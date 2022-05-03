@@ -39,6 +39,7 @@ extend ENLIGHTEN in countless ways we never imagined.
     - [Maintenance](README_MAINTENANCE.md)
     - [Documentation](README_DOCUMENTATION.md)
     - [Testing](README_TESTING.md)
+    - [Rendered Doxygen](https://wasatchphotonics.com/api/ENLIGHTEN/)
 - Technical Notes
     - [Qt](README_QT.md)
     - [CSS](README_CSS.md)

@@ -2,7 +2,7 @@
 
 ENLIGHTEN's internal developer documentation is rendered here:
 
-- https://mco.wasatchphotonics.com/doc/Enlighten/
+- https://wasatchphotonics.com/api/ENLIGHTEN/
 
 # Rendering
 

@@ -46,6 +46,7 @@ function upload()
 POST_MAC=false
 POST_WIN=false
 POST_LINUX=false
+DOCS_ONLY=false
 
 while [ "$1" != "" ]; do
     case $1 in
@@ -58,10 +59,8 @@ done
 
 if ! ( $POST_WIN || $POST_MAC || $POST_LINUX )
 then
-    echo "Usage: $0 [--win | --mac | --linux]"
-    echo
-    echo "Please specify at least one platform."
-    exit 1
+    echo "Updating documentation only."
+    DOCS_ONLY=true
 fi
 
 ################################################################################
@@ -119,6 +118,12 @@ fi
 
 make doc
 rsync --archive docs/doxygen/html/ $USERNAME@wasatchphotonics.com:www/api/enlighten/
+scp docs/ENLIGHTEN_CHANGELOG.html $USERNAME@wasatchphotonics.com:www/binaries/apps/enlighten/README.html
+
+if $DOCS_ONLY
+then
+    exit 0
+fi
 echo
 
 mkdir -p releases
@@ -147,9 +152,6 @@ then
 else
     echo "skipping Linux"
 fi
-
-
-scp docs/ENLIGHTEN_CHANGELOG.html $USERNAME@wasatchphotonics.com:www/binaries/apps/enlighten/README.html
 
 ################################################################################
 # capture build artifacts
