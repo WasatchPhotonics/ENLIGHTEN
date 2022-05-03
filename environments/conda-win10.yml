@@ -1,0 +1,19 @@
+name: conda_enlighten3
+
+channels:
+    - defaults
+    - conda-forge
+
+dependencies:
+    - numpy
+    - pandas
+    - pexpect
+    - pip
+    - psutil
+    - python
+    - pytest
+    - scipy
+    - xlwt
+    - qimage2ndarray
+
+# installed from pip: PySide2 pygtail pyusb pywavelets superman pyqtgraph

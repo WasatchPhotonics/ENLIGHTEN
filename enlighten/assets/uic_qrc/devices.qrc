@@ -1,0 +1,31 @@
+<RCC>
+  <qresource prefix="spectrometers">
+    <file>images/devices/785-L.png</file>
+    <file>images/devices/WP-1064-L.png</file>
+    <file>images/devices/WP-1064-SMA.png</file>
+    <file>images/devices/WP-405-FS.png</file>
+    <file>images/devices/WP-405-SMA.png</file>
+    <file>images/devices/WP-532-FS.png</file>
+    <file>images/devices/WP-532-SMA.png</file>
+    <file>images/devices/WP-532-ER-SMA.png</file>
+    <file>images/devices/WP-633-FS.png</file>
+    <file>images/devices/WP-633-L.png</file>
+    <file>images/devices/WP-633-SMA.png</file>
+    <file>images/devices/WP-785-FS.png</file>
+    <file>images/devices/WP-785-L.png</file>
+    <file>images/devices/WP-785-SMA.png</file>
+    <file>images/devices/WP-785-ER-SMA.png</file>
+    <file>images/devices/WP-830-FS.png</file>
+    <file>images/devices/WP-830-L.png</file>
+    <file>images/devices/WP-830-SMA.png</file>
+    <file>images/devices/WP-NIR1-SMA.png</file>
+    <file>images/devices/WP-UV-VIS-SMA.png</file>
+    <file>images/devices/WP-VIS-SMA.png</file>
+    <file>images/devices/WP-VIS-NIR-SMA.png</file>
+    <file>images/devices/WP-VIS-NIR-SMA-OEM.png</file>
+    <file>images/devices/stroker.png</file>
+    <file>images/devices/SiG-785-FS.png</file>
+    <file>images/devices/SiG-633-FS.png</file>
+  </qresource>
+</RCC>
+

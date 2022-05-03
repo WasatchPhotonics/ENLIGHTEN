@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="simulation">
+    <file>images/spectrums/hardware_capture_02.PNG</file>
+    <file>images/spectrums/thumbnail_loading.png</file>
+    <file>images/spectrums/hardware_capture_03.PNG</file>
+    <file>images/spectrums/hardware_capture_01.PNG</file>
+  </qresource>
+</RCC>

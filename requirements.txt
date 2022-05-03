@@ -1,0 +1,16 @@
+# Requirements without specifiers. Grab latest of each package
+PySide2 
+pygtail 
+pyusb 
+pefile 
+pywavelets 
+superman 
+pyqtgraph 
+spc_spectra 
+libusb 
+seabreeze 
+boto3 
+tensorflow 
+bleak 
+pyftdi 
+adafruit-blinka

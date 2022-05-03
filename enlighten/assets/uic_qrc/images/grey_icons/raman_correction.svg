@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17 21" xml:space="preserve">
+     <defs>
+         <marker orient="auto" refY="0" refX="0" id="arrow" style="fill:#f7f7f7; stroke:#f7f7f7; stroke-width:0.625; overflow:visible">
+            <path d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+                  transform="scale(0.6)" />
+        </marker>
+    </defs>
+    <g transform="translate(-2.9293143,-1.301635)" style="fill:none; stroke:#f7f7f7">
+        <path style="stroke:#aaa" d="m 2.9293143,22.198992 c 4.287606,0 3.496278,-16.6309539 5.008184,-16.6309539 1.511906,0 1.088073,16.6309539 5.0081837,16.6309539"/>
+        <path d="m 10.583333,22.225001 c 4.287606,0 3.496278,-16.6309539 5.008184,-16.6309539 1.511906,0 1.088073,16.6309539 5.008184,16.6309539"/>
+        <path style="stroke-width:0.6" d="m 7.9374983,1.301635 v 2.3151031 0 0 0"/>
+        <path style="stroke-width:0.6" d="m 15.591517,1.301635 v 2.3151031 0 0 0"/>
+        <path style="stroke-width:0.6; marker-start:url(#arrow)" d="M 14.208013,2.4591861 H 8.8349083 v 0 0 0"/>
+    </g>
+</svg>

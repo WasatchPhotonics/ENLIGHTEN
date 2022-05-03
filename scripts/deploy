@@ -1,0 +1,167 @@
+#!/bin/bash
+################################################################################
+#                                  deploy                                      #
+################################################################################
+#                                                                              #
+#  DESCRIPTION:  Quick script to consistently and reliably upload releases     #
+#                to our website.                                               #
+#                                                                              #
+#  AUTHOR:       Mark Zieg <mzieg@wasatchphotonics.com>                        #
+#                                                                              #
+################################################################################
+
+function upload()
+{
+    local LOCAL_NAME="$1"
+
+    if ! [ -f $LOCAL_NAME ]
+    then
+        echo "ERROR: can't find $LOCAL_NAME"
+        exit 1
+    fi
+
+    REMOTE_PATH="www/binaries/apps/enlighten/$LOCAL_NAME"
+    if $IS_BETA
+    then
+        REMOTE_PATH="www/binaries/apps/enlighten/beta/$LOCAL_NAME"
+    fi
+
+    if ssh $USERNAME@wasatchphotonics.com ls $REMOTE_PATH 1>/dev/null 2>&1
+    then
+        echo "ERROR: $REMOTE_PATH already found on remote host (manually remove/rename then retry)"
+        exit 1
+    else
+        echo "$REMOTE_PATH does not currently exist on remote host"
+    fi
+
+    scp $LOCAL_NAME $USERNAME@wasatchphotonics.com:$REMOTE_PATH
+
+    mv -f $LOCAL_NAME releases
+}
+
+################################################################################
+# process cmd-line args
+################################################################################
+
+POST_MAC=false
+POST_WIN=false
+POST_LINUX=false
+
+while [ "$1" != "" ]; do
+    case $1 in
+          --mac) POST_MAC=true   ;;
+          --win) POST_WIN=true   ;;
+        --linux) POST_LINUX=true ;;
+    esac
+    shift
+done
+
+if ! ( $POST_WIN || $POST_MAC || $POST_LINUX )
+then
+    echo "Usage: $0 [--win | --mac | --linux]"
+    echo
+    echo "Please specify at least one platform."
+    exit 1
+fi
+
+################################################################################
+# read parameters
+################################################################################
+
+read -p "Username:   " USERNAME
+read -p "Version:    " VERSION 
+read -p "Beta:       " BETA
+
+export VERSION
+
+if echo $BETA | grep -q y
+then
+    IS_BETA=true
+else
+    IS_BETA=false
+fi
+
+################################################################################
+# validate release requirements
+################################################################################
+
+# verify version number in code
+if egrep -q "\"$VERSION\"" enlighten/common.py
+then
+    echo "version found in common.py"
+else
+    echo "version missing from common.py"
+    exit 1
+fi
+
+# verify version number is tagged
+if git tag | egrep -q $VERSION
+then
+    echo "Git tag found (ENLIGHTEN)"
+else
+    echo "Git tag not found in ENLIGHTEN: $VERSION"
+    exit 1
+fi
+
+# verify Wasatch.PY is tagged
+DRIVER_TAG="enlighten-$VERSION"
+if ( cd ../Wasatch.PY && git tag -l ) | egrep -q "^${DRIVER_TAG}\$"
+then
+    echo "Git tag found (Wasatch.PY)"
+else
+    echo "Git tag not found in Wasatch.PY: $DRIVER_TAG"
+    exit 1
+fi
+
+################################################################################
+# render documentation 
+################################################################################
+
+make doc
+echo
+
+mkdir -p releases
+
+################################################################################
+# upload binaries
+################################################################################
+
+if $POST_WIN
+then
+    upload "Enlighten-Setup64-${VERSION}.exe"
+else
+    echo "skipping Windows"
+fi
+
+if $POST_MAC
+then
+    upload "ENLIGHTEN-MacOS-${VERSION}.zip"
+else
+    echo "skipping Mac"
+fi
+
+if $POST_LINUX
+then
+    upload "ENLIGHTEN-linux-${VERSION}.tgz"
+else
+    echo "skipping Linux"
+fi
+
+
+scp docs/ENLIGHTEN_CHANGELOG.html $USERNAME@wasatchphotonics.com:www/binaries/apps/enlighten/README.html
+
+################################################################################
+# capture build artifacts
+################################################################################
+
+if [ -r build.out ]
+then
+    BUILD_LOG=releases/build-${VERSION}.log
+    echo "stdout:"   > $BUILD_LOG
+    cat   build.out >> $BUILD_LOG
+
+    echo "stderr:"  >> $BUILD_LOG
+    cat   build.err >> $BUILD_LOG
+
+    gzip $BUILD_LOG
+fi

@@ -1,0 +1,16 @@
+<RCC>
+  <qresource prefix="svg">
+    <file>images/throbbers/rings.svg</file>
+    <file>images/throbbers/puff.svg</file>
+    <file>images/throbbers/ball-triangle.svg</file>
+  </qresource>
+  <qresource prefix="gifs">
+    <file>images/throbbers/green_arc.gif</file>
+    <file>images/throbbers/833.gif</file>
+    <file>images/throbbers/3.gif</file>
+    <file>images/throbbers/Spinner.gif</file>
+    <file>images/throbbers/Disk.gif</file>
+    <file>images/throbbers/EnlightenIconGif.gif</file>
+    <file>images/throbbers/green_disk.gif</file>
+  </qresource>
+</RCC>
