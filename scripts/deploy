@@ -118,6 +118,7 @@ fi
 ################################################################################
 
 make doc
+rsync --archive docs/doxygen/html/ $USERNAME@wasatchphotonics.com:www/api/enlighten/
 echo
 
 mkdir -p releases

@@ -70,10 +70,6 @@ docs:
 	@doxygen 1>doxygen.out 2>doxygen.err
 	@test -L wasatch && rm wasatch
 	@#
-	@# Upload developer docs to MCO 
-	@#
-	@rsync --archive docs/doxygen/html/ mco.wasatchphotonics.com:/var/www/mco/public_html/doc/Enlighten/
-	@#
 	@# Convert Changelog to HTML
 	@#
 	@pandoc --metadata title:ENLIGHTEN-Changelog --toc --self-contained --from gfm --to html README_CHANGELOG.md > docs/ENLIGHTEN_CHANGELOG.html
