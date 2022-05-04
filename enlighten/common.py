@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 #       can be modules (files) within it
     
 ## ENLIGHTEN's application version number (checked by scripts/deploy and bootstrap.bat)
-VERSION = "3.2.0"
+VERSION = "3.2.1"
 
 ## 
 # It's important to keep this list in sync with the comboBoxTechnique items.

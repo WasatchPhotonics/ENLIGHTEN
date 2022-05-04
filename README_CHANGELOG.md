@@ -1,7 +1,8 @@
 # Version History
 
 # 3.2 Open-Source
-
+- 2022-05-04 3.2.1
+    - add despiking feature
 - 2022-05-03 3.2.0
     - moved to GitHub
 
