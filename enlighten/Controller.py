@@ -1848,6 +1848,8 @@ class Controller:
         ########################################################################
         # Graph Post-Processed Spectrum
         ########################################################################
+        if self.form.ui.checkBox_despike_enable.isChecked():
+            pr = self.despiking_feature.process(pr)
 
         if spec is None:
             # We're not responsible for graphing spectra which didn't come from a

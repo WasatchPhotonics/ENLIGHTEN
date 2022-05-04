@@ -179,6 +179,7 @@ class AreaScanFeature(object):
         self.frame_count = 0 # could move to app_settings
 
     def process_reading(self, reading):
+        log.debug(f"trying to process area scan read")
         if reading is None or reading.spectrum is None:
             return
 
