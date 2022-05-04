@@ -30,7 +30,7 @@ class Despiking(EnlightenPluginBase):
         fields.append(EnlightenPluginField(
             name="tau",
             datatype="float",
-            initial=100,
+            initial=7,
             minimum=0.1,
             maximum=300,
             step=0.1,
@@ -79,7 +79,7 @@ class Despiking(EnlightenPluginBase):
         else:
             series_x = list(range(len(spiky_spectra)))
 
-        trend_x = list(range(mod_z_scores))
+        trend_x = list(range(len(mod_z_scores)))
 
 
         log.debug(f"despiked spectra is {spiky_spectra}")
