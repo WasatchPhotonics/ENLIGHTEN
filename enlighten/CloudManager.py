@@ -63,7 +63,7 @@ class CloudManager:
         local_file = ''
         try:
             local_file = os.path.join(get_default_data_dir(), "eeprom_backups", f"{serial_number}.json")
-            self.eeprom_bucket.download_file(f"{serial_number}.json", self.local_file)
+            self.eeprom_bucket.download_file(f"{serial_number}.json", local_file)
         except Exception as e:
             log.error(f"Ran into error trying to download cloud eeprom file of {e}")
             self.result_message.setText("Error retrieving EEPROM file from server.")
