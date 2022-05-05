@@ -34,7 +34,6 @@ mac.bundled
 version.txt
 out.txt
 err.txt
-keys.py
 wasatch_applog.txt
 .vs/
 
