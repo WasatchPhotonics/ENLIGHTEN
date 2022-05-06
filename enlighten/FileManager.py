@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 # Encapsulate operations managing files, directory trees etc.
 class FileManager(object):
     
-    FILTER = "CSV (*.csv);;JSON (*.json);;SPC (*.spc)"
+    FILTER = "CSV (*.csv);;JSON (*.json);;SPC (*.spc);;ASC (*.asc)"
 
     ##
     # @param form for QDialogs requiring a parent
