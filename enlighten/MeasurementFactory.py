@@ -330,14 +330,15 @@ class MeasurementFactory(object):
                 if linecount > 100:
                     break
             
-    ##
-    # Determine whether file looks like a simple 2-column set of (x, y) pairs
-    # (floats, ints, whatever) with no metadata.  Supports tab- or comma-
-    # delimited files.
-    #
-    # Ignores anything AFTER the first blank line (Solis .asc files put metadata
-    # there).
-    def looks_like_simple_columns(self, pathname):
+    def looks_like_simple_columns(self, pathname) -> bool:
+        """
+        Determine whether file looks like a simple 2-column set of (x, y) pairs
+        (floats, ints, whatever) with no metadata.  Supports tab- or comma-
+        delimited files.
+        
+        Ignores anything AFTER the first blank line (Solis .asc files put metadata
+        there).
+        """
         with open(pathname, "r") as infile:
             for line in infile:
                 line = line.strip()
