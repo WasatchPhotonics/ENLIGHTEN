@@ -66,6 +66,7 @@ docs:
 	@# Render Doxygen
 	@#
 	@echo Rendering Doxygen...
+	@rm -rf docs/doxygen/html
 	@test -L wasatch || ln -s ../Wasatch.PY/wasatch
 	@doxygen 1>doxygen.out 2>doxygen.err
 	@test -L wasatch && rm wasatch

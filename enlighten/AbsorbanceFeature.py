@@ -3,12 +3,17 @@ import math
 
 log = logging.getLogger(__name__)
 
-##
-# Thinking this doesn't need VignetteROI, because Transmission already does it.
 class AbsorbanceFeature:
+    """
+    Computes absorbance using Beer's Law.
 
-    ## above this it's bad data, because our spectrometers aren't this good
-    MAX_AU = 6.0
+    Note that any required vignetting is performed within TransmissionFeature.
+
+    @see [Beer-Lambert Law](https://en.wikipedia.org/wiki/Beer%E2%80%93Lambert_law)
+    """
+
+    ## above this it's likely bad data, based on current model performance 
+    MAX_AU = 6.0    
 
     def __init__(self,
             marquee,
@@ -17,10 +22,14 @@ class AbsorbanceFeature:
         self.marquee        = marquee                
         self.transmission   = transmission
 
-    ## 
-    # @returns True if successfully updated ProcessedReading
-    # @todo update with numpy?
-    def process(self, processed_reading, settings):
+    def process(self, processed_reading, settings) -> bool:
+        """
+        Computes absorbance from the current processed spectrum,
+        then stores it back into 'processed.'
+
+        @returns False if transmission can't be computed, or value exceeds MAX_AU
+        @todo optimize with Numpy
+        """
         pr = processed_reading
 
         if not self.transmission.process(pr, settings):
@@ -30,7 +39,6 @@ class AbsorbanceFeature:
         saturated = False
         absorbance = []
         trans = pr.get_processed()
-        log.debug("trans = %s", trans[0:10])
         for t_perc in trans:
             au = 0
             t = t_perc / 100.0
@@ -45,7 +53,6 @@ class AbsorbanceFeature:
                     saturated = True
             absorbance.append(au)
 
-        log.debug("absorbance = %s", absorbance[0:10])
         pr.set_processed(absorbance)
 
         if saturated:

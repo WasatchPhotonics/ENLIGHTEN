@@ -12,11 +12,26 @@ from .ScrollStealFilter import ScrollStealFilter
 
 log = logging.getLogger(__name__)
 
-##
-# @todo give Graph awareness of the four plugin locations (top, left, right, 
-#       bottom), so that other features can use them; have AreaScanFeature claim
-#       "top", so when in use, PluginController only allows left/right/bottom.
 class AreaScanFeature(object):
+    """
+    Implements a 2D "area scan," displaying the full detector rows and columns
+    rather than the usual 1D vertically-binned spectrum.
+
+    This feature is primarily for manufacturing use.  It is not currently 
+    very robust or efficient.
+
+    @par Fast Mode
+
+    Early AreaScan implementations in firmware sent out a single line in response
+    to a single ACQUIRE opcode; 64 ACQUIRE requests had to be sent to read-out an
+    entire 64-row detector.  When in "Fast Area Scan Mode," the detector sends
+    out all 64 lines (or the height of the detector) in response to a single
+    ACQUIRE.
+
+    @todo give Graph awareness of the four plugin locations (top, left, right, 
+          bottom), so that other features can use them; have AreaScanFeature claim
+          "top", so when in use, PluginController only allows left/right/bottom.
+    """
 
     # ##########################################################################
     # Lifecycle
@@ -124,11 +139,14 @@ class AreaScanFeature(object):
         if not self.multispec.check_hardware_curve_present(self.name, spec.device_id):
             log.info(f"Removing spec curve {spec} already deleted, returning")
             return
+
         cur_curve = self.multispec.get_hardware_feature_curve(self.name, spec.device_id)
+
         # remove current curve from graph
         for curve in self.chart_live.listDataItems():
             if curve.name() == cur_curve.name():
                 self.chart_live.removeItem(curve)
+
         self.multispec.remove_hardware_curve(self.name, spec.device_id)
         log.info(f"finished removing spec {spec}")
 
@@ -228,8 +246,8 @@ class AreaScanFeature(object):
     # callbacks
     # ##########################################################################
 
-    ## the user changed the delay_ms spinner
     def delay_callback(self):
+        """ the user changed the delay_ms spinner """
         spec = self.multispec.current_spectrometer()
         if spec is None:
             return self.disable()
@@ -238,16 +256,16 @@ class AreaScanFeature(object):
         if self.enabled:
             spec.change_device_setting("detector_offset", self.delay_ms)
 
-    # the user changed the start/stop lines
     def roi_callback(self):
+        """ the user changed the start/stop lines """
         spec = self.multispec.current_spectrometer()
         if spec is None:
             return self.disable()
 
         self.update_from_gui()
 
-    ## The user clicked "[x] fast" on the widget
     def fast_callback(self):
+        """ The user clicked "[x] fast" on the widget """
         spec = self.multispec.current_spectrometer()
         if spec is None:
             return self.disable()
@@ -263,8 +281,8 @@ class AreaScanFeature(object):
         self.frame_image.setVisible(False)
         self.cb_enable.setChecked(False)
 
-    ## The user clicked "[x] enable" on the widget
     def enable_callback(self):
+        """ The user clicked "[x] enable" on the widget """
         spec = self.multispec.current_spectrometer()
         if spec is None:
             return self.disable()
@@ -318,8 +336,8 @@ class AreaScanFeature(object):
     # private methods
     # ##########################################################################
 
-    ## update the area scan parameters from the GUI widgets
     def update_from_gui(self):
+        """ update the area scan parameters from the GUI widgets """
         spec = self.multispec.current_spectrometer()
         if spec is None:
             return self.disable()
@@ -335,8 +353,8 @@ class AreaScanFeature(object):
             spec.change_device_setting("vertical_binning", (self.start_line, self.stop_line))
             self.resize()
 
-    ## we've updated the start/stop lines, so resize the image
     def update_progress_bar(self):
+        """ we've updated the start/stop lines, so resize the image """
         if self.last_received_time is None:
             log.debug("update_progress_bar: initializing")
             self.last_received_time = datetime.datetime.now()
@@ -404,11 +422,12 @@ class AreaScanFeature(object):
         # if spec.settings.is_micro():
         #    self.image.move(0, 0)
 
-    ##
-    # @todo qimage2ndarray technically provides access to the existing QImage's 
-    #       underlying data, so we could probably simply update the existing 
-    #       QImage rather than make a whole new QPixmap.
     def finish_update(self):
+        """
+        @todo qimage2ndarray technically provides access to the existing QImage's 
+              underlying data, so we could probably simply update the existing 
+              QImage rather than make a whole new QPixmap.
+        """
         if self.data is None:
             return
 

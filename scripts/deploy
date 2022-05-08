@@ -81,6 +81,22 @@ else
 fi
 
 ################################################################################
+# render documentation 
+################################################################################
+
+make doc
+rsync --archive --delete docs/doxygen/html/ $USERNAME@wasatchphotonics.com:www/api/ENLIGHTEN/
+scp docs/ENLIGHTEN_CHANGELOG.html $USERNAME@wasatchphotonics.com:www/binaries/apps/enlighten/README.html
+
+if $DOCS_ONLY
+then
+    exit 0
+fi
+echo
+
+mkdir -p releases
+
+################################################################################
 # validate release requirements
 ################################################################################
 
@@ -111,22 +127,6 @@ else
     echo "Git tag not found in Wasatch.PY: $DRIVER_TAG"
     exit 1
 fi
-
-################################################################################
-# render documentation 
-################################################################################
-
-make doc
-rsync --archive docs/doxygen/html/ $USERNAME@wasatchphotonics.com:www/api/enlighten/
-scp docs/ENLIGHTEN_CHANGELOG.html $USERNAME@wasatchphotonics.com:www/binaries/apps/enlighten/README.html
-
-if $DOCS_ONLY
-then
-    exit 0
-fi
-echo
-
-mkdir -p releases
 
 ################################################################################
 # upload binaries

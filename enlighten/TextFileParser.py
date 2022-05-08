@@ -16,6 +16,21 @@ class TextFileParser(object):
     A file parser to deserialize one Measurement from a column-ordered CSV file
     with no header data.  Infers unit of x-axis from current graph settings.
     Added to support Andor Solis .asc files.
+
+    @todo consider parsing metadata found below the spectrum, including the following
+          from Andor Solis .asc files:
+
+          Date and Time:                Fri May  6 12:08:48 2022
+          Temperature (C):              -60
+          Model:                        DV416_LD
+          Data Type:                    Counts
+          Exposure Time (secs):         0.05667
+          Horizontally flipped:         false
+          Serial Number:                27239
+          Pre-Amplifier Gain:           1x
+
+    @todo given Andor serial number, consider using ENLIGHTEN's configured 
+          excitation for that unit as the excitation — or even for full x-axis?
     """
 
     def __init__(self, pathname, graph):
@@ -50,10 +65,8 @@ class TextFileParser(object):
         self.processed_reading.processed = y
 
         if self.graph.in_wavelengths():
-            log.debug("assuming wavelengths")
             self.settings.wavelengths = x
         elif self.graph.in_wavenumbers():
-            log.debug("assuming wavenumbers")
             self.settings.wavenumbers = x
 
         self.processed_reading.post_load_cleanup()
