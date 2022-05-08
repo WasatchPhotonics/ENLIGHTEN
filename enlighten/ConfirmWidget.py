@@ -4,12 +4,12 @@ from PySide2 import QtGui, QtCore, QtWidgets
 
 log = logging.getLogger(__name__)
 
-##
-# Widget to display confirmation question when a ThumbnailWidget's trash 
-# button is clicked. Each ThumbnailWidget has one of these, although it's 
-# normally hidden.
 class ConfirmWidget(QtWidgets.QFrame):
-
+    """
+    Widget to display confirmation question when a ThumbnailWidget's trash 
+    button is clicked. Each ThumbnailWidget has one of these, although it's 
+    normally hidden.
+    """
     def __init__(self, 
             callback_yes,
             parent,
@@ -46,14 +46,12 @@ class ConfirmWidget(QtWidgets.QFrame):
         self.button_no.setText("No")
         self.button_no.clicked.connect(self.default_callback_no if callback_no is None else callback_no)
 
-    ##
-    # By default, just dismiss (hide) widget if user clicks No
     def default_callback_no(self):
+        """ By default, just dismiss (hide) widget if user clicks No. """
         self.setVisible(False)
 
-    ## 
-    # @todo merge with ThumbnailWidget.create_button, move to util?
     def add_small_push_button(self, icon_name="default", size=(30, 30), icon_size=(20, 20), loc=None):
+        """ @todo merge with ThumbnailWidget.create_button, move to util? """
         icon = QtGui.QIcon()
         icon.addPixmap(":/greys/images/grey_icons/%s.svg" % icon_name)
 

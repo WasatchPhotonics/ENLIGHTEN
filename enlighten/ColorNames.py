@@ -3,18 +3,18 @@ import re
 
 log = logging.getLogger(__name__)
 
-##
-# These are colors we can reference by name in .ini files or elsewhere.
-#
-# The static ColorNames lookups have been extracted out of Colors, in part so 
-# Configuration can "have" a ColorNames without needing a full Colors object
-# (which itself currently requires a Configuration).
-#
-# @note all names are lowercase
-#
-# @see http://htmlcolorcodes.com/color-names/
 class ColorNames(object):
-
+    """
+    These are colors we can reference by name in .ini files or elsewhere.
+    
+    The static ColorNames lookups have been extracted out of Colors, in part so 
+    Configuration can "have" a ColorNames without needing a full Colors object
+    (which itself currently requires a Configuration).
+    
+    @note all names are lowercase (comparisons are case-insensitive)
+    
+    @see http://htmlcolorcodes.com/color-names/
+    """
     def clear(self):
         self.names = None
         self.names_by_length = None
@@ -170,7 +170,7 @@ class ColorNames(object):
             'enlighten_blue':       '#0000ff',
             'enlighten_red':        '#ff0000',
             'enlighten_green':      '#1fd11f', # semi light-green
-            'enlighten_dark_red':   '#660000', # MZ: changed from #ff3300
+            'enlighten_dark_red':   '#660000', 
             'enlighten_light_gray': '#a7a7a7',
             'enlighten_faded_gray': '#272727',
             'enlighten_medium_blue':'#0000ff',
@@ -190,8 +190,8 @@ class ColorNames(object):
             'enlighten_name_e2':    '#f84f21', # the 'E' in ENLIGHTEN (orangered)
             'enlighten_name_n2':    '#cd242b', # the 'N' in ENLIGHTEN (red)
 
-            'enlighten_benign':     '#007c3c', # '#00a550', # from KnowItAll logo
-            'enlighten_hazard':     '#a60a0a', # similar to red buttons
+            'enlighten_benign':     '#007c3c', 
+            'enlighten_hazard':     '#a60a0a',
 
             # These are the colors used in the ENLIGHTEN logo:
             #
@@ -240,4 +240,3 @@ class ColorNames(object):
         except:
             pass
         return None
-

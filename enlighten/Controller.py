@@ -48,24 +48,23 @@ from wasatch.RealUSBDevice            import RealUSBDevice
 
 log = logging.getLogger(__name__)
 
-##
-# Trivial class to eliminate a tuple during memory profiling.
 class AcquiredReading(object):
+    """ Trivial class to eliminate a tuple during memory profiling. """
     def __init__(self, reading=None, progress=0, disconnect=False):
         self.reading    = reading
         self.disconnect = disconnect
         self.progress = progress
 
-##
-# Main application controller class for ENLIGHTEN.
-#
-# This class is still way bigger than it should be, but it's gradually coming
-# under control.
-#
-# - most feature logic has been extracted into "business objects" which own and
-#   configure their own GUI widgets and internal state
-#
 class Controller:
+    """
+    Main application controller class for ENLIGHTEN.
+    
+    This class is still way bigger than it should be, but it's gradually coming
+    under control.
+    
+    - most feature logic has been extracted into "business objects" which own and
+      configure their own GUI widgets and internal state
+    """
 
     # ##########################################################################
     # Constants
@@ -75,7 +74,7 @@ class Controller:
     STATUS_TIMER_SLEEP_MS           = 1000
     BUS_TIMER_SLEEP_MS              = 1000
     LOG_READER_TIMER_SLEEP_MS       = 3000
-    MAX_MISSED_READINGS             = 2
+    MAX_MISSED_READINGS             =    2
 
     URL_HELP = "https://wasatchphotonics.com/software-support/enlighten/"
 
@@ -83,21 +82,6 @@ class Controller:
     # Lifecycle
     # ##########################################################################
 
-    ##
-    # All of the parameters are normally parsed from via command-line arguments
-    # in Enlighten.py.  Typically the only argument that changes in normal
-    # operation is log_level.
-    #
-    # @param app        the running QApplication, to which the Controller
-    #                   will add the BasicWindow form
-    # @param log_level  string in ["debug", "info", "warning", "error", "critical"]
-    #                   (https://docs.python.org/2/library/logging.html#logging-levels)
-    # @param max_memory_growth how much process RAM usage is allowed to increase
-    #                   as a percentage before ENLIGHTEN automatically shuts down
-    # @param run_sec    automatically exit after this many seconds
-    # @param serial_number only connect to this unit if found.
-    # @param stylesheet_path pathname to CSS "skin" to use for overriding enlighten.css
-    # @param set_all_dfu set each ARM spectrometer to DFU mode as they connect
     def __init__(self,
                 app,
                 log_queue,
@@ -109,6 +93,22 @@ class Controller:
                 set_all_dfu       = False,
                 headless          = False,
             ):
+        """
+        All of the parameters are normally parsed from via command-line arguments
+        in Enlighten.py.  Typically the only argument that changes in normal
+        operation is log_level.
+        
+        @param app        the running QApplication, to which the Controller
+                          will add the BasicWindow form
+        @param log_level  string in ["debug", "info", "warning", "error", "critical"]
+                          (https://docs.python.org/2/library/logging.html#logging-levels)
+        @param max_memory_growth how much process RAM usage is allowed to increase
+                          as a percentage before ENLIGHTEN automatically shuts down
+        @param run_sec    automatically exit after this many seconds
+        @param serial_number only connect to this unit if found.
+        @param stylesheet_path pathname to CSS "skin" to use for overriding enlighten.css
+        @param set_all_dfu set each ARM spectrometer to DFU mode as they connect
+        """
 
         self.app                    = app
         self.log_queue              = log_queue # currently needed for KnowItAll.Wrapper
@@ -347,8 +347,8 @@ class Controller:
         self.control_exit_signal.exit.emit("Control level close")
         log.critical("emitted control level close (exit_code %d)", self.exit_code)
 
-    ## Add Qt signal handlers to the Controller instance.
     def create_signals(self):
+        """ Add Qt signal handlers to the Controller instance. """
 
         ## inherits from QObject, hence supports Qt signals
         class ControlClose(QtCore.QObject):
@@ -390,10 +390,11 @@ class Controller:
     #                                                                          #
     # ##########################################################################
 
-    ## 
-    # Poll the USB bus periodically for new connection events (including 
-    # devices connected at application launch).
     def setup_bus_listener(self):
+        """
+        Poll the USB bus periodically for new connection events (including 
+        devices connected at application launch).
+        """
         self.marquee.info("searching for spectrometers", immediate=True)
         self.bus = WasatchBus()
         self.bus_timer = QtCore.QTimer()
@@ -401,15 +402,15 @@ class Controller:
         self.bus_timer.setSingleShot(True)
         self.bus_timer.start(500)
 
-    ## @todo move to StripChartFeature
     def setup_hardware_strip_listener(self):
+        """ @todo move to StripChartFeature """
         self.hard_strip_timer = QtCore.QTimer()
         self.hard_strip_timer.timeout.connect(self.process_hardware_strip)
         self.hard_strip_timer.setSingleShot(True)
         self.hard_strip_timer.start(1000)
 
-    ## @todo move to StripChartFeature
     def process_hardware_strip(self):
+        """ @todo move to StripChartFeature """
         for spec, recent_read in self.multispec.spec_most_recent_reads.items():
             for feature in [self.detector_temperature,
                             self.laser_temperature,
@@ -419,10 +420,12 @@ class Controller:
             self.hard_strip_timer.start(self.form.ui.spinBox_integration_time_ms.value())
             return
         self.hard_strip_timer.start(1000)
-    ## 
-    # If a device is listed on the bus, and it is not currently connected,
-    # attempt to make a connection.
+
     def tick_bus_listener(self):
+        """
+        If a device is listed on the bus, and it is not currently connected,
+        attempt to make a connection.
+        """
         if self.shutting_down:
             return self.bus_timer.stop()
 
@@ -452,15 +455,16 @@ class Controller:
         # down the connection process).
         self.bus_timer.start(self.BUS_TIMER_SLEEP_MS)
 
-    ## 
-    # If there are any visible spectrometers that ENLIGHTEN has not yet
-    # connected to, try to connect to them.  Only connect one device per pass;
-    # let bus_listener kick-off and call connect_new() again if more remain.
-    #
-    # Note that this method gets called whether there are any spectrometers
-    # on the bus or not, and whether any or all of them have already connected
-    # or not.
     def connect_new(self, other_device=None):
+        """
+        # If there are any visible spectrometers that ENLIGHTEN has not yet
+        # connected to, try to connect to them.  Only connect one device per pass;
+        # let bus_listener kick-off and call connect_new() again if more remain.
+        #
+        # Note that this method gets called whether there are any spectrometers
+        # on the bus or not, and whether any or all of them have already connected
+        # or not.
+        """
         # do we see any spectrometers on the bus?  (WasatchBus will pre-filter to
         # only valid spectrometer devices)
         if other_device is not None and other_device not in self.other_devices:
@@ -597,7 +601,7 @@ class Controller:
                     self.multispec.remove_in_process(device_id)
 
 
-    ## also called by PageNavigation.set_technique_common
+    # also called by PageNavigation.set_technique_common
     def update_feature_visibility(self):
         # disable anything that shouldn't be on without a spectrometer
         # (could grow this considerably)
@@ -615,26 +619,26 @@ class Controller:
     # Spectrometer Initialization
     # ##########################################################################
 
-    ##
-    # This method is called in two very different circumstances:
-    #
-    # - by Controller.connect_new(), when we connect to a new spectrometer
-    #   - this is considered a "hotplug" event
-    #   - this includes when a previously dropped/disconnected spectrometer
-    #     reattaches / re-enumerates
-    # - by Multispec, when the user manually changes the "currently selected
-    #   spectrometer" select-box on the GUI (frequent)
-    #
-    # The method itself determines the calling case by inferring a "hotplug"
-    # variable from whether the passed device was already connected or not.
-    #
-    # Probably we should split this function into two:
-    #
-    # - move 'hotplug' logic to initialize_newly_connected_device()
-    # - leave rest in initialize_gui_from_current_device()
-    # - have hotplug function call initialize_gui() at end
-    #
     def initialize_new_device(self, device):
+        """
+        This method is called in two very different circumstances:
+        
+        - by Controller.connect_new(), when we connect to a new spectrometer
+          - this is considered a "hotplug" event
+          - this includes when a previously dropped/disconnected spectrometer
+            reattaches / re-enumerates
+        - by Multispec, when the user manually changes the "currently selected
+          spectrometer" select-box on the GUI (frequent)
+        
+        The method itself determines the calling case by inferring a "hotplug"
+        variable from whether the passed device was already connected or not.
+        
+        Probably we should split this function into two:
+        
+        - move 'hotplug' logic to initialize_newly_connected_device()
+        - leave rest in initialize_gui_from_current_device()
+        - have hotplug function call initialize_gui() at end
+        """
         sfu = self.form.ui
 
         if self.shutting_down:
@@ -882,15 +886,15 @@ class Controller:
         # call StripChartFeature getter
         spec.app_state.reset_temperature_data(time_window=sfu.spinBox_strip_window.value(), hotplug=hotplug)
 
-    ##
-    # Note: adding/removing a trace to a graph apparently makes all curves visible,
-    # so call this method to allow business objects to re-hide any curves
-    # (or other widgets) based on internal business object state.
-    #
-    # @todo move to Graph and allow other business objects to register as observers
-    #
-    # @todo Probably need to integrate PluginController into this too.
     def rehide_curves(self):
+        """
+        Adding/removing a trace to a graph apparently makes all curves visible,
+        so call this method to allow business objects to re-hide any curves
+        (or other widgets) based on internal business object state.
+        
+        @todo move to Graph and allow other business objects to register as observers
+        @todo Probably need to integrate PluginController into this too.
+        """
         for feature in [ self.baseline_correction,
                          self.raman_shift_correction ]:
             feature.update_visibility()
@@ -899,8 +903,8 @@ class Controller:
     # More GUI Setup
     # ##########################################################################
 
-    ## @todo move to LoggingFeature
     def setup_log_interface(self):
+        """ @todo move to LoggingFeature """
         try:
             offset_file = applog.get_location() + ".offset"
             if os.path.exists(offset_file):
@@ -920,11 +924,12 @@ class Controller:
     # Logging
     # ##########################################################################
 
-    ##
-    # Periodically tail the logfile to the QTextEdit in Hardware -> Setup -> Logging.
-    #
-    # @todo move to LoggingFeature
     def tick_log_reader(self):
+        """
+        Periodically tail the logfile to the QTextEdit in Hardware -> Setup -> Logging.
+        
+        @todo move to LoggingFeature
+        """
         if self.area_scan.enabled:
             return
 
@@ -958,11 +963,12 @@ class Controller:
 
         self.log_reader_timer.start(Controller.LOG_READER_TIMER_SLEEP_MS)
 
-    ##
-    # This gets ticked by tick_log_reader.
-    #
-    # @todo move to LoggingFeature
     def colorize_log(self, line):
+        """
+        This gets ticked by tick_log_reader.
+        
+        @todo move to LoggingFeature
+        """
         if " CRITICAL " in line:
             color = "980000" # red
         elif " ERROR " in line:
@@ -982,17 +988,18 @@ class Controller:
     # Setup (populate widget placeholders)
     # ##########################################################################
 
-    ##
-    # Create the required widget and layout configuration for adding newly
-    # saved entries from the scope capture interface.
-    #
-    # This generates a HIDDEN graph (it'll be "underneath" the displayed
-    # stackedWidget of saved spectra), which is nonetheless actively used when
-    # generating thumbnails of new traces.
-    #
-    # This could probably be moved into MeasurementFactory, the sole user of
-    # these widgets.
     def populate_thumbnail_column(self):
+        """
+        Create the required widget and layout configuration for adding newly
+        saved entries from the scope capture interface.
+        
+        This generates a HIDDEN graph (it'll be "underneath" the displayed
+        stackedWidget of saved spectra), which is nonetheless actively used when
+        generating thumbnails of new traces.
+        
+        This could probably be moved into MeasurementFactory, the sole user of
+        these widgets.
+        """
         sfu = self.form.ui
 
         log.debug("Placeholder scope capture save")
@@ -1052,8 +1059,8 @@ class Controller:
         sfu.checkBox_swap_alternating_pixels        .stateChanged       .connect(self.swap_alternating_pixels_callback)
         sfu.checkBox_graph_alternating_pixels       .stateChanged       .connect(self.graph_alternating_pixels_callback)
 
-    ## set up application-wide shortcut keys (called AFTER business object creation)
     def bind_shortcuts(self):
+        """ Set up application-wide shortcut keys (called AFTER business object creation). """
         log.debug("Set up shortcuts")
 
         self.shortcuts = {}
@@ -1115,14 +1122,15 @@ class Controller:
     # save spectra
     # ##########################################################################
 
-    ##
-    # This is a GUI method (used as a callback) to generate one Measurement from
-    # the most-recent ProcessedReading of EACH connected spectrometer.
-    #
-    # Originally there was no thought of Measurements "knowing" what technique
-    # was in use when they were created.  However, we (currently) only want the
-    # ID button to show up on Raman measurements, so...let's see where this goes.
     def save_current_spectra(self):
+        """
+        This is a GUI method (used as a callback) to generate one Measurement from
+        the most-recent ProcessedReading of EACH connected spectrometer.
+        
+        Originally there was no thought of Measurements "knowing" what technique
+        was in use when they were created.  However, we (currently) only want the
+        ID button to show up on Raman measurements, so...let's see where this goes.
+        """
         technique = self.page_nav.get_current_technique()
 
         if self.save_options.save_all_spectrometers():
@@ -1135,17 +1143,17 @@ class Controller:
     # miscellaneous callbacks
     # ##########################################################################
 
-    ##
-    # The 'force' parameter requires some explanation.  There was a time when
-    # production FID spectrometers were not being assigned gain and offset values
-    # in their EEPROMs.  Therefore EEPROM values were considered suspicious
-    # (offset in particular was unreliable).  So we don't want to just push
-    # possibly-invalid EEPROM defaults downstream.  However, we do want to allow
-    # explicit changes via the EEPROMEditor and .ini files to be pushed down.  So
-    # the EEPROMEditor sends the "force" parameter.
-    #
-    # This should perhaps be called "sync_gain_and_offset".
     def update_gain_and_offset(self, force=False):
+        """
+        @param force: There was a time when production FID spectrometers were 
+                      not being assigned gain and offset values in their 
+                      EEPROMs.  Therefore EEPROM values were considered 
+                      suspicious (offset in particular was unreliable).  So we
+                      don't want to just push possibly-invalid EEPROM defaults
+                      downstream.  However, we do want to allow explicit changes
+                      via the EEPROMEditor and .ini files to be pushed down.  So
+                      the EEPROMEditor sends the "force" parameter.
+        """
         sfu = self.form.ui
         spec = self.current_spectrometer()
         if spec is None:
@@ -1169,9 +1177,8 @@ class Controller:
             spec.change_device_setting("detector_offset",     ee.detector_offset)
             spec.change_device_setting("detector_offset_odd", ee.detector_offset_odd)
 
-    ##
-    # Doesn't seem any point in tracking state on this?
     def swap_alternating_pixels_callback(self):
+        """ Doesn't seem any point in tracking state on this? """
         sfu = self.form.ui
         spec = self.current_spectrometer()
         if spec is None:
@@ -1195,8 +1202,8 @@ class Controller:
     # Event Loops
     # ##########################################################################
 
-    ## Create and start the timer to tick our event loop
     def setup_main_event_loops(self):
+        """ Create and start the timer to tick our event loop. """
         log.debug("Setup main event loops")
 
         # @todo eventually move to AcquisitionFeature?
@@ -1214,29 +1221,30 @@ class Controller:
         self.status_timer          .start(1000)
         self.status_indicators     .start(1000)
 
-    ## 
-    # This polls every spectrometer's worker thread at 10Hz (or less) to receive
-    # the latest Reading from their Queue.
-    #
-    # To be clear, that means that ENLIGHTEN cannot read more than 10 spectra per
-    # second from a spectrometer, even though Wasatch spectrometers have "scan 
-    # rates" many times that.
-    #
-    # This is because ENLIGHTEN was designed as a real-time data VIEWING program,
-    # not a real-time DATA ANALYSIS program.  For data analysis, in which you are
-    # generating statistics on every spectra generated by the spectrometer, you
-    # would need to run at a faster rate.  In this case, all we're trying to do 
-    # is graph "the latest" spectrum from the spectrometer, and for that 10Hz 
-    # seems fine.
-    #
-    # Note that when multiple spectrometers are connected, we actually poll a 
-    # little slower.
-    #
-    # Also note that we're still not really polling at 10Hz...we're starting each
-    # new polling cycle 100ms after the last one finished, and it's possible that
-    # some cycles (especially if using blocking plugins) may take many milliseconds
-    # to complete.
     def tick_acquisition(self):
+        """
+        This polls every spectrometer's worker thread at 10Hz (or less) to 
+        receive the latest Reading from their Queue.
+        
+        To be clear, that means that ENLIGHTEN cannot read more than 10 spectra 
+        per second from a spectrometer, even though Wasatch spectrometers have 
+        "scan rates" many times that.
+        
+        This is because ENLIGHTEN was designed as a real-time data VIEWING 
+        program, not a real-time DATA ANALYSIS or COLLECTION program.  For data 
+        analysis, in which you are generating statistics on every spectra 
+        generated by the spectrometer, you would need to run at a faster rate.  
+        In this case, all we're trying to do is graph "the latest" spectrum from
+        the spectrometer, and for that 10Hz seems fine.
+        
+        Note that when multiple spectrometers are connected, we actually poll a 
+        little slower.
+        
+        Also note that we're still not really polling at 10Hz...we're starting 
+        each new polling cycle 100ms after the last one finished, and it's 
+        possible that some cycles (especially if using blocking plugins) may take
+        many milliseconds to complete.
+        """
         if self.shutting_down:
             return
 
@@ -1316,9 +1324,11 @@ class Controller:
     #                                                                          #
     # ##########################################################################
 
-    ## Attempt to acquire a reading from the subprocess response queue,
-    #  process and render data in the GUI.
     def attempt_reading(self, spec):
+        """
+        Attempt to acquire a reading from the subprocess response queue,
+        process and render data in the GUI.
+        """
         sfu = self.form.ui
         if spec is None:
             return
@@ -1465,37 +1475,39 @@ class Controller:
                     reading.laser_enabled, spec.settings.state.laser_enabled, elapsed_ms, debounce_ms)
                 self.toggle_laser()
 
-    ##
-    # Poll the spectrometer subprocess (WasatchDeviceWrapper) and see what
-    # comes back.
-    #
-    # In the current subprocess comms, any of these four things can come back:
-    #
-    # - False:   poison-pill (disconnect device, shutdown process)
-    # - True:    treat as KEEPALIVE (ignore, keep polling for data)
-    # - None:    treat as KEEPALIVE (ignore, keep polling for data)
-    # - Reading: process measurement (optionally flagged as a failure)
-    #
-    # Basically, there are so many things in Python that can trigger a None
-    # response (like get_no_wait()) that it seems an unreasonable flag for use
-    # as a poison-pill, especially given the many times when honestly "no reading
-    # is available" is a legitimate and non-erroneous status.  Using False feels
-    # more explicit.
-    #
-    # Probably we should generate a full hierarchy of Message types that can flow
-    # up from subprocess to ENLIGHTEN, and those could include PoisonPillMessage
-    # and StatusMessage and all kinds of stuff.  We'll get there.
-    #
-    # @see wasatch.WasatchDeviceWrapper.acquire_data
-    # @see wasatch.WasatchDevice.acquire_data
-    #
-    # @todo eventually move to AcquisitionFeature
-    #
-    # @return   A (Reading, disconnectBool) tuple.  If there was a valid Reading,
-    #           that will be the first tuple element.  The second element will be
-    #           a bool indicating whether the device has malfunctioned and needs
-    #           to be disconnected.
     def acquire_reading(self, spec: Spectrometer) -> AcquiredReading:
+        """
+        Poll the spectrometer subprocess (WasatchDeviceWrapper) and see what
+        comes back.
+        
+        In the current communication architecture, any of these four things can 
+        come back:
+        
+        - False:   poison-pill (disconnect device, shutdown process)
+        - True:    treat as KEEPALIVE (ignore, keep polling for data)
+        - None:    treat as KEEPALIVE (ignore, keep polling for data)
+        - Reading: process measurement (optionally flagged as a failure)
+        
+        Basically, there are so many things in Python that can trigger a None
+        response (like get_no_wait()) that it seems an unreasonable flag for use
+        as a poison-pill, especially given the many times when honestly "no reading
+        is available" is a legitimate and non-erroneous status.  Using False feels
+        more explicit.
+        
+        Probably we should generate a full hierarchy of Message types that can flow
+        up from subprocess to ENLIGHTEN, and those could include PoisonPillMessage
+        and StatusMessage and all kinds of stuff.  We'll get there.
+        
+        @see wasatch.WasatchDeviceWrapper.acquire_data
+        @see wasatch.WasatchDevice.acquire_data
+        
+        @todo eventually move to AcquisitionFeature
+        
+        @return   A (Reading, disconnectBool) tuple.  If there was a valid Reading,
+                  that will be the first tuple element.  The second element will be
+                  a bool indicating whether the device has malfunctioned and needs
+                  to be disconnected.
+        """
         reading = None
 
         device = spec.device
@@ -1557,16 +1569,17 @@ class Controller:
         log.critical("acquire_reading(%s): how did we get here?!", str(device_id))
         return AcquiredReading(disconnect=True)
 
-    ##
-    # Used to handle StatusMessage objects received from spectrometer
-    # subprocesses (as opposed to the Readings we normally receive).
-    #
-    # These are not common in the current architecture.  These were used
-    # initially to provide progress updates to the GUI when loading long series
-    # of I2C overrides to the IMX before firmware encapsulated sensor control.
-    #
-    # @param msg - presumably a StatusMessage from a spectrometer process
     def process_status_message(self, msg):
+        """
+        Used to handle StatusMessage objects received from spectrometer
+        subprocesses (as opposed to the Readings we normally receive).
+        
+        These are not common in the current architecture.  These were used
+        initially to provide progress updates to the GUI when loading long series
+        of I2C overrides to the IMX before firmware encapsulated sensor control.
+        
+        @param msg - presumably a StatusMessage from a spectrometer process
+        """
         sfu = self.form.ui
 
         if msg is None:
@@ -1631,19 +1644,20 @@ class Controller:
 
         self.cursor.update()
 
-    ##
-    # Called by Measurements.create_from_file if save_options.load_raw.  This
-    # takes the loaded raw, dark and reference, and re-feeds them back through
-    # process_reading, along with the loaded Settings object containing wavecal,
-    # pixel count etc.  This will display the re-processed spectrum on screen,
-    # then return the new ProcessedReading object.  We pass that back to the
-    # caller, who will update the new ProcessedReading into the originally
-    # loaded Measurement, update the measurement_id / timestamps, generate the
-    # thumbnail and re-save.
-    #
-    # @param measurement (Input) Measurement
-    # @returns new ProcessedReading
     def reprocess(self, measurement):
+        """
+        Called by Measurements.create_from_file if save_options.load_raw.  This
+        takes the loaded raw, dark and reference, and re-feeds them back through
+        process_reading, along with the loaded Settings object containing wavecal,
+        pixel count etc.  This will display the re-processed spectrum on screen,
+        then return the new ProcessedReading object.  We pass that back to the
+        caller, who will update the new ProcessedReading into the originally
+        loaded Measurement, update the measurement_id / timestamps, generate the
+        thumbnail and re-save.
+        
+        @param measurement (Input) Measurement
+        @returns new ProcessedReading
+        """
         log.debug("reprocessing")
         pr = measurement.processed_reading
         if pr.raw is None:
@@ -1665,43 +1679,44 @@ class Controller:
             ref      = pr.reference,
             settings = settings)
 
-    ##
-    # @todo split into "update graphs" and "post-processing"
-    #
-    # Requested order of operations, per Michael Matthews:
-    #
-    # - Remove excess data points (vertical or horizontal areas of interest)
-    # - Scan Averaging
-    #   - snap usable dark
-    # - Subtract Dark
-    # - Correction for detector non-linearity* (when enabled)
-    # - Correct for stray light*  (when enabled)
-    # - Correct for intensity* (when enabled, per your suggested OoO)
-    # - Apply Boxcar Smoothing
-    # - Baseline removal / fluorescence removal, etc
-    # - Laser X-Axis shift
-    # - X-Axis Interpolation (when enabled)
-    #
-    # * Requires Dark Corrected Spectra
-    #
-    # @par Reprocessing loaded spectra
-    #
-    # If no Spectrometer is passed in, use the current one. Therefore,
-    # reprocessed spectra will use the SpectrometerState and SpectrometerApplicationState
-    # associated with the current Spectrometer.  However, we do try to re-use the
-    # SpectrometerSettings instantiated when we reloaded the measurement.
-    #
-    # Of particular note are dark and reference, which can be manually
-    # passed-in for reprocessed measurements if found in input file. Likewise, we
-    # pass in the loaded Settings object so that the x-axis can be generated from
-    # the correct wavecal, pixel count, as well as the correct vignetting ROI.
-    #
-    # Keywords to help people find this function:
-    # - update graphs
-    # - perform processing
-    # - post-process
-    # - apply business logic
     def process_reading(self, reading, spec=None, dark=None, ref=None, settings=None):
+        """
+        @todo split into "update graphs" and "post-processing"
+        
+        Requested order of operations, per Michael Matthews:
+        
+        - Remove excess data points (vertical or horizontal areas of interest)
+        - Scan Averaging
+          - snap usable dark
+        - Subtract Dark
+        - Correction for detector non-linearity* (when enabled)
+        - Correct for stray light*  (when enabled)
+        - Correct for intensity* (when enabled, per your suggested OoO)
+        - Apply Boxcar Smoothing
+        - Baseline removal / fluorescence removal, etc
+        - Laser X-Axis shift
+        - X-Axis Interpolation (when enabled)
+        
+        * Requires Dark Corrected Spectra
+        
+        @par Reprocessing loaded spectra
+        
+        If no Spectrometer is passed in, use the current one. Therefore,
+        reprocessed spectra will use the SpectrometerState and SpectrometerApplicationState
+        associated with the current Spectrometer.  However, we do try to re-use the
+        SpectrometerSettings instantiated when we reloaded the measurement.
+        
+        Of particular note are dark and reference, which can be manually
+        passed-in for reprocessed measurements if found in input file. Likewise, we
+        pass in the loaded Settings object so that the x-axis can be generated from
+        the correct wavecal, pixel count, as well as the correct vignetting ROI.
+        
+        Keywords to help people find this function:
+        - update graphs
+        - perform processing
+        - post-process
+        - apply business logic
+        """
         sfu = self.form.ui
 
         if settings is None:
@@ -1957,16 +1972,17 @@ class Controller:
         # update the StatusBar
         self.status_bar.update()
 
-    ##
-    # Lightweight wrapper over pyqtgraph.PlotCurveItem.setData.
-    #
-    # Checks for case where x[0] is higher than x[1] (happens with a default
-    # wavecal of [0, 1, 0, 0] and positive excitation in wavenumber space).
-    # Also traps for unequal array lengths, etc.
-    #
-    # @todo merge into Graph.set_data (calling it is a start)
-    # @returns True if graph was updated
     def set_curve_data(self, curve, y, x=None, label=None) -> bool:
+        """
+        # Lightweight wrapper over pyqtgraph.PlotCurveItem.setData.
+        #
+        # Checks for case where x[0] is higher than x[1] (happens with a default
+        # wavecal of [0, 1, 0, 0] and positive excitation in wavenumber space).
+        # Also traps for unequal array lengths, etc.
+        #
+        # @todo merge into Graph.set_data (calling it is a start)
+        # @returns True if graph was updated
+        """
         if curve is None:
             log.error("set_curve_data[%s]: no curve")
             return False
@@ -2024,12 +2040,13 @@ class Controller:
     #                                                                          #
     # ##########################################################################
 
-    ##
-    # Load per-spectrometer settings keyed on serial_number (not general
-    # ENLIGHTEN settings like sound).  
-    #
-    # called from initialize_new_device
     def set_from_ini_file(self):
+        """
+        Load per-spectrometer settings keyed on serial_number (not general
+        ENLIGHTEN settings like sound).  
+        
+        called from initialize_new_device
+        """
         sfu = self.form.ui
         spec = self.current_spectrometer()
 
@@ -2135,36 +2152,37 @@ class Controller:
             except:
                 log.error("ignored invalid %s", exc_info=1)
 
-    ##
-    # We're reading (not loading, but getting values from) a newly-connected
-    # spectrometer's portion of the .ini file so that local user configuration
-    # can override the EEPROM etc.  As we read in values, we update the
-    # associated widget on the EEPROMEditor.
-    #
-    # Normally, calling setText() on a QLineEdit would trigger a textChanged
-    # event, such that follow-through actions would automatically follow (like
-    # updating the associated EEPROM field, recalculating the wavecal, etc).
-    #
-    # However, we have deliberately DISABLED the textChanged event on lineEdit
-    # widgets in the EEPROMEditor, because they have a nasty habit of responding
-    # to EVERY KEYPRESS when editing coefficients (creating bizarre behavior
-    # and errors on typos).
-    #
-    # Therefore, for now, we hacked EEPROMEditor.bind_lineEdit such that it
-    # stores a reference to each lineEdit widget's EEPROMEditor callback function
-    # in the widget itself, in an attribute called enlighten_trigger.
-    #
-    # We can assume that the EEPROMEditor itself was instantiated and bound at
-    # application startup time, long before any spectrometer connected and caused
-    # us to parse its .ini settings, so we can safely assume that this trigger
-    # callback is available to this function.
-    #
-    # So in conclusion, after an outside agency (like this .ini function)
-    # reaches into the EEPROMEditor and changes the values of lineEdit
-    # widgets owned by it, we then call that widget's enlighten_trigger()
-    # callback to tell the EEPROMEditor to "do whatever you would normally do
-    # after a user manually edited that field and pressed return."
     def update_lineEdit(self, sn, widget, name):
+        """
+        We're reading (not loading, but getting values from) a newly-connected
+        spectrometer's portion of the .ini file so that local user configuration
+        can override the EEPROM etc.  As we read in values, we update the
+        associated widget on the EEPROMEditor.
+        
+        Normally, calling setText() on a QLineEdit would trigger a textChanged
+        event, such that follow-through actions would automatically follow (like
+        updating the associated EEPROM field, recalculating the wavecal, etc).
+        
+        However, we have deliberately DISABLED the textChanged event on lineEdit
+        widgets in the EEPROMEditor, because they have a nasty habit of responding
+        to EVERY KEYPRESS when editing coefficients (creating bizarre behavior
+        and errors on typos).
+        
+        Therefore, for now, we hacked EEPROMEditor.bind_lineEdit such that it
+        stores a reference to each lineEdit widget's EEPROMEditor callback function
+        in the widget itself, in an attribute called enlighten_trigger.
+        
+        We can assume that the EEPROMEditor itself was instantiated and bound at
+        application startup time, long before any spectrometer connected and caused
+        us to parse its .ini settings, so we can safely assume that this trigger
+        callback is available to this function.
+        
+        So in conclusion, after an outside agency (like this .ini function)
+        reaches into the EEPROMEditor and changes the values of lineEdit
+        widgets owned by it, we then call that widget's enlighten_trigger()
+        callback to tell the EEPROMEditor to "do whatever you would normally do
+        after a user manually edited that field and pressed return."
+        """
         if self.config.has_option(sn, name):
             value = self.config.get(sn, name)
             log.debug("Controller.update_lineEdit: setting %s to %s for %s", name, value, sn)
@@ -2187,12 +2205,13 @@ class Controller:
     # X-Axis Management
     # ##########################################################################
 
-    ## 
-    # This gets called if the user has edited the EEPROM fields (coeff or 
-    # excitation).  Basically, update the Settings object if new versions were 
-    # passed; then recompute wavelengths and wavenumbers no matter what, and 
-    # sync excitations.
     def update_wavecal(self, coeffs=None):
+        """
+        This gets called if the user has edited the EEPROM fields (coeff or 
+        excitation).  Basically, update the Settings object if new versions were 
+        passed; then recompute wavelengths and wavenumbers no matter what, and 
+        sync excitations.
+        """
         sfu = self.form.ui
         spec = self.current_spectrometer()
         ee = spec.settings.eeprom
@@ -2211,24 +2230,25 @@ class Controller:
         # @todo LaserControlFeature
         sfu.doubleSpinBox_lightSourceWidget_excitation_nm.setValue(ee.excitation_nm_float)
 
-    ##
-    # Graph.current_x_axis is not per-spectrometer, therefore:
-    #
-    # - pixels: overlapped and left-justified
-    # - wavelengths: partially overlapped / non-congruent (cool)
-    # - wavenumbers: mostly-overlapped, jagged left-edge
-    #
-    # @todo move this to Spectrometer? Graph?
-    #
-    # If you pass in a specific spectrometer, it uses the settings (wavecal &
-    # excitation) from THAT spectrometer.  Otherwise, if you pass in a specific
-    # SpectrometerSettings object (say from a saved/loaded Measurement), it
-    # uses that.  Otherwise it uses the current spectrometer.
-    #
-    # This function ONLY vignettes the x-axis if specifically asked to (and able to).
-    #
-    # @todo need to update for DetectorRegions
     def generate_x_axis(self, spec=None, settings=None, unit=None, vignetted=True):
+        """
+        Graph.current_x_axis is not per-spectrometer, therefore:
+        
+        - pixels: overlapped and left-justified
+        - wavelengths: partially overlapped / non-congruent (cool)
+        - wavenumbers: mostly-overlapped, jagged left-edge
+        
+        @todo move this to Spectrometer? Graph?
+        
+        If you pass in a specific spectrometer, it uses the settings (wavecal &
+        excitation) from THAT spectrometer.  Otherwise, if you pass in a specific
+        SpectrometerSettings object (say from a saved/loaded Measurement), it
+        uses that.  Otherwise it uses the current spectrometer.
+        
+        This function ONLY vignettes the x-axis if specifically asked to (and able to).
+        
+        @todo need to update for DetectorRegions
+        """
         x_axis = None
         retval = None
 
@@ -2318,6 +2338,7 @@ class Controller:
         """
         spec.settings.state.ignore_timeouts_until = None
         self.seen_errors[spec].clear()
+
     ## can't be in LoggingFeature unless log was a parameter...
     def header(self, s):
         log.debug("")
@@ -2325,4 +2346,3 @@ class Controller:
         log.debug(s)
         log.debug('=' * len(s))
         log.debug("")
-

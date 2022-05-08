@@ -2,25 +2,27 @@ import logging
 
 log = logging.getLogger(__name__)
 
-##
-# This class encapsulates access to the host OS (Windows) copy-paste clipboard, 
-# allowing tabular data to be copied from ENLIGHTEN and pasted into other 
-# applications like Microsoft Excel.
-#
-# This is NOT related to the "Measurement Capture Bar" along the left-hand
-# edge of ENLIGHTEN's GUI, although we seem to be converging toward calling that
-# "the ENLIGHTEN Clipboard."
 class Clipboard(object):
+    """
+    This class encapsulates access to the host OS (Windows) copy-paste clipboard, 
+    allowing tabular data to be copied from ENLIGHTEN and pasted into other 
+    applications like Microsoft Excel.
+    
+    This is NOT related to the "Measurement Capture Bar" along the left-hand
+    edge of ENLIGHTEN's GUI, although we seem to be converging toward calling that
+    "the ENLIGHTEN Clipboard."
+    """
     def __init__(self, clipboard, marquee):
         self.clipboard = clipboard
         self.marquee   = marquee
 
-    ## 
-    # Copies the passed list-of-lists to the clipboard as column-ordered tab-
-    # delimited lines.
-    #
-    # @param spectra   an array of arrays (e.g. [ [wavelengths], [spectrum], [trace_1], [trace_2] ] )
     def copy_spectra(self, spectra):
+        """
+        Copies the passed list-of-lists to the clipboard as column-ordered tab-
+        delimited lines.
+        
+        @param spectra   an array of arrays (e.g. [ [wavelengths], [spectrum], [trace_1], [trace_2] ] )
+        """
         if spectra is None or len(spectra) == 0:
             return
 
@@ -52,14 +54,15 @@ class Clipboard(object):
         self.clipboard.setText(s)
         self.marquee.info("copied %d rows to clipboard" % rows)
 
-    ##
-    # Copies the contents of a QTableWidget to the clipboard as tab-delimited lines.
-    # 
-    # If a rectangular block (presumably one or more contiguous rows or columns) were
-    # selected in the GUI, then only the selected block is copied.
-    #
-    # @see https://stackoverflow.com/a/3698704
     def copy_table_widget(self, table):
+        """
+        Copies the contents of a QTableWidget to the clipboard as tab-delimited lines.
+        
+        If a rectangular block (presumably one or more contiguous rows or columns) were
+        selected in the GUI, then only the selected block is copied.
+        
+        @see https://stackoverflow.com/a/3698704
+        """
         try:
             indices = table.selectedIndexes()
             if len(indices) == 0:

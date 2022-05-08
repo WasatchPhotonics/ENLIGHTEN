@@ -19,6 +19,9 @@ except Exception as e:
     log.error("No AWS keys found. Cloud eeprom restore disabled")
 
 class CloudManager:
+    """
+    Encapsulates access to AWS-backed cloud features.
+    """
 
     def __init__(self, 
                  restore_button: QPushButton, 
@@ -105,4 +108,3 @@ class CloudManager:
             )
         log.debug("Created client session")
         return s3_session
-
