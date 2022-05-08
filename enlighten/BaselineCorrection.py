@@ -9,71 +9,56 @@ from wasatch import utils as wasatch_utils
 
 log = logging.getLogger(__name__)
 
-##
-# Encapsulates baseline correction.
-#
-# We've always needed to add proper background subtraction. This need has been
-# highlighted by the observed importance of proper baseline correction 
-# (fluorescence subtraction) to get good results in KnowItAll.
-#
-# @par Visibility / Usability
-#
-# There are two paths to BaselineCorrection: 
-#
-# - implicit operation: automatically enabled, with default algo (AirPLS), when in
-#   Raman Mode, but ONLY if a horizontally vignetted ROI is configured.
-#
-# - explicit operation: if user checked "Advanced Options" then "Baseline Correction"
-#   in the "Advanced Options" widget, then manually clicked "Enabled" in the Baseline
-#   Correction widget.
-# 
-# @par ModPoly
-#
-# Dieter reports that ModPoly (or IModPoly), based on Lieber & Mahadevan-Jansen 
-# (2003), is pretty much the industry standard and what he typically uses from R
-# via baseline.modpolyfit().
-#
-# @par PyHAT (USGS)
-#
-# It looks like there's already an open-source ModPoly Python implementation here:
-#
-# - https://github.com/USGS-Astrogeology/PyHAT/blob/dev/libpyhat/transform/baseline_code/polyfit.py
-#
-# I tried installing the entire PyHAT module via conda (both conda-forge and 
-# usgs-astrogeology channels), also via pip and "python setup.py install", but the
-# various dependencies don't seem to coincide on Win32 under Python 3.7. 
-# 
-# Specifically, they don't even seem to support PyHAT on Windows at all, although 
-# the related plio is available:
-# 
-# - https://anaconda.org/usgs-astrogeology/pyhat
-# - https://anaconda.org/usgs-astrogeology/plio
-# 
-# @par Superman
-# 
-# It looks like the open-source [Superman](https://github.com/all-umass/superman)
-# module has a working ModPoly (PolyFit), and several other algorithms as well. 
-# I wasn't able to get Mario working, and Wavelet had an unmet dependency (fixed),
-# but most are now exposed by ENLIGHTEN.
-#
-# I made a couple tweaks to the WasatchPhotonics fork of Superman, which allow it
-# to build with Visual Studio Community 2019, and expose an extra parameter
-# in the AirPLS constructor (whittaker).  Sadly, while my local build works fine
-# in my development environment, it blows up when run after pyinstaller.  There
-# is probably some DLL I need to bundle, or a "hidden import" I need to capture,
-# but the truth is I only needed that to access the Whittaker param and I don't
-# think it's that essential, so for now it's back to the pip distro.
-# 
-# @par References
-#
-# - https://link.springer.com/content/pdf/10.1007%2Fs13320-018-0512-y.pdf
-# - https://arxiv.org/ftp/arxiv/papers/1306/1306.4156.pdf 
-#
 class BaselineCorrection:
+    """
+    Encapsulates baseline correction.
+    
+    @par Visibility / Usability
+    
+    There are two paths to BaselineCorrection: 
+    
+    - implicit operation: automatically enabled, with default algo (AirPLS), when in
+      Raman Mode, but ONLY if a horizontally vignetted ROI is configured. (MZ: is this true?)
+    
+    - explicit operation: if user checked "Advanced Options" then "Baseline Correction"
+      in the "Advanced Options" widget, then manually clicked "Enabled" in the Baseline
+      Correction widget.
+    
+    @par ModPoly
+    
+    Dieter reports that ModPoly (or IModPoly), based on Lieber & Mahadevan-Jansen 
+    (2003), is pretty much the industry standard and what he typically uses from R
+    via baseline.modpolyfit().
+    
+    @par PyHAT (USGS)
+    
+    It looks like there's already an open-source ModPoly Python implementation here:
+    
+    - https://github.com/USGS-Astrogeology/PyHAT/blob/dev/libpyhat/transform/baseline_code/polyfit.py
+    
+    I tried installing the entire PyHAT module via conda (both conda-forge and 
+    usgs-astrogeology channels), also via pip and "python setup.py install", but the
+    various dependencies don't seem to coincide on Win32 under Python 3.7. 
+    
+    Specifically, they don't even seem to support PyHAT on Windows at all, although 
+    the related plio is available:
+    
+    - https://anaconda.org/usgs-astrogeology/pyhat
+    - https://anaconda.org/usgs-astrogeology/plio
+    
+    @par Superman
+    
+    It looks like the open-source [Superman](https://github.com/all-umass/superman)
+    module has a working ModPoly (PolyFit), and several other algorithms as well. 
+    I wasn't able to get Mario working, and Wavelet had an unmet dependency (fixed),
+    but most are now exposed by ENLIGHTEN.
+    
+    @see https://link.springer.com/content/pdf/10.1007%2Fs13320-018-0512-y.pdf
+    @see https://arxiv.org/ftp/arxiv/papers/1306/1306.4156.pdf 
+    """
 
     DEFAULT_ALGO_NAME = "AirPLS"
     
-    ## @todo add cb_zero
     def __init__(self,
             cb_enabled,         # whether we're actively correcting the baseline
             cb_show_curve,      # whether we should show the computed baseline (whether it's being subtracted or not)
@@ -133,20 +118,21 @@ class BaselineCorrection:
         self.curve = graph.add_curve("baseline", rehide=False, in_legend=False)
         self.curve.setVisible(False)
 
-    ##
-    # This will overwrite the default algo name, if provided
-    #
-    # [Auto-enabling at launch] requires thought.  We want to enable process-mode
-    # applications to automatically start-up with baseline correction applied, if
-    # that is part of their logic, but we really don't want "normal" desktop users
-    # starting with baseline correction pre-enabled -- it causes too much 
-    # confusion, especially with darks.  
-    #
-    # Ultimately I replaced:
-    #   - config("baseline_correction", "enabled") 
-    #   + config("batch_collection", "baseline_correction_enabled")
-    #
     def init_from_config(self):
+        """
+        This will overwrite the default algo name, if provided
+        
+        The prospect of auto-enabling baseline correction at launch requires 
+        thought. We want to enable process-mode applications to automatically 
+        start-up with baseline correction applied, if that is part of their 
+        logic, but we really don't want "normal" desktop users starting with 
+        baseline correction pre-enabled -- it causes too much confusion, 
+        especially with darks.  
+
+        Currently we allow the "batch_collection" persistence settings to set
+        baseline_correction_enabled, making it clear that this should only be
+        enabled by default if doing "process-mode" batch collections.
+        """ 
         s = "baseline_correction"
 
         def set(field, value):
@@ -158,20 +144,21 @@ class BaselineCorrection:
         # if self.config.has_option(s, "algo"):
         #     self.current_algo_name = self.config.get(s, "algo")
 
-        # AirPLS options for Dieter
+        # AirPLS options to analyze algorithm performance
         set("current_algo_name",            self.config.get      (s, "algo",                         default=None))
         set("airpls_max_iters",             self.config.get_int  (s, "airpls_max_iters",             default=None))
         set("airpls_smoothness_param",      self.config.get_int  (s, "airpls_smoothness_param",      default=None))
         set("airpls_whittaker_deriv_order", self.config.get_int  (s, "airpls_whittaker_deriv_order", default=None))
         set("airpls_conv_thresh",           self.config.get_float(s, "airpls_conv_thresh",           default=None))
 
-    ## 
-    # Populate the combobox from the hardcoded list of supported algos 
-    # (instantiating each as we go).
-    #
-    # @note 'mario' didn't work
-    # @note this is called before bindings, so no callbacks will be issued
     def init_algos(self):
+        """
+        Populate the combobox from the hardcoded list of supported algos 
+        (instantiating each as we go).
+        
+        @note 'mario' didn't work
+        @note this is called before bindings, so no callbacks will be issued
+        """
         names = { 
           # ComboBox label       Superman class
             'AirPLS':            'airpls',
@@ -206,14 +193,14 @@ class BaselineCorrection:
                 log.error("failed to instantiate BaselineCorrection algo %s (%s)", name, abbr, exc_info=1)
                 self.algos[name] = None
 
-    ##
-    # Called by Controller on first visit to Raman mode, per Dieter.  
-    #
-    # This selects the default (or last-used) algo in the combobox, then 
-    # optionally enables the feature.
-    #
-    # @param enable (Input) if true, enable the feature (does NOT disable on false!)
     def reset(self, enable=False):
+        """
+        Called by Controller on first visit to Raman mode. This selects the 
+        default (or last-used) algo in the combobox, then optionally enables the
+        feature.
+        
+        @param enable (Input) if true, enable the feature (does NOT disable on false!)
+        """
         log.debug("reset(enable=%s)", enable)
         for index in range(self.combo_algo.count()):
             label = self.combo_algo.itemText(index) 
@@ -272,12 +259,12 @@ class BaselineCorrection:
         if self.enabled:
             self.guide.clear(token="enable_baseline_correction")
 
-    ##
-    # @param pr   (In/Out) ProcessedReading
-    # @param spec (Input)  Spectrometer
-    #
-    # @note uses vignetted spectrum if found
     def process(self, pr, spec):
+        """
+        @param pr   (In/Out) ProcessedReading
+        @param spec (Input)  Spectrometer
+        @note uses vignetted spectrum if found
+        """
         # log.debug("process: show_curve %s, enabled %s, algo %s, pr %s", self.show_curve, self.enabled, self.algo, pr)
 
         if spec is None:
@@ -320,7 +307,6 @@ class BaselineCorrection:
         pr.set_processed(corrected)
 
     def generate_baseline(self, spectrum, x_axis):
-        # log.debug("generating baseline with %s", self.current_algo_name)
         intensities = np.array(spectrum, dtype=np.float64)
         bands       = np.array(x_axis, dtype=np.float64)
 

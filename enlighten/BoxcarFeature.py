@@ -7,10 +7,8 @@ from wasatch import utils as wasatch_utils
 
 log = logging.getLogger(__name__)
 
-##
-# Encapsulate the high-frequency noise smoothing "boxcar" filter run at the end of post-processing.
-#
 class BoxcarFeature(object):
+    """ Encapsulate the high-frequency noise smoothing "boxcar" filter run at the end of post-processing. """
     
     def __init__(self,
             bt_dn,
@@ -46,12 +44,12 @@ class BoxcarFeature(object):
     def dn_callback(self):
         util.decr_spinbox(self.spinbox)
 
-    ##
-    # @param pr (In/Out) ProcessedReading
-    # @param spec (Input) Spectrometer
-    #
-    # @note supports vignetted ProcessedReading
     def process(self, pr, spec=None):
+        """
+        @param pr (In/Out) ProcessedReading
+        @param spec (Input) Spectrometer
+        @note supports vignetted ProcessedReading
+        """
         if pr is None:
             return
 

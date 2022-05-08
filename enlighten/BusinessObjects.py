@@ -55,7 +55,6 @@ from .BLEManager                      import BLEManager
 from .Clipboard                       import Clipboard
 from .ModelInfo                       import ModelInfo
 from .Multispec                       import Multispec
-#from .MultiPos                       import MultiPos
 from .Marquee                         import Marquee
 from .Colors                          import Colors
 from .Sounds                          import Sounds
@@ -66,18 +65,16 @@ from .GUI                             import GUI
 from .KnowItAll.Feature               import Feature as KIAFeature
 from .Plugins.PluginController        import PluginController
 
-##
-# This is sort of an "extension class" to Controller, or a "partial class" in C#
-# terms.  It's not really a separate object, so much as a place to encapsulate 
-# one huge set of related functionality out of Controller.py, to make that
-# already-huge class more navigable and maintainable.
-#
-# I'm not entirely sure this is a good idea, but it's easily undone if it proves
-# unsuccessful.
-#
-# Consider having this maintain a list of all business objects, so Controller
-# could call update_visibility() etc on all of them.
 class BusinessObjects:
+    """
+    This is sort of an "extension class" to Controller, or a "partial class" in C#
+    terms.  It's not really a separate object, so much as a place to encapsulate 
+    one huge set of related functionality out of Controller.py, to make that
+    already-huge class more navigable and maintainable.
+    
+    Consider having this maintain a list of all business objects, so Controller
+    could call update_visibility() etc on all of them.
+    """
 
     def __init__(self, controller):
         self.controller = controller
@@ -91,10 +88,11 @@ class BusinessObjects:
         log.debug("=" * len(s))
         log.debug("")
 
-    ##
-    # These are things needed early in the Controller's constructor 
-    # initialization, i.e. before the placeholders are populated
     def create_first(self):
+        """
+        These are things needed early in the Controller's constructor 
+        initialization, i.e. before the placeholders are populated.
+        """
         ctl = self.controller
         sfu = ctl.form.ui
 
@@ -125,14 +123,15 @@ class BusinessObjects:
             form                        = ctl.form,
             stylesheets                 = ctl.stylesheets)
 
-    ##
-    # Create the remaining business objects which allow us to encapsulate
-    # coherent sets of application functionality outside the Controller.
-    #
-    # This is called by Controller.__init__() after set_initial_state(), so you
-    # can assume that the GUI is configured and all widget placeholders have been
-    # populated.  No spectrometers will have connected at this time.
     def create_rest(self):
+        """
+        Create the remaining business objects which allow us to encapsulate
+        coherent sets of application functionality outside the Controller.
+        
+        This is called by Controller.__init__() after set_initial_state(), so you
+        can assume that the GUI is configured and all widget placeholders have been
+        populated.  No spectrometers will have connected at this time.
+        """
         ctl = self.controller
         sfu = ctl.form.ui
 
@@ -162,8 +161,7 @@ class BusinessObjects:
         self.header("instantiating FileManager")
         ctl.file_manager = FileManager(
             form                        = ctl.form,
-            marquee                     = ctl.marquee,
-        )
+            marquee                     = ctl.marquee)
 
         self.header("instantiating Clipboard")
         ctl.clipboard = Clipboard(
@@ -174,8 +172,7 @@ class BusinessObjects:
         ctl.guide = GuideFeature(
             bt_enable                   = sfu.pushButton_guide,
             gui                         = ctl.gui,
-            marquee                     = ctl.marquee,
-        )
+            marquee                     = ctl.marquee)
 
         self.header("instantiating BatteryFeature")
         ctl.battery_feature = BatteryFeature(
@@ -198,8 +195,7 @@ class BusinessObjects:
             combo_axis                  = sfu.displayAxis_comboBox_axis,
 
             layout_scope_capture        = sfu.layout_scope_capture_graphs,
-            stacked_widget_scope_setup  = sfu.stackedWidget_scope_setup_live_spectrum,
-        )
+            stacked_widget_scope_setup  = sfu.stackedWidget_scope_setup_live_spectrum)
 
         self.header("instantiating Cursor")
         ctl.cursor = Cursor(
@@ -278,8 +274,7 @@ class BusinessObjects:
             sfu                         = sfu,
             gui                         = ctl.gui,
             clipboard                   = ctl.clipboard,
-            hardware_file_manager       = ctl.hardware_file_manager
-        )
+            hardware_file_manager       = ctl.hardware_file_manager)
 
         self.header("instantiating VignetteROIFeature")
         ctl.vignette_roi = VignetteROIFeature(
@@ -292,14 +287,12 @@ class BusinessObjects:
             vignette_roi                = ctl.vignette_roi,
                                        
             cb_max_enable               = sfu.checkBox_enable_max_transmission,
-            sb_max_perc                 = sfu.spinBox_max_transmission_perc
-        )
+            sb_max_perc                 = sfu.spinBox_max_transmission_perc)
 
         self.header("instantiating AbsorbanceFeature")
         ctl.absorbance = AbsorbanceFeature(
             marquee                     = ctl.marquee,
-            transmission                = ctl.transmission
-        )
+            transmission                = ctl.transmission)
 
         self.header("instantiating StatusBarFeature")
         ctl.status_bar = StatusBarFeature(
@@ -330,8 +323,7 @@ class BusinessObjects:
             multispec                   = ctl.multispec,
             rb_wavelength               = sfu.radioButton_save_interpolation_wavelength,
             rb_wavenumber               = sfu.radioButton_save_interpolation_wavenumber,
-            vignette_roi                = ctl.vignette_roi
-        )
+            vignette_roi                = ctl.vignette_roi)
 
         self.header("instantiating ExternalTriggerFeature")
         ctl.external_trigger = ExternalTriggerFeature(
@@ -367,8 +359,7 @@ class BusinessObjects:
             le_suffix                   = sfu.lineEdit_scope_capture_save_suffix,
             multispec                   = ctl.multispec,
             rb_by_col                   = sfu.radioButton_save_by_column,
-            rb_by_row                   = sfu.radioButton_save_by_row,
-        )
+            rb_by_row                   = sfu.radioButton_save_by_row)
 
         self.header("instantiating PageNavigation")
         ctl.page_nav = PageNavigation(
@@ -391,8 +382,7 @@ class BusinessObjects:
 
             update_feature_visibility              = ctl.update_feature_visibility,
             scroll_area                            = sfu.scrollArea_hsd,
-            sfu                                    = sfu,
-            )
+            sfu                                    = sfu)
 
         self.header("instantiating MeasurementFactory")
         ctl.measurement_factory = MeasurementFactory(
@@ -420,8 +410,7 @@ class BusinessObjects:
             label_count                 = sfu.label_session_count,
             layout                      = sfu.verticalLayout_scope_capture_save,
             marquee                     = ctl.marquee,
-            reprocess_callback          = ctl.reprocess
-        )
+            reprocess_callback          = ctl.reprocess)
         ctl.graph.measurements = ctl.measurements
 
         self.header("instantiating Authentication")
@@ -434,8 +423,7 @@ class BusinessObjects:
 
             oem_widgets                 = [ sfu.pushButton_write_eeprom, sfu.pushButton_importEEPROM, sfu.pushButton_exportEEPROM, sfu.pushButton_restore_eeprom ],
             advanced_widgets            = [ sfu.doubleSpinBox_lightSourceWidget_excitation_nm,
-                                            sfu.tabWidget_advanced_features ]
-        );
+                                            sfu.tabWidget_advanced_features ])
 
         self.header("instantiating EEPROMWriter")
         ctl.eeprom_writer = EEPROMWriter(
@@ -443,8 +431,7 @@ class BusinessObjects:
             button_save                 = sfu.pushButton_write_eeprom,
             marquee                     = ctl.marquee,
             multispec                   = ctl.multispec,
-            reset_hardware_errors       = ctl.clear_response_errors,
-        )
+            reset_hardware_errors       = ctl.clear_response_errors)
 
         self.header("instantiating EEPROMEditor")
         ctl.eeprom_editor = EEPROMEditor(
@@ -469,7 +456,7 @@ class BusinessObjects:
             cb_enable                   = sfu.checkBox_raman_intensity_correction,
             guide                       = ctl.guide,
             multispec                   = ctl.multispec,
-            vignette_roi                = ctl.vignette_roi,)
+            vignette_roi                = ctl.vignette_roi)
 
         self.header("instantiating LaserControlFeature")
         ctl.laser_control = LaserControlFeature(
@@ -498,8 +485,7 @@ class BusinessObjects:
             clear_btn                   = sfu.laser_temp_pushButton,
             make_pen                    = ctl.gui.make_pen,
             clipboard                   = ctl.clipboard,
-            hardware_file_manager       = ctl.hardware_file_manager
-            )
+            hardware_file_manager       = ctl.hardware_file_manager)
 
         self.header("instantiating Sounds")
         ctl.sounds = Sounds(
@@ -523,8 +509,7 @@ class BusinessObjects:
         self.header("instantiating CloudManager")
         ctl.cloud_manager = CloudManager(
             restore_button = sfu.pushButton_restore_eeprom,
-            eeprom_editor  = ctl.eeprom_editor
-            )
+            eeprom_editor  = ctl.eeprom_editor)
 
         self.header("instantiating VCRControls")
         ctl.vcr_controls = VCRControls(
@@ -538,8 +523,7 @@ class BusinessObjects:
             gui                         = ctl.gui,
             multispec                   = ctl.multispec,
             scan_averaging              = ctl.scan_averaging,
-            take_one                    = ctl.take_one
-        )
+            take_one                    = ctl.take_one)
         ctl.vcr_controls.register_observer("save", ctl.save_current_spectra)
         ctl.scan_averaging.set_vcr_controls(ctl.vcr_controls)
 
@@ -554,8 +538,7 @@ class BusinessObjects:
             multispec                   = ctl.multispec,
             page_nav                    = ctl.page_nav,
             vignette_roi                = ctl.vignette_roi,
-            graph                       = ctl.graph,
-        )
+            graph                       = ctl.graph)
 
         self.header("instantiating DarkFeature")
         ctl.dark_feature = DarkFeature(
@@ -573,7 +556,7 @@ class BusinessObjects:
             button_toggle               = sfu.pushButton_scope_toggle_dark,
             lb_timestamp                = sfu.label_dark_timestamp,
             stackedWidget_scope_setup_dark_spectrum = sfu.stackedWidget_scope_setup_dark_spectrum,
-            gui_make_pen                            = ctl.gui.make_pen)
+            gui_make_pen                = ctl.gui.make_pen)
 
         self.header("instantiating ReferenceFeature")
         ctl.reference_feature = ReferenceFeature(
@@ -598,15 +581,15 @@ class BusinessObjects:
 
         self.header("instantiating BatchCollection")
         ctl.batch_collection = BatchCollection(
-            config                      = ctl.config,
-            dark_feature                = ctl.dark_feature,
-            factory                     = ctl.measurement_factory,
-            laser_enable_callback       = ctl.laser_control.set_laser_enable,
-            marquee                     = ctl.marquee,
-            measurements                = ctl.measurements,
-            multispec                   = ctl.multispec,
-            save_options                = ctl.save_options,
-            vcr_controls                = ctl.vcr_controls,
+            config                        = ctl.config,
+            dark_feature                  = ctl.dark_feature,
+            factory                       = ctl.measurement_factory,
+            laser_enable_callback         = ctl.laser_control.set_laser_enable,
+            marquee                       = ctl.marquee,
+            measurements                  = ctl.measurements,
+            multispec                     = ctl.multispec,
+            save_options                  = ctl.save_options,
+            vcr_controls                  = ctl.vcr_controls,
 
             cb_enabled                    = sfu.checkBox_BatchCollection_enabled,
             cb_dark_before_batch          = sfu.checkBox_BatchCollection_dark_before_batch,
@@ -637,8 +620,7 @@ class BusinessObjects:
             bt_up                       = sfu.pushButton_integration_time_ms_up,
             multispec                   = ctl.multispec,
             slider                      = sfu.slider_integration_time_ms,
-            spinbox                     = sfu.spinBox_integration_time_ms
-        )
+            spinbox                     = sfu.spinBox_integration_time_ms)
 
         self.header("instantiating GainDBFeature")
         ctl.gain_db_feature = GainDBFeature(
@@ -647,8 +629,7 @@ class BusinessObjects:
             label                       = sfu.label_gainWidget_title,
             multispec                   = ctl.multispec,
             slider                      = sfu.slider_gain,
-            spinbox                     = sfu.doubleSpinBox_gain
-        )
+            spinbox                     = sfu.doubleSpinBox_gain)
 
         self.header("instantiating BLEManager")
         ctl.ble_manager = BLEManager(
@@ -656,8 +637,7 @@ class BusinessObjects:
             ble_button                  = sfu.pushButton_bleScan,
             controller_connect          = ctl.connect_new,
             controller_disconnect       = ctl.disconnect_device,
-            progress_bar                = sfu.readingProgressBar
-            )
+            progress_bar                = sfu.readingProgressBar)
 
         self.header("instantiating RamanModeFeature")
         ctl.raman_mode_feature = RamanModeFeature(
@@ -665,10 +645,9 @@ class BusinessObjects:
             cb_enable                   = sfu.checkBox_raman_mode_enable,
             multispec                   = ctl.multispec,
             page_nav                    = ctl.page_nav,
-            vcr_controls                = ctl.vcr_controls
-        )
+            vcr_controls                = ctl.vcr_controls)
 
-        # TODO: refactor like PluginController (why pass log_queue?)
+        # TODO: refactor like PluginController
         self.header("instantiating KIAFeature")
         ctl.kia_feature = KIAFeature(
             baseline_correction         = ctl.baseline_correction,
@@ -719,25 +698,17 @@ class BusinessObjects:
             multispec                   = ctl.multispec,
             vignette_roi                = ctl.vignette_roi)
 
-        # TODO: still needed?
-        # self.header("instantiating MultiPos")
-        # ctl.multi_pos = MultiPos(
-        #     multispec                   = ctl.multispec,
-        #     sb_pos                      = sfu.spinBox_multi_position
-        # )
-
         self.header("instantiating ManufacturingFeature")
         ctl.mfg = ManufacturingFeature(
             bt_dfu                      = sfu.pushButton_mfg_dfu,
-            multispec                   = ctl.multispec
-        )
+            multispec                   = ctl.multispec)
 
         self.header("instantiating HardwareCaptureControlFeature")
         ctl.hardware_control_feature = HardwareCaptureControlFeature(
             sfu                 = sfu,
             graph               = ctl.graph,
             laser_feature       = ctl.laser_temperature,
-            detector_feature    = ctl.detector_temperature,)
+            detector_feature    = ctl.detector_temperature)
 
         self.header("instantiating PluginController")
         ctl.plugin_controller = PluginController(
@@ -787,8 +758,7 @@ class BusinessObjects:
             sb_start                    = sfu.spinBox_area_scan_start_line,
             sb_stop                     = sfu.spinBox_area_scan_stop_line,
             sb_delay_ms                 = sfu.spinBox_area_scan_delay_ms,
-            set_curve_data              = ctl.set_curve_data
-        )
+            set_curve_data              = ctl.set_curve_data)
 
         self.header("instantiating RamanShiftCorrectionFeature")
         ctl.raman_shift_correction = RamanShiftCorrectionFeature(
@@ -801,8 +771,7 @@ class BusinessObjects:
             gui                         = ctl.gui,
             marquee                     = ctl.marquee,
             multispec                   = ctl.multispec,
-            page_nav                    = ctl.page_nav
-        )
+            page_nav                    = ctl.page_nav)
 
         self.header("instantiating AccessoryControlFeature")
         ctl.accessory_control = AccessoryControlFeature(

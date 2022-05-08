@@ -14,10 +14,13 @@ from wasatch.BLEDevice import BLEDevice
 
 log = logging.getLogger(__name__)
 
-#@todo in the BLEManager:
-#show progress indicator while reading EEPROM (~15sec)
-#show progress indicator while reading spectrum (~4sec)
 class BLEManager:
+    """
+    Special features required to support and interface with BLE-based spectrometers.
+
+    @todo show progress indicator while reading EEPROM (~15sec)
+    @todo show progress indicator while reading spectrum (~4sec)
+    """
 
     def __init__(self, 
                  marquee,
@@ -116,6 +119,9 @@ class BLEManager:
         self.scans_q.put(wp_devices)
 
 class BLESelector(QDialog):
+    """
+    A pop-up window listing all discovered BLE devices.
+    """
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("BLE Devices")
@@ -133,10 +139,12 @@ class BLESelector(QDialog):
         self.movie.start()
         self.layout.addWidget(self.label)
 
-    # Same as plugin Controller
-    # need to clear all depending the layout recursively
-    # see https://stackoverflow.com/questions/4528347/clear-all-widgets-in-a-layout-in-pyqt
     def clear_plugin_layout(self, layout):
+        """
+        Same as plugin Controller.
+        Need to clear all depending the layout recursively.
+        @see https://stackoverflow.com/questions/4528347/clear-all-widgets-in-a-layout-in-pyqt
+        """
         if layout is None:
             return
 
