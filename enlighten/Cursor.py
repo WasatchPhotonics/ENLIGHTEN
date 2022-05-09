@@ -7,10 +7,11 @@ from .ScrollStealFilter import ScrollStealFilter
 
 log = logging.getLogger(__name__)
 
-##
-# Encapsulates the main "scope capture" cursor (vertical red line) on the
-# scope graph.  Note that StatusBar will register as an observer.
 class Cursor(object):
+    """
+    Encapsulates the main "scope capture" cursor (vertical red line) on the
+    scope graph.  Note that StatusBar will register as an observer.
+    """
     def __init__(self,
             button_dn,
             button_up,

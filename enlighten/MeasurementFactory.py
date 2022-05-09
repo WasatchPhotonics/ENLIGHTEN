@@ -9,6 +9,7 @@ import re
 
 from .ColumnFileParser import ColumnFileParser
 from .ExportFileParser import ExportFileParser
+from .TextFileParser   import TextFileParser
 from .SPCFileParser    import SPCFileParser
 from .ThumbnailWidget  import ThumbnailWidget
 from .DashFileParser   import DashFileParser
@@ -232,14 +233,23 @@ class MeasurementFactory(object):
                 elif self.looks_like_raw_columns(pathname):
                     log.debug("looks_like_raw_columns")
                     measurements = [ self.create_from_columnar_file(pathname) ]
-                elif self.looks_like_columns(pathname):
-                    log.debug("looks_like_columns")
+                elif self.looks_like_enlighten_columns(pathname):
+                    log.debug("looks_like_enlighten_columns")
                     measurements = [ self.create_from_columnar_file(pathname) ]
-                elif self.looks_like_columns(pathname, test_export=True):
-                    log.debug("looks_like_columns(export)")
+                elif self.looks_like_enlighten_columns(pathname, test_export=True):
+                    log.debug("looks_like_enlighten_columns(export)")
                     measurements = self.create_from_export_file(pathname)
+                elif self.looks_like_simple_columns(pathname):
+                    log.debug("looks_like_simple_columns")
+                    measurements = [ self.create_from_simple_columnar_file(pathname) ]
                 else:
                     log.error("unrecognized CSV format %s", pathname)
+            elif pathname.lower().endswith(".asc"):
+                if self.looks_like_simple_columns(pathname):
+                    log.debug("looks_like_simple_columns")
+                    measurements = [ self.create_from_simple_columnar_file(pathname) ]
+                else:
+                    log.error("unrecognized ASC format %s", pathname)
             elif pathname.lower().endswith(".json"):
                 measurements = self.create_from_json_file(pathname)
             elif pathname.lower().endswith(".spc"):
@@ -305,7 +315,7 @@ class MeasurementFactory(object):
     # parameter we can use the same test for both formats.  (Export files have
     # additional padding due to the leading px/nm/cm columns, so even an export
     # of a single measurement would have more than 2 columns).
-    def looks_like_columns(self, pathname, test_export=False):
+    def looks_like_enlighten_columns(self, pathname, test_export=False):
         linecount = 0
         with open(pathname, "r") as infile:
             for line in infile:
@@ -320,6 +330,38 @@ class MeasurementFactory(object):
                 if linecount > 100:
                     break
             
+    def looks_like_simple_columns(self, pathname) -> bool:
+        """
+        Determine whether file looks like a simple 2-column set of (x, y) pairs
+        (floats, ints, whatever) with no metadata.  Supports tab- or comma-
+        delimited files.
+        
+        Ignores anything AFTER the first blank line (Solis .asc files put metadata
+        there).
+        """
+        with open(pathname, "r") as infile:
+            for line in infile:
+                line = line.strip()
+                if len(line) == 0:
+                    break
+
+                if "\t" in line:
+                    tok = [v.strip() for v in line.split("\t")]
+                else:
+                    tok = [v.strip() for v in line.split(",")]
+
+                if len(tok) != 2:
+                    log.debug(f"not a simple column file: {line}")
+                    return False
+                for v in tok:
+                    try:
+                        float(v)
+                    except:
+                        log.debug(f"not a simple column file: {line}", exc_info=1)
+                        return False
+        log.debug(f"seems a simple column file")
+        return True
+
     def create_from_dash_file(self, pathname):
         parser = DashFileParser(
             pathname     = pathname,
@@ -358,8 +400,15 @@ class MeasurementFactory(object):
 
     def create_from_spc_file(self, pathname):
         parser = SPCFileParser(
+            pathname = pathname,
             graph = self.graph)
-        return parser.parse(pathname)
+        return parser.parse()
+
+    def create_from_simple_columnar_file(self, pathname):
+        parser = TextFileParser(
+            pathname = pathname,
+            graph = self.graph)
+        return parser.parse()
 
     def load_interpolated(self, settings):
         pathname = self.file_manager.get_pathname("Select measurement")

@@ -7,118 +7,122 @@ from . import util
 
 log = logging.getLogger(__name__)
 
-##
-# This class encapsulates batch collection, which is the automated collection
-# of a series of 'measurement_count' Step-And-Save events at a period of
-# 'measurement_period_ms', captured to disk using the configured SaveOptions.
-#
-# This sequence is normally triggered when the VCRControls' "Start Collection"
-# button is clicked, and is implemented as a timed series of clicks to the
-# VCRControls' "Step and Save" button.
-#
-# It is assumed that the scope will be paused at the beginning of a Batch
-# Collection, and left on pause at the end.
-#
-# @par History
-#
-# Earlier implementations of BatchCollection left the spectrometer in free-
-# running mode, and simply timed a sequence of "Save" events running in
-# parallel to the ongoing stream of spectra continually rendered to the scope.
-#
-# As a result, the beginning of ACQUISITIONS was not synchronized to the
-# beginning of each batch "step", and the "save event" was not specifically
-# tied to the END of an acquisition started within the step.
-#
-# There were many things wrong with this approach, which should be remedied
-# by the new VCRControl's encapsulated "Step and Save" functionality.
-#
-# @par Process Mode
-#
-# In so-called "process mode" (intended for 24/7 process line control systems),
-# batches themselves can be indefinitely iterated if 'batch_count' is zero.
-#
-# For process environments, the enlighten.ini Configuration setting
-# "batch.start_on_connect = True" will initiate a continuous sequence of batches
-# upon first spectrometer connection.
-#
-# To be clear, the word "process" here has nothing to do with OS kernels or
-# threads, and relates to continuous-measurement industrial environments.
-#
-# @par Multispec
-#
-# The original concept was just to "collect X spectra in a row".  The evolving
-# concept is more like "at a period of Y ms, virtually click the 'Step and Save'
-# button a total of X times".
-#
-# Therefore, the number of spectrometers connected, and the individual
-# integration times of those spectrometers, becomes irrelevant: the
-# measurement_period_ms determines the interval between Step-and-Save events, and
-# the and the number of events, rather than the number of spectra saved, is the
-# count.
-#
-# @par Untimed Collections
-#
-# Some users don't wish to impose fixed timing, and just want to collect and save
-# measurement_count spectra at the defined integration time.
-#
-# Although this is the "easier" challenge than "clock ticked" collections, it has
-# its own complications.  For instance, if there are multiple spectrometers connected
-# with different integration times in effect, and save_all_spectrometers is checked,
-# the measurements will occur at different times, and the collections won't end together.
-#
-# Therefore, if measurement_period_ms is ZERO, this class will not run any internal
-# timers, but will simply collect "measurement_count" spectra from each contributing
-# spectrometer. In this use-case, Controller.attempt_reading() calls
-# BatchCollection.consider_for_save(), circumventing the QTimers.
-#
-# @par Laser Control
-#
-# There are three use-cases:
-#
-# - laser_manual: means the user is manually controlling the laser (if there
-#   is one), so don't worry about it
-#
-# - laser_batch: turn the laser on at the beginning of a batch (count 0),
-#   off at the end (measurement_count)
-#
-# - laser_spectrum: turn the laser on at the beginning of a measurement (each
-#   count), off after.
-#
-# The three modes are exposed in the configuration file as:
-#
-# \code
-#   laser_mode = manual | batch | spectrum
-# \endcode
-#
-# If multiple spectrometers are connected, the laser commands (like acquisition
-# triggers) are sent to each.
-#
-# Note that laser_spectrum timing is implemented within Wasatch.PY, so that the
-# laser on/off and timing can occur within the "spectrometer thread" during a
-# single acquisition event.  On the contrary, laser_batch is implemented here
-# within BatchCollection.
-#
-# @par Dark
-#
-# It's clearly useful to be able to take a fresh dark at the start of each
-# batch, and that has been implemented.
-#
-# However, another customer requested the ability to take a dark before each
-# measurement within a batch (presumably with laser mode "Spectrum"), and that's
-# a bit more tricky.  Right now "spectrum" laser mode is controlled inside
-# Wasatch.PY, so for each measurement we'd have to disable the driver's laser mode,
-# TakeOne dark, set the dark, then re-enable laser mode, and take the measurement.
-# That's not much better than having manual control of the laser from this
-# process, which is what we were trying to avoid, as it doesn't really allow
-# fine-grained control over warmup time.
-#
-# For now, I'm following in the architectural path of pushing somewhat more
-# functionality down into Wasatch.PY, and letting the driver provide BOTH the
-# dark and the laser control around the Reading.  We won't be performing dark
-# subtraction within the driver, but adding a .dark attribute to the Reading
-# which ENLIGHTEN can register and store upon receipt.
-#
 class BatchCollection(object):
+    """
+    This class encapsulates batch collection, which is the automated collection
+    of a series of 'measurement_count' Step-And-Save events at a period of
+    'measurement_period_ms', captured to disk using the configured SaveOptions.
+    
+    This sequence is normally triggered when the VCRControls' "Start Collection"
+    button is clicked, and is implemented as a timed series of clicks to the
+    VCRControls' "Step and Save" button.
+    
+    It is assumed that the scope will be paused at the beginning of a Batch
+    Collection, and left on pause at the end.
+    
+    @par History
+    
+    Earlier implementations of BatchCollection left the spectrometer in free-
+    running mode, and simply timed a sequence of "Save" events running in
+    parallel to the ongoing stream of spectra continually rendered to the scope.
+    
+    As a result, the beginning of ACQUISITIONS were not synchronized to the
+    beginning of each batch "step", and the "save event" was not specifically
+    tied to the END of an acquisition started within the step.
+    
+    There were many things wrong with this approach, which are partially remedied
+    by the new VCRControl's encapsulated "Step and Save" functionality.
+
+    Note that there is still a question of synchronization between when the
+    software requests a spectrum (sends ACQUIRE to the microcontroller and
+    FPGA), and when the commanded integration actually begins, due to the
+    "free-running" modes internally implemented within the firmware to keep
+    the detector pixels clear and the sensor in a ready state.
+    
+    @par Process Mode
+    
+    In so-called "process mode" (intended for 24/7 process line control systems),
+    batches themselves can be indefinitely iterated if 'batch_count' is zero.
+    
+    For process environments, the enlighten.ini Configuration setting
+    "batch.start_on_connect = True" will initiate a continuous sequence of batches
+    upon first spectrometer connection.
+    
+    To be clear, the word "process" here has nothing to do with OS kernels or
+    threads, and relates to continuous-measurement industrial environments.
+    
+    @par Multispec
+    
+    The original concept was just to "collect X spectra in a row".  The evolving
+    concept is more like "at a period of Y ms, virtually click the 'Step and Save'
+    button a total of X times".
+    
+    Therefore, the number of spectrometers connected, and the individual
+    integration times of those spectrometers, becomes irrelevant: the
+    measurement_period_ms determines the interval between Step-and-Save events, and
+    the and the number of events, rather than the number of spectra saved, is the
+    count.
+    
+    @par Untimed Collections
+    
+    Some users don't wish to impose fixed timing, and just want to collect and save
+    measurement_count spectra at the defined integration time.
+    
+    Although this is the "easier" challenge than "clock ticked" collections, it has
+    its own complications.  For instance, if there are multiple spectrometers connected
+    with different integration times in effect, and save_all_spectrometers is checked,
+    the measurements will occur at different times, and the collections won't end together.
+    
+    Therefore, if measurement_period_ms is ZERO, this class will not run any internal
+    timers, but will simply collect "measurement_count" spectra from each contributing
+    spectrometer. In this use-case, Controller.attempt_reading() calls
+    BatchCollection.consider_for_save(), circumventing the QTimers.
+    
+    @par Laser Control
+    
+    There are three use-cases:
+    
+    - MANUAL: means the user is manually controlling the laser (if there
+      is one), so don't worry about it
+    - BATCH: turn the laser on at the beginning of a batch (count 0),
+      off at the end (measurement_count)
+    - SPECTRUM: turn the laser on at the beginning of a measurement (each
+      count), off after.
+    
+    The three modes are exposed in the configuration file as:
+    
+    \code
+      laser_mode = manual | batch | spectrum
+    \endcode
+    
+    If multiple spectrometers are connected, the laser commands (like acquisition
+    triggers) are sent to each.
+    
+    Note that laser_spectrum timing is implemented within Wasatch.PY, so that the
+    laser on/off and timing can occur within the "spectrometer thread" during a
+    single acquisition event.  On the contrary, laser_batch is implemented here
+    within BatchCollection.
+    
+    @par Dark
+    
+    It's clearly useful to be able to take a fresh dark at the start of each
+    batch, and that has been implemented.
+    
+    However, another customer requested the ability to take a dark before each
+    measurement within a batch (presumably with laser mode "Spectrum"), and that's
+    a bit more tricky.  Right now "spectrum" laser mode is controlled inside
+    Wasatch.PY, so for each measurement we'd have to disable the driver's laser mode,
+    TakeOne dark, set the dark, then re-enable laser mode, and take the measurement.
+    That's not much better than having manual control of the laser from this
+    process, which is what we were trying to avoid, as it doesn't really allow
+    fine-grained control over warmup time.
+    
+    For now, I'm following in the architectural path of pushing somewhat more
+    functionality down into Wasatch.PY, and letting the driver provide BOTH the
+    dark and the laser control around the Reading.  We won't be performing dark
+    subtraction within the driver, but adding a .dark attribute to the Reading
+    which ENLIGHTEN can register and store upon receipt.
+    """
     def __init__(self,
             config,
             dark_feature,
@@ -298,6 +302,7 @@ class BatchCollection(object):
         self.update_explanation()
 
     def update_explanation(self):
+        """ Generates the ToolTip on "Explain This." """
         if not self.enabled:
             s = "Batch Collection is <b>Disabled</b>."
         else:
@@ -339,9 +344,8 @@ class BatchCollection(object):
     # Runtime Loop
     # ##########################################################################
 
-    ##
-    # Someone clicked the "Start Collection" button in VCRButtons.
     def start_collection(self):
+        """ Someone clicked the "Start Collection" button in VCRButtons. """
         if not self.enabled:
             self.stop() # just to be safe
             return False
@@ -504,8 +508,8 @@ class BatchCollection(object):
         self.multispec.change_device_setting("acquisition_laser_trigger_enable", False)
         self.multispec.change_device_setting("acquisition_take_dark_enable", False)
 
-    # at each tick of the Batch timer, initiate a Step And Save event
     def tick_measurement(self):
+        """ At each tick of the Batch timer, initiate a Step And Save event. """
         if not self.running:
             return
 
@@ -529,9 +533,8 @@ class BatchCollection(object):
         # when this event completes, VCRControls will call our save_complete method
         self.vcr_controls.step_save(self.save_complete)
 
-    ##
-    # A VCRControls' "step_save" event has completed
     def save_complete(self):
+        """ A VCRControls "step_save" event has completed. """
         if not self.running:
             return
 

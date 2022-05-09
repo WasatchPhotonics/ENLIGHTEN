@@ -5,6 +5,9 @@ from wasatch.SpectrometerState        import SpectrometerState
 log = logging.getLogger(__name__)
 
 class ExternalTriggerFeature:
+    """
+    Encapsulate external hardware triggering.
+    """
     
     def __init__(self,
              cb_enabled,
@@ -19,8 +22,8 @@ class ExternalTriggerFeature:
 
         self.cb_enabled.stateChanged.connect(self.enable_callback)
         
-    ## Called by init_new_spectrometer on connection or selection
     def update_visibility(self):
+        """ Called by init_new_spectrometer on connection or selection. """
         spec = self.multispec.current_spectrometer()
         if spec is None:
             self.cb_enabled.setVisible(False)

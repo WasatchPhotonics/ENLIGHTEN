@@ -10,43 +10,44 @@ from wasatch.SpectrometerSettings import SpectrometerSettings
 
 log = logging.getLogger(__name__)
 
-## 
-# A temporary pre-Measurement object built-up while reading an export file.
-#
-# @todo this can probably be generalized and re-used for ColumnFileParser at 
-#       least, and likely DashFileParser as well.
-# @todo populate temperature and laser temperature
 class ExportedMeasurement(object):
+    """
+    A temporary pre-Measurement object built-up while reading an export file.
+    
+    @todo this can probably be generalized and re-used for ColumnFileParser at 
+          least, and likely DashFileParser as well.
+    @todo populate temperature and laser temperature
+    """
     def __init__(self):
         self.headers = []
         self.header_count = 1
         self.metadata = {}
         self.processed_reading = ProcessedReading()
-##
-# A file parser to deserialize multiple Measurement objects from a column-ordered
-# export file.
-#
-# Given the similarity between the columnar CSV and "export" file formats, it 
-# would be SO TEMPTING to imagine you could easily generalize them.  I think
-# they're just different enough that it would be a nightmare, so here we are.
-# (They are probably more easily mergable now that we're supporting format 1
-# exports, which look very like columnar CSV files.)
-#
-# The way we are currently exporting Measurements, EVERY spectrometer has the
-# same prefix fields (px/nm/cm) and EVERY measurement has the same headers
-# (pr/raw/dk/ref).  So there is some room for optimization there, but it's 
-# almost as easy to just parse them directly (e.g., in case someone deleted 
-# columns from the CSV in Excel).
-# 
-# Note that we completely ignore the pixel/wavelength/wavenumber columns (via 
-# skip_fields), instead using the "Pixel Count", "Wavecal Coeff" and "Laser 
-# Wavelength" metadata fields to regenerate from scratch.
-#
-# A unit-test of sorts for this class can be found in 
-# enlighten/scripts/split-spectra.py.
-#
-class ExportFileParser(object):
 
+class ExportFileParser(object):
+    """
+    A file parser to deserialize multiple Measurement objects from a column-ordered
+    export file.
+    
+    Given the similarity between the columnar CSV and "export" file formats, it 
+    would be SO TEMPTING to imagine you could easily generalize them.  I think
+    they're just different enough that it would be a nightmare, so here we are.
+    (They are probably more easily mergable now that we're supporting format 1
+    exports, which look very like columnar CSV files.)
+    
+    The way we are currently exporting Measurements, EVERY spectrometer has the
+    same prefix fields (px/nm/cm) and EVERY measurement has the same headers
+    (pr/raw/dk/ref).  So there is some room for optimization there, but it's 
+    almost as easy to just parse them directly (e.g., in case someone deleted 
+    columns from the CSV in Excel).
+    
+    Note that we completely ignore the pixel/wavelength/wavenumber columns (via 
+    skip_fields), instead using the "Pixel Count", "Wavecal Coeff" and "Laser 
+    Wavelength" metadata fields to regenerate from scratch.
+    
+    A unit-test of sorts for this class can be found in 
+    enlighten/scripts/split-spectra.py.
+    """ 
     def __init__(self, pathname, save_options):
         self.pathname = pathname
         self.save_options = save_options
@@ -80,9 +81,8 @@ class ExportFileParser(object):
     # Private methods
     # ##########################################################################
 
-    ##
-    # @see ColumnFileParser.post_process_metadata
     def post_process_metadata(self, em):
+        """ @see ColumnFileParser.post_process_metadata """
         if self.format == 1:
             metadata = self.global_metadata
             log.debug("post-processing metadata: %s" % metadata)
@@ -193,35 +193,36 @@ class ExportFileParser(object):
         if len(self.measurements) == 1:
             self.measurements[0].add_renamable(self.pathname)
 
-    ##
-    # The first "Metadata" line of the Export file format which contains
-    # per-Measurement data is Measurement ID or Serial Number, so use that to 
-    # infer sizing and counts of all the Measurements in the file.
-    #
-    # Specifically, we're going to see how many nulls follow the initial
-    # metadata name, as that tells us how many px/nm/cm columns we can skip at 
-    # the beginning of each line.
-    #
-    # Then for each value we find, we're going to count how many nulls follow
-    # _it_, which will tell us how many header fields (pr/raw/dk/ref)
-    # that Measurement uses.
-    #
-    # All this information will go into the ExportMeasument object we'll 
-    # instantiate for each value we find in this row.
-    #
-    # \verbatim
-    # EnlightenVer
-    # MeasID      A        B        C   <==
-    # Serial      S1       S1       S2      
-    # Label       Aa       Bb       Cc      
-    # m1          x        y        z 
-    # m2          x        y        z
-    #
-    # S1    S2    Aa       Bb       Cc
-    # px wl px wl pr rw dk pr rw dk pr rw dk 
-    # \endverbatim
-    #
     def process_first_metadata(self, values):
+        """
+        The first "Metadata" line of the Export file format which contains
+        per-Measurement data is Measurement ID or Serial Number, so use that to 
+        infer sizing and counts of all the Measurements in the file.
+        
+        Specifically, we're going to see how many nulls follow the initial
+        metadata name, as that tells us how many px/nm/cm columns we can skip at 
+        the beginning of each line.
+        
+        Then for each value we find, we're going to count how many nulls follow
+        _it_, which will tell us how many header fields (pr/raw/dk/ref)
+        that Measurement uses.
+        
+        All this information will go into the ExportMeasument object we'll 
+        instantiate for each value we find in this row.
+        
+        @verbatim
+        EnlightenVer
+        MeasID      A        B        C   <==
+        Serial      S1       S1       S2      
+        Label       Aa       Bb       Cc      
+        m1          x        y        z 
+        m2          x        y        z
+        
+        S1    S2    Aa       Bb       Cc
+        px wl px wl pr rw dk pr rw dk pr rw dk 
+        @endverbatim
+        """
+        
         field = values.pop(0)   # may be "Measurement ID" or "Serial Number" depending on format
         self.skip_fields = 1    # skip the field we just read
 
@@ -245,23 +246,24 @@ class ExportFileParser(object):
                     self.skip_fields += 1
         log.debug("instantiated %d ExportMeasurements from first line", len(self.exported_measurements))
 
-    ##
-    # Read a metadata line from the file (Measurement ID, Integration Time, Note
-    # etc), storing values in the appropriate ExportedMeasurement object.
-    #
-    # \verbatim
-    # EnlightenVer
-    # MeasID      A        B        C       <==
-    # Serial      S1       S1       S2      <== 
-    # Label       Aa       Bb       Cc      <==
-    # m1          x        y        z       <==
-    # m2          x        y        z       <==
-    #
-    # S1    S2    Aa       Bb       Cc
-    # px wl px wl pr rw dk pr rw dk pr rw dk 
-    # \endverbatim
-    #
     def process_metadata(self, values):
+        """
+        Read a metadata line from the file (Measurement ID, Integration Time, Note
+        etc), storing values in the appropriate ExportedMeasurement object.
+        
+        @verbatim
+        EnlightenVer
+        MeasID      A        B        C       <==
+        Serial      S1       S1       S2      <== 
+        Label       Aa       Bb       Cc      <==
+        m1          x        y        z       <==
+        m2          x        y        z       <==
+        
+        S1    S2    Aa       Bb       Cc
+        px wl px wl pr rw dk pr rw dk pr rw dk 
+        @endverbatim
+        """
+        
         field = values[0]
 
         # determine format on first line
@@ -296,48 +298,51 @@ class ExportFileParser(object):
                     if len(values):
                         em.metadata[field] = values[0]  # store this key-value pair
                         values = values[em.header_count:] # toss the nulls expected to follow
-    ##
-    # Read the "labels" line from the file (Cyclohexane, Container, etc)
-    # storing values in the appropriate ExportedMeasurement object.
-    #
-    # \verbatim
-    # EnlightenVer
-    # MeasID      A        B        C     
-    # Serial      S1       S1       S2       
-    # Label       Aa       Bb       Cc      <-- not this
-    # m1          x        y        z      
-    # m2          x        y        z       
-    #
-    # S1    S2    Aa       Bb       Cc      <== this
-    # px wl px wl pr rw dk pr rw dk pr rw dk 
-    # \endverbatim
-    #
-    # @note The "Label" field is experimentally also being added to Metadata, 
-    #       making processing of this line (and perhaps the line itself) 
-    #       superfluous.
+
     def process_labels(self, values):
+        """
+        Read the "labels" line from the file (Cyclohexane, Container, etc)
+        storing values in the appropriate ExportedMeasurement object.
+        
+        @verbatim
+        EnlightenVer
+        MeasID      A        B        C     
+        Serial      S1       S1       S2       
+        Label       Aa       Bb       Cc      <-- not this
+        m1          x        y        z      
+        m2          x        y        z       
+        
+        S1    S2    Aa       Bb       Cc      <== this
+        px wl px wl pr rw dk pr rw dk pr rw dk 
+        @endverbatim
+        
+        @note The "Label" field is experimentally also being added to Metadata, 
+              making processing of this line (and perhaps the line itself) 
+              superfluous.
+        """
         field = "Label"
         values = values[self.skip_fields:] # toss the leading px/nm/cm fields
         for em in self.exported_measurements:
             if len(values):
                 em.metadata[field] = values[0]  # store this key-value pair
                 values = values[em.header_count:] # toss the nulls expected to follow
-    ##
-    # Read the header row topping the data block, storing each header by position
-    # in the appropriate ExportedMeasurement.
-    #
-    # \verbatim
-    # EnlightenVer
-    # MeasID      A        B        C       
-    # Serial      S1       S1       S2       
-    # Label       Aa       Bb       Cc 
-    # m1          x        y        z       
-    # m2          x        y        z       
-    #
-    # S1    S2    Aa       Bb       Cc      
-    # px wl px wl pr rw dk pr rw dk pr rw dk <== 
-    # \endverbatim
     def process_header(self, values):
+        """
+        Read the header row topping the data block, storing each header by position
+        in the appropriate ExportedMeasurement.
+        
+        @verbatim
+        EnlightenVer
+        MeasID      A        B        C       
+        Serial      S1       S1       S2       
+        Label       Aa       Bb       Cc 
+        m1          x        y        z       
+        m2          x        y        z       
+        
+        S1    S2    Aa       Bb       Cc      
+        px wl px wl pr rw dk pr rw dk pr rw dk <== 
+        @endverbatim
+        """
         if self.format == 1:
             # instantiate ExportedMeasurements from header fields
             self.skip_fields = 0
@@ -373,24 +378,24 @@ class ExportFileParser(object):
                         else:
                             log.error("process_header: unknown header %s", header)
 
-    ##
-    # Read a data line from the file, storing values in the appropriate 
-    # ExportedMeasurement object.
-    #
-    # \verbatim
-    # EnlightenVer
-    # MeasID      A        B        C       
-    # Serial      S1       S1       S2       
-    # Label       Aa       Bb       Cc 
-    # m1          x        y        z      
-    # m2          x        y        z     
-    #
-    # S1    S2    Aa       Bb       Cc       
-    # px wl px wl pr rw dk pr rw dk pr rw dk 
-    # 0  1  0  2  1  2  1  2  3  2  5  6  1  <==
-    # \endverbatim
-    #
     def process_data(self, values):
+        """
+        Read a data line from the file, storing values in the appropriate 
+        ExportedMeasurement object.
+        
+        @verbatim
+        EnlightenVer
+        MeasID      A        B        C       
+        Serial      S1       S1       S2       
+        Label       Aa       Bb       Cc 
+        m1          x        y        z      
+        m2          x        y        z     
+        
+        S1    S2    Aa       Bb       Cc       
+        px wl px wl pr rw dk pr rw dk pr rw dk 
+        0  1  0  2  1  2  1  2  3  2  5  6  1  <==
+        @endverbatim
+        """
         values = values[self.skip_fields:] # toss the leading px/nm/cm fields
         for em in self.exported_measurements:
             for i in range(em.header_count):
@@ -415,9 +420,8 @@ class ExportFileParser(object):
                     if array is not None:
                         array.append(float(value))
 
-    ##
-    # Read in the export file line-by-line, slurping in data for later filing.
     def load_data(self):
+        """ Read in the export file line-by-line, slurping in data for later filing. """
         state = "reading_metadata"
         log.debug("loading %s", self.pathname)
         line_count = 0

@@ -9,11 +9,11 @@ from .assets.uic_qrc import enlighten_layout
 
 log = logging.getLogger(__name__)
 
-##
-# In the Controller, you will see myriad references to "self.form" and "sfu" --
-# those refer to an object of this class (and its .ui attribute).
 class BasicWindow(QtWidgets.QMainWindow):
-
+    """
+    In the Controller, you will see myriad references to "self.form" and "sfu" --
+    those refer to an object of this class (and its .ui attribute).
+    """
     def __init__(self, title, headless):
         super(BasicWindow, self).__init__()
 
@@ -28,7 +28,7 @@ class BasicWindow(QtWidgets.QMainWindow):
         self.setWindowTitle(title)
         self.showMaximized()
         if headless:
-            # hiding tends to mess with gui tests since the componenets are also hidden
+            # hiding tends to mess with gui tests since the componets are also hidden
             # So I replaced with minimizing, which I recognize is not a true headless
             # self.hide()
             self.showMinimized()

@@ -2,22 +2,23 @@ import logging
 
 log = logging.getLogger(__name__)
 
-## 
-# @file EmissionLamps.py
-#
-# This class was originally used for an earlier ENLIGHTEN "wavelength calibration"
-# feature, which allowed full wavelength calibration from within ENLIGHTEN. 
-# However, that feature wasn't particularly well-designed, and we opted to move
-# that capability to WPSpecCal in any event.  However, I'm retaining this class
-# should we want to use it for a non-Raman, emission-based equivalent of the 
-# RamanShiftCorrection "single-point x-axis correction".  
-#
-# Note that the tables defining which peaks should be visible from which 
-# models are probably dated with respect to spectral range.  You may also 
-# consider that they could be easily replaced by a simple range query; however,
-# in wavelength calibration, it is often desired to explicitly choose which 
-# peaks are used for wavecal (avoiding split peaks, balancing the spread across
-# the detector, etc).
+"""
+@file EmissionLamps.py
+
+This class was originally used for an earlier ENLIGHTEN "wavelength calibration"
+feature, which allowed full wavelength calibration from within ENLIGHTEN. 
+However, that feature wasn't particularly well-designed, and we opted to move
+that capability to WPSpecCal in any event.  However, I'm retaining this class
+should we want to use it for a non-Raman, emission-based equivalent of the 
+RamanShiftCorrection "single-point x-axis correction".  
+
+Note that the tables defining which peaks should be visible from which 
+models are probably dated with respect to spectral range.  You may also 
+consider that they could be easily replaced by a simple range query; however,
+in wavelength calibration, it is often desired to explicitly choose which 
+peaks are used for wavecal (avoiding split peaks, balancing the spread across
+the detector, etc).
+"""
 
 # ##############################################################################
 #                                                                              #
@@ -25,8 +26,8 @@ log = logging.getLogger(__name__)
 #                                                                              #
 # ##############################################################################
 
-## convenience class: instantiate one of these to get access to each EmissionLamp 
 class EmissionLamps(object):
+    """ convenience class: instantiate one of these to get access to each EmissionLamp """
     def __init__(self,
             model_info):
 
@@ -44,21 +45,21 @@ class EmissionLamps(object):
 #                                                                              #
 # ##############################################################################
 
-## 
-# Encapsulates static product data about a gas emission lamp for use by the
-# Wavecal business object. 
-#
-# All data taken from Ocean Optics website for their excellent line of gas
-# emission lamps, which Wasatch Photonics enthusiastically endorses for all your 
-# spectrometer calibration needs. 
-#
-# @note Relative intensities are extremely nominal, given grating transmission
-#       curves; small peaks on one spectrometer may be huge on another. Peaks
-#       with intensity of 'zero' I simply haven't seen, don't know, and should
-#       probably be displayed as '1' but perhaps in a different color. Intensities
-#       should be based on VIS-NIR or VIS if available.
-#
 class EmissionLamp(object):
+    """
+    Encapsulates static product data about a gas emission lamp for use by the
+    Wavecal business object. 
+    
+    All data taken from Ocean Optics website for their excellent line of gas
+    emission lamps, which Wasatch Photonics enthusiastically endorses for all your 
+    spectrometer calibration needs. 
+    
+    @note Relative intensities are extremely nominal, given grating transmission
+          curves; small peaks on one spectrometer may be huge on another. Peaks
+          with intensity of 'zero' I simply haven't seen, don't know, and should
+          probably be displayed as '1' but perhaps in a different color. Intensities
+          should be based on VIS-NIR or VIS if available.
+    """
     def __init__(self, model_info, element=None):
         self.model_info = model_info
 
@@ -123,9 +124,9 @@ class EmissionLamp(object):
 #                                                                              #
 # ##############################################################################
 
-##
-# AR-1 (argon)
 class ArLamp(EmissionLamp):
+    """ AR-1 (argon) """
+
     def __init__(self, model_info):
         super(ArLamp, self).__init__(model_info, element='Ar')
         self.urls = [ 'http://oceanoptics.com/wp-content/uploads/AR-1_spectra-01.jpg',
@@ -187,9 +188,9 @@ class ArLamp(EmissionLamp):
                }
         self.parse_data(data)
 
-##
-# Hg-1 (mixture of argon and mercury)
 class HgArLamp(EmissionLamp):
+    """ Hg-1 (mixture of argon and mercury) """
+
     def __init__(self, model_info):
         super(HgArLamp, self).__init__(model_info, element='HgAr')
         self.urls = [ 'http://oceanoptics.com/wp-content/uploads/HG-1-spectrum-with-USB2000-XR1-2.png',
@@ -229,8 +230,9 @@ class HgArLamp(EmissionLamp):
                }
         self.parse_data(data)
 
-## Kr-1 (krypton)
 class KrLamp(EmissionLamp):
+    """ Kr-1 (krypton) """
+
     def __init__(self, model_info):
         super(KrLamp, self).__init__(model_info, element='Kr')
         self.urls = [ 'http://oceanoptics.com/wp-content/uploads/KR-1-spectral-range-web.jpg',
@@ -280,8 +282,9 @@ class KrLamp(EmissionLamp):
                }
         self.parse_data(data)
 
-## Ne-1 (neon)
 class NeLamp(EmissionLamp):
+    """ Ne-1 (neon) """
+
     def __init__(self, model_info):
         super(NeLamp, self).__init__(model_info, element='Ne')
         self.urls = [ 'http://oceanoptics.com/wp-content/uploads/NE-1-spectral-range-web.jpg',
@@ -350,8 +353,8 @@ class NeLamp(EmissionLamp):
                }
         self.parse_data(data)
 
-## Xe-1 (xenon)
 class XeLamp(EmissionLamp):
+    """ Xe-1 (xenon) """
     def __init__(self, model_info):
         super(XeLamp, self).__init__(model_info, element='Xe')
         self.urls = [ 'http://oceanoptics.com/wp-content/uploads/XE-1_spectra-01.jpg' ]

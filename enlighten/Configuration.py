@@ -1,4 +1,4 @@
-from PySide2 import QtCore #, QtGui
+from PySide2 import QtCore
 
 import os
 import re
@@ -13,53 +13,53 @@ from . import common
 
 log = logging.getLogger(__name__)
 
-##
-# This is a wrapper over ConfigParser.  It adds the following features:
-#
-# - generates a stub template if none found
-# - preserves comments when saving .ini
-# - auto-expands named Colors 
-# - auto-converts Qt line styles to enum
-#
-# This class manages enlighten.ini, which should be found under
-# C:\\users\\%USER%\\Documents\\EnlightenSpectra on Windows, and
-# ~/EnlightenSpectra on POSIX.
-#
-# A default template file will be created if none exists.
-#
-# Like most .ini files, sections are delineated in [brackets], 
-# followed by lines of "name = value" pairs.  Blank lines and those
-# starting with pound (#) are ignored.
-#
-# Most sections are global and affect all spectrometers.
-# Individual spectrometer settings can be controlled by sections
-# named with the given device's serialNumber ([WP-00001], etc).
-#
-# Note that in the name of user-friendliness and automation, some 
-# English-language values are dynamically translated from strings
-# to corresponding Qt objects (colors, pen styles etc) in get().
-#
-# @todo allow Business Objects to define their own ConfigurationDefaults.
-#
-# @todo support registration, similar to EEPROMEditor, of tuples like the following:
-#
-# (widget, type, ini_label)
-# e.g., config.register(checkbox_batch_enabled, bool, "batch.enabled")
-#
-# Such that:
-# 
-# - register() will apply NON-DEFAULT config values to the widget
-# - set() will update both the widget and config section
-# - get() will return the current widget value
-#
-# @par Design Considerations
-#
-# "enlighten.ini" pre-dated me, and needed to be supported.  Doing this
-# from scratch, I'd go with JSON, which supports much more complex 
-# structured data.  For now, the compromise will be that "complex" objects
-# requiring JSON configuration can use their own configuration files,
-# pointed to by this one.
 class Configuration(object):
+    """
+    This is a wrapper over ConfigParser.  It adds the following features:
+    
+    - generates a stub template if none found
+    - preserves comments when saving .ini
+    - auto-expands named Colors 
+    - auto-converts Qt line styles to enum
+    
+    This class manages enlighten.ini, which should be found under
+    EnlightenSpectra.
+    
+    A default template file will be created if none exists.
+    
+    Like most .ini files, sections are delineated in [brackets], 
+    followed by lines of "name = value" pairs.  Blank lines and those
+    starting with pound (#) are ignored.
+    
+    Most sections are global and affect all spectrometers.
+    Individual spectrometer settings can be controlled by sections
+    named with the given device's serialNumber ([WP-00001], etc).
+    
+    Note that in the name of user-friendliness and automation, some 
+    English-language values are dynamically translated from strings
+    to corresponding Qt objects (colors, pen styles etc) in get().
+    
+    @todo allow Business Objects to define their own ConfigurationDefaults.
+    
+    @todo support registration, similar to EEPROMEditor, of tuples like the following:
+    
+    (widget, type, ini_label)
+    e.g., config.register(checkbox_batch_enabled, bool, "batch.enabled")
+    
+    Such that:
+    
+    - register() will apply NON-DEFAULT config values to the widget
+    - set() will update both the widget and config section
+    - get() will return the current widget value
+
+    @par Design Considerations
+    
+    "enlighten.ini" pre-dated me, and needed to be supported.  Doing this
+    from scratch, I'd go with JSON, which supports much more complex 
+    structured data.  For now, the compromise will be that "complex" objects
+    requiring JSON configuration can use their own configuration files,
+    pointed to by this one.
+    """
 
     def clear(self):
         self.lines = []
@@ -94,11 +94,12 @@ class Configuration(object):
 
         self.button_save.clicked.connect(self.save_callback)
 
-    ## 
-    # We read the .ini twice:
-    # - once as an array of lines (we use this when re-saving the file later)
-    # - again as a parsed configuration tree
     def reload(self):
+        """
+        We read the .ini twice:
+        - once as an array of lines (we use this when re-saving the file later)
+        - again as a parsed configuration tree
+        """
         self.load_text()
         self.parse()
         self.dump()
@@ -107,8 +108,8 @@ class Configuration(object):
     # Initialization
     # ##########################################################################
 
-    ## create EnlightenSpectra directory if not found
     def stub_dir(self):
+        """ create EnlightenSpectra directory if not found. """
         if os.path.exists(self.directory):
             return
 
@@ -118,8 +119,8 @@ class Configuration(object):
         except Exception as exc:
             log.critical("failed to create config directory", exc_info=1)
 
-    ## create test spectra dir if not found
     def stub_test(self):
+        """ Create test spectra dir if not found. """
         if os.path.exists(self.test_dir):
             return
 
@@ -129,8 +130,8 @@ class Configuration(object):
         except Exception as exc:
             log.critical("failed to create test directory", exc_info=1)
 
-    ## If no enlighten.ini file exists, make one
     def stub_missing(self):
+        """ If no enlighten.ini file exists, make one. """
         if os.path.exists(self.pathname):
             return
 
@@ -160,8 +161,8 @@ class Configuration(object):
         except:
             log.critical(f"failed to stub {self.pathname}")
 
-    ## slurp file as array of lines
     def load_text(self):
+        """ Slurp file as array of lines. """
         if not os.path.exists(self.pathname):
             log.debug("not found: %s", self.pathname)
             return
@@ -170,8 +171,8 @@ class Configuration(object):
             self.lines = infile.readlines()
         self.lines = [x.strip() for x in self.lines] 
 
-    ## load as ConfigParser object
     def parse(self):
+        """ Load as ConfigParser object. """
         self.config = configparser.ConfigParser()
         self.config.optionxform = str
         try:
@@ -281,15 +282,16 @@ class Configuration(object):
     # Reading options
     # ##########################################################################
     
-    ## 
-    # @param raw    return the literal value exactly as found in the file
-    #               (otherwise, perform interpretive post-processing of color
-    #                names and pen styles)
-    # @param section which INI section the key should be found in
-    # @param key     which setting we're looking for
-    # @param default value to return if not found
-    # @returns something, always (defaults to string "0")
     def get(self, section, key, raw=False, default="0"):
+        """
+        @param raw    return the literal value exactly as found in the file
+                      (otherwise, perform interpretive post-processing of color
+                       names and pen styles)
+        @param section which INI section the key should be found in
+        @param key     which setting we're looking for
+        @param default value to return if not found
+        @returns something, always (defaults to string "0")
+        """
         if self.config and self.config.has_section(section) and self.config.has_option(section, key):
             value = self.config.get(section, key)   # self.config != self :-)
         elif section in self.defaults and key in self.defaults[section]:
@@ -306,8 +308,8 @@ class Configuration(object):
 
         return value
 
-    ## not using ConfigParser.getboolean() because we want to support defaults
     def get_bool(self, section, key):
+        """ Not using ConfigParser.getboolean() because we want to support defaults. """
         return self.get(section, key).lower() == "true"
 
     def get_int(self, section, key, default=0):

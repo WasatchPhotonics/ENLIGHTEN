@@ -11,19 +11,22 @@ from wasatch.CSVLoader            import CSVLoader
 
 log = logging.getLogger(__name__)
 
-##
-# A file parser to deserialize one Measurement from a column-ordered CSV file.
-#
-# Given the similarity between the columnar CSV and "export" file formats, it 
-# would be SO TEMPTING to imagine you could easily generalize them.  I thought
-# they're just different enough that it would be a nightmare, so here we are.
-#
-# It is expected that this will be able to handle "raw" columnar CSV formats as
-# well, which contain no metadata, but instead begin directly with the header
-# row.  In that case, wavelength and wavenumber are used directly from the input
-# data, as no wavecal coefficients or excitation are available.
 class ColumnFileParser(object):
+    """
+    A file parser to deserialize one ENLIGHTEN-format Measurement from a column-
+    ordered CSV file.
+    
+    Given the similarity between the columnar CSV and "export" file formats, it 
+    would be SO TEMPTING to imagine you could easily generalize them.  I thought
+    they're just different enough that it would be a nightmare, so here we are.
+    
+    It is expected that this will be able to handle "raw" columnar CSV formats as
+    well, which contain no metadata, but instead begin directly with the header
+    row.  In that case, wavelength and wavenumber are used directly from the input
+    data, as no wavecal coefficients or excitation are available.
 
+    @see TextFileParser for files with no header row at all.
+    """
     def __init__(self, pathname, save_options=None):
         self.pathname = pathname
         self.save_options = save_options
@@ -38,9 +41,7 @@ class ColumnFileParser(object):
         self.processed_reading = self.csv_loader.processed_reading
         self.processed_reading.reading = self.csv_loader.processed_reading.reading
 
-    ##
-    # Returns a Measurement
-    def parse(self):
+    def parse(self) -> Measurement:
         # read through the input file by line, loading data locally
         self.csv_loader.load_data()
 
@@ -58,7 +59,7 @@ class ColumnFileParser(object):
             processed_reading = self.processed_reading,
             save_options      = self.save_options)
 
-        log.info(f"\nAfter creating measurement the wave coeffs are {m.settings.eeprom.wavelength_coeffs}\n")
+        # log.info(f"\nAfter creating measurement the wave coeffs are {m.settings.eeprom.wavelength_coeffs}\n")
 
         # note that label often won't be what the user expected, because they
         # may have editted it in the Capture Bar AFTER the file was created,
@@ -93,13 +94,14 @@ class ColumnFileParser(object):
             log.error(f"failed to convert {field} to float: {s}")
             return 0
 
-    ##
-    # May be any of these:
-    # 
-    # - 2021-12-31 16:32:14.012888 (saved from ENLIGHTEN)
-    # - 12/31/2021 16:32:14 
-    # - 09:14.9 (re-saved from Excel)
     def parse_timestamp(self, ts):
+        """
+        May be any of these:
+        
+        - 2021-12-31 16:32:14.012888 (saved from ENLIGHTEN)
+        - 12/31/2021 16:32:14 
+        - 09:14.9 (re-saved from Excel)
+        """
         now = datetime.datetime.now()
         if ts is None:
             return now
@@ -142,20 +144,21 @@ class ColumnFileParser(object):
         log.error(f"unable to convert to datetime: [{ts}]")
         return now
 
-    ##
-    # This looks VERY SIMILAR to the DashSpectrometer ctor...except for things 
-    # like Serial Number.  And ExportFileParser.post_process_metadata...
-    #
-    # If we passed-in the metadata dict, and returned a tuple (timestamp, 
-    # SpectrometerSettings) that might work.  But where to put the function?
-    #
-    # Note that currently there is nowhere to put SpectrometerApplicationData 
-    # that we parsed from the file (like technique).
-    #
-    # In cases where we're looking for different field spellings, those may 
-    # have been added to better support other application file formats
-    # (such as RamanSpecCal).
     def post_process_metadata(self):
+        """
+        This looks VERY SIMILAR to the DashSpectrometer ctor...except for things 
+        like Serial Number.  And ExportFileParser.post_process_metadata...
+        
+        If we passed-in the metadata dict, and returned a tuple (timestamp, 
+        SpectrometerSettings) that might work.  But where to put the function?
+        
+        Note that currently there is nowhere to put SpectrometerApplicationData 
+        that we parsed from the file (like technique).
+        
+        In cases where we're looking for different field spellings, those may 
+        have been added to better support other application file formats
+        (such as RamanSpecCal).
+        """
         metadata = self.metadata
 
         self.settings = SpectrometerSettings()

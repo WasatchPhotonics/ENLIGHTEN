@@ -9,20 +9,21 @@ from wasatch.SpectrometerSettings import SpectrometerSettings
 
 log = logging.getLogger(__name__)
 
-##
-# Represents data that will go into the next Measurement we generate (or "could",
-# for Dash data we don't actually disposition at this time).
-#
-# The distinction between DashMeasurement and DashSpectrometer is kind of arbitrary,
-# (they're all mixed in the Dash metadata prefixes), but helps distinguish 
-# "spectrometer" data from "measurement" data.
-#
-# @todo consider replacing both this and DashSpectrometer with a generalized 
-#       ExportedMeasurement, containing a generic post_process_metadata() 
-#       method
-#
-# @todo instantiate a Reading object and write detector/laser temperature to it
 class DashMeasurement(object):
+    """
+    Represents data that will go into the next Measurement we generate (or "could",
+    for Dash data we don't actually disposition at this time).
+    
+    The distinction between DashMeasurement and DashSpectrometer is kind of arbitrary,
+    (they're all mixed in the Dash metadata prefixes), but helps distinguish 
+    "spectrometer" data from "measurement" data.
+    
+    @todo consider replacing both this and DashSpectrometer with a generalized 
+          ExportedMeasurement, containing a generic post_process_metadata() 
+          method
+    
+    @todo instantiate a Reading object and write detector/laser temperature to it
+    """
     def __init__(self, row):
         if "Timestamp" in row:
             self.timestamp = datetime.datetime.now()
@@ -43,18 +44,18 @@ class DashMeasurement(object):
         self.note = None
         self.processed_reading = None
 
-##
-# A kind of mini-Spectrometer, holding state about a Spectrometer which will
-# go into the next Measurement we generate.  
-#
-# The distinction between DashMeasurement and DashSpectrometer is kind of arbitrary,
-# (they're all mixed in the Dash metadata prefixes), but helps distinguish 
-# "spectrometer" data from "measurement" data.
 class DashSpectrometer(object):
+    """
+    A kind of mini-Spectrometer, holding state about a Spectrometer which will
+    go into the next Measurement we generate.  
+    
+    The distinction between DashMeasurement and DashSpectrometer is kind of arbitrary,
+    (they're all mixed in the Dash metadata prefixes), but helps distinguish 
+    "spectrometer" data from "measurement" data.
+    """
 
-    ##
-    # @see ColumnFileParser.post_process_metadata
     def __init__(self, row):
+        """ @see ColumnFileParser.post_process_metadata """
         self.dash_measurement = DashMeasurement(row)
 
         self.settings = SpectrometerSettings()
@@ -104,58 +105,58 @@ class DashSpectrometer(object):
         else:
             log.error("update_processed_reading has ProcessedReading yet note was '%s'", note)
 
-##
-# Load the specified filename into a list of Measurements.
-# Expects a historical Dash v2.1 format csv file like the following:
-#
-# \verbatim
-#   "Dash Output v2.1","2016-09-30 10:59:55.263000 version: 1036.1","Row","Pixel Data","S-00192"
-#   "Line Number","Integration Time","Timestamp",              "Blank","Note",   "Temperature","CCD C0","CCD C1","CCD C2",    "CCD C3",    "CCD Offset","CCD Gain","Laser Wavelength","Laser Enable","Laser Power","Laser Temperature","Pixel Count"
-#   "1",          "100",             "2016-09-30 10:52:42.509","",     "Ethanol",-273.0,       801.591,  0.13999,-3.16859e-06,-1.00352e-08,0,           1.9,       "785.0",           1,             97,           32.56,              1024,        1544,1556,1544...
-# \endverbatim
-#
-# As we step through the rows of the file, we'll need to maintain last-seen
-# metadata about each spectrometer.  As we step through the line, we'll 
-# generate Measurements from blocks that can be anywhere from individual
-# lines (processed) to 7-line blocks:
-#
-#   - pixels        (discard)
-#   - wavelengths   (discard)
-#   - wavenumbers   (discard)
-#   - processed     (note)
-#   - raw
-#   - dark
-#   - reference
-#
-# Note that technically the expanded pixels, wavelengths and wavenumbers 
-# lines are discarded, because the prefixed line metadata contains wavecal
-# coeffs, pixel count and excitation wavelength, so lines with a "Note" of
-# those values will be discarded.
-#
-# The all-important "processed" line is assumed to be the FIRST line of a new
-# Line Number including prefixed metadata (timestamp etc) which has NOT been 
-# discarded (e.g. named pixels/wavelengths/wavenumbers, which seems unlikely).
-#
-# So we'll maintain state for each spectrometer, generating new Measurements
-# from the latest-known spectrometer data each time we encounter a new block.
-#
-# Technically we never end up re-using old DashSpectrometer objects (we 
-# regenerate them from each new 'processed' line), so there's really no need to 
-# maintain the self.specs hash...we could just make it self.current_spec.
-#
-# @par Exploits
-#
-# If the user has manually assigned a "note" field of "pixels", "wavelengths",
-# or "wavenumbers" (unlikely), the given spectrum will not be correctly read.
-# (Most likely, the "raw" version will be read and assumed to be "processed",
-# which isn't so bad).
-#
-# I _think_ the algorithm will be fine if the user assigns a note of "raw", 
-# "dark", "reference" etc, because the ACTUAL components with those labels
-# should be read AFTER the processed row (which can have an arbitrary name,
-# including those given).
-#
 class DashFileParser(object):
+    """
+    Load the specified filename into a list of Measurements.
+    Expects a historical Dash v2.1 format csv file like the following:
+    
+    @verbatim
+      "Dash Output v2.1","2016-09-30 10:59:55.263000 version: 1036.1","Row","Pixel Data","S-00192"
+      "Line Number","Integration Time","Timestamp",              "Blank","Note",   "Temperature","CCD C0","CCD C1","CCD C2",    "CCD C3",    "CCD Offset","CCD Gain","Laser Wavelength","Laser Enable","Laser Power","Laser Temperature","Pixel Count"
+      "1",          "100",             "2016-09-30 10:52:42.509","",     "Ethanol",-273.0,       801.591,  0.13999,-3.16859e-06,-1.00352e-08,0,           1.9,       "785.0",           1,             97,           32.56,              1024,        1544,1556,1544...
+    @endverbatim
+    
+    As we step through the rows of the file, we'll need to maintain last-seen
+    metadata about each spectrometer.  As we step through the line, we'll 
+    generate Measurements from blocks that can be anywhere from individual
+    lines (processed) to 7-line blocks:
+    
+    - pixels        (discard)
+    - wavelengths   (discard)
+    - wavenumbers   (discard)
+    - processed     (note)
+    - raw
+    - dark
+    - reference
+    
+    Note that technically the expanded pixels, wavelengths and wavenumbers 
+    lines are discarded, because the prefixed line metadata contains wavecal
+    coeffs, pixel count and excitation wavelength, so lines with a "Note" of
+    those values will be discarded.
+    
+    The all-important "processed" line is assumed to be the FIRST line of a new
+    Line Number including prefixed metadata (timestamp etc) which has NOT been 
+    discarded (e.g. named pixels/wavelengths/wavenumbers, which seems unlikely).
+    
+    So we'll maintain state for each spectrometer, generating new Measurements
+    from the latest-known spectrometer data each time we encounter a new block.
+    
+    Technically we never end up re-using old DashSpectrometer objects (we 
+    regenerate them from each new 'processed' line), so there's really no need to 
+    maintain the self.specs hash...we could just make it self.current_spec.
+    
+    @par Exploits
+    
+    If the user has manually assigned a "note" field of "pixels", "wavelengths",
+    or "wavenumbers" (unlikely), the given spectrum will not be correctly read.
+    (Most likely, the "raw" version will be read and assumed to be "processed",
+    which isn't so bad).
+    
+    I _think_ the algorithm will be fine if the user assigns a note of "raw", 
+    "dark", "reference" etc, because the ACTUAL components with those labels
+    should be read AFTER the processed row (which can have an arbitrary name,
+    including those given).
+    """
 
     def __init__(self, pathname, save_options):
         self.pathname = pathname
@@ -167,8 +168,8 @@ class DashFileParser(object):
 
         self.serial = None
 
-    ## Instantiate a new DashSpectrometer from the passed row, and add it to our hash
     def init_spec(self, row):
+        """ Instantiate a new DashSpectrometer from the passed row, and add it to our hash. """
         dash_spec = DashSpectrometer(row)
         serial = dash_spec.settings.eeprom.serial_number
 

@@ -25,6 +25,9 @@ class DarkFeature:
             lb_timestamp,
             stackedWidget_scope_setup_dark_spectrum,
             gui_make_pen):
+        """
+        Encapsulates dark correction.
+        """
 
         self.generate_x_axis     = generate_x_axis
         self.gui                 = gui
@@ -75,16 +78,20 @@ class DarkFeature:
             log.debug("toggle: clearing")
             self.clear()
 
-    ##
-    # Note that while we track reference_excitation for offset, we don't for dark
-    # because it is assumed that the laser is off...
-    #
-    # Note: Don't use this function directly for GUI callbacks, as they will pass
-    #       Qt arguments along.  This is what the otherwise-spurious _callback()
-    #       versions are for, to ignore any extra arguments.
-    #
-    # @param dark: could come from Reading in BatchCollection
     def store(self, dark=None):
+        """
+        Store a new dark.  If one was passed, use that; otherwise take the latest
+        recordable_dark from the current spectrometer.
+
+        @note While we track reference_excitation for offset, we don't for dark
+              because it is assumed that the laser is off.
+        
+        @note Don't use this function directly for GUI callbacks, as they will pass
+              Qt arguments along.  This is what the otherwise-spurious _callback()
+              versions are for, to ignore any extra arguments.
+        
+        @param dark: could come from Reading in BatchCollection
+        """
         spec = self.multispec.current_spectrometer()
         if spec is None:
             return
@@ -154,19 +161,20 @@ class DarkFeature:
     # private methods
     # ##########################################################################
 
-    ##
-    # Prompts the user to select a previously-saved Measurement (from disk, not
-    # a loaded thumbnail), and pull the "Dark" column from that.
-    #
-    # - If no dark is found, does nothing.
-    # - If dark is a column of zeros, uses that.
-    # - If multiple Measurements are in the file, uses the first.
-    #
-    # Better design: add drop-down "..." menu to every ThumbnailWidget, to which we
-    # can add a bunch of functions, including "Load dark" and "Load reference". This
-    # would provide better support for "Export" files, where the Measurement we want
-    # actually is buried within a larger set.
     def load(self):
+        """
+        Prompts the user to select a previously-saved Measurement (from disk, not
+        a loaded thumbnail), and pull the "Dark" column from that.
+        
+        - If no dark is found in the selected measurement, does nothing.
+        - If dark is a column of zeros, uses that.
+        - If multiple Measurements are in the file, uses the first.
+        
+        Better design: add drop-down "..." menu to every ThumbnailWidget, to which we
+        can add a bunch of functions, including "Load dark" and "Load reference". This
+        would provide better support for "Export" files, where the Measurement we want
+        actually is buried within a larger set.
+        """
         m = self.measurement_factory.load_interpolated(self.settings())
         if m is None:
             return
@@ -245,4 +253,3 @@ class DarkFeature:
         placeholder = self.stackedWidget_scope_setup_dark_spectrum
         placeholder.addWidget(chart)
         placeholder.setCurrentIndex(1)
-

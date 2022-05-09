@@ -8,26 +8,27 @@ from enum import IntEnum
 
 log = logging.getLogger(__name__)
 
-##
-# Namespace containing various enums and constants used elsewhere within the 
-# application.
-#
-# @todo consider making "common" a package (directory), and each of these classes
-#       can be modules (files) within it
-    
-## ENLIGHTEN's application version number (checked by scripts/deploy and bootstrap.bat)
-VERSION = "3.2.1"
+"""
+Namespace containing various enums and constants used elsewhere within the 
+application.
 
-## 
-# It's important to keep this list in sync with the comboBoxTechnique items.
-#
-# @todo consider auto-populating inside code
+@todo consider making "common" a package (directory), and each of these classes
+      can be modules (files) within it
+"""
+    
+VERSION = "3.2.2"
+""" ENLIGHTEN's application version number (checked by scripts/deploy and bootstrap.bat) """
+
 class Techniques(IntEnum):
     HARDWARE            = 0
     SCOPE               = 1
     RAMAN               = 2 
     TRANSMISSION        = 3
     ABSORBANCE          = 4
+"""
+It's important to keep this list in sync with the comboBoxTechnique items.
+@todo consider auto-populating inside code
+"""
 
 class TechniquesHelper:
     pretty_names = {

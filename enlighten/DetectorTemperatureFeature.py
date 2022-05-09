@@ -9,6 +9,9 @@ log = logging.getLogger(__name__)
 from PySide2 import QtGui, QtCore 
 
 class DetectorTemperatureFeature:
+    """
+    Encapsulate the monitoring of detector temperature.
+    """
 
     def __init__(self,
             graph,
@@ -92,9 +95,8 @@ class DetectorTemperatureFeature:
         self.enabled_callback()
         self.apply_setpoint()
 
-    ##
-    # The user just selected a different spectrometer (but it isn't a hotplug)
     def update_visibility(self):
+        """ The user just selected a different spectrometer (but it isn't a hotplug). """
         spec = self.multispec.current_spectrometer()
         if spec is None:
             return
@@ -180,8 +182,8 @@ class DetectorTemperatureFeature:
     # private methods
     # ##########################################################################
 
-    ## send GUI value downstream (and turns on if it was off)
     def apply_setpoint(self):
+        """ Send GUI value downstream (and turns on if it was off). """
         # shouldn't matter if we take from spinbox or slider
         value = self.spinbox.value() 
 
@@ -220,10 +222,12 @@ class DetectorTemperatureFeature:
                 self.sfu.tec_temperature_graph.removeItem(curve)
         # remove current curve from multispec record
         self.multispec.remove_hardware_curve(self.name, spec.device_id)
-    ## 
-    # If a startup temperature has been configured and is in range, use that;
-    # otherwise default to minimum.
+    
     def get_default_temp(self, spec):
+        """
+        If a startup temperature has been configured and is in range, use that;
+        otherwise default to minimum.
+        """
         lo          = spec.settings.eeprom.min_temp_degC
         hi          = spec.settings.eeprom.max_temp_degC
         startup     = spec.settings.eeprom.startup_temp_degC
@@ -253,12 +257,14 @@ class DetectorTemperatureFeature:
     def spinbox_callback(self):
         self.apply_setpoint()
 
-    ## Apply the current "enabled" checkbox state downstream and to GUI elements.
-    #
-    # Note that if the DetectorTemperatureFeature is disabled, it does not let 
-    # you change the setpoint via spinner, slider or buttons.  This is deliberate.
-    # You can only adjust the setpoint when the TEC is enabled.
     def enabled_callback(self):
+        """
+        Apply the current "enabled" checkbox state downstream and to GUI elements.
+        
+        Note that if the DetectorTemperatureFeature is disabled, it does not let 
+        you change the setpoint via spinner, slider or buttons.  This is deliberate.
+        You can only adjust the setpoint when the TEC is enabled.
+        """
         enabled = self.cb_enabled.isChecked()
 
         self.multispec.set_state("tec_enabled", enabled)

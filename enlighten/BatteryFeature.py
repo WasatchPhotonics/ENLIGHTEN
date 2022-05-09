@@ -2,10 +2,10 @@ import logging
 
 log = logging.getLogger(__name__)
 
-##
-# @todo track battery state in SpectrometerApplicationState to support multiple connected spectrometers
 class BatteryFeature:
-
+    """ 
+    @todo track battery state in SpectrometerApplicationState to support multiple connected spectrometers
+    """
     def __init__(self,
                  lb_raw,
                  lb_parsed):

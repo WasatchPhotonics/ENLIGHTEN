@@ -9,27 +9,27 @@ from .BasicDialog import BasicDialog
 
 log = logging.getLogger(__name__)
 
-##
-# Encapsulates the "Advanced Options" control widget atop the Spectrometer 
-# Control column on the GUI.
-#
-# - persists state ("never_show") through Configuration / enlighten.ini
-# - is potentially affected by selected / current spectrometer or hotplugs (not 
-#   all models support TEC control or AreaScan)
-#
-# @par Relationship to Authentication
-#
-# Currently there is no interaction betwween Authentication (which "hides" 
-# non-user-facing features like rare OEM and Manufacturing options behind
-# passwords) and Advanced Options (which simply hides them behind a warning 
-# dialog).
-#
-# Checking the Advanced Options checkbox does not affect your "login level"
-# with respect to Authentication, nor does logging-in affect your Advanced 
-# Options selection(s).  They are different "gateways" which obscure / protect
-# different sets of features.
-#
 class AdvancedOptionsFeature:
+    """
+    Encapsulates the "Advanced Options" control widget atop the Spectrometer 
+    Control column on the GUI.
+    
+    - persists state ("never_show") through Configuration / enlighten.ini
+    - is potentially affected by selected / current spectrometer or hotplugs (not 
+      all models support TEC control or AreaScan)
+    
+    @par Relationship to Authentication
+    
+    Currently there is no interaction betwween Authentication (which "hides" 
+    non-user-facing features like rare OEM and Manufacturing options behind
+    passwords) and Advanced Options (which simply hides them behind a warning 
+    dialog).
+    
+    Checking the Advanced Options checkbox does not affect your "login level"
+    with respect to Authentication, nor does logging-in affect your Advanced 
+    Options selection(s).  They are different "gateways" which obscure / protect
+    different sets of features.
+    """
     
     def __init__(self,
             cb_enable,          # main "enable" checkbox for Advanced Features
@@ -99,10 +99,8 @@ class AdvancedOptionsFeature:
     # ##########################################################################
 
     def update_visibility(self) -> None:
-        log.debug("AdvancedOptionsFeature: update_visibility")
         spec = self.multispec.current_spectrometer()
         if spec is None:
-            log.debug("AdvancedOptionsFeature: update_visibility (no spec)")
             self.enabled = False
 
             for attr_name, attr in self.__dict__.items():
@@ -117,8 +115,6 @@ class AdvancedOptionsFeature:
             return
     
         is_ingaas = spec.settings.is_ingaas()
-        log.info("AdvancedOptionsFeature: is_ingaas %s", is_ingaas)
-
         self.enabled = self.cb_enable.isChecked()
         
         self.set_area_scan_available(not is_ingaas)
@@ -138,20 +134,20 @@ class AdvancedOptionsFeature:
     #                                                                          #
     # ##########################################################################
 
-    ## The user clicked "Cancel" on the warning dialog 
     def dialog_rejected_callback(self) -> None:
+        """ The user clicked "Cancel" on the warning dialog """
         self.cb_enable.setChecked(False)
         self.update_gui()
 
-    ## The user clicked "Ok" on the warning dialog (and maybe the checkbox).
     def dialog_accepted_callback(self) -> None:
+        """ The user clicked "Ok" on the warning dialog (and maybe the checkbox). """
         self.dialog_shown = True
         self.never_show = self.dialog_warning.ui.checkBox.isChecked()
         self.config.set("advanced_options", "never_show", self.never_show)
         self.update_gui()
 
-    ## The user clicked the "Advanced" checkbox, so display or hide the sub-options frame
     def enable_callback(self):
+        """ The user clicked the "Advanced" checkbox, so display or hide the sub-options frame """
         if self.cb_enable.isChecked() and not self.dialog_shown and not self.never_show:
             return self.dialog_warning.display()
         self.update_gui()
@@ -175,19 +171,15 @@ class AdvancedOptionsFeature:
     # These methods are used to optionally hide or make available options which
     # only apply to certain types of spectrometer (TEC, area scan etc)
 
-    ## 
-    # It has been decided that TEC Control is (or is not) a reasonable option for
-    # the current spectrometer
     def set_tec_available(self, flag: bool) -> None:
+        """ It has been decided that TEC Control is (or is not) a reasonable option for the current spectrometer """
         self.cb_tec.setVisible(flag)
         if not flag:
             self.tec_visible = False
             self.fr_tec.setVisible(False)
 
-    ## 
-    # It has been decided that Area Scan is (or is not) a reasonable option for 
-    # the current spectrometer
     def set_area_scan_available(self, flag: bool) -> None:
+        """ It has been decided that Area Scan is (or is not) a reasonable option for the current spectrometer """
         self.cb_area_scan.setVisible(flag)
         if not flag:
             self.area_scan_visible = False

@@ -28,25 +28,25 @@ class SPCFileParser:
     # Graph is used to determine the current x-axis, if we are unable to determine
     # the file's x-axis (wavelength vs wavenumber) and default to simply load into the
     # current coordinate space.
-    def __init__(self, graph):
+    def __init__(self, pathname, graph):
+        self.pathname = pathname
         self.graph = graph
-        pass
 
     ## 
-    # Given a pathname to an SPC file, load it and return a list of Measurement
+    # Given an SPC file, load it and return a list of Measurement
     # objects parsed from that one SPC file.
     # 
     # @todo think about other things we could import from the file
-    def parse(self, pathname):
+    def parse(self):
 
-        basename = os.path.basename(pathname)
+        basename = os.path.basename(self.pathname)
 
         ########################################################################
         # load the SPC file
         ########################################################################
 
-        log.debug("instantiating spc.File from %s", pathname)
-        data = spc.File(pathname)
+        log.debug("instantiating spc.File from %s", self.pathname)
+        data = spc.File(self.pathname)
 
         ########################################################################
         # determine the SPC format

@@ -4,30 +4,30 @@ from .ScrollStealFilter import ScrollStealFilter
 
 log = logging.getLogger(__name__)
 
-##
-# @brief support for the Gen 1.5 Non-Raman and Raman OEM External Accessory Connector
-#
-# @par Nomenclature
-#
-# There are some differences in nomenclature here, and I'm not sure this is the 
-# final or perfect version, but the differences are there for a reason.
-#
-# In ENLIGHTEN's GUI, "continuous strobe" is very different from "laser".  The
-# controls are on different parts of the GUI, they're labeled differently, they
-# are colored differently, and basically exposed as different and unrelated
-# features.
-#
-# That said, inside the electronics and firmware, they're actually the same
-# feature, they're just hooked to different hardware pins.  Both use the 
-# "mod_*_us" attributes, and both are ultimately dis/enabled by the laser_enable
-# USB opcode (there is no such thing as "strobe_enable").  (Not quite true:
-# there is a Wasatch.PY "setting" called "strobe_enable," which MERELY sets
-# the laser_enable opcode without other historical "laser management" behavior.)
-#
-# The bridging between nomenclatures is deliberately encapsulated here, within
-# this Feature class.
 class AccessoryControlFeature(object):
-
+    """
+    Support for the Gen 1.5 OEM External Accessory Connector.
+    
+    @par Nomenclature
+    
+    There are some differences in nomenclature here, and I'm not sure this is the 
+    final or perfect version, but the differences are there for a reason.
+    
+    In ENLIGHTEN's GUI, "continuous strobe" is very different from "laser".  The
+    controls are on different parts of the GUI, they're labeled differently, they
+    are colored differently, and basically exposed as different and unrelated
+    features.
+    
+    That said, inside the electronics and firmware, they're currently the same
+    feature, they're just hooked to different hardware pins.  Both use the 
+    "mod_*_us" attributes, and both are ultimately dis/enabled by the laser_enable
+    USB opcode (there is no such thing as "strobe_enable").  (Not quite true:
+    there is a Wasatch.PY "setting" called "strobe_enable," which MERELY sets
+    the laser_enable opcode without other historical "laser management" behavior.)
+    
+    The bridging between nomenclatures is deliberately encapsulated here, within
+    this Feature class.
+    """
     def __init__(self,
             cb_display,
             cb_enable,
@@ -119,10 +119,10 @@ class AccessoryControlFeature(object):
 
         return self.visible
 
-    def hz_to_us(self, hz):
+    def hz_to_us(self, hz) -> int:
         return int(round(1e6 / hz))
 
-    def us_to_hz(self, us):
+    def us_to_hz(self, us) -> int:
         return int(round(1e6 / us))
 
     def fan_callback(self):
