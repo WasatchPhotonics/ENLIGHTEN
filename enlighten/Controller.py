@@ -1824,6 +1824,9 @@ class Controller:
             if not self.page_nav.using_reference():
                 self.richardson_lucy.process(pr, spec)
 
+        if self.form.ui.checkBox_despike_enable.isChecked():
+            pr = self.despiking_feature.process(pr)
+
         ########################################################################
         # Boxcar Smoothing
         ########################################################################

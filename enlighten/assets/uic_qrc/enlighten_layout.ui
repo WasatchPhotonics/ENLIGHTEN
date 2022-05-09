@@ -2173,7 +2173,7 @@ QComboBox QListView
                        <x>0</x>
                        <y>0</y>
                        <width>688</width>
-                       <height>5766</height>
+                       <height>5900</height>
                       </rect>
                      </property>
                      <property name="minimumSize">
@@ -10521,7 +10521,7 @@ p, li { white-space: pre-wrap; }
                   <x>0</x>
                   <y>0</y>
                   <width>235</width>
-                  <height>771</height>
+                  <height>671</height>
                  </rect>
                 </property>
                 <property name="maximumSize">
@@ -10795,7 +10795,7 @@ p, li { white-space: pre-wrap; }
                                    <x>0</x>
                                    <y>0</y>
                                    <width>199</width>
-                                   <height>326</height>
+                                   <height>226</height>
                                   </rect>
                                  </property>
                                  <layout class="QVBoxLayout" name="verticalLayout_scope_capture_save_design">
@@ -12671,7 +12671,7 @@ p, li { white-space: pre-wrap; }
                                  <rect>
                                   <x>0</x>
                                   <y>0</y>
-                                  <width>824</width>
+                                  <width>360</width>
                                   <height>300</height>
                                  </rect>
                                 </property>
@@ -13452,9 +13452,9 @@ p, li { white-space: pre-wrap; }
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>0</y>
+                <y>-616</y>
                 <width>222</width>
-                <height>2918</height>
+                <height>3084</height>
                </rect>
               </property>
               <property name="styleSheet">
@@ -13657,6 +13657,13 @@ p, li { white-space: pre-wrap; }
                             <widget class="QCheckBox" name="checkBox_AdvancedOptions_Region">
                              <property name="text">
                               <string>Region Control</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QCheckBox" name="checkBox_AdvancedOptions_Despike">
+                             <property name="text">
+                              <string>Despiking</string>
                              </property>
                             </widget>
                            </item>
@@ -14143,6 +14150,182 @@ p, li { white-space: pre-wrap; }
                         </item>
                        </layout>
                       </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QFrame" name="frame_despike_widget">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_85_x_2">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label_despike_widget">
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Despiking</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QFrame" name="frame_despike_widget_black">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="lineWidth">
+                     <number>1</number>
+                    </property>
+                    <property name="wpGrad" stdset="0">
+                     <bool>false</bool>
+                    </property>
+                    <layout class="QVBoxLayout" name="verticalLayout_86x_2">
+                     <property name="spacing">
+                      <number>1</number>
+                     </property>
+                     <property name="leftMargin">
+                      <number>5</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>5</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>5</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>5</number>
+                     </property>
+                     <item>
+                      <layout class="QFormLayout" name="formLayout_28x_2">
+                       <property name="labelAlignment">
+                        <set>Qt::AlignCenter</set>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <item row="0" column="0">
+                        <widget class="QCheckBox" name="checkBox_despike_enable">
+                         <property name="text">
+                          <string />
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="0" column="1">
+                        <widget class="QLabel" name="label_233">
+                         <property name="text">
+                          <string>Enable</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="0">
+                        <widget class="QDoubleSpinBox" name="doubleSpinBox_tau_despike">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>75</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                         <property name="minimum">
+                          <double>1.000000000000000</double>
+                         </property>
+                         <property name="maximum">
+                          <double>100.000000000000000</double>
+                         </property>
+                         <property name="singleStep">
+                          <double>0.100000000000000</double>
+                         </property>
+                         <property name="value">
+                          <double>7.000000000000000</double>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="1">
+                        <widget class="QLabel" name="label_despike_tau">
+                         <property name="toolTip">
+                          <string>Sensitivty to Peaks. Lower values means flagging more pixels as potential spikes.</string>
+                         </property>
+                         <property name="text">
+                          <string>Tau</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="2" column="0">
+                        <widget class="QSpinBox" name="spinBox_window_despike">
+                         <property name="minimumSize">
+                          <size>
+                           <width>75</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                         <property name="alignment">
+                          <set>Qt::AlignCenter</set>
+                         </property>
+                         <property name="minimum">
+                          <number>1</number>
+                         </property>
+                         <property name="maximum">
+                          <number>100</number>
+                         </property>
+                         <property name="value">
+                          <number>3</number>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="2" column="1">
+                        <widget class="QLabel" name="label_despike_window">
+                         <property name="toolTip">
+                          <string>The bounds for the area of pixels averaged in a spike. This is for one side. A value of 3 means a window of 6, 2 would be a window of 4 pixels etc.</string>
+                         </property>
+                         <property name="text">
+                          <string>Window Size</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
                      </item>
                     </layout>
                    </widget>

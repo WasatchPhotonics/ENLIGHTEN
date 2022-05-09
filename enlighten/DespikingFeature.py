@@ -3,61 +3,37 @@ from statistics import median
 
 import numpy as np
 
-from EnlightenPlugin import EnlightenPluginBase,    \
-                            EnlightenPluginResponse, \
-                            EnlightenPluginField,     \
-                            EnlightenPluginConfiguration
+from wasatch.ProcessedReading import ProcessedReading
 
 log = logging.getLogger(__name__)
 
-class Despiking(EnlightenPluginBase):
+class DespikingFeature:
+    """
+    Provides access to the removal of cosmic spikes that could impact
+    analysis. Currently only implements the algorithm in the paper by
+    Whitaker and Hayes. Future improvements will provide different 
+    algorithms to choose from.
+    """
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self,
+                 spin_tau,
+                 spin_window):
+        self.spin_tau = spin_tau
+        self.spin_window = spin_window
 
-    def get_configuration(self):
-        fields = []
+    def process(self, processed_reading: ProcessedReading) -> ProcessedReading:
+        # currently the only algorithm but will likely expand to accommodate more
+        return self.DarrenEtAlAlgo(processed_reading)
 
-        fields.append(EnlightenPluginField(
-            name="window size",
-            datatype="int",
-            initial=7,
-            minimum=2,
-            maximum=30,
-            direction="input",
-            ))
-
-        fields.append(EnlightenPluginField(
-            name="tau",
-            datatype="float",
-            initial=7,
-            minimum=0.1,
-            maximum=300,
-            step=0.1,
-            direction="input",
-            ))
-
-        return EnlightenPluginConfiguration(name            = "Despiking Plugin", 
-                                            has_other_graph = True,
-                                            streaming       = True,
-                                            is_blocking     = False,
-                                            fields          = fields,
-                                            series_names    = ['Despiked',
-                                                               'Detrended Diff',
-                                                               'Mod Z Scores'])
-    def connect(self, enlighten_info):
-        return super().connect(enlighten_info)
-
-    def process_request(self, request):
+    def DarrenEtAlAlgo(self, processed_reading: ProcessedReading) -> ProcessedReading:
         """
         @see Whitaker, Darren, and Kevin Hayes. 
         "A Simple Algorithm for Despiking Raman Spectra." ChemRxiv (2018)
         """
-        spiky_spectra = request.processed_reading.processed
+        spiky_spectra = processed_reading.processed
         log.debug(f"got spiky_spectra {spiky_spectra}")
-        settings = request.settings
-        tau_outlier_criteria = request.fields["tau"]
-        window_size_m = request.fields["window size"]
+        tau_outlier_criteria = self.spin_tau.value()
+        window_size_m = self.spin_window.value()
         nabla_counts = np.asarray([yt - yt_last for yt, yt_last in zip(spiky_spectra[1:],spiky_spectra[:-1])]) # 0 idx vs paper 1 idx
         med = median(nabla_counts)
         mad = median(np.abs(nabla_counts - med))
@@ -70,45 +46,24 @@ class Despiking(EnlightenPluginBase):
         mod_z_scores[-1] = tau_outlier_criteria + 1
         candidate_idxs = [idx[0] for idx, value in np.ndenumerate(mod_z_scores) if abs(value) > tau_outlier_criteria]
         self.interpolate_zs(spiky_spectra, mod_z_scores, candidate_idxs, tau_outlier_criteria, window_size_m)
-        unit = self.enlighten_info.get_x_axis_unit()
-        # set x axis info
-        if unit == "nm":
-            series_x = settings.wavelengths
-        elif unit == "cm":
-            series_x = settings.wavenumbers
-        else:
-            series_x = list(range(len(spiky_spectra)))
-
-        trend_x = list(range(len(mod_z_scores)))
-
 
         log.debug(f"despiked spectra is {spiky_spectra}")
-        series = {
-            "Despiked": {
-                "x": series_x,
-                "y": spiky_spectra,
-                },
-             "Detrended Diff": {
-                 'x': trend_x,
-                 'y': nabla_counts,
-                 },
-              "Mod Z Scores": {
-                 'x': trend_x,
-                 'y': mod_z_scores,
-                  }
-            }
-        return EnlightenPluginResponse(request, series=series)
-
+        processed_reading.processed = spiky_spectra
+        return processed_reading
 
     def interpolate_zs(self, 
                        spectra: np.ndarray, 
                        scores: np.ndarray, 
                        candidate_idxs: list[int], 
                        tau: float,
-                       m: int) -> np.ndarray:
+                       m: int) -> None:
         """
+        @param tau, sensitivity to spikes, lower means more likely to consider 
+            something a spike, Whitaker and Hayes used 6.5 for default
+        @param m window size, larger window means grabs more neighbors for averaging
+            in the moving window
         takes the pre-identified indicies that are believed to be spikes
-        and apply's the algorithm from the paper on them.
+        and applies the algorithm from the paper on them.
         Modification is done in place
         """
         indicator_func = lambda score, tau: 1 if abs(score) < tau else 0
@@ -153,5 +108,3 @@ class Despiking(EnlightenPluginBase):
             log.debug(f"assigning value {averaged_value} to spiky point with original value {spectra[index]}")
             spectra[index] = averaged_value
 
-    def disconnect(self):
-        super().disconnect()
