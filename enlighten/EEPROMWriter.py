@@ -9,6 +9,10 @@ from . import common
 log = logging.getLogger(__name__)
 
 class EEPROMWriter(object):
+    """
+    Encapsulate reflashing the EEPROM to the device.
+    """
+
     def __init__(self,
             authentication,
             button_save,
@@ -113,25 +117,26 @@ class EEPROMWriter(object):
 
         return True
 
-    ##
-    # This will write the current spectrometer's EEPROM's contents in JSON format
-    # to EnlightenSpectra/eeprom_backups/EEPROM-SERIAL-SHA1.json.  Every time a
-    # spectrometer is connected, EEPROM will backup the EEPROM in this manner.  
-    # New writes will simply overwrite the old AS LONG AS the digest is unchanged.
-    # Older versions can be distinguished from inode timestamp.  
-    #
-    # It is recognized that reducing a digest in this way risks collisions, but 
-    # typically the number of EEPROM changes to a given unit are few.
-    #
-    # Note: with FieldWavecalFeature, the number of EEPROM changes is likely to,
-    # increase, and we may want to revisit this behavior.
-    #
-    # If at any point we wanted to provide a "restore EEPROM" feature (whether in 
-    # ENLIGHTEN, a Python script etc), easiest path is just to use the "buffers" 
-    # which are fully preserved.
-    #
-    # @param output_path[in] if provided, should be a scalar string pathname of an existing directory
     def backup(self, output_path=None):
+        """
+        This will write the current spectrometer's EEPROM's contents in JSON format
+        to EnlightenSpectra/eeprom_backups/EEPROM-SERIAL-SHA1.json.  Every time a
+        spectrometer is connected, EEPROM will backup the EEPROM in this manner.  
+        New writes will simply overwrite the old AS LONG AS the digest is unchanged.
+        Older versions can be distinguished from inode timestamp.  
+        
+        It is recognized that reducing a digest in this way risks collisions, but 
+        typically the number of EEPROM changes to a given unit are few.
+        
+        Note: with FieldWavecalFeature, the number of EEPROM changes is likely to,
+        increase, and we may want to revisit this behavior.
+        
+        If at any point we wanted to provide a "restore EEPROM" feature (whether in 
+        ENLIGHTEN, a Python script etc), easiest path is just to use the "buffers" 
+        which are fully preserved.
+        
+        @param output_path[in] if provided, should be a scalar string pathname of an existing directory
+        """
         log.debug("backing up EEPROM")
 
         spec = self.multispec.current_spectrometer()

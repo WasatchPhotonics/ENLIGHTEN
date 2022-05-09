@@ -14,46 +14,33 @@ from wasatch.EEPROM import EEPROM
 
 log = logging.getLogger(__name__)
 
-##
-# Unlike most business objects, just pass in self.form.ui to avoid a REALLY long list of widgets
-#
-# Key assumptions:
-#
-# - only lineEdit and spinBoxes currently support arrays
-#       - I didn't implement doubleSpinBox arrays because all current arrays of 
-#         floats/doubles are coefficients, and coefficients should be displayed 
-#         and editted in scientific notation rather than fixed-decimal spinners; 
-#         hence, lineEdit
-#       - also, we currently have no arrays of radioButtons or checkBoxes
-# - lineEdit arrays are assumed to represent float32 (all EEPROM floats are 
-#   float32, and we currently have no string arrays)
-# - all scalar (non-array) lineEdits are assumed to be strings
-#       - while we have several float scalars in the EEPROM, none are of ranges 
-#         benefitting from scientific notation
-#
-# Note that the order of widgets on the form, and the "EEPROM Pages" in which they
-# appear, is solely defined in the Qt layout and may diverge from the current
-# "physical" EEPROM layout.  A more ACCURATE process would be to actually expose
-# each field's Page and Offset in the wasatch.EEPROM object, so the ENLIGHTEN 
-# form could be dynamically generated to match various EEPROM formats, but I'm
-# not sure that would actually simplify life for most end-users (though 
-# developers would appreciate it).
 class EEPROMEditor(object):
+    """
+    Unlike most business objects, just pass in self.form.ui to avoid a REALLY long list of widgets
     
-    ##
-    # @param authentication     So the EEPROMEditor will know which fields
-    #                           to make editable
-    # @param eeprom_writer      used to save EEPROM changes
-    # @param sfu                self.form.ui (easier than passing in 100-odd widgets)
-    # @param update_wavecal_callback if any EEPROM fields relating to the wavecal
-    #                           are editted, call this to update x-axes
-    # @param update_gain_and_offset_callback if any EEPROM fields relating to gain
-    #                           or offset are editted, call this to update the
-    #                           spectrometer
-    # @param vignette_roi       allows feature updates on value changes
-    #
-    # @todo if we had business objects for DetectorFeature and WavecalFeature, 
-    #       we could structure this better than the Controller callbacks
+    Key assumptions:
+    
+    - only lineEdit and spinBoxes currently support arrays
+          - I didn't implement doubleSpinBox arrays because all current arrays of 
+            floats/doubles are coefficients, and coefficients should be displayed 
+            and editted in scientific notation rather than fixed-decimal spinners; 
+            hence, lineEdit
+          - also, we currently have no arrays of radioButtons or checkBoxes
+    - lineEdit arrays are assumed to represent float32 (all EEPROM floats are 
+      float32, and we currently have no string arrays)
+    - all scalar (non-array) lineEdits are assumed to be strings
+          - while we have several float scalars in the EEPROM, none are of ranges 
+            benefitting from scientific notation
+    
+    Note that the order of widgets on the form, and the "EEPROM Pages" in which they
+    appear, is solely defined in the Qt layout and may diverge from the current
+    "physical" EEPROM layout.  A more ACCURATE process would be to actually expose
+    each field's Page and Offset in the wasatch.EEPROM object, so the ENLIGHTEN 
+    form could be dynamically generated to match various EEPROM formats, but I'm
+    not sure that would actually simplify life for most end-users (though 
+    developers would appreciate it).
+    """
+    
     def __init__(self, 
                 authentication,
                 clipboard,
@@ -69,8 +56,22 @@ class EEPROMEditor(object):
                 update_wavecal_callback, 
                 update_gain_and_offset_callback,
                 vignette_roi,
-                current_spectrometer,
-            ): 
+                current_spectrometer): 
+        """
+        @param authentication     So the EEPROMEditor will know which fields
+                                  to make editable
+        @param eeprom_writer      used to save EEPROM changes
+        @param sfu                self.form.ui (easier than passing in 100-odd widgets)
+        @param update_wavecal_callback if any EEPROM fields relating to the wavecal
+                                  are editted, call this to update x-axes
+        @param update_gain_and_offset_callback if any EEPROM fields relating to gain
+                                  or offset are editted, call this to update the
+                                  spectrometer
+        @param vignette_roi       allows feature updates on value changes
+        
+        @todo if we had business objects for DetectorFeature and WavecalFeature, 
+              we could structure this better than the Controller callbacks
+        """
 
         self.authentication                  = authentication
         self.bt_copy                         = bt_copy
@@ -148,13 +149,14 @@ class EEPROMEditor(object):
             "flip_x_axis": "invert_x_axis",
             }
 
-    ##
-    # Note that self.eeprom is used in the binding process, but just to confirm 
-    # whether the field exists as an attribute in the current version of 
-    # wasatch.EEPROM, and if so whether it's editable -- the field's VALUE is not
-    # (at this point in program flow) read from the EEPROM object or updated to 
-    # the widgets, until update_from_spec is called.
     def bind(self):
+        """
+        Note that self.eeprom is used in the binding process, but just to confirm 
+        whether the field exists as an attribute in the current version of 
+        wasatch.EEPROM, and if so whether it's editable -- the field's VALUE is not
+        (at this point in program flow) read from the EEPROM object or updated to 
+        the widgets, until update_from_spec is called.
+        """
         sfu = self.sfu
 
         # Type                    Widget                                      EEPROM field                     
@@ -343,25 +345,26 @@ class EEPROMEditor(object):
             
         self.clipboard.copy_dict(table)
 
-    ##
-    # Dynamically create a new EEPROMEditor class method named for a given
-    # EEPROM field (with optional index).
-    #
-    # Method names will look like this:
-    #
-    # - baud_rate_callback 
-    # - raman_intensity_coeffs_5_callback
-    #
-    # The body of the callback function is a unique instance of the function
-    # f() below, which is simply a pass-through to call widget_callback() with
-    # the appropriate name and index.
-    #
-    # This is done so that each EEPROMEditor widget can be bound to a unique
-    # callback method, allowing a change in any on-screen field to correctly
-    # call widget_callback() with the name and index of the EEPROM attribute
-    # to update.  There are probably other ways to do this, but this worked 
-    # and was fun.
     def create_callback(self, name, index=None):
+        """
+        Dynamically create a new EEPROMEditor class method named for a given
+        EEPROM field (with optional index).
+        
+        Method names will look like this:
+        
+        - baud_rate_callback 
+        - raman_intensity_coeffs_5_callback
+        
+        The body of the callback function is a unique instance of the function
+        f() below, which is simply a pass-through to call widget_callback() with
+        the appropriate name and index.
+        
+        This is done so that each EEPROMEditor widget can be bound to a unique
+        callback method, allowing a change in any on-screen field to correctly
+        call widget_callback() with the name and index of the EEPROM attribute
+        to update.  There are probably other ways to do this, but this worked 
+        and was fun.
+        """
         def f(*args):
             log.debug("f: relaying callback to widget_callback(%s)" % name)
             self.widget_callback(name, index)
@@ -376,27 +379,28 @@ class EEPROMEditor(object):
 
         return f
 
-    ##
-    # The user has changed a value in the EEPROM editor, which we need to save 
-    # back to the EEPROM object.
-    #
-    # I really want to use a single callback method for all the EEPROMEditor
-    # widgets.  I'm currently doing this by dynamically creating unique callback 
-    # methods for each widget, where each identifies itself via a 'name' 
-    # parameter (see create_callback).
-    #
-    # Another option would be to have EEPROMEditor extend QObject and then use
-    # QObject.sender():
-    # https://www.blog.pythonlibrary.org/2013/04/10/pyside-connecting-multiple-widgets-to-the-same-slot/
-    #
-    # Note that because we're using getattr and setattr against the EEPROM 
-    # instance, it doesn't matter if someone has reassigned eeprom.wavelength_coeffs
-    # to a new []...the widgets are bound to the NAME of the attribute, and can't
-    # be left hanging with a reference to an old referent.
-    #
-    # @param reset_from_eeprom[in] If True, copy EEPROM field -> widget; if False, copy widget -> EEPROM field.
-    #        To my knowledge, this field is ONLY added when called from LaserControlFeature.
     def widget_callback(self, name, index=None, reset_from_eeprom=False):
+        """
+        The user has changed a value in the EEPROM editor, which we need to save 
+        back to the EEPROM object.
+        
+        I really want to use a single callback method for all the EEPROMEditor
+        widgets.  I'm currently doing this by dynamically creating unique callback 
+        methods for each widget, where each identifies itself via a 'name' 
+        parameter (see create_callback).
+        
+        Another option would be to have EEPROMEditor extend QObject and then use
+        QObject.sender():
+        https://www.blog.pythonlibrary.org/2013/04/10/pyside-connecting-multiple-widgets-to-the-same-slot/
+        
+        Note that because we're using getattr and setattr against the EEPROM 
+        instance, it doesn't matter if someone has reassigned eeprom.wavelength_coeffs
+        to a new []...the widgets are bound to the NAME of the attribute, and can't
+        be left hanging with a reference to an old referent.
+        
+        @param reset_from_eeprom[in] If True, copy EEPROM field -> widget; if False, copy widget -> EEPROM field.
+               To my knowledge, this field is ONLY added when called from LaserControlFeature.
+        """
         log.debug("callback triggered for widget %s (index %s, reset %s)", name, index, reset_from_eeprom)
 
         value = None
@@ -541,22 +545,23 @@ class EEPROMEditor(object):
     # methods
     # ##########################################################################
 
-    ## production request: display detector_gain in hex
     def update_gain_in_hex(self):
+        """ production request: display detector_gain in hex """
         spec = self.multispec.current_spectrometer()
         if spec is not None:
             gain_uint16 = spec.settings.eeprom.float_to_uint16(spec.settings.eeprom.detector_gain)
             self.lb_gain_hex.setText("0x%04x" % gain_uint16)
 
-    ##
-    # There is a potential issue here.  We are really colorizing the 
-    # digest not only if fields have been actively changed on the GUI,
-    # but if THE CURRENT VERSION OF ENLIGHTEN would save the EEPROM with
-    # different buffer contents.  Therefore, if a spectrometer's EEPROM
-    # has format 9, and the curent version of ENLIGHTEN would save it 
-    # with format 11, then the digest will show a difference (red) even
-    # though nothing has been changed by the user.
     def update_digest(self):
+        """
+        There is a potential issue here.  We are really colorizing the 
+        digest not only if fields have been actively changed on the GUI,
+        but if THE CURRENT VERSION OF ENLIGHTEN would save the EEPROM with
+        different buffer contents.  Therefore, if a spectrometer's EEPROM
+        has format 9, and the curent version of ENLIGHTEN would save it 
+        with format 11, then the digest will show a difference (red) even
+        though nothing has been changed by the user.
+        """
         new_digest = self.eeprom.generate_digest(regenerate=True)
         if self.eeprom.digest == new_digest:
             css = "white_text"
@@ -571,16 +576,17 @@ class EEPROMEditor(object):
         self.lb_digest.setText(new_digest)
         self.lb_digest.setToolTip(tt)
 
-    ##
-    # Render a floating-point value as a float32 in scientific notation, with no
-    # more digits of precision than Python2.7 (would have to make fields much
-    # wider to support Python3's apparent float64 internal precision).
     def sci_str(self, n):
+        """
+        Render a floating-point value as a float32 in scientific notation, with no
+        more digits of precision than Python2.7 (would have to make fields much
+        wider to support Python3's apparent float64 internal precision).
+        """
         getcontext().prec = 8
         return '%e' % getcontext().create_decimal_from_float(float(n))
 
-    ## The user logged-in (or -out), update what should be updated
     def update_authentication(self):
+        """ The user logged-in (or -out), so update what should be updated. """
         for widget in self.widgets:
             editable = False 
 
@@ -611,17 +617,18 @@ class EEPROMEditor(object):
         self.sfu.label_has_actual_integration_time       .setText(str(fpga.has_actual_integ_time))
         self.sfu.label_has_horizontal_binning            .setText(str(fpga.has_horiz_binning))
 
-    ##
-    # A new spectrometer has connected, or been selected in Multispec, and
-    # the EEPROM Editor should update its widgets to display the current
-    # spectrometer's settings.
-    # 
-    # We don't call blockSignals(), so each call to setValue() should trigger
-    # the appropriate bound callback (passed-through to widget_callback()).
-    #
-    # However, we don't want to send a long stream of "send_to_subprocess"
-    # events, so only send one at the end of this update if needed.
     def update_from_spec(self):
+        """
+        A new spectrometer has connected, or been selected in Multispec, and
+        the EEPROM Editor should update its widgets to display the current
+        spectrometer's settings.
+        
+        We don't call blockSignals(), so each call to setValue() should trigger
+        the appropriate bound callback (passed-through to widget_callback()).
+        
+        However, we don't want to send a long stream of "send_to_subprocess"
+        events, so only send one at the end of this update if needed.
+        """
         spec = self.multispec.current_spectrometer()
         if spec is None:
             return
@@ -707,10 +714,9 @@ class EEPROMEditor(object):
 
         self.updated_from_eeprom = True
 
-    ##
-    # Update our display of which (if any) frame representing page 6-7 fields
-    # is visible.
     def update_subformat(self):
+        """ Update our display of which (if any) frame representing page 6-7 fields is visible. """
+
         # hide them all
         log.debug("updating subformat")
         for frame in self.subformat_frames:
