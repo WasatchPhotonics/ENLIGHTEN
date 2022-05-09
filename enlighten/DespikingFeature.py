@@ -8,6 +8,12 @@ from wasatch.ProcessedReading import ProcessedReading
 log = logging.getLogger(__name__)
 
 class DespikingFeature:
+    """
+    Provides access to the removal of cosmic spikes that could impact
+    analysis. Currently only implements the algorithm in the paper by
+    Whitaker and Hayes. Future improvements will provide different 
+    algorithms to choose from.
+    """
 
     def __init__(self,
                  spin_tau,
@@ -52,8 +58,12 @@ class DespikingFeature:
                        tau: float,
                        m: int) -> None:
         """
+        @param tau, sensitivity to spikes, lower means more likely to consider 
+            something a spike, Whitaker and Hayes used 6.5 for default
+        @param m window size, larger window means grabs more neighbors for averaging
+            in the moving window
         takes the pre-identified indicies that are believed to be spikes
-        and apply's the algorithm from the paper on them.
+        and applies the algorithm from the paper on them.
         Modification is done in place
         """
         indicator_func = lambda score, tau: 1 if abs(score) < tau else 0
