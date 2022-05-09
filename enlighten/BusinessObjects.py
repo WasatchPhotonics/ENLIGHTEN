@@ -27,6 +27,7 @@ from .AbsorbanceFeature               import AbsorbanceFeature
 from .StatusBarFeature                import StatusBarFeature
 from .RamanModeFeature                import RamanModeFeature
 from .StatusIndicators                import StatusIndicators
+from .DespikingFeature                import DespikingFeature
 from .ReferenceFeature                import ReferenceFeature
 from .AreaScanFeature                 import AreaScanFeature
 from .BatchCollection                 import BatchCollection
@@ -647,6 +648,10 @@ class BusinessObjects:
             page_nav                    = ctl.page_nav,
             vcr_controls                = ctl.vcr_controls)
 
+        ctl.despiking_feature = DespikingFeature(
+            spin_tau                    = sfu.doubleSpinBox_tau_despike,
+            spin_window                 = sfu.spinBox_window_despike)
+
         # TODO: refactor like PluginController
         self.header("instantiating KIAFeature")
         ctl.kia_feature = KIAFeature(
@@ -794,6 +799,7 @@ class BusinessObjects:
             cb_post                     = sfu.checkBox_AdvancedOptions_PostProcessing,
             cb_region                   = sfu.checkBox_AdvancedOptions_Region,
             cb_tec                      = sfu.checkBox_AdvancedOptions_TECControl,
+            cb_despike                  = sfu.checkBox_AdvancedOptions_Despike,
             config                      = ctl.config,
             fr_subopt                   = sfu.frame_AdvancedOptions_SubOptions,
             fr_area_scan                = sfu.frame_area_scan_widget,
@@ -801,6 +807,7 @@ class BusinessObjects:
             fr_post                     = sfu.frame_post_processing,
             fr_tec                      = sfu.frame_tec_control,
             fr_region                   = sfu.frame_region_control,
+            fr_despike                  = sfu.frame_despike_widget,
             multispec                   = ctl.multispec,
             stylesheets                 = ctl.stylesheets)
         ctl.baseline_correction.advanced_options = ctl.advanced_options

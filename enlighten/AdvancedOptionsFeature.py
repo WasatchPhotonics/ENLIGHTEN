@@ -38,6 +38,7 @@ class AdvancedOptionsFeature:
             cb_post,            # whether to show PostProcessingOptions widget
             cb_region,          
             cb_tec,             # whether to show TECControl widget
+            cb_despike,
             config,             # Configuration (enlighten.ini)
             fr_subopt,          # sub-frame wrapping all CheckBoxes other than Enable
             fr_area_scan,       # frame containing AreaScan widget
@@ -45,8 +46,9 @@ class AdvancedOptionsFeature:
             fr_post,            # frame containing PostProcessingOptions widget
             fr_region,
             fr_tec,             # frame containing TECControl widget
+            fr_despike,
             multispec,          # used to selectively "allow" use of model-specific features on hotplug / selection
-            stylesheets):       # used to format dialog
+            stylesheets) -> None:       # used to format dialog
 
         self.cb_enable      = cb_enable
         self.cb_area_scan   = cb_area_scan
@@ -54,6 +56,7 @@ class AdvancedOptionsFeature:
         self.cb_post        = cb_post
         self.cb_region      = cb_region
         self.cb_tec         = cb_tec
+        self.cb_despike     = cb_despike
         self.config         = config
         self.fr_subopt      = fr_subopt
         self.fr_area_scan   = fr_area_scan
@@ -61,6 +64,7 @@ class AdvancedOptionsFeature:
         self.fr_post        = fr_post
         self.fr_region      = fr_region
         self.fr_tec         = fr_tec
+        self.fr_despike     = fr_despike
         self.multispec      = multispec
 
         self.enabled            = False
@@ -82,6 +86,7 @@ class AdvancedOptionsFeature:
         self.cb_post                        .stateChanged   .connect(self.post_callback)
         self.cb_region                      .stateChanged   .connect(self.region_callback)
         self.cb_tec                         .stateChanged   .connect(self.tec_callback)
+        self.cb_despike                     .stateChanged   .connect(self.despike_callback)
         self.dialog_warning.ui.buttonBox    .accepted       .connect(self.dialog_accepted_callback)
         self.dialog_warning.ui.buttonBox    .rejected       .connect(self.dialog_rejected_callback)
 
@@ -93,23 +98,16 @@ class AdvancedOptionsFeature:
     #                                                                          #
     # ##########################################################################
 
-    def update_visibility(self):
+    def update_visibility(self) -> None:
         spec = self.multispec.current_spectrometer()
         if spec is None:
             self.enabled = False
 
-            self.fr_subopt      .setVisible(False)
-            self.fr_area_scan   .setVisible(False)
-            self.fr_baseline    .setVisible(False)
-            self.fr_post        .setVisible(False)
-            self.fr_region      .setVisible(False)
-            self.fr_tec         .setVisible(False)
-            self.cb_enable      .setChecked(False)
-            self.cb_area_scan   .setChecked(False)
-            self.cb_baseline    .setChecked(False)
-            self.cb_post        .setChecked(False)
-            self.cb_region      .setChecked(False)
-            self.cb_tec         .setChecked(False)
+            for attr_name, attr in self.__dict__.items():
+                if attr_name.startswith('fr_'):
+                    attr.setVisible(False)
+                elif attr_name.startswith('cb_'):
+                    attr.setChecked(False)
 
             self.set_area_scan_available(False)
             self.set_tec_available(False)
@@ -136,12 +134,12 @@ class AdvancedOptionsFeature:
     #                                                                          #
     # ##########################################################################
 
-    def dialog_rejected_callback(self):
+    def dialog_rejected_callback(self) -> None:
         """ The user clicked "Cancel" on the warning dialog """
         self.cb_enable.setChecked(False)
         self.update_gui()
 
-    def dialog_accepted_callback(self):
+    def dialog_accepted_callback(self) -> None:
         """ The user clicked "Ok" on the warning dialog (and maybe the checkbox). """
         self.dialog_shown = True
         self.never_show = self.dialog_warning.ui.checkBox.isChecked()
@@ -154,7 +152,7 @@ class AdvancedOptionsFeature:
             return self.dialog_warning.display()
         self.update_gui()
     
-    def update_gui(self):
+    def update_gui(self) -> None:
         self.enabled = self.cb_enable.isChecked()
         self.fr_subopt.setVisible(self.enabled)
         if not self.enabled:
@@ -173,21 +171,21 @@ class AdvancedOptionsFeature:
     # These methods are used to optionally hide or make available options which
     # only apply to certain types of spectrometer (TEC, area scan etc)
 
-    def set_tec_available(self, flag):
+    def set_tec_available(self, flag: bool) -> None:
         """ It has been decided that TEC Control is (or is not) a reasonable option for the current spectrometer """
         self.cb_tec.setVisible(flag)
         if not flag:
             self.tec_visible = False
             self.fr_tec.setVisible(False)
 
-    def set_area_scan_available(self, flag):
+    def set_area_scan_available(self, flag: bool) -> None:
         """ It has been decided that Area Scan is (or is not) a reasonable option for the current spectrometer """
         self.cb_area_scan.setVisible(flag)
         if not flag:
             self.area_scan_visible = False
             self.fr_area_scan.setVisible(False)
 
-    def set_region_available(self, flag):
+    def set_region_available(self, flag: bool) -> None:
         self.cb_region.setVisible(flag)
         if not flag:
             self.region_visible = False
@@ -201,22 +199,26 @@ class AdvancedOptionsFeature:
 
     # the per-feature checkbox callbacks
 
-    def area_scan_callback(self):
+    def area_scan_callback(self) -> None:
         self.area_scan_visible = self.cb_area_scan.isChecked()
         self.fr_area_scan.setVisible(self.area_scan_visible)
 
-    def baseline_callback(self):
+    def despike_callback(self) -> None:
+        self.despike_visible = self.cb_despike.isChecked()
+        self.fr_despike.setVisible(self.despike_visible)
+
+    def baseline_callback(self) -> None:
         self.baseline_visible = self.cb_baseline.isChecked()
         self.fr_baseline.setVisible(self.baseline_visible)
 
-    def post_callback(self):
+    def post_callback(self) -> None:
         self.post_visible = self.cb_post.isChecked()
         self.fr_post.setVisible(self.post_visible)
 
-    def region_callback(self):
+    def region_callback(self) -> None:
         self.region_visible = self.cb_region.isChecked()
         self.fr_region.setVisible(self.region_visible)
 
-    def tec_callback(self):
+    def tec_callback(self) -> None:
         self.tec_visible = self.cb_tec.isChecked()
         self.fr_tec.setVisible(self.tec_visible)
