@@ -38,13 +38,18 @@ class DespikingFeature:
         med = median(nabla_counts)
         mad = median(np.abs(nabla_counts - med))
         mod_z_scores = (0.6745*(nabla_counts-med))/mad
-        # nabla_counts is 1 spectra length short since its a diffing
-        # paper says ends are auto set to spiky 
-        # so just insert a 0 at the beginning that will be overwritten anyway
-        np.insert(mod_z_scores, 0, 0) 
         mod_z_scores[0] = tau_outlier_criteria + 1
         mod_z_scores[-1] = tau_outlier_criteria + 1
-        candidate_idxs = [idx[0] for idx, value in np.ndenumerate(mod_z_scores) if abs(value) > tau_outlier_criteria]
+        outlier_id = np.vectorize(lambda x: abs(x) > tau_outlier_criteria)
+        above_threshold = outlier_id(mod_z_scores)
+        sign_diff_outliers = np.abs(np.diff(np.sign(np.multiply(above_threshold,mod_z_scores))))
+        # there should be a +1 because a diff always results in an array of length n-1 of original
+        candidate_idxs = [idx[0]+1 for idx, value in np.ndenumerate(sign_diff_outliers) if value == 2]
+        log.debug(f"candidate idxs are {candidate_idxs}")
+        # paper says ends are auto set to spiky 
+        # so just insert a 0 and len spectra
+        candidate_idxs.insert(0, 0)
+        candidate_idxs.append(len(mod_z_scores) - 1)
         self.interpolate_zs(spiky_spectra, mod_z_scores, candidate_idxs, tau_outlier_criteria, window_size_m)
 
         log.debug(f"despiked spectra is {spiky_spectra}")
