@@ -557,7 +557,6 @@ class Multispec(object):
             color = self.choose_color(spec)
         else:
             color = spec.assigned_color
-        log.debug(f"make pen called for spec {spec} with is auto of {self.is_autocolor()} color is {color}")
 
         try:
             pen = self.gui.make_pen(
