@@ -50,8 +50,9 @@ class Despiking(EnlightenPluginBase):
 
     def process_request(self, request):
         """
-        @see Whitaker, Darren, and Kevin Hayes. 
-        "A Simple Algorithm for Despiking Raman Spectra." ChemRxiv (2018)
+        Implements an averaging window for pixels determined to be a spike.
+        Spike determination is made by determining a positive outlier z score 
+        followed by a negative outlier z score.
         """
         spiky_spectra = request.processed_reading.processed
         log.debug(f"got spiky_spectra {spiky_spectra}")

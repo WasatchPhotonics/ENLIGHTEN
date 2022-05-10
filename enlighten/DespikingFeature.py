@@ -23,12 +23,13 @@ class DespikingFeature:
 
     def process(self, processed_reading: ProcessedReading) -> ProcessedReading:
         # currently the only algorithm but will likely expand to accommodate more
-        return self.DarrenEtAlAlgo(processed_reading)
+        return self.moving_avg_window_algo(processed_reading)
 
-    def DarrenEtAlAlgo(self, processed_reading: ProcessedReading) -> ProcessedReading:
+    def moving_avg_window_algo(self, processed_reading: ProcessedReading) -> ProcessedReading:
         """
-        @see Whitaker, Darren, and Kevin Hayes. 
-        "A Simple Algorithm for Despiking Raman Spectra." ChemRxiv (2018)
+        Implements an averaging window for pixels determined to be a spike.
+        Spike determination is made by determining a positive outlier z score 
+        followed by a negative outlier z score.
         """
         spiky_spectra = processed_reading.processed
         log.debug(f"got spiky_spectra {spiky_spectra}")
