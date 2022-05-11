@@ -64,7 +64,7 @@ class CloudManager:
                     self.result_message.setText("EEPROM Writing Error.")
                     self.result_message.setIcon(QMessageBox.Critical)
                     self.result_message.exec_()
-                self.result_message.setText("EEPROM Restore successful.")
+                self.result_message.setText("EEPROM Restore successful. Write EEPROM to complete.")
                 self.result_message.setIcon(QMessageBox.NoIcon)
                 self.result_message.exec_()
 
