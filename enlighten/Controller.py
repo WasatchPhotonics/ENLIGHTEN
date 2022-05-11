@@ -829,8 +829,6 @@ class Controller:
         for feature in [ self.dark_feature, self.reference_feature ]:
             feature.clear(quiet=True) if hotplug else feature.display()
 
-        # cursor
-        self.cursor.center()
 
         ########################################################################
         # Business Objects
@@ -839,6 +837,8 @@ class Controller:
         # Activate business objects which have connection / selection events
 
         if hotplug:
+            # cursor
+            self.cursor.center()
             for feature in [ self.accessory_control,
                              self.laser_control ]:
                 feature.init_hotplug()
