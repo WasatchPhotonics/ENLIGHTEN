@@ -1,8 +1,10 @@
 import os
-import boto3
+import json
 import logging
 from typing import Optional
+from decimal import Decimal
 
+import boto3
 from PySide2 import QtCore, QtWidgets, QtGui
 from PySide2.QtWidgets import QInputDialog, QLineEdit, QMessageBox, QPushButton
 
@@ -17,6 +19,16 @@ try:
 except Exception as e:
     DISABLED = True
     log.error("No AWS keys found. Cloud eeprom restore disabled")
+# response contains decimals that cannot be converted to JSON
+# need to handle those cases
+# see https://stackoverflow.com/questions/51614177/requesting-help-triggering-a-lambda-function-from-dynamodb
+def handle_decimal_type(obj):
+  if isinstance(obj, Decimal):
+      if float(obj).is_integer():
+         return int(obj)
+      else:
+         return float(obj)
+  raise TypeError
 
 class CloudManager:
     """
@@ -42,7 +54,7 @@ class CloudManager:
     def perform_restore(self) -> None:
         serial_number = self.prompt_for_serial()
         self.setup_connection()
-        if serial_number != None:
+        if serial_number is not None and self.session is not None:
             local_file, download_result = self.attempt_download(serial_number)
             if download_result:
                 log.debug(f"succeeded in downloading cloud file {serial_number}")
@@ -57,16 +69,28 @@ class CloudManager:
                 self.result_message.exec_()
 
     def setup_connection(self) -> None:
-        self.session = self.create_session()
-        self.s3_resource = self.session.resource("s3")
-        self.eeprom_bucket = self.s3_resource.Bucket("eeprom-factory-files")
-        log.debug("Finished setting up connection to cloud provider")
+        try:
+            self.session = self.create_session()
+            self.dynamo_resource = self.session.resource("dynamodb")
+            self.eeprom_table = self.dynamo_resource.Table("WPSCReports")
+            log.debug("Finished setting up connection to cloud provider")
+        except:
+            self.session = None
+            self.result_message.setText("Error connecting to cloud. Please try again.")
+            self.result_message.setIcon(QMessageBox.Critical)
+            self.result_message.exec_()
 
     def attempt_download(self, serial_number: str) -> tuple[str, bool]:
         local_file = ''
         try:
             local_file = os.path.join(get_default_data_dir(), "eeprom_backups", f"{serial_number}.json")
-            self.eeprom_bucket.download_file(f"{serial_number}.json", local_file)
+            response = self.eeprom_table.get_item(Key={"serialNumber": serial_number})
+            eeprom_response = response["Item"]
+            # default is required, see function definition
+            eeprom = self.eeprom_editor.parse_wpsc_report(dict(eeprom_response))
+            json_response = json.dumps(eeprom, default=handle_decimal_type)
+            with open(local_file, 'w') as f:
+                f.write(str(json_response))
         except Exception as e:
             log.error(f"Ran into error trying to download cloud eeprom file of {e}")
             self.result_message.setText("Error retrieving EEPROM file from server.")
@@ -105,6 +129,7 @@ class CloudManager:
             aws_access_key_id=access_id,
             aws_secret_access_key=access_secret,
             aws_session_token=access_session,
+            region_name=DYNAMO_REGION,
             )
         log.debug("Created client session")
         return s3_session
