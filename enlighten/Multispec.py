@@ -362,6 +362,7 @@ class Multispec(object):
             return len(self.spectrometers)
         except:
             log.error("error returning spec length")
+            return 0
 
     def is_current_spectrometer(self, spec):
         return self.device_id is not None and self.device_id == spec.device_id

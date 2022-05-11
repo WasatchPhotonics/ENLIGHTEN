@@ -198,10 +198,14 @@ class Graph(object):
     ## when the Technique changes, update axis as appropriate 
     def set_x_axis(self, enum):
         log.debug("set_x_axis: %s", enum)
+        old_axis = self.current_x_axis
         self.current_x_axis = enum
         self.set_x_axis_label(common.AxesHelper.get_pretty_name(enum))
 
         try:
+            # re-initialize cursor position (BUG: re-centers, doesn't stay on previous peak)
+            if self.cursor is not None:
+                self.cursor.convert_location(old_axis, enum)
             # Controller.generate_x_axis() actually uses Graph.current_x_axis to 
             # determine the current axis enum, so we can be confident this will 
             # return the appropriate array...IF a spectrometer is connected
@@ -221,10 +225,6 @@ class Graph(object):
 
             # if we were zoomed into a portion of the graph, changing x-axis will "display all"
             self.reset_axes()
-
-            # re-initialize cursor position (BUG: re-centers, doesn't stay on previous peak)
-            if self.cursor is not None:
-                self.cursor.recenter()
 
             # update any spectra currently displayed on the graph (Measurement
             # traces or paused acquisition)
