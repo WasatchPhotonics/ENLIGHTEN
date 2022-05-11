@@ -207,7 +207,6 @@ class Cursor(object):
         self.ds_value.setEnabled(True)
 
         x = self.cursor.getXPos()
-        log.debug(f"ds value being set to {x}")
         self.current_percent = float(x - x_axis[0]) / float(x_axis[-1] - x_axis[0])
         log.debug("moved_callback: x = %.2f (%.2f%%)", x, 100.0 * self.current_percent)
 
