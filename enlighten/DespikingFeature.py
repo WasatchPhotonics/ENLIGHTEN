@@ -51,11 +51,35 @@ class DespikingFeature:
         # so just insert a 0 and len spectra
         candidate_idxs.insert(0, 0)
         candidate_idxs.append(len(mod_z_scores) - 1)
-        self.interpolate_zs(spiky_spectra, mod_z_scores, candidate_idxs, tau_outlier_criteria, window_size_m)
+        self.simple_interpolate_zs(spiky_spectra, mod_z_scores, candidate_idxs, tau_outlier_criteria, window_size_m)
 
         log.debug(f"despiked spectra is {spiky_spectra}")
         processed_reading.processed = spiky_spectra
         return processed_reading
+
+    def simple_interpolate_zs(self,
+                              spectra: np.ndarray,
+                              scores: np.ndarray,
+                              candidate_idx: list[int],
+                              tau: float,
+                              m:int):
+        if len(candidate_idx) > 0:
+            for candidate in candidate_idx:
+                left_pixel = candidate-1
+                while left_pixel in candidate_idx:
+                    left_pixel -= 1
+                right_pixel = candidate+1
+                while right_pixel in candidate_idx:
+                    right_pixel += 1
+                if left_pixel > 0:
+                    left_value = spectra[left_pixel]
+                else:
+                    left_value = spectra[right_pixel]
+                if right_pixel >= len(spectra):
+                    right_value = spectra[left_pixel]
+                else:
+                    right_value = spectra[right_pixel]
+                spectra[candidate] = 0.5*(left_value+right_value)
 
     def interpolate_zs(self, 
                        spectra: np.ndarray, 
