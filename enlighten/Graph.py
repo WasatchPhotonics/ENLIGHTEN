@@ -57,6 +57,7 @@ class Graph(object):
             combo_axis                  = None,
             layout_scope_capture        = None, # passed by Controller/BusinessObjects
             stacked_widget_scope_setup  = None, # by Controller/BusinessObjects
+            init_graph_axis             = True,   
             ):               
 
         self.plot                       = plot
@@ -83,7 +84,10 @@ class Graph(object):
         self.vignette_roi   = None 
         self.measurements   = None
 
-        self.current_x_axis = common.Axes.WAVELENGTHS
+        if init_graph_axis:
+            self.current_x_axis = common.Axes.WAVELENGTHS
+        else:
+            self.current_x_axis = self.combo_axis.currentIndex()
         self.current_y_axis = common.Axes.COUNTS
         self.intended_y_axis= common.Axes.COUNTS
 
