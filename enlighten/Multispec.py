@@ -401,7 +401,7 @@ class Multispec(object):
         # another call to initialize_new_device (which is presumably what trigger-
         # ed this call to add() in the first place).
         self.combo_spectrometer.blockSignals(True)
-        self.combo_spectrometer.addItem(spec.label)
+        self.combo_spectrometer.addItem(spec.label.replace(" ", "\n"))
         index = self.combo_spectrometer.count() - 1
         self.combo_spectrometer.setCurrentIndex(index)
         self.combo_spectrometer.blockSignals(False)
