@@ -2,6 +2,11 @@
 
 # 3.2 Open-Source
 
+- 2022-05-13 3.2.4
+    - editing Thumbnail label now updates "Label" metadata in saved CSV
+    - RamanID plugin
+        - removed SimpleRamanID 
+        - quoted pathnames
 - 2022-05-11 3.2.3
     - fixed interlock monitoring (driver-only change)
 - 2022-05-06 3.2.2
