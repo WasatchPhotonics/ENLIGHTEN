@@ -7,6 +7,10 @@
     - RamanID plugin
         - removed SimpleRamanID 
         - quoted pathnames
+    - cursor fixes when changing x-axis / switching spectrometer
+    - improve readability of connected spectrometer names 
+    - fix "auto-color" retention
+    - added redistributables to source distribution
 - 2022-05-11 3.2.3
     - fixed interlock monitoring (driver-only change)
 - 2022-05-06 3.2.2
