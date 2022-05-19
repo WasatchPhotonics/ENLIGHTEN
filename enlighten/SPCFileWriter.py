@@ -383,7 +383,12 @@ class SPCFileWriter:
 
         if len(self.log_data) > 0 or len(self.log_text) > 0:
             log = self.generate_log_header(self.log_data, self.log_text)
-            file_output = b"".join(file_output, log, log_data, log_text.encode())
+            file_output = b"".join(file_output, log, self.log_data, self.log_text.encode())
+
+        with open(file_name, 'wb') as f:
+            f.write(file_output)
+            return True
+        return False
 
 
     def generate_dir_pointer(self, offset: int, sub_size: int, z_val: float) -> bytes:
