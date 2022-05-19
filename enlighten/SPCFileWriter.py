@@ -370,20 +370,20 @@ class SPCFileWriter:
                                    num_points = points_count,
                                    w_axis_value = w_val)
             if self.file_type & SPCFileType.TXYXYS:
-                subfile = b"".join(sub_head, x_values[i], y_values[i])
+                subfile = b"".join([sub_head, x_values[i], y_values[i]])
             else:
-                subfile = b"".join(sub_head, y_values[i])
+                subfile = b"".join([sub_head, y_values[i]])
 
             pointer = self.generate_dir_pointer(len(file_output), len(subfile), z_val)
             dir_pointers.append(pointer)
-            file_output = b"".join(file_output, subfile)
+            file_output = b"".join([file_output, subfile])
 
         if self.file_type & SPCFileType.TXVALS and self.file_type & SPCFileType.TXYXYS:
-            file_output = b"".join(file_output, b"".join(dir_pointers))
+            file_output = b"".join([file_output, b"".join(dir_pointers)])
 
         if len(self.log_data) > 0 or len(self.log_text) > 0:
             log = self.generate_log_header(self.log_data, self.log_text)
-            file_output = b"".join(file_output, log, self.log_data, self.log_text.encode())
+            file_output = b"".join([file_output, log, self.log_data, self.log_text.encode()])
 
         with open(file_name, 'wb') as f:
             f.write(file_output)
@@ -392,8 +392,8 @@ class SPCFileWriter:
 
 
     def generate_dir_pointer(self, offset: int, sub_size: int, z_val: float) -> bytes:
-        Boffset = offset.to_bytes(4, offset)
-        Bsub_size = sub_size.to_bytes(4, offset)
+        Boffset = offset.to_bytes(4, byteorder="big")
+        Bsub_size = sub_size.to_bytes(4, byteorder="big")
         Bz_value = pack("f", z_val)
         return b"".join([Boffset, Bsub_size, Bz_value])
 
@@ -476,7 +476,7 @@ class SPCFileWriter:
         if num_coadded is None:
             Bnum_coadded = b"\x00\x00\x00\x00"
         else:
-            Bnum_coaded = pack("l", num_coadded)
+            Bnum_coadded = pack("l", num_coadded)
         Bw_axis_value = pack("f", w_axis_value)
         extra = b"\x00\x00\x00\x00" # 4 null bytes for the reserved portion
         subheader = b''.join([Bsubfile_flags, 
@@ -485,7 +485,7 @@ class SPCFileWriter:
                               Bstart_z, Bend_z, 
                               Bnoise_value, 
                               Bnum_points,
-                              Bnum_coaded,
+                              Bnum_coadded,
                               Bw_axis_value,
                               extra])
         if len(subheader) < 32:
