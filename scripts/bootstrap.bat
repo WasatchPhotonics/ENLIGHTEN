@@ -218,7 +218,7 @@ echo %date% %time% ======================================================
 echo %date% %time% Regenerating Qt views
 echo %date% %time% ======================================================
 echo.
-scripts\rebuild_resources.sh
+bash scripts\rebuild_resources.sh
 if %errorlevel% neq 0 goto script_failure
 
 if "%build_target%" == "default" goto PAST_TESTS

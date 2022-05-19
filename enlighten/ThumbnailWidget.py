@@ -371,15 +371,21 @@ class ThumbnailWidget(QtWidgets.QFrame):
 
         self.focus_listener.register(self.le_name, self.rename_complete_callback)
 
-    ## the user hit "return" after editting the Thumbnail's name, so pass
-    # the new label up to the Measurement object.
     def rename_complete_callback(self):
+        """
+        The user hit "return" after editting the Thumbnail's name, or otherwise
+        moved focus to a different widget, so pass the new label up to the 
+        Measurement object.
+        """
+        if not self.focus_listener.registered(self.le_name):
+            return
+
+        self.focus_listener.unregister(self.le_name)
+
         self.stylesheets.apply(self.le_name, "clear_border")
         self.button_edit.setFocus()
         self.le_name.setReadOnly(True)
         self.gui.colorize_button(self.button_edit, False)
-        self.focus_listener.unregister(self.le_name)
-
         self.measurement.update_label(self.le_name.text(), manual=True)
 
     def expand_callback(self):

@@ -2199,11 +2199,6 @@ class Controller:
             value = ("TRUE" == self.config.get(sn, name).upper())
             widget.setChecked(value)
 
-    def update_label(self, sn, widget, name):
-        if self.config.has_option(sn, name):
-            value = self.config.get(sn, name)
-            widget.setText(value)
-
     # ##########################################################################
     # X-Axis Management
     # ##########################################################################
