@@ -219,6 +219,7 @@ class Measurement(object):
                            'Baseline Correction Algo',
                            'ROI Pixel Start',
                            'ROI Pixel End',
+                           'CCD C4',
                            'Slit Width',
                            'Vignetted',
                            'Interpolated',
