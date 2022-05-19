@@ -197,7 +197,7 @@ class SPCDate:
         month = int(time.month) << 16
         year = int(time.year) << 20
         
-        self.compressed_date = (minutes & hour & day & month & year).to_bytes(32, byteorder = "little")
+        self.compressed_date = (minutes & hour & day & month & year).to_bytes(4, byteorder = "little")
 
     def get(self):
         return self.compressed_date
@@ -294,6 +294,7 @@ class SPCFileWriter:
                        z_values: np.ndarray = np.empty(shape=(0)),
                        w_values: np.ndarray = np.empty(shape=(0)),
                        ) -> bool:
+        global log
         file_output = b""
         if x_values.size == 0:
             first_x = 0
@@ -342,6 +343,7 @@ class SPCFileWriter:
             w_units = self.w_units,
             )
         file_output = b"".join([file_output, file_header])
+        log.debug(f"file header length is {len(file_header)}")
 
         if (self.file_type & SPCFileType.TXVALS) and not (self.file_type & SPCFileType.TXYXYS):
             file_output = b"".join([file_output, Bx_values]) # x values should be a flat array so shouldn't be any issues with this
@@ -488,10 +490,8 @@ class SPCFileWriter:
                               Bnum_points,
                               Bnum_coadded,
                               Bw_axis_value,
-                              extra])
-        if len(subheader) < 32:
-            log.error(f"sub header was less than 32 bytes. It was {len(subheader)}. This shouldn't happen")
-            raise
+                              extra
+                              ])
         return subheader
 
     def generate_header(self,
@@ -543,7 +543,7 @@ class SPCFileWriter:
         Bsrc_instrument_desc = bytearray(src_instrument_desc, encoding="utf-8")
         Bsrc_instrument_desc = self.fit_byte_block(Bsrc_instrument_desc, SRC_INSTRUMENT_LIMIT)
         Bpeak_point = pack("e", peak_point)
-        spare = bytes(bytearray(b"\x00"*SPARE_LIMIT))
+        spare = bytes(bytearray(b"\x00\x00\x00\x00"*SPARE_LIMIT))
         Bmemo = bytearray(memo, encoding="utf-8")
         Bmemo = self.fit_byte_block(Bmemo, MEMO_LIMIT)
         Bcustom_axes = b"\x00".join([bytes(ax, encoding="utf-8") for ax in custom_axes])
@@ -561,16 +561,19 @@ class SPCFileWriter:
         Bw_plane_inc = pack("f", w_plane_inc)
         Bw_units = w_units.to_bytes(1, byteorder="little")
         Breserved = bytes(bytearray(b"\x00"*RESERVE_LIMIT))
-        file_header = b"".join([
+        field_bytes = [
             Bfile_type, Bfile_version, Bexperiment_type, Bexponent, Bnum_points,
             Bfirst_x, Blast_x, Bnum_subfiles, Bx_units, By_units, Bz_units,
             Bpost_disposition, compress_date.get(), Bres_desc, Bsrc_instrument_desc, 
             Bpeak_point, spare, Bmemo, Bcustom_axes, Blog_offset, Bspectra_mod_flag,
             Bprocess_code, calib_plus_one, sample_inject, data_mul, Bmethod_file,
             Bz_subfile_inc, Bnum_w_planes, Bw_plane_inc, Bw_units, Breserved
-            ])
+            ]
+        new_line = '\n'
+        log.debug(f"various field lengths are \n{f'{new_line}'.join([str(len(field)) for field in field_bytes])}")
+        file_header = b"".join(field_bytes)
 
         if len(file_header) < 512:
-            log.error(f"file_header length is less than 512") # this shouldn't happen
+            log.error(f"file_header length is less than 512 length was {len(file_header)}") # this shouldn't happen
             raise
         return file_header
