@@ -6,6 +6,7 @@
 from collections import namedtuple
 import os
 import sys
+import math
 import logging
 from struct import pack
 from datetime import datetime
@@ -19,6 +20,10 @@ RES_DESC_LIMIT = 9
 SRC_INSTRUMENT_LIMIT = 9
 MEMO_LIMIT = 130
 AXES_LIMIT = 30
+METHOD_FILE_LIMIT = 48
+SPARE_LIMIT = 8
+RESERVE_LIMIT = 187
+LOG_RESERVE_LIMIT = 44
 
 class SPCFileType(IntFlag):
     """
@@ -229,29 +234,6 @@ class SPCFileWriter:
                  log_data: bytes = bytes(),
                  log_text: str = "",
                  )-> None:
-        self.file_type = file_type
-        self.num_pts = num_pts
-        self.compress_date = compress_date
-        self.file_version = file_version
-        self.experiment_type = experiment_type
-        self.exponent = exponent
-        self.first_x = first_x
-        self.last_x = last_x
-        self.x_units = x_units
-        self.y_units = y_units
-        self.z_units = z_units
-        self.res_desc = res_desc
-        self.src_instrument_desc = src_instrument_desc
-        self.custom_units = custom_units
-        self.memo = memo
-        self.custom_axis_str = custom_axis_str
-        self.spectra_mod_flag = spectra_mod_flag
-        self.z_subfile_inc = z_subfile_inc
-        self.num_w_planes = num_w_planes
-        self.w_plane_inc = w_plane_inc
-        self.w_units = w_units
-        self.log_data = log_data
-        self.log_text = log_text
         """
         According to the formatting document the following file types are most common.
         For the respective file type, the corresponding initialization parameters 
@@ -281,7 +263,29 @@ class SPCFileWriter:
         ------------------
         Pass a 2D numpy array for the X values and a 2D numpy array for the Y values
         """
-        pass
+        self.file_type = file_type
+        self.num_pts = num_pts
+        self.compress_date = compress_date
+        self.file_version = file_version
+        self.experiment_type = experiment_type
+        self.exponent = exponent
+        self.first_x = first_x
+        self.last_x = last_x
+        self.x_units = x_units
+        self.y_units = y_units
+        self.z_units = z_units
+        self.res_desc = res_desc
+        self.src_instrument_desc = src_instrument_desc
+        self.custom_units = custom_units
+        self.memo = memo
+        self.custom_axis_str = custom_axis_str
+        self.spectra_mod_flag = spectra_mod_flag
+        self.z_subfile_inc = z_subfile_inc
+        self.num_w_planes = num_w_planes
+        self.w_plane_inc = w_plane_inc
+        self.w_units = w_units
+        self.log_data = log_data
+        self.log_text = log_text
 
     def write_spc_file(self,
                        file_name: str, 
@@ -290,6 +294,7 @@ class SPCFileWriter:
                        z_values: np.ndarray = np.empty(shape=(0)),
                        w_values: np.ndarray = np.empty(shape=(0)),
                        ) -> bool:
+        file_output = b""
         if x_values.size == 0:
             first_x = 0
             last_x = 0
@@ -298,12 +303,23 @@ class SPCFileWriter:
             last_x = np.amax(x_values)
         if not (self.file_type & SPCFileType.TMULTI):
             points_count = len(y_values)
-        if self.file_type & SPCFileType.TMULTI and (len(y_values.shape()) < 2 or y_values.shape()[1] < 2):
-            log.error(f"spectra marked as multi trace but y array has less than 2 rows")
-            return False
         else:
-            points_count = len(y_values[0]) # assuming not jagged, which it shouldn't be from what I know
+            # num_points for XYXYXY is instead supposed to be the byte offset to the directory
+            # or null and there is no directory
+            points_count = 0 
+        if len(y_values.shape()) == 1:
+            num_traces = 1
+        else:
             num_traces = y_values.shape()[0]
+
+        if w_values.size != 0:
+            if num_traces % len(w_values) != 0:
+                log.error(f"w_values should divide evenly into the number of sub files")
+                raise 
+
+        By_values = self.convert_points(y_values)
+        Bx_values = self.convert_points(x_values)
+
         file_header = self.generate_header(
             file_type = self.file_type,
             num_points = points_count,
@@ -325,6 +341,56 @@ class SPCFileWriter:
             w_plane_inc = self.w_plane_inc,
             w_units = self.w_units,
             )
+        file_output = "".join([file_output, file_header])
+
+        if (self.file_type & SPCFileType.TXVALS) and not (self.file_type & SPCFileType.TXYXYS):
+            file_output = "".join([file_output, Bx_values]) # x values should be a flat array so shouldn't be any issues with this
+
+        subheaders = []
+        for i in range(num_traces):
+            w_val = 0
+            if w_values.size != 0:
+                w_val = w_values[math.floor(i/w_values(len))]
+            if SPCFileType.TXYXYS & self.file_type:
+                points_count = len(y_values[i]) # inverse from header, header it is 0, here it's the length of a specific y input
+            sub_header = b""
+            match len(z):
+                case 0:
+                    z_val = 0
+                case 1:
+                    z_val = z_values[0]
+                case _:
+                    try:
+                        z_val = z_values[i]
+                    except:
+                        z_val = 0
+            sub_head = self.generate_subheader(start_z = z_val,
+                                   sub_index = i, 
+                                   num_points = points_count,
+                                   w_axis_value = w_val)
+            subheaders.append(sub_head)
+
+        if self.file_type & SPCFileType.TXYXYS:
+            subfiles = [b"".join([head, xs, ys]) for head, xs, ys in zip(subheaders, x_values, y_values)]
+        else:
+            subfiles = [b"".join([head, ys]) for head, ys in zip(subheaders, y_values)]
+
+        subfiles = b"".join(subfiles)
+
+
+    def generate_log_header(self, log_data: bytes, log_text: str) -> bytes:
+        text_len = len(log_text.encode())
+        data_len = len(log_data)
+        block_size = 64 + text_len + data_len
+        mem_block = 4096 * round(block_size/4096)
+        text_offset = 64 + data_len
+        Bblock_size = pack("l", block_size)
+        Bmem_size = pack("l", mem_block)
+        Btext_offset = pack("l", text_offset)
+        Bdata_len = pack("l", data_len)
+        Bdisk_len = b"\x00\x00\x00\x00"
+        Breserved = bytes(bytearray(b"\x00"*LOG_RESERVE_LIMIT))
+        return b"".join([Bblock_size, Bmem_size, Btext_offset, Bdata_len, Bdisk_len, Breserved])
 
     def convert_points(self, data_points: np.ndarray) -> bytes:
         """
@@ -335,8 +401,28 @@ class SPCFileWriter:
         data_points = data_points.astype(np.float32)
         return data_points.tobytes()
 
-    def calc_log_offset(self, num_subfiles: int, num_points: int) -> 
-
+    def calc_log_offset(self, 
+                        file_type: SPCFileType,
+                        num_subfiles: int, 
+                        num_points: int, 
+                        ) -> int:
+        """
+        Calculates the log offset in bytes,
+        assumes no directory present. If there is a directory
+        that value is added later in the generate_header function
+        """
+        log_offset = 0
+        log_offset += 512 # length of header
+        if file_type & SPCFileType.TXVALS and not (file_type & SPCFileType.TXYXYS):
+            log_offset += num_points # number of points for common x axis
+        log_offset += num_subfiles * 32 # add 32 bytes for each subheader
+        if file_type & SPCFileType.TMULTI and file_type & SPCFileType.TXYXYS:
+            log_offset += num_points * num_subfiles # chose clarity over conciseness here
+            log_offset += num_points * num_subfiles # first line represnets each x axis in subfile, second is each y
+        else:
+            log_offset += num_points * num_subfiles # only a y axis in each sub file
+        return int(log_offset) # should be int but just to be safe
+            
     def fit_byte_block(self, field: bytearray, limit: int) -> bytes:
         while field < limit:
             field.append(b"\x00")
@@ -345,7 +431,7 @@ class SPCFileWriter:
         return bytes(field)
 
     def generate_subheader(self,
-                           subfile_flags: SPCSubfileFlags.SUBNONE,
+                           subfile_flags: SPCSubfileFlags = SPCSubfileFlags.SUBNONE,
                            exponent: int = -128, # -128 so it will be an IEEE 32bit float
                            sub_index: int = 0,
                            start_z: float = 0.0, # looking at spc.h, z appears to be a time value so won't pass array of data points like x or y
@@ -407,12 +493,11 @@ class SPCFileWriter:
                         peak_point: float = 0, # Interferogram peak point, associated with y_units = 2 
                         memo: str = "",
                         custom_axes: list[str] = [],
-                        # log_offset: float = 0.0, calculated based on num points, and num subheaders
                         spectra_mod_flag: SPCModFlags = SPCModFlags.Not,
                         process_code: SPCProcessCode = SPCProcessCode.PPNONE, # should normally be set to null according to old format file
                         calib_plus_one: int = b"\x00", # old format doc says galactic internal use and should be null
-                        sample_inject: int = b"\x00", # spc.h lists 1 as valid, old format doc says only for galactic internal use and should be null
-                        data_mul: float = b"\x00", # old format doc says galactic internal use only and should be null
+                        sample_inject: int = b"\x00\x00", # spc.h lists 1 as valid, old format doc says only for galactic internal use and should be null
+                        data_mul: float = b"\x00\x00\x00\x00", # old format doc says galactic internal use only and should be null
                         method_file: str = b"\x00", # according to pdf it seems to just be the string rep of a file name for program data. Although old doc also says this should be null
                         z_subfile_inc: float = 1.0,
                         num_w_planes: float = 0,
@@ -423,7 +508,7 @@ class SPCFileWriter:
         Bfile_version = file_version.to_bytes(1, byteorder = "big")
         Bexperiment_type = experiment_type.to_bytes(1, byteorder = "big")
         Bexponent = exponent.to_bytes(1, byteorder = "big")
-        Bnum_points = num_points.to_bytes(1, byteorder="big")
+        Bnum_points = num_points.to_bytes(4, byteorder="big")
         Bfirst_x = pack("d", first_x)
         Blast_x = pack("d", last_x)
         Bnum_subfiles = pack("l", num_subfiles)
@@ -435,17 +520,36 @@ class SPCFileWriter:
         Bres_desc = bytearray(res_desc, encoding="utf-8")
         Bres_desc = self.fit_byte_block(Bres_desc, RES_DESC_LIMIT)
         Bsrc_instrument_desc = bytearray(src_instrument_desc, encoding="utf-8")
-        Bsrc_intsrument_desc = self.fit_byte_block(Bsrc_instrument_desc, SRC_INSTRUMENT_LIMIT)
+        Bsrc_instrument_desc = self.fit_byte_block(Bsrc_instrument_desc, SRC_INSTRUMENT_LIMIT)
         Bpeak_point = pack("e", peak_point)
-        spare = bytes(bytearray([b"\x00"]*8))
+        spare = bytes(bytearray(b"\x00"*SPARE_LIMIT))
         Bmemo = bytearray(memo, encoding="utf-8")
         Bmemo = self.fit_byte_block(Bmemo, MEMO_LIMIT)
         Bcustom_axes = b"\x00".join([bytes(ax, encoding="utf-8") for ax in custom_axes])
         Bcustom_axes = self.fit_byte_block(bytearray(Bcustom_axes), AXES_LIMIT)
+        log_offset = self.calc_log_offset(file_type, num_subfiles, num_points)
+        if file_type & SPCFileType.TXYXYS:
+            Bnum_points = log_offset.to_bytes(4, byteorder="big") # dir offset is log offset without dir since dir comes before log
+            log_offset += num_subfiles * 12 # spc.h defines each dir entry as 12 bytes, one entry per subfile
+        Blog_offset = pack("l", log_offset)
+        Bspectra_mod_flag = pack("l", spectra_mod_flag)
+        Bprocess_code = pack("c", process_code)
+        Bmethod_file = self.fit_byte_block(method_file, METHOD_FILE_LIMIT)
+        Bz_subfile_inc = pack("f", z_subfile_inc)
+        Bnum_w_planes = pack("l", num_w_planes)
+        Bw_plane_inc = pack("f", w_plane_inc)
+        Bw_units = pack("c", w_units)
+        Breserved = bytes(bytearray(b"\x00"*RESERVE_LIMIT))
+        file_header = bytes(bytearray([
+            Bfile_type, Bfile_version, Bexperiment_type, Bexponent, Bnum_points,
+            Bfirst_x, Blast_x, Bnum_subfiles, Bx_units, By_units, Bz_units,
+            Bpost_disposition, compress_date.get(), Bres_desc, Bsrc_instrument_desc, 
+            Bpeak_point, spare, Bmemo, Bcustom_axes, Blog_offset, Bspectra_mod_flag,
+            Bprocess_code, calib_plus_one, sample_inject, data_mul, Bmethod_file,
+            Bz_subfile_inc, Bnum_w_planes, Bw_plane_inc, Bw_units, Breserved
+            ]))
 
-
-
-
-        pass
-
-
+        if len(file_header) < 512:
+            log.error(f"file_header length is less than 512") # this shouldn't happen
+            raise
+        return file_header
