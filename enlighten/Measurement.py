@@ -12,6 +12,8 @@ from wasatch.ProcessedReading import ProcessedReading
 
 from . import common
 from . import util
+from . import SPCFileWriter
+from .SPCFileWriter import SPCFileType 
 
 from wasatch.SpectrometerSettings import SpectrometerSettings
 from wasatch import utils as wasatch_utils
@@ -655,6 +657,9 @@ class Measurement(object):
         if self.save_options.save_json():
             self.save_json_file()
 
+        if self.save_options.save_spc():
+            self.save_spc_file()
+
     def save_csv_file(self):
         if self.save_options is not None and self.save_options.save_by_row():
             self.save_csv_file_by_row()
@@ -961,6 +966,15 @@ class Measurement(object):
         m = self.to_dict()
         s = json.dumps(m, sort_keys=True, indent=2)
         return util.clean_json(s)
+
+    def save_spc_file(self, use_basename=False):
+        today_dir = self.generate_today_dir()
+        if use_basename:
+            pathname = "%s.spc" % self.basename
+        else:
+            pathname = os.path.join(today_dir, "%s.spc" % self.generate_filename())
+        spc_writer = SPCFileWriter.SPCFileWriter(SPCFileType.DEFAULT)
+        spc_writer.write_spc_file(pathname, self.processed_reading.processed)
 
     ##
     # Save the Measurement in a JSON file for simplified programmatic parsing.

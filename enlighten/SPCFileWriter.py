@@ -42,7 +42,7 @@ class SPCFileType(IntFlag):
 
 # From GRAMSDDE.h
 # Currenlty only support PPNONE
-class SPCProcessCode(Enum):
+class SPCProcessCode(IntEnum):
     PPNONE	= 0    # No post processing 
     PPCOMP	= 1    # Compute (run PPCOMP?.ABP) 
     PPDLLC	= 2    # Compute with DLL (run PPCOMP?.DLL) 
@@ -307,10 +307,10 @@ class SPCFileWriter:
             # num_points for XYXYXY is instead supposed to be the byte offset to the directory
             # or null and there is no directory
             points_count = 0 
-        if len(y_values.shape()) == 1:
+        if len(y_values.shape) == 1:
             num_traces = 1
         else:
-            num_traces = y_values.shape()[0]
+            num_traces = y_values.shape[0]
 
         if w_values.size != 0:
             if num_traces % len(w_values) != 0:
@@ -337,11 +337,11 @@ class SPCFileWriter:
             custom_axes = self.custom_units,
             spectra_mod_flag = self.spectra_mod_flag,
             z_subfile_inc = self.z_subfile_inc,
-            num_w_planes = self.num_w_plane,
+            num_w_planes = self.num_w_planes,
             w_plane_inc = self.w_plane_inc,
             w_units = self.w_units,
             )
-        file_output = "".join([file_output, file_header])
+        file_output = b"".join([file_output, file_header])
 
         if (self.file_type & SPCFileType.TXVALS) and not (self.file_type & SPCFileType.TXYXYS):
             file_output = b"".join([file_output, Bx_values]) # x values should be a flat array so shouldn't be any issues with this
@@ -355,7 +355,7 @@ class SPCFileWriter:
             if SPCFileType.TXYXYS & self.file_type:
                 points_count = len(y_values[i]) # inverse from header, header it is 0, here it's the length of a specific y input
             sub_header = b""
-            match len(z):
+            match len(z_values):
                 case 0:
                     z_val = 0
                 case 1:
@@ -443,9 +443,9 @@ class SPCFileWriter:
         return int(log_offset) # should be int but just to be safe
             
     def fit_byte_block(self, field: bytearray, limit: int) -> bytes:
-        while field < limit:
-            field.append(b"\x00")
-        if field > limit:
+        while len(field) < limit:
+            field.extend(bytearray(b"\x00"))
+        if len(field) > limit:
             field = field[:limit]
         return bytes(field)
 
@@ -460,8 +460,8 @@ class SPCFileWriter:
                            num_coadded: int = None,  # should be null according to old format
                            w_axis_value: float = 0.0,
                            ) -> bytes:
-        Bsubfile_flags = pack("c", subfile_flags)
-        Bexponent = pack("B", exponent)
+        Bsubfile_flags = subfile_flags.to_bytes(1, byteorder="big")
+        Bexponent = pack("b", exponent)
         Bsub_index = pack("H", sub_index)
         Bstart_z = pack("f", start_z)
         Bend_z = pack("f", end_z)
@@ -513,7 +513,7 @@ class SPCFileWriter:
                         memo: str = "",
                         custom_axes: list[str] = [],
                         spectra_mod_flag: SPCModFlags = SPCModFlags.Not,
-                        process_code: SPCProcessCode = SPCProcessCode.PPNONE, # should normally be set to null according to old format file
+                        process_code: SPCProcessCode = SPCProcessCode.PPCOMP, # should normally be set to null according to old format file
                         calib_plus_one: int = b"\x00", # old format doc says galactic internal use and should be null
                         sample_inject: int = b"\x00\x00", # spc.h lists 1 as valid, old format doc says only for galactic internal use and should be null
                         data_mul: float = b"\x00\x00\x00\x00", # old format doc says galactic internal use only and should be null
@@ -523,7 +523,7 @@ class SPCFileWriter:
                         w_plane_inc: float = 1.0,
                         w_units: SPCXType = SPCXType.SPCXArb,
                         ) -> bytes:
-        Bfile_type = file_type.to_bytes(1, bytorder="big")
+        Bfile_type = file_type.to_bytes(1, byteorder="big")
         Bfile_version = file_version.to_bytes(1, byteorder = "big")
         Bexperiment_type = experiment_type.to_bytes(1, byteorder = "big")
         Bexponent = exponent.to_bytes(1, byteorder = "big")
@@ -552,21 +552,21 @@ class SPCFileWriter:
             log_offset += num_subfiles * 12 # spc.h defines each dir entry as 12 bytes, one entry per subfile
         Blog_offset = pack("l", log_offset)
         Bspectra_mod_flag = pack("l", spectra_mod_flag)
-        Bprocess_code = pack("c", process_code)
-        Bmethod_file = self.fit_byte_block(method_file, METHOD_FILE_LIMIT)
+        Bprocess_code = process_code.to_bytes(1, byteorder = "big")
+        Bmethod_file = self.fit_byte_block(bytearray(method_file), METHOD_FILE_LIMIT)
         Bz_subfile_inc = pack("f", z_subfile_inc)
         Bnum_w_planes = pack("l", num_w_planes)
         Bw_plane_inc = pack("f", w_plane_inc)
-        Bw_units = pack("c", w_units)
+        Bw_units = w_units.to_bytes(1, byteorder="big")
         Breserved = bytes(bytearray(b"\x00"*RESERVE_LIMIT))
-        file_header = bytes(bytearray([
+        file_header = b"".join([
             Bfile_type, Bfile_version, Bexperiment_type, Bexponent, Bnum_points,
             Bfirst_x, Blast_x, Bnum_subfiles, Bx_units, By_units, Bz_units,
             Bpost_disposition, compress_date.get(), Bres_desc, Bsrc_instrument_desc, 
             Bpeak_point, spare, Bmemo, Bcustom_axes, Blog_offset, Bspectra_mod_flag,
             Bprocess_code, calib_plus_one, sample_inject, data_mul, Bmethod_file,
             Bz_subfile_inc, Bnum_w_planes, Bw_plane_inc, Bw_units, Breserved
-            ]))
+            ])
 
         if len(file_header) < 512:
             log.error(f"file_header length is less than 512") # this shouldn't happen
