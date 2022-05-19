@@ -500,7 +500,7 @@ class SPCFileWriter:
                         compress_date: SPCDate,
                         file_version: int = 0x4B,
                         experiment_type: SPCTechType = SPCTechType.SPCTechGen,
-                        exponent: int = 0,
+                        exponent: int = -128,
                         first_x: float = 0,
                         last_x: float = 0,
                         num_subfiles: int = 0,
@@ -528,7 +528,7 @@ class SPCFileWriter:
         Bfile_type = file_type.to_bytes(1, byteorder="little")
         Bfile_version = file_version.to_bytes(1, byteorder = "little")
         Bexperiment_type = experiment_type.to_bytes(1, byteorder = "little")
-        Bexponent = exponent.to_bytes(1, byteorder = "little")
+        Bexponent = exponent.to_bytes(1, byteorder = "little", signed=True)
         Bnum_points = num_points.to_bytes(4, byteorder="little")
         Bfirst_x = pack("d", first_x)
         Blast_x = pack("d", last_x)
