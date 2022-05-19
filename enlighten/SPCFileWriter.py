@@ -344,10 +344,11 @@ class SPCFileWriter:
         file_output = "".join([file_output, file_header])
 
         if (self.file_type & SPCFileType.TXVALS) and not (self.file_type & SPCFileType.TXYXYS):
-            file_output = "".join([file_output, Bx_values]) # x values should be a flat array so shouldn't be any issues with this
+            file_output = b"".join([file_output, Bx_values]) # x values should be a flat array so shouldn't be any issues with this
 
-        subheaders = []
+        dir_pointers = []
         for i in range(num_traces):
+            subfile = b""
             w_val = 0
             if w_values.size != 0:
                 w_val = w_values[math.floor(i/w_values(len))]
@@ -368,15 +369,28 @@ class SPCFileWriter:
                                    sub_index = i, 
                                    num_points = points_count,
                                    w_axis_value = w_val)
-            subheaders.append(sub_head)
+            if self.file_type & SPCFileType.TXYXYS:
+                subfile = b"".join(sub_head, x_values[i], y_values[i])
+            else:
+                subfile = b"".join(sub_head, y_values[i])
 
-        if self.file_type & SPCFileType.TXYXYS:
-            subfiles = [b"".join([head, xs, ys]) for head, xs, ys in zip(subheaders, x_values, y_values)]
-        else:
-            subfiles = [b"".join([head, ys]) for head, ys in zip(subheaders, y_values)]
+            pointer = self.generate_dir_pointer(len(file_output), len(subfile), z_val)
+            dir_pointers.append(pointer)
+            file_output = b"".join(file_output, subfile)
 
-        subfiles = b"".join(subfiles)
+        if self.file_type & SPCFileType.TXVALS and self.file_type & SPCFileType.TXYXYS:
+            file_output = b"".join(file_output, b"".join(dir_pointers))
 
+        if len(self.log_data) > 0 or len(self.log_text) > 0:
+            log = self.generate_log_header(self.log_data, self.log_text)
+            file_output = b"".join(file_output, log, log_data, log_text.encode())
+
+
+    def generate_dir_pointer(self, offset: int, sub_size: int, z_val: float) -> bytes:
+        Boffset = offset.to_bytes(4, offset)
+        Bsub_size = sub_size.to_bytes(4, offset)
+        Bz_value = pack("f", z_val)
+        return b"".join([Boffset, Bsub_size, Bz_value])
 
     def generate_log_header(self, log_data: bytes, log_text: str) -> bytes:
         text_len = len(log_text.encode())
