@@ -15,6 +15,11 @@ import numpy as np
 
 log = logging.getLogger(__name__)
 
+RES_DESC_LIMIT = 9
+SRC_INSTRUMENT_LIMIT = 9
+MEMO_LIMIT = 130
+AXES_LIMIT = 30
+
 class SPCFileType(IntFlag):
     """
     Describes the various file format flags.
@@ -189,6 +194,9 @@ class SPCDate:
         
         self.compressed_date = (minutes & hour & day & month & year).to_bytes(32, byteorder = "big")
 
+    def get(self):
+        return self.compressed_date
+
 class SPCFileWriter:
     """
     Created based on the spc file format.
@@ -208,6 +216,8 @@ class SPCFileWriter:
                  x_units: SPCXType = SPCXType.SPCXArb,
                  y_units: SPCYType = SPCYType.SPCYArb, 
                  z_units: SPCXType = SPCXType.SPCXArb,
+                 res_desc: str = "",
+                 src_instrument_desc: str = "",
                  custom_units: list[str] = [],
                  memo: str = "",
                  custom_axis_str: str = "",
@@ -216,6 +226,8 @@ class SPCFileWriter:
                  num_w_planes: float = 0,
                  w_plane_inc: float = 1.0,
                  w_units: SPCXType = SPCXType.SPCXArb,
+                 log_data: bytes = bytes(),
+                 log_text: str = "",
                  )-> None:
         self.file_type = file_type
         self.num_pts = num_pts
@@ -228,6 +240,8 @@ class SPCFileWriter:
         self.x_units = x_units
         self.y_units = y_units
         self.z_units = z_units
+        self.res_desc = res_desc
+        self.src_instrument_desc = src_instrument_desc
         self.custom_units = custom_units
         self.memo = memo
         self.custom_axis_str = custom_axis_str
@@ -236,6 +250,8 @@ class SPCFileWriter:
         self.num_w_planes = num_w_planes
         self.w_plane_inc = w_plane_inc
         self.w_units = w_units
+        self.log_data = log_data
+        self.log_text = log_text
         """
         According to the formatting document the following file types are most common.
         For the respective file type, the corresponding initialization parameters 
@@ -274,17 +290,40 @@ class SPCFileWriter:
                        z_values: np.ndarray = np.empty(shape=(0)),
                        w_values: np.ndarray = np.empty(shape=(0)),
                        ) -> bool:
+        if x_values.size == 0:
+            first_x = 0
+            last_x = 0
+        else:
+            first_x = np.amin(x_values)
+            last_x = np.amax(x_values)
         if not (self.file_type & SPCFileType.TMULTI):
             points_count = len(y_values)
         if self.file_type & SPCFileType.TMULTI and (len(y_values.shape()) < 2 or y_values.shape()[1] < 2):
             log.error(f"spectra marked as multi trace but y array has less than 2 rows")
             return False
         else:
-            points_count = len(y_values[0]) # assuming not jagged, which it shouldn't be
+            points_count = len(y_values[0]) # assuming not jagged, which it shouldn't be from what I know
+            num_traces = y_values.shape()[0]
         file_header = self.generate_header(
             file_type = self.file_type,
             num_points = points_count,
             compress_date = SPCDate(self.compress_date),
+            experiment_type = self.experiment_type,
+            first_x = first_x,
+            last_x = last_x,
+            num_subfiles = num_traces,
+            x_units = self.x_units,
+            y_units = self.y_units,
+            z_units = self.z_units,
+            res_desc = self.res_desc,
+            src_instrument_desc = self.src_instrument_desc,
+            memo = self.memo,
+            custom_axes = self.custom_units,
+            spectra_mod_flag = self.spectra_mod_flag,
+            z_subfile_inc = self.z_subfile_inc,
+            num_w_planes = self.num_w_plane,
+            w_plane_inc = self.w_plane_inc,
+            w_units = self.w_units,
             )
 
     def convert_points(self, data_points: np.ndarray) -> bytes:
@@ -295,6 +334,15 @@ class SPCFileWriter:
         """
         data_points = data_points.astype(np.float32)
         return data_points.tobytes()
+
+    def calc_log_offset(self, num_subfiles: int, num_points: int) -> 
+
+    def fit_byte_block(self, field: bytearray, limit: int) -> bytes:
+        while field < limit:
+            field.append(b"\x00")
+        if field > limit:
+            field = field[:limit]
+        return bytes(field)
 
     def generate_subheader(self,
                            subfile_flags: SPCSubfileFlags.SUBNONE,
@@ -347,17 +395,19 @@ class SPCFileWriter:
                         file_version: int = 0x4B,
                         experiment_type: SPCTechType = SPCTechType.SPCTechGen,
                         exponent: int = 0,
-                        first_x: int = 0,
-                        last_x: int = 0,
+                        first_x: float = 0,
+                        last_x: float = 0,
                         num_subfiles: int = 0,
                         x_units: SPCXType = SPCXType.SPCXArb,
                         y_units: SPCYType = SPCYType.SPCYArb, 
                         z_units: SPCXType = SPCXType.SPCXArb,
                         post_disposition: SPCPostDisposition = SPCPostDisposition.PSTDEFT, # should normally be null according to old format doc
+                        res_desc: str = "",
+                        src_instrument_desc: str = "",
                         peak_point: float = 0, # Interferogram peak point, associated with y_units = 2 
                         memo: str = "",
-                        custom_axis_str: str = "",
-                        log_offset: float = 0.0,
+                        custom_axes: list[str] = [],
+                        # log_offset: float = 0.0, calculated based on num points, and num subheaders
                         spectra_mod_flag: SPCModFlags = SPCModFlags.Not,
                         process_code: SPCProcessCode = SPCProcessCode.PPNONE, # should normally be set to null according to old format file
                         calib_plus_one: int = b"\x00", # old format doc says galactic internal use and should be null
@@ -369,6 +419,33 @@ class SPCFileWriter:
                         w_plane_inc: float = 1.0,
                         w_units: SPCXType = SPCXType.SPCXArb,
                         ) -> bytes:
+        Bfile_type = file_type.to_bytes(1, bytorder="big")
+        Bfile_version = file_version.to_bytes(1, byteorder = "big")
+        Bexperiment_type = experiment_type.to_bytes(1, byteorder = "big")
+        Bexponent = exponent.to_bytes(1, byteorder = "big")
+        Bnum_points = num_points.to_bytes(1, byteorder="big")
+        Bfirst_x = pack("d", first_x)
+        Blast_x = pack("d", last_x)
+        Bnum_subfiles = pack("l", num_subfiles)
+        Bx_units = x_units.to_bytes(1, "big")
+        By_units = y_units.to_bytes(1, "big")
+        Bz_units = z_units.to_bytes(1, "big")
+        Bpost_disposition = post_disposition.to_bytes(1, "big")
+        # compress date is already formated to bytes by the object
+        Bres_desc = bytearray(res_desc, encoding="utf-8")
+        Bres_desc = self.fit_byte_block(Bres_desc, RES_DESC_LIMIT)
+        Bsrc_instrument_desc = bytearray(src_instrument_desc, encoding="utf-8")
+        Bsrc_intsrument_desc = self.fit_byte_block(Bsrc_instrument_desc, SRC_INSTRUMENT_LIMIT)
+        Bpeak_point = pack("e", peak_point)
+        spare = bytes(bytearray([b"\x00"]*8))
+        Bmemo = bytearray(memo, encoding="utf-8")
+        Bmemo = self.fit_byte_block(Bmemo, MEMO_LIMIT)
+        Bcustom_axes = b"\x00".join([bytes(ax, encoding="utf-8") for ax in custom_axes])
+        Bcustom_axes = self.fit_byte_block(bytearray(Bcustom_axes), AXES_LIMIT)
+
+
+
+
         pass
 
 
