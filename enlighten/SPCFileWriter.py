@@ -197,7 +197,7 @@ class SPCDate:
         month = int(time.month) << 16
         year = int(time.year) << 20
         
-        self.compressed_date = (minutes & hour & day & month & year).to_bytes(32, byteorder = "big")
+        self.compressed_date = (minutes & hour & day & month & year).to_bytes(32, byteorder = "little")
 
     def get(self):
         return self.compressed_date
@@ -297,7 +297,7 @@ class SPCFileWriter:
         file_output = b""
         if x_values.size == 0:
             first_x = 0
-            last_x = 0
+            last_x = len(y_values)
         else:
             first_x = np.amin(x_values)
             last_x = np.amax(x_values)
@@ -372,7 +372,7 @@ class SPCFileWriter:
             if self.file_type & SPCFileType.TXYXYS:
                 subfile = b"".join([sub_head, x_values[i], y_values[i]])
             else:
-                subfile = b"".join([sub_head, y_values[i]])
+                subfile = b"".join([sub_head, By_values])
 
             pointer = self.generate_dir_pointer(len(file_output), len(subfile), z_val)
             dir_pointers.append(pointer)
@@ -392,8 +392,8 @@ class SPCFileWriter:
 
 
     def generate_dir_pointer(self, offset: int, sub_size: int, z_val: float) -> bytes:
-        Boffset = offset.to_bytes(4, byteorder="big")
-        Bsub_size = sub_size.to_bytes(4, byteorder="big")
+        Boffset = offset.to_bytes(4, byteorder="little")
+        Bsub_size = sub_size.to_bytes(4, byteorder="little")
         Bz_value = pack("f", z_val)
         return b"".join([Boffset, Bsub_size, Bz_value])
 
@@ -418,6 +418,7 @@ class SPCFileWriter:
         Does not support the spc specific exponent representation of floating point numbers.
         """
         data_points = data_points.astype(np.float32)
+        log.debug(f"spc spectra len is {len(data_points.tobytes())}")
         return data_points.tobytes()
 
     def calc_log_offset(self, 
@@ -460,7 +461,7 @@ class SPCFileWriter:
                            num_coadded: int = None,  # should be null according to old format
                            w_axis_value: float = 0.0,
                            ) -> bytes:
-        Bsubfile_flags = subfile_flags.to_bytes(1, byteorder="big")
+        Bsubfile_flags = subfile_flags.to_bytes(1, byteorder="little")
         Bexponent = pack("b", exponent)
         Bsub_index = pack("H", sub_index)
         Bstart_z = pack("f", start_z)
@@ -523,18 +524,19 @@ class SPCFileWriter:
                         w_plane_inc: float = 1.0,
                         w_units: SPCXType = SPCXType.SPCXArb,
                         ) -> bytes:
-        Bfile_type = file_type.to_bytes(1, byteorder="big")
-        Bfile_version = file_version.to_bytes(1, byteorder = "big")
-        Bexperiment_type = experiment_type.to_bytes(1, byteorder = "big")
-        Bexponent = exponent.to_bytes(1, byteorder = "big")
-        Bnum_points = num_points.to_bytes(4, byteorder="big")
+        log.debug(f"first x is {first_x} and last is {last_x}")
+        Bfile_type = file_type.to_bytes(1, byteorder="little")
+        Bfile_version = file_version.to_bytes(1, byteorder = "little")
+        Bexperiment_type = experiment_type.to_bytes(1, byteorder = "little")
+        Bexponent = exponent.to_bytes(1, byteorder = "little")
+        Bnum_points = num_points.to_bytes(4, byteorder="little")
         Bfirst_x = pack("d", first_x)
         Blast_x = pack("d", last_x)
         Bnum_subfiles = pack("l", num_subfiles)
-        Bx_units = x_units.to_bytes(1, "big")
-        By_units = y_units.to_bytes(1, "big")
-        Bz_units = z_units.to_bytes(1, "big")
-        Bpost_disposition = post_disposition.to_bytes(1, "big")
+        Bx_units = x_units.to_bytes(1, "little")
+        By_units = y_units.to_bytes(1, "little")
+        Bz_units = z_units.to_bytes(1, "little")
+        Bpost_disposition = post_disposition.to_bytes(1, "little")
         # compress date is already formated to bytes by the object
         Bres_desc = bytearray(res_desc, encoding="utf-8")
         Bres_desc = self.fit_byte_block(Bres_desc, RES_DESC_LIMIT)
@@ -548,16 +550,16 @@ class SPCFileWriter:
         Bcustom_axes = self.fit_byte_block(bytearray(Bcustom_axes), AXES_LIMIT)
         log_offset = self.calc_log_offset(file_type, num_subfiles, num_points)
         if file_type & SPCFileType.TXYXYS:
-            Bnum_points = log_offset.to_bytes(4, byteorder="big") # dir offset is log offset without dir since dir comes before log
+            Bnum_points = log_offset.to_bytes(4, byteorder="little") # dir offset is log offset without dir since dir comes before log
             log_offset += num_subfiles * 12 # spc.h defines each dir entry as 12 bytes, one entry per subfile
         Blog_offset = pack("l", log_offset)
         Bspectra_mod_flag = pack("l", spectra_mod_flag)
-        Bprocess_code = process_code.to_bytes(1, byteorder = "big")
+        Bprocess_code = process_code.to_bytes(1, byteorder = "little")
         Bmethod_file = self.fit_byte_block(bytearray(method_file), METHOD_FILE_LIMIT)
         Bz_subfile_inc = pack("f", z_subfile_inc)
         Bnum_w_planes = pack("l", num_w_planes)
         Bw_plane_inc = pack("f", w_plane_inc)
-        Bw_units = w_units.to_bytes(1, byteorder="big")
+        Bw_units = w_units.to_bytes(1, byteorder="little")
         Breserved = bytes(bytearray(b"\x00"*RESERVE_LIMIT))
         file_header = b"".join([
             Bfile_type, Bfile_version, Bexperiment_type, Bexponent, Bnum_points,

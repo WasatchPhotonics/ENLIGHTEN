@@ -47,6 +47,9 @@ class SPCFileParser:
 
         log.debug("instantiating spc.File from %s", self.pathname)
         data = spc.File(self.pathname)
+        log.debug(f"spc parse atts are {data.__dict__}")
+        #for key, value in data.__dict__:
+        #    log.debug(f"spc parse attrs are {key}: {value}")
 
         ########################################################################
         # determine the SPC format
@@ -92,6 +95,7 @@ class SPCFileParser:
         measurements = []
         for sub in data.sub:
             x = sub.x if fmt.endswith('-xy') else data.x
+            log.debug(f"sub info is {sub.__dict__}")
             label = basename if data.fnsub == 1 else ("%s-%02d" % (basename, sub.subindx))
             measurements.append(self.create_measurement_from_sub(x, sub.y, unit=unit, timestamp=timestamp, label=label))
 
