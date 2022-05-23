@@ -13,7 +13,7 @@ from wasatch.ProcessedReading import ProcessedReading
 from . import common
 from . import util
 from . import SPCFileWriter
-from .SPCFileWriter import SPCFileType 
+from .SPCFileWriter import SPCFileType, SPCTechType, SPCXType, SPCYType 
 
 from wasatch.SpectrometerSettings import SpectrometerSettings
 from wasatch import utils as wasatch_utils
@@ -967,14 +967,46 @@ class Measurement(object):
         s = json.dumps(m, sort_keys=True, indent=2)
         return util.clean_json(s)
 
-    def save_spc_file(self, use_basename=False):
+    def save_spc_file(self, use_basename=False) -> None:
         today_dir = self.generate_today_dir()
+        current_x = self.save_options.multispec.graph.current_x_axis # a round about way to get the x axis, but it works
+        log_text = f"Exported from Wasatch Photonics Enlighten.\nDevice {self.spec.label}"
         if use_basename:
             pathname = "%s.spc" % self.basename
         else:
             pathname = os.path.join(today_dir, "%s.spc" % self.generate_filename())
-        spc_writer = SPCFileWriter.SPCFileWriter(SPCFileType.DEFAULT)
-        spc_writer.write_spc_file(pathname, self.processed_reading.processed)
+        match current_x:
+            case common.Axes.WAVELENGTHS:
+                spc_writer = SPCFileWriter.SPCFileWriter(SPCFileType.TXVALS)
+                spc_writer.write_spc_file(pathname, 
+                                          self.processed_reading.processed, 
+                                          numpy.asarray(self.spec.settings.wavelengths), 
+                                          x_units = SPCXType.SPCXNMetr,
+                                          y_units = SPCYType.SPCYCount,
+                                          experiment_type = SPCTechType.SPCTechRmn,
+                                          log_text = log_text,
+                                          )
+            case common.Axes.WAVENUMBERS:
+                spc_writer = SPCFileWriter.SPCFileWriter(SPCFileType.TXVALS)
+                spc_writer.write_spc_file(pathname, 
+                                          self.processed_reading.processed, 
+                                          numpy.asarray(self.spec.settings.wavenumbers),
+                                          x_units = SPCXType.SPCXCM,
+                                          y_units = SPCYType.SPCYCount,
+                                          experiment_type = SPCTechType.SPCTechRmn,
+                                          log_text = log_text,
+                                          )
+            case common.AXES.PIXELS:
+                spc_writer = SPCFileWriter.SPCFileWriter(SPCFileType.DEFAULT)
+                spc_writer.write_spc_file(pathname, 
+                                          self.processed_reading.processed,
+                                          y_units = SPCYType.SPCYCount,
+                                          experiment_type = SPCTechType.SPCTechRmn,
+                                          log_text = log_text,
+                                          )
+            case _:
+                log.error(f"current x axis doesn't match vaild values. Aborting SPC save")
+                return
 
     ##
     # Save the Measurement in a JSON file for simplified programmatic parsing.

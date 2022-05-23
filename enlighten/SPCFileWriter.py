@@ -30,6 +30,7 @@ def fit_byte_block(field: bytearray, limit: int) -> bytes:
         field.extend(bytearray(b"\x00"))
     if len(field) > limit:
         field = field[:limit]
+        field[-1] = 0 # most fields are null terminated so just make that the default
     return bytes(field)
 
 class SPCFileType(IntFlag):
@@ -487,6 +488,9 @@ class SPCFileWriter:
         file_output = b""
         generate_log = False
         if x_values.size == 0:
+            if self.file_type == SPCFileType.TXVALS:
+                log.error(f"no x values received but file type is a shared x values type")
+                return False
             first_x = 0
             last_x = len(y_values)
         else:
@@ -506,7 +510,7 @@ class SPCFileWriter:
         if w_values.size != 0:
             if num_traces % len(w_values) != 0:
                 log.error(f"w_values should divide evenly into the number of sub files")
-                raise 
+                return False
 
         if len(self.log_data) > 0 or len(self.log_text) > 0:
             generate_log = True
@@ -569,7 +573,9 @@ class SPCFileWriter:
                                    w_axis_value = w_val)
             sub_head = subheader.generate_subheader()
             if self.file_type & SPCFileType.TXYXYS:
-                subfile = b"".join([sub_head, x_values[i], y_values[i]])
+                bx = self.convert_points(x_values[i])
+                by = self.convert_points(y_values[i])
+                subfile = b"".join([sub_head, bx, by])
             else:
                 subfile = b"".join([sub_head, By_values])
 
