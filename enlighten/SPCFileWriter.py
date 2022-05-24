@@ -11,6 +11,7 @@ from struct import pack
 from datetime import datetime
 from dataclasses import dataclass, field
 from enum import IntEnum, IntFlag
+from tkinter import W
 
 import numpy as np
 
@@ -221,6 +222,8 @@ class SPCHeader:
     file_type: SPCFileType # (ftflags)
     num_points: int # (fnpts) or directory position for XYXYXY files
     compress_date: SPCDate # (fdate)
+    x_values: np.ndarray = np.empty(shape=(0))
+    y_values: np.ndarray = np.empty(shape=(0))
     file_version: int = 0x4B # (fversn)
     experiment_type: SPCTechType = SPCTechType.SPCTechGen # (fexper)
     exponent: int = -128 # (fexp)
@@ -272,7 +275,7 @@ class SPCHeader:
         Bmemo = fit_byte_block(Bmemo, MEMO_LIMIT)
         Bcustom_axes = b"\x00".join([bytes(ax, encoding="utf-8") for ax in self.custom_axes.default_factory()])
         Bcustom_axes = fit_byte_block(bytearray(Bcustom_axes), AXES_LIMIT)
-        log_offset = self.calc_log_offset(self.file_type, self.num_subfiles, self.num_points) # (flogoff)
+        log_offset = self.calc_log_offset(self.file_type, self.num_subfiles, self.x_values, self.y_values) # (flogoff)
         if self.file_type & SPCFileType.TXYXYS:
             Bnum_points = log_offset.to_bytes(4, byteorder="little") # dir offset is log offset without dir since dir comes before log
             log_offset += self.num_subfiles * 12 # spc.h defines each dir entry as 12 bytes, one entry per subfile
@@ -309,7 +312,8 @@ class SPCHeader:
     def calc_log_offset(self, 
                         file_type: SPCFileType,
                         num_subfiles: int, 
-                        num_points: int, 
+                        x_values: np.ndarray,
+                        y_values: np.ndarray,
                         ) -> int:
         """
         Calculates the log offset in bytes,
@@ -320,13 +324,17 @@ class SPCHeader:
         log_offset += 512 # length of header
         log_offset += num_subfiles * 32 # add 32 bytes for each subheader
         if file_type & SPCFileType.TXVALS and not (file_type & SPCFileType.TXYXYS):
-            log_offset += (num_points * 4) # number of points for common x axis
+            log_offset += (len(x_values) * 4) # number of points for common x axis
         if file_type & SPCFileType.TMULTI and file_type & SPCFileType.TXYXYS:
             # multiply by 4 due to 32bit float
-            log_offset += (num_points * 4) * num_subfiles # chose clarity over conciseness here
-            log_offset += (num_points * 4) * num_subfiles # first line represnets each x axis in subfile, second is each y
+            for idx in range(len(x_values)):
+                log_offset += (len(x_values[idx]) * 4) * num_subfiles # chose clarity over conciseness here
+                log_offset += (len(y_values[idx]) * 4) * num_subfiles # first line represnets each x axis in subfile, second is each y
+        elif file_type & SPCFileType.TMULTI:
+            for idx in range(len(y_values)):
+                log_offset += (len(y_values[idx]) * 4) * num_subfiles
         else:
-            log_offset += (num_points * 4) * num_subfiles # only a y axis in each sub file
+            log_offset += (len(y_values) * 4) * num_subfiles # only a y axis in each sub file
         return int(log_offset) # should be int but just to be safe
 
 
@@ -525,6 +533,8 @@ class SPCFileWriter:
             file_type = self.file_type,
             num_points = points_count,
             compress_date = SPCDate(self.compress_date),
+            x_values = x_values,
+            y_values = y_values,
             experiment_type = self.experiment_type,
             first_x = first_x,
             last_x = last_x,
