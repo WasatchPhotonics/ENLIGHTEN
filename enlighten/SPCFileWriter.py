@@ -204,10 +204,9 @@ class SPCDate:
         day = int(time.day) << 11
         month = int(time.month) << 16
         year = int(time.year) << 20
+        formatted_date = (minutes | hour | day | month | year)
         
-        self.compressed_date = (minutes & hour & day & month & year).to_bytes(4, byteorder = "little")
-        log.debug(f"compressing year {year}, month {month}, day {day}, and hour {hour}")
-        log.debug(f"compressed date is {self.compressed_date}")
+        self.compressed_date = formatted_date.to_bytes(4, byteorder = "little")
 
     def get(self):
         return self.compressed_date
@@ -546,7 +545,6 @@ class SPCFileWriter:
             )
         file_header = header.generate_header()
         file_output = b"".join([file_output, file_header])
-        log.debug(f"file header length is {len(file_header)}")
 
         if (self.file_type & SPCFileType.TXVALS) and not (self.file_type & SPCFileType.TXYXYS):
             file_output = b"".join([file_output, Bx_values]) # x values should be a flat array so shouldn't be any issues with this
@@ -593,7 +591,6 @@ class SPCFileWriter:
         if generate_log:
             log_head = SPCLog(self.log_data, self.log_text)
             log_header = log_head.generate_log_header()
-            log.debug(f"before joining the log portions, file length is {len(file_output)}")
             file_output = b"".join([file_output, log_header, self.log_data, self.log_text.encode()])
 
         try:
@@ -617,7 +614,6 @@ class SPCFileWriter:
         Does not support the spc specific exponent representation of floating point numbers.
         """
         data_points = data_points.astype(np.float32)
-        log.debug(f"spc spectra len is {len(data_points.tobytes())}")
         return data_points.tobytes()
 
             
