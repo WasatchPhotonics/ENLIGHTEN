@@ -277,7 +277,7 @@ class SPCHeader:
         Bcustom_axes = fit_byte_block(bytearray(Bcustom_axes), AXES_LIMIT)
         log_offset = self.calc_log_offset(self.file_type, self.num_subfiles, self.x_values, self.y_values) # (flogoff)
         log.debug(f"calculated log offset to be {log_offset}")
-        if False and self.file_type & SPCFileType.TXYXYS and self.file_type & SPCFileType.TXVALS:
+        if self.file_type & SPCFileType.TXYXYS and self.file_type & SPCFileType.TXVALS:
             # dir offset is log offset without dir since dir comes before log
             # per the spec num_points is the dir offset when there is a dir
             log.debug(f"setting dir offset to {log_offset}, num subfiles is {self.num_subfiles}")
@@ -603,7 +603,7 @@ class SPCFileWriter:
             dir_pointers.append(pointer)
             file_output = b"".join([file_output, subfile])
 
-        if False and self.file_type & SPCFileType.TXVALS and self.file_type & SPCFileType.TXYXYS:
+        if self.file_type & SPCFileType.TXVALS and self.file_type & SPCFileType.TXYXYS:
             file_output = b"".join([file_output, b"".join(dir_pointers)])
 
         if generate_log:
