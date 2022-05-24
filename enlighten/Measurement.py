@@ -970,7 +970,7 @@ class Measurement(object):
     def save_spc_file(self, use_basename=False) -> None:
         today_dir = self.generate_today_dir()
         current_x = self.save_options.multispec.graph.current_x_axis # a round about way to get the x axis, but it works
-        log_text = f"Exported from Wasatch Photonics Enlighten.\nDevice {self.spec.label}"
+        log_text = f"Exported from Wasatch Photonics ENLIGHTEN.\nDevice {self.spec.label}"
         if use_basename:
             pathname = "%s.spc" % self.basename
         else:
