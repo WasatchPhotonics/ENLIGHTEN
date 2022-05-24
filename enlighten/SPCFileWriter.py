@@ -276,10 +276,16 @@ class SPCHeader:
         Bcustom_axes = b"\x00".join([bytes(ax, encoding="utf-8") for ax in self.custom_axes.default_factory()])
         Bcustom_axes = fit_byte_block(bytearray(Bcustom_axes), AXES_LIMIT)
         log_offset = self.calc_log_offset(self.file_type, self.num_subfiles, self.x_values, self.y_values) # (flogoff)
-        if self.file_type & SPCFileType.TXYXYS:
-            Bnum_points = log_offset.to_bytes(4, byteorder="little") # dir offset is log offset without dir since dir comes before log
+        log.debug(f"calculated log offset to be {log_offset}")
+        if False and self.file_type & SPCFileType.TXYXYS and self.file_type & SPCFileType.TXVALS:
+            # dir offset is log offset without dir since dir comes before log
+            # per the spec num_points is the dir offset when there is a dir
+            log.debug(f"setting dir offset to {log_offset}, num subfiles is {self.num_subfiles}")
+            Bnum_points = log_offset.to_bytes(4, byteorder="little") 
             log_offset += self.num_subfiles * 12 # spc.h defines each dir entry as 12 bytes, one entry per subfile
+            log.debug(f"setting log offset to {log_offset}")
         if self.generate_log:
+            log.debug(f"setting log offset to {log_offset}")
             Blog_offset = pack("l", log_offset)
         else:
             Blog_offset = b"\x00\x00\x00\x00"
@@ -328,8 +334,9 @@ class SPCHeader:
         if file_type & SPCFileType.TMULTI and file_type & SPCFileType.TXYXYS:
             # multiply by 4 due to 32bit float
             for idx in range(len(x_values)):
-                log_offset += (len(x_values[idx]) * 4) * num_subfiles # chose clarity over conciseness here
-                log_offset += (len(y_values[idx]) * 4) * num_subfiles # first line represnets each x axis in subfile, second is each y
+                log.debug(f"for values idx {idx} adding to offset for x {len(x_values[idx]) * 4} and y {len(y_values[idx]) * 4}")
+                log_offset += (len(x_values[idx]) * 4) # chose clarity over conciseness here
+                log_offset += (len(y_values[idx]) * 4) # first line represnets each x axis in subfile, second is each y
         elif file_type & SPCFileType.TMULTI:
             for idx in range(len(y_values)):
                 log_offset += (len(y_values[idx]) * 4) * num_subfiles
@@ -381,6 +388,7 @@ class SPCSubheader:
                               Bw_axis_value,
                               extra
                               ])
+        log.debug(f"finished making sub header of lenght {len(subheader)}")
         return subheader
 
 @dataclass
@@ -595,10 +603,11 @@ class SPCFileWriter:
             dir_pointers.append(pointer)
             file_output = b"".join([file_output, subfile])
 
-        if self.file_type & SPCFileType.TXVALS and self.file_type & SPCFileType.TXYXYS:
+        if False and self.file_type & SPCFileType.TXVALS and self.file_type & SPCFileType.TXYXYS:
             file_output = b"".join([file_output, b"".join(dir_pointers)])
 
         if generate_log:
+            log.debug(f"generating spc log")
             log_head = SPCLog(self.log_data, self.log_text)
             log_header = log_head.generate_log_header()
             file_output = b"".join([file_output, log_header, self.log_data, self.log_text.encode()])
@@ -615,7 +624,9 @@ class SPCFileWriter:
         Boffset = offset.to_bytes(4, byteorder="little")
         Bsub_size = sub_size.to_bytes(4, byteorder="little")
         Bz_value = pack("f", z_val)
-        return b"".join([Boffset, Bsub_size, Bz_value])
+        pointer = b"".join([Boffset, Bsub_size, Bz_value])
+        log.debug(f"finished creating pointer of len {len(pointer)}")
+        return pointer
 
     def convert_points(self, data_points: np.ndarray) -> bytes:
         """
