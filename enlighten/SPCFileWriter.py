@@ -206,6 +206,8 @@ class SPCDate:
         year = int(time.year) << 20
         
         self.compressed_date = (minutes & hour & day & month & year).to_bytes(4, byteorder = "little")
+        log.debug(f"compressing year {year}, month {month}, day {day}, and hour {hour}")
+        log.debug(f"compressed date is {self.compressed_date}")
 
     def get(self):
         return self.compressed_date
@@ -279,6 +281,7 @@ class SPCHeader:
             Blog_offset = pack("l", log_offset)
         else:
             Blog_offset = b"\x00\x00\x00\x00"
+        log.debug(f"calc log offset to be {log_offset}")
         Bspectra_mod_flag = pack("l", self.spectra_mod_flag)
         Bprocess_code = self.process_code.to_bytes(1, byteorder = "little")
         Bmethod_file = fit_byte_block(bytearray(self.method_file), METHOD_FILE_LIMIT)
@@ -316,14 +319,15 @@ class SPCHeader:
         """
         log_offset = 0
         log_offset += 512 # length of header
-        if file_type & SPCFileType.TXVALS and not (file_type & SPCFileType.TXYXYS):
-            log_offset += num_points # number of points for common x axis
         log_offset += num_subfiles * 32 # add 32 bytes for each subheader
+        if file_type & SPCFileType.TXVALS and not (file_type & SPCFileType.TXYXYS):
+            log_offset += (num_points * 4) # number of points for common x axis
         if file_type & SPCFileType.TMULTI and file_type & SPCFileType.TXYXYS:
-            log_offset += num_points * num_subfiles # chose clarity over conciseness here
-            log_offset += num_points * num_subfiles # first line represnets each x axis in subfile, second is each y
+            # multiply by 4 due to 32bit float
+            log_offset += (num_points * 4) * num_subfiles # chose clarity over conciseness here
+            log_offset += (num_points * 4) * num_subfiles # first line represnets each x axis in subfile, second is each y
         else:
-            log_offset += num_points * num_subfiles # only a y axis in each sub file
+            log_offset += (num_points * 4) * num_subfiles # only a y axis in each sub file
         return int(log_offset) # should be int but just to be safe
 
 
@@ -383,10 +387,11 @@ class SPCLog:
         block_size = 64 + text_len + data_len
         mem_block = 4096 * round(block_size/4096)
         text_offset = 64 + data_len
-        Bblock_size = pack("l", block_size)
-        Bmem_size = pack("l", mem_block)
-        Btext_offset = pack("l", text_offset)
-        Bdata_len = pack("l", data_len)
+        log.debug(f"log encoding values text len {text_len}, data_len {data_len}, block_size {block_size}, mem_block {mem_block}")
+        Bblock_size = pack(">l", block_size)
+        Bmem_size = pack(">l", mem_block)
+        Btext_offset = pack(">l", text_offset)
+        Bdata_len = pack(">l", data_len)
         Bdisk_len = b"\x00\x00\x00\x00"
         Breserved = bytes(bytearray(b"\x00"*LOG_RESERVE_LIMIT))
         return b"".join([Bblock_size, Bmem_size, Btext_offset, Bdata_len, Bdisk_len, Breserved])
@@ -484,7 +489,6 @@ class SPCFileWriter:
                        z_values: np.ndarray = np.empty(shape=(0)),
                        w_values: np.ndarray = np.empty(shape=(0)),
                        ) -> bool:
-        global log # shouldn't need to have this here. Interperter is throwing an error for me for some reason though
         file_output = b""
         generate_log = False
         if x_values.size == 0:
@@ -588,8 +592,9 @@ class SPCFileWriter:
 
         if generate_log:
             log_head = SPCLog(self.log_data, self.log_text)
-            log = log_head.generate_log_header()
-            file_output = b"".join([file_output, log, self.log_data, self.log_text.encode()])
+            log_header = log_head.generate_log_header()
+            log.debug(f"before joining the log portions, file length is {len(file_output)}")
+            file_output = b"".join([file_output, log_header, self.log_data, self.log_text.encode()])
 
         try:
             with open(file_name, 'wb') as f:
