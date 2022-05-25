@@ -256,7 +256,12 @@ class SPCHeader:
         Bfile_version = self.file_version.to_bytes(1, byteorder = "little")
         Bexperiment_type = self.experiment_type.to_bytes(1, byteorder = "little")
         Bexponent = self.exponent.to_bytes(1, byteorder = "little", signed=True)
-        Bnum_points = self.num_points.to_bytes(4, byteorder="little")
+        if not (self.file_type & SPCFileType.TXVALS):
+            log.debug(f"header is even spaced, setting num points to count {self.num_points}")
+            Bnum_points = self.num_points.to_bytes(4, byteorder="little")
+        else:
+            log.debug(f"uneven, x will be specified, setting points count to 0")
+            Bnum_points = b"\x00\x00\x00\x00"
         Bfirst_x = pack("d", self.first_x)
         Blast_x = pack("d", self.last_x)
         Bnum_subfiles = pack("l", self.num_subfiles)
@@ -289,6 +294,7 @@ class SPCHeader:
             Blog_offset = pack("l", log_offset)
         else:
             Blog_offset = b"\x00\x00\x00\x00"
+        Blog_offset = b"\x00\x00\x00\x00"
         log.debug(f"calc log offset to be {log_offset}")
         Bspectra_mod_flag = pack("l", self.spectra_mod_flag)
         Bprocess_code = self.process_code.to_bytes(1, byteorder = "little")
@@ -309,6 +315,7 @@ class SPCHeader:
         new_line = '\n'
         log.debug(f"various field lengths are \n{f'{new_line}'.join([str(len(field)) for field in field_bytes])}")
         file_header = b"".join(field_bytes)
+        log.debug(f"file header is {file_header}")
 
         if len(file_header) < 512:
             log.error(f"file_header length is less than 512 length was {len(file_header)}") # this shouldn't happen
@@ -360,10 +367,11 @@ class SPCSubheader:
     def generate_subheader(self) -> bytes:
         log.debug(f"sub file flag is {self.subfile_flags}, exp is {self.exponent}")
         Bsubfile_flags = self.subfile_flags.to_bytes(1, byteorder="little")
-        Bexponent = pack("b", self.exponent)
-        Bsub_index = pack("H", self.sub_index)
-        Bstart_z = pack("f", self.start_z)
-        Bend_z = pack("f", self.end_z)
+        Bexponent = pack("<b", self.exponent)
+        log.debug(f"entering sub header bytes of {Bexponent}")
+        Bsub_index = pack("<H", self.sub_index)
+        Bstart_z = pack("<f", self.start_z)
+        Bend_z = pack("<f", self.end_z)
         if self.noise_value is None:
             Bnoise_value = b"\x00\x00\x00\x00"
         else:
@@ -504,6 +512,8 @@ class SPCFileWriter:
                        z_values: np.ndarray = np.empty(shape=(0)),
                        w_values: np.ndarray = np.empty(shape=(0)),
                        ) -> bool:
+        if self.file_type & SPCFileType.TMULTI:
+            log.debug(f"MULTIFILE")
         file_output = b""
         generate_log = False
         if x_values.size == 0:
@@ -515,8 +525,11 @@ class SPCFileWriter:
         else:
             first_x = np.amin(x_values)
             last_x = np.amax(x_values)
+            log.debug(f"setting first x to {first_x} and last x to {last_x}")
         if not (self.file_type & SPCFileType.TMULTI):
             points_count = len(y_values)
+        elif self.file_type & SPCFileType.TMULTI and not (self.file_type & SPCFileType.TXYXYS):
+            points_count = len(y_values[0]) # since x values are evenly spaced y values shouldn't be jagged array
         else:
             # num_points for XYXYXY is instead supposed to be the byte offset to the directory
             # or null and there is no directory
@@ -534,8 +547,8 @@ class SPCFileWriter:
         if len(self.log_data) > 0 or len(self.log_text) > 0:
             generate_log = True
 
-        By_values = self.convert_points(y_values)
-        Bx_values = self.convert_points(x_values)
+        By_values = self.convert_points(y_values, np.single)
+        Bx_values = self.convert_points(x_values, np.single)
 
         header = SPCHeader(
             file_type = self.file_type,
@@ -593,9 +606,18 @@ class SPCFileWriter:
                                    w_axis_value = w_val)
             sub_head = subheader.generate_subheader()
             if self.file_type & SPCFileType.TXYXYS:
-                bx = self.convert_points(x_values[i])
-                by = self.convert_points(y_values[i])
+                log.debug("IS TXYXYX")
+                convert_x = np.vectorize(lambda x: int(x*(2**(32))) )
+                xs = convert_x(np.ones(shape=(1952,)))
+                ys = convert_x(y_values[i])
+                log.debug(f"converting x values of {x_values[i]} to {xs}")
+                log.debug(f"converting to bytes y values of {y_values[i]} to {ys}")
+                bx = self.convert_points(xs, "<i4") #self.convert_points(np.ones(shape=(1952,)), "<f4")#self.convert_points(x_values[i], "<f4")
+                by = self.convert_points(ys, "<f4")
+                log.debug(f"bx len is {len(bx)}, by {len(by)} and sub {len(sub_head)}")
                 subfile = b"".join([sub_head, bx, by])
+            elif self.file_type & SPCFileType.TMULTI and not (self.file_type & SPCFileType.TXYXYS):
+                subfile = b"".join([sub_head, self.convert_points(y_values[i], "<f4")])
             else:
                 subfile = b"".join([sub_head, By_values])
 
@@ -603,8 +625,8 @@ class SPCFileWriter:
             dir_pointers.append(pointer)
             file_output = b"".join([file_output, subfile])
 
-        if self.file_type & SPCFileType.TXVALS and self.file_type & SPCFileType.TXYXYS:
-            file_output = b"".join([file_output, b"".join(dir_pointers)])
+        #if self.file_type & SPCFileType.TXVALS and self.file_type & SPCFileType.TXYXYS:
+        #    file_output = b"".join([file_output, b"".join(dir_pointers)])
 
         if generate_log:
             log.debug(f"generating spc log")
@@ -628,13 +650,13 @@ class SPCFileWriter:
         log.debug(f"finished creating pointer of len {len(pointer)}")
         return pointer
 
-    def convert_points(self, data_points: np.ndarray) -> bytes:
+    def convert_points(self, data_points: np.ndarray, conversion: np.dtype) -> bytes:
         """
         Takes a numpy array of data points and converts them to single precision floats.
         Then converts them to a string of bytes. Currently only supports the single precision.
         Does not support the spc specific exponent representation of floating point numbers.
         """
-        data_points = data_points.astype(np.float32)
+        data_points = data_points.astype(conversion)
         return data_points.tobytes()
 
             

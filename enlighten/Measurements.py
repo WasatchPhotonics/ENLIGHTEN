@@ -406,7 +406,7 @@ class Measurements(object):
         y_units = SPCYType.SPCYArb
         experiment_type = SPCTechType.SPCTechRmn
         current_x = self.save_options.multispec.graph.current_x_axis
-        file_type = SPCFileType.TMULTI | SPCFileType.TXYXYS | SPCFileType.TXVALS
+        file_type = SPCFileType.TMULTI
 
         for m in self.measurements:
             devices.append(m.spec.label)
@@ -426,6 +426,7 @@ class Measurements(object):
                     log.error(f"current x axis {current_x} doesn't match any valid values, returning without export")
                     return False
             ys.append(m.processed_reading.processed)
+        devices = list(set(devices)) # remove duplicates
         log_label = f"Exported from Wasatch Photonics ENLIGHTEN. Measurement devices were {' '.join(devices)}"
         np_xs = np.asarray(xs)
         np_ys = np.asarray(ys)
@@ -434,7 +435,7 @@ class Measurements(object):
                                experiment_type = experiment_type,
                                x_units = x_units,
                                y_units = y_units,
-                               log_text = log_label,
+                               #log_text = log_label,
                                )
         try:
             writer.write_spc_file(filename, y_values = np_ys, x_values = np_xs)

@@ -96,6 +96,10 @@ class SPCFileParser:
         for sub in data.sub:
             x = sub.x if fmt.endswith('-xy') else data.x
             log.debug(f"sub info is {sub.__dict__}")
+            try:
+                log.debug(f"y max is {max(sub.y)}, x max is {max(sub.x)}")
+            except:
+                pass
             label = basename if data.fnsub == 1 else ("%s-%02d" % (basename, sub.subindx))
             measurements.append(self.create_measurement_from_sub(x, sub.y, unit=unit, timestamp=timestamp, label=label))
 
