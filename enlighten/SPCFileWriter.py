@@ -282,11 +282,12 @@ class SPCHeader:
         Bcustom_axes = fit_byte_block(bytearray(Bcustom_axes), AXES_LIMIT)
         log_offset = self.calc_log_offset(self.file_type, self.num_subfiles, self.x_values, self.y_values) # (flogoff)
         log.debug(f"calculated log offset to be {log_offset}")
-        if self.file_type & SPCFileType.TXYXYS and self.file_type & SPCFileType.TXVALS:
+        if self.file_type & SPCFileType.TMULTI and self.file_type & SPCFileType.TXVALS:
             # dir offset is log offset without dir since dir comes before log
             # per the spec num_points is the dir offset when there is a dir
             log.debug(f"setting dir offset to {log_offset}, num subfiles is {self.num_subfiles}")
-            Bnum_points = log_offset.to_bytes(4, byteorder="little") 
+            if self.file_type & SPCFileType.TXYXYS:
+                Bnum_points = log_offset.to_bytes(4, byteorder="little") # only TXYXYS changes num_points to dir offset
             log_offset += self.num_subfiles * 12 # spc.h defines each dir entry as 12 bytes, one entry per subfile
             log.debug(f"setting log offset to {log_offset}")
         if self.generate_log:
@@ -625,8 +626,8 @@ class SPCFileWriter:
             dir_pointers.append(pointer)
             file_output = b"".join([file_output, subfile])
 
-        #if self.file_type & SPCFileType.TXVALS and self.file_type & SPCFileType.TXYXYS:
-        #    file_output = b"".join([file_output, b"".join(dir_pointers)])
+        if self.file_type & SPCFileType.TXVALS and self.file_type & SPCFileType.TXYXYS:
+            file_output = b"".join([file_output, b"".join(dir_pointers)])
 
         if generate_log:
             log.debug(f"generating spc log")

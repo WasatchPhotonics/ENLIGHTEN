@@ -435,7 +435,7 @@ class Measurements(object):
                                experiment_type = experiment_type,
                                x_units = x_units,
                                y_units = y_units,
-                               #log_text = log_label,
+                               log_text = log_label,
                                )
         try:
             writer.write_spc_file(filename, y_values = np_ys, x_values = np_xs[0])
