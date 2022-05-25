@@ -2,6 +2,9 @@
 
 # 3.2 Open-Source
 
+- 2022-05-19 3.2.5
+    - add 5th wavecal coeff to standard CSV format
+    - limit graph heights on Scope Setup
 - 2022-05-13 3.2.4
     - editing Thumbnail label now updates "Label" metadata in saved CSV
     - RamanID plugin
