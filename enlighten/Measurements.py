@@ -406,7 +406,7 @@ class Measurements(object):
         y_units = SPCYType.SPCYArb
         experiment_type = SPCTechType.SPCTechRmn
         current_x = self.save_options.multispec.graph.current_x_axis
-        file_type = SPCFileType.TMULTI
+        file_type = SPCFileType.TMULTI | SPCFileType.TXVALS
 
         for m in self.measurements:
             devices.append(m.spec.label)
@@ -438,7 +438,7 @@ class Measurements(object):
                                #log_text = log_label,
                                )
         try:
-            writer.write_spc_file(filename, y_values = np_ys, x_values = np_xs)
+            writer.write_spc_file(filename, y_values = np_ys, x_values = np_xs[0])
             return True
         except Exception as e:
             log.error(f"failed to write session to spc file due to error {e}. Returning without exporting.")

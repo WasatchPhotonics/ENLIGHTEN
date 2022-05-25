@@ -256,8 +256,8 @@ class SPCHeader:
         Bfile_version = self.file_version.to_bytes(1, byteorder = "little")
         Bexperiment_type = self.experiment_type.to_bytes(1, byteorder = "little")
         Bexponent = self.exponent.to_bytes(1, byteorder = "little", signed=True)
-        if not (self.file_type & SPCFileType.TXVALS):
-            log.debug(f"header is even spaced, setting num points to count {self.num_points}")
+        if not (self.file_type & SPCFileType.TXYXYS):
+            log.debug(f"header is even spaced or not XYXYXY, setting num points to count {self.num_points}")
             Bnum_points = self.num_points.to_bytes(4, byteorder="little")
         else:
             log.debug(f"uneven, x will be specified, setting points count to 0")
