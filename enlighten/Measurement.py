@@ -989,7 +989,7 @@ class Measurement(object):
                                           )
             case common.Axes.WAVENUMBERS:
                 spc_writer = SPCFileWriter.SPCFileWriter(SPCFileType.TXVALS,
-                                          x_units = SPCXType.SPCXCM,
+                                          x_units = SPCXType.SPCXWaven,
                                           y_units = SPCYType.SPCYCount,
                                           experiment_type = SPCTechType.SPCTechRmn,
                                           log_text = log_text,
