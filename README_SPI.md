@@ -29,6 +29,17 @@ Typical sequence:
 
 # Troubleshooting
 
+## Environment Variables
+
+    $ export BLINKA_FT232H=1
+
+## Missing backend
+
+MacOS:
+    $ export DYLD_LIBRARY_PATH=/usr/local/lib
+
+## FT232H Pin Assignments
+
 Wasatch.PY (specifically, SPIDevice.py) contains hard-coded assumptions about how
 your Adafruit FT232 is wired into the 15-pin Accessory Connector.  
 
