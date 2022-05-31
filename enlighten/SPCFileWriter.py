@@ -429,7 +429,8 @@ class SPCFileWriter:
     Created based on the spc file format.
     the primary method for writing files is via the write_spc_file method
     x data points and y data points are passed in via 2 different 2d arrays
-    Only new format is currently supported.
+    Only new format is currently supported. This was validated against Spectragryph
+    and the python spc_spectra library https://github.com/rohanisaac/spc
     """
     def __init__(self,
                  file_type: SPCFileType,
