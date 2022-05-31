@@ -429,8 +429,7 @@ class SPCFileWriter:
     Created based on the spc file format.
     the primary method for writing files is via the write_spc_file method
     x data points and y data points are passed in via 2 different 2d arrays
-    Only new format is currently supported. This was validated against Spectragryph
-    and the python spc_spectra library https://github.com/rohanisaac/spc
+    Only new format is currently supported.
     """
     def __init__(self,
                  file_type: SPCFileType,
@@ -450,9 +449,9 @@ class SPCFileWriter:
                  memo: str = "",
                  custom_axis_str: str = "",
                  spectra_mod_flag: SPCModFlags = SPCModFlags.Not,
-                 z_subfile_inc: float = 0.0,
+                 z_subfile_inc: float = 1.0,
                  num_w_planes: float = 0,
-                 w_plane_inc: float = 0.0,
+                 w_plane_inc: float = 1.0,
                  w_units: SPCXType = SPCXType.SPCXArb,
                  log_data: bytes = bytes(),
                  log_text: str = "",
@@ -612,14 +611,8 @@ class SPCFileWriter:
                                    w_axis_value = w_val)
             if self.file_type & SPCFileType.TXYXYS:
                 log.debug("IS TXYXYX")
-                subheader.exponent = self.calculate_exponent(x_values[i], y_values[i]) + 1 # plus one to shift extra for sign bit
-                convert_x = np.vectorize(lambda x: int(x*(2**(32))) >> subheader.exponent)
-                xs = x_values[i]#convert_x(x_values[i])
-                ys = y_values[i]#convert_x(y_values[i])
-                log.debug(f"converting x values of {x_values[i]} to {xs}")
-                log.debug(f"converting to bytes y values of {y_values[i]} to {ys}")
-                bx = self.convert_points(xs, "<f4") #self.convert_points(np.ones(shape=(1952,)), "<f4")#self.convert_points(x_values[i], "<f4")
-                by = self.convert_points(ys, "<f4")
+                bx = self.convert_points(x_values[i], "<f4") #self.convert_points(np.ones(shape=(1952,)), "<f4")#self.convert_points(x_values[i], "<f4")
+                by = self.convert_points(y_values[i], "<f4")
                 sub_head = subheader.generate_subheader()
                 log.debug(f"bx len is {len(bx)}, by {len(by)} and sub {len(sub_head)}")
                 subfile = b"".join([sub_head, bx, by])

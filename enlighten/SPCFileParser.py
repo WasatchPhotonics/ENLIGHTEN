@@ -4,6 +4,8 @@ import logging
 import re
 import os
 
+import numpy as np
+
 from .Measurement      import Measurement
 
 log = logging.getLogger(__name__)
@@ -91,10 +93,21 @@ class SPCFileParser:
         ########################################################################
         # instantiate each sub-file into a Measurement (some have own x-axis)
         ########################################################################
+        is_xyxy = data.txyxys
 
         measurements = []
         for sub in data.sub:
             x = sub.x if fmt.endswith('-xy') else data.x
+            if is_xyxy:
+                # spc_spectra library appears abandoned and has a few bugs
+                # here the issue is ONLY for XYXY files they interpert them as Galactic floats
+                # The standard seems to imply they are always IEEE floats
+                # this block converts them back to IEEE floats and reads them
+                x_to_raw = np.vectorize(lambda x: x/(2**(data.fexp-32)))
+                log.debug(f"orig x is {x}")
+                x_raw = x_to_raw(x)
+                log.debug(f"x_raw convert is {x_raw}")
+                x = np.frombuffer(x_raw.astype("<i4").tobytes(), "<f4")
             log.debug(f"sub info is {sub.__dict__}")
             try:
                 log.debug(f"y max is {max(sub.y)}, x max is {max(sub.x)}")
