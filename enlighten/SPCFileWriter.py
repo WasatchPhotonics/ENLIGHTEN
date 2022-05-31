@@ -240,14 +240,14 @@ class SPCHeader:
     memo: str = "" # (fcmnt)
     custom_axes: list[str] = field(default_factory=list) # (fcatxt)
     spectra_mod_flag: SPCModFlags = SPCModFlags.Not # (fmods)
-    process_code: SPCProcessCode = SPCProcessCode.PPCOMP # (fprocs) should normally be set to null according to old format file
+    process_code: SPCProcessCode = SPCProcessCode.PPNONE # (fprocs) should normally be set to null according to old format file
     calib_plus_one: int = b"\x00" # (flevel) old format doc says galactic internal use and should be null
     sample_inject: int = b"\x00\x00" # (fsampin) spc.h lists 1 as valid, old format doc says only for galactic internal use and should be null
     data_mul: float = b"\x00\x00\x00\x00" # (ffactor) old format doc says galactic internal use only and should be null
     method_file: str = b"\x00" # (fmethod) according to pdf it seems to just be the string rep of a file name for program data. Although old doc also says this should be null
-    z_subfile_inc: float = 1.0 # (fzinc)
+    z_subfile_inc: float = 0.0 # (fzinc)
     num_w_planes: float = 0 # (fwplanes)
-    w_plane_inc: float = 1.0 # (fwinc)
+    w_plane_inc: float = 0.0 # (fwinc)
     w_units: SPCXType = SPCXType.SPCXArb # (freserv)
     generate_log: bool = False
 
@@ -359,7 +359,7 @@ class SPCSubheader:
     exponent: int = -128 # (subexp) -128 so it will be an IEEE 32bit float
     sub_index: int = 0 # (subindx)
     start_z: float = 0.0 # (subtime) looking at spc.h, z appears to be a time value so won't pass array of data points like x or y
-    end_z: float = 0.0 # (subnext)
+    end_z: float = None # (subnext)
     noise_value: float = None # (subnois) should be null according to old format
     num_points: int = None # (subnpts) only needed for xyxy multifile
     num_coadded: int = None  # (subscan) should be null according to old format
@@ -372,7 +372,10 @@ class SPCSubheader:
         log.debug(f"entering sub header bytes of {Bexponent}")
         Bsub_index = pack("<H", self.sub_index)
         Bstart_z = pack("<f", self.start_z)
-        Bend_z = pack("<f", self.end_z)
+        if self.end_z is None:
+            Bend_z = pack("<f", self.start_z)
+        else:
+            Bend_z = pack("<f", self.end_z)
         if self.noise_value is None:
             Bnoise_value = b"\x00\x00\x00\x00"
         else:
@@ -446,9 +449,9 @@ class SPCFileWriter:
                  memo: str = "",
                  custom_axis_str: str = "",
                  spectra_mod_flag: SPCModFlags = SPCModFlags.Not,
-                 z_subfile_inc: float = 1.0,
+                 z_subfile_inc: float = 0.0,
                  num_w_planes: float = 0,
-                 w_plane_inc: float = 1.0,
+                 w_plane_inc: float = 0.0,
                  w_units: SPCXType = SPCXType.SPCXArb,
                  log_data: bytes = bytes(),
                  log_text: str = "",
@@ -531,6 +534,7 @@ class SPCFileWriter:
             points_count = len(y_values)
         elif self.file_type & SPCFileType.TMULTI and not (self.file_type & SPCFileType.TXYXYS):
             points_count = len(y_values[0]) # since x values are evenly spaced y values shouldn't be jagged array
+            self.exponent = self.calculate_exponent(x_values)
         else:
             # num_points for XYXYXY is instead supposed to be the byte offset to the directory
             # or null and there is no directory
@@ -605,21 +609,24 @@ class SPCFileWriter:
                                    sub_index = i, 
                                    num_points = points_count,
                                    w_axis_value = w_val)
-            sub_head = subheader.generate_subheader()
             if self.file_type & SPCFileType.TXYXYS:
                 log.debug("IS TXYXYX")
-                convert_x = np.vectorize(lambda x: int(x*(2**(32))) )
-                xs = convert_x(np.ones(shape=(1952,)))
-                ys = convert_x(y_values[i])
+                subheader.exponent = self.calculate_exponent(x_values[i], y_values[i]) + 1 # plus one to shift extra for sign bit
+                convert_x = np.vectorize(lambda x: int(x*(2**(32))) >> subheader.exponent)
+                xs = x_values[i]#convert_x(x_values[i])
+                ys = y_values[i]#convert_x(y_values[i])
                 log.debug(f"converting x values of {x_values[i]} to {xs}")
                 log.debug(f"converting to bytes y values of {y_values[i]} to {ys}")
-                bx = self.convert_points(xs, "<i4") #self.convert_points(np.ones(shape=(1952,)), "<f4")#self.convert_points(x_values[i], "<f4")
+                bx = self.convert_points(xs, "<f4") #self.convert_points(np.ones(shape=(1952,)), "<f4")#self.convert_points(x_values[i], "<f4")
                 by = self.convert_points(ys, "<f4")
+                sub_head = subheader.generate_subheader()
                 log.debug(f"bx len is {len(bx)}, by {len(by)} and sub {len(sub_head)}")
                 subfile = b"".join([sub_head, bx, by])
             elif self.file_type & SPCFileType.TMULTI and not (self.file_type & SPCFileType.TXYXYS):
+                sub_head = subheader.generate_subheader()
                 subfile = b"".join([sub_head, self.convert_points(y_values[i], "<f4")])
             else:
+                sub_head = subheader.generate_subheader()
                 subfile = b"".join([sub_head, By_values])
 
             pointer = self.generate_dir_pointer(len(file_output), len(subfile), z_val)
@@ -650,6 +657,29 @@ class SPCFileWriter:
         pointer = b"".join([Boffset, Bsub_size, Bz_value])
         log.debug(f"finished creating pointer of len {len(pointer)}")
         return pointer
+
+    def calculate_exponent(self, x_values: np.ndarray, y_values) -> int:
+        """
+        Exploits the fact that we are on a 64 bit architecutre.
+        any value greater than 1 results in a number greater than what a 32 bit int can hold.
+        We can hold that value and keep dividing by 2 until we get smaller than 32 bit.
+        This will then be our exponent. Since that final integer over 2^32 results in some decimal.
+        The left shift of that decimal should be our original number.
+        A max_x that is only a very small decimal should be very rare so shouldn't need to worry about
+        shifting the decimal right.
+        """
+        max_x = abs(np.amax(x_values))
+        max_y = abs(np.amax(y_values))
+        max_num = max([max_x, max_y])
+        product = max_num * (2**32)
+        exponent = 0
+        while product > 2**32:
+            product /= 2
+            exponent += 1
+            if exponent > 127:
+                log.error(f"exponent is only a signed byte. Cannot store greater than 127")
+                raise
+        return exponent
 
     def convert_points(self, data_points: np.ndarray, conversion: np.dtype) -> bytes:
         """

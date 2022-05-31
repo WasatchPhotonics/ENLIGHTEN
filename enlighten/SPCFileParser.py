@@ -98,6 +98,7 @@ class SPCFileParser:
             log.debug(f"sub info is {sub.__dict__}")
             try:
                 log.debug(f"y max is {max(sub.y)}, x max is {max(sub.x)}")
+                log.debug(f"axes lengths are y {len(sub.y)} and x {len(sub.x)}")
             except:
                 pass
             label = basename if data.fnsub == 1 else ("%s-%02d" % (basename, sub.subindx))
