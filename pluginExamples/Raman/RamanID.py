@@ -308,7 +308,8 @@ class RamanID(EnlightenPluginBase):
         logfile = open(pexpect_log, "w") 
 
         # this is the shell command we'll execute in pexpect
-        cmd = f"{RamanID.RAMAN_ID_EXE} --verbose --logfile {debug_log} --streaming --library {self.library_dir} 2>nul"
+        cmd = f'"{RamanID.RAMAN_ID_EXE}" --verbose --logfile "{debug_log}" --streaming --library "{self.library_dir}" 2>nul'
+        cmd.replace('\\', '/')
 
         # need to compare this to PluginWorker's timeout on connect()
         timeout_sec = 10 

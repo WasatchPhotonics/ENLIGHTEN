@@ -1,8 +1,10 @@
 import pyqtgraph
 import logging
-import numpy
+import numpy as np
 
 from . import util
+from . import common
+from wasatch import utils as wasatch_utils
 from .ScrollStealFilter import ScrollStealFilter
 
 log = logging.getLogger(__name__)
@@ -50,6 +52,44 @@ class Cursor(object):
         # add Cursor to Graph
         graph.cursor = self
 
+        self.px_to_wavelen = lambda x, spec: wasatch_utils.pixel_to_wavelength(x, spec.settings.eeprom.wavelength_coeffs)
+        self.wavelen_to_wavenum = lambda x, spec: wasatch_utils.wavelength_to_wavenumber(x, spec.settings.eeprom.excitation_nm_float)
+        self.wavenum_to_wavelen = lambda x, spec: wasatch_utils.wavenumber_to_wavelength(spec.settings.eeprom.excitation_nm_float, x)
+        # noticed you could walk the cursor for px_to_wavenum, 
+        # think it's an off by 1 error due to the 2 searchsorted
+        self.px_to_wavenum = lambda x, spec: wasatch_utils.wavelength_to_wavenumber(self.px_to_wavelen(x-1, spec), spec.settings.eeprom.excitation_nm_float)
+        self.conversions = {
+            (common.Axes.PIXELS,common.Axes.WAVELENGTHS): self.px_to_wavelen,
+            (common.Axes.PIXELS,common.Axes.WAVENUMBERS): self.px_to_wavenum,
+            (common.Axes.WAVELENGTHS,common.Axes.PIXELS): self.wavelen_to_pixels,
+            (common.Axes.WAVELENGTHS,common.Axes.WAVENUMBERS): self.wavelen_to_wavenum,
+            (common.Axes.WAVENUMBERS,common.Axes.PIXELS): self.wavenum_to_pixels,
+            (common.Axes.WAVENUMBERS,common.Axes.WAVELENGTHS): self.wavenum_to_wavelen,
+            }
+
+
+    def wavenum_to_pixels(self, x, spec):
+        log.debug(f"wave num to pixels called")
+        specs = self.multispec.get_spectrometers()
+        for spec in specs:
+            wavenums = spec.settings.wavenumbers
+            log.debug(f"checking spec with wavenums {wavenums[0]} and {wavenums[-1]}")
+            if x > wavenums[0] and x <= wavenums[-1]:
+                x = np.searchsorted(wavenums, x, side="right")
+                log.debug(f"new x value is {x}")
+                return x
+
+    def wavelen_to_pixels(self, x, spec):
+        log.debug(f"wave len to pixels called for value {x}")
+        specs = self.multispec.get_spectrometers()
+        for spec in specs:
+            wavelengths = spec.settings.wavelengths
+            log.debug(f"checking spec with wavelengths {wavelengths[0]} and {wavelengths[-1]}")
+            if x > wavelengths[0] and x <= wavelengths[-1]:
+                x = np.searchsorted(wavelengths, x, side="right")
+                log.debug(f"new x value is {x}")
+                return x
+
     def register_observer(self, callback):
         self.observers.append(callback)
 
@@ -88,6 +128,23 @@ class Cursor(object):
         util.decr_spinbox(self.ds_value)
         self.update()
 
+    def convert_location(self, old_axis, new_axis):
+        log.debug(f"convert location from {old_axis} to {new_axis}")
+        spec = self.multispec.current_spectrometer()
+        if spec is None:
+            log.debug(f"spec is none so not updating x")
+            return
+        x = self.cursor.getXPos()
+
+        conversion_func = self.conversions.get((old_axis,new_axis), None)
+        if conversion_func is None:
+            log.debug(f"conversion func is none so not updating x")
+            return
+
+        new_x = conversion_func(x, spec)
+        self.set_value(new_x)
+        self.update()
+    
     def update(self):
         if not self.cb_enable.isChecked():
             return
@@ -114,7 +171,7 @@ class Cursor(object):
             # https://stackoverflow.com/questions/2566412/find-nearest-value-in-numpy-array
             #
             # MZ: seems it would be worth offering interpolation here?
-            x = numpy.abs(x_axis - x).argmin() 
+            x = np.abs(x_axis - x).argmin() 
             y = spectrum[x]
 
             # display the corresponding spectral value

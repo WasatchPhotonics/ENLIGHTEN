@@ -250,6 +250,7 @@ class Multispec(object):
             for spec in self.get_spectrometers():
                 if spec.app_state.hidden or spec.curve is None:
                     self.unhide(spec)
+                    spec.curve.setPen(self.make_pen(spec))
                 else:
                     spec.curve.setPen(self.make_pen(spec))
 
@@ -362,6 +363,7 @@ class Multispec(object):
             return len(self.spectrometers)
         except:
             log.error("error returning spec length")
+            return 0
 
     def is_current_spectrometer(self, spec):
         return self.device_id is not None and self.device_id == spec.device_id
@@ -401,7 +403,7 @@ class Multispec(object):
         # another call to initialize_new_device (which is presumably what trigger-
         # ed this call to add() in the first place).
         self.combo_spectrometer.blockSignals(True)
-        self.combo_spectrometer.addItem(spec.label)
+        self.combo_spectrometer.addItem(spec.label.replace(" ", "\n"))
         index = self.combo_spectrometer.count() - 1
         self.combo_spectrometer.setCurrentIndex(index)
         self.combo_spectrometer.blockSignals(False)
@@ -532,7 +534,7 @@ class Multispec(object):
     # ##########################################################################
 
     def check_callback(self):
-        self.seen_model_colors = set()
+        self.seen_model_colors = {}
         self.update_spectrometer_colors()
 
     def update_spectrometer_colors(self):
@@ -570,8 +572,7 @@ class Multispec(object):
     def choose_color(self, spec):
         if self.is_autocolor() and spec.wp_model_info is not None:
             model_color = spec.wp_model_info.color
-            if model_color in self.seen_model_colors:
-
+            if model_color in self.seen_model_colors.keys() and self.seen_model_colors.get(model_color, None) != spec:
                 if spec.assigned_color is not None:
                     color = spec.assigned_color
                 else:
@@ -580,7 +581,7 @@ class Multispec(object):
                         color = self.colors.get_next_random()
             else:
                 color = model_color
-                self.seen_model_colors.add(color)
+                self.seen_model_colors[color] = spec
         else:
             color = self.colors.get_by_widget("scope")
             if color in self.seen_colors:
