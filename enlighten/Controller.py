@@ -2053,7 +2053,10 @@ class Controller:
         sfu = self.form.ui
         spec = self.current_spectrometer()
 
-        sn = spec.settings.eeprom.serial_number
+        # avoid corrupted data on unprogrammed EEPROMs
+        sn = "UNKNOWN"
+        if spec.settings.eeprom.serial_number is not None:
+            sn = util.printable(spec.settings.eeprom.serial_number)[:16]
 
         if not self.config.has_section(sn):
             log.debug("set_from_ini_file: %s not found in config", sn)
