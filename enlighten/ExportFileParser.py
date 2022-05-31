@@ -444,7 +444,7 @@ class ExportFileParser(object):
                         self.process_metadata(values)
                 
                 elif state == "looking_for_header":
-                    if field == "pixel":
+                    if field in ["pixel", "wavelength", "wavenumber"]:
                         self.process_header(values)
                         state = "reading_data"
                     elif self.format > 1 and len(field) > 0:
