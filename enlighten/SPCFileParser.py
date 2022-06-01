@@ -104,16 +104,8 @@ class SPCFileParser:
                 # The standard seems to imply they are always IEEE floats
                 # this block converts them back to IEEE floats and reads them
                 x_to_raw = np.vectorize(lambda x: x/(2**(data.fexp-32)))
-                log.debug(f"orig x is {x}")
                 x_raw = x_to_raw(x)
-                log.debug(f"x_raw convert is {x_raw}")
                 x = np.frombuffer(x_raw.astype("<i4").tobytes(), "<f4")
-            log.debug(f"sub info is {sub.__dict__}")
-            try:
-                log.debug(f"y max is {max(sub.y)}, x max is {max(sub.x)}")
-                log.debug(f"axes lengths are y {len(sub.y)} and x {len(sub.x)}")
-            except:
-                pass
             label = basename if data.fnsub == 1 else ("%s-%02d" % (basename, sub.subindx))
             measurements.append(self.create_measurement_from_sub(x, sub.y, unit=unit, timestamp=timestamp, label=label))
 

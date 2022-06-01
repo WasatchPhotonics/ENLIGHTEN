@@ -281,7 +281,6 @@ class SPCHeader:
         Bcustom_axes = b"\x00".join([bytes(ax, encoding="utf-8") for ax in self.custom_axes.default_factory()])
         Bcustom_axes = fit_byte_block(bytearray(Bcustom_axes), AXES_LIMIT)
         log_offset = self.calc_log_offset(self.file_type, self.num_subfiles, self.x_values, self.y_values) # (flogoff)
-        log.debug(f"calculated log offset to be {log_offset}")
         if self.file_type & SPCFileType.TMULTI and self.file_type & SPCFileType.TXVALS:
             # dir offset is log offset without dir since dir comes before log
             # per the spec num_points is the dir offset when there is a dir
@@ -289,14 +288,11 @@ class SPCHeader:
             if self.file_type & SPCFileType.TXYXYS:
                 Bnum_points = log_offset.to_bytes(4, byteorder="little") # only TXYXYS changes num_points to dir offset
             log_offset += self.num_subfiles * 12 # spc.h defines each dir entry as 12 bytes, one entry per subfile
-            log.debug(f"setting log offset to {log_offset}")
         if self.generate_log:
-            log.debug(f"setting log offset to {log_offset}")
             Blog_offset = pack("l", log_offset)
         else:
             Blog_offset = b"\x00\x00\x00\x00"
         Blog_offset = b"\x00\x00\x00\x00"
-        log.debug(f"calc log offset to be {log_offset}")
         Bspectra_mod_flag = pack("l", self.spectra_mod_flag)
         Bprocess_code = self.process_code.to_bytes(1, byteorder = "little")
         Bmethod_file = fit_byte_block(bytearray(self.method_file), METHOD_FILE_LIMIT)
@@ -314,9 +310,7 @@ class SPCHeader:
             Bz_subfile_inc, Bnum_w_planes, Bw_plane_inc, Bw_units, Breserved
             ]
         new_line = '\n'
-        log.debug(f"various field lengths are \n{f'{new_line}'.join([str(len(field)) for field in field_bytes])}")
         file_header = b"".join(field_bytes)
-        log.debug(f"file header is {file_header}")
 
         if len(file_header) < 512:
             log.error(f"file_header length is less than 512 length was {len(file_header)}") # this shouldn't happen
@@ -342,7 +336,6 @@ class SPCHeader:
         if file_type & SPCFileType.TMULTI and file_type & SPCFileType.TXYXYS:
             # multiply by 4 due to 32bit float
             for idx in range(len(x_values)):
-                log.debug(f"for values idx {idx} adding to offset for x {len(x_values[idx]) * 4} and y {len(y_values[idx]) * 4}")
                 log_offset += (len(x_values[idx]) * 4) # chose clarity over conciseness here
                 log_offset += (len(y_values[idx]) * 4) # first line represnets each x axis in subfile, second is each y
         elif file_type & SPCFileType.TMULTI:
@@ -366,10 +359,8 @@ class SPCSubheader:
     w_axis_value: float = 0.0 # (subwlevel)
 
     def generate_subheader(self) -> bytes:
-        log.debug(f"sub file flag is {self.subfile_flags}, exp is {self.exponent}")
         Bsubfile_flags = self.subfile_flags.to_bytes(1, byteorder="little")
         Bexponent = pack("<b", self.exponent)
-        log.debug(f"entering sub header bytes of {Bexponent}")
         Bsub_index = pack("<H", self.sub_index)
         Bstart_z = pack("<f", self.start_z)
         if self.end_z is None:
@@ -400,7 +391,6 @@ class SPCSubheader:
                               Bw_axis_value,
                               extra
                               ])
-        log.debug(f"finished making sub header of lenght {len(subheader)}")
         return subheader
 
 @dataclass
@@ -414,7 +404,6 @@ class SPCLog:
         block_size = 64 + text_len + data_len
         mem_block = 4096 * round(block_size/4096)
         text_offset = 64 + data_len
-        log.debug(f"log encoding values text len {text_len}, data_len {data_len}, block_size {block_size}, mem_block {mem_block}")
         Bblock_size = pack("l", block_size)
         Bmem_size = pack("l", mem_block)
         Btext_offset = pack("l", text_offset)
@@ -516,8 +505,6 @@ class SPCFileWriter:
                        z_values: np.ndarray = np.empty(shape=(0)),
                        w_values: np.ndarray = np.empty(shape=(0)),
                        ) -> bool:
-        if self.file_type & SPCFileType.TMULTI:
-            log.debug(f"MULTIFILE")
         file_output = b""
         generate_log = False
         if x_values.size == 0:
@@ -529,7 +516,6 @@ class SPCFileWriter:
         else:
             first_x = np.amin(x_values)
             last_x = np.amax(x_values)
-            log.debug(f"setting first x to {first_x} and last x to {last_x}")
         if not (self.file_type & SPCFileType.TMULTI):
             points_count = len(y_values)
         elif self.file_type & SPCFileType.TMULTI and not (self.file_type & SPCFileType.TXYXYS):
@@ -610,11 +596,9 @@ class SPCFileWriter:
                                    num_points = points_count,
                                    w_axis_value = w_val)
             if self.file_type & SPCFileType.TXYXYS:
-                log.debug("IS TXYXYX")
                 bx = self.convert_points(x_values[i], "<f4") #self.convert_points(np.ones(shape=(1952,)), "<f4")#self.convert_points(x_values[i], "<f4")
                 by = self.convert_points(y_values[i], "<f4")
                 sub_head = subheader.generate_subheader()
-                log.debug(f"bx len is {len(bx)}, by {len(by)} and sub {len(sub_head)}")
                 subfile = b"".join([sub_head, bx, by])
             elif self.file_type & SPCFileType.TMULTI and not (self.file_type & SPCFileType.TXYXYS):
                 sub_head = subheader.generate_subheader()
@@ -649,7 +633,6 @@ class SPCFileWriter:
         Bsub_size = sub_size.to_bytes(4, byteorder="little")
         Bz_value = pack("f", z_val)
         pointer = b"".join([Boffset, Bsub_size, Bz_value])
-        log.debug(f"finished creating pointer of len {len(pointer)}")
         return pointer
 
     def calculate_exponent(self, x_values: np.ndarray, y_values) -> int:

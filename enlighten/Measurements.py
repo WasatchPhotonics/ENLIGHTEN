@@ -355,7 +355,7 @@ class Measurements(object):
 
         if filename is None:
             now = datetime.datetime.now()
-            default_filename = "Session-" + now.strftime("%Y%m%d-%H%M%S.csv")
+            default_filename = "Session-" + now.strftime("%Y%m%d-%H%M%S")
 
             # prompt the user to override the default filename
             # @todo give Controller.form to GUI, add gui.promptString()
@@ -399,6 +399,7 @@ class Measurements(object):
     def export_session_spc(self, directory: str, filename: str) -> bool:
         if not filename.endswith(".spc"):
             filename += ".spc"
+        pathname = os.path.join(directory, filename)
 
         devices = []
         xs = []
@@ -436,10 +437,10 @@ class Measurements(object):
                                experiment_type = experiment_type,
                                x_units = x_units,
                                y_units = y_units,
-                               #log_text = log_label,
+                               log_text = log_label,
                                )
         try:
-            writer.write_spc_file(filename, y_values = np_ys, x_values = np_xs)
+            writer.write_spc_file(pathname, y_values = np_ys, x_values = np_xs)
             return True
         except Exception as e:
             log.error(f"failed to write session to spc file due to error {e}. Returning without exporting.")
