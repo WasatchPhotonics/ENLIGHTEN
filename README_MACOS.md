@@ -2,9 +2,17 @@
 
 The normal setup process seems to work, with just a few tweaks:
 
-- Use miniconda3 and the conda_win10.yml environment file to create a conda_enlighten3 environment.
-- Use pip to install the packages listed at the end of conda_win10.yml (including pyqtgraph).
-- scripts/rebuild_resources.sh seems to work as-is (follows the Linux conditionals).
+- Use miniconda3 and the conda-win10.yml environment file to create a conda_enlighten3 environment:
+
+    $ cp environments/conda-win10.yml environment.yml
+    $ conda env create -n conda_enlighten3
+    $ python -m pip install -r requirements.txt
+    $ pip install PySide2 pygtail pyusb pywavelets superman pyqtgraph matplotlib
+    $ scripts/rebuild_resources.sh
+
+Notes:
+
+- note that Python 3.10+ is required
 - designer.sh has a tweak to support MacOS.
 - wasatch.applog has a tweak to support both old "Darwin" and new "macOS" Python platforms.
 - scripts/enlighten.py has a tweak for Big Sur from here:
@@ -15,7 +23,7 @@ The normal setup process seems to work, with just a few tweaks:
     $ cd ~/work/code/enlighten
     $ conda activate conda_enlighten3
     $ export PYTHONPATH="../Wasatch.PY:pluginExamples:."
-    $ python scripts/Enlighten.py
+    $ python scripts/Enlighten.py --log-level debug 1>enlighten.out 2>enlighten.err
     
 # Installer Build Process
 

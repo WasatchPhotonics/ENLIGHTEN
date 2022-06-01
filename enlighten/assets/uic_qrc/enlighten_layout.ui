@@ -2065,7 +2065,7 @@ QComboBox QListView
         </sizepolicy>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>2</number>
        </property>
        <widget class="QWidget" name="page_hardware_setup">
         <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -2173,7 +2173,7 @@ QComboBox QListView
                        <x>0</x>
                        <y>0</y>
                        <width>688</width>
-                       <height>5900</height>
+                       <height>5662</height>
                       </rect>
                      </property>
                      <property name="minimumSize">
@@ -7316,8 +7316,8 @@ p, li { white-space: pre-wrap; }
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>1134</width>
-                    <height>932</height>
+                    <width>721</width>
+                    <height>930</height>
                    </rect>
                   </property>
                   <layout class="QVBoxLayout" name="verticalLayout">
@@ -8064,8 +8064,8 @@ p, li { white-space: pre-wrap; }
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>606</width>
-              <height>1368</height>
+              <width>656</width>
+              <height>1348</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -10003,6 +10003,12 @@ p, li { white-space: pre-wrap; }
             </property>
             <item>
              <widget class="QFrame" name="frame_scopeSetup_spectra_live_white">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>500</height>
+               </size>
+              </property>
               <property name="wpBox" stdset="0">
                <bool>false</bool>
               </property>
@@ -10154,6 +10160,12 @@ p, li { white-space: pre-wrap; }
             </item>
             <item>
              <widget class="QFrame" name="frame_scopeSetup_spectra_dark_white">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>500</height>
+               </size>
+              </property>
               <property name="wpBox" stdset="0">
                <bool>false</bool>
               </property>
@@ -10311,6 +10323,12 @@ p, li { white-space: pre-wrap; }
             </item>
             <item>
              <widget class="QFrame" name="frame_scopeSetup_spectra_reference_white">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>500</height>
+               </size>
+              </property>
               <property name="wpBox" stdset="0">
                <bool>false</bool>
               </property>
@@ -10454,6 +10472,19 @@ p, li { white-space: pre-wrap; }
               </layout>
              </widget>
             </item>
+            <item>
+             <spacer name="verticalSpacer_moveLower">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
            </layout>
           </widget>
          </item>
@@ -10521,7 +10552,7 @@ p, li { white-space: pre-wrap; }
                   <x>0</x>
                   <y>0</y>
                   <width>235</width>
-                  <height>671</height>
+                  <height>665</height>
                  </rect>
                 </property>
                 <property name="maximumSize">
@@ -13452,9 +13483,9 @@ p, li { white-space: pre-wrap; }
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-616</y>
+                <y>0</y>
                 <width>222</width>
-                <height>3084</height>
+                <height>3071</height>
                </rect>
               </property>
               <property name="styleSheet">
@@ -13681,6 +13712,12 @@ p, li { white-space: pre-wrap; }
                </item>
                <item>
                 <widget class="QFrame" name="frame_multiSpecWidget">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
@@ -13742,6 +13779,12 @@ p, li { white-space: pre-wrap; }
                      </property>
                      <item row="0" column="0">
                       <widget class="QFrame" name="frame_multiSpecWidget_black">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>0</width>
@@ -13778,6 +13821,18 @@ p, li { white-space: pre-wrap; }
                         </property>
                         <item>
                          <widget class="QComboBox" name="comboBox_multiSpec">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>50</height>
+                           </size>
+                          </property>
                           <property name="font">
                            <font>
                             <pointsize>10</pointsize>
@@ -13790,6 +13845,12 @@ p, li { white-space: pre-wrap; }
                           </property>
                           <property name="toolTip">
                            <string>Select spectrometer to control</string>
+                          </property>
+                          <property name="editable">
+                           <bool>false</bool>
+                          </property>
+                          <property name="currentText">
+                           <string>WP-785-L</string>
                           </property>
                           <item>
                            <property name="text">
