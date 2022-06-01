@@ -2,6 +2,8 @@
 
 # 3.2 Open-Source
 
+- 2022-06-01 3.2.7
+    - add spc file writer
 - 2022-05-19 3.2.5
     - add 5th wavecal coeff to standard CSV format
     - limit graph heights on Scope Setup
