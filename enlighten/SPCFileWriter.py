@@ -81,7 +81,7 @@ class SPCFileType(IntFlag):
     TXVALS = 128	# Non even X values, must pass full x array 
 
 # From GRAMSDDE.h
-# Currenlty only support PPNONE
+# Currently only support PPNONE
 class SPCProcessCode(IntFlag):
     PPNONE	= 0    # No post processing 
     PPCOMP	= 1    # Compute (run PPCOMP?.ABP) 
@@ -94,7 +94,7 @@ class SPCProcessCode(IntFlag):
     PPUSER	= 128  # General user-written post program (run PPUSER?.ABP) 
 
 class SPCModFlags(IntFlag):
-    Not = 0 # unmodified
+    UNMOD = 0 # unmodified
     A = 2**1 # Averaging (from multiple source traces)
     B = 2**2 # Baseline correction or offset functions
     C = 2**3 # Interferogram to spectrum Computation
@@ -105,7 +105,7 @@ class SPCModFlags(IntFlag):
     O = 2**15 # Other functions (add, subtract, noise, etc.)
     S = 2**19 # Spectral Subtraction
     T = 2**20 # Truncation (only a portion of original X axis remains)
-    W = 2**20 # When collected (date and time information) has been modified
+    W = 2**23 # When collected (date and time information) has been modified
     X = 2**24 # X units conversions or X shifting
     Y = 2**25 # Y units conversions (transmission->absorbance, etc.)
     Z = 2**26 # Zap functions (features removed or modified)
@@ -270,7 +270,7 @@ class SPCHeader:
     peak_point: float = 0 # (fpeakpt) Interferogram peak point, associated with y_units = 2 
     memo: str = "" # (fcmnt)
     custom_axes: list[str] = field(default_factory=list) # (fcatxt)
-    spectra_mod_flag: SPCModFlags = SPCModFlags.Not # (fmods)
+    spectra_mod_flag: SPCModFlags = SPCModFlags.UNMOD # (fmods)
     # For proc codes see https://github.com/bz-dev/spc-sdk/blob/master/GRAMSDDE.H#L104
     # There are two defines for the value 1. This is explained more in their comments.
     # Rather than repeat this, I just use PPCOMP for a default of 1.
@@ -470,7 +470,7 @@ class SPCFileWriter:
                  custom_units: list[str] = field(default_factory=list),
                  memo: str = "",
                  custom_axis_str: str = "",
-                 spectra_mod_flag: SPCModFlags = SPCModFlags.Not,
+                 spectra_mod_flag: SPCModFlags = SPCModFlags.UNMOD,
                  z_subfile_inc: float = 1.0,
                  num_w_planes: float = 0,
                  w_plane_inc: float = 1.0,
