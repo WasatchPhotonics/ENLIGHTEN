@@ -100,7 +100,7 @@ class SPCFileParser:
             x = sub.x if fmt.endswith('-xy') else data.x
             if is_xyxy:
                 # spc_spectra library appears abandoned and has a few bugs
-                # here the issue is ONLY for XYXY files they interpert them as Galactic floats
+                # here the issue is ONLY for XYXY files they interpret them as Galactic floats
                 # The standard seems to imply they are always IEEE floats
                 # this block converts them back to IEEE floats and reads them
                 x_to_raw = np.vectorize(lambda x: x/(2**(data.fexp-32)))

@@ -1,7 +1,39 @@
+"""
+MIT License
+
+Copyright (c) 2022 Wasatch Photonics
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
 # See the following refernces for details on the .spc file format implementation
 # https://github.com/bz-dev/spc-sdk
 # https://www.yumpu.com/en/document/read/40416248/a-brief-guide-to-spc-file-format-and-using-gspcio
 # https://ensembles-eu.metoffice.gov.uk/met-res/aries/technical/GSPC_UDF.PDF
+
+# This file is meant to write the SPC file format.
+# It has been tested with file formats of Y, XY, XYYY, and XYXYXY
+# It was verified by parsing the outputs using the following tools
+# https://github.com/rohanisaac/spc
+# https://www.effemm2.de/spectragryph/
+# https://sciencesolutions.wiley.com/knowitall-spectroscopy-software/
+# XYXYXY files are successfully parsed by spectragryph and rohanisaac
+# KIA states they are invalid though.
 
 import os
 import sys
@@ -11,7 +43,6 @@ from struct import pack
 from datetime import datetime
 from dataclasses import dataclass, field
 from enum import IntEnum, IntFlag
-from tkinter import W
 
 import numpy as np
 
@@ -240,7 +271,10 @@ class SPCHeader:
     memo: str = "" # (fcmnt)
     custom_axes: list[str] = field(default_factory=list) # (fcatxt)
     spectra_mod_flag: SPCModFlags = SPCModFlags.Not # (fmods)
-    process_code: SPCProcessCode = SPCProcessCode.PPNONE # (fprocs) should normally be set to null according to old format file
+    # For proc codes see https://github.com/bz-dev/spc-sdk/blob/master/GRAMSDDE.H#L104
+    # There are two defines for the value 1. This is explained more in their comments.
+    # Rather than repeat this, I just use PPCOMP for a default of 1.
+    process_code: SPCProcessCode = SPCProcessCode.PPCOMP 
     calib_plus_one: int = b"\x00" # (flevel) old format doc says galactic internal use and should be null
     sample_inject: int = b"\x00\x00" # (fsampin) spc.h lists 1 as valid, old format doc says only for galactic internal use and should be null
     data_mul: float = b"\x00\x00\x00\x00" # (ffactor) old format doc says galactic internal use only and should be null
@@ -309,7 +343,6 @@ class SPCHeader:
             Bprocess_code, self.calib_plus_one, self.sample_inject, self.data_mul, Bmethod_file,
             Bz_subfile_inc, Bnum_w_planes, Bw_plane_inc, Bw_units, Breserved
             ]
-        new_line = '\n'
         file_header = b"".join(field_bytes)
 
         if len(file_header) < 512:
@@ -637,7 +670,7 @@ class SPCFileWriter:
 
     def calculate_exponent(self, x_values: np.ndarray, y_values) -> int:
         """
-        Exploits the fact that we are on a 64 bit architecutre.
+        Exploits the fact that we are on a 64 bit architecture.
         any value greater than 1 results in a number greater than what a 32 bit int can hold.
         We can hold that value and keep dividing by 2 until we get smaller than 32 bit.
         This will then be our exponent. Since that final integer over 2^32 results in some decimal.
