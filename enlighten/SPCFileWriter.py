@@ -82,7 +82,7 @@ class SPCFileType(IntFlag):
 
 # From GRAMSDDE.h
 # Currenlty only support PPNONE
-class SPCProcessCode(IntEnum):
+class SPCProcessCode(IntFlag):
     PPNONE	= 0    # No post processing 
     PPCOMP	= 1    # Compute (run PPCOMP?.ABP) 
     PPDLLC	= 2    # Compute with DLL (run PPCOMP?.DLL) 
