@@ -48,9 +48,10 @@ class ExportFileParser(object):
     A unit-test of sorts for this class can be found in 
     enlighten/scripts/split-spectra.py.
     """ 
-    def __init__(self, pathname, save_options):
+    def __init__(self, pathname, save_options, encoding="utf-8"):
         self.pathname = pathname
         self.save_options = save_options
+        self.encoding = encoding
 
         self.spectrometers = {}
         self.measurements  = []
@@ -425,7 +426,7 @@ class ExportFileParser(object):
         state = "reading_metadata"
         log.debug("loading %s", self.pathname)
         line_count = 0
-        with open(self.pathname, "r") as infile:
+        with open(self.pathname, "r", encoding=encoding) as infile:
             for line in infile:
                 line = line.strip()
                 values = [ x.strip() for x in line.split(",") ]

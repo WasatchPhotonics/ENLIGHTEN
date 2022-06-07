@@ -443,7 +443,7 @@ class Measurement(object):
                 value = self.get_metadata(code)
 
             label = label.replace("{%s}" % code, str(value))
-            log.debug("generate_label: {code} -> {value} (label now {label})")
+            log.debug(f"generate_label: {code} -> {value} (label now {label})")
 
     def generate_basename(self):
         if self.save_options is None:

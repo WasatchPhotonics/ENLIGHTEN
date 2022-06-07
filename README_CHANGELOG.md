@@ -2,6 +2,9 @@
 
 # 3.2 Open-Source
 
+- 2022-06-06 3.2.8
+    - auto-detect utf-8-sig encoding (common in Excel CSV)
+    - default loaded file labels to basename if no metadata found
 - 2022-05-19 3.2.5
     - add 5th wavecal coeff to standard CSV format
     - limit graph heights on Scope Setup

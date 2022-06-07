@@ -158,9 +158,10 @@ class DashFileParser(object):
     including those given).
     """
 
-    def __init__(self, pathname, save_options):
+    def __init__(self, pathname, save_options, encoding="utf-8"):
         self.pathname = pathname
         self.save_options = save_options
+        self.encoding = encoding
 
         # all the DashSpectrometers we've seen in this file
         self.specs = {}
@@ -221,7 +222,7 @@ class DashFileParser(object):
         # for the prefix metadata fields.  All of the array data (whether pixels,
         # wavelengths or wavenumbers, or processed, raw, dark or reference 
         # spectra) will go into a single array element csv_in['remainder'].
-        csv_in = csv.DictReader(open(self.pathname, 'r'), Measurement.CSV_HEADER_FIELDS, 'remainder')
+        csv_in = csv.DictReader(open(self.pathname, 'r', encoding=self.encoding), Measurement.CSV_HEADER_FIELDS, 'remainder')
 
         readcount       =  0 # physical file line 
         last_linenumber = -1 # Line Number
