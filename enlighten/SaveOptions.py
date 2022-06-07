@@ -122,7 +122,7 @@ class SaveOptions(object):
         self.update_widgets()
 
         # not yet implemented
-        self.cb_spc.setVisible(False)
+        #self.cb_spc.setVisible(False)
 
         # ######################################################################
         # binding

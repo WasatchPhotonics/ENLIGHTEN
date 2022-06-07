@@ -1,12 +1,16 @@
 import datetime
 import logging
 import copy
+import json
 import csv
 import os
 
+import numpy as np
 from PySide2 import QtGui, QtWidgets
 
 from .Measurement import Measurement
+from SPyC_Writer import SPCFileWriter
+from SPyC_Writer.SPCEnums import SPCFileType, SPCXType, SPCYType, SPCTechType
 
 from . import common
 from . import util
@@ -351,7 +355,7 @@ class Measurements(object):
 
         if filename is None:
             now = datetime.datetime.now()
-            default_filename = "Session-" + now.strftime("%Y%m%d-%H%M%S.csv")
+            default_filename = "Session-" + now.strftime("%Y%m%d-%H%M%S")
 
             # prompt the user to override the default filename
             # @todo give Controller.form to GUI, add gui.promptString()
@@ -379,6 +383,9 @@ class Measurements(object):
         if self.save_options.save_json():
             self.export_session_json(directory, filename, export)
 
+        if self.save_options.save_spc():
+            self.export_session_spc(directory, filename)
+
         for callback in self.observers["export"]:
             callback(export)
 
@@ -388,6 +395,56 @@ class Measurements(object):
     def generate_export_dict(self) -> list[dict]:
         export = [m.to_dict() for m in self.measurements]
         return export
+
+    def export_session_spc(self, directory: str, filename: str) -> bool:
+        if not filename.endswith(".spc"):
+            filename += ".spc"
+        pathname = os.path.join(directory, filename)
+
+        devices = []
+        xs = []
+        ys = []
+        x_units = SPCXType.SPCXArb
+        y_units = SPCYType.SPCYArb
+        experiment_type = SPCTechType.SPCTechRmn
+        current_x = self.save_options.multispec.graph.current_x_axis
+        file_type = SPCFileType.TMULTI | SPCFileType.TXVALS | SPCFileType.TXYXYS | SPCFileType.TCGRAM
+
+        for m in self.measurements:
+            devices.append(m.spec.label)
+            match current_x:
+                case common.Axes.WAVELENGTHS:
+                    x_units = SPCXType.SPCXNMetr
+                    y_units = SPCYType.SPCYCount
+                    xs.append(m.spec.settings.wavelengths)
+                case common.Axes.WAVENUMBERS:
+                    x_units = SPCXType.SPCXCM
+                    y_units = SPCYType.SPCYCount
+                    xs.append(m.spec.settings.wavelengths)
+                case common.Axes.PIXELS:
+                    y_units = SPCYType.SPCYCount
+                    xs.append(list(range(m.spec.settings.eeprom.active_pixels_horizontal)))
+                case _:
+                    log.error(f"current x axis {current_x} doesn't match any valid values, returning without export")
+                    return False
+            ys.append(m.processed_reading.processed)
+        devices = list(set(devices)) # remove duplicates
+        log_label = f"Exported from Wasatch Photonics ENLIGHTEN. Measurement devices were {' '.join(devices)}"
+        np_xs = np.asarray(xs)
+        np_ys = np.asarray(ys)
+
+        writer = SPCFileWriter.SPCFileWriter(file_type = file_type,
+                               experiment_type = experiment_type,
+                               x_units = x_units,
+                               y_units = y_units,
+                               log_text = log_label,
+                               )
+        try:
+            writer.write_spc_file(pathname, y_values = np_ys, x_values = np_xs)
+            return True
+        except Exception as e:
+            log.error(f"failed to write session to spc file due to error {e}. Returning without exporting.")
+            return False
 
     ##
     # Should this generate a JSON dict of Measurements (keyed on MeasurementID)
