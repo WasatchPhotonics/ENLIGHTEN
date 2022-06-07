@@ -98,6 +98,7 @@ class SPCFileParser:
         measurements = []
         for sub in data.sub:
             x = sub.x if fmt.endswith('-xy') else data.x
+            log.debug(f"parse sub data is {sub.__dict__}")
             if is_xyxy:
                 # spc_spectra library appears abandoned and has a few bugs
                 # here the issue is ONLY for XYXY files they interpret them as Galactic floats

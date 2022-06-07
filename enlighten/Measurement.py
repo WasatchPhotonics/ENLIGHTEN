@@ -980,10 +980,11 @@ class Measurement(object):
         today_dir = self.generate_today_dir()
         current_x = self.save_options.multispec.graph.current_x_axis # a round about way to get the x axis, but it works
         log_text = f"Exported from Wasatch Photonics ENLIGHTEN.\nDevice {self.spec.label}"
+        self.processed_reading.processed = numpy.asarray([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])
         if use_basename:
             pathname = "%s.spc" % self.basename
         else:
-            pathname = os.path.join(today_dir, "%s.spc" % self.generate_filename())
+            pathname = os.path.join(today_dir, "%s.spc" % self.generate_basename())
         match current_x:
             case common.Axes.WAVELENGTHS:
                 spc_writer = SPCFileWriter.SPCFileWriter(SPCFileType.TXVALS,

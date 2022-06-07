@@ -219,17 +219,15 @@ class SPCPostDisposition(IntEnum):
     PSTASK	= 8    # Query user: save, keep, or both (ABC Driver Only!) 
 
 class SPCSubfileFlags(IntEnum):
-    SUBNONE = 0 # No changes flag, this will likely be the ony one used. The others seem to be for software that regularly change .spc files
+    SUBNONE = 0 # No changes flag, this will likely be the only one used. The others seem to be for software that regularly change .spc files
     SUBCHGD = 1	# Subflags bit if subfile changed 
     SUBNOPT = 8	# Subflags bit if peak table file should not be used 
-    SUBMODF = 128	# Subflgs bit if subfile modified by arithmetic 
+    SUBMODF = 128	# Subflags bit if subfile modified by arithmetic 
 
 class SPCDate:
     def __init__(self, time: datetime = None) -> None:
         if time is None:
             time = datetime.datetime.now()
-
-        self.compressed_date = int(0)
 
         minutes = int(time.minute) 
         hour = int(time.hour) << 6
@@ -553,11 +551,11 @@ class SPCFileWriter:
             points_count = len(y_values)
         elif self.file_type & SPCFileType.TMULTI and not (self.file_type & SPCFileType.TXYXYS):
             points_count = len(y_values[0]) # since x values are evenly spaced y values shouldn't be jagged array
-            self.exponent = self.calculate_exponent(x_values)
         else:
             # num_points for XYXYXY is instead supposed to be the byte offset to the directory
             # or null and there is no directory
             points_count = 0 
+            self.exponent = self.calculate_exponent(x_values, y_values)
         if len(y_values.shape) == 1:
             num_traces = 1
         else:
@@ -610,8 +608,10 @@ class SPCFileWriter:
             w_val = 0
             if w_values.size != 0:
                 w_val = w_values[math.floor(i/w_values(len))]
-            if SPCFileType.TXYXYS & self.file_type:
+            if SPCFileType.TMULTI & self.file_type:
                 points_count = len(y_values[i]) # inverse from header, header it is 0, here it's the length of a specific y input
+            else:
+                points_count = -128
             sub_header = b""
             match len(z_values):
                 case 0:
