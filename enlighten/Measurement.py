@@ -12,8 +12,8 @@ from wasatch.ProcessedReading import ProcessedReading
 
 from . import common
 from . import util
-from . import SPCFileWriter
-from .SPCFileWriter import SPCFileType, SPCTechType, SPCXType, SPCYType 
+from SPyC_Writer import SPCFileWriter
+from SPyC_Writer.SPCEnums import SPCFileType, SPCXType, SPCYType, SPCTechType
 
 from wasatch.SpectrometerSettings import SpectrometerSettings
 from wasatch import utils as wasatch_utils
@@ -980,7 +980,6 @@ class Measurement(object):
         today_dir = self.generate_today_dir()
         current_x = self.save_options.multispec.graph.current_x_axis # a round about way to get the x axis, but it works
         log_text = f"Exported from Wasatch Photonics ENLIGHTEN.\nDevice {self.spec.label}"
-        self.processed_reading.processed = numpy.asarray([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])
         if use_basename:
             pathname = "%s.spc" % self.basename
         else:
