@@ -8,7 +8,6 @@ import os
 import numpy as np
 from PySide2 import QtGui, QtWidgets
 
-from . import SPCFileWriter
 from .Measurement import Measurement
 from SPyC_Writer import SPCFileWriter
 from SPyC_Writer.SPCEnums import SPCFileType, SPCXType, SPCYType, SPCTechType
