@@ -440,6 +440,7 @@ class Controller:
         # refresh the list of visible spectrometers on the BLE list
         self.ble_manager.check_complete_scans()
 
+        self.multispec.check_ejected_unplugged(self.bus.device_ids)
         ########################################################################
         # attempt connection to the first untried (not connected, not in-process)
         # device on the list
@@ -492,6 +493,9 @@ class Controller:
             # ignore devices we've already connected to in Multispec
             if self.multispec.is_connected(device_id):
                 # log.debug("connect_new: already connected: %s", device_id)
+                continue
+
+            if self.multispec.check_spec_user_ejected(device_id):
                 continue
 
             # this is not the spectrometer we're trying to connect

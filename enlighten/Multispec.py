@@ -7,6 +7,7 @@ import re
 
 from .Spectrometer import Spectrometer
 from .ScrollStealFilter import ScrollStealFilter
+from wasatch.DeviceID import DeviceID
 
 from . import util
 
@@ -47,7 +48,9 @@ class Multispec(object):
             model_info,
             reinit_callback,
             stylesheets,
-            
+            eject_button,
+            controller_disconnect,
+
             lockable_widgets):
 
         self.button_lock           = button_lock
@@ -63,9 +66,12 @@ class Multispec(object):
         self.layout_colors         = layout_colors
         self.model_info            = model_info
         self.stylesheets           = stylesheets
+        self.eject_button          = eject_button
+        self.controller_disconnect = controller_disconnect
         self.lockable_widgets      = lockable_widgets
 
         self.device_id = None
+        self.ejected = set()
         self.strip_features = []
         self.spectrometers = {}
         self.spec_most_recent_reads = {}
@@ -97,6 +103,7 @@ class Multispec(object):
         self.check_autocolor    .stateChanged           .connect(self.check_callback)
         self.check_hide_others  .stateChanged           .connect(self.check_hide_others_callback)
         self.combo_spectrometer .currentIndexChanged    .connect(self.combo_callback)
+        self.eject_button       .clicked                .connect(self.eject_current_spec)
         self.combo_spectrometer                         .installEventFilter(ScrollStealFilter(self.combo_spectrometer))
         self.button_lock        .clicked                .connect(self.lock_callback)
         self.button_color       .sigColorChanged        .connect(self.color_changed_callback)
@@ -234,6 +241,30 @@ class Multispec(object):
 
     def check_hide_others_callback(self):
         self.update_hide_others()
+
+    def check_ejected_unplugged(self, connected_devices: list[DeviceID]) -> None:
+        """
+        Goes through the set of ejected spectrometers and checks if they still appear
+        in the list of connected devices. If they don't, this means a user ejected spec has
+        been physically unplugged and should be removed from the set so the user can plug it back in
+        """
+        log.debug(f"checking ejections, connected list are {connected_devices} and {self.ejected}")
+        if len(self.ejected) == 0:
+            return
+        plugged_in = set(connected_devices)
+        physically_unplugged = self.ejected.difference(plugged_in)
+        self.ejected = {dev for dev in self.ejected if dev not in physically_unplugged}
+
+    def check_spec_user_ejected(self, device_id: DeviceID) -> bool:
+        return device_id in self.ejected
+
+    def eject_current_spec(self):
+        spec = self.current_spectrometer()
+        if spec is None:
+            return
+        self.controller_disconnect(spec)
+        log.debug(f"EJECT PERFORM")
+        self.ejected.add(spec.device.device_id)
 
     def update_hide_others(self):
         self.hide_others = self.check_hide_others.isChecked()
@@ -426,7 +457,8 @@ class Multispec(object):
     def get_combo_index(self, spec):
         label = spec.label
         for index in range(self.combo_spectrometer.count()):
-            this_label = self.combo_spectrometer.itemText(index) 
+            this_label = self.combo_spectrometer.itemText(index).replace('\n', ' ', 1) 
+            log.debug(f"COMBO IDX checking {label} matches {index} {this_label}")
             if label == this_label:
                 return index
         log.error("get_combo_index: failed to find %s", label)
