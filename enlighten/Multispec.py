@@ -455,7 +455,7 @@ class Multispec(object):
     def get_combo_index(self, spec):
         label = spec.label
         for index in range(self.combo_spectrometer.count()):
-            this_label = self.combo_spectrometer.itemText(index).replace('\n', ' ', 1) 
+            this_label = self.combo_spectrometer.itemText(index).replace('\n', ' ', 1) # needed since \n added to avoid cutting off label in gui 
             log.debug(f"COMBO IDX checking {label} matches {index} {this_label}")
             if label == this_label:
                 return index
