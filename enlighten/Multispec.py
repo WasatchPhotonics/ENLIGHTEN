@@ -248,7 +248,6 @@ class Multispec(object):
         in the list of connected devices. If they don't, this means a user ejected spec has
         been physically unplugged and should be removed from the set so the user can plug it back in
         """
-        log.debug(f"checking ejections, connected list are {connected_devices} and {self.ejected}")
         if len(self.ejected) == 0:
             return
         plugged_in = set(connected_devices)
@@ -263,7 +262,6 @@ class Multispec(object):
         if spec is None:
             return
         self.controller_disconnect(spec)
-        log.debug(f"EJECT PERFORM")
         self.ejected.add(spec.device.device_id)
 
     def update_hide_others(self):
