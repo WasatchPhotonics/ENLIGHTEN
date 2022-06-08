@@ -1,7 +1,8 @@
 # Version History
 
 # 3.2 Open-Source
-
+- 2022-06-08 3.2.8
+    - add eject button feature
 - 2022-06-01 3.2.7
     - add spc file writer
 - 2022-05-19 3.2.5
