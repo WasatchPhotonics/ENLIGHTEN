@@ -2,6 +2,25 @@
 
 # 3.2 Open-Source
 
+- 2022-06-01 3.2.7
+    - add spc file writer
+- 2022-05-31 3.2.6
+    - fix import error for files exported without pixel header
+- 2022-05-19 3.2.5
+    - add 5th wavecal coeff to standard CSV format
+    - limit graph heights on Scope Setup
+- 2022-05-13 3.2.4
+    - editing Thumbnail label now updates "Label" metadata in saved CSV
+    - RamanID plugin
+        - removed SimpleRamanID 
+        - quoted pathnames
+    - cursor fixes when changing x-axis / switching spectrometer
+    - improve readability of connected spectrometer names 
+    - fix "auto-color" retention
+    - added redistributables to source distribution
+    - Andor fan control
+- 2022-05-11 3.2.3
+    - fixed interlock monitoring (driver-only change)
 - 2022-05-06 3.2.2
     - support .asc files from Andor Solis
 - 2022-05-04 3.2.1

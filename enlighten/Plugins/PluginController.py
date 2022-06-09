@@ -741,6 +741,7 @@ class PluginController:
             button_zoom         = self.graph_scope.button_zoom,
             cb_marker           = self.graph_scope.cb_marker,
             combo_axis          = self.graph_scope.combo_axis,
+            init_graph_axis     = False
         )
 
         # create curves for each series

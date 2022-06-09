@@ -16,7 +16,8 @@ application.
       can be modules (files) within it
 """
     
-VERSION = "3.2.2"
+VERSION = "3.2.7"
+
 """ ENLIGHTEN's application version number (checked by scripts/deploy and bootstrap.bat) """
 
 class Techniques(IntEnum):

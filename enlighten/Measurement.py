@@ -12,6 +12,8 @@ from wasatch.ProcessedReading import ProcessedReading
 
 from . import common
 from . import util
+from SPyC_Writer import SPCFileWriter
+from SPyC_Writer.SPCEnums import SPCFileType, SPCXType, SPCYType, SPCTechType
 
 from wasatch.SpectrometerSettings import SpectrometerSettings
 from wasatch import utils as wasatch_utils
@@ -170,6 +172,8 @@ log = logging.getLogger(__name__)
 # There are various ways we could address this weakness (e.g., snap a Deep Copy 
 # of Settings on pause()), but it's not a priority at this time.
 #
+# @todo more robust / defined behavior with duplicate labels across Measurements
+#       (currently has some graphing glitches when adding / removing traces)
 class Measurement(object):
 
     ##
@@ -217,6 +221,7 @@ class Measurement(object):
                            'Baseline Correction Algo',
                            'ROI Pixel Start',
                            'ROI Pixel End',
+                           'CCD C4',
                            'Slit Width',
                            'Vignetted',
                            'Interpolated',
@@ -442,11 +447,14 @@ class Measurement(object):
             label = label.replace("{%s}" % code, str(value))
             log.debug("generate_label: {code} -> {value} (label now {label})")
 
-    def generate_filename(self):
+    def generate_basename(self):
         if self.save_options is None:
             return self.measurement_id
         else:
-            return self.save_options.wrap_name(self.measurement_id)
+            if self.renamed_manually and self.save_options.allow_rename_files():
+                return self.label
+            else:
+                return self.save_options.wrap_name(self.measurement_id)
 
     def dump(self):
         log.debug("Measurement:")
@@ -532,7 +540,6 @@ class Measurement(object):
             return
 
         old_label = self.label
-        # log.debug("renaming from %s to %s", old_label, label)
 
         # drop old trace (technically all we need to do is rename the label)
         was_displayed = False
@@ -541,22 +548,26 @@ class Measurement(object):
             was_displayed = self.thumbnail_widget.is_displayed
             self.thumbnail_widget.remove_curve_from_graph(label=old_label) # remove using the old value
 
-        # apply new value
-        self.label = label
+        # if they removed the label, nothing more to do
         if label is None:
+            self.label = label
             return
 
-        # re-apply trace with new legend
-        if was_displayed:
-            self.thumbnail_widget.add_curve_to_graph()
+        self.label = label
 
         # rename the underlying file(s)
         if self.save_options.allow_rename_files():
             self.rename_files()
 
+        # re-apply trace with new legend
+        if was_displayed:
+            self.thumbnail_widget.add_curve_to_graph()
+
         if manual:
-            log.debug("noting that this measurement was manually renamed")
             self.renamed_manually = True
+
+        # re-save (update metadata on disk)
+        self.save()
 
     ##
     # The measurement has been relabled (say, "cyclohexane").  So if 
@@ -654,6 +665,9 @@ class Measurement(object):
 
         if self.save_options.save_json():
             self.save_json_file()
+
+        if self.save_options.save_spc():
+            self.save_spc_file()
 
     def save_csv_file(self):
         if self.save_options is not None and self.save_options.save_by_row():
@@ -881,7 +895,7 @@ class Measurement(object):
         ########################################################################
 
         today_dir = self.generate_today_dir()
-        pathname = os.path.join(today_dir, "%s.xls" % self.generate_filename())
+        pathname = os.path.join(today_dir, "%s.xls" % self.generate_basename())
         try:
             wbk.save(pathname)
             log.info("saved %s", pathname)
@@ -962,6 +976,50 @@ class Measurement(object):
         s = json.dumps(m, sort_keys=True, indent=2)
         return util.clean_json(s)
 
+    def save_spc_file(self, use_basename=False) -> None:
+        today_dir = self.generate_today_dir()
+        current_x = self.save_options.multispec.graph.current_x_axis # a round about way to get the x axis, but it works
+        log_text = f"Exported from Wasatch Photonics ENLIGHTEN.\nDevice {self.spec.label}"
+        if use_basename:
+            pathname = "%s.spc" % self.basename
+        else:
+            pathname = os.path.join(today_dir, "%s.spc" % self.generate_basename())
+        match current_x:
+            case common.Axes.WAVELENGTHS:
+                spc_writer = SPCFileWriter.SPCFileWriter(SPCFileType.TXVALS,
+                                          x_units = SPCXType.SPCXNMetr,
+                                          y_units = SPCYType.SPCYCount,
+                                          experiment_type = SPCTechType.SPCTechRmn,
+                                          log_text = log_text,
+                                          )
+                spc_writer.write_spc_file(pathname, 
+                                          self.processed_reading.processed, 
+                                          numpy.asarray(self.spec.settings.wavelengths), 
+                                          )
+            case common.Axes.WAVENUMBERS:
+                spc_writer = SPCFileWriter.SPCFileWriter(SPCFileType.TXVALS,
+                                          x_units = SPCXType.SPCXWaven,
+                                          y_units = SPCYType.SPCYCount,
+                                          experiment_type = SPCTechType.SPCTechRmn,
+                                          log_text = log_text,
+                                          )
+                spc_writer.write_spc_file(pathname, 
+                                          self.processed_reading.processed, 
+                                          numpy.asarray(self.spec.settings.wavenumbers),
+                                          )
+            case common.Axes.PIXELS:
+                spc_writer = SPCFileWriter.SPCFileWriter(SPCFileType.DEFAULT,
+                                          experiment_type = SPCTechType.SPCTechRmn,
+                                          log_text = log_text,
+                                          )
+                spc_writer.write_spc_file(pathname, 
+                                          self.processed_reading.processed,
+                                          y_units = SPCYType.SPCYCount,
+                                          )
+            case _:
+                log.error(f"current x axis doesn't match vaild values. Aborting SPC save")
+                return
+
     ##
     # Save the Measurement in a JSON file for simplified programmatic parsing.
     # in the next column and so on (similar layout as the Excel output).
@@ -975,7 +1033,7 @@ class Measurement(object):
         if use_basename:
             pathname = "%s.json" % self.basename
         else:
-            pathname = os.path.join(today_dir, "%s.json" % self.generate_filename())
+            pathname = os.path.join(today_dir, "%s.json" % self.generate_basename())
 
         s = self.to_json()
         with open(pathname, "w", encoding='utf-8') as f:
@@ -1004,7 +1062,7 @@ class Measurement(object):
         if use_basename:
             pathname = "%s.%s" % (self.basename, ext)
         else:
-            pathname = os.path.join(today_dir, "%s.%s" % (self.generate_filename(), ext))
+            pathname = os.path.join(today_dir, "%s.%s" % (self.generate_basename(), ext))
 
         # vignetting
         roi = None
@@ -1171,7 +1229,7 @@ class Measurement(object):
             # anytime we save a CSV by-row, it becomes the implicit target for
             # subsequent appendage
             today_dir = self.generate_today_dir()
-            pathname = os.path.join(today_dir, "%s.csv" % self.generate_filename())
+            pathname = os.path.join(today_dir, "%s.csv" % self.generate_basename())
             log.debug("save_csv_file_by_row: creating pathname %s", pathname)
 
             self.save_options.reset_appendage(pathname)
@@ -1353,9 +1411,6 @@ class Measurement(object):
         # store the match
         self.declared_match = declared_match
         
-        # Dieter didn't like this: rename label on chart and object
-        # self.update_label(self.declared_match)
-
         # re-save files using current SaveOptions (will store new label, overwriting old files with old name)
         # (these will definitely be in TODAY directory, regardless of where they were loaded from)
         self.save()

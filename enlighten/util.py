@@ -64,6 +64,14 @@ def clean_list(a):
         return a.tolist()
     return a 
 
+def printable(s: str) -> str:
+    """ bang (!) through tilde (~) """
+    clean = ""
+    if s is not None:
+        for c in s:
+            clean += c if 32 < ord(c) < 127 else "."
+    return clean
+
 ################################################################################
 # File Helpers
 ################################################################################

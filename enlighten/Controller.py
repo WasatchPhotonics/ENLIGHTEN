@@ -829,8 +829,6 @@ class Controller:
         for feature in [ self.dark_feature, self.reference_feature ]:
             feature.clear(quiet=True) if hotplug else feature.display()
 
-        # cursor
-        self.cursor.center()
 
         ########################################################################
         # Business Objects
@@ -839,6 +837,8 @@ class Controller:
         # Activate business objects which have connection / selection events
 
         if hotplug:
+            # cursor
+            self.cursor.center()
             for feature in [ self.accessory_control,
                              self.laser_control ]:
                 feature.init_hotplug()
@@ -2053,7 +2053,10 @@ class Controller:
         sfu = self.form.ui
         spec = self.current_spectrometer()
 
-        sn = spec.settings.eeprom.serial_number
+        # avoid corrupted data on unprogrammed EEPROMs
+        sn = "UNKNOWN"
+        if spec.settings.eeprom.serial_number is not None:
+            sn = util.printable(spec.settings.eeprom.serial_number)[:16]
 
         if not self.config.has_section(sn):
             log.debug("set_from_ini_file: %s not found in config", sn)
@@ -2198,11 +2201,6 @@ class Controller:
         if self.config.has_option(sn, name):
             value = ("TRUE" == self.config.get(sn, name).upper())
             widget.setChecked(value)
-
-    def update_label(self, sn, widget, name):
-        if self.config.has_option(sn, name):
-            value = self.config.get(sn, name)
-            widget.setText(value)
 
     # ##########################################################################
     # X-Axis Management
