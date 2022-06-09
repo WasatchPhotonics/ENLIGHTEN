@@ -44,6 +44,8 @@ class CloudManager:
             return
         self.restore_button = restore_button
         self.eeprom_editor = eeprom_editor
+        self.session = None
+        self.dynamo_resource = None
 
         self.result_message = QMessageBox(self.restore_button)
         self.result_message.setWindowTitle("Restore EEPROM Result")
@@ -51,9 +53,20 @@ class CloudManager:
 
         self.restore_button.clicked.connect(self.perform_restore)
 
+    def get_andor_eeprom(self, detector_serial: str) -> dict:
+        if self.session is None or self.dynamo_resource is None:
+            self.setup_connection()
+        if detector_serial is not None:
+            andor_table = self.dynamo_resource.Table("andor_EEPROM")
+            response = andor_table.get_item(Key={"detector_serial_number": detector_serial})
+            eeprom_response = response["Item"]
+            return eeprom_response.__dict__ # AWS response should be python object. This makes that object a dict
+        return {}
+
     def perform_restore(self) -> None:
         serial_number = self.prompt_for_serial()
-        self.setup_connection()
+        if self.session is None or self.dynamo_resource is None:
+            self.setup_connection()
         if serial_number is not None and self.session is not None:
             local_file, download_result = self.attempt_download(serial_number)
             if download_result:
