@@ -17,6 +17,7 @@ application.
 """
     
 VERSION = "3.2.7"
+
 """ ENLIGHTEN's application version number (checked by scripts/deploy and bootstrap.bat) """
 
 class Techniques(IntEnum):
