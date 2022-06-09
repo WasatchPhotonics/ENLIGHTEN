@@ -481,9 +481,9 @@ class ThumbnailWidget(QtWidgets.QFrame):
         try:
             self.curve = self.graph.add_curve(name=label, y=spectrum, x=x_axis, pen=pen, measurement=self.measurement)
         except:
-            return log.error("couldn't add Thumbnail trace to graph", exc_info=1)
+            log.error("couldn't add Thumbnail trace to graph", exc_info=1)
 
-        self.set_active(True)
+        self.set_active(self.curve is not None)
 
     ## Called by Measurement.save_csv_file_by_row to prevent attempts to rename
     # spectra appended as lines to an existing file.
