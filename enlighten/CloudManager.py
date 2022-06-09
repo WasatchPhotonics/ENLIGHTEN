@@ -60,7 +60,7 @@ class CloudManager:
             andor_table = self.dynamo_resource.Table("andor_EEPROM")
             response = andor_table.get_item(Key={"detector_serial_number": detector_serial})
             eeprom_response = response["Item"]
-            return eeprom_response.__dict__ # AWS response should be python object. This makes that object a dict
+            return dict(eeprom_response)
         return {}
 
     def perform_restore(self) -> None:
