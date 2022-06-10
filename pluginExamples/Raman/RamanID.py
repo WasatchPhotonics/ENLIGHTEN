@@ -22,7 +22,20 @@ log = logging.getLogger(__name__)
 # This is a sample ENLIGHTEN plugin which relays spectra to an external 
 # executable for Raman identification.
 #
-# There are several features of note:
+# It is important to understand the following:
+#
+# - This plugin is not, in and of itself, capable of performing Raman 
+#   identification. 
+# - This plugin COMMUNICATES with an external program providing Raman 
+#   identification. 
+# - Specifically, this program passes ENLIGHTEN spectra to the external 
+#   program, reads back the declared compound name / score (if any), and 
+#   displays them on the ENLIGHTEN GUI.
+#
+# - A sample C/C++ RamanID application is provided here, for demonstration
+#   purposes: [Enlighten-Simple-RamanID](https://github.com/WasatchPhotonics/Enlighten-Simple-RamanID)
+# - That program includes a pre-compiled Windows installer here:
+#   [MSI Installer](https://github.com/WasatchPhotonics/Enlighten-Simple-RamanID/tree/main/releases)
 #
 # @par External Client
 #
@@ -47,6 +60,10 @@ log = logging.getLogger(__name__)
 # 6. executable returns match results in NDJSON line at client's stdout
 # 7. plugin reads match results at plugin stdin
 # 8. plugin demarshalls JSON and populates EnlightenPluginResponse
+#
+# A sample external client meeting this specification is provided here for reference:
+#
+# - https://github.com/WasatchPhotonics/Enlighten-Simple-RamanID
 # 
 # @par ENLIGHTEN Blocking
 #
