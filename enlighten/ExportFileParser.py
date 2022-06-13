@@ -426,7 +426,7 @@ class ExportFileParser(object):
         state = "reading_metadata"
         log.debug("loading %s", self.pathname)
         line_count = 0
-        with open(self.pathname, "r", encoding=encoding) as infile:
+        with open(self.pathname, "r", encoding=self.encoding) as infile:
             for line in infile:
                 line = line.strip()
                 values = [ x.strip() for x in line.split(",") ]

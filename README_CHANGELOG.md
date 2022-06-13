@@ -2,6 +2,8 @@
 
 # 3.2 Open-Source
 
+- 2022-06-09 3.2.10
+    - fix "load export" bug introduced with 3.2.8
 - 2022-06-08 3.2.9
     - add eject button feature
 - 2022-06-06 3.2.8
