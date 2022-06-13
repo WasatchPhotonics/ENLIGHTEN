@@ -695,9 +695,10 @@ class Controller:
             else:
                 spec.settings.eeprom.excitation_nm_float = andor_eeprom["excitation_nm_float"]
                 spec.settings.eeprom.wavelength_coeffs = andor_eeprom["wavelength_coeffs"]
-                spec.settings.eeprom.detector = spec.setting.eeprom.serial_number
+                spec.settings.eeprom.detector_serial_number = spec.setting.eeprom.serial_number
                 spec.settings.eeprom.serial_number = andor_eeprom["wp_serial_number"]
                 spec.settings.eeprom.model = andor_eeprom["wp_model"]
+                sfu.label_detector_serial.setText(spec.settings.eeprom.detector_serial_number)
         ########################################################################
         # announce connection
         ########################################################################

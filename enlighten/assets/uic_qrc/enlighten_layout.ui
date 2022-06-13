@@ -2065,7 +2065,7 @@ QComboBox QListView
         </sizepolicy>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="page_hardware_setup">
         <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -2171,9 +2171,9 @@ QComboBox QListView
                      <property name="geometry">
                       <rect>
                        <x>0</x>
-                       <y>0</y>
-                       <width>688</width>
-                       <height>5662</height>
+                       <y>-5107</y>
+                       <width>1134</width>
+                       <height>5927</height>
                       </rect>
                      </property>
                      <property name="minimumSize">
@@ -6560,87 +6560,101 @@ QComboBox QListView
                                       </property>
                                      </widget>
                                     </item>
-                                    <item row="3" column="0">
+                                    <item row="4" column="0">
                                      <widget class="QLabel" name="label_ccd_temperature_raw">
                                       <property name="text">
                                        <string>0x000</string>
                                       </property>
                                      </widget>
                                     </item>
-                                    <item row="3" column="1">
+                                    <item row="4" column="1">
                                      <widget class="QLabel" name="label_19">
                                       <property name="text">
                                        <string>Raw CCD Temperature</string>
                                       </property>
                                      </widget>
                                     </item>
-                                    <item row="4" column="0">
+                                    <item row="5" column="0">
                                      <widget class="QLabel" name="label_secondary_adc_raw">
                                       <property name="text">
                                        <string>0x000</string>
                                       </property>
                                      </widget>
                                     </item>
-                                    <item row="4" column="1">
+                                    <item row="5" column="1">
                                      <widget class="QLabel" name="label_25">
                                       <property name="text">
                                        <string>Raw Secondary ADC</string>
                                       </property>
                                      </widget>
                                     </item>
-                                    <item row="5" column="0">
+                                    <item row="6" column="0">
                                      <widget class="QLabel" name="label_battery_raw">
                                       <property name="text">
                                        <string>0x000000</string>
                                       </property>
                                      </widget>
                                     </item>
-                                    <item row="5" column="1">
+                                    <item row="6" column="1">
                                      <widget class="QLabel" name="label_battery_parsed">
                                       <property name="text">
                                        <string>Battery</string>
                                       </property>
                                      </widget>
                                     </item>
-                                    <item row="7" column="0">
+                                    <item row="8" column="0">
                                      <widget class="QCheckBox" name="checkBox_sound_enable">
                                       <property name="text">
                                        <string />
                                       </property>
                                      </widget>
                                     </item>
-                                    <item row="7" column="1">
+                                    <item row="8" column="1">
                                      <widget class="QLabel" name="label_11">
                                       <property name="text">
                                        <string>Enable Sound Effects</string>
                                       </property>
                                      </widget>
                                     </item>
-                                    <item row="6" column="0">
+                                    <item row="7" column="0">
                                      <widget class="QLabel" name="label_ambient_temperature">
                                       <property name="text">
                                        <string>unknown</string>
                                       </property>
                                      </widget>
                                     </item>
-                                    <item row="6" column="1">
+                                    <item row="7" column="1">
                                      <widget class="QLabel" name="label_236">
                                       <property name="text">
                                        <string>Ambient Temperature</string>
                                       </property>
                                      </widget>
                                     </item>
-                                    <item row="2" column="0">
+                                    <item row="3" column="0">
                                      <widget class="QLabel" name="label_eeprom_digest">
                                       <property name="text">
                                        <string>0xabcde</string>
                                       </property>
                                      </widget>
                                     </item>
-                                    <item row="2" column="1">
+                                    <item row="3" column="1">
                                      <widget class="QLabel" name="label_240">
                                       <property name="text">
                                        <string>EEPROM Digest</string>
+                                      </property>
+                                     </widget>
+                                    </item>
+                                    <item row="2" column="0">
+                                     <widget class="QLabel" name="label_detector_serial">
+                                      <property name="text">
+                                       <string>none</string>
+                                      </property>
+                                     </widget>
+                                    </item>
+                                    <item row="2" column="1">
+                                     <widget class="QLabel" name="label_172">
+                                      <property name="text">
+                                       <string>Detector Serial Number</string>
                                       </property>
                                      </widget>
                                     </item>
@@ -7317,7 +7331,7 @@ p, li { white-space: pre-wrap; }
                     <x>0</x>
                     <y>0</y>
                     <width>721</width>
-                    <height>930</height>
+                    <height>932</height>
                    </rect>
                   </property>
                   <layout class="QVBoxLayout" name="verticalLayout">
@@ -8065,7 +8079,7 @@ p, li { white-space: pre-wrap; }
               <x>0</x>
               <y>0</y>
               <width>656</width>
-              <height>1348</height>
+              <height>1368</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -10552,7 +10566,7 @@ p, li { white-space: pre-wrap; }
                   <x>0</x>
                   <y>0</y>
                   <width>235</width>
-                  <height>665</height>
+                  <height>671</height>
                  </rect>
                 </property>
                 <property name="maximumSize">
@@ -13485,7 +13499,7 @@ p, li { white-space: pre-wrap; }
                 <x>0</x>
                 <y>0</y>
                 <width>222</width>
-                <height>3071</height>
+                <height>3097</height>
                </rect>
               </property>
               <property name="styleSheet">
