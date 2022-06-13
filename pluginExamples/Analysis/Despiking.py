@@ -50,8 +50,9 @@ class Despiking(EnlightenPluginBase):
 
     def process_request(self, request):
         """
-        @see Whitaker, Darren, and Kevin Hayes. 
-        "A Simple Algorithm for Despiking Raman Spectra." ChemRxiv (2018)
+        Implements an averaging window for pixels determined to be a spike.
+        Spike determination is made by determining a positive outlier z score 
+        followed by a negative outlier z score.
         """
         spiky_spectra = request.processed_reading.processed
         log.debug(f"got spiky_spectra {spiky_spectra}")
@@ -68,7 +69,11 @@ class Despiking(EnlightenPluginBase):
         np.insert(mod_z_scores, 0, 0) 
         mod_z_scores[0] = tau_outlier_criteria + 1
         mod_z_scores[-1] = tau_outlier_criteria + 1
-        candidate_idxs = [idx[0] for idx, value in np.ndenumerate(mod_z_scores) if abs(value) > tau_outlier_criteria]
+        outlier_id = np.vectorize(lambda x: abs(x) > tau_outlier_criteria)
+        above_threshold = outlier_id(mod_z_scores)
+        sign_diff_outliers = np.abs(np.diff(np.sign(np.multiply(above_threshold,mod_z_scores))))
+        # there should be a +1 because a diff always results in an array of length n-1 of original
+        candidate_idxs = [idx[0]+1 for idx, value in np.ndenumerate(sign_diff_outliers) if value == 2]
         self.interpolate_zs(spiky_spectra, mod_z_scores, candidate_idxs, tau_outlier_criteria, window_size_m)
         unit = self.enlighten_info.get_x_axis_unit()
         # set x axis info
@@ -88,10 +93,6 @@ class Despiking(EnlightenPluginBase):
                 "x": series_x,
                 "y": spiky_spectra,
                 },
-             "Detrended Diff": {
-                 'x': trend_x,
-                 'y': nabla_counts,
-                 },
               "Mod Z Scores": {
                  'x': trend_x,
                  'y': mod_z_scores,
