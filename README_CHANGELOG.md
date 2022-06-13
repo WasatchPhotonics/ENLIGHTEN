@@ -1,11 +1,14 @@
 # Version History
 
 # 3.2 Open-Source
-- 2022-06-09 3.2.9
+- 2022-06-09 3.2.10
     - convert cloud manager eeprom restore to dynamoDB
     - add getting andor eeprom from cloud
-- 2022-06-08 3.2.8
+- 2022-06-08 3.2.9
     - add eject button feature
+- 2022-06-06 3.2.8
+    - auto-detect utf-8-sig encoding (common in Excel CSV)
+    - default loaded file labels to basename if no metadata found
 - 2022-06-01 3.2.7
     - add spc file writer
 - 2022-05-19 3.2.5

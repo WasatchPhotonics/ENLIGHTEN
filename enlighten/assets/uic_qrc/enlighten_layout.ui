@@ -10839,8 +10839,8 @@ p, li { white-space: pre-wrap; }
                                   <rect>
                                    <x>0</x>
                                    <y>0</y>
-                                   <width>199</width>
-                                   <height>226</height>
+                                   <width>190</width>
+                                   <height>206</height>
                                   </rect>
                                  </property>
                                  <layout class="QVBoxLayout" name="verticalLayout_scope_capture_save_design">
@@ -12716,7 +12716,7 @@ p, li { white-space: pre-wrap; }
                                  <rect>
                                   <x>0</x>
                                   <y>0</y>
-                                  <width>360</width>
+                                  <width>96</width>
                                   <height>300</height>
                                  </rect>
                                 </property>
@@ -13834,44 +13834,77 @@ p, li { white-space: pre-wrap; }
                          <number>5</number>
                         </property>
                         <item>
-                         <widget class="QComboBox" name="comboBox_multiSpec">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="minimumSize">
-                           <size>
-                            <width>0</width>
-                            <height>50</height>
-                           </size>
-                          </property>
-                          <property name="font">
-                           <font>
-                            <pointsize>10</pointsize>
-                            <weight>50</weight>
-                            <bold>false</bold>
-                           </font>
-                          </property>
-                          <property name="focusPolicy">
-                           <enum>Qt::StrongFocus</enum>
-                          </property>
-                          <property name="toolTip">
-                           <string>Select spectrometer to control</string>
-                          </property>
-                          <property name="editable">
-                           <bool>false</bool>
-                          </property>
-                          <property name="currentText">
-                           <string>WP-785-L</string>
+                         <layout class="QHBoxLayout" name="horizontalLayout_multiSpec_colors_2">
+                          <property name="spacing">
+                           <number>0</number>
                           </property>
                           <item>
-                           <property name="text">
-                            <string>WP-785-L</string>
-                           </property>
+                           <widget class="QComboBox" name="comboBox_multiSpec">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                             <size>
+                              <width>0</width>
+                              <height>50</height>
+                             </size>
+                            </property>
+                            <property name="font">
+                             <font>
+                              <pointsize>10</pointsize>
+                              <weight>50</weight>
+                              <bold>false</bold>
+                             </font>
+                            </property>
+                            <property name="focusPolicy">
+                             <enum>Qt::StrongFocus</enum>
+                            </property>
+                            <property name="toolTip">
+                             <string>Select spectrometer to control</string>
+                            </property>
+                            <property name="editable">
+                             <bool>false</bool>
+                            </property>
+                            <property name="currentText">
+                             <string>WP-785-L</string>
+                            </property>
+                            <item>
+                             <property name="text">
+                              <string>WP-785-L</string>
+                             </property>
+                            </item>
+                           </widget>
                           </item>
-                         </widget>
+                          <item>
+                           <widget class="QPushButton" name="pushButton_eject">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                             <size>
+                              <width>30</width>
+                              <height>30</height>
+                             </size>
+                            </property>
+                            <property name="toolTip">
+                             <string>Eject the current spectrometer.</string>
+                            </property>
+                            <property name="text">
+                             <string />
+                            </property>
+                            <property name="icon">
+                             <iconset resource="grey_icons.qrc">
+                              <normaloff>:/greys/images/grey_icons/eject.svg</normaloff>:/greys/images/grey_icons/eject.svg</iconset>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
                         </item>
                         <item>
                          <layout class="QHBoxLayout" name="horizontalLayout_multiSpec_others">
@@ -17874,7 +17907,6 @@ p, li { white-space: pre-wrap; }
   <tabstop>pushButton_copy_to_clipboard</tabstop>
   <tabstop>scrollArea_scope_capture_details</tabstop>
   <tabstop>controlWidget_scrollArea</tabstop>
-  <tabstop>comboBox_multiSpec</tabstop>
   <tabstop>checkBox_enable_max_transmission</tabstop>
   <tabstop>spinBox_max_transmission_perc</tabstop>
   <tabstop>pushButton_laser_toggle</tabstop>

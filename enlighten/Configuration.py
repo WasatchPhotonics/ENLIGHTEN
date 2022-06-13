@@ -137,7 +137,7 @@ class Configuration(object):
 
         self.stub_dir()
         try:
-            with open(self.pathname, "w", newline="", encoding="utf_8") as outfile:
+            with open(self.pathname, "w", newline="", encoding="utf-8") as outfile:
                 header = """
                     # ENLIGHTEN configuration file
                     # 
@@ -167,7 +167,7 @@ class Configuration(object):
             log.debug("not found: %s", self.pathname)
             return
 
-        with open(self.pathname, encoding="utf_8") as infile:
+        with open(self.pathname, encoding="utf-8") as infile:
             self.lines = infile.readlines()
         self.lines = [x.strip() for x in self.lines] 
 
@@ -214,7 +214,7 @@ class Configuration(object):
                 section = None
                 seen = {}
 
-                with open(self.pathname, "w", newline="", encoding="utf_8") as outfile:
+                with open(self.pathname, "w", newline="", encoding="utf-8") as outfile:
 
                     def dump_keys():
                         if section is not None and section in seen and self.config.has_section(section):
