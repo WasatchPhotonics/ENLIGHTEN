@@ -2,6 +2,8 @@
 
 # 3.2 Open-Source
 
+- 2022-06-13 3.2.11
+    - add display for andor high gain
 - 2022-06-09 3.2.10
     - fix "load export" bug introduced with 3.2.8
 - 2022-06-08 3.2.9
