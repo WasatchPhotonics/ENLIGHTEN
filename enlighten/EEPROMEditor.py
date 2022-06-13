@@ -815,7 +815,7 @@ class EEPROMEditor(object):
             else:
                 log.debug(f"key {snake_case} not found in translation, returning as is")
             return snake_case
-        eeprom_dump = {captial_to_snake(key): item for key, item in eeprom_dump.items()}
+        eeprom_dump = {capital_to_snake(key): item for key, item in eeprom_dump.items()}
         eeprom_dump["excitation_nm_float"] = eeprom_dump["excitation_nm"]
         roi_starts = eeprom_dump["roi_vert_region_starts"]
         roi_ends = eeprom_dump["roi_vert_region_ends"]
@@ -847,7 +847,9 @@ class EEPROMEditor(object):
                 eeprom_json = json.load(eeprom_file)
 
         eeprom_dict = dict(eeprom_json)
-        if "reportID" in eeprom_dict:
+        eeprom_keys = list(eeprom_dict.keys())
+        if eeprom_keys[0].lower() != eeprom_keys[0]:
+            log.debug(f"capital case found, converting wpsc keys")
             eeprom_dict = self.parse_wpsc_report(eeprom_dict)
             if eeprom_dict == {}:
                 log.error(f"error in wpsc parse, receveid an empty dict")

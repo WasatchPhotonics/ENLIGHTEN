@@ -671,6 +671,7 @@ class Controller:
         ########################################################################
 
         device_id = device.device_id
+
         log.info("initialize_new_device: device_id %s", device_id)
 
         # infer if this is a "hotplug" situation
@@ -691,6 +692,17 @@ class Controller:
         self.multispec.update_hide_others()
         self.multispec.update_color()
 
+        if device.is_andor:
+            andor_eeprom = self.cloud_manager.get_andor_eeprom(spec.settings.eeprom.serial_number.replace("CCD-",""))
+            if andor_eeprom is {}:
+                log.error(f"got empty dict for andor eeprom. Serial number incorrect or no entry in dynamo table.")
+            else:
+                spec.settings.eeprom.excitation_nm_float = andor_eeprom["excitation_nm_float"]
+                spec.settings.eeprom.wavelength_coeffs = andor_eeprom["wavelength_coeffs"]
+                spec.settings.eeprom.detector_serial_number = spec.setting.eeprom.serial_number
+                spec.settings.eeprom.serial_number = andor_eeprom["wp_serial_number"]
+                spec.settings.eeprom.model = andor_eeprom["wp_model"]
+                sfu.label_detector_serial.setText(spec.settings.eeprom.detector_serial_number)
         ########################################################################
         # announce connection
         ########################################################################
