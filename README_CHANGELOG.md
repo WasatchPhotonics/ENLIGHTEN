@@ -1,9 +1,12 @@
 # Version History
 
 # 3.2 Open-Source
+
+- 2022-06-13 3.2.11
+    - add display for andor high gain
+    - add ability grab andor eeprom info from cloud
 - 2022-06-09 3.2.10
-    - convert cloud manager eeprom restore to dynamoDB
-    - add getting andor eeprom from cloud
+    - fix "load export" bug introduced with 3.2.8
 - 2022-06-08 3.2.9
     - add eject button feature
 - 2022-06-06 3.2.8
@@ -11,6 +14,8 @@
     - default loaded file labels to basename if no metadata found
 - 2022-06-01 3.2.7
     - add spc file writer
+- 2022-05-31 3.2.6
+    - fix import error for files exported without pixel header
 - 2022-05-19 3.2.5
     - add 5th wavecal coeff to standard CSV format
     - limit graph heights on Scope Setup
