@@ -2,6 +2,7 @@ import datetime
 import logging
 import csv
 import re
+import os
 
 from .Measurement      import Measurement
 
@@ -27,14 +28,15 @@ class ColumnFileParser(object):
 
     @see TextFileParser for files with no header row at all.
     """
-    def __init__(self, pathname, save_options=None):
+    def __init__(self, pathname, save_options=None, encoding="utf-8"):
         self.pathname = pathname
         self.save_options = save_options
+        self.encoding = encoding
 
         # default
         self.timestamp = datetime.datetime.now()
 
-        self.csv_loader = CSVLoader(pathname,save_options)
+        self.csv_loader = CSVLoader(pathname, save_options, encoding)
 
         self.headers = self.csv_loader.headers
         self.metadata = self.csv_loader.metadata
@@ -68,6 +70,8 @@ class ColumnFileParser(object):
         # many characters and syntax in the label)
         if "Label" in self.metadata:
             m.label = self.metadata["Label"]
+        else:
+            m.label = os.path.splitext(os.path.basename(self.pathname))[0]
 
         # this parser only loads a single measurement, so the file is renamable
         m.add_renamable(self.pathname)

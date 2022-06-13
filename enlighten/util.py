@@ -72,6 +72,12 @@ def printable(s: str) -> str:
             clean += c if 32 < ord(c) < 127 else "."
     return clean
 
+def determine_encoding(pathname: str) -> str: 
+    with open(pathname, "r", encoding="utf-8") as infile:
+        line = infile.readline()
+        log.debug(f"determine_encoding: line [{line}] ({pathname})")
+        return "utf-8-sig" if u'\ufeff' in line else "utf-8"
+
 ################################################################################
 # File Helpers
 ################################################################################

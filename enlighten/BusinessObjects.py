@@ -225,6 +225,8 @@ class BusinessObjects:
             model_info                  = ctl.model_info,
             reinit_callback             = ctl.initialize_new_device,
             stylesheets                 = ctl.stylesheets,
+            eject_button                = sfu.pushButton_eject,
+            controller_disconnect       = ctl.disconnect_device,
 
 			# Essentially, these are widgets corresponding to SpectrometerState fields,
             # SpectrometerApplicationState fields, or change_device_setting() keys

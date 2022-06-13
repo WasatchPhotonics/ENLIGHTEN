@@ -226,32 +226,34 @@ class MeasurementFactory(object):
 
         # peek in the file and guess at the format
         try:
+            encoding = util.determine_encoding(pathname)
+            log.debug(f"create_from_file: encoding {encoding} ({pathname})")
             if pathname.lower().endswith(".csv"):
-                if self.looks_like_dash(pathname):
+                if self.looks_like_dash(pathname, encoding=encoding):
                     log.debug("looks_like_dash")
-                    measurements = self.create_from_dash_file(pathname)
-                elif self.looks_like_raw_columns(pathname):
-                    log.debug("looks_like_raw_columns")
-                    measurements = [ self.create_from_columnar_file(pathname) ]
-                elif self.looks_like_enlighten_columns(pathname):
+                    measurements = self.create_from_dash_file(pathname, encoding=encoding)
+                elif self.looks_like_labeled_columns(pathname, encoding=encoding):
+                    log.debug("looks_like_labeled_columns")
+                    measurements = [ self.create_from_columnar_file(pathname, encoding=encoding) ]
+                elif self.looks_like_enlighten_columns(pathname, encoding=encoding):
                     log.debug("looks_like_enlighten_columns")
-                    measurements = [ self.create_from_columnar_file(pathname) ]
-                elif self.looks_like_enlighten_columns(pathname, test_export=True):
+                    measurements = [ self.create_from_columnar_file(pathname, encoding=encoding) ]
+                elif self.looks_like_enlighten_columns(pathname, test_export=True, encoding=encoding):
                     log.debug("looks_like_enlighten_columns(export)")
-                    measurements = self.create_from_export_file(pathname)
-                elif self.looks_like_simple_columns(pathname):
+                    measurements = self.create_from_export_file(pathname, encoding=encoding)
+                elif self.looks_like_simple_columns(pathname, encoding=encoding):
                     log.debug("looks_like_simple_columns")
-                    measurements = [ self.create_from_simple_columnar_file(pathname) ]
+                    measurements = [ self.create_from_simple_columnar_file(pathname, encoding=encoding) ]
                 else:
                     log.error("unrecognized CSV format %s", pathname)
             elif pathname.lower().endswith(".asc"):
-                if self.looks_like_simple_columns(pathname):
+                if self.looks_like_simple_columns(pathname, encoding=encoding):
                     log.debug("looks_like_simple_columns")
-                    measurements = [ self.create_from_simple_columnar_file(pathname) ]
+                    measurements = [ self.create_from_simple_columnar_file(pathname, encoding=encoding) ]
                 else:
                     log.error("unrecognized ASC format %s", pathname)
             elif pathname.lower().endswith(".json"):
-                measurements = self.create_from_json_file(pathname)
+                measurements = self.create_from_json_file(pathname, encoding=encoding)
             elif pathname.lower().endswith(".spc"):
                 measurements = self.create_from_spc_file(pathname)
         except:
@@ -277,8 +279,8 @@ class MeasurementFactory(object):
     ##
     # Determine whether file looks like one of our row-ordered files (whether 
     # individual spectrum, appended spectra, or a row-ordered export)
-    def looks_like_dash(self, pathname):
-        with open(pathname, "r") as infile:
+    def looks_like_dash(self, pathname, encoding="utf-8"):
+        with open(pathname, "r", encoding=encoding) as infile:
             return infile.readline().startswith("Dash Output")
 
     ##
@@ -291,14 +293,22 @@ class MeasurementFactory(object):
     # \endverbatim
     #
     # Essentially, whether the first valid line is an x-axis header
-    def looks_like_raw_columns(self, pathname):
-        with open(pathname, "r") as infile:
+    def looks_like_labeled_columns(self, pathname, encoding="utf-8"):
+        result = False
+        first_line = None
+        with open(pathname, "r", encoding=encoding) as infile:
             for line in infile:
                 line = line.strip()
                 if line.startswith('#') or len(line) == 0:
                     continue
                 tok = line.lower().split(",")
-                return re.match(r'^(pixel|wavelength|wavenumber)', tok[0])
+                if re.match(r'^(pixel|wavelength|wavenumber)', tok[0]):
+                    result = True
+                first_line = line
+                break
+
+        log.debug(f"looks_like_labeled_columns: result {result}, first_line: {first_line}")
+        return result
 
     ##
     # Determine whether file looks like our individual column-ordered CSV files,
@@ -315,9 +325,9 @@ class MeasurementFactory(object):
     # parameter we can use the same test for both formats.  (Export files have
     # additional padding due to the leading px/nm/cm columns, so even an export
     # of a single measurement would have more than 2 columns).
-    def looks_like_enlighten_columns(self, pathname, test_export=False):
+    def looks_like_enlighten_columns(self, pathname, test_export=False, encoding="utf-8"):
         linecount = 0
-        with open(pathname, "r") as infile:
+        with open(pathname, "r", encoding=encoding) as infile:
             for line in infile:
                 if line.startswith("Integration Time"):
                     # count how many values (not empty comma-delimited nulls) appear
@@ -330,7 +340,7 @@ class MeasurementFactory(object):
                 if linecount > 100:
                     break
             
-    def looks_like_simple_columns(self, pathname) -> bool:
+    def looks_like_simple_columns(self, pathname, encoding="utf-8") -> bool:
         """
         Determine whether file looks like a simple 2-column set of (x, y) pairs
         (floats, ints, whatever) with no metadata.  Supports tab- or comma-
@@ -339,7 +349,7 @@ class MeasurementFactory(object):
         Ignores anything AFTER the first blank line (Solis .asc files put metadata
         there).
         """
-        with open(pathname, "r") as infile:
+        with open(pathname, "r", encoding=encoding) as infile:
             for line in infile:
                 line = line.strip()
                 if len(line) == 0:
@@ -357,30 +367,33 @@ class MeasurementFactory(object):
                     try:
                         float(v)
                     except:
-                        log.debug(f"not a simple column file: {line}", exc_info=1)
+                        log.debug(f"not a simple column file: {line}")
                         return False
         log.debug(f"seems a simple column file")
         return True
 
-    def create_from_dash_file(self, pathname):
+    def create_from_dash_file(self, pathname, encoding="utf-8"):
         parser = DashFileParser(
             pathname     = pathname,
-            save_options = self.save_options)
+            save_options = self.save_options,
+            encoding     = encoding)
         return parser.parse()
 
-    def create_from_columnar_file(self, pathname):
+    def create_from_columnar_file(self, pathname, encoding="utf-8"):
         parser = ColumnFileParser(
             pathname     = pathname,
-            save_options = self.save_options)
+            save_options = self.save_options,
+            encoding     = encoding)
         return parser.parse()
 
-    def create_from_export_file(self, pathname):
+    def create_from_export_file(self, pathname, encoding="utf-8"):
         parser = ExportFileParser(
             pathname     = pathname,
-            save_options = self.save_options)
+            save_options = self.save_options,
+            encoding     = encoding)
         return parser.parse()
 
-    def create_from_json_file(self, pathname):
+    def create_from_json_file(self, pathname, encoding="utf-8"):
         try:
             with open(pathname) as f:
                 data = json.load(f)
@@ -404,7 +417,7 @@ class MeasurementFactory(object):
             graph = self.graph)
         return parser.parse()
 
-    def create_from_simple_columnar_file(self, pathname):
+    def create_from_simple_columnar_file(self, pathname, encoding="utf-8"):
         parser = TextFileParser(
             pathname = pathname,
             graph = self.graph)
