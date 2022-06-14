@@ -1,5 +1,6 @@
 \mainpage
-![Logo](docs/logo-1000px.png)
+![Logo](docs/images/logo-1000px.png)
+\image html logo-1000px.png
 
 # ENLIGHTEN Product Pages
 
