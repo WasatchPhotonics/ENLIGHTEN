@@ -97,7 +97,7 @@ This means there are twice as many frames as there needs to be, as you'd THINK
 there would be ways to put a thin white line around a heavier dark line using
 CSS.  And there are: several ways, in fact.  But Qt's CSS rendering engine
 doesn't seem to support the 'outline' property, nor the 'box-shadow' property,
-and I couldn't figure out how to successfully create a .QFrame[wpPanel]\:\:after
+and I couldn't figure out how to successfully create a .QFrame[wpPanel] :: after
 shadow.
 
 There are _programmatic_ ways to do shadows / edged panels in Qt, but that would

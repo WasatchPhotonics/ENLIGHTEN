@@ -16,5 +16,8 @@ Insight spectrometers to generally work with Enlighten.
 - Install [Zadig](https://zadig.akeo.ie/)
 - Use Zadig to replace the driver from any of the Ocean spectrometers with a libusbK driver
 - Install the Wasatch [python-seabreeze](https://github.com/WasatchPhotonics/python-seabreeze/tree/master) fork with the branch that contains the modifications for Ocean spectrometers
-- set your python path with the following command set PYTHONPATH=.;..\Wasatch.PY;.\pluginExamples;..\python-seabreeze\;..\python-seabreeze\src;
+- set your PYTHONPATH with the following command:
+
+    C:> set PYTHONPATH=.;..\Wasatch.PY;.\pluginExamples;..\python-seabreeze\;..\python-seabreeze\src;
+
 - run enlighten from source as you normally would

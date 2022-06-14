@@ -375,7 +375,7 @@ class Graph(object):
             curve.setSymbol(None)
 
     ##
-    # @http://www.pyqtgraph.org/documentation/graphicsItems/plotdataitem.html
+    # @see http://www.pyqtgraph.org/documentation/graphicsItems/plotdataitem.html
     def set_data(self, curve, y=None, x=None):
         if x is not None:
             log.debug(f"plotting {len(x)} x values {x[:3]} .. {x[-3:]}")

@@ -1,6 +1,4 @@
-<!--
 \mainpage
--->
 ![Logo](docs/logo-1000px.png)
 
 # ENLIGHTEN Product Pages
@@ -19,6 +17,12 @@ If you'd rather download pre-compiled installers for Windows, MacOS or Linux, fi
 the latest released versions here:
 
 - [ENLIGHTEN Installers](https://wasatchphotonics.com/binaries/apps/enlighten/)
+
+If you'd like to see the "rendered Doxygen" version of these pages, with the "dot 
+graphs" converted into actual clickable / zoomable UML image-maps, and the "ref"
+links expanded into active hypertext, click here:
+
+- [Rendered Doxygen](https://wasatchphotonics.com/api/ENLIGHTEN/)
 
 For more information about our GitHub source code distribution, read on...
 
@@ -59,7 +63,6 @@ extend ENLIGHTEN in countless ways we never imagined.
     - [Maintenance](README_MAINTENANCE.md)
     - [Documentation](README_DOCUMENTATION.md)
     - [Testing](README_TESTING.md)
-    - [Rendered Doxygen](https://wasatchphotonics.com/api/ENLIGHTEN/)
 - Technical Notes
     - [Qt](README_QT.md)
     - [CSS](README_CSS.md)
