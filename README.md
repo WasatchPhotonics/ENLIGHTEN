@@ -3,7 +3,7 @@
 -->
 ![Logo](docs/logo-1000px.png)
 
-# ENLIGHTEN Manual
+# ENLIGHTEN Product Pages
 
 If you are new to ENLIGHTEN and want to learn about *using* the software, versus
 "building" or "maintaining" the software, please start with our *Operating Manual:*
@@ -13,9 +13,14 @@ If you are new to ENLIGHTEN and want to learn about *using* the software, versus
 For more information about ENLIGHTEN, please see the product home page on 
 Wasatch Photonics' website:
 
-- [ENLIGHTEN Product Page](https://wasatchphotonics.com/product-category/software/)
+- [ENLIGHTEN Homepage](https://wasatchphotonics.com/product-category/software/)
 
-For more information about our source code distribution, read on...
+If you'd rather download pre-compiled installers for Windows, MacOS or Linux, find
+the latest released versions here:
+
+- [ENLIGHTEN Installers](https://wasatchphotonics.com/binaries/apps/enlighten/)
+
+For more information about our GitHub source code distribution, read on...
 
 # ENLIGHTEN Source Distribution
 
