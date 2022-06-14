@@ -463,14 +463,14 @@ class Graph(object):
             spectra = [ x_axis ]
 
             # iterate over every curve on the graph
-            for curve in self.scope_capture_graph.listDataItems():
+            for curve in self.plot.listDataItems():
                 spectrum = curve.getData()[-1]
                 if spectrum is not None and len(spectrum) == len(x_axis):
                     spectra.append(spectrum)
         else:
             # multiple spectrometers, so x-axis and lengths can vary
             spectra = []
-            for curve in self.scope_capture_graph.listDataItems():
+            for curve in self.plot.listDataItems():
                 spectra.append(curve.getData()[0])
                 spectra.append(curve.getData()[-1])
 
