@@ -1411,7 +1411,11 @@ class Controller:
             # WasatchDeviceWrapper currently turns these into upstream poison-pills,
             # so this is not expected
             log.critical("Hardware ERROR on device_id %s: %s", device_id, reading.failure)
-            reading = None
+            return
+
+        if reading.spectrum is None:
+            # this should not happen
+            log.critical("null spectrum device_id %s", device_id)
             return
 
         ########################################################################
@@ -1428,7 +1432,9 @@ class Controller:
             return
         elif spec.device.is_ble:
             self.form.ui.readingProgressBar.setValue(100)
+
         # @todo need to update DetectorRegions so this will pass (use total_pixels)
+
         pixels = len(reading.spectrum)
         if pixels != spec.settings.pixels():
             self.marquee.info(f"{device_id} provided incorrect spectra length of {pixels}. Expected {spec.settings.pixels()}")
