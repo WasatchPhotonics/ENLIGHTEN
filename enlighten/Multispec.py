@@ -411,7 +411,6 @@ class Multispec(object):
     def update_widget(self):
         log.debug("update_widget start (%s)", self.device_id)
         multi = self.count() > 1
-        # self.frame_widget.setVisible(multi)
 
         self.frame_widget.setVisible(True)
         self.combo_spectrometer.setEnabled(multi)
