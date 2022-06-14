@@ -444,6 +444,9 @@ class Measurement(object):
                 # log.debug("generate_label: deleting unrecognized code {code}")
                 value = self.get_metadata(code)
 
+            if isinstance(value, float):
+                value = f"{value:.3f}"
+
             label = label.replace("{%s}" % code, str(value))
             log.debug(f"generate_label: {code} -> {value} (label now {label})")
 
