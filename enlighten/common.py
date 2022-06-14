@@ -1,12 +1,16 @@
 import logging
 import os
 
-# needed to allow plugins to access tensorflow
-import tensorflow
 
 from enum import IntEnum
 
 log = logging.getLogger(__name__)
+
+# needed to allow plugins to access tensorflow
+try:
+    import tensorflow
+except:
+    log.warning(f"tensorflow not found. skipping. some plugins may not work")
 
 """
 Namespace containing various enums and constants used elsewhere within the 
