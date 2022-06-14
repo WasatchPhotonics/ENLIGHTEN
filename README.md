@@ -2,7 +2,14 @@
     Reading from textfile?  Try -> https://mco.wasatchphotonics.com/doc/Enlighten/
 -->
 \mainpage
-# ENLIGHTEN README
+# ENLIGHTEN Manual
+
+If you are new to ENLIGHTEN and want to learn about *using* the software, versus
+"building" or "maintaining" the software, please start with our *Operating Manual:*
+
+- [ENLIGHTEN Manual](https://wasatchphotonics.com/wp-content/uploads/ENLIGHTEN-Manual-3.0.pdf)
+
+# ENLIGHTEN Source Distribution
 
 **ENLIGHTEN&trade;** (the registered [trademark](https://trademarks.justia.com/873/08/enlighten-87308319.html)
 is in all-caps) is Wasatch Photonics' standard desktop GUI tool for controlling 
@@ -14,7 +21,7 @@ alignment, focus, QC etc -- see RamanSpecCal for those functions.
 
 It is also not an end-all / be-all "perform everything you might ever want to
 do with a spectrometer" tool -- if we were to invest in creating that, we 
-probably wouldn't give it away for free.  (But give 
+probably wouldn't give it away for free :-)  (But give 
 [Spectragryph](https://www.effemm2.de/spectragryph/) or 
 [Panorama](https://www.labcognition.com/en/panorama.html) a try!)
 
