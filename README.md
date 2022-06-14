@@ -1,7 +1,8 @@
 <!--
-    Reading from textfile?  Try -> https://mco.wasatchphotonics.com/doc/Enlighten/
--->
 \mainpage
+-->
+![Logo](docs/logo-1000px.png)
+
 # ENLIGHTEN Manual
 
 If you are new to ENLIGHTEN and want to learn about *using* the software, versus
