@@ -27,8 +27,9 @@ class HighGainModeFeature:
             return
 
         is_ingaas = spec.settings.is_ingaas()
-        self.cb_enabled.setVisible(is_ingaas)
-        if not is_ingaas:
+        is_andor = spec.device.is_andor
+        self.cb_enabled.setVisible(is_ingaas or is_andor)
+        if not is_ingaas and not is_andor:
             return
 
         self.cb_enabled.setChecked(spec.settings.state.high_gain_mode_enabled)
