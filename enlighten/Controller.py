@@ -2330,17 +2330,16 @@ class Controller:
         selection = [clicked_button == btn for btn in [ok_btn, disconnect_btn, help_btn]]
         self.dialog_open = False
         spec.settings.state.ignore_timeouts_until = datetime.datetime(datetime.MAXYEAR,12,1)
-        match selection:
-            case [True,_,_]:
-                pass
-            case [_,True,_]:
-                self.disconnect_device(spec)
-                self.multispec.set_gave_up(spec.device_id)
-                return False
-            case [_,_,True]:
-                self.open_log()
-            case [_,_,_]:
-                log.error(f"User didn't choose a button. Defaulting to persist aberrant spectrometer.")
+        if selection == [True, False, False]:
+            pass
+        elif selection == [False, True, False]:
+            self.disconnect_device(spec)
+            self.multispec.set_gave_up(spec.device_id)
+            return False
+        elif selection == [False, False, True]:
+            self.open_log()
+        else:
+            log.error(f"User didn't choose a button. Defaulting to persist aberrant spectrometer.")
         return True
 
     def open_log(self):

@@ -984,41 +984,40 @@ class Measurement(object):
             pathname = "%s.spc" % self.basename
         else:
             pathname = os.path.join(today_dir, "%s.spc" % self.generate_basename())
-        match current_x:
-            case common.Axes.WAVELENGTHS:
-                spc_writer = SPCFileWriter.SPCFileWriter(SPCFileType.TXVALS,
-                                          x_units = SPCXType.SPCXNMetr,
-                                          y_units = SPCYType.SPCYCount,
-                                          experiment_type = SPCTechType.SPCTechRmn,
-                                          log_text = log_text,
-                                          )
-                spc_writer.write_spc_file(pathname, 
-                                          self.processed_reading.processed, 
-                                          numpy.asarray(self.spec.settings.wavelengths), 
-                                          )
-            case common.Axes.WAVENUMBERS:
-                spc_writer = SPCFileWriter.SPCFileWriter(SPCFileType.TXVALS,
-                                          x_units = SPCXType.SPCXWaven,
-                                          y_units = SPCYType.SPCYCount,
-                                          experiment_type = SPCTechType.SPCTechRmn,
-                                          log_text = log_text,
-                                          )
-                spc_writer.write_spc_file(pathname, 
-                                          self.processed_reading.processed, 
-                                          numpy.asarray(self.spec.settings.wavenumbers),
-                                          )
-            case common.Axes.PIXELS:
-                spc_writer = SPCFileWriter.SPCFileWriter(SPCFileType.DEFAULT,
-                                          experiment_type = SPCTechType.SPCTechRmn,
-                                          log_text = log_text,
-                                          )
-                spc_writer.write_spc_file(pathname, 
-                                          self.processed_reading.processed,
-                                          y_units = SPCYType.SPCYCount,
-                                          )
-            case _:
-                log.error(f"current x axis doesn't match vaild values. Aborting SPC save")
-                return
+        if current_x == common.Axes.WAVELENGTHS:
+            spc_writer = SPCFileWriter.SPCFileWriter(SPCFileType.TXVALS,
+                                      x_units = SPCXType.SPCXNMetr,
+                                      y_units = SPCYType.SPCYCount,
+                                      experiment_type = SPCTechType.SPCTechRmn,
+                                      log_text = log_text,
+                                      )
+            spc_writer.write_spc_file(pathname, 
+                                      self.processed_reading.processed, 
+                                      numpy.asarray(self.spec.settings.wavelengths), 
+                                      )
+        elif current_x == common.Axes.WAVENUMBERS:
+            spc_writer = SPCFileWriter.SPCFileWriter(SPCFileType.TXVALS,
+                                      x_units = SPCXType.SPCXWaven,
+                                      y_units = SPCYType.SPCYCount,
+                                      experiment_type = SPCTechType.SPCTechRmn,
+                                      log_text = log_text,
+                                      )
+            spc_writer.write_spc_file(pathname, 
+                                      self.processed_reading.processed, 
+                                      numpy.asarray(self.spec.settings.wavenumbers),
+                                      )
+        elif current_x == common.Axes.PIXELS:
+            spc_writer = SPCFileWriter.SPCFileWriter(SPCFileType.DEFAULT,
+                                      experiment_type = SPCTechType.SPCTechRmn,
+                                      log_text = log_text,
+                                      )
+            spc_writer.write_spc_file(pathname, 
+                                      self.processed_reading.processed,
+                                      y_units = SPCYType.SPCYCount,
+                                      )
+        else :
+            log.error(f"current x axis doesn't match vaild values. Aborting SPC save")
+            return
 
     ##
     # Save the Measurement in a JSON file for simplified programmatic parsing.
