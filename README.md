@@ -9,6 +9,13 @@ If you are new to ENLIGHTEN and want to learn about *using* the software, versus
 
 - [ENLIGHTEN Manual](https://wasatchphotonics.com/wp-content/uploads/ENLIGHTEN-Manual-3.0.pdf)
 
+For more information about ENLIGHTEN, please see the product home page on 
+Wasatch Photonics' website:
+
+- [ENLIGHTEN Product Page](https://wasatchphotonics.com/product-category/software/)
+
+For more information about our source code distribution, read on...
+
 # ENLIGHTEN Source Distribution
 
 **ENLIGHTEN&trade;** (the registered [trademark](https://trademarks.justia.com/873/08/enlighten-87308319.html)
