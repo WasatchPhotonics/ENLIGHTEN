@@ -3,6 +3,7 @@ PySide2
 pygtail 
 pyusb 
 pefile 
+pyinstaller
 pywavelets 
 superman 
 pyqtgraph 
