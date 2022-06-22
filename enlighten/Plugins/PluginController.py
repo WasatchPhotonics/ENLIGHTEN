@@ -1095,6 +1095,7 @@ class PluginController:
             return
 
         for setting, value in response.commands:
+            log.debug(f"applying {setting}")
             self.multispec.change_device_setting(setting, value)
 
     # ##########################################################################

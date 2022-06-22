@@ -32,10 +32,10 @@ class ROI(EnlightenPluginBase):
         fields = []
 
         fields.append(EnlightenPluginField(name="Region",        direction="input",  datatype=int,  initial=   0, minimum=0, maximum=   3, tooltip="Which ROI to configure"))
-        fields.append(EnlightenPluginField(name="Y0",            direction="input",  datatype=int,  initial= 400, minimum=0, maximum=1079, tooltip="Start row"))
-        fields.append(EnlightenPluginField(name="Y1",            direction="input",  datatype=int,  initial= 800, minimum=0, maximum=1079, tooltip="End row"))
-        fields.append(EnlightenPluginField(name="X0",            direction="input",  datatype=int,  initial= 100, minimum=0, maximum=1951, tooltip="Start column"))
-        fields.append(EnlightenPluginField(name="X1",            direction="input",  datatype=int,  initial=1200, minimum=0, maximum=1951, tooltip="End column"))
+        fields.append(EnlightenPluginField(name="Y0",            direction="input",  datatype=int,  initial= 250, minimum=0, maximum=1079, tooltip="Start row"))
+        fields.append(EnlightenPluginField(name="Y1",            direction="input",  datatype=int,  initial= 750, minimum=0, maximum=1079, tooltip="End row"))
+        fields.append(EnlightenPluginField(name="X0",            direction="input",  datatype=int,  initial=  12, minimum=0, maximum=1951, tooltip="Start column"))
+        fields.append(EnlightenPluginField(name="X1",            direction="input",  datatype=int,  initial=1932, minimum=0, maximum=1951, tooltip="End column"))
         fields.append(EnlightenPluginField(name="12-bit Data",   direction="input",  datatype=bool, initial=False, tooltip="12-bit pixel depth (vs 10-bit, default)"))
         fields.append(EnlightenPluginField(name="12-bit ADC",    direction="input",  datatype=bool, initial=False, tooltip="12-bit Analog-to-Digital Converter (vs 10-bit, default)"))
         fields.append(EnlightenPluginField(name="Pixel Mode",    direction="output", datatype=int,  initial=   0, tooltip="computed pixel mode"))
@@ -52,16 +52,13 @@ class ROI(EnlightenPluginBase):
         super().connect(enlighten_info)
         return True
 
-    # At this point, unusually, we completely ignore the incoming ProcessedReading.
-    # When multi-ROI is working, we may use this to split the unary spectrum into
-    # multiple spectra.
     def process_request(self, request):
         pr = request.processed_reading 
         settings = request.settings
         wavelengths = settings.wavelengths
 
         if not settings.is_micro():
-            return EnlightenPluginResponse(request, message = "Detector ROI requires SiG")
+            return EnlightenPluginResponse(request, message = "Detector ROI only supported on Series-XS")
 
         region      = request.fields["Region"]
         y0          = request.fields["Y0"]
@@ -71,23 +68,47 @@ class ROI(EnlightenPluginBase):
         adc_12      = request.fields["12-bit ADC"]
         depth_12    = request.fields["12-bit Data"]
 
-        if not (y0 < y1 and x0 < x1) or (y0 == y1 == x0 == x1 == 0):
-            return EnlightenPluginResponse(request, message = "invalid ROI")
+        if y0 >= y1 or x0 >= x1 or (y0 == y1 == x0 == x1 == 0):
+            return EnlightenPluginResponse(request, message = f"invalid ROI (({x0}, {y0}), ({x1}, {y1}))")
 
         ########################################################################
         # Generate spectrometer commands
         ########################################################################
-
         cmds = []
-        roi = DetectorROI(region, y0, y1, x0, x1)
-        if not (self.detector_regions.has_region(region) and self.detector_regions.get_roi(region) == roi):
+
+        roi = DetectorROI(region, y0, y1, x0, x1, enabled=True)
+        log.debug(f"instantiated ROI {roi}")
+
+        send_roi = False
+        if not self.detector_regions.has_region(region):
+            log.debug(f"sending ROI because we don't yet have one for region {region}")
+            send_roi = True
+        elif self.detector_regions.get_roi(region) != roi:
+            log.debug(f"sending ROI because new ROI differs from current region {region}")
+            send_roi = True
+        else:
+            log.debug("not sending ROI command (matched existing)")
+
+        if send_roi:
             cmds.append(("detector_roi", roi))
+            log.debug(f"commands now {cmds}")
             self.detector_regions.add(roi)
 
         pixel_mode = (adc_12 << 1) | depth_12
-        if self.pixel_mode is None or self.pixel_mode != pixel_mode:
+        send_pixel_mode = False
+        if self.pixel_mode is None:
+            log.debug("sending pixel_mode because it was undefined")
+            send_pixel_mode = True
+        elif self.pixel_mode != pixel_mode:
+            log.debug("sending pixel_mode because it changed")
+            send_pixel_mode = True
+        else:
+            log.debug("not sending pixel_mode (matched existing)")
+
+        if False and send_pixel_mode:
             cmds.append(("pixel_mode", pixel_mode))
-        self.pixel_mode = pixel_mode
+            log.debug(f"commands now {cmds}")
+            self.pixel_mode = pixel_mode
 
         ########################################################################
         # Process Spectra
@@ -137,4 +158,3 @@ class ROI(EnlightenPluginBase):
         self.error_message = msg
         log.error(f"report_error: {msg}")
         return False
-
