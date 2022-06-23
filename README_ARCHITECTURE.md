@@ -171,7 +171,7 @@ documentation pages.
             }
 
             Measurement                     [ URL="\ref enlighten.Measurement.Measurement" ]
-            ProcessedReading                [ URL="\ref enlighten.ProcessedReading.ProcessedReading" ]
+            ProcessedReading                [ URL="\ref wasatch.ProcessedReading.ProcessedReading" ]
             MeasurementFactory              [ URL="\ref enlighten.MeasurementFactory.MeasurementFactory" ]
             Measurements                    [ URL="\ref enlighten.Measurements.Measurements" ]
             ThumbnailWidget                 [ URL="\ref enlighten.ThumbnailWidget.ThumbnailWidget" ]

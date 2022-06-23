@@ -54,8 +54,13 @@ Basically, follow this procedure:
 
 - https://github.com/WasatchPhotonics/Wasatch.NET#post-install-step-1-libusb-drivers
 
-Except when it tells you to navigate to C:\\Program Files\\Wasatch Photonics\\Wasatch.NET\\libusb\_drivers, 
-instead navigate to enlighten\\scripts\\support\_files\\libusb\_drivers.
+Except when it tells you to navigate here:
+
+    C:\Program Files\Wasatch Photonics\Wasatch.NET\libusb\drivers
+
+instead navigate here:
+
+    enlighten\scripts\support\files\libusb\drivers.
 
 ## Build a Release Installer
 
@@ -100,7 +105,7 @@ If you get this on Windows using ENLIGHTEN 64-bit:
     raise USBError(_strerror(ret), ret, _libusb_errno[ret])
         usb.core.USBError: [Errno 2] Entity not found
 
-One option is to rename C:\Windows\System32\libusb-1.0.dll to Libusb-1.0-save.dll.
+One option is to rename C:/Windows/System32/libusb-1.0.dll to Libusb-1.0-save.dll.
 
 This issue should be solved by Wasatch.PY 2.0.2, which explicitly specified the
 libusb0 backend in calls to usb.core.find().

@@ -2171,9 +2171,9 @@ QComboBox QListView
                      <property name="geometry">
                       <rect>
                        <x>0</x>
-                       <y>-5107</y>
+                       <y>0</y>
                        <width>1134</width>
-                       <height>5927</height>
+                       <height>5689</height>
                       </rect>
                      </property>
                      <property name="minimumSize">
@@ -7331,7 +7331,7 @@ p, li { white-space: pre-wrap; }
                     <x>0</x>
                     <y>0</y>
                     <width>721</width>
-                    <height>932</height>
+                    <height>930</height>
                    </rect>
                   </property>
                   <layout class="QVBoxLayout" name="verticalLayout">
@@ -8078,8 +8078,8 @@ p, li { white-space: pre-wrap; }
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>656</width>
-              <height>1368</height>
+              <width>606</width>
+              <height>1348</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -10566,7 +10566,7 @@ p, li { white-space: pre-wrap; }
                   <x>0</x>
                   <y>0</y>
                   <width>235</width>
-                  <height>671</height>
+                  <height>665</height>
                  </rect>
                 </property>
                 <property name="maximumSize">
@@ -10839,8 +10839,8 @@ p, li { white-space: pre-wrap; }
                                   <rect>
                                    <x>0</x>
                                    <y>0</y>
-                                   <width>190</width>
-                                   <height>206</height>
+                                   <width>199</width>
+                                   <height>226</height>
                                   </rect>
                                  </property>
                                  <layout class="QVBoxLayout" name="verticalLayout_scope_capture_save_design">
@@ -12716,7 +12716,7 @@ p, li { white-space: pre-wrap; }
                                  <rect>
                                   <x>0</x>
                                   <y>0</y>
-                                  <width>96</width>
+                                  <width>360</width>
                                   <height>300</height>
                                  </rect>
                                 </property>
@@ -13499,7 +13499,7 @@ p, li { white-space: pre-wrap; }
                 <x>0</x>
                 <y>0</y>
                 <width>222</width>
-                <height>3097</height>
+                <height>3085</height>
                </rect>
               </property>
               <property name="styleSheet">
@@ -13727,7 +13727,7 @@ p, li { white-space: pre-wrap; }
                <item>
                 <widget class="QFrame" name="frame_multiSpecWidget">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
@@ -13793,24 +13793,6 @@ p, li { white-space: pre-wrap; }
                      </property>
                      <item row="0" column="0">
                       <widget class="QFrame" name="frame_multiSpecWidget_black">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>0</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>16777215</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
                        <property name="lineWidth">
                         <number>1</number>
                        </property>
@@ -13819,7 +13801,7 @@ p, li { white-space: pre-wrap; }
                        </property>
                        <layout class="QVBoxLayout" name="verticalLayout_89">
                         <property name="spacing">
-                         <number>1</number>
+                         <number>7</number>
                         </property>
                         <property name="leftMargin">
                          <number>5</number>
@@ -13841,7 +13823,7 @@ p, li { white-space: pre-wrap; }
                           <item>
                            <widget class="QComboBox" name="comboBox_multiSpec">
                             <property name="sizePolicy">
-                             <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+                             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                               <horstretch>0</horstretch>
                               <verstretch>0</verstretch>
                              </sizepolicy>
@@ -13849,6 +13831,12 @@ p, li { white-space: pre-wrap; }
                             <property name="minimumSize">
                              <size>
                               <width>0</width>
+                              <height>50</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>16777215</width>
                               <height>50</height>
                              </size>
                             </property>
@@ -13881,7 +13869,7 @@ p, li { white-space: pre-wrap; }
                           <item>
                            <widget class="QPushButton" name="pushButton_eject">
                             <property name="sizePolicy">
-                             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
                               <horstretch>0</horstretch>
                               <verstretch>0</verstretch>
                              </sizepolicy>
@@ -13889,7 +13877,13 @@ p, li { white-space: pre-wrap; }
                             <property name="minimumSize">
                              <size>
                               <width>30</width>
-                              <height>30</height>
+                              <height>26</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>30</width>
+                              <height>26</height>
                              </size>
                             </property>
                             <property name="toolTip">
@@ -13908,8 +13902,23 @@ p, li { white-space: pre-wrap; }
                         </item>
                         <item>
                          <layout class="QHBoxLayout" name="horizontalLayout_multiSpec_others">
+                          <property name="spacing">
+                           <number>0</number>
+                          </property>
                           <item>
                            <widget class="QCheckBox" name="checkBox_multiSpec_hide_others">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>16777215</width>
+                              <height>50</height>
+                             </size>
+                            </property>
                             <property name="toolTip">
                              <string>Only graph selected spectrometer</string>
                             </property>
@@ -13921,7 +13930,7 @@ p, li { white-space: pre-wrap; }
                           <item>
                            <widget class="QPushButton" name="pushButton_multiSpec_lock">
                             <property name="sizePolicy">
-                             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                               <horstretch>0</horstretch>
                               <verstretch>0</verstretch>
                              </sizepolicy>
@@ -13959,6 +13968,18 @@ p, li { white-space: pre-wrap; }
                           </property>
                           <item>
                            <widget class="QCheckBox" name="checkBox_multiSpec_autocolor">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>16777215</width>
+                              <height>50</height>
+                             </size>
+                            </property>
                             <property name="toolTip">
                              <string>Tint graph lines by model</string>
                             </property>
