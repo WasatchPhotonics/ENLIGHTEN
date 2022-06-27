@@ -27,13 +27,15 @@ However, you do need to properly configure your environment with all our library
 dependencies and package requirements.  This includes checking out a copy of 
 Wasatch.PY into a directory parallel to ENLIGHTEN, and adding to your PYTHONPATH:
 
-    $ cd ~/work/code (or wherever you base your code)
+    $ cd work\code (or wherever you base your code)
     $ git clone git@github.com:WasatchPhotonics/ENLIGHTEN.git
     $ git clone git@github.com:WasatchPhotonics/Wasatch.PY.git
+    $ cd ENLIGHTEN
     $ set PYTHONPATH=Z:\work\code\Wasatch.PY (or equivalent)
+    $ set PYTHONPATH=..\Wasatch.PY;pluginExamples;.
 
 *Note:* when setting environment variables like PYTHONPATH under Windows, 
-_do not_ quote them (e.g., do not type: set PYTHONPATH="..\Wasatch.PY")
+_do not_ quote them (e.g., do *not* type: set PYTHONPATH="..\Wasatch.PY")
 
 To bootstrap and validate your development environment, just run this from a Git 
 Cmd shell:
