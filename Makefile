@@ -10,6 +10,8 @@
 RUN_SEC := 0
 
 VERSION := $(shell grep 'VERSION =' enlighten/common.py | awk '{print $$3}' | tr -d '"')
+RPI_ID := $(shell grep '^ID=' /etc/os-release | awk -F= '{print $$2}' | tr -d '"')
+RPI_CODENAME := $(shell grep '^VERSION_CODENAME=' /etc/os-release | awk -F= '{print $$2}' | tr -d '"')
 
 help:
 	@echo "To build and run Enlighten, see README.md"
@@ -25,6 +27,7 @@ help:
 	@echo "  cloc            - count SLOC in Python, JSON and .ini files"
 	@echo "  doc             - render documentation"
 	@echo "  linux-installer - build a Linux binary using pyinstaller"
+	@echo "  rpi-installer   - build a Raspberry Pi binary using pyinstaller"
 	@echo "  mac-installer   - build a Mac application using pyinstaller and platypus"
 	@echo 
 	@echo "VERSION = $(VERSION)"
@@ -86,7 +89,7 @@ docs:
 # executable is named enlighten.exe and doesn't conflict with the enlighten/ directory;
 # we don't have to do it on Mac, because pyinstaller doesn't support bundles and
 # we have to roll all that in via platypus externally.
-linux-installer:
+linux-installer-base:
 	rm -rf build-linux*
 	mkdir -p build-linux
 	pyinstaller \
@@ -110,8 +113,16 @@ linux-installer:
 	cp -rv udev                          build-linux/EnlightenGUI/
 	mv build-linux/EnlightenGUI build-linux/ENLIGHTEN-$(VERSION)
 	( cd build-linux && tar zcvf ../ENLIGHTEN-linux-$(VERSION).tgz ENLIGHTEN-$(VERSION) | sed 's/^/compressing: /' )
+
+linux-installer: linux-installer-base
 	@echo 
 	@echo "ENLIGHTEN-$(VERSION) for Linux packaged in ENLIGHTEN-linux-$(VERSION).tgz"
+
+rpi-installer: linux-installer-base
+	@echo 
+	@FILENAME="ENLIGHTEN-${RPI_ID}-${RPI_CODENAME}-$(VERSION).tgz" && \
+        mv ENLIGHTEN-linux-$(VERSION).tgz $$FILENAME && \
+        echo "ENLIGHTEN-$(VERSION) for Raspberry Pi packaged in $$FILENAME"
 
 mac-installer:
 	@rm -rf build-mac build-mac-work

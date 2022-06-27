@@ -148,7 +148,8 @@ fi
 
 if $POST_LINUX
 then
-    upload "ENLIGHTEN-linux-${VERSION}.tgz"
+    TARBALL=`ls -t *.tgz | head -1`
+    upload $TARBALL
 else
     echo "skipping Linux"
 fi
