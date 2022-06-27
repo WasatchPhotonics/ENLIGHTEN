@@ -48,11 +48,15 @@ At writing that is:
 
 Then remaining packages:
 
-    $ sudo apt-get install pyside2-tools python3-xlwt libatlas-base-dev python3-pywt 2to3 python3-pil.imagetk 
+    $ sudo apt-get install pyside2-tools python3-xlwt libatlas-base-dev python3-pywt 2to3 python3-pil.imagetk libusb-0.1-4
 
 And finally:
 
     $ pip3 install superman pygtail pyusb pexpect pyqtgraph SPyC_Writer qimage2ndarray boto3 pandas
+
+If you also want to build and deploy installers, the following additional utilities are required:
+
+    $ sudo apt-get install doxygen graphviz pandoc
 
 ## Issue: missing python3-pyside2uic
 
