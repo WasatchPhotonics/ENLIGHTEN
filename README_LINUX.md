@@ -23,7 +23,7 @@ Optional but recommended:
 
     $ sudo apt-get install git vim doxygen graphviz cloc
 
-## Install Miniconda2
+## Install Miniconda3
 
 Download and run the latest 64-bit installer from:
 

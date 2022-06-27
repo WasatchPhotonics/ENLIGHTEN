@@ -44,29 +44,48 @@ At writing that is:
         python3-pyside2.qtwidgets           \
         python3-pyside2.qtx11extras         \
         python3-pyside2.qtxml               \
-        python3-pyside2.qtxmlpatterns       \
-        python3-pyside2uic
+        python3-pyside2.qtxmlpatterns       
 
 Then remaining packages:
 
-    $ sudo apt-get install pyside2-tools python3-xlwt libatlas-base-dev python3-pywt 2to3
+    $ sudo apt-get install pyside2-tools python3-xlwt libatlas-base-dev python3-pywt 2to3 python3-pil.imagetk 
 
 And finally:
 
-    $ pip3 install superman pygtail pyusb pexpect
+    $ pip3 install superman pygtail pyusb pexpect pyqtgraph SPyC_Writer qimage2ndarray boto3 pandas
 
-# Source dependencies
+## Issue: missing python3-pyside2uic
 
-    // can probably now be done with "pip3 install pyqtgraph"
-    $ git clone https://github.com/pyqtgraph/pyqtgraph.git
-    $ cd pyqtgraph
-    $ git checkout develop
-    $ sudo python3 setup.py install
+Ideally, we would want to also `pip3 install python3-pyside2uic` (and historically, 
+that was indeed part of the process).
+
+Unfortunately, there is no current pre-built binary "wheel" for pyside2uic for 
+the Raspberry Pi.  This is well-documented on the internet, and currently there
+is no good way to install or build one.  Going forward, the world seems to be
+moving from PySide2 to PyQt, and ENLIGHTEN will probably need to follow along.
+
+However, for now, we can get around this by not using pyside2uic on the RPi at
+all, but instead using it on a different computer / OS and copying the result
+over to the RPi.
+
+There are two main utilities ENLIGHTEN uses from pyside2uic: UIC and RCC.  They
+are used to convert ENLIGHTEN's .ui files and .rcc files (under enlighten/assets)
+into .py files.  Those conversions can be performed under MacOS or Windows, and
+the result copied to RPi.
+
+Example (both starting from ~/work/code/ENLIGHTEN):
+
+    // on Mac
+    $ scripts/rebuilt_resources.sh
+
+    // on Raspberry Pi
+    $ rsync --progress --archive USER@MAC_IP:work/code/ENLIGHTEN/enlighten/assets/ enlighten/assets/
+    $ find . -name __pycache__ -exec rm -rf {} \;
 
 # Test
 
     $ cd work/code/enlighten
-    $ export PYTHONPATH=".:../Wasatch.PY"
+    $ export PYTHONPATH=".:pluginExamples:../Wasatch.PY"
     $ python3 scripts/Enlighten.py
 
 # Resetting USB Ports
