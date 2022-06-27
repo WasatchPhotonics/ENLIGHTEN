@@ -4,6 +4,7 @@
 
 - 2022-06-23 3.2.12
     - remove := and match cases to allow greater backwards compatiblity
+    - updates for Raspberry Pi
 - 2022-06-13 3.2.11
     - add display for andor high gain
     - add ability grab andor eeprom info from cloud
