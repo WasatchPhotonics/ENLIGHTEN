@@ -2290,7 +2290,7 @@ class Controller:
         # log.debug(f"generate_x_axis: regions = {regions}")
 
         if unit is not None:
-            if unit == "cm": retval = np.copy(settings.wavenumbers)
+            if   unit == "cm": retval = np.copy(settings.wavenumbers)
             elif unit == "nm": retval = np.copy(settings.wavelengths)
             elif unit == "px": retval = np.array(list(range(settings.pixels())), dtype=np.float32)
         elif self.graph.current_x_axis == common.Axes.WAVELENGTHS:
@@ -2307,7 +2307,8 @@ class Controller:
 
         if regions:
             log.debug("generate_x_axis: chopping into regions")
-            retval = regions.chop(retval, flatten=True) # which region?
+            retval = regions.chop(retval, flatten=True, orig_roi=settings.eeprom.get_horizontal_roi()) # which region?
+            log.debug(f"generate_x_axis: got back {len(retval)} values ({retval[:3]}...{retval[:-3]})")
 
         return retval
 

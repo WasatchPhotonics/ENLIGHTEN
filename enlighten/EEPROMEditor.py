@@ -366,7 +366,7 @@ class EEPROMEditor(object):
         and was fun.
         """
         def f(*args):
-            log.debug("f: relaying callback to widget_callback(%s)" % name)
+            # log.debug("f: relaying callback to widget_callback(%s)" % name)
             self.widget_callback(name, index)
 
         if index is None:
@@ -375,7 +375,7 @@ class EEPROMEditor(object):
             fullname = "%s_%d_callback" % (name, index)
 
         setattr(EEPROMEditor, fullname, f)
-        log.debug("create_callback: created %s method" % fullname)
+        # log.debug("create_callback: created %s method" % fullname)
 
         return f
 

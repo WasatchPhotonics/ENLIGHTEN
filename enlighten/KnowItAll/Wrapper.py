@@ -345,7 +345,7 @@ class Wrapper(object):
 
         # confirm the KIAConsole executable launches correctly
         log.debug("continuous_poll: checking child has started")
-        timeout_sec = 10
+        timeout_sec = 30
         try:
             child.expect("Starting stream processing", timeout=timeout_sec)
 
