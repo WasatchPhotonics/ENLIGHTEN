@@ -412,21 +412,20 @@ class Measurements(object):
 
         for m in self.measurements:
             devices.append(m.spec.label)
-            match current_x:
-                case common.Axes.WAVELENGTHS:
-                    x_units = SPCXType.SPCXNMetr
-                    y_units = SPCYType.SPCYCount
-                    xs.append(m.spec.settings.wavelengths)
-                case common.Axes.WAVENUMBERS:
-                    x_units = SPCXType.SPCXCM
-                    y_units = SPCYType.SPCYCount
-                    xs.append(m.spec.settings.wavelengths)
-                case common.Axes.PIXELS:
-                    y_units = SPCYType.SPCYCount
-                    xs.append(list(range(m.spec.settings.eeprom.active_pixels_horizontal)))
-                case _:
-                    log.error(f"current x axis {current_x} doesn't match any valid values, returning without export")
-                    return False
+            if current_x == common.Axes.WAVELENGTHS:
+                x_units = SPCXType.SPCXNMetr
+                y_units = SPCYType.SPCYCount
+                xs.append(m.spec.settings.wavelengths)
+            elif current_x == common.Axes.WAVENUMBERS:
+                x_units = SPCXType.SPCXCM
+                y_units = SPCYType.SPCYCount
+                xs.append(m.spec.settings.wavelengths)
+            elif current_x == common.Axes.PIXELS:
+                y_units = SPCYType.SPCYCount
+                xs.append(list(range(m.spec.settings.eeprom.active_pixels_horizontal)))
+            else:
+                log.error(f"current x axis {current_x} doesn't match any valid values, returning without export")
+                return False
             ys.append(m.processed_reading.processed)
         devices = list(set(devices)) # remove duplicates
         log_label = f"Exported from Wasatch Photonics ENLIGHTEN. Measurement devices were {' '.join(devices)}"

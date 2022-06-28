@@ -29,7 +29,12 @@ function upload()
     if ssh $USERNAME@wasatchphotonics.com ls $REMOTE_PATH 1>/dev/null 2>&1
     then
         echo "ERROR: $REMOTE_PATH already found on remote host (manually remove/rename then retry)"
-        exit 1
+        if $FORCE
+        then
+            echo "--force configured, allowing overwrite"
+        else
+            exit 1
+        fi
     else
         echo "$REMOTE_PATH does not currently exist on remote host"
     fi
@@ -47,12 +52,14 @@ POST_MAC=false
 POST_WIN=false
 POST_LINUX=false
 DOCS_ONLY=false
+FORCE=false
 
 while [ "$1" != "" ]; do
     case $1 in
           --mac) POST_MAC=true   ;;
           --win) POST_WIN=true   ;;
         --linux) POST_LINUX=true ;;
+        --force) FORCE=true      ;;
     esac
     shift
 done
@@ -148,7 +155,8 @@ fi
 
 if $POST_LINUX
 then
-    upload "ENLIGHTEN-linux-${VERSION}.tgz"
+    TARBALL=`ls -t *.tgz | head -1`
+    upload $TARBALL
 else
     echo "skipping Linux"
 fi

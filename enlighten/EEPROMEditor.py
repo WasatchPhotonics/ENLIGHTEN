@@ -834,8 +834,9 @@ class EEPROMEditor(object):
 
         if not file_name: 
             log.debug(f"no file provided for import, prompting user for eeprom")
-            if file_name := QtWidgets.QFileDialog.getOpenFileName(None,
-                "Open EEPROM", common.get_default_data_dir(), "EEPROM Files (*.json)"):
+            file_name = QtWidgets.QFileDialog.getOpenFileName(None,
+                "Open EEPROM", common.get_default_data_dir(), "EEPROM Files (*.json)")
+            if file_name is not None:
             # file_name is a tuple with the first element being the actual name
                 with open(file_name[0],'r') as eeprom_file:
                     eeprom_json = json.load(eeprom_file)
@@ -860,8 +861,9 @@ class EEPROMEditor(object):
         return True
 
     def export_eeprom(self):
-        if file_name := QtWidgets.QFileDialog.getSaveFileName(None,
-            "Export EEPROM", common.get_default_data_dir(), "EEPROM Files (*.json)"):
+        file_name = QtWidgets.QFileDialog.getSaveFileName(None,
+            "Export EEPROM", common.get_default_data_dir(), "EEPROM Files (*.json)")
+        if file_name is not None:
             self.eeprom_writer.backup(file_name[0])
         else:
             log.error("Error in selecting save location path for eeprom")
