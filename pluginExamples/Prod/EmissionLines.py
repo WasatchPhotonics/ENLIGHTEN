@@ -17,6 +17,8 @@ log = logging.getLogger(__name__)
 # typical appearance.
 class EmissionLines(EnlightenPluginBase):
 
+    MIN_REL_INTENSITY = 0.2
+
     def __init__(self):
         super().__init__()
         self.lamps = self.get_lamps()
@@ -64,18 +66,19 @@ class EmissionLines(EnlightenPluginBase):
         # determine which of this lamp's emission lines to visualize on the graph
         lines = self.lamps[lamp]
         visible = []
-        max_rel_intensity = 0
+        max_rel_intensity = self.MIN_REL_INTENSITY
         for peak in sorted(lines.keys()):
             rel_intensity = lines[peak]
-            if peak >= wavelengths[0] and peak <= wavelengths[-1] and rel_intensity > 0:
+            if peak >= wavelengths[0] and peak <= wavelengths[-1]:
                 visible.append(peak)
                 max_rel_intensity = max(max_rel_intensity, rel_intensity)
 
         series_x = [ wavelengths[0] ]
         series_y = [ lo ]
 
+        log.debug(f"displaying {len(visible)} {lamp} peaks")
         for x in visible:
-            rel_intensity = lines[x]
+            rel_intensity = max(lines[x], self.MIN_REL_INTENSITY)
             y = lo + (hi - lo) * rel_intensity / max_rel_intensity
             series_x.extend((x - 0.1,  x, x + 0.1))
             series_y.extend((lo,       y,      lo))
