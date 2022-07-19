@@ -96,6 +96,31 @@ class EmissionLines(EnlightenPluginBase):
     # reasonable starting point.
     #
     # @todo for completeness add He, Rn
+    #
+    # @par Sources
+    # 
+    # Data taken from NIST, as well as vendor websites of calibration lamps.
+    #
+    # @see https://physics.nist.gov/PhysRefData/ASD/lines_form.html
+    #
+    # Ar:
+    # @see http://oceanoptics.com/wp-content/uploads/AR-1_spectra-01.jpg
+    # @see http://bwtek.com/wp-content/uploads/2012/05/scl100_ar.jpg
+    #
+    # Hg:
+    # @see http://oceanoptics.com/wp-content/uploads/HG-1-spectrum-with-USB2000-XR1-2.png
+    # @see http://bwtek.com/wp-content/uploads/2012/05/scl100_mer.jpg
+    #
+    # Kr:
+    # @see http://oceanoptics.com/wp-content/uploads/KR-1-spectral-range-web.jpg
+    # @see http://bwtek.com/wp-content/uploads/2012/05/scl100_kr.jpg
+    # 
+    # Ne:
+    # @see http://oceanoptics.com/wp-content/uploads/NE-1-spectral-range-web.jpg
+    # @see http://bwtek.com/wp-content/uploads/2012/05/scl100_neon.jpg
+    #
+    # Xe:
+    # @see http://oceanoptics.com/wp-content/uploads/XE-1_spectra-01.jpg
     def get_lamps(self):
         return {
             "Ar": {
