@@ -16,3 +16,4 @@ bleak
 pyftdi 
 adafruit-blinka
 SPyC_Writer
+crcmod

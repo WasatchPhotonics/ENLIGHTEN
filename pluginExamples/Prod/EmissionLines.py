@@ -96,6 +96,13 @@ class EmissionLines(EnlightenPluginBase):
     # reasonable starting point.
     #
     # @todo for completeness add He, Rn
+    #
+    # @par Sources
+    # 
+    # Data taken from NIST, as well as calibration lamp vendor websites.
+    #
+    # @see https://physics.nist.gov/PhysRefData/ASD/lines_form.html
+    # @see https://www.oceaninsight.com/products/light-sources/calibration-sources/wavelength-calibration-sources/
     def get_lamps(self):
         return {
             "Ar": {
