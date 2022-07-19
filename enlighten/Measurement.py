@@ -231,6 +231,7 @@ class Measurement(object):
                            'Region',
                            'Laser Power mW',
                            'Battery %',
+                           'Device ID',
                            'FW Version',
                            'FPGA Version']
     EXTRA_HEADER_FIELDS_SET = set(EXTRA_HEADER_FIELDS)
@@ -746,6 +747,7 @@ class Measurement(object):
         if field == "fw version":                return self.settings.microcontroller_firmware_version
         if field == "fpga version":              return self.settings.fpga_firmware_version 
         if field == "laser power %":             return self.processed_reading.reading.laser_power_perc if self.processed_reading.reading is not None else 0
+        if field == "device id":                 return str(self.settings.device_id)
 
         if field == "laser power mw":            
             if self.processed_reading.reading is not None and \
