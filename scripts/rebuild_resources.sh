@@ -7,10 +7,12 @@
 
 LAYOUT_ONLY=false
 ICONS_ONLY=false
+PAUSE=false
 while [ "$1" != "" ]; do
     case $1 in
         --layout) LAYOUT_ONLY=true; shift ;;
          --icons)  ICONS_ONLY=true; shift ;;
+         --pause)       PAUSE=true; shift ;;
     esac
     shift
 done
@@ -43,6 +45,13 @@ then
 
     RCC="$CONDA_PREFIX/Scripts/pyside2-rcc.exe"
     UIC="$CONDA_PREFIX/Scripts/pyside2-uic.exe"
+
+    # added because recent(?) versions of Git Cmd / Git Bash seem to 
+    # automatically launch new shells (run .sh scripts like this one)
+    # in $HOME rather than the "current working directory" (and this
+    # truthfully shouldn't hurt anything)
+    SCRIPT_DIR=`dirname $0` 
+    cd $SCRIPT_DIR/.. 
 else
     if uname -a | grep -qi armv7
     then
@@ -149,5 +158,8 @@ fi
 # make uic_qrc a valid Python module
 touch enlighten/assets/uic_qrc/__init__.py
 
-#echo "Press return to continue..."
-#read foo
+if $PAUSE
+then
+    echo "Press return to continue..."
+    read foo
+fi
