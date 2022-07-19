@@ -15,6 +15,7 @@ log = logging.getLogger(__name__)
 # @note since this extends QWidget, we want to be careful creating attributes 
 #       with names like .name, .value, .config or .widget that could override 
 #       parent attributes
+# @todo add QtWidgets.ComboBox
 class PluginFieldWidget(QtWidgets.QWidget):
 
     ## class attribute

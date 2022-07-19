@@ -208,7 +208,7 @@ class RamanShiftCorrectionFeature(object):
             with open(path) as f:
                 doc = json.load(f)
                 data = doc["Compounds"]
-            log.debug("loaded JSON from %s: %s", path, data)
+            log.debug(f"loaded JSON from {path}")
         except:
             log.error("unable to load JSON from %s", path, exc_info=1)
             return
