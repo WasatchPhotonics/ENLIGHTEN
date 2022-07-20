@@ -442,7 +442,6 @@ class Measurement(object):
             elif hasattr(self.settings.state, code):
                 value = getattr(self.settings.state, code)
             else:
-                # log.debug("generate_label: deleting unrecognized code {code}")
                 value = self.get_metadata(code)
 
             if isinstance(value, float):

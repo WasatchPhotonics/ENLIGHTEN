@@ -440,6 +440,27 @@ class BatchCollection(object):
         log.debug("scheduling first tick in %d ms", sleep_ms)
         self.timer_measurement.start(sleep_ms)
 
+    ##
+    # Tempting to render SaveOptions.label_template in here...not sure how that 
+    # would fly with multiple spectrometers.  More to the point, label_template
+    # is rendered on individual Measurement objects, and the BatchCollection
+    # class, odd as it seems, doesn't actually have a reference to any of the 
+    # Measurement objects it causes to be collected.  They're all automated by
+    # raising step_save events in VCRControls, which doesn't itself hold any
+    # references so can't even send one back through the completion event.
+    # I don't think we can easily do this right now, perhaps for good reason.
+    def generate_export_filename(self, now):
+        filename = "Batch"
+        if prefix := self.save_options.prefix():
+            filename += "-" + prefix
+        filename += "-" + now.strftime("%Y%m%d-%H%M%S")
+        if suffix := self.save_options.suffix():
+            filename += "-" + suffix
+        if self.batch_count > 1:
+            filename += f"-{self.current_batch_count}-of-{self.batch_count}"
+        log.debug(f"export filename = {filename}")
+        return filename
+
     def complete_batch(self):
         now = datetime.datetime.now()
         self.current_batch_count += 1
@@ -460,14 +481,11 @@ class BatchCollection(object):
 
         # export if requested
         if self.export_after_batch:
-            ts = now.strftime("%Y%m%d-%H%M%S")
-            filename = f"Batch-{self.save_options.prefix()}-{ts}-{self.save_options.suffix()}"
-            if self.batch_count > 0:
-                filename += f"-of-{self.batch_count}"
+            filename = self.generate_export_filename(now)
             self.measurements.export_session(filename=filename)
 
         # If the batch ends after the timeout then stop
-        if self.collection_timeout is not None and datetime.datime.now() > self.collection_timeout:
+        if self.collection_timeout is not None and now > self.collection_timeout:
             log.info("timeout is reached, ending collection process")
             self.stop()
             return

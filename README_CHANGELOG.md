@@ -2,6 +2,11 @@
 
 # 3.2 Open-Source
 
+- 2022-07-19 3.2.13
+    - fixes to scripts/rebuild_resources.sh for Surface Pro (mzieg-surface)
+    - added Prod/EmissionLines plugin (mzieg-emission_lines)
+    - fixes for SPI (save DeviceID, add CRC) (mzieg-spi-redux)
+    - bugfix on BatchCollectionf filenames
 - 2022-06-23 3.2.12
     - remove := and match cases to allow greater backwards compatiblity
     - updates for Raspberry Pi

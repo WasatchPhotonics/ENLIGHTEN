@@ -1,7 +1,6 @@
 import logging
 import os
 
-
 from enum import IntEnum
 
 log = logging.getLogger(__name__)
@@ -19,7 +18,7 @@ application.
 @todo consider making "common" a package (directory), and each of these classes
       can be modules (files) within it
 """
-VERSION = "3.2.12"
+VERSION = "3.2.13"
 
 """ ENLIGHTEN's application version number (checked by scripts/deploy and bootstrap.bat) """
 
