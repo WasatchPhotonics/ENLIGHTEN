@@ -2,6 +2,8 @@
 
 # 3.2 Open-Source
 
+- 2022-07-21 3.2.14
+    - fixed laser power issue in Wasatch.PY
 - 2022-07-19 3.2.13
     - fixes to scripts/rebuild_resources.sh for Surface Pro (mzieg-surface)
     - added Prod/EmissionLines plugin (mzieg-emission_lines)
