@@ -2,6 +2,8 @@
 
 # 3.2 Open-Source
 
+- 2022-07-22 3.2.15
+    - Andor fixes (Cloud temporarily disabled)
 - 2022-07-21 3.2.14
     - fixed laser power issue in Wasatch.PY
 - 2022-07-19 3.2.13

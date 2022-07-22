@@ -39,13 +39,15 @@ class CloudManager:
                  restore_button: QPushButton, 
                  eeprom_editor: EEPROMEditor) -> None:
 
+        self.restore_button = restore_button
+        self.eeprom_editor = eeprom_editor
+
+        self.session = None
+        self.dynamo_resource = None
+
         if DISABLED:
             log.info("No keys, so not initializing cloud manager class")
             return
-        self.restore_button = restore_button
-        self.eeprom_editor = eeprom_editor
-        self.session = None
-        self.dynamo_resource = None
 
         self.result_message = QMessageBox(self.restore_button)
         self.result_message.setWindowTitle("Restore EEPROM Result")
@@ -56,7 +58,8 @@ class CloudManager:
     def get_andor_eeprom(self, detector_serial: str) -> dict:
         if self.session is None or self.dynamo_resource is None:
             self.setup_connection()
-        if detector_serial is not None:
+        if self.session is not None and detector_serial is not None:
+            log.debug(f"loading Andor EEPROM for detector {detector_serial}")
             andor_table = self.dynamo_resource.Table("andor_EEPROM")
             response = andor_table.get_item(Key={"detector_serial_number": detector_serial})
             eeprom_response = response["Item"]
@@ -82,7 +85,12 @@ class CloudManager:
                 self.result_message.exec_()
 
     def setup_connection(self) -> None:
+        if DISABLED:
+            log.error("CloudManager disabled")
+            return
+
         try:
+            log.debug("creating cloud session")
             self.session = self.create_session()
             self.dynamo_resource = self.session.resource("dynamodb")
             self.eeprom_table = self.dynamo_resource.Table("WPSCReports")
@@ -96,6 +104,7 @@ class CloudManager:
     def attempt_download(self, serial_number: str) -> tuple[str, bool]:
         local_file = ''
         try:
+            log.debug(f"downloading EEPROM for serial {serial_number}")
             local_file = os.path.join(get_default_data_dir(), "eeprom_backups", f"{serial_number}.json")
             response = self.eeprom_table.get_item(Key={"serialNumber": serial_number})
             eeprom_response = response["Item"]
