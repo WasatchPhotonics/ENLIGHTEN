@@ -621,10 +621,10 @@ class Measurement(object):
             for ext in exts:
                 (basedir, basename) = exts[ext]
 
-                if n == 0:
-                    new_pathname = "%s%s.%s" % (basedir, self.label, ext)
-                else:
-                    new_pathname = "%s%s-%d.%s" % (basedir, self.label, n, ext)
+                new_basename = util.normalize_filename(self.label)
+                if n > 0:
+                    new_basename += f"-{n}"
+                new_pathname = os.path.join(basedir, f"{new_basename}.{ext}")
 
                 if os.path.exists(new_pathname):
                     conflict = True
@@ -632,7 +632,6 @@ class Measurement(object):
 
             if not conflict:
                 break
-
             n += 1
 
         # apparently there's no conflict for any extension using suffix 'n'
@@ -640,13 +639,15 @@ class Measurement(object):
         for ext in exts:
             (basedir, basename) = exts[ext]
 
-            old_pathname = "%s%s.%s" % (basedir, basename, ext)
-            if n == 0:
-                new_pathname = "%s%s.%s" % (basedir, self.label, ext)
-            else:
-                new_pathname = "%s%s-%d.%s" % (basedir, self.label, n, ext)
+            new_basename = util.normalize_filename(self.label)
+            if n > 0:
+                new_basename += f"-{n}"
+
+            old_pathname = os.path.join(basedir, f"{basename}.{ext}")
+            new_pathname = os.path.join(basedir, f"{new_basename}.{ext}")
 
             try:
+                log.debug(f"renaming {old_pathname} -> {new_pathname}")
                 os.rename(old_pathname, new_pathname)
                 self.add_renamable(new_pathname)
             except:

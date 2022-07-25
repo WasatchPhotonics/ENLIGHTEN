@@ -2,6 +2,8 @@
 
 # 3.2 Open-Source
 
+- 2022-07-?? 3.2.16
+    - fixed issue renaming files (normalize metacharacters)
 - 2022-07-22 3.2.15
     - Andor fixes (Cloud temporarily disabled)
 - 2022-07-21 3.2.14
