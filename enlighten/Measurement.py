@@ -455,7 +455,7 @@ class Measurement(object):
             return self.measurement_id
         else:
             if self.renamed_manually and self.save_options.allow_rename_files():
-                return self.label
+                return util.normalize_filename(self.label)
             else:
                 return self.save_options.wrap_name(self.measurement_id)
 
@@ -533,9 +533,6 @@ class Measurement(object):
         self.settings           = None
         self.thumbnail_widget   = None
         self.processed_reading  = None
-
-    def normalize_filename(self, filename):
-        return re.sub(':', '_', filename) # normalize bad characters 
 
     def update_label(self, label, manual=False):
         if self.renamed_manually and not manual:

@@ -103,6 +103,14 @@ def safe_mkdirp(directory):
     except Exception as exc:
         log.critical("can't create %s", directory, exc_info=1)
 
+## 
+# Some filenames are auto-populated from the on-screen labels used on 
+# thumbnails and graph traces.  However, those labels may include characters
+# that aren't valid (or wise) in filenames, like colon, slash, and backslash,
+# so normalize those out.
+def normalize_filename(filename):
+    return re.sub(r'[:/\\]', '_', filename)
+
 ################################################################################
 # Qt Helpers
 ################################################################################
