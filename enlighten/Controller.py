@@ -18,7 +18,6 @@ from PySide2.QtCore import QObject, QEvent
 from PySide2.QtWidgets import QMessageBox, QVBoxLayout, QWidget, QLabel, QMessageBox
 
 from collections import defaultdict
-from decimal import Decimal
 
 from pygtail import Pygtail # for log screen
 
@@ -690,9 +689,6 @@ class Controller:
                     else:
                         if cloud_name in andor_eeprom:
                             cloud_value = andor_eeprom[cloud_name]
-                            if cloud_value is list and cloud_value[0] is Decimal:
-                                log.debug("converting decimals")
-                                cloud_value = [ float(x) for x in cloud_value ]
                             log.info(f"using cloud-recommended default of {local_name} {cloud_value}")
                             setattr(device.settings.eeprom, local_name, cloud_value)
 
