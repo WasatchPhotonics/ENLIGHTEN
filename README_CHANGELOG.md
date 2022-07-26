@@ -4,7 +4,9 @@
 
 - 2022-07-26 3.2.16
     - fixed issue renaming files (normalize metacharacters)
-    - leaving Cloud disabled pending boto config
+    - resolved Andor cloud issues 
+        - Decimal conversion
+        - DynamoDB schema update
 - 2022-07-22 3.2.15
     - Andor fixes 
     - disabled Cloud while analyzing errors

@@ -18,6 +18,7 @@ from PySide2.QtCore import QObject, QEvent
 from PySide2.QtWidgets import QMessageBox, QVBoxLayout, QWidget, QLabel, QMessageBox
 
 from collections import defaultdict
+from decimal import Decimal
 
 from pygtail import Pygtail # for log screen
 
@@ -667,6 +668,43 @@ class Controller:
             return
 
         ########################################################################
+        # initialize from cloud
+        ########################################################################
+
+        if device.is_andor:
+            # attempt to backfill missing EEPROM settings from cloud
+            # (allow overrides from local configuration file)
+            log.debug("attempting to download Andor EEPROM")
+            andor_eeprom = self.cloud_manager.get_andor_eeprom(device.settings.eeprom.detector_serial_number)
+            if andor_eeprom == {}:
+                log.error(f"got empty dict for Andor eeprom. Serial number incorrect or no entry in dynamo table.")
+            else:
+                log.debug(f"andor_eeprom = {andor_eeprom}")
+
+                def default_missing(local_name, empty_value=None, cloud_name=None):
+                    if cloud_name is None:
+                        cloud_name = local_name
+                    current_value = getattr(device.settings.eeprom, local_name) 
+                    if current_value != empty_value:
+                        log.debug(f"keeping non-default {local_name} {current_value}")
+                    else:
+                        if cloud_name in andor_eeprom:
+                            cloud_value = andor_eeprom[cloud_name]
+                            if cloud_value is list and cloud_value[0] is Decimal:
+                                log.debug("converting decimals")
+                                cloud_value = [ float(x) for x in cloud_value ]
+                            log.info(f"using cloud-recommended default of {local_name} {cloud_value}")
+                            setattr(device.settings.eeprom, local_name, cloud_value)
+
+                default_missing("excitation_nm_float", 0)
+                default_missing("wavelength_coeffs",  [0, 1, 0, 0])
+                default_missing("model", None, "wp_model")
+                default_missing("detector", "iDus")
+                default_missing("serial_number", device.settings.eeprom.detector_serial_number, "wp_serial_number")
+
+                device.change_setting("save_config", device.settings.eeprom)
+
+        ########################################################################
         # update Multispec
         ########################################################################
 
@@ -693,33 +731,7 @@ class Controller:
         self.multispec.update_color()
 
         if device.is_andor:
-            # attempt to backfill missing EEPROM settings from cloud
-            # (allow overrides from local configuration file)
-            log.debug("attempting to download Andor EEPROM")
-            andor_eeprom = self.cloud_manager.get_andor_eeprom(spec.settings.eeprom.detector_serial_number)
-            if andor_eeprom == {}:
-                log.error(f"got empty dict for Andor eeprom. Serial number incorrect or no entry in dynamo table.")
-            else:
-                log.debug(f"andor_eeprom = {andor_eeprom}")
-
-                def default_missing(local_name, empty_value=None, cloud_name=None):
-                    if cloud_name is None:
-                        cloud_name = local_name
-                    if getattr(spec.settings.eeprom, local_name) == empty_value:
-                        if cloud_name in andor_eeprom:
-                            setattr(spec.settings.eeprom, local_name, andor_eeprom[cloud_name])
-                            log.info(f"Defaulting eeprom.{local_name} to {andor_eeprom[cloud_name]}")
-
-                default_missing("excitaton_nm_float", 0)
-                default_missing("wavelength_coeffs", [])
-                default_missing("model", None, "wp_model")
-                default_missing("detector", "iDus")
-                default_missing("serial_number", spec.settings.eeprom.detector_serial_number, "wp_serial_number")
-                sfu.label_detector_serial.setText(spec.settings.eeprom.detector_serial_number)
-
-                device.change_setting("save_config")
-
-                self.update_wavecal()
+            self.update_wavecal()
 
         ########################################################################
         # announce connection

@@ -10,6 +10,7 @@ from PySide2.QtWidgets import QInputDialog, QLineEdit, QMessageBox, QPushButton
 
 from .common import get_default_data_dir
 from .EEPROMEditor import EEPROMEditor
+from . import util
 
 log = logging.getLogger(__name__)
 
@@ -58,13 +59,16 @@ class CloudManager:
     def get_andor_eeprom(self, detector_serial: str) -> dict:
         if self.session is None or self.dynamo_resource is None:
             self.setup_connection()
-        if self.session is not None and detector_serial is not None:
-            log.debug(f"loading Andor EEPROM for detector {detector_serial}")
-            andor_table = self.dynamo_resource.Table("andor_EEPROM")
-            response = andor_table.get_item(Key={"detector_serial_number": detector_serial})
-            eeprom_response = response["Item"]
-            return dict(eeprom_response)
-        return {}
+        if self.session is None or detector_serial is None:
+            return {}
+
+        log.debug(f"loading Andor EEPROM for detector {detector_serial}")
+        andor_table = self.dynamo_resource.Table("andor_EEPROM")
+        response = andor_table.get_item(Key={"detector_serial_number": detector_serial})
+        eeprom_response = response["Item"]
+        dict_response = dict(eeprom_response)
+        util.normalize_decimal(dict_response)
+        return dict_response
 
     def perform_restore(self) -> None:
         serial_number = self.prompt_for_serial()
@@ -88,6 +92,9 @@ class CloudManager:
         if DISABLED:
             log.error("CloudManager disabled")
             return
+
+        # boto seems to log a lot of exception and stack-traces even during "successful" connections
+        logging.getLogger('botocore.utils').setLevel(logging.INFO)
 
         try:
             log.debug("creating cloud session")
