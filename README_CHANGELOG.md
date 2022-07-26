@@ -2,10 +2,12 @@
 
 # 3.2 Open-Source
 
-- 2022-07-?? 3.2.16
+- 2022-07-26 3.2.16
     - fixed issue renaming files (normalize metacharacters)
+    - leaving Cloud disabled pending boto config
 - 2022-07-22 3.2.15
-    - Andor fixes (Cloud temporarily disabled)
+    - Andor fixes 
+    - disabled Cloud while analyzing errors
 - 2022-07-21 3.2.14
     - fixed laser power issue in Wasatch.PY
 - 2022-07-19 3.2.13
