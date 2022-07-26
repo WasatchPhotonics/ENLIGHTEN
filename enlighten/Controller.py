@@ -695,7 +695,8 @@ class Controller:
         if device.is_andor:
             # attempt to backfill missing EEPROM settings from cloud
             # (allow overrides from local configuration file)
-            andor_eeprom = self.cloud_manager.get_andor_eeprom(spec.settings.eeprom.serial_number.replace("CCD-",""))
+            log.debug("attempting to download Andor EEPROM")
+            andor_eeprom = self.cloud_manager.get_andor_eeprom(spec.settings.eeprom.detector_serial_number)
             if andor_eeprom == {}:
                 log.error(f"got empty dict for Andor eeprom. Serial number incorrect or no entry in dynamo table.")
             else:

@@ -132,6 +132,7 @@ class CloudManager:
         return text
 
     def create_session(self) -> boto3.Session:
+        log.debug("instantiating boto3 client")
         client = boto3.client("cognito-identity", region_name="us-east-1")
 
         log.debug("getting client credentials")
@@ -139,19 +140,27 @@ class CloudManager:
             IdentityPoolId=ID_POOL_ID,
             )
 
+        log.debug("getting client credentials for identity")
         response_cred = client.get_credentials_for_identity(
             IdentityId=response["IdentityId"],
             )
+        log.debug("Obtained client credentials")
 
-        access_id = response_cred["Credentials"]["AccessKeyId"]
-        access_secret = response_cred["Credentials"]["SecretKey"]
-        access_session = response_cred["Credentials"]["SessionToken"]
-        log.debug("Obtained client credentials, setting up client session")
-        s3_session = boto3.Session(
-            aws_access_key_id=access_id,
-            aws_secret_access_key=access_secret,
-            aws_session_token=access_session,
-            region_name=DYNAMO_REGION,
-            )
-        log.debug("Created client session")
+        log.debug("Parsing credentials")
+        try:
+            access_id = response_cred["Credentials"]["AccessKeyId"]
+            access_secret = response_cred["Credentials"]["SecretKey"]
+            access_session = response_cred["Credentials"]["SessionToken"]
+
+            log.debug("instantiating client session")
+            s3_session = boto3.Session(
+                aws_access_key_id=access_id,
+                aws_secret_access_key=access_secret,
+                aws_session_token=access_session,
+                region_name=DYNAMO_REGION,
+                )
+            log.debug("Created client session")
+        except:
+            log.error("exception creating client session", exc_info=1)
+            return 
         return s3_session
