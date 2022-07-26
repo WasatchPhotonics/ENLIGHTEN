@@ -1,10 +1,15 @@
 import os
 import json
+import socket
 import logging
+#import urllib.request
+
 from typing import Optional
 from decimal import Decimal
 
 import boto3
+from botocore.config import Config
+
 from PySide2 import QtCore, QtWidgets, QtGui
 from PySide2.QtWidgets import QInputDialog, QLineEdit, QMessageBox, QPushButton
 
@@ -20,6 +25,7 @@ try:
 except Exception as e:
     DISABLED = True
     log.error("No AWS keys found. Cloud eeprom restore disabled")
+
 # response contains decimals that cannot be converted to JSON
 # need to handle those cases
 # see https://stackoverflow.com/questions/51614177/requesting-help-triggering-a-lambda-function-from-dynamodb
@@ -48,6 +54,10 @@ class CloudManager:
 
         if DISABLED:
             log.info("No keys, so not initializing cloud manager class")
+            return
+
+        if "ENLIGHTEN_DISABLE_INTERNET" in os.environ:
+            log.info("Internet access disabled")
             return
 
         self.result_message = QMessageBox(self.restore_button)
@@ -88,9 +98,35 @@ class CloudManager:
                 self.result_message.setIcon(QMessageBox.NoIcon)
                 self.result_message.exec_()
 
+    def is_internet_available(self):
+        """
+        This completes in a few milliseconds in my testing.
+
+        Host: 8.8.8.8 (google-public-dns-a.google.com)
+        OpenPort: 53/tcp
+        Service: domain (DNS/TCP)
+
+        @see https://stackoverflow.com/a/33117579/11615696
+        """
+        log.debug("checking if internet available")
+        try:
+            # This can be slower than you'd expect:
+            # urllib.request.urlopen("http://www.google.com", timeout=2) 
+
+            socket.setdefaulttimeout(1)
+            socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect(("8.8.8.8", 53))
+            log.info("internet is available")
+            return True
+        except socket.error as ex:
+            log.error("internet is not available")
+            return False
+
     def setup_connection(self) -> None:
         if DISABLED:
             log.error("CloudManager disabled")
+            return
+
+        if not self.is_internet_available():
             return
 
         # boto seems to log a lot of exception and stack-traces even during "successful" connections
@@ -103,8 +139,9 @@ class CloudManager:
             self.eeprom_table = self.dynamo_resource.Table("WPSCReports")
             log.debug("Finished setting up connection to cloud provider")
         except:
+            log.error("failed to create session", exc_info=1)
             self.session = None
-            self.result_message.setText("Error connecting to cloud. Please try again.")
+            self.result_message.setText("Error connecting to cloud. Using locally cached configuration.")
             self.result_message.setIcon(QMessageBox.Critical)
             self.result_message.exec_()
 
@@ -139,19 +176,26 @@ class CloudManager:
         return text
 
     def create_session(self) -> boto3.Session:
+
+        config = Config(
+           retries = {
+              'max_attempts': 1,
+              'mode': 'standard'
+           }
+        )
+
         log.debug("instantiating boto3 client")
-        client = boto3.client("cognito-identity", region_name="us-east-1")
+        client = boto3.client("cognito-identity", region_name="us-east-1", config=config)
 
         log.debug("getting client credentials")
-        response = client.get_id(
-            IdentityPoolId=ID_POOL_ID,
-            )
+        try:
+            response = client.get_id(IdentityPoolId=ID_POOL_ID)
+        except:
+            log.error("unable to connect to cloud reponsitory", exc_info=1)
+            return
 
         log.debug("getting client credentials for identity")
-        response_cred = client.get_credentials_for_identity(
-            IdentityId=response["IdentityId"],
-            )
-        log.debug("Obtained client credentials")
+        response_cred = client.get_credentials_for_identity(IdentityId=response["IdentityId"])
 
         log.debug("Parsing credentials")
         try:

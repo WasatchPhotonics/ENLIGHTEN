@@ -7,6 +7,8 @@
     - resolved Andor cloud issues 
         - Decimal conversion
         - DynamoDB schema update
+        - fast is_internet_available check before attempting AWS
+        - added ENLIGHTEN_DISABLE_INTERNET environment variable check
 - 2022-07-22 3.2.15
     - Andor fixes 
     - disabled Cloud while analyzing errors
