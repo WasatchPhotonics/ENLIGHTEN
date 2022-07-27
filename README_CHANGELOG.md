@@ -2,6 +2,8 @@
 
 # 3.2 Open-Source
 
+- 2022-07-27 3.2.17
+    - display error details on connection failures
 - 2022-07-26 3.2.16
     - fixed issue renaming files (normalize metacharacters)
     - resolved Andor cloud issues 
