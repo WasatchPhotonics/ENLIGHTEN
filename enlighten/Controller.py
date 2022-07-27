@@ -1957,6 +1957,7 @@ class Controller:
                         else:
                             log.error("process_reading: impossible graph axis: %s", self.graph.get_x_axis_unit())
                     else:
+                        self.marquee.error("Interpolation error. Are your interp values right?")
                         log.error("process_reading: error generating interpolated graph curve")
                 else:
                     cropped = pr.is_cropped()
