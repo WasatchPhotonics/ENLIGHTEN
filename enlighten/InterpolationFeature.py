@@ -149,6 +149,7 @@ class InterpolationFeature(object):
             return 
 
         if pr is None:
+            log.error("Interpolation was called without a pr, returning none.")
             return 
 
         if wavelengths is None and settings is not None:
@@ -158,9 +159,11 @@ class InterpolationFeature(object):
             wavenumbers = settings.wavenumbers
 
         if wavelengths is None and wavenumbers is None:
+            log.error("Wavelengths and wavenumbers were none, returning none.")
             return
 
         if not (self.use_wavelengths or self.use_wavenumbers):
+            log.error("Not using wavelengths and not using wavenumbers were none, returning none.")
             return 
 
         log.debug("interpolating processed reading")
@@ -191,6 +194,7 @@ class InterpolationFeature(object):
                     wavenumbers = ipr.wavenumbers))
 
         if old_axis is None:
+            log.error("Old axis was none, returning none.")
             return None
 
         if pr.processed is not None:
