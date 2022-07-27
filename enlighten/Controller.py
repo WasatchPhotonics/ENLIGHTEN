@@ -681,6 +681,10 @@ class Controller:
         ########################################################################
 
         if device.is_andor:
+            # Note that currently we're doing this BEFORE determining if it's a 
+            # hotplug; ideally, we should only need to connect to the Cloud
+            # on hotplug.  
+
             # attempt to backfill missing EEPROM settings from cloud
             # (allow overrides from local configuration file)
             log.debug("attempting to download Andor EEPROM")
@@ -709,6 +713,10 @@ class Controller:
                 default_missing("serial_number", device.settings.eeprom.detector_serial_number, "wp_serial_number")
 
                 device.change_setting("save_config", device.settings.eeprom)
+
+            sfu.label_detector_serial.setText(device.settings.eeprom.detector_serial_number)
+        else:
+            sfu.label_detector_serial.setText("")
 
         ########################################################################
         # update Multispec
