@@ -458,6 +458,7 @@ class BatchCollection(object):
             filename += "-" + suffix
         if self.batch_count > 1:
             filename += f"-{self.current_batch_count}-of-{self.batch_count}"
+        filename = util.normalize_filename(filename)
         log.debug(f"export filename = {filename}")
         return filename
 

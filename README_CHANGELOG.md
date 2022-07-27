@@ -2,6 +2,16 @@
 
 # 3.2 Open-Source
 
+- 2022-07-26 3.2.16
+    - fixed issue renaming files (normalize metacharacters)
+    - resolved Andor cloud issues 
+        - Decimal conversion
+        - DynamoDB schema update
+        - fast is_internet_available check before attempting AWS
+        - added ENLIGHTEN_DISABLE_INTERNET environment variable check
+- 2022-07-22 3.2.15
+    - Andor fixes 
+    - disabled Cloud while analyzing errors
 - 2022-07-21 3.2.14
     - fixed laser power issue in Wasatch.PY
 - 2022-07-19 3.2.13

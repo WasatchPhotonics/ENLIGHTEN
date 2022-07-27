@@ -667,6 +667,40 @@ class Controller:
             return
 
         ########################################################################
+        # initialize from cloud
+        ########################################################################
+
+        if device.is_andor:
+            # attempt to backfill missing EEPROM settings from cloud
+            # (allow overrides from local configuration file)
+            log.debug("attempting to download Andor EEPROM")
+            andor_eeprom = self.cloud_manager.get_andor_eeprom(device.settings.eeprom.detector_serial_number)
+            if andor_eeprom == {}:
+                log.error(f"got empty dict for Andor eeprom. Serial number incorrect or no entry in dynamo table.")
+            else:
+                log.debug(f"andor_eeprom = {andor_eeprom}")
+
+                def default_missing(local_name, empty_value=None, cloud_name=None):
+                    if cloud_name is None:
+                        cloud_name = local_name
+                    current_value = getattr(device.settings.eeprom, local_name) 
+                    if current_value != empty_value:
+                        log.debug(f"keeping non-default {local_name} {current_value}")
+                    else:
+                        if cloud_name in andor_eeprom:
+                            cloud_value = andor_eeprom[cloud_name]
+                            log.info(f"using cloud-recommended default of {local_name} {cloud_value}")
+                            setattr(device.settings.eeprom, local_name, cloud_value)
+
+                default_missing("excitation_nm_float", 0)
+                default_missing("wavelength_coeffs",  [0, 1, 0, 0])
+                default_missing("model", None, "wp_model")
+                default_missing("detector", "iDus")
+                default_missing("serial_number", device.settings.eeprom.detector_serial_number, "wp_serial_number")
+
+                device.change_setting("save_config", device.settings.eeprom)
+
+        ########################################################################
         # update Multispec
         ########################################################################
 
@@ -693,16 +727,8 @@ class Controller:
         self.multispec.update_color()
 
         if device.is_andor:
-            andor_eeprom = self.cloud_manager.get_andor_eeprom(spec.settings.eeprom.serial_number.replace("CCD-",""))
-            if andor_eeprom is {}:
-                log.error(f"got empty dict for andor eeprom. Serial number incorrect or no entry in dynamo table.")
-            else:
-                spec.settings.eeprom.excitation_nm_float = andor_eeprom["excitation_nm_float"]
-                spec.settings.eeprom.wavelength_coeffs = andor_eeprom["wavelength_coeffs"]
-                spec.settings.eeprom.detector_serial_number = spec.setting.eeprom.serial_number
-                spec.settings.eeprom.serial_number = andor_eeprom["wp_serial_number"]
-                spec.settings.eeprom.model = andor_eeprom["wp_model"]
-                sfu.label_detector_serial.setText(spec.settings.eeprom.detector_serial_number)
+            self.update_wavecal()
+
         ########################################################################
         # announce connection
         ########################################################################
@@ -2157,7 +2183,7 @@ class Controller:
                 spec.settings.eeprom.has_cooling = True
 
         # go ahead and regenerate x-axis
-        spec.settings.update_wavecal()
+        self.update_wavecal()
 
         log.debug("set_from_ini_file: done")
 

@@ -11,6 +11,7 @@ import re
 import os
 
 from collections import namedtuple
+from decimal import Decimal
 
 log = logging.getLogger(__name__)
 
@@ -102,6 +103,14 @@ def safe_mkdirp(directory):
         os.makedirs(expanded)
     except Exception as exc:
         log.critical("can't create %s", directory, exc_info=1)
+
+## 
+# Some filenames are auto-populated from the on-screen labels used on 
+# thumbnails and graph traces.  However, those labels may include characters
+# that aren't valid (or wise) in filenames, like colon, slash, and backslash,
+# so normalize those out.
+def normalize_filename(filename):
+    return re.sub(r'[:/\\]', '_', filename)
 
 ################################################################################
 # Qt Helpers
@@ -259,6 +268,24 @@ def clean_json(s):
 
     # Java's JSON parser breaks on NaN...the spec is iffy
     return re.sub(r"\bNaN\b", "null", s)
+
+##
+# Recurse down a potentially nested structure of dicts and lists, converting
+# every Decimal into a float.  Used to normalize results from AWS DynamoDB.
+# (Is there a way to make boto default to this?)
+def normalize_decimal(obj):
+    if type(obj) is dict:
+        for k, v in obj.items():
+            if type(v) is Decimal:
+                obj[k] = float(v)
+            elif isinstance(v, (list, dict)):
+                normalize_decimal(v)
+    elif type(obj) is list:
+        for i in range(len(obj)):
+            if type(obj[i]) is Decimal:
+                obj[i] = float(obj[i])
+            elif isinstance(obj[i], (list, dict)):
+                normalize_decimal(obj[i])
 
 def python_version():
     return ".".join([str(x) for x in sys.version_info])
