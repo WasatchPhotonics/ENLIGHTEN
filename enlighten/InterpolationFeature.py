@@ -146,6 +146,7 @@ class InterpolationFeature(object):
 
     def interpolate_processed_reading(self, pr, wavelengths=None, wavenumbers=None, settings=None):
         if self.new_axis is None:
+            log.error("new axis not provided, returning none")
             return 
 
         if pr is None:
