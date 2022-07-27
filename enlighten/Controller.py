@@ -586,24 +586,34 @@ class Controller:
         in_progress_specs = list(self.multispec.in_process.items())
         for device_id, device in in_progress_specs:
             log.debug(f"checking {device_id} for settings results")
-            if device.poll_settings():
-                self.header("connect_new: successfully connected %s" % device_id)
-                self.initialize_new_device(device)
+            disconnect_device = False
 
-                # remove the "in-process" flag, as it's now in the "connected" list
-                # and fully initialized
-                if device.is_ble:
-                    self.form.ui.readingProgressBar.show()
-                self.multispec.remove_in_process(device_id)
-                self.header("connect_new: done (%s)" % device_id)
+            poll_result = device.poll_settings()
+            if poll_result is not None:
+                if poll_result.data:
+                    self.header("connect_new: successfully connected %s" % device_id)
+                    self.initialize_new_device(device)
+
+                    # remove the "in-process" flag, as it's now in the "connected" list
+                    # and fully initialized
+                    if device.is_ble:
+                        self.form.ui.readingProgressBar.show()
+                    self.multispec.remove_in_process(device_id)
+                    self.header("connect_new: done (%s)" % device_id)
+                else:
+                    self.marquee.error(poll_result.error_msg)
+                    disconnect_device = True
+                    
             else:
                 # didn't get settings so check for timeout
                 if device.connect_start_time + datetime.timedelta(seconds=self.spec_timeout) < datetime.datetime.now():
                     log.error(f"{device_id} settings timed out, giving up on the spec")
-                    device.disconnect()
-                    self.multispec.set_gave_up(device_id)
-                    self.multispec.remove_in_process(device_id)
+                    disconnect_device = True
 
+            if disconnect_device:
+                device.disconnect()
+                self.multispec.set_gave_up(device_id)
+                self.multispec.remove_in_process(device_id)
 
     # also called by PageNavigation.set_technique_common
     def update_feature_visibility(self):
