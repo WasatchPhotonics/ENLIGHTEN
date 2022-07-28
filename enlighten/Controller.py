@@ -475,7 +475,7 @@ class Controller:
 
             # no need to make this persistent, it'll be renewed 1/sec
             self.marquee.info("no spectrometers found") 
-            #self.multispec.remove_all()
+            self.multispec.remove_all()
 
             self.update_feature_visibility
             return
