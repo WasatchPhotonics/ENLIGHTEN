@@ -511,7 +511,10 @@ class BusinessObjects:
 
         self.header("instantiating CloudManager")
         ctl.cloud_manager = CloudManager(
+            cb_enabled     = sfu.checkBox_cloud_config_download_enabled,
             restore_button = sfu.pushButton_restore_eeprom,
+
+            config         = ctl.config,
             eeprom_editor  = ctl.eeprom_editor)
 
         self.header("instantiating VCRControls")

@@ -2,6 +2,8 @@
 
 # 3.2 Open-Source
 
+- 2022-07-28 3.2.18
+    - made internet access opt-in
 - 2022-07-27 3.2.17
     - display error details on connection failures
     - display detector serial number

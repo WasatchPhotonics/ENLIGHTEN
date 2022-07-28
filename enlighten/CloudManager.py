@@ -11,10 +11,11 @@ import boto3
 from botocore.config import Config
 
 from PySide2 import QtCore, QtWidgets, QtGui
-from PySide2.QtWidgets import QInputDialog, QLineEdit, QMessageBox, QPushButton
+from PySide2.QtWidgets import QInputDialog, QLineEdit, QMessageBox, QPushButton, QCheckBox
 
 from .common import get_default_data_dir
 from .EEPROMEditor import EEPROMEditor
+from .Configuration import Configuration
 from . import util
 
 log = logging.getLogger(__name__)
@@ -40,33 +41,60 @@ def handle_decimal_type(obj):
 class CloudManager:
     """
     Encapsulates access to AWS-backed cloud features.
+
+    All internet access is opt-in, so unless the user has manually checked the 
+    "Enable Cloud Access" options in Setup, all internet access will be blocked.
     """
 
+    CONFIG_SECTION = "Cloud"
+
     def __init__(self, 
+                 cb_enabled: QCheckBox,
                  restore_button: QPushButton, 
+
+                 config: Configuration,
                  eeprom_editor: EEPROMEditor) -> None:
 
+        self.cb_enabled = cb_enabled
         self.restore_button = restore_button
+
+        self.config = config
         self.eeprom_editor = eeprom_editor
 
         self.session = None
         self.dynamo_resource = None
 
         if DISABLED:
-            log.info("No keys, so not initializing cloud manager class")
+            log.info("No keys, so not initializing CloudManager")
             return
 
-        if "ENLIGHTEN_DISABLE_INTERNET" in os.environ:
-            log.info("Internet access disabled")
-            return
+        self.init_from_config()
 
         self.result_message = QMessageBox(self.restore_button)
         self.result_message.setWindowTitle("Restore EEPROM Result")
         self.result_message.setStandardButtons(QMessageBox.Ok)
 
-        self.restore_button.clicked.connect(self.perform_restore)
+        self.restore_button.clicked      .connect(self.perform_restore)
+        self.cb_enabled    .stateChanged .connect(self.enable_callback)
+
+    def init_from_config(self):
+        self.cb_enabled.setChecked(self.config.get_bool(self.CONFIG_SECTION, "enabled"))
+
+    def save_config(self):
+        self.config.set(self.CONFIG_SECTION, "enabled", self.enabled())
+
+    def enabled(self) -> bool:
+        if DISABLED or not self.cb_enabled.isChecked():
+            log.debug("Cloud access disabled")
+            return False
+        return True
+
+    def enable_callback(self):
+        self.save_config()
 
     def get_andor_eeprom(self, detector_serial: str) -> dict:
+        if not self.enabled():
+            return {}
         if self.session is None or self.dynamo_resource is None:
             self.setup_connection()
         if self.session is None or detector_serial is None:
@@ -81,6 +109,8 @@ class CloudManager:
         return dict_response
 
     def perform_restore(self) -> None:
+        if not self.enabled():
+            return 
         serial_number = self.prompt_for_serial()
         if self.session is None or self.dynamo_resource is None:
             self.setup_connection()
@@ -122,10 +152,8 @@ class CloudManager:
             return False
 
     def setup_connection(self) -> None:
-        if DISABLED:
-            log.error("CloudManager disabled")
-            return
-
+        if not self.enabled():
+            return 
         if not self.is_internet_available():
             return
 
@@ -146,6 +174,9 @@ class CloudManager:
             self.result_message.exec_()
 
     def attempt_download(self, serial_number: str) -> tuple[str, bool]:
+        if not self.enabled():
+            return 
+
         local_file = ''
         try:
             log.debug(f"downloading EEPROM for serial {serial_number}")
@@ -170,12 +201,11 @@ class CloudManager:
                                           "Enter Spectrometer Serial Number",
                                           "Serial Number",
                                           QLineEdit.Normal)
-        if not ok:
-            return
-        
-        return text
+        return text if ok else None
 
     def create_session(self) -> boto3.Session:
+        if not self.enabled():
+            return
 
         config = Config(
            retries = {
