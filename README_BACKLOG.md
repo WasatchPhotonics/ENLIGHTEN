@@ -4,6 +4,7 @@
 
 - Should exit faster with long integration times (1min+).  If there is no laser 
   (or no laser enabled), just kill child threads.
+- more testing with Andor (multiple XL units, XL with others, etc)
 
 ## Architecture
 
