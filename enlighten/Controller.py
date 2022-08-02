@@ -471,7 +471,7 @@ class Controller:
         if other_device is not None and other_device not in self.other_devices:
             self.other_devices.append(other_device)
         self.bus.device_ids.extend(self.other_devices)
-        if self.bus.is_empty():
+        if self.bus.is_empty() and self.multispec.count():
 
             # no need to make this persistent, it'll be renewed 1/sec
             self.marquee.info("no spectrometers found") 
@@ -549,6 +549,10 @@ class Controller:
             pass
         elif str(new_device_id.address) != '111111' and str(new_device_id.bus) != '111111':
             new_device_id.device_type = RealUSBDevice(new_device_id)
+        try:
+            self.bus.device_ids.remove(new_device_id)
+        except:
+            log.error(f"failed to remove new device {new_device_id} from bus devices")
 
         # attempt to connect the device
         if new_device_id.is_andor():
