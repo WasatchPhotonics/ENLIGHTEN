@@ -3,6 +3,7 @@
 # 3.2 Open-Source
 
 - 2022-08-03 3.2.19
+    - hide high gain by default
     - event based usb connection Windows and Linux
     - Switch to std lib csv to support quote csv
 - 2022-07-28 3.2.18
