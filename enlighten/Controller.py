@@ -465,6 +465,8 @@ class Controller:
         # Note that this method gets called whether there are any spectrometers
         # on the bus or not, and whether any or all of them have already connected
         # or not.
+        #
+        # @param other_device: can be a BLEDevice from BLEManager
         """
         # do we see any spectrometers on the bus?  (WasatchBus will pre-filter to
         # only valid spectrometer devices)
@@ -583,8 +585,12 @@ class Controller:
         Check if an identified spectrometer succeeded in returning settings
         With this complete, initialize and start operating the spec
         """
-        in_progress_specs = list(self.multispec.in_process.items())
+        in_progress_specs = list(self.multispec.in_process.items()) 
         for device_id, device in in_progress_specs:
+            if device is None or type(device) is bool:
+                log.debug("check_ready_initialize: ignoring {device_id} ({device})")
+                continue
+
             log.debug(f"checking {device_id} for settings results")
             disconnect_device = False
 

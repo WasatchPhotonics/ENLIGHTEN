@@ -2,6 +2,8 @@
 
 # 3.2 Open-Source
 
+- 2022-08-04 3.2.19
+    - testing new DeviceFinderUSB
 - 2022-07-28 3.2.18
     - made internet access opt-in
 - 2022-07-27 3.2.17
