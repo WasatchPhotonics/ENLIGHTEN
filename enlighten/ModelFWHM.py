@@ -72,7 +72,7 @@ class ModelFWHM(object):
                 continue
 
             model = tok[0].upper()
-            avg   = tok[1]
+            avg   = float(tok[1])
 
             self.table[model] = avg
 
@@ -105,7 +105,7 @@ class ModelFWHM(object):
                     break
             if matched_all:
                 fwhm = self.table[key]
-                log.debug("scrambled match: %s (%s) -> %f", full_model, key, fwhm)
+                log.debug(f"scrambled match: {full_model} ({key}) -> {fwhm}")
                 return fwhm
 
-        log.error("could not find model %s in FWHM table", full_model)
+        log.error(f"could not find model {fulL_model} in FWHM table")
