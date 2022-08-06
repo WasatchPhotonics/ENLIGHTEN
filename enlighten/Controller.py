@@ -303,7 +303,7 @@ class Controller:
             return False
 
         if self.multispec.count() == 0:
-            self.marquee.info("searching for spectrometers", immediate=True)
+            self.marquee.info("searching for spectrometers", immediate=True, persist=True)
             self.advanced_options.update_visibility()
 
         self.status_indicators.update_visibility()
@@ -395,7 +395,7 @@ class Controller:
         Poll the USB bus periodically for new connection events (including 
         devices connected at application launch).
         """
-        self.marquee.info("searching for spectrometers", immediate=True)
+        self.marquee.info("searching for spectrometers", immediate=True, persist=True)
         self.bus = WasatchBus()
         self.bus_timer = QtCore.QTimer()
         self.bus_timer.timeout.connect(self.tick_bus_listener)
@@ -437,6 +437,7 @@ class Controller:
 
         # refresh the list of visible spectrometers on the USB bus
         self.bus.update()
+
         # refresh the list of visible spectrometers on the BLE list
         self.ble_manager.check_complete_scans()
 
@@ -473,10 +474,10 @@ class Controller:
         if other_device is not None and other_device not in self.other_devices:
             self.other_devices.append(other_device)
         self.bus.device_ids.extend(self.other_devices)
-        if self.bus.is_empty() and self.multispec.count():
+        if self.bus.is_empty() and self.multispec.count() > 0:
 
             # no need to make this persistent, it'll be renewed 1/sec
-            self.marquee.info("no spectrometers found") 
+            self.marquee.info("no spectrometers found...calling remove_all") 
             self.multispec.remove_all()
 
             self.update_feature_visibility
@@ -531,7 +532,7 @@ class Controller:
                 log.debug("connect_new: ignoring: %s", device_id)
                 continue
 
-            # we found A DEVICE that we wish to connect to; 
+            # we found the ID of a DEVICE that we wish to connect to; 
             # stop, as there's no reason to continue
             new_device_id = device_id
             break
@@ -550,7 +551,8 @@ class Controller:
         if isinstance(new_device_id.device_type, BLEDevice):
             pass
         elif str(new_device_id.address) != '111111' and str(new_device_id.bus) != '111111':
-            new_device_id.device_type = RealUSBDevice(new_device_id)
+            new_device_id.device_type = RealUSBDevice(new_device_id) # MZ: I don't like this
+
         try:
             self.bus.device_ids.remove(new_device_id)
         except:
@@ -1394,7 +1396,7 @@ class Controller:
     #                                                                          #
     # ##########################################################################
 
-    def attempt_reading(self, spec):
+    def attempt_reading(self, spec) -> None:
         """
         Attempt to acquire a reading from the subprocess response queue,
         process and render data in the GUI.
@@ -1408,16 +1410,16 @@ class Controller:
         # check for a full reading (spectrum + temperature and other metadata)
         acquired_reading = self.acquire_reading(spec)
 
-        if acquired_reading.disconnect:
+        if acquired_reading is not None and acquired_reading.disconnect:
             log.critical("Read poison pill from WasatchDeviceWrapper -- disconnect requested")
             self.disconnect_device(spec)
             return
 
-        # we collected the measurement (to clear the queue), but don't do anything with it
+        # we collected the reading (to clear the queue), but don't do anything with it
         if spec.app_state.paused and not self.batch_collection.running:
             return
 
-        if acquired_reading.reading is None:
+        if acquired_reading is None or acquired_reading.reading is None:
             log.debug("attempt_reading(%s): no reading available", device_id)
             if self.vcr_controls.paused or self.batch_collection.running or not spec.is_acquisition_timeout():
                 return
@@ -1443,6 +1445,7 @@ class Controller:
             # this doesn't have to be done after each keepalive...we could do this at 1Hz or so
             if spec.app_state.missed_reading_count > self.MAX_MISSED_READINGS and \
                     not spec.app_state.spec_timeout_prompt_shown:
+                log.info("displaying Timeout Warning MessageBox (stay connected, or disconnect)")
                 spec.app_state.spec_timeout_prompt_shown = True
                 dlg = QMessageBox(self.form)
                 dlg.setWindowTitle("Timeout Warning")
@@ -1452,9 +1455,11 @@ class Controller:
                 button = dlg.exec_()
 
                 if button == QMessageBox.No:
+                    log.info("user opted to disconnect following timeout")
                     log.error("spectrometer acquisition timed-out...disconnecting")
                     self.disconnect_device(spec)
                 else:
+                    log.info("user opted to stay connected in spite of timeout")
                     log.error("spectrometer acquisition timed-out...user indicated persist")
 
             return
@@ -1553,92 +1558,87 @@ class Controller:
 
     def acquire_reading(self, spec: Spectrometer) -> AcquiredReading:
         """
-        Poll the spectrometer subprocess (WasatchDeviceWrapper) and see what
-        comes back.
-        
-        In the current communication architecture, any of these four things can 
-        come back:
-        
-        - False:   poison-pill (disconnect device, shutdown process)
-        - True:    treat as KEEPALIVE (ignore, keep polling for data)
-        - None:    treat as KEEPALIVE (ignore, keep polling for data)
-        - Reading: process measurement (optionally flagged as a failure)
-        
-        Basically, there are so many things in Python that can trigger a None
-        response (like get_no_wait()) that it seems an unreasonable flag for use
-        as a poison-pill, especially given the many times when honestly "no reading
-        is available" is a legitimate and non-erroneous status.  Using False feels
-        more explicit.
-        
-        Probably we should generate a full hierarchy of Message types that can flow
-        up from subprocess to ENLIGHTEN, and those could include PoisonPillMessage
-        and StatusMessage and all kinds of stuff.  We'll get there.
+        Poll the spectrometer thread (WasatchDeviceWrapper) for a 
+        SpectrometerResponse.
         
         @see wasatch.WasatchDeviceWrapper.acquire_data
         @see wasatch.WasatchDevice.acquire_data
         
         @todo eventually move to AcquisitionFeature
-        
-        @return   A (Reading, disconnectBool) tuple.  If there was a valid Reading,
-                  that will be the first tuple element.  The second element will be
-                  a bool indicating whether the device has malfunctioned and needs
-                  to be disconnected.
+
+        @returns one of three things: 
+                 1. AcquiredReading(reading=Reading) with an actual Reading 
+                    (could still contain an error etc), or 
+                 2. AcquiredReading(disconnect=True) if it all went sidewides, or
+                 3. None if it's neither good nor bad and no action should be 
+                    taken (keepalive etc)
         """
-        reading = None
 
         device = spec.device
         if spec is None or device is None:
             # silently ignore...this should be rare, and likely indicates a delay
             # during initial connection or tear-down
             log.error("acquiring reading from missing device?")
-            return AcquiredReading()
+            return 
 
         device_id = spec.device_id
 
         try:
-            reading_response = device.acquire_data()
-            # log.debug(f"Got response of {reading_response}")
-            if reading_response.error_msg != "" and reading_response.error_lvl != ErrorLevel.ok:
-                ok = self.display_response_error(spec, reading_response.error_msg)
-                if not ok:
-                    return AcquiredReading()
+            spectrometer_response = device.acquire_data()
+            if spectrometer_response.poison_pill:
+                log.error(f"acquire_reading: received poison-pill from spectrometer: {spectrometer_response}") # disposition AFTER displaying user message
 
-            # was the boolean True (a keepalive) or False (poison-pill)?
-            if reading_response.keep_alive:
-                # log.debug("received bool KEEPALIVE")
-                return AcquiredReading()
-            elif reading_response.poison_pill:
-                log.critical("received poison-pill from subprocess, response error level with message follows:")
-                log.critical(f"[{reading_response.error_msg}], {reading_response.error_lvl.name}")
-                return AcquiredReading(disconnect=True)
+            if spectrometer_response.poison_pill or \
+                    (spectrometer_response.error_msg != "" and spectrometer_response.error_lvl != ErrorLevel.ok):
+                # We received an error from the device.  Don't do anything about it immediately;
+                # don't disconnect for instance.  It may or may not be a poison-pill...we're not
+                # even checking yet, because we want to let the user decide what to do.
+                log.debug("acquire_reading: prompting user to dispsition error")
+                stay_connected = self.display_response_error(spec, spectrometer_response.error_msg)
+                if stay_connected:
+                    log.debug("acquire_reading: either the user said this was okay, or they're still thinking about it")
+                else:
+                    # the user said to shut things down
+                    log.error("acquire_reading: user said to disconnect")
+                    return AcquiredReading(disconnect=True)
 
-            # did we get anything?
-            if reading_response.data is not None:
-                # we got a Reading!
+            if spectrometer_response.poison_pill:
+                # the user hasn't [yet] decided to disconnect, but we can't really "do anything" with data that's
+                # coming from a spectrometer throwing poison-pills, so for now treat it as a keepalive
+                log.debug(f"received poison-pill from spectrometer, but the user has not [yet] opted to disconnect")
+                return 
+
+            if spectrometer_response.keep_alive:
+                return 
+
+            if spectrometer_response.data is None:
+                # we got a None...treat as keepalive
+                return
+
+            if type(spectrometer_response.data) is Reading:
+                reading = spectrometer_response.data
 
                 # did the Reading have a failure flag set?
-                if reading_response.data.failure is not None:
-                    # Apparently there was an error in the sub-process.
-                    # Unsure we want to treat every failure as a poison-pill.
-                    # Let's let the device tell us if it thinks it needs to die.
-                    # Just log this and wait for further updates.
+                if reading.failure is not None:
+                    # Apparently there was an error in the thread worker.
+                    # However, the device didn't send a poison-pill, so
+                    # just log this and wait for further updates.
                     log.critical("acquire_reading(%s): failure in reading: %s", str(device_id), str(reading.failure))
-                    return AcquiredReading()
+                    return 
 
                 # apparently it was a GOOD reading!
                 spec.reset_acquisition_timeout()
-                return AcquiredReading(reading=reading_response.data, progress=reading_response.progress)
+                return AcquiredReading(reading=reading, progress=spectrometer_response.progress)
 
             else:
-                # we got a None.  Treat as a keepalive.
-                return AcquiredReading()
+                log.error(f"received a SpectrometerResponse where data is {type(spectrometer_response.data)}")
+                return 
 
         except Exception as exc:
             # we didn't receive notification of an error which occurred downstream
-            # in the subprocess, we actually had a problem communicating with the
-            # subprocess "full stop."  The subprocess is hosed, so cut it loose.
+            # in the thread, we actually had a problem communicating with the
+            # thread "full stop."  The thread is hosed, so cut it loose.
             log.critical("acquire_reading(%s): problem acquiring from connected device", str(device_id), exc_info=1)
-            del reading
             return AcquiredReading(disconnect=True)
 
         # I don't see how you'd get here.  Call it a poison-pill and log it.
@@ -2373,14 +2373,32 @@ class Controller:
             spec.app_state.update_rolling_data(self.form.ui.spinBox_strip_window.value())
 
     def display_response_error(self, spec: Spectrometer, response_error: str) -> bool:
-        if response_error in self.seen_errors[spec] or self.dialog_open:
-            return
-        self.dialog_open = True
+        """
+        @returns True if:
+                     1. the device can stay connected (includes log views), or 
+                     2. there's already a dialog open, or
+                     3. we've already prompted the user about this error on this spectrometer.
+                 False if:
+                     1. the user said to disconnect
+        """
+        if response_error in self.seen_errors[spec]:
+            log.debug(f"ignoring error because already seen: {response_error}")
+            return True
         self.seen_errors[spec].append(response_error)
 
+        if self.dialog_open:
+            log.debug(f"ignoring error because dialog currently open: {response_error}")
+            return True
+        self.dialog_open = True # todo make a mutex
+
         dlg = QMessageBox(self.form)
+        log.info(f"displaying MessageBox with the received error and options (Okay, Disconnect, Log): {response_error}")
         dlg.setWindowTitle("Spectrometer Error")
-        dlg.setText(f"ENLIGHTEN has encountered an error with the spectrometer.  The exception is shown below.  Click ‘View Log’ to automatically open the logfile in Notepad, ‘Disconnect’ to retry or ‘Okay’ to dismiss this dialog:\n\n{response_error}")
+        dlg.setText("ENLIGHTEN has encountered an error with the spectrometer. " \
+                  + "The exception is shown below.  Click 'View Log' to " \
+                  + "automatically open the logfile in Notepad, 'Disconnect' to " \
+                  + "retry or 'Okay' to dismiss this dialog:\n\n" \
+                  + response_error)
         ok_btn = dlg.addButton("Okay", QMessageBox.AcceptRole)
         disconnect_btn = dlg.addButton("Disconnect", QMessageBox.RejectRole)
         help_btn = dlg.addButton("View Log", QMessageBox.HelpRole)
@@ -2393,12 +2411,14 @@ class Controller:
         self.dialog_open = False
         spec.settings.state.ignore_timeouts_until = datetime.datetime(datetime.MAXYEAR,12,1)
         if selection == [True, False, False]:
-            pass
+            log.info("user clicked 'Okay' to dismiss the dialog with no action")
         elif selection == [False, True, False]:
+            log.info("user clicked 'Disconnect' so disconnecting the device")
             self.disconnect_device(spec)
             self.multispec.set_gave_up(spec.device_id)
             return False
         elif selection == [False, False, True]:
+            log.info("user clicked 'View Log' so displaying the logfile")
             self.open_log()
         else:
             log.error(f"User didn't choose a button. Defaulting to persist aberrant spectrometer.")

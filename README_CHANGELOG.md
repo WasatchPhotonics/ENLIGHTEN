@@ -2,6 +2,9 @@
 
 # 3.2 Open-Source
 
+- 2022-08-?? 
+    - fixed bug parsing FWHM table
+    - making disconnect logic a little more robust
 - 2022-08-04 3.2.19
     - testing new DeviceFinderUSB
 - 2022-07-28 3.2.18
