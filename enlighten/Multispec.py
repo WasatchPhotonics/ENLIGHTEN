@@ -266,9 +266,11 @@ class Multispec(object):
         return device_id in self.ejected
 
     def eject_current_spec(self):
+        log.debug("user clicked eject")
         spec = self.current_spectrometer()
         if spec is None:
             return
+        log.critical(f"user clicked eject on {spec}")
         self.controller_disconnect(spec)
         self.ejected.add(spec.device.device_id)
 
@@ -413,7 +415,7 @@ class Multispec(object):
         if self.device_id in self.spectrometers:
             return self.spectrometers[self.device_id]
 
-        log.error("Multispec.current_spectrometer: can't find self.device_id %s in spectrometers", self.device_id)
+        log.error(f"Multispec.current_spectrometer: can't find self.device_id {self.device_id} in spectrometers")
         return None
 
     def update_widget(self):
@@ -445,6 +447,7 @@ class Multispec(object):
         self.combo_spectrometer.blockSignals(False)
         
         # select the newly added device
+        log.debug(f"Multispec.add: self.device_id now {device_id}")
         self.device_id = device_id
 
         ########################################################################
@@ -543,7 +546,7 @@ class Multispec(object):
         # get the device_id of the selected item in the comboBox
         device_id = self.get_combo_device_id()
         if device_id is None:
-            log.debug("combo_callback: can't determine device_id")
+            log.debug("combo_callback: can't determine device_id (setting None)")
             self.device_id = None
             return 
 
@@ -558,7 +561,7 @@ class Multispec(object):
             log.debug("combo_callback[%s]: re-selected current spectrometer %s (no-op)", device_id, self.device_id)
             return
 
-        log.info("combo_callback[%s]: switching default device", device_id)
+        log.info(f"combo_callback[{device_id}]: switching default device (now {device_id})")
         self.device_id = device_id
 
         # this is a no-op when shutting down
