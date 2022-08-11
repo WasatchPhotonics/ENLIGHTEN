@@ -75,6 +75,7 @@ class Controller:
     BUS_TIMER_SLEEP_MS              = 1000
     LOG_READER_TIMER_SLEEP_MS       = 3000
     MAX_MISSED_READINGS             =    2
+    USE_ERROR_DIALOG                = False
 
     URL_HELP = "https://wasatchphotonics.com/software-support/enlighten/"
 
@@ -2380,7 +2381,11 @@ class Controller:
                      3. we've already prompted the user about this error on this spectrometer.
                  False if:
                      1. the user said to disconnect
+                     2. ENLIGHTEN was not configured to use the error dialogs
         """
+        if not self.USE_ERROR_DIALOG:
+            return False
+
         if response_error in self.seen_errors[spec]:
             log.debug(f"ignoring error because already seen: {response_error}")
             return True
