@@ -34,6 +34,7 @@ from wasatch import applog
 from wasatch import utils as wasatch_utils
 
 from wasatch.WasatchDeviceWrapper     import WasatchDeviceWrapper
+from wasatch.DeviceFinderUSB          import DeviceFinderUSB
 from wasatch.SpectrometerResponse     import ErrorLevel
 from wasatch.StatusMessage            import StatusMessage
 from wasatch.WasatchBus               import WasatchBus
@@ -475,7 +476,9 @@ class Controller:
         if other_device is not None and other_device not in self.other_devices:
             self.other_devices.append(other_device)
         self.bus.device_ids.extend(self.other_devices)
-        if self.bus.is_empty() and self.multispec.count() > 0:
+
+        # MZ/ED: If DeviceFinderUSB.USE_MONITORING is True, I had to disable this call to remove_all:
+        if self.bus.is_empty() and self.multispec.count() > 0 and not DeviceFinderUSB.USE_MONITORING:
 
             # no need to make this persistent, it'll be renewed 1/sec
             self.marquee.info("no spectrometers found...calling remove_all") 
