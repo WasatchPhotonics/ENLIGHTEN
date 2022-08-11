@@ -20,6 +20,7 @@ class HighGainModeFeature:
         self.multispec  = multispec
 
         self.cb_enabled.toggled.connect(self.enable_callback)
+        self.cb_enabled.setVisible(False)
 
     def update(self):
         spec = self.multispec.current_spectrometer()

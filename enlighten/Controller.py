@@ -471,7 +471,7 @@ class Controller:
         if other_device is not None and other_device not in self.other_devices:
             self.other_devices.append(other_device)
         self.bus.device_ids.extend(self.other_devices)
-        if self.bus.is_empty() and self.multispec.count():
+        if self.bus.is_empty() and self.multispec.count() == 0:
 
             # no need to make this persistent, it'll be renewed 1/sec
             self.marquee.info("no spectrometers found") 
