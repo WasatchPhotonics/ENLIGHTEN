@@ -471,7 +471,7 @@ class Controller:
         if other_device is not None and other_device not in self.other_devices:
             self.other_devices.append(other_device)
         self.bus.device_ids.extend(self.other_devices)
-        if self.bus.is_empty() and self.multispec.count():
+        if self.bus.is_empty() and self.multispec.count() == 0:
 
             # no need to make this persistent, it'll be renewed 1/sec
             self.marquee.info("no spectrometers found") 
@@ -541,14 +541,6 @@ class Controller:
         # try to connect to this device
         ####################################################################
         
-        # The string for a fake usb device used to create a deviceID is always
-        # hashOfSpecName:0x16384:111111:111111
-        # This line checks if the address and bus (last two tok) do not correspond to a Mock device
-        # A BLE device will already have a set device_type of BLEDevice so let it go
-        if isinstance(new_device_id.device_type, BLEDevice):
-            pass
-        elif str(new_device_id.address) != '111111' and str(new_device_id.bus) != '111111':
-            new_device_id.device_type = RealUSBDevice(new_device_id)
         try:
             self.bus.device_ids.remove(new_device_id)
         except:

@@ -10,7 +10,7 @@ from threading import Thread
 from PySide2 import QtCore, QtWidgets, QtGui
 from PySide2.QtWidgets import QApplication, QDialog, QMainWindow, QPushButton, QVBoxLayout, QLabel
 
-from wasatch.BLEDevice import BLEDevice
+from wasatch.DeviceID import DeviceID
 
 log = logging.getLogger(__name__)
 
@@ -102,8 +102,9 @@ class BLEManager:
 
     def perform_connect(self, btn, device):
         log.debug(f"called to perform connect on btn {btn} with text {btn.text()}")
-        self.ble_device = BLEDevice(device, self.loop)
-        ok = self.controller_connect(self.ble_device)
+        #self.ble_device = BLEDevice(device, self.loop)
+        self.ble_device_id = DeviceID(label=f"BLE:{device.address}:{device.name}")
+        ok = self.controller_connect(self.ble_device_id)
         self.ble_present = True
         if ok:
             self.ble_button.setStyleSheet("background-color: blue")
@@ -114,7 +115,7 @@ class BLEManager:
         log.debug("starting discovery")
         devices = await discover()
         log.debug(f"found devices of {devices}")
-        wp_devices = [dev for dev in devices if dev.name is not None and "wp" in dev.name.lower()]
+        wp_devices = [dev for dev in devices if dev.name is not None and ("wp" in dev.name.lower() or "raspberry" in dev.name.lower())]
         log.debug(f"wp_devices is {wp_devices}")
         self.scans_q.put(wp_devices)
 
