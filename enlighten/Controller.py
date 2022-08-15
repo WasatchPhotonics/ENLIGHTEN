@@ -550,7 +550,7 @@ class Controller:
         if new_device_id.is_andor():
             self.marquee.info("connecting to XL spectrometer (please wait)", persist=True)
         else:
-            self.marquee.info("connecting to 0x%04x:0x%04x" % (new_device_id.vid, new_device_id.pid), persist=True)
+            self.marquee.info(f"connecting to {new_device_id}", persist=True)
         
         log.debug("connect_new: instantiating WasatchDeviceWrapper with %s", new_device_id)
         device = WasatchDeviceWrapper(
