@@ -27,10 +27,12 @@ class BLEManager:
                  ble_button, 
                  controller_connect,
                  controller_disconnect,
-                 progress_bar):
+                 progress_bar,
+                 multispec):
         self.scans_q = Queue()
         self.ble_present = False
         self.marquee = marquee
+        self.multispec = multispec
         self.ble_button = ble_button
         self.progress_bar = progress_bar
         self.ble_btn_stlye = ble_button.styleSheet()
@@ -46,6 +48,7 @@ class BLEManager:
         self.thread.start()
 
     def check_complete_scans(self):
+        log.debug(f"checking for scans and queue is empty {self.scans_q.empty()}")
         if not self.scans_q.empty():
             wp_devices = self.scans_q.get_nowait()
             self.selection_popup.clear_plugin_layout(self.selection_popup.layout)
@@ -72,7 +75,7 @@ class BLEManager:
         self.marquee.info("Closing BLE spectrometers...", immediate=True)
         time.sleep(0.05)
         if self.ble_device_id is not None:
-            self.controller_disconnect(self.ble_device_id)
+            self.controller_disconnect(self.multispec.get_spectrometer(self.ble_device_id))
 
     def ble_btn_click(self):
         log.debug("ble button clicked, creating task")
@@ -107,8 +110,6 @@ class BLEManager:
         self.ble_present = True
         if ok:
             self.ble_button.setStyleSheet("background-color: blue")
-        else:
-            self.ble_device.close()
 
     async def perform_discovery(self):
         log.debug("starting discovery")

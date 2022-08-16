@@ -546,6 +546,9 @@ class Controller:
         except:
             log.error(f"failed to remove new device {new_device_id} from bus devices")
 
+        if new_device_id in self.other_devices:
+            self.other_devices.remove(new_device_id)
+
         # attempt to connect the device
         if new_device_id.is_andor():
             self.marquee.info("connecting to XL spectrometer (please wait)", persist=True)
