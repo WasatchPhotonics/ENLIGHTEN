@@ -175,6 +175,9 @@ echo %date% %time% ======================================================
 echo.
 
 python -m pip install -r requirements.txt
+REM Bootstrap bat is meant to make a windows installer
+REM because of this separately install pywin32 since it's only meant for windows
+pip install pywin32 
 if %errorlevel% neq 0 goto script_failure
 
 python -m pip uninstall pyqt5

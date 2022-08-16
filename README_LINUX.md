@@ -81,6 +81,10 @@ Run demo:
 
     $ python -m pip install -r requirements.txt
 
+## Install Linux specific depenedencies
+
+    $ python -m pip install pyudev
+
 ## Rebuild Qt artifacts
 
     $ scripts/rebuild_resources.sh

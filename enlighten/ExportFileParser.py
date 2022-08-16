@@ -402,6 +402,7 @@ class ExportFileParser(object):
             for i in range(em.header_count):
                 try:
                     header = em.headers[i].lower()
+                    log.debug(f"for em {em}, trying to process header {header}")
                 except:
                     continue
 
@@ -420,6 +421,8 @@ class ExportFileParser(object):
                     
                     if array is not None:
                         array.append(float(value))
+                    else:
+                        log.debug(f"array was none, not processing data value {value}")
 
     def load_data(self):
         """ Read in the export file line-by-line, slurping in data for later filing. """
@@ -427,10 +430,9 @@ class ExportFileParser(object):
         log.debug("loading %s", self.pathname)
         line_count = 0
         with open(self.pathname, "r", encoding=self.encoding) as infile:
-            for line in infile:
-                line = line.strip()
-                values = [ x.strip() for x in line.split(",") ]
-                field = values[0].lower()
+            csv_lines = csv.reader(infile)
+            for line in csv_lines:
+                values = [ x.strip() for x in line ]
 
                 if line_count < 25:
                     log.debug("load_data: [%s] line = %s", state, line)
@@ -438,17 +440,17 @@ class ExportFileParser(object):
 
                 if state == "reading_metadata":
 
-                    if len(field) == 0:
+                    if len(values) == 0:
                         state = "looking_for_header"
 
                     else:
                         self.process_metadata(values)
                 
                 elif state == "looking_for_header":
-                    if field in ["pixel", "wavelength", "wavenumber"]:
+                    if values[0].lower() in ["pixel", "wavelength", "wavenumber"]:
                         self.process_header(values)
                         state = "reading_data"
-                    elif self.format > 1 and len(field) > 0:
+                    elif self.format > 1 and len(values[0]) > 0:
                         # assume this is the label row
                         self.process_labels(values)
                         # keep looking for the actual header row
