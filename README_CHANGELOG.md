@@ -2,6 +2,9 @@
 
 # 3.2 Open-Source
 
+- 2022-08-16 3.2.19
+    - update BLEManager so it focuses more on UI, move logic to Wasatch.PY
+    - setup Mock specs with new creation format
 - 2022-07-28 3.2.18
     - made internet access opt-in
 - 2022-07-27 3.2.17
