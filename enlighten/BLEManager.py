@@ -38,6 +38,7 @@ class BLEManager:
         self.controller_disconnect = controller_disconnect
         self.selection_popup = BLESelector(parent=self.ble_button)
         self.ble_button.clicked.connect(self.ble_btn_click)
+        self.ble_device_id = None
         self.loop = asyncio.new_event_loop()
         self.ble_device = None
         self.progress_bar.hide()
@@ -70,10 +71,8 @@ class BLEManager:
         log.debug(f"calling stop of async loop")
         self.marquee.info("Closing BLE spectrometers...", immediate=True)
         time.sleep(0.05)
-        if self.ble_device is not None:
-            self.ble_device.close()
-            self.controller_disconnect(self.ble_device.device_id)
-            del self.ble_device
+        if self.ble_device_id is not None:
+            self.controller_disconnect(self.ble_device_id)
 
     def ble_btn_click(self):
         log.debug("ble button clicked, creating task")

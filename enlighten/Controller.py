@@ -588,12 +588,13 @@ class Controller:
             if poll_result is not None:
                 if poll_result.data:
                     self.header("connect_new: successfully connected %s" % device_id)
-                    self.initialize_new_device(device)
-
                     # remove the "in-process" flag, as it's now in the "connected" list
                     # and fully initialized
                     if device.is_ble:
                         self.form.ui.readingProgressBar.show()
+
+                    self.initialize_new_device(device)
+
                     self.multispec.remove_in_process(device_id)
                     self.header("connect_new: done (%s)" % device_id)
                 else:
@@ -2316,7 +2317,6 @@ class Controller:
         x_axis = None
         retval = None
 
-        log.debug(f"generate_x_axis: spec {spec}, settings {settings}, unit {unit}, vignetted {vignetted}")
 
         if settings is None:
             if spec is None:
@@ -2325,7 +2325,10 @@ class Controller:
                 settings = spec.settings
 
         if settings is None:
+            log.error(f"settings was None even after getting current spec, not generating x-axis")
             return
+
+        log.debug(f"generate_x_axis: spec {spec}, settings {settings}, unit {unit}, vignetted {vignetted}")
 
         regions = settings.state.detector_regions
         # log.debug(f"generate_x_axis: regions = {regions}")
