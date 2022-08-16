@@ -468,8 +468,10 @@ class BusinessObjects:
             gui                         = ctl.gui,
             marquee                     = ctl.marquee,
             multispec                   = ctl.multispec,
+            page_nav                    = ctl.page_nav,
             status_indicators           = ctl.status_indicators,
             raman_intensity_correction  = ctl.raman_intensity_correction,
+
             button_dn                   = sfu.pushButton_laser_power_dn,
             button_up                   = sfu.pushButton_laser_power_up,
             button_toggle               = sfu.pushButton_laser_toggle,

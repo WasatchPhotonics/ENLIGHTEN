@@ -7,7 +7,9 @@ import re
 
 from .Spectrometer import Spectrometer
 from .ScrollStealFilter import ScrollStealFilter
+
 from wasatch.DeviceID import DeviceID
+from wasatch.WasatchDeviceWrapper import WasatchDeviceWrapper
 
 from . import util
 
@@ -79,7 +81,7 @@ class Multispec(object):
         self.spec_hardware_live_curves = {}
         self.spec_detector_temp_curves = {}
         self.spec_hardware_feature_curves = defaultdict(dict)
-        self.in_process = {}
+        self.in_process = {} # a dict of device_id to WasatchDeviceWrapper (may be None if "gave up")
         self.disconnecting = {}
         self.ignore = {}
 
@@ -159,50 +161,56 @@ class Multispec(object):
         color = spec.assigned_color
         if color is not None:
             self.button_color.setColor(color)
-        
 
-    ## @return True if any in_process devices are True (i.e., not "abandoned / 
-    #          gave-up", but honestly still being connected)
-    def have_any_in_process(self):
+    def have_any_in_process(self) -> bool:
+        """
+        @returns True if any in_process devices are honestly still in-process (i.e. not "gave up")
+        @note I think there's a cleverer way to do this in Python now
+        """
         for device_id in self.in_process:
             if self.in_process[device_id]:
                 return True
 
     def have_any_andor(self) -> bool:
+        """ 
+        @note there may be a clever way to do this too
+        """
         for device_id in self.in_process:
-            # log.debug(f"have_any_andor: checking in-process {device_id}")
             if device_id.is_andor():
-                # log.debug(f"have_any_andor: FOUND in-process {device_id}")
                 return True
         for spec in self.get_spectrometers():
-            # log.debug(f"have_any_andor: checking registered {spec}")
             if spec.device_id.is_andor():
-                # log.debug(f"have_any_andor: FOUND registered {spec}")
                 return True
         log.debug(f"have_any_andor: didn't find any")
         return False
 
-    def set_in_process(self, device_id, device):
-        log.debug("set_in_process: %s", device_id)
+    def set_in_process(self, device_id, device: WasatchDeviceWrapper):
+        log.debug(f"set_in_process: {device_id} -> {device}")
         self.in_process[device_id] = device
 
     def set_gave_up(self, device_id):
-        self.in_process[device_id] = False
+        """
+        Sets in_process value to None, indicating that we've given up trying to 
+        connect to that device_id (it is permanently but inactively "in process").
+        """
+        self.in_process[device_id] = None
         log.debug("set_gave_up: %s", device_id)
 
     def set_ignore(self, device_id):
         log.debug("set_ignore: %s", device_id)
         self.ignore[device_id] = True
 
-    ## @return True if in_process at all (including "gave up")
-    def is_in_process(self, device_id):
+    def is_in_process(self, device_id) -> bool:
+        """
+        @returns True if in_process at all (including None, indicating "gave up")
+        """
         return device_id in self.in_process 
 
-    def is_ignore(self, device_id):
+    def is_ignore(self, device_id) -> bool:
         return device_id in self.ignore
 
-    def is_gave_up(self, device_id):
-        return device_id in self.in_process and not self.in_process[device_id]
+    def is_gave_up(self, device_id) -> bool:
+        return device_id in self.in_process and self.in_process[device_id] is None
 
     def remove_in_process(self, device_id):
         del self.in_process[device_id]
@@ -258,9 +266,11 @@ class Multispec(object):
         return device_id in self.ejected
 
     def eject_current_spec(self):
+        log.debug("user clicked eject")
         spec = self.current_spectrometer()
         if spec is None:
             return
+        log.critical(f"user clicked eject on {spec}")
         self.controller_disconnect(spec)
         self.ejected.add(spec.device.device_id)
 
@@ -369,35 +379,35 @@ class Multispec(object):
 
         return clones
 
-    def any_has_excitation(self):
+    def any_has_excitation(self) -> bool:
         for device_id in sorted(self.spectrometers, key=str):
             if self.spectrometers[device_id].has_excitation():
                 return True
         return False
 
-    def get_spectrometer(self, device_id):
+    def get_spectrometer(self, device_id) -> Spectrometer:
         return self.spectrometers.get(device_id,None)
 
-    def is_autocolor(self):
+    def is_autocolor(self) -> bool:
         return self.check_autocolor.isChecked()
 
-    def is_selected(self, device_id):
+    def is_selected(self, device_id) -> bool:
         return device_id == self.device_id
 
-    def is_connected(self, device_id):
+    def is_connected(self, device_id) -> bool:
         return device_id in self.spectrometers
 
-    def count(self):
+    def count(self) -> int:
         try:
             return len(self.spectrometers)
         except:
             log.error("error returning spec length")
             return 0
 
-    def is_current_spectrometer(self, spec):
+    def is_current_spectrometer(self, spec) -> bool:
         return self.device_id is not None and self.device_id == spec.device_id
 
-    def current_spectrometer(self):
+    def current_spectrometer(self) -> Spectrometer:
         if self.device_id is None:
             log.debug("Multispec.current_spectrometer: self.device_id is None")
             return None
@@ -405,7 +415,7 @@ class Multispec(object):
         if self.device_id in self.spectrometers:
             return self.spectrometers[self.device_id]
 
-        log.error("Multispec.current_spectrometer: can't find self.device_id %s in spectrometers", self.device_id)
+        log.error(f"Multispec.current_spectrometer: can't find self.device_id {self.device_id} in spectrometers")
         return None
 
     def update_widget(self):
@@ -437,6 +447,7 @@ class Multispec(object):
         self.combo_spectrometer.blockSignals(False)
         
         # select the newly added device
+        log.debug(f"Multispec.add: self.device_id now {device_id}")
         self.device_id = device_id
 
         ########################################################################
@@ -451,7 +462,7 @@ class Multispec(object):
             spec=spec)
         self.update_widget()
 
-    def get_combo_index(self, spec):
+    def get_combo_index(self, spec) -> int:
         label = spec.label
         for index in range(self.combo_spectrometer.count()):
             this_label = self.combo_spectrometer.itemText(index).replace('\n', ' ', 1) # needed since \n added to avoid cutting off label in gui 
@@ -468,17 +479,18 @@ class Multispec(object):
             self.remove(spec)
 
     ## @return success
-    def remove(self, spec=None):
+    def remove(self, spec=None) -> bool:
         if spec is None:
             # default to current
             spec = self.spectrometers[self.device_id]
 
         if spec not in self.spectrometers.keys():
             log.debug(f"Failed to find {spec} in {self.spectrometers.keys()}, returning")
-            return
+            return False
 
         if spec is None:
-            return
+            return False
+
         index = self.get_combo_index(spec)
         if index < 0:
             try:
@@ -506,17 +518,17 @@ class Multispec(object):
         return True
 
     # figure out which device_id was selected on the combobox
-    def get_combo_device_id(self):
+    def get_combo_device_id(self) -> DeviceID:
         index = self.combo_spectrometer.currentIndex()
         if index < 0:
-            return
+            return None
 
         label = str(self.combo_spectrometer.itemText(index))
         log.debug("get_combo_device_id: label = %s index = %d", label, index)
         m = re.match(r'^\s*(.*)\s+\((.*)\)\s*$', label)
         if not m:
             log.error("get_combo_device_id: can't parse %s", label)
-            return
+            return None
 
         serial = m.group(1)
         model  = m.group(2)
@@ -527,14 +539,14 @@ class Multispec(object):
                 return device_id 
 
         log.error("get_combo_device_id: can't find serial %s, model %s", serial, model)
-        return 
+        return None
 
     ## If the selected MultiSpec spectrometer changes, update affected objects
     def combo_callback(self):
         # get the device_id of the selected item in the comboBox
         device_id = self.get_combo_device_id()
         if device_id is None:
-            log.debug("combo_callback: can't determine device_id")
+            log.debug("combo_callback: can't determine device_id (setting None)")
             self.device_id = None
             return 
 
@@ -549,7 +561,7 @@ class Multispec(object):
             log.debug("combo_callback[%s]: re-selected current spectrometer %s (no-op)", device_id, self.device_id)
             return
 
-        log.info("combo_callback[%s]: switching default device", device_id)
+        log.info(f"combo_callback[{device_id}]: switching default device (now {device_id})")
         self.device_id = device_id
 
         # this is a no-op when shutting down
@@ -573,11 +585,13 @@ class Multispec(object):
             else:
                 log.critical("update_spectrometer_colors: None spectrometer?!")
 
-    ##
-    # note that even though we determine color locally, we still pass the
-    # widget back to make_pen to allow config-based configuration of
-    # style, width etc
     def make_pen(self, spec):
+        """
+        @note that even though we determine color locally, we still pass the 
+              widget back to make_pen to allow config-based configuration of 
+              style, width etc
+        @returns QPen
+        """
         widget   = "scope"
         selected = self.is_selected(spec.device_id)
 
@@ -655,5 +669,5 @@ class Multispec(object):
     def remove_hardware_curve(self, name, spec_id):
         self.spec_hardware_feature_curves[name].pop(spec_id, None)
 
-    def check_hardware_curve_present(self, name, spec_id):
+    def check_hardware_curve_present(self, name, spec_id) -> bool:
         return spec_id in self.spec_hardware_feature_curves[name]
