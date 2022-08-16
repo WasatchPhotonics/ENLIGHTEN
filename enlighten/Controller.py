@@ -259,6 +259,8 @@ class Controller:
             return False
 
         device_id = spec.device_id
+        if spec.device.is_ble:
+            self.form.ui.readingProgressBar.setValue(0)
         self.marquee.info("disconnecting %s" % spec.label)
         self.multispec.set_disconnecting(device_id, True)
 
@@ -541,11 +543,7 @@ class Controller:
         # try to connect to this device
         ####################################################################
         
-        try:
-            self.bus.device_ids.remove(new_device_id)
-        except:
-            log.error(f"failed to remove new device {new_device_id} from bus devices")
-
+        self.bus.device_ids.remove(new_device_id)
         if new_device_id in self.other_devices:
             self.other_devices.remove(new_device_id)
 

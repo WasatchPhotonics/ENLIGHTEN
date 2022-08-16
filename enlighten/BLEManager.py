@@ -76,6 +76,8 @@ class BLEManager:
         time.sleep(0.05)
         if self.ble_device_id is not None:
             self.controller_disconnect(self.multispec.get_spectrometer(self.ble_device_id))
+            self.multispec.set_disconnecting(self.ble_device_id, False)
+            self.ble_device_id = None
 
     def ble_btn_click(self):
         log.debug("ble button clicked, creating task")
