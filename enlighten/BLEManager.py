@@ -117,7 +117,7 @@ class BLEManager:
         log.debug("starting discovery")
         devices = await discover()
         log.debug(f"found devices of {devices}")
-        wp_devices = [dev for dev in devices if dev.name is not None and ("wp" in dev.name.lower() or "raspberry" in dev.name.lower())]
+        wp_devices = [dev for dev in devices if dev.name is not None and ("wp" in dev.name.lower())]
         log.debug(f"wp_devices is {wp_devices}")
         self.scans_q.put(wp_devices)
 
