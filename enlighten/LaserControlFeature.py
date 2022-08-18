@@ -17,8 +17,10 @@ class LaserControlFeature:
                  gui,
                  marquee,
                  multispec,
+                 page_nav,
                  status_indicators,
                  raman_intensity_correction,
+
                  button_dn,
                  button_up,
                  button_toggle,
@@ -32,8 +34,8 @@ class LaserControlFeature:
         self.gui                = gui
         self.marquee            = marquee
         self.multispec          = multispec
+        self.page_nav           = page_nav
         self.status_indicators  = status_indicators
-        self.slider_stop_usb    = False
         self.guide              = guide
 
         self.button_dn          = button_dn
@@ -46,6 +48,9 @@ class LaserControlFeature:
         self.raman_intensity_correction = raman_intensity_correction
 
         battery_feature.register_observer(self.battery_callback)
+
+        self.slider_stop_usb    = False
+        self.displayed_srm_tip  = False
 
         self.button_dn          .clicked            .connect(self.dn_callback)
         self.button_up          .clicked            .connect(self.up_callback)
@@ -149,8 +154,13 @@ class LaserControlFeature:
         if spec is None:
             return
 
-        if self.raman_intensity_correction.is_supported() and flag and not self.raman_intensity_correction.enabled:
-            self.guide.suggest("Tip:Raman intensity is more reliable when using Raman Intensity Correction", token="enable_raman_intensity_correction")
+        if not self.raman_intensity_correction.enabled and \
+                self.raman_intensity_correction.is_supported() and \
+                self.page_nav.doing_raman() and \
+                not self.displayed_srm_tip and \
+                flag:
+            self.guide.suggest("Tip: Raman response is more consistent when using Raman Intensity Correction", token="enable_raman_intensity_correction")
+            self.displayed_srm_tip = True
 
         if use_multispec:
             self.multispec.set_state("laser_enabled", flag)

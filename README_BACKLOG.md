@@ -1,5 +1,10 @@
 # Backlog
 
+## Hotplugs
+
+- Better detection of "duplicate" spectrometers (same serial and same model, 
+  different bus/addr, one "live" and one frozen) - delete the frozen one
+
 ## Mark
 
 - Should exit faster with long integration times (1min+).  If there is no laser 
@@ -37,14 +42,7 @@ the like.
 ## For Apps Eng
 
 - add "Cancel" button for KnowItAll to kill long-running ID
-- cosmic ray removal
-    - Probably good using robust outlier detection for a group of a few pixels, 
-      say five pixels in a row, and the center one is tested, then determine 
-      median and 2nd and 4th quintile (just sort the five pixels in order of 
-      signal and take number 2,3,4), and if the center pixel is more than median 
-      (#3) plus N-times this inter-quintile range (#4 - #2), then it is a spike...
-      Or something like that. Have to look out for actual Raman or atomic 
-      emission peaks...Those should not get dropped.
+- finish "despiking"
 
 ## For PM
 
@@ -53,13 +51,10 @@ the like.
 - on first save, pop-up dialog saying where spectra is saved, and how to change
 
 ## Gratings Mfg requests
+
 - click-to-place cursor
 - update cursor intensity when moving cursor on paused spectra
 - Make individual User Controls collapsible
-
-## Unscheduled
-- BLE support (SiG)
-- Open-source
 
 ## User Experience 
 
