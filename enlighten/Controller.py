@@ -77,7 +77,7 @@ class Controller:
     BUS_TIMER_SLEEP_MS              = 1000
     LOG_READER_TIMER_SLEEP_MS       = 3000
     MAX_MISSED_READINGS             =    2
-    USE_ERROR_DIALOG                = False
+    USE_ERROR_DIALOG                = True #False
 
     URL_HELP = "https://wasatchphotonics.com/software-support/enlighten/"
 
@@ -2409,7 +2409,12 @@ class Controller:
                   + response_error + "\n\n")
         dlg_btns = [("Okay", QMessageBox.AcceptRole), ("Disconnect", QMessageBox.RejectRole), ("View Log", QMessageBox.HelpRole)]
 
-        selection = TimeoutDialog.showWithTimeout(5, dlg_msg, dlg_title, QMessageBox.Warning, dlg_btns)
+        selection = TimeoutDialog.showWithTimeout(self.form, 
+                                                  10, 
+                                                  dlg_msg, 
+                                                  dlg_title, 
+                                                  QMessageBox.Warning, 
+                                                  dlg_btns)
         # Generate a bool list by comparing the clicked btn against the btn options
         self.dialog_open = False
         spec.settings.state.ignore_timeouts_until = datetime.datetime(datetime.MAXYEAR,12,1)

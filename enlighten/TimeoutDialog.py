@@ -9,13 +9,13 @@ import PySide2
 from PySide2.QtWidgets import QMessageBox, QMessageBox
 
 class TimeoutDialog(QMessageBox):
-    def __init__(self, *__args):
-        QMessageBox.__init__(self)
+    def __init__(self, *args):
+        QMessageBox.__init__(self, *args)
         self.timeout = 0
         self.autoclose = False
         self.msg = ""
         self.currentTime = 0
-        self.closeout_msg = f", closing in {self.timeout-self.currentTime} seconds"
+        self.closeout_msg = f"Closing in {self.timeout-self.currentTime} seconds"
 
     def showEvent(self, QShowEvent):
         self.currentTime = 0
@@ -24,24 +24,25 @@ class TimeoutDialog(QMessageBox):
 
     def timerEvent(self, *args, **kwargs):
         self.currentTime += 1
-        self.setText(self.msg + self.closeout_msg)
-        if self.currentTime >= self.timeout:
+        self.closeout_msg = f"Closing in {self.timeout-self.currentTime} seconds"
+        self.setText(f"{self.msg} {self.closeout_msg}")
+        if self.currentTime >= self.timeout and self.timeout != -1:
             self.done(0)
 
     @staticmethod
-    def showWithTimeout(timeoutSeconds, message, title, icon=QMessageBox.Information, buttons=None):
+    def showWithTimeout(parent, timeoutSeconds, message, title, icon=QMessageBox.Information, buttons=None):
         if buttons is None:
             buttons = [("Ok", QMessageBox.Ok)]
         if not isinstance(buttons, list):
             buttons = [buttons]
-        w = TimeoutDialog()
+        w = TimeoutDialog(parent)
         w.autoclose = True
         w.timeout = timeoutSeconds
-        w.setText(message + w.closeout_msg)
+        w.setText(f"{message} Closing in {w.timeout} seconds")
         w.msg = message
         w.setWindowTitle(title)
         w.setIcon(icon)
-        btns = list[map(lambda b: w.addButton(b[0], b[1]), buttons)]
+        btns = [w.addButton(b[0], b[1]) for b in buttons]
         w.exec_()
         clicked_button = w.clickedButton()
         selection = [clicked_button == btn for btn in btns]
