@@ -44,6 +44,7 @@ from wasatch.Reading                  import Reading
 from wasatch.ProcessedReading         import ProcessedReading
 from .BusinessObjects                 import BusinessObjects
 from .Spectrometer                    import Spectrometer
+from .TimeoutDialog                   import TimeoutDialog
 from .BasicWindow                     import BasicWindow
 from wasatch.RealUSBDevice            import RealUSBDevice
 
@@ -2399,23 +2400,17 @@ class Controller:
             return True
         self.dialog_open = True # todo make a mutex
 
-        dlg = QMessageBox(self.form)
         log.info(f"displaying MessageBox with the received error and options (Okay, Disconnect, Log): {response_error}")
-        dlg.setWindowTitle("Spectrometer Error")
-        dlg.setText("ENLIGHTEN has encountered an error with the spectrometer. " \
+        dlg_title = "Spectrometer Error"
+        dlg_msg = ("ENLIGHTEN has encountered an error with the spectrometer. " \
                   + "The exception is shown below.  Click 'View Log' to " \
                   + "automatically open the logfile in Notepad, 'Disconnect' to " \
                   + "retry or 'Okay' to dismiss this dialog:\n\n" \
-                  + response_error)
-        ok_btn = dlg.addButton("Okay", QMessageBox.AcceptRole)
-        disconnect_btn = dlg.addButton("Disconnect", QMessageBox.RejectRole)
-        help_btn = dlg.addButton("View Log", QMessageBox.HelpRole)
-        dlg.setIcon(QMessageBox.Warning)
-        button = dlg.exec_()
+                  + response_error + "\n\n")
+        dlg_btns = [("Okay", QMessageBox.AcceptRole), ("Disconnect", QMessageBox.RejectRole), ("View Log", QMessageBox.HelpRole)]
 
-        clicked_button = dlg.clickedButton()
+        selection = TimeoutDialog.showWithTimeout(5, dlg_msg, dlg_title, QMessageBox.Warning, dlg_btns)
         # Generate a bool list by comparing the clicked btn against the btn options
-        selection = [clicked_button == btn for btn in [ok_btn, disconnect_btn, help_btn]]
         self.dialog_open = False
         spec.settings.state.ignore_timeouts_until = datetime.datetime(datetime.MAXYEAR,12,1)
         if selection == [True, False, False]:
