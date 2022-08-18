@@ -29,13 +29,18 @@ class ExternalTriggerFeature:
             self.cb_enabled.setVisible(False)
             return
 
-        # is checkbox visible?
-        supports_triggering = spec.settings.hardware_info.supports_triggering()
-        self.cb_enabled.setVisible(supports_triggering)
+        try:
+            # is checkbox visible?
+            supports_triggering = spec.settings.hardware_info.supports_triggering()
+            self.cb_enabled.setVisible(supports_triggering)
+            # is checkbox checked?
+            self.enabled = supports_triggering and (spec.settings.state.trigger_source == SpectrometerState.TRIGGER_SOURCE_EXTERNAL)
+            self.cb_enabled.setChecked(self.enabled)
+        except:
+            self.cb_enabled.setVisible(False)
+            self.enabled = False
+            self.cb_enabled.setChecked(self.enabled)
 
-        # is checkbox checked?
-        self.enabled = supports_triggering and (spec.settings.state.trigger_source == SpectrometerState.TRIGGER_SOURCE_EXTERNAL)
-        self.cb_enabled.setChecked(self.enabled)
 
     def is_enabled(self): 
         return self.enabled

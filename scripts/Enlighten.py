@@ -19,7 +19,7 @@ os.environ["BLINKA_FT232H"]="1" # used to allow SPI with FT232H
 from PySide2 import QtGui, QtCore, QtWidgets, QtSvg, QtXml
 
 from enlighten import common
-from wasatch.MockUSBDevice import MockUSBDevice
+from wasatch.DeviceID import DeviceID
 from wasatch   import applog
 
 log = logging.getLogger(__name__)
@@ -119,7 +119,7 @@ class EnlightenApplication(object):
         # The sim_spec code is used for debugging with the test framework during peculiar issues
         #####
         self.controller.control_exit_signal.exit.connect(self.closeEvent)
-        #sim_spec = MockUSBDevice("SiG_785","EEPROM-EM-9c65d19f4c.json")
+        #sim_spec = DeviceID(label="MOCK:SiG_785:EEPROM-EM-9c65d19f4c.json")
         #self.controller.connect_new(sim_spec)
         # pass off control to Qt to manage its objects until application shutdown
         if not self.testing:

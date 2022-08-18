@@ -10,7 +10,7 @@ from threading import Thread
 from PySide2 import QtCore, QtWidgets, QtGui
 from PySide2.QtWidgets import QApplication, QDialog, QMainWindow, QPushButton, QVBoxLayout, QLabel
 
-from wasatch.BLEDevice import BLEDevice
+from wasatch.DeviceID import DeviceID
 
 log = logging.getLogger(__name__)
 
@@ -27,10 +27,12 @@ class BLEManager:
                  ble_button, 
                  controller_connect,
                  controller_disconnect,
-                 progress_bar):
+                 progress_bar,
+                 multispec):
         self.scans_q = Queue()
         self.ble_present = False
         self.marquee = marquee
+        self.multispec = multispec
         self.ble_button = ble_button
         self.progress_bar = progress_bar
         self.ble_btn_stlye = ble_button.styleSheet()
@@ -38,6 +40,7 @@ class BLEManager:
         self.controller_disconnect = controller_disconnect
         self.selection_popup = BLESelector(parent=self.ble_button)
         self.ble_button.clicked.connect(self.ble_btn_click)
+        self.ble_device_id = None
         self.loop = asyncio.new_event_loop()
         self.ble_device = None
         self.progress_bar.hide()
@@ -45,6 +48,7 @@ class BLEManager:
         self.thread.start()
 
     def check_complete_scans(self):
+        log.debug(f"checking for scans and queue is empty {self.scans_q.empty()}")
         if not self.scans_q.empty():
             wp_devices = self.scans_q.get_nowait()
             self.selection_popup.clear_plugin_layout(self.selection_popup.layout)
@@ -70,10 +74,10 @@ class BLEManager:
         log.debug(f"calling stop of async loop")
         self.marquee.info("Closing BLE spectrometers...", immediate=True)
         time.sleep(0.05)
-        if self.ble_device is not None:
-            self.ble_device.close()
-            self.controller_disconnect(self.ble_device.device_id)
-            del self.ble_device
+        if self.ble_device_id is not None:
+            self.controller_disconnect(self.multispec.get_spectrometer(self.ble_device_id))
+            self.multispec.set_disconnecting(self.ble_device_id, False)
+            self.ble_device_id = None
 
     def ble_btn_click(self):
         log.debug("ble button clicked, creating task")
@@ -102,19 +106,18 @@ class BLEManager:
 
     def perform_connect(self, btn, device):
         log.debug(f"called to perform connect on btn {btn} with text {btn.text()}")
-        self.ble_device = BLEDevice(device, self.loop)
-        ok = self.controller_connect(self.ble_device)
+        #self.ble_device = BLEDevice(device, self.loop)
+        self.ble_device_id = DeviceID(label=f"BLE:{device.address}:{device.name}")
+        ok = self.controller_connect(self.ble_device_id)
         self.ble_present = True
         if ok:
             self.ble_button.setStyleSheet("background-color: blue")
-        else:
-            self.ble_device.close()
 
     async def perform_discovery(self):
         log.debug("starting discovery")
         devices = await discover()
         log.debug(f"found devices of {devices}")
-        wp_devices = [dev for dev in devices if dev.name is not None and "wp" in dev.name.lower()]
+        wp_devices = [dev for dev in devices if dev.name is not None and ("wp" in dev.name.lower())]
         log.debug(f"wp_devices is {wp_devices}")
         self.scans_q.put(wp_devices)
 

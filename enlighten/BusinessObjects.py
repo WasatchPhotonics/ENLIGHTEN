@@ -645,7 +645,8 @@ class BusinessObjects:
             ble_button                  = sfu.pushButton_bleScan,
             controller_connect          = ctl.connect_new,
             controller_disconnect       = ctl.disconnect_device,
-            progress_bar                = sfu.readingProgressBar)
+            progress_bar                = sfu.readingProgressBar,
+            multispec                   = ctl.multispec)
 
         self.header("instantiating RamanModeFeature")
         ctl.raman_mode_feature = RamanModeFeature(

@@ -261,6 +261,8 @@ class Controller:
             return False
 
         device_id = spec.device_id
+        if spec.device.is_ble:
+            self.form.ui.readingProgressBar.setValue(0)
         self.marquee.info("disconnecting %s" % spec.label)
         self.multispec.set_disconnecting(device_id, True)
 
@@ -548,25 +550,15 @@ class Controller:
         # try to connect to this device
         ####################################################################
         
-        # The string for a fake usb device used to create a deviceID is always
-        # hashOfSpecName:0x16384:111111:111111
-        # This line checks if the address and bus (last two tok) do not correspond to a Mock device
-        # A BLE device will already have a set device_type of BLEDevice so let it go
-        if isinstance(new_device_id.device_type, BLEDevice):
-            pass
-        elif str(new_device_id.address) != '111111' and str(new_device_id.bus) != '111111':
-            new_device_id.device_type = RealUSBDevice(new_device_id) # MZ: I don't like this
-
-        try:
-            self.bus.device_ids.remove(new_device_id)
-        except:
-            log.error(f"failed to remove new device {new_device_id} from bus devices")
+        self.bus.device_ids.remove(new_device_id)
+        if new_device_id in self.other_devices:
+            self.other_devices.remove(new_device_id)
 
         # attempt to connect the device
         if new_device_id.is_andor():
             self.marquee.info("connecting to XL spectrometer (please wait)", persist=True)
         else:
-            self.marquee.info("connecting to 0x%04x:0x%04x" % (new_device_id.vid, new_device_id.pid), persist=True)
+            self.marquee.info(f"connecting to {new_device_id}", persist=True)
         
         log.debug("connect_new: instantiating WasatchDeviceWrapper with %s", new_device_id)
         device = WasatchDeviceWrapper(
@@ -608,12 +600,13 @@ class Controller:
             if poll_result is not None:
                 if poll_result.data:
                     self.header("connect_new: successfully connected %s" % device_id)
-                    self.initialize_new_device(device)
-
                     # remove the "in-process" flag, as it's now in the "connected" list
                     # and fully initialized
                     if device.is_ble:
                         self.form.ui.readingProgressBar.show()
+
+                    self.initialize_new_device(device)
+
                     self.multispec.remove_in_process(device_id)
                     self.header("connect_new: done (%s)" % device_id)
                 else:
@@ -2334,7 +2327,6 @@ class Controller:
         x_axis = None
         retval = None
 
-        log.debug(f"generate_x_axis: spec {spec}, settings {settings}, unit {unit}, vignetted {vignetted}")
 
         if settings is None:
             if spec is None:
@@ -2343,7 +2335,10 @@ class Controller:
                 settings = spec.settings
 
         if settings is None:
+            log.error(f"settings was None even after getting current spec, not generating x-axis")
             return
+
+        log.debug(f"generate_x_axis: spec {spec}, settings {settings}, unit {unit}, vignetted {vignetted}")
 
         regions = settings.state.detector_regions
         # log.debug(f"generate_x_axis: regions = {regions}")
