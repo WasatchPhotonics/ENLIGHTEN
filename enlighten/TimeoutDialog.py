@@ -21,6 +21,16 @@ class TimeoutDialog(QMessageBox):
         self.currentTime = 0
         if self.autoclose:
             self.startTimer(1000)
+        # https://wiki.qt.io/How_to_Center_a_Window_on_the_Screen
+
+        self.setGeometry(
+            QtWidgets.QStyle.alignedRect(
+                QtCore.Qt.LeftToRight,
+                QtCore.Qt.AlignCenter,
+                window.size(),
+                QtWidgets.qApp.desktop().availableGeometry(),
+            )
+        )
 
     def timerEvent(self, *args, **kwargs):
         self.currentTime += 1

@@ -77,7 +77,9 @@ class Controller:
     BUS_TIMER_SLEEP_MS              = 1000
     LOG_READER_TIMER_SLEEP_MS       = 3000
     MAX_MISSED_READINGS             =    2
-    USE_ERROR_DIALOG                = True #False
+    USE_ERROR_DIALOG                = False
+    SPEC_ERROR_MAX_RETRY            = 3
+    SPEC_RESET_MAX_RETRY            = 3
 
     URL_HELP = "https://wasatchphotonics.com/software-support/enlighten/"
 
@@ -166,7 +168,7 @@ class Controller:
         ########################################################################
 
         # instantiate the initial Business Objects we'll need to complete startup
-        self.seen_errors = defaultdict(list)
+        self.seen_errors = defaultdict(lambda: defaultdict(int))
         self.business_objects = BusinessObjects(self)
         self.business_objects.create_first()
 
@@ -515,6 +517,10 @@ class Controller:
                 log.error("connect_new: shouldn't be called whilst spectrometers are in-process")
                 return
 
+            if self.multispec.is_in_reset(device_id):
+                log.debug(f"spec is in reset so don't connect in new")
+                return
+
             # Kludge around the fact that individual Andor cameras sometimes
             # (but not consistently) show up on multiple USB port addresses and thus
             # have multiple unique DeviceIDs as we are tracking them through libusb.
@@ -596,8 +602,8 @@ class Controller:
         Check if an identified spectrometer succeeded in returning settings
         With this complete, initialize and start operating the spec
         """
-        in_progress_specs = list(self.multispec.in_process.items()) 
-        for device_id, device in in_progress_specs:
+        in_process_specs = list(self.multispec.in_process.items()) 
+        for device_id, device in in_process_specs:
             if device is None or type(device) is bool:
                 log.debug("check_ready_initialize: ignoring {device_id} ({device})")
                 continue
@@ -1449,7 +1455,8 @@ class Controller:
 
             # this doesn't have to be done after each keepalive...we could do this at 1Hz or so
             if spec.app_state.missed_reading_count > self.MAX_MISSED_READINGS and \
-                    not spec.app_state.spec_timeout_prompt_shown:
+                    not spec.app_state.spec_timeout_prompt_shown and \
+                    not self.multispec.is_in_reset(spec.device.device_id):
                 log.info("displaying Timeout Warning MessageBox (stay connected, or disconnect)")
                 spec.app_state.spec_timeout_prompt_shown = True
                 dlg = QMessageBox(self.form)
@@ -1599,13 +1606,28 @@ class Controller:
                 # don't disconnect for instance.  It may or may not be a poison-pill...we're not
                 # even checking yet, because we want to let the user decide what to do.
                 log.debug("acquire_reading: prompting user to dispsition error")
+
+                self.seen_errors[spec][spectrometer_response.error_msg] += 1
+                if self.seen_errors[spec][spectrometer_response.error_msg] <= self.SPEC_ERROR_MAX_RETRY:
+                    # rety reading a few times before calling a reset
+                    return
                 stay_connected = self.display_response_error(spec, spectrometer_response.error_msg)
+                log.debug(f"user selected stay {stay_connected}")
                 if stay_connected:
                     log.debug("acquire_reading: either the user said this was okay, or they're still thinking about it")
-                else:
+                elif self.multispec.reset_tries(device_id) > self.SPEC_RESET_MAX_RETRY and not stay_connected:
                     # the user said to shut things down
-                    log.error("acquire_reading: user said to disconnect")
+                    log.debug(f"reset tries is {self.multispec.reset_tries(device_id)}")
+                    log.error("acquire_reading: user said to disconnect or hit max resets so give up")
+                    self.multispec.set_gave_up(device_id)
                     return AcquiredReading(disconnect=True)
+                else:
+                    self.marquee.info(f"{device_id} had errors. Attempting reset to recover, try number {self.multispec.reset_tries(device_id)}", immediate=True, persist=True)
+                    self.seen_errors[spec][spectrometer_response.error_msg] = 0
+                    self.multispec.set_in_reset(spec.device_id)
+                    device.reset()
+                    self.multispec.set_in_process(device_id, device)
+                    return
 
             if spectrometer_response.poison_pill:
                 # the user hasn't [yet] decided to disconnect, but we can't really "do anything" with data that's
@@ -2383,17 +2405,16 @@ class Controller:
                      1. the device can stay connected (includes log views), or 
                      2. there's already a dialog open, or
                      3. we've already prompted the user about this error on this spectrometer.
+                     4. ENLIGHTEN was not configured to use the error dialogs
                  False if:
                      1. the user said to disconnect
-                     2. ENLIGHTEN was not configured to use the error dialogs
         """
         if not self.USE_ERROR_DIALOG:
             return False
 
-        if response_error in self.seen_errors[spec]:
+        if response_error in self.seen_errors[spec].keys():
             log.debug(f"ignoring error because already seen: {response_error}")
             return True
-        self.seen_errors[spec].append(response_error)
 
         if self.dialog_open:
             log.debug(f"ignoring error because dialog currently open: {response_error}")
@@ -2422,15 +2443,16 @@ class Controller:
             log.info("user clicked 'Okay' to dismiss the dialog with no action")
         elif selection == [False, True, False]:
             log.info("user clicked 'Disconnect' so disconnecting the device")
-            self.disconnect_device(spec)
             self.multispec.set_gave_up(spec.device_id)
             return False
         elif selection == [False, False, True]:
             log.info("user clicked 'View Log' so displaying the logfile")
             self.open_log()
         else:
-            log.error(f"User didn't choose a button. Defaulting to persist aberrant spectrometer.")
-        return True
+            log.info(f"User didn't choose a button. Attempting disconnect and reconnect")
+            self.seen_errors[spec].pop(response_error)
+            return False
+        return False
 
     def open_log(self):
         # Interestingly a few threads explained that this will open the default text editor

@@ -80,6 +80,7 @@ class Multispec(object):
         self.spec_laser_temp_curves = {}
         self.spec_hardware_live_curves = {}
         self.spec_detector_temp_curves = {}
+        self.spec_in_reset = defaultdict(int) # deafult of int() is 0
         self.spec_hardware_feature_curves = defaultdict(dict)
         self.in_process = {} # a dict of device_id to WasatchDeviceWrapper (may be None if "gave up")
         self.disconnecting = {}
@@ -161,6 +162,24 @@ class Multispec(object):
         color = spec.assigned_color
         if color is not None:
             self.button_color.setColor(color)
+
+    def _match_device_id(self, device_id, device_id_checking):
+        return device_id.vid == device_id_checking.vid \
+            and device_id.pid == device_id_checking.pid \
+            and device_id.address == device_id_checking.address \
+            and device_id.bus == device_id_checking.bus
+
+    def is_in_reset(self, device_id):
+        return any([self._match_device_id(device_id, key) for key in self.spec_in_reset.keys()])
+
+    def set_in_reset(self, device_id):
+        self.spec_in_reset[device_id] += 1
+
+    def reset_tries(self, device_id):
+        return self.spec_in_reset[device_id]
+
+    def clear_reset(self, device_id):
+        self.spec_in_reset[device_id] = 0
 
     def have_any_in_process(self) -> bool:
         """
