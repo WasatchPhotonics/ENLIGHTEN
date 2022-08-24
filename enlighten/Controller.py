@@ -614,7 +614,7 @@ class Controller:
             poll_result = device.poll_settings()
             if poll_result is not None:
                 if poll_result.data:
-                    self.header("connect_new: successfully connected %s" % device_id)
+                    self.header("check_ready_initialize: successfully connected %s" % device_id)
                     self.initialize_new_device(device)
 
                     # remove the "in-process" flag, as it's now in the "connected" list
@@ -750,9 +750,12 @@ class Controller:
         log.info("initialize_new_device: device_id %s", device_id)
 
         # infer if this is a "hotplug" situation
-        if self.multispec.is_connected(device_id):
+        if self.multispec.is_connected(device_id) or self.multispec.is_in_reset(device_id):
             log.debug("initialize_new_device: re-selecting already-connected device")
             hotplug = False
+            if self.multispec.is_in_reset(device_id):
+                log.debug(f"readding reset device")
+                self.multispec.readd(device_id)
         else:
             log.debug("initialize_new_device: initializing newly-connected device")
             self.multispec.add(device)
@@ -1334,6 +1337,9 @@ class Controller:
         # poll all spectrometer threads for SPECTRA
         for spec in self.multispec.get_spectrometers():
             if not spec.app_state.hidden:
+                log.debug(f"spec in reset {self.multispec.is_in_reset(spec.device_id)}")
+                log.debug(f"app state {not spec.app_state.hidden}")
+                log.debug(f"combined is {not spec.app_state.hidden and not self.multispec.is_in_reset(spec.device_id)}")
                 self.attempt_reading(spec)
 
         if not self.shutting_down:
@@ -1625,7 +1631,16 @@ class Controller:
                     self.marquee.info(f"{device_id} had errors. Attempting reset to recover, try number {self.multispec.reset_tries(device_id)}", immediate=True, persist=True)
                     self.seen_errors[spec][spectrometer_response.error_msg] = 0
                     self.multispec.set_in_reset(spec.device_id)
-                    device.reset()
+                    log.debug(f"attempting reset, admin is {wasatch_utils.check_admin()}")
+                    if wasatch_utils.check_admin():
+                        log.debug("is admin calling reset")
+                        device.reset()
+                    else:
+                        log.debug("not admin performing disconnect")
+                        device.disconnect()
+                        time.sleep(0.1)
+                        log.debug("non admin reset disconnect done, trying to connect")
+                        device.connect()
                     self.multispec.set_in_process(device_id, device)
                     return
 
