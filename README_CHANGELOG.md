@@ -2,6 +2,8 @@
 
 # 3.2 Open-Source
 
+- 2022-08-25 3.2.21
+    - Change failure state to perform reset of spec using pyusb
 - 2022-08-16 3.2.20
     - testing new DeviceFinderUSB
     - fixed bug parsing FWHM table
