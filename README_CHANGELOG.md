@@ -2,6 +2,8 @@
 
 # 3.2 Open-Source
 
+- 2022-08-29 3.2.22
+    - add pyusb reset as a recovery attempt
 - 2022-08-25 3.2.21
     - Change failure state to perform reset of spec using pyusb
 - 2022-08-16 3.2.20
