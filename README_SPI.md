@@ -38,22 +38,14 @@ Typical sequence:
 MacOS:
     $ export DYLD_LIBRARY_PATH=/usr/local/lib
 
-## FT232H Pin Assignments
+## Environment Variables
 
-Wasatch.PY (specifically, SPIDevice.py) contains hard-coded assumptions about how
-your Adafruit FT232 is wired into the 15-pin Accessory Connector.  
+Wasatch.PY (specifically, SPIDevice.py) contains default assumptions about how
+your Adafruit FT232H is wired into the 15-pin Accessory Connector, as well as the 
+baud rate and USB block-size for communicating with the FT232H.
 
-Please note the Accessory Connector pin-out in ENG-0150 includes the 
-following pins:
+You can override those defaults by setting environment variables before running
+ENLIGHTEN.  See here for more information:
 
-- Pin 5 TRIGGER_IN
-- Pin 6 DATA_READY
+- https://github.com/WasatchPhotonics/Wasatch.PY/blob/master/README.md#environment-variables
 
-SPIDevice.py is currently hardcoded to expect these pins to be mapped as follows
-on the FT232 (this agrees with spi_console.py):
-
-- D5 DATA_READY
-- D6 TRIGGER_IN
-
-If your FT232 was wired differently (for instance with TRIGGER on C0 and READY on C1),
-you will need to temporarily edit SPIDevice.py appropriately.
