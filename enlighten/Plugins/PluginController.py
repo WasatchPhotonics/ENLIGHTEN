@@ -516,6 +516,25 @@ class PluginController:
     # ##########################################################################
     # plug-in selection
     # ##########################################################################
+    def process_widgets(self, widgets, parent):
+        for epf in widgets:
+            if not PluginValidator.validate_field(epf):
+                log.error("invalid EnlightenPluginField: %s", epf.name)
+                continue
+
+            # plugins are allowed exactly one pandas output
+            if epf.datatype == "pandas":
+                if self.panda_field:
+                    log.error(f"ignoring extra pandas field {epf.name}")
+                else:
+                    self.panda_field = epf
+                # no dynamic widget for pandas fields...they use the TableView
+                continue
+
+            log.debug(f"instantiating PluginFieldWidget {epf.name}")
+            pfw = PluginFieldWidget(epf)
+            parent.append(pfw)
+            #self.plugin_field_widgets.append(pfw)
 
     ##
     # This may or may not be the first time this plugin has been selected, so
@@ -586,32 +605,40 @@ class PluginController:
             log.debug("instantiating fields")
             self.panda_field = None
             self.plugin_field_widgets = []
-            for epf in config.fields:
-                if not PluginValidator.validate_field(epf):
-                    log.error("invalid EnlightenPluginField: %s", epf.name)
-                    continue
-
-                # plugins are allowed exactly one pandas output
-                if epf.datatype == "pandas":
-                    if self.panda_field:
-                        log.error(f"ignoring extra pandas field {epf.name}")
-                    else:
-                        self.panda_field = epf
-                    # no dynamic widget for pandas fields...they use the TableView
-                    continue
-
-                log.debug(f"instantiating PluginFieldWidget {epf.name}")
-                pfw = PluginFieldWidget(epf)
-                self.plugin_field_widgets.append(pfw)
 
             log.debug("populating vlayout")
             self.vlayout_fields.addLayout(self.plugin_fields_layout)
 
-            # note these are PluginFieldWidgets, NOT EnlightenPluginFields
-            log.debug("adding fields")
-            for pfw in self.plugin_field_widgets:
-                self.plugin_fields_layout.addLayout(pfw.get_display_element())
-                self.frame_fields.setVisible(True)
+            if type(config.fields) == dict:
+                log.debug("trying to add stack widget because dict for the fields")
+                self.select_vbox = QtWidgets.QVBoxLayout()
+                self.stacked_widget = QtWidgets.QStackedWidget()
+                self.widget_selector = QtWidgets.QComboBox()
+                self.widget_selector.activated[int].connect(self.stacked_widget.setCurrentIndex)
+                for k, list_epf in config.fields.items():
+                    self.widget_selector.addItem(str(k))
+                    list_pfw = []
+                    self.process_widgets(list_epf, list_pfw)
+                    key_page = QtWidgets.QWidget()
+                    key_page_layout = QtWidgets.QVBoxLayout()
+                    for pfw in list_pfw:
+                        key_page_layout.addLayout(pfw.get_display_element())
+                    key_page.setLayout(key_page_layout)
+                    self.stacked_widget.addWidget(key_page)
+
+                self.select_vbox.addWidget(self.widget_selector)
+                self.select_vbox.addWidget(self.stacked_widget)
+                self.plugin_fields_layout.addLayout(self.select_vbox)
+            else:
+                log.debug(f"Non dict epf, performing standard layout")
+                self.process_widgets(config.fields, self.plugin_field_widgets)
+
+                # note these are PluginFieldWidgets, NOT EnlightenPluginFields
+                log.debug("adding fields")
+                for pfw in self.plugin_field_widgets:
+                    self.plugin_fields_layout.addLayout(pfw.get_display_element())
+
+            self.frame_fields.setVisible(True)
 
             if self.panda_field:
                 log.debug("creating output table")
