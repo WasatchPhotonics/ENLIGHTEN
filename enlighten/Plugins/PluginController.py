@@ -610,6 +610,7 @@ class PluginController:
             self.vlayout_fields.addLayout(self.plugin_fields_layout)
 
             if type(config.fields) == dict:
+                self.plugin_field_widgets = []
                 log.debug("trying to add stack widget because dict for the fields")
                 self.select_vbox = QtWidgets.QVBoxLayout()
                 self.stacked_widget = QtWidgets.QStackedWidget()
@@ -622,6 +623,9 @@ class PluginController:
                     key_page = QtWidgets.QWidget()
                     key_page_layout = QtWidgets.QVBoxLayout()
                     for pfw in list_pfw:
+                        # Not organizing values sent back to the plugin
+                        # Just send all the field values as a flat list
+                        self.plugin_field_widgets.append(pfw) 
                         key_page_layout.addLayout(pfw.get_display_element())
                     key_page.setLayout(key_page_layout)
                     self.stacked_widget.addWidget(key_page)
@@ -920,12 +924,15 @@ class PluginController:
             # saved Measurement.
 
             log.debug("instantiating EnlightenPluginRequest")
+            plugin_fields = { pfw.field_name: pfw.field_value for pfw in self.plugin_field_widgets }
+            if type(config.fields) == dict:
+                plugin_fields["active_page"] = self.widget_selector.currentText()
             self.mut.lock() # avoid duplicate request_ids
             request = EnlightenPluginRequest(
                 request_id          = self.next_request_id,
                 settings            = copy.deepcopy(settings),
                 processed_reading   = copy.deepcopy(processed_reading),
-                fields              = { pfw.field_name: pfw.field_value for pfw in self.plugin_field_widgets }
+                fields              = plugin_fields
             )
             self.next_request_id += 1
             self.mut.unlock()
