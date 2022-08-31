@@ -863,7 +863,7 @@ class PluginController:
     # @returns True if response received and processed within timeout
     def process_response_blocking(self, orig_pr):
         try:
-            response = self.response_queue.get(block=True, timeout=3)
+            response = self.response_queue.get(block=True, timeout=10)
             self.handle_response(response, orig_pr)
             return True
         except:
