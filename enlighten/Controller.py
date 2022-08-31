@@ -603,13 +603,9 @@ class Controller:
             poll_result = device.poll_settings()
             if poll_result is not None:
                 if poll_result.data:
-<<<<<<< HEAD
-                    self.header("connect_new: successfully connected %s" % device_id)
-=======
                     self.header("check_ready_initialize: successfully connected %s" % device_id)
                     self.initialize_new_device(device)
 
->>>>>>> 0fb51c099b24b458840bab02d62d6a2eab8a1cbb
                     # remove the "in-process" flag, as it's now in the "connected" list
                     # and fully initialized
                     if device.is_ble:
@@ -1606,15 +1602,13 @@ class Controller:
                 # don't disconnect for instance.  It may or may not be a poison-pill...we're not
                 # even checking yet, because we want to let the user decide what to do.
                 log.debug("acquire_reading: prompting user to dispsition error")
-<<<<<<< HEAD
                 log.debug(f"response from spec was {spectrometer_response}")
-=======
 
                 self.seen_errors[spec][spectrometer_response.error_msg] += 1
                 if self.seen_errors[spec][spectrometer_response.error_msg] <= self.SPEC_ERROR_MAX_RETRY:
                     # rety reading a few times before calling a reset
                     return
->>>>>>> 0fb51c099b24b458840bab02d62d6a2eab8a1cbb
+
                 stay_connected = self.display_response_error(spec, spectrometer_response.error_msg)
                 log.debug(f"user selected stay {stay_connected}")
                 if stay_connected:
