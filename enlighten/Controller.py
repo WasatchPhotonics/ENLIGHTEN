@@ -294,6 +294,7 @@ class Controller:
         # close
         ########################################################################
 
+
         log.debug("disconnect_device[%s]: closing", device_id)
         spec.close()
 
@@ -1586,11 +1587,13 @@ class Controller:
                 log.error(f"acquire_reading: received poison-pill from spectrometer: {spectrometer_response}") # disposition AFTER displaying user message
 
             if spectrometer_response.poison_pill or \
-                    (spectrometer_response.error_msg != "" and spectrometer_response.error_lvl != ErrorLevel.ok):
+                    (spectrometer_response.error_msg != "" and spectrometer_response.error_lvl != ErrorLevel.ok) \
+                    and spectrometer_response.keep_alive is not True:
                 # We received an error from the device.  Don't do anything about it immediately;
                 # don't disconnect for instance.  It may or may not be a poison-pill...we're not
                 # even checking yet, because we want to let the user decide what to do.
                 log.debug("acquire_reading: prompting user to dispsition error")
+                log.debug(f"response from spec was {spectrometer_response}")
                 stay_connected = self.display_response_error(spec, spectrometer_response.error_msg)
                 if stay_connected:
                     log.debug("acquire_reading: either the user said this was okay, or they're still thinking about it")
