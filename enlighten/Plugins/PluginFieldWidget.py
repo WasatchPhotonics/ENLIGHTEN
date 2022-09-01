@@ -23,6 +23,7 @@ class PluginFieldWidget(QtWidgets.QWidget):
         'string':   QtWidgets.QLineEdit,
         'int':      QtWidgets.QSpinBox,
         'float':    QtWidgets.QDoubleSpinBox,
+        'radio':    QtWidgets.QRadioButton,
         'bool':     QtWidgets.QCheckBox,
         'button':   QtWidgets.QPushButton
     }
@@ -59,6 +60,7 @@ class PluginFieldWidget(QtWidgets.QWidget):
             "int":      lambda widget : self.create_int_fields     (widget), 
             "string":   lambda widget : self.create_string_fields  (widget),
             "bool":     lambda widget : self.create_bool_fields    (widget),
+            "radio":    lambda widget : self.create_radio_fields   (widget),
             "button":   lambda widget : self.create_button_fields  (widget)
         }
 
@@ -120,6 +122,14 @@ class PluginFieldWidget(QtWidgets.QWidget):
         widget.setText(self.field_value)
         widget.textChanged.connect(lambda: self.update_value(self.field_widget.text()))
 
+    def create_radio_fields(self, widget):
+        if self.field_value is None:
+            self.field_value = False
+
+        if isinstance(self.field_value, bool):
+            widget.setChecked(self.field_value)
+        widget.toggled.connect(lambda check: self.update_value(check))
+
     def create_bool_fields(self, widget):
         if self.field_value is None:
             self.field_value = False
@@ -164,6 +174,8 @@ class PluginFieldWidget(QtWidgets.QWidget):
         self.field_value = value
         if self.field_config.datatype == 'string':
             self.field_widget.setText(str(value))
+        elif self.field_config.datatype == "radio":
+            self.field_widget.setChecked(wasatch_utils.to_bool(value))
         elif self.field_config.datatype == "bool":
             self.field_widget.setChecked(wasatch_utils.to_bool(value))
         elif self.field_config.datatype == 'int':
