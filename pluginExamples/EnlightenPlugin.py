@@ -317,6 +317,7 @@ class EnlightenPluginField:
             maximum     = 100,
             step        = 1,
             precision   = 2,
+            options     = None,
             callback    = None,
             tooltip     = None):
 
@@ -330,6 +331,7 @@ class EnlightenPluginField:
         self.precision  = precision
         self.callback   = callback
         self.tooltip    = tooltip
+        self.options    = options
 
 ##
 # This is a "request" object sent by the ENLIGHTEN GUI to the plug-in, containing

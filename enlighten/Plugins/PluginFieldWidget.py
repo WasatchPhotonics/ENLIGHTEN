@@ -89,7 +89,10 @@ class PluginFieldWidget(QtWidgets.QWidget):
             self.field_widget = QtWidgets.QLabel(str(self.field_value))
         else:
             # create input widget
-            self.field_widget = PluginFieldWidget.datatype_to_widgets[self.field_config.datatype](self)
+            if self.field_config.datatype != "radio":
+                self.field_widget = PluginFieldWidget.datatype_to_widgets[self.field_config.datatype](self)
+            else:
+                self.field_widget = PluginFieldWidget.datatype_to_widgets[self.field_config.datatype]()
 
         if self.field_config.tooltip is not None:
             self.field_widget.setToolTip(self.field_config.tooltip)

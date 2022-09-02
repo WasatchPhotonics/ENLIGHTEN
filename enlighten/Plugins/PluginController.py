@@ -254,7 +254,7 @@ class PluginController:
             graph_scope = self.graph_scope, 
             reference_is_dark_corrected = reference_is_dark_corrected,
             save_options = self.save_options,
-            kia_feature = kia_feature,
+            kia_feature = self.kia_feature,
             read_measurements = self.measurements.read_measurements)
 
     def initialize_python_path(self):
@@ -533,10 +533,22 @@ class PluginController:
                     self.panda_field = epf
                 # no dynamic widget for pandas fields...they use the TableView
                 continue
+            elif epf.datatype == "radio":
+                groupBox = QtWidgets.QGroupBox(f"{epf.name}")
+                vbox = QtWidgets.QVBoxLayout()
+                epf.group = groupBox
+                epf.layout = vbox
+                for option in epf.options:
+                    epf.name = option
+                    pfw = PluginFieldWidget(epf)
+                    parent.append(pfw)
+                continue
 
             log.debug(f"instantiating PluginFieldWidget {epf.name}")
             pfw = PluginFieldWidget(epf)
             parent.append(pfw)
+            # old code left to be clear what parent was before dict
+            # makes this easier to understand imo
             #self.plugin_field_widgets.append(pfw)
 
     ##
@@ -612,6 +624,7 @@ class PluginController:
             log.debug("populating vlayout")
             self.vlayout_fields.addLayout(self.plugin_fields_layout)
 
+            added_group = []
             if type(config.fields) == dict:
                 self.plugin_field_widgets = []
                 log.debug("trying to add stack widget because dict for the fields")
@@ -643,7 +656,16 @@ class PluginController:
                 # note these are PluginFieldWidgets, NOT EnlightenPluginFields
                 log.debug("adding fields")
                 for pfw in self.plugin_field_widgets:
-                    self.plugin_fields_layout.addLayout(pfw.get_display_element())
+                    if pfw.field_config.datatype == "radio":
+                        group_box = pfw.field_config.group
+                        layout = pfw.field_config.layout
+                        if not group_box in added_group:
+                            self.plugin_fields_layout.addWidget(group_box)
+                            group_box.setLayout(layout)
+                            added_group.append(group_box)
+                        layout.addLayout(pfw.get_display_element())
+                    else:
+                        self.plugin_fields_layout.addLayout(pfw.get_display_element())
 
             self.frame_fields.setVisible(True)
 
