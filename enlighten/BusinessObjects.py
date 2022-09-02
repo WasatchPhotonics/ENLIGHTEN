@@ -737,6 +737,7 @@ class BusinessObjects:
             multispec                   = ctl.multispec,
             parent                      = ctl.form,
             save_options                = ctl.save_options,
+            kia_feature                 = ctl.kia_feature
 
             button_process              = sfu.pushButton_plugin_process,
             cb_connected                = sfu.checkBox_plugin_connected,

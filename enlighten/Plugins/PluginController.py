@@ -152,6 +152,7 @@ class PluginController:
             multispec,
             parent,
             save_options,
+            kia_feature,
 
             button_process,
             cb_connected,
@@ -184,6 +185,7 @@ class PluginController:
         self.multispec                  = multispec
         self.parent                     = parent
         self.save_options               = save_options
+        self.kia_feature                = kia_feature
 
         # widgets
         self.button_process             = button_process
@@ -252,6 +254,7 @@ class PluginController:
             graph_scope = self.graph_scope, 
             reference_is_dark_corrected = reference_is_dark_corrected,
             save_options = self.save_options,
+            kia_feature = kia_feature,
             read_measurements = self.measurements.read_measurements)
 
     def initialize_python_path(self):

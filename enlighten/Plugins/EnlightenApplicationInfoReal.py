@@ -14,12 +14,14 @@ class EnlightenApplicationInfoReal(EnlightenApplicationInfo):
             graph_scope, 
             reference_is_dark_corrected,
             save_options,
+            kia_feature,
             read_measurements,
             dependencies = {}):
 
         self.get_x_axis_unit_callback = graph_scope.get_x_axis_unit
         self.reference_is_dark_corrected = reference_is_dark_corrected
         self.save_options_directory_callback = save_options.get_directory
+        self.kia_feature = kia_feature
         self.dependencies = dependencies
         self.read_measurements = read_measurements
 

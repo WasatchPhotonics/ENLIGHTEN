@@ -257,6 +257,8 @@ class Feature(object):
         self.max_results = self.sb_max_results.value()
 
         self.recent_matches = {} # recent[compound] = datetime
+        self.last_declared_match = None
+        self.last_response = None
 
         # note that this is KIAFeature.Config, not enlighten.Configuration
         self.config = Config()
