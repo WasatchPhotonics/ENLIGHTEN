@@ -2,6 +2,9 @@
 
 # 3.2 Open-Source
 
+- 2022-09-06 3.2.24
+    - change plugin to allow exposure to save features
+    - add radio buttons to plugins
 - 2022-08-16 3.2.21
     - update BLEManager so it focuses more on UI, move logic to Wasatch.PY
     - setup Mock specs with new creation format
