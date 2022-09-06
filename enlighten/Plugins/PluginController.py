@@ -153,6 +153,7 @@ class PluginController:
             parent,
             save_options,
             kia_feature,
+            measurements_clipboard,
 
             button_process,
             cb_connected,
@@ -186,6 +187,7 @@ class PluginController:
         self.parent                     = parent
         self.save_options               = save_options
         self.kia_feature                = kia_feature
+        self.measurements_clipboard     = measurements_clipboard
 
         # widgets
         self.button_process             = button_process
@@ -255,7 +257,10 @@ class PluginController:
             reference_is_dark_corrected = reference_is_dark_corrected,
             save_options = self.save_options,
             kia_feature = self.kia_feature,
-            read_measurements = self.measurements.read_measurements)
+            plugin_settings = self.get_current_settings,
+            measurement_factory = self.measurement_factory,
+            measurements_clipboard = self.measurements_clipboard,
+            read_measurements = self.measurements.read_measurements) # leaving read measurement call for legacy purposes
 
     def initialize_python_path(self):
         for path in self.plugin_dirs:
@@ -898,6 +903,13 @@ class PluginController:
             self.disconnect()
             return False
 
+    def get_current_settings(self):
+        config = self.get_current_configuration()
+        plugin_fields = { pfw.field_name: pfw.field_value for pfw in self.plugin_field_widgets }
+        if type(config.fields) == dict:
+            plugin_fields["active_page"] = self.widget_selector.currentText()
+        return plugin_fields
+
     ##
     # Processes any queued responses, then sends the new request.
     #
@@ -949,9 +961,7 @@ class PluginController:
             # saved Measurement.
 
             log.debug("instantiating EnlightenPluginRequest")
-            plugin_fields = { pfw.field_name: pfw.field_value for pfw in self.plugin_field_widgets }
-            if type(config.fields) == dict:
-                plugin_fields["active_page"] = self.widget_selector.currentText()
+            plugin_fields = self.get_current_settings()
             self.mut.lock() # avoid duplicate request_ids
             request = EnlightenPluginRequest(
                 request_id          = self.next_request_id,

@@ -738,6 +738,7 @@ class BusinessObjects:
             parent                      = ctl.form,
             save_options                = ctl.save_options,
             kia_feature                 = ctl.kia_feature,
+            measurements_clipboard      = ctl.measurements,
 
             button_process              = sfu.pushButton_plugin_process,
             cb_connected                = sfu.checkBox_plugin_connected,

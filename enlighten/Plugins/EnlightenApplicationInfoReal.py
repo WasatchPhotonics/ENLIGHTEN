@@ -15,12 +15,18 @@ class EnlightenApplicationInfoReal(EnlightenApplicationInfo):
             reference_is_dark_corrected,
             save_options,
             kia_feature,
-            read_measurements,
+            plugin_settings,
+            measurement_factory,
+            measurements_clipboard,
+            read_measurements,# present for legacy reasons
             dependencies = {}):
 
         self.get_x_axis_unit_callback = graph_scope.get_x_axis_unit
         self.reference_is_dark_corrected = reference_is_dark_corrected
         self.save_options_directory_callback = save_options.get_directory
+        self.plugin_settings = plugin_settings
+        self.measurements_clipboard = measurements_clipboard
+        self.measurement_factory = measurement_factory
         self.kia_feature = kia_feature
         self.dependencies = dependencies
         self.read_measurements = read_measurements
