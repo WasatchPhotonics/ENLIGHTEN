@@ -2065,7 +2065,7 @@ QComboBox QListView
         </sizepolicy>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="page_hardware_setup">
         <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -2171,9 +2171,9 @@ QComboBox QListView
                      <property name="geometry">
                       <rect>
                        <x>0</x>
-                       <y>0</y>
+                       <y>-5185</y>
                        <width>1134</width>
-                       <height>5689</height>
+                       <height>5978</height>
                       </rect>
                      </property>
                      <property name="minimumSize">
@@ -6792,7 +6792,7 @@ QComboBox QListView
                                       </property>
                                      </widget>
                                     </item>
-                                    <item row="4" column="0">
+                                    <item row="5" column="0">
                                      <widget class="QPushButton" name="pushButton_write_eeprom">
                                       <property name="minimumSize">
                                        <size>
@@ -6811,7 +6811,7 @@ QComboBox QListView
                                       </property>
                                      </widget>
                                     </item>
-                                    <item row="5" column="0">
+                                    <item row="6" column="0">
                                      <widget class="QPushButton" name="pushButton_importEEPROM">
                                       <property name="sizePolicy">
                                        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -6836,7 +6836,7 @@ QComboBox QListView
                                       </property>
                                      </widget>
                                     </item>
-                                    <item row="6" column="0">
+                                    <item row="8" column="0">
                                      <widget class="QPushButton" name="pushButton_exportEEPROM">
                                       <property name="minimumSize">
                                        <size>
@@ -6855,7 +6855,7 @@ QComboBox QListView
                                       </property>
                                      </widget>
                                     </item>
-                                    <item row="3" column="0">
+                                    <item row="4" column="0">
                                      <widget class="QPushButton" name="pushButton_restore_eeprom">
                                       <property name="minimumSize">
                                        <size>
@@ -6868,6 +6868,25 @@ QComboBox QListView
                                       </property>
                                       <property name="text">
                                        <string>Restore EEPROM</string>
+                                      </property>
+                                      <property name="initiallyVisible" stdset="0">
+                                       <bool>false</bool>
+                                      </property>
+                                     </widget>
+                                    </item>
+                                    <item row="9" column="0">
+                                     <widget class="QPushButton" name="pushButton_reset_fpga">
+                                      <property name="minimumSize">
+                                       <size>
+                                        <width>130</width>
+                                        <height>30</height>
+                                       </size>
+                                      </property>
+                                      <property name="toolTip">
+                                       <string>Reset EEPROM to factory settings by loading from cloud</string>
+                                      </property>
+                                      <property name="text">
+                                       <string>Reset FPGA</string>
                                       </property>
                                       <property name="initiallyVisible" stdset="0">
                                        <bool>false</bool>
@@ -7331,7 +7350,7 @@ p, li { white-space: pre-wrap; }
                     <x>0</x>
                     <y>0</y>
                     <width>721</width>
-                    <height>930</height>
+                    <height>932</height>
                    </rect>
                   </property>
                   <layout class="QVBoxLayout" name="verticalLayout">
@@ -8077,9 +8096,9 @@ p, li { white-space: pre-wrap; }
             <property name="geometry">
              <rect>
               <x>0</x>
-              <y>-640</y>
+              <y>0</y>
               <width>656</width>
-              <height>1455</height>
+              <height>1475</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -10666,7 +10685,7 @@ p, li { white-space: pre-wrap; }
                   <x>0</x>
                   <y>0</y>
                   <width>235</width>
-                  <height>665</height>
+                  <height>671</height>
                  </rect>
                 </property>
                 <property name="maximumSize">
@@ -13599,7 +13618,7 @@ p, li { white-space: pre-wrap; }
                 <x>0</x>
                 <y>0</y>
                 <width>222</width>
-                <height>3085</height>
+                <height>3111</height>
                </rect>
               </property>
               <property name="styleSheet">
