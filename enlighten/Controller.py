@@ -170,7 +170,6 @@ class Controller:
 
         # instantiate the initial Business Objects we'll need to complete startup
         self.seen_errors = defaultdict(lambda: defaultdict(int))
-        self.reset_spec_fpga = set()
         self.business_objects = BusinessObjects(self)
         self.business_objects.create_first()
 
@@ -866,10 +865,6 @@ class Controller:
         # degC-to-DAC coeffs (to support .ini overrides)
         if hotplug:
             spec.change_device_setting("degC_to_dac_coeffs", spec.settings.eeprom.degC_to_dac_coeffs)
-
-        if f"{spec.settings.eeprom.model}{spec.settings.eeprom.serial_number}" in self.reset_spec_fpga:
-            log.debug(f"Spec {spec} was in reset_spec_fpga set. Telling to reset fpga")
-            self.perform_fpga_reset(spec)
 
         # gain and offset...why does this need to be done?  Wasn't it already
         # done by the earlier call to self.eeprom_editor.update_from_spec?
@@ -1632,7 +1627,6 @@ class Controller:
                     device.reset()
                     self.disconnect_device(spec)
                     log.debug(f"adding spec model and serial to be reset on connect")
-                    self.reset_spec_fpga.add(f"{spec.settings.eeprom.model}{spec.settings.eeprom.serial_number}")
                     self.bus.update(poll=True)
                     return
 
