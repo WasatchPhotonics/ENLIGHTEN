@@ -1632,7 +1632,7 @@ class Controller:
                     device.reset()
                     self.disconnect_device(spec)
                     log.debug(f"adding spec model and serial to be reset on connect")
-                    self.reset_spec_fpga(f"{spec.settings.eeprom.model}{spec.settings.eeprom.serial_number}")
+                    self.reset_spec_fpga.add(f"{spec.settings.eeprom.model}{spec.settings.eeprom.serial_number}")
                     self.bus.update(poll=True)
                     return
 
