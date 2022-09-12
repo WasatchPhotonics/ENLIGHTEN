@@ -2,6 +2,8 @@
 
 # 3.2 Open-Source
 
+- 2022-09-12 3.2.26
+    - cause fpga reset during error reconnect
 - 2022-09-08 3.2.25
     - add fpga reset button
 - 2022-08-29 3.2.22
