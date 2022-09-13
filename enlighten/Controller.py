@@ -44,6 +44,7 @@ from wasatch.Reading                  import Reading
 from wasatch.ProcessedReading         import ProcessedReading
 from .BusinessObjects                 import BusinessObjects
 from .Spectrometer                    import Spectrometer
+from .TimeoutDialog                   import TimeoutDialog
 from .BasicWindow                     import BasicWindow
 from wasatch.RealUSBDevice            import RealUSBDevice
 
@@ -77,6 +78,8 @@ class Controller:
     LOG_READER_TIMER_SLEEP_MS       = 3000
     MAX_MISSED_READINGS             =    2
     USE_ERROR_DIALOG                = False
+    SPEC_ERROR_MAX_RETRY            = 3
+    SPEC_RESET_MAX_RETRY            = 3
 
     URL_HELP = "https://wasatchphotonics.com/software-support/enlighten/"
 
@@ -165,7 +168,7 @@ class Controller:
         ########################################################################
 
         # instantiate the initial Business Objects we'll need to complete startup
-        self.seen_errors = defaultdict(list)
+        self.seen_errors = defaultdict(lambda: defaultdict(int))
         self.business_objects = BusinessObjects(self)
         self.business_objects.create_first()
 
@@ -293,6 +296,7 @@ class Controller:
         ########################################################################
         # close
         ########################################################################
+
 
         log.debug("disconnect_device[%s]: closing", device_id)
         spec.close()
@@ -587,8 +591,8 @@ class Controller:
         Check if an identified spectrometer succeeded in returning settings
         With this complete, initialize and start operating the spec
         """
-        in_progress_specs = list(self.multispec.in_process.items()) 
-        for device_id, device in in_progress_specs:
+        in_process_specs = list(self.multispec.in_process.items()) 
+        for device_id, device in in_process_specs:
             if device is None or type(device) is bool:
                 log.debug("check_ready_initialize: ignoring {device_id} ({device})")
                 continue
@@ -599,7 +603,9 @@ class Controller:
             poll_result = device.poll_settings()
             if poll_result is not None:
                 if poll_result.data:
-                    self.header("connect_new: successfully connected %s" % device_id)
+                    self.header("check_ready_initialize: successfully connected %s" % device_id)
+                    self.initialize_new_device(device)
+
                     # remove the "in-process" flag, as it's now in the "connected" list
                     # and fully initialized
                     if device.is_ble:
@@ -736,9 +742,12 @@ class Controller:
         log.info("initialize_new_device: device_id %s", device_id)
 
         # infer if this is a "hotplug" situation
-        if self.multispec.is_connected(device_id):
+        if self.multispec.is_connected(device_id): #or self.multispec.is_in_reset(device_id):
             log.debug("initialize_new_device: re-selecting already-connected device")
             hotplug = False
+            if self.multispec.is_in_reset(device_id):
+                log.debug(f"readding reset device")
+                self.multispec.readd(device_id)
         else:
             log.debug("initialize_new_device: initializing newly-connected device")
             self.multispec.add(device)
@@ -1441,7 +1450,8 @@ class Controller:
 
             # this doesn't have to be done after each keepalive...we could do this at 1Hz or so
             if spec.app_state.missed_reading_count > self.MAX_MISSED_READINGS and \
-                    not spec.app_state.spec_timeout_prompt_shown:
+                    not spec.app_state.spec_timeout_prompt_shown and \
+                    not self.multispec.is_in_reset(spec.device.device_id):
                 log.info("displaying Timeout Warning MessageBox (stay connected, or disconnect)")
                 spec.app_state.spec_timeout_prompt_shown = True
                 dlg = QMessageBox(self.form)
@@ -1586,18 +1596,36 @@ class Controller:
                 log.error(f"acquire_reading: received poison-pill from spectrometer: {spectrometer_response}") # disposition AFTER displaying user message
 
             if spectrometer_response.poison_pill or \
-                    (spectrometer_response.error_msg != "" and spectrometer_response.error_lvl != ErrorLevel.ok):
+                    (spectrometer_response.error_msg != "" and spectrometer_response.error_lvl != ErrorLevel.ok) \
+                    and spectrometer_response.keep_alive is not True:
                 # We received an error from the device.  Don't do anything about it immediately;
                 # don't disconnect for instance.  It may or may not be a poison-pill...we're not
                 # even checking yet, because we want to let the user decide what to do.
                 log.debug("acquire_reading: prompting user to dispsition error")
+                log.debug(f"response from spec was {spectrometer_response}")
+
+                self.seen_errors[spec][spectrometer_response.error_msg] += 1
+                if self.seen_errors[spec][spectrometer_response.error_msg] <= self.SPEC_ERROR_MAX_RETRY:
+                    # rety reading a few times before calling a reset
+                    return
+
                 stay_connected = self.display_response_error(spec, spectrometer_response.error_msg)
+                log.debug(f"user selected stay {stay_connected}")
                 if stay_connected:
                     log.debug("acquire_reading: either the user said this was okay, or they're still thinking about it")
-                else:
+                elif self.multispec.reset_tries(device_id) > self.SPEC_RESET_MAX_RETRY and not stay_connected:
                     # the user said to shut things down
-                    log.error("acquire_reading: user said to disconnect")
+                    log.debug(f"reset tries is {self.multispec.reset_tries(device_id)}")
+                    log.error("acquire_reading: user said to disconnect or hit max resets so give up")
+                    self.multispec.set_gave_up(device_id)
                     return AcquiredReading(disconnect=True)
+                else:
+                    self.marquee.info(f"{device_id} had errors. Attempting reset to recover, try number {self.multispec.reset_tries(device_id)}", immediate=True, persist=True)
+                    self.seen_errors[spec][spectrometer_response.error_msg] = 0
+                    device.reset()
+                    self.disconnect_device(spec)
+                    self.bus.update(poll=True)
+                    return
 
             if spectrometer_response.poison_pill:
                 # the user hasn't [yet] decided to disconnect, but we can't really "do anything" with data that's
@@ -2377,55 +2405,54 @@ class Controller:
                      1. the device can stay connected (includes log views), or 
                      2. there's already a dialog open, or
                      3. we've already prompted the user about this error on this spectrometer.
+                     4. ENLIGHTEN was not configured to use the error dialogs
                  False if:
                      1. the user said to disconnect
-                     2. ENLIGHTEN was not configured to use the error dialogs
         """
         if not self.USE_ERROR_DIALOG:
             return False
 
-        if response_error in self.seen_errors[spec]:
+        if response_error in self.seen_errors[spec].keys():
             log.debug(f"ignoring error because already seen: {response_error}")
             return True
-        self.seen_errors[spec].append(response_error)
 
         if self.dialog_open:
             log.debug(f"ignoring error because dialog currently open: {response_error}")
             return True
         self.dialog_open = True # todo make a mutex
 
-        dlg = QMessageBox(self.form)
         log.info(f"displaying MessageBox with the received error and options (Okay, Disconnect, Log): {response_error}")
-        dlg.setWindowTitle("Spectrometer Error")
-        dlg.setText("ENLIGHTEN has encountered an error with the spectrometer. " \
+        dlg_title = "Spectrometer Error"
+        dlg_msg = ("ENLIGHTEN has encountered an error with the spectrometer. " \
                   + "The exception is shown below.  Click 'View Log' to " \
                   + "automatically open the logfile in Notepad, 'Disconnect' to " \
                   + "retry or 'Okay' to dismiss this dialog:\n\n" \
-                  + response_error)
-        ok_btn = dlg.addButton("Okay", QMessageBox.AcceptRole)
-        disconnect_btn = dlg.addButton("Disconnect", QMessageBox.RejectRole)
-        help_btn = dlg.addButton("View Log", QMessageBox.HelpRole)
-        dlg.setIcon(QMessageBox.Warning)
-        button = dlg.exec_()
+                  + response_error + "\n\n")
+        dlg_btns = [("Okay", QMessageBox.AcceptRole), ("Disconnect", QMessageBox.RejectRole), ("View Log", QMessageBox.HelpRole)]
 
-        clicked_button = dlg.clickedButton()
+        selection = TimeoutDialog.showWithTimeout(self.form, 
+                                                  10, 
+                                                  dlg_msg, 
+                                                  dlg_title, 
+                                                  QMessageBox.Warning, 
+                                                  dlg_btns)
         # Generate a bool list by comparing the clicked btn against the btn options
-        selection = [clicked_button == btn for btn in [ok_btn, disconnect_btn, help_btn]]
         self.dialog_open = False
         spec.settings.state.ignore_timeouts_until = datetime.datetime(datetime.MAXYEAR,12,1)
         if selection == [True, False, False]:
             log.info("user clicked 'Okay' to dismiss the dialog with no action")
         elif selection == [False, True, False]:
             log.info("user clicked 'Disconnect' so disconnecting the device")
-            self.disconnect_device(spec)
             self.multispec.set_gave_up(spec.device_id)
             return False
         elif selection == [False, False, True]:
             log.info("user clicked 'View Log' so displaying the logfile")
             self.open_log()
         else:
-            log.error(f"User didn't choose a button. Defaulting to persist aberrant spectrometer.")
-        return True
+            log.info(f"User didn't choose a button. Attempting disconnect and reconnect")
+            self.seen_errors[spec].pop(response_error)
+            return False
+        return False
 
     def open_log(self):
         # Interestingly a few threads explained that this will open the default text editor

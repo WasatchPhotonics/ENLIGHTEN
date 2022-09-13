@@ -5,9 +5,14 @@
 - 2022-09-06 3.2.24
     - change plugin to allow exposure to save features
     - add radio buttons to plugins
-- 2022-08-16 3.2.21
+- 2022-08-31 3.2.23
+    - fix for external trigger erroring
+- 2022-08-29 3.2.22
+    - add pyusb reset as a recovery attempt
+- 2022-08-25 3.2.21
     - update BLEManager so it focuses more on UI, move logic to Wasatch.PY
     - setup Mock specs with new creation format
+    - Change failure state to perform reset of spec using pyusb
 - 2022-08-16 3.2.20
     - testing new DeviceFinderUSB
     - fixed bug parsing FWHM table

@@ -80,6 +80,8 @@ class Multispec(object):
         self.spec_laser_temp_curves = {}
         self.spec_hardware_live_curves = {}
         self.spec_detector_temp_curves = {}
+        self.reset_spec_objs = {}
+        self.spec_in_reset = defaultdict(int) # deafult of int() is 0
         self.spec_hardware_feature_curves = defaultdict(dict)
         self.in_process = {} # a dict of device_id to WasatchDeviceWrapper (may be None if "gave up")
         self.disconnecting = {}
@@ -161,6 +163,23 @@ class Multispec(object):
         color = spec.assigned_color
         if color is not None:
             self.button_color.setColor(color)
+
+    def is_in_reset(self, device_id):
+        return any([device_id == key for key in self.spec_in_reset.keys()])
+
+    def set_in_reset(self, device_id):
+        self.spec_in_reset[device_id] += 1
+        self.reset_spec_objs[device_id] = self.spectrometers[device_id]
+        del self.spectrometers[device_id]
+
+    def reset_tries(self, device_id):
+        return self.spec_in_reset[device_id]
+
+    def clear_reset(self, device_id):
+        try:
+            self.spec_in_reset.pop(device_id)
+        except:
+            log.error("tried to pop device id {device_id} but couldn't find in reset dict")
 
     def have_any_in_process(self) -> bool:
         """
@@ -415,7 +434,7 @@ class Multispec(object):
         if self.device_id in self.spectrometers:
             return self.spectrometers[self.device_id]
 
-        log.error(f"Multispec.current_spectrometer: can't find self.device_id {self.device_id} in spectrometers")
+        log.error(f"Multispec.current_spectrometer: can't find self.device_id {self.device_id} in spectrometers {self.spectrometers}")
         return None
 
     def update_widget(self):
@@ -427,6 +446,15 @@ class Multispec(object):
         self.button_lock.setEnabled(multi)
         self.check_hide_others.setEnabled(multi)
         log.debug("update_widget end (%s)", self.device_id)
+
+    def readd(self, device_id):
+        log.debug(f"readding spec {device_id}")
+        try:
+            self.spectrometers[device_id] = self.reset_spec_objs[device_id]
+            del self.reset_spec_objs[device_id]
+            log.debug(f"after readd specs are {self.spectrometers}")
+        except Exception as e:
+            log.error(f"error in readd {e}")
 
     def add(self, device):
         device_id = device.device_id
@@ -479,7 +507,7 @@ class Multispec(object):
             self.remove(spec)
 
     ## @return success
-    def remove(self, spec=None) -> bool:
+    def remove(self, spec=None, silent=False) -> bool:
         if spec is None:
             # default to current
             spec = self.spectrometers[self.device_id]
@@ -504,8 +532,6 @@ class Multispec(object):
         label = spec.label
 
         self.graph.remove_curve(label)
-        
-        del self.spectrometers[device_id]
 
         # this should cause combo_callback to trigger, calling 
         # Controller.initialize_new_device and thus updating Multispec.device_id to 
@@ -515,6 +541,9 @@ class Multispec(object):
         
         if not self.count():
             self.reset_seen()
+
+        del self.spectrometers[spec.device_id]
+
         return True
 
     # figure out which device_id was selected on the combobox
