@@ -469,7 +469,8 @@ class PluginController:
         self.button_process.setEnabled(False)
         pr = self.get_last_processed_reading()
         settings = self.get_settings()
-        self.process_reading(pr, settings, manual=True)
+        spec = self.multispec.current_spectrometer()
+        self.process_reading(pr, settings, spec, manual=True)
 
     # ##########################################################################
     # PluginWorker
@@ -918,7 +919,7 @@ class PluginController:
     # break ENLIGHTEN.  This is a performance hit, but oh well.
     #
     # @returns true if new EnlightenPluginRequest successfully sent to plugin
-    def process_reading(self, processed_reading, settings, manual=False):
+    def process_reading(self, processed_reading, settings, spec, manual=False):
         if processed_reading is None or settings is None:
             return False
 
@@ -965,6 +966,7 @@ class PluginController:
             self.mut.lock() # avoid duplicate request_ids
             request = EnlightenPluginRequest(
                 request_id          = self.next_request_id,
+                spec                = spec,
                 settings            = copy.deepcopy(settings),
                 processed_reading   = copy.deepcopy(processed_reading),
                 fields              = plugin_fields

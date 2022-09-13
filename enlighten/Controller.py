@@ -1964,7 +1964,7 @@ class Controller:
         # affect ProcessedReading.processed), we kind of need that to happen 
         # here.
         if self.plugin_controller.enabled:
-            self.plugin_controller.process_reading(pr, settings)
+            self.plugin_controller.process_reading(pr, settings, spec)
 
         ########################################################################
         # Graph Post-Processed Spectrum

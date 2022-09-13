@@ -2,6 +2,8 @@
 
 # 3.2 Open-Source
 
+- 2022-09-13 3.2.28
+    - Add spec object to enlighten plugins
 - 2022-09-12 3.2.27
     - revert to only fpga reset via button
 - 2022-09-12 3.2.26

@@ -75,7 +75,7 @@ class Spectrometer(object):
         log.info("Spectrometer: closed %s", self.device_id)
 
     def __str__(self):
-        return str(self.device_id)
+        return str(self.device_id).replace("DeviceID", "Spectrometer Object")
 
     def __eq__(self, other):
         return str(self) == str(other)
