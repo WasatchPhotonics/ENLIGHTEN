@@ -2,6 +2,12 @@
 
 # 3.2 Open-Source
 
+- 2022-09-12 3.2.27
+    - revert to only fpga reset via button
+- 2022-09-12 3.2.26
+    - cause fpga reset during error reconnect
+- 2022-09-08 3.2.25
+    - add fpga reset button
 - 2022-09-06 3.2.24
     - change plugin to allow exposure to save features
     - add radio buttons to plugins

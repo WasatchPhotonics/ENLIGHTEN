@@ -159,6 +159,7 @@ class Controller:
                         sfu.tabWidget_advanced_features
                       ]:
             widget.setVisible(False)
+        sfu.pushButton_reset_fpga.clicked.connect(self.perform_fpga_reset)
 
         # immediately show Scope Capture screen
         #self.set_main_page(common.Pages.SCOPE_CAPTURE)
@@ -1624,6 +1625,7 @@ class Controller:
                     self.seen_errors[spec][spectrometer_response.error_msg] = 0
                     device.reset()
                     self.disconnect_device(spec)
+                    log.debug(f"adding spec model and serial to be reset on connect")
                     self.bus.update(poll=True)
                     return
 
@@ -2393,6 +2395,18 @@ class Controller:
             log.debug(f"generate_x_axis: got back {len(retval)} values ({retval[:3]}...{retval[:-3]})")
 
         return retval
+
+    def perform_fpga_reset(self, spec = None):
+        if spec is None:
+            spec = self.multispec.current_spectrometer()
+
+        if spec is None:
+            return
+
+        wasatch_device = spec.device
+
+        wasatch_device.change_setting("reset_fpga", None)
+
 
     def update_hardware_window(self):
         for spec in self.multispec.spectrometers.values():
