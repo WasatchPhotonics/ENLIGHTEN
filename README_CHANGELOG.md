@@ -2,6 +2,8 @@
 
 # 3.2 Open-Source
 
+- 2022-09-13 3.2.29
+    - fix plugin metadata in csv exports
 - 2022-09-13 3.2.28
     - Add spec object to enlighten plugins
 - 2022-09-12 3.2.27
