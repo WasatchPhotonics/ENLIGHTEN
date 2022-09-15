@@ -747,7 +747,7 @@ class Controller:
             hotplug = False
             if self.multispec.is_in_reset(device_id):
                 log.debug(f"readding reset device")
-                self.multispec.readd(device_id)
+                self.multispec.readd_spec_object(device_id)
         else:
             log.debug("initialize_new_device: initializing newly-connected device")
             self.multispec.add(device)

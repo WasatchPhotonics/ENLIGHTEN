@@ -447,7 +447,7 @@ class Multispec(object):
         self.check_hide_others.setEnabled(multi)
         log.debug("update_widget end (%s)", self.device_id)
 
-    def readd(self, device_id):
+    def readd_spec_object(self, device_id):
         log.debug(f"readding spec {device_id}")
         try:
             self.spectrometers[device_id] = self.reset_spec_objs[device_id]
