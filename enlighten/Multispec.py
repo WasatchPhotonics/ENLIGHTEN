@@ -512,7 +512,7 @@ class Multispec(object):
             # default to current
             spec = self.spectrometers[self.device_id]
 
-        if spec not in self.spectrometers.keys():
+        if spec.device_id not in self.spectrometers.keys():
             log.debug(f"Failed to find {spec} in {self.spectrometers.keys()}, returning")
             return False
 

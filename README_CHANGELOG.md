@@ -2,6 +2,10 @@
 
 # 3.2 Open-Source
 
+- 2022-09-19 3.2.30
+    - bugfixes while testing merged CEChanges 
+        - count retries in WasatchDeviceWrapper, not Multispec
+        - remove Multispec entries by device_id
 - 2022-09-13 3.2.29
     - fix plugin metadata in csv exports
 - 2022-09-13 3.2.28

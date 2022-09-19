@@ -1602,30 +1602,35 @@ class Controller:
                 # We received an error from the device.  Don't do anything about it immediately;
                 # don't disconnect for instance.  It may or may not be a poison-pill...we're not
                 # even checking yet, because we want to let the user decide what to do.
-                log.debug("acquire_reading: prompting user to dispsition error")
+                log.debug("acquire_reading: prompting user to disposition error")
                 log.debug(f"response from spec was {spectrometer_response}")
 
                 self.seen_errors[spec][spectrometer_response.error_msg] += 1
-                if self.seen_errors[spec][spectrometer_response.error_msg] <= self.SPEC_ERROR_MAX_RETRY:
-                    # rety reading a few times before calling a reset
+                error_count = self.seen_errors[spec][spectrometer_response.error_msg]
+                if error_count <= self.SPEC_ERROR_MAX_RETRY and not spectrometer_response.poison_pill:
+                    # retry reading a few times before calling a reset
+                    log.debug(f"temporarily ignoring brief glitch (seen_errors {error_count} <= {self.SPEC_ERROR_MAX_RETRY}")
                     return
 
                 stay_connected = self.display_response_error(spec, spectrometer_response.error_msg)
-                log.debug(f"user selected stay {stay_connected}")
+                log.debug(f"dialog disposition: stay_connected {stay_connected}")
+
+               #tries = self.multispec.reset_tries(device_id)
+                tries = device.reset_tries
                 if stay_connected:
                     log.debug("acquire_reading: either the user said this was okay, or they're still thinking about it")
-                elif self.multispec.reset_tries(device_id) > self.SPEC_RESET_MAX_RETRY and not stay_connected:
+                elif tries > self.SPEC_RESET_MAX_RETRY:
                     # the user said to shut things down
-                    log.debug(f"reset tries is {self.multispec.reset_tries(device_id)}")
+                    log.debug(f"reset tries is {tries}") 
                     log.error("acquire_reading: user said to disconnect or hit max resets so give up")
                     self.multispec.set_gave_up(device_id)
                     return AcquiredReading(disconnect=True)
                 else:
-                    self.marquee.info(f"{device_id} had errors. Attempting reset to recover, try number {self.multispec.reset_tries(device_id)}", immediate=True, persist=True)
+                    self.marquee.info(f"{device_id} had errors. Attempting reset to recover, try number {tries}", immediate=True, persist=True)
                     self.seen_errors[spec][spectrometer_response.error_msg] = 0
                     device.reset()
                     self.disconnect_device(spec)
-                    log.debug(f"adding spec model and serial to be reset on connect")
+                   #log.debug(f"adding spec model and serial to be reset on connect")
                     self.bus.update(poll=True)
                     return
 
@@ -2419,9 +2424,9 @@ class Controller:
                      1. the device can stay connected (includes log views), or 
                      2. there's already a dialog open, or
                      3. we've already prompted the user about this error on this spectrometer.
-                     4. ENLIGHTEN was not configured to use the error dialogs
                  False if:
                      1. the user said to disconnect
+                     2. ENLIGHTEN was not configured to use the error dialogs
         """
         if not self.USE_ERROR_DIALOG:
             return False
