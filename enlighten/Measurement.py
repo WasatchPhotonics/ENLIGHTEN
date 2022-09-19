@@ -1101,12 +1101,13 @@ class Measurement(object):
                         value = self.get_metadata(field)
                         out.writerow([field, value])
                         outputted.add(field)
-                out.writerow([])
 
                 if self.processed_reading.plugin_metadata is not None:
                     for k, v in self.processed_reading.plugin_metadata.items():
                         if k not in outputted:
                             out.writerow([k, v])
+
+                out.writerow([])
 
             headers = []
             if self.save_options is not None:

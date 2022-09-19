@@ -152,6 +152,8 @@ class PluginController:
             multispec,
             parent,
             save_options,
+            kia_feature,
+            measurements_clipboard,
 
             button_process,
             cb_connected,
@@ -184,6 +186,8 @@ class PluginController:
         self.multispec                  = multispec
         self.parent                     = parent
         self.save_options               = save_options
+        self.kia_feature                = kia_feature
+        self.measurements_clipboard     = measurements_clipboard
 
         # widgets
         self.button_process             = button_process
@@ -252,7 +256,11 @@ class PluginController:
             graph_scope = self.graph_scope, 
             reference_is_dark_corrected = reference_is_dark_corrected,
             save_options = self.save_options,
-            read_measurements = self.measurements.read_measurements)
+            kia_feature = self.kia_feature,
+            plugin_settings = self.get_current_settings,
+            measurement_factory = self.measurement_factory,
+            measurements_clipboard = self.measurements_clipboard,
+            read_measurements = self.measurements.read_measurements) # leaving read measurement call for legacy purposes
 
     def initialize_python_path(self):
         for path in self.plugin_dirs:
@@ -461,7 +469,8 @@ class PluginController:
         self.button_process.setEnabled(False)
         pr = self.get_last_processed_reading()
         settings = self.get_settings()
-        self.process_reading(pr, settings, manual=True)
+        spec = self.multispec.current_spectrometer()
+        self.process_reading(pr, settings, spec, manual=True)
 
     # ##########################################################################
     # PluginWorker
@@ -516,6 +525,37 @@ class PluginController:
     # ##########################################################################
     # plug-in selection
     # ##########################################################################
+    def process_widgets(self, widgets, parent):
+        for epf in widgets:
+            if not PluginValidator.validate_field(epf):
+                log.error("invalid EnlightenPluginField: %s", epf.name)
+                continue
+
+            # plugins are allowed exactly one pandas output
+            if epf.datatype == "pandas":
+                if self.panda_field:
+                    log.error(f"ignoring extra pandas field {epf.name}")
+                else:
+                    self.panda_field = epf
+                # no dynamic widget for pandas fields...they use the TableView
+                continue
+            elif epf.datatype == "radio":
+                groupBox = QtWidgets.QGroupBox(f"{epf.name}")
+                vbox = QtWidgets.QVBoxLayout()
+                epf.group = groupBox
+                epf.layout = vbox
+                for option in epf.options:
+                    epf.name = option
+                    pfw = PluginFieldWidget(epf)
+                    parent.append(pfw)
+                continue
+
+            log.debug(f"instantiating PluginFieldWidget {epf.name}")
+            pfw = PluginFieldWidget(epf)
+            parent.append(pfw)
+            # old code left to be clear what parent was before dict
+            # makes this easier to understand imo
+            #self.plugin_field_widgets.append(pfw)
 
     ##
     # This may or may not be the first time this plugin has been selected, so
@@ -586,32 +626,54 @@ class PluginController:
             log.debug("instantiating fields")
             self.panda_field = None
             self.plugin_field_widgets = []
-            for epf in config.fields:
-                if not PluginValidator.validate_field(epf):
-                    log.error("invalid EnlightenPluginField: %s", epf.name)
-                    continue
-
-                # plugins are allowed exactly one pandas output
-                if epf.datatype == "pandas":
-                    if self.panda_field:
-                        log.error(f"ignoring extra pandas field {epf.name}")
-                    else:
-                        self.panda_field = epf
-                    # no dynamic widget for pandas fields...they use the TableView
-                    continue
-
-                log.debug(f"instantiating PluginFieldWidget {epf.name}")
-                pfw = PluginFieldWidget(epf)
-                self.plugin_field_widgets.append(pfw)
 
             log.debug("populating vlayout")
             self.vlayout_fields.addLayout(self.plugin_fields_layout)
 
-            # note these are PluginFieldWidgets, NOT EnlightenPluginFields
-            log.debug("adding fields")
-            for pfw in self.plugin_field_widgets:
-                self.plugin_fields_layout.addLayout(pfw.get_display_element())
-                self.frame_fields.setVisible(True)
+            added_group = []
+            if type(config.fields) == dict:
+                self.plugin_field_widgets = []
+                log.debug("trying to add stack widget because dict for the fields")
+                self.select_vbox = QtWidgets.QVBoxLayout()
+                self.stacked_widget = QtWidgets.QStackedWidget()
+                self.widget_selector = QtWidgets.QComboBox()
+                self.widget_selector.activated[int].connect(self.stacked_widget.setCurrentIndex)
+                for k, list_epf in config.fields.items():
+                    self.widget_selector.addItem(str(k))
+                    list_pfw = []
+                    self.process_widgets(list_epf, list_pfw)
+                    key_page = QtWidgets.QWidget()
+                    key_page_layout = QtWidgets.QVBoxLayout()
+                    for pfw in list_pfw:
+                        # Not organizing values sent back to the plugin
+                        # Just send all the field values as a flat list
+                        self.plugin_field_widgets.append(pfw) 
+                        key_page_layout.addLayout(pfw.get_display_element())
+                    key_page.setLayout(key_page_layout)
+                    self.stacked_widget.addWidget(key_page)
+
+                self.select_vbox.addWidget(self.widget_selector)
+                self.select_vbox.addWidget(self.stacked_widget)
+                self.plugin_fields_layout.addLayout(self.select_vbox)
+            else:
+                log.debug(f"Non dict epf, performing standard layout")
+                self.process_widgets(config.fields, self.plugin_field_widgets)
+
+                # note these are PluginFieldWidgets, NOT EnlightenPluginFields
+                log.debug("adding fields")
+                for pfw in self.plugin_field_widgets:
+                    if pfw.field_config.datatype == "radio":
+                        group_box = pfw.field_config.group
+                        layout = pfw.field_config.layout
+                        if not group_box in added_group:
+                            self.plugin_fields_layout.addWidget(group_box)
+                            group_box.setLayout(layout)
+                            added_group.append(group_box)
+                        layout.addLayout(pfw.get_display_element())
+                    else:
+                        self.plugin_fields_layout.addLayout(pfw.get_display_element())
+
+            self.frame_fields.setVisible(True)
 
             if self.panda_field:
                 log.debug("creating output table")
@@ -832,7 +894,7 @@ class PluginController:
     # @returns True if response received and processed within timeout
     def process_response_blocking(self, orig_pr):
         try:
-            response = self.response_queue.get(block=True, timeout=3)
+            response = self.response_queue.get(block=True, timeout=10)
             self.handle_response(response, orig_pr)
             return True
         except:
@@ -842,6 +904,13 @@ class PluginController:
             self.disconnect()
             return False
 
+    def get_current_settings(self):
+        config = self.get_current_configuration()
+        plugin_fields = { pfw.field_name: pfw.field_value for pfw in self.plugin_field_widgets }
+        if type(config.fields) == dict:
+            plugin_fields["active_page"] = self.widget_selector.currentText()
+        return plugin_fields
+
     ##
     # Processes any queued responses, then sends the new request.
     #
@@ -850,7 +919,7 @@ class PluginController:
     # break ENLIGHTEN.  This is a performance hit, but oh well.
     #
     # @returns true if new EnlightenPluginRequest successfully sent to plugin
-    def process_reading(self, processed_reading, settings, manual=False):
+    def process_reading(self, processed_reading, settings, spec, manual=False):
         if processed_reading is None or settings is None:
             return False
 
@@ -893,12 +962,14 @@ class PluginController:
             # saved Measurement.
 
             log.debug("instantiating EnlightenPluginRequest")
+            plugin_fields = self.get_current_settings()
             self.mut.lock() # avoid duplicate request_ids
             request = EnlightenPluginRequest(
                 request_id          = self.next_request_id,
+                spec                = spec,
                 settings            = copy.deepcopy(settings),
                 processed_reading   = copy.deepcopy(processed_reading),
-                fields              = { pfw.field_name: pfw.field_value for pfw in self.plugin_field_widgets }
+                fields              = plugin_fields
             )
             self.next_request_id += 1
             self.mut.unlock()

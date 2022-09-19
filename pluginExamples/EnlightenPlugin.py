@@ -9,6 +9,7 @@ from dataclasses import dataclass, field
 
 log = logging.getLogger(__name__)
 
+from enlighten.Spectrometer           import Spectrometer
 from wasatch.ProcessedReading         import ProcessedReading
 from wasatch.SpectrometerSettings     import SpectrometerSettings
 
@@ -317,6 +318,7 @@ class EnlightenPluginField:
             maximum     = 100,
             step        = 1,
             precision   = 2,
+            options     = None,
             callback    = None,
             tooltip     = None):
 
@@ -330,6 +332,7 @@ class EnlightenPluginField:
         self.precision  = precision
         self.callback   = callback
         self.tooltip    = tooltip
+        self.options    = options
 
 ##
 # This is a "request" object sent by the ENLIGHTEN GUI to the plug-in, containing
@@ -356,6 +359,7 @@ class EnlightenPluginRequest:
            names, and current scalar values.
     """
     request_id: int = -1
+    spec: Spectrometer = field(default_factory=Spectrometer)
     settings: SpectrometerSettings = field(default_factory=SpectrometerSettings)
     processed_reading: ProcessedReading = field(default_factory=ProcessedReading)
     creation_time: datetime.datetime = datetime.datetime.now()

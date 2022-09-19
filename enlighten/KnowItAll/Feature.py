@@ -257,6 +257,8 @@ class Feature(object):
         self.max_results = self.sb_max_results.value()
 
         self.recent_matches = {} # recent[compound] = datetime
+        self.last_declared_match = None
+        self.last_response = None
 
         # note that this is KIAFeature.Config, not enlighten.Configuration
         self.config = Config()
@@ -535,12 +537,12 @@ class Feature(object):
 
     ## The user has clicked the "continuous" checkbox which enables or disables 
     #  KIA processing of each acquired spectrum, so connect if necessary.
-    def _enabled_callback(self):
+    def _enabled_callback(self, plugin_process = False):
         if self.closing:
             return
 
         checked = self.cb_enabled.isChecked()
-        if checked:
+        if checked or plugin_process:
             if self.wrapper is None:
                 if self._connect():
                     self.enabled = True

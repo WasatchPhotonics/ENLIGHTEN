@@ -84,7 +84,7 @@ class PluginValidator:
             field.direction = field.direction.lower().strip()
 
             # check for valid datatypes
-            if field.datatype not in ["string", "int", "float", "bool", "button", "pandas"]:
+            if field.datatype not in ["string", "int", "float", "bool", "button", "pandas", "radio"]:
                 log.error("invalid EnlightenPluginField %s datatype: %s", field.name, field.datatype)
                 return False
 
