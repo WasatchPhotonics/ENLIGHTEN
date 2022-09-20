@@ -71,7 +71,7 @@ class Spectrometer(object):
         try:
             self.device.disconnect()
         except Exception as e:
-            log.error("Spectrometer either does not exist or already disconnected {e}")
+            log.error(f"Spectrometer either does not exist or already disconnected {e}")
         log.info("Spectrometer: closed %s", self.device_id)
 
     def __str__(self):
