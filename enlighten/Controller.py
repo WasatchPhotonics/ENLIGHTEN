@@ -121,6 +121,7 @@ class Controller:
         self.max_memory_growth      = max_memory_growth
         self.run_sec                = run_sec
         self.dialog_open            = False
+        self.grid_display           = False
         self.serial_number_desired  = serial_number
         self.stylesheet_path        = stylesheet_path
         self.set_all_dfu            = set_all_dfu
@@ -251,6 +252,8 @@ class Controller:
         self.bind_shortcuts()
 
         self.page_nav.post_init()
+
+        sfu.pushButton_graphGrid.clicked.connect(self.graph_grid_toggle)
 
         self.header("Controller ctor done")
         self.other_devices = []
@@ -2476,6 +2479,14 @@ class Controller:
     def open_log(self):
         # Interestingly a few threads explained that this will open the default text editor
         webbrowser.open(os.path.join(common.get_default_data_dir(), "enlighten.log"))
+
+    def graph_grid_toggle(self):
+        log.debug("grid callback run")
+        self.grid_display = not self.grid_display
+        if self.graph != None and self.graph.plot != None:
+            self.graph.plot.showGrid(self.grid_display, self.grid_display)
+        if self.plugin_controller.graph_plugin != None and self.plugin_controller.graph_plugin.plot != None:
+            self.plugin_controller.graph_plugin.plot.showGrid(self.grid_display, self.grid_display)
 
     def clear_response_errors(self, spec):
         """
