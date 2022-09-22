@@ -254,6 +254,10 @@ class Controller:
         self.page_nav.post_init()
 
         sfu.pushButton_graphGrid.clicked.connect(self.graph_grid_toggle)
+        self.enlighten_graphs = {
+                "scope graph": [self.graph, "plot"],
+                "plugin graph": [self.plugin_controller, "graph_plugin", "plot"],
+            }
 
         self.header("Controller ctor done")
         self.other_devices = []
@@ -2481,12 +2485,18 @@ class Controller:
         webbrowser.open(os.path.join(common.get_default_data_dir(), "enlighten.log"))
 
     def graph_grid_toggle(self):
-        log.debug("grid callback run")
         self.grid_display = not self.grid_display
-        if self.graph != None and self.graph.plot != None:
-            self.graph.plot.showGrid(self.grid_display, self.grid_display)
-        if self.plugin_controller.graph_plugin != None and self.plugin_controller.graph_plugin.plot != None:
-            self.plugin_controller.graph_plugin.plot.showGrid(self.grid_display, self.grid_display)
+        for name, obj_path in self.enlighten_graphs.items():
+            head = obj_path[0]
+            tail = obj_path[1:]
+            for attr in tail:
+                if head != None and hasattr(head, attr):
+                    head = getattr(head, attr)
+                else:
+                    log.error(f"{name} couldn't set grid")
+                    break
+            else:
+                head.showGrid(self.grid_display, self.grid_display)
 
     def clear_response_errors(self, spec):
         """
