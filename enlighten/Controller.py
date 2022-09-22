@@ -254,6 +254,10 @@ class Controller:
         self.page_nav.post_init()
 
         sfu.pushButton_graphGrid.clicked.connect(self.graph_grid_toggle)
+        sfu.pushButton_roi_toggle.clicked.connect(self.toggle_roi_process)
+        self.default_roi_btn = self.form.ui.pushButton_roi_toggle.styleSheet()
+        self.form.ui.pushButton_roi_toggle.setStyleSheet("background-color: #aa0000")
+        self.roi_enabled = True
         self.enlighten_graphs = {
                 "scope graph": [self.graph, "plot"],
                 "plugin graph": [self.plugin_controller, "graph_plugin", "plot"],
@@ -1893,7 +1897,8 @@ class Controller:
 
         # This should be done before any processing that involves multiple
         # pixels, e.g. offset, boxcar, baseline correction, or Richardson-Lucy.
-        self.vignette_roi.process(pr, settings)
+        if self.roi_enabled:
+            self.vignette_roi.process(pr, settings)
 
         ########################################################################
         # Reference
@@ -2424,6 +2429,13 @@ class Controller:
         for spec in self.multispec.spectrometers.values():
             # call StripChartFeature getter
             spec.app_state.update_rolling_data(self.form.ui.spinBox_strip_window.value())
+
+    def toggle_roi_process(self):
+        self.roi_enabled = not self.roi_enabled
+        if self.roi_enabled:
+            self.form.ui.pushButton_roi_toggle.setStyleSheet("background-color: #aa0000")
+        else:
+            self.form.ui.pushButton_roi_toggle.setStyleSheet(self.default_roi_btn)
 
     def display_response_error(self, spec: Spectrometer, response_error: str) -> bool:
         """

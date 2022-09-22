@@ -11917,6 +11917,41 @@ p, li { white-space: pre-wrap; }
                                </property>
                               </spacer>
                              </item>
+                             <item>
+                              <widget class="QPushButton" name="pushButton_roi_toggle">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>30</width>
+                                 <height>26</height>
+                                </size>
+                               </property>
+                               <property name="maximumSize">
+                                <size>
+                                 <width>30</width>
+                                 <height>26</height>
+                                </size>
+                               </property>
+                               <property name="text">
+                                <string>ROI</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
+                              <spacer name="horizontalSpacer_465">
+                               <property name="orientation">
+                                <enum>Qt::Horizontal</enum>
+                               </property>
+                               <property name="sizeType">
+                                <enum>QSizePolicy::Fixed</enum>
+                               </property>
+                               <property name="sizeHint" stdset="0">
+                                <size>
+                                 <width>9</width>
+                                 <height>20</height>
+                                </size>
+                               </property>
+                              </spacer>
+                             </item>
                             </layout>
                            </item>
                            <item>
