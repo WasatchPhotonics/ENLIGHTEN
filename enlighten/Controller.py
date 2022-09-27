@@ -1,6 +1,7 @@
 from threading import Thread
 import webbrowser
 import pyqtgraph
+import functools
 import datetime
 import logging
 import numpy as np
@@ -121,6 +122,7 @@ class Controller:
         self.max_memory_growth      = max_memory_growth
         self.run_sec                = run_sec
         self.dialog_open            = False
+        self.grid_display           = False
         self.serial_number_desired  = serial_number
         self.stylesheet_path        = stylesheet_path
         self.set_all_dfu            = set_all_dfu
@@ -251,6 +253,17 @@ class Controller:
         self.bind_shortcuts()
 
         self.page_nav.post_init()
+
+        sfu.pushButton_graphGrid.clicked.connect(self.graph_grid_toggle)
+        sfu.pushButton_roi_toggle.clicked.connect(self.toggle_roi_process)
+        self.default_roi_btn = self.form.ui.pushButton_roi_toggle.styleSheet()
+        self.default_graph_btn = self.form.ui.pushButton_graphGrid.styleSheet()
+        self.form.ui.pushButton_roi_toggle.setStyleSheet("background-color: #aa0000")
+        self.roi_enabled = True
+        self.enlighten_graphs = {
+                "scope graph": [self.graph, "plot"],
+                "plugin graph": [self.plugin_controller, "graph_plugin", "plot"],
+            }
 
         self.header("Controller ctor done")
         self.other_devices = []
@@ -1886,7 +1899,8 @@ class Controller:
 
         # This should be done before any processing that involves multiple
         # pixels, e.g. offset, boxcar, baseline correction, or Richardson-Lucy.
-        self.vignette_roi.process(pr, settings)
+        if self.roi_enabled:
+            self.vignette_roi.process(pr, settings)
 
         ########################################################################
         # Reference
@@ -2418,6 +2432,13 @@ class Controller:
             # call StripChartFeature getter
             spec.app_state.update_rolling_data(self.form.ui.spinBox_strip_window.value())
 
+    def toggle_roi_process(self):
+        self.roi_enabled = not self.roi_enabled
+        if self.roi_enabled:
+            self.form.ui.pushButton_roi_toggle.setStyleSheet("background-color: #aa0000")
+        else:
+            self.form.ui.pushButton_roi_toggle.setStyleSheet(self.default_roi_btn)
+
     def display_response_error(self, spec: Spectrometer, response_error: str) -> bool:
         """
         @returns True if:
@@ -2476,6 +2497,29 @@ class Controller:
     def open_log(self):
         # Interestingly a few threads explained that this will open the default text editor
         webbrowser.open(os.path.join(common.get_default_data_dir(), "enlighten.log"))
+
+    def get_grid_display(self):
+        return self.grid_display
+
+    def graph_grid_toggle(self):
+        self.grid_display = not self.grid_display
+        log.debug(f"setting grid display to {self.grid_display}")
+        if self.grid_display:
+            self.form.ui.pushButton_graphGrid.setStyleSheet("background-color: #aa0000")
+        else:
+            self.form.ui.pushButton_graphGrid.setStyleSheet(self.default_graph_btn)
+        def resolve_graph_plot(head, attr):
+            if head != None and hasattr(head, attr):
+                return getattr(head, attr)
+            else:
+                None
+
+        for name, obj_path in self.enlighten_graphs.items():
+            plot = functools.reduce(resolve_graph_plot, obj_path)
+            if plot != None:
+                plot.showGrid(self.grid_display, self.grid_display)
+            else:
+                log.error(f"{name} couldn't set grid")
 
     def clear_response_errors(self, spec):
         """
