@@ -1,6 +1,7 @@
 from threading import Thread
 import webbrowser
 import pyqtgraph
+import functools
 import datetime
 import logging
 import numpy as np
@@ -256,6 +257,7 @@ class Controller:
         sfu.pushButton_graphGrid.clicked.connect(self.graph_grid_toggle)
         sfu.pushButton_roi_toggle.clicked.connect(self.toggle_roi_process)
         self.default_roi_btn = self.form.ui.pushButton_roi_toggle.styleSheet()
+        self.default_graph_btn = self.form.ui.pushButton_graphGrid.styleSheet()
         self.form.ui.pushButton_roi_toggle.setStyleSheet("background-color: #aa0000")
         self.roi_enabled = True
         self.enlighten_graphs = {
@@ -2496,19 +2498,28 @@ class Controller:
         # Interestingly a few threads explained that this will open the default text editor
         webbrowser.open(os.path.join(common.get_default_data_dir(), "enlighten.log"))
 
+    def get_grid_display(self):
+        return self.grid_display
+
     def graph_grid_toggle(self):
         self.grid_display = not self.grid_display
-        for name, obj_path in self.enlighten_graphs.items():
-            head = obj_path[0]
-            tail = obj_path[1:]
-            for attr in tail:
-                if head != None and hasattr(head, attr):
-                    head = getattr(head, attr)
-                else:
-                    log.error(f"{name} couldn't set grid")
-                    break
+        log.debug(f"setting grid display to {self.grid_display}")
+        if self.grid_display:
+            self.form.ui.pushButton_graphGrid.setStyleSheet("background-color: #aa0000")
+        else:
+            self.form.ui.pushButton_graphGrid.setStyleSheet(self.default_graph_btn)
+        def resolve_graph_plot(head, attr):
+            if head != None and hasattr(head, attr):
+                return getattr(head, attr)
             else:
-                head.showGrid(self.grid_display, self.grid_display)
+                None
+
+        for name, obj_path in self.enlighten_graphs.items():
+            plot = functools.reduce(resolve_graph_plot, obj_path)
+            if plot != None:
+                plot.showGrid(self.grid_display, self.grid_display)
+            else:
+                log.error(f"{name} couldn't set grid")
 
     def clear_response_errors(self, spec):
         """
