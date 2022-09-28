@@ -12,7 +12,7 @@ application.
 @todo consider making "common" a package (directory), and each of these classes
       can be modules (files) within it
 """
-VERSION = "3.2.32"
+VERSION = "3.2.33"
 
 """ ENLIGHTEN's application version number (checked by scripts/deploy and bootstrap.bat) """
 
