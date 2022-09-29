@@ -2501,6 +2501,9 @@ class Controller:
     def get_grid_display(self):
         return self.grid_display
 
+    def get_roi_enabled(self):
+        return self.roi_enabled
+
     def graph_grid_toggle(self):
         self.grid_display = not self.grid_display
         log.debug(f"setting grid display to {self.grid_display}")

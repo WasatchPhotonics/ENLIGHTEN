@@ -227,6 +227,7 @@ class BusinessObjects:
             stylesheets                 = ctl.stylesheets,
             eject_button                = sfu.pushButton_eject,
             controller_disconnect       = ctl.disconnect_device,
+            get_roi_enabled             = ctl.get_roi_enabled,
 
 			# Essentially, these are widgets corresponding to SpectrometerState fields,
             # SpectrometerApplicationState fields, or change_device_setting() keys

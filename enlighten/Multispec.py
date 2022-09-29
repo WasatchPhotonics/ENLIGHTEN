@@ -52,6 +52,7 @@ class Multispec(object):
             stylesheets,
             eject_button,
             controller_disconnect,
+            get_roi_enabled,
 
             lockable_widgets):
 
@@ -71,6 +72,7 @@ class Multispec(object):
         self.eject_button          = eject_button
         self.controller_disconnect = controller_disconnect
         self.lockable_widgets      = lockable_widgets
+        self.get_roi_enabled       = get_roi_enabled
 
         self.device_id = None
         self.ejected = set()
@@ -80,6 +82,7 @@ class Multispec(object):
         self.spec_laser_temp_curves = {}
         self.spec_hardware_live_curves = {}
         self.spec_detector_temp_curves = {}
+        self.spec_roi_curtains = {}
         self.reset_spec_objs = {}
         self.spec_in_reset = defaultdict(int) # deafult of int() is 0
         self.spec_hardware_feature_curves = defaultdict(dict)
@@ -464,6 +467,15 @@ class Multispec(object):
 
         log.debug("Multispec.add: adding to self.spectrometers: %s", device_id)
         self.spectrometers[device_id] = spec
+        left_roi_region = pyqtgraph.LinearRegionItem((0, spec.settings.eeprom.roi_horizontal_start), movable=False)
+        right_roi_region = pyqtgraph.LinearRegionItem((spec.settings.eeprom.roi_horizontal_end, spec.settings.eeprom.active_pixels_horizontal), movable=False)
+        self.spec_roi_curtains[spec] = (left_roi_region, right_roi_region)
+        #if self.get_roi_enabled and spec.settings.eeprom.roi_horizontal_start == 0:
+        #    left_roi_region.setOpacity(0)
+        #if self.get_roi_enabled and spec.settings.eeprom.roi_horizontal_end == 0:
+        #   right_roi_region.setOpacity(0)
+        self.graph.add_roi_region(left_roi_region)
+        self.graph.add_roi_region(right_roi_region)
 
         # This is within blockSignals because I don't want to recursively trigger
         # another call to initialize_new_device (which is presumably what trigger-

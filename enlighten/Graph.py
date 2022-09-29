@@ -292,6 +292,9 @@ class Graph(object):
 
         self.plot.setLabel(axis="left", text=common.AxesHelper.get_pretty_name(self.current_y_axis))
 
+    def add_roi_region(self, region):
+        self.plot.addItem(region)
+
     ## 
     # This was originally used used by ThumbnailWidget, when clicking the "show 
     # trace" thumbnail button. It's now also being used by 
