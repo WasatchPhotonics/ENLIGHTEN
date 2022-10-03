@@ -22,6 +22,8 @@ class BasicWindow(QtWidgets.QMainWindow):
         # the all-important "sfu"
         self.ui = enlighten_layout.Ui_MainWindow()
         self.ui.setupUi(self)
+        new_line = '\n'
+        #log.error(f"type of main window is {type(self.ui)} {f'{new_line}'.join(dir(self.ui))}")
 
         self.create_signals()
         self.setWindowIcon(QtGui.QIcon(":/application/images/EnlightenIcon.ico"))

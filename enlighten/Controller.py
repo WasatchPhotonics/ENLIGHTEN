@@ -271,7 +271,8 @@ class Controller:
         self.other_devices = []
 
         # init is done so display the GUI and destory the splash screen
-        self.form.showMaximized()
+        self.form.setGeometry(0, 0, 755, 559)
+        self.form.show()
 
         if headless:
             # hiding tends to mess with gui tests since the componets are also hidden
