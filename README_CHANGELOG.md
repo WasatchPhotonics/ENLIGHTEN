@@ -2,6 +2,8 @@
 
 # 3.2 Open-Source
 
+- 2022-10-03 3.2.32
+    - add splash screen on start up
 - 2022-09-22 3.2.31
     - add graph grid button and roi button to tool bar
 - 2022-09-19 3.2.30
