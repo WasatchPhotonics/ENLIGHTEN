@@ -98,10 +98,10 @@ class EnlightenApplication(object):
 
         # instantiate form (a QMainWindow with named "MainWindow")
         # UI needs to be imported here in order to access qresources for the splash screen
-        self.form = BasicWindow(title="ENLIGHTEN %s" % common.VERSION,headless=self.args.headless)
+        self.form = BasicWindow(title="ENLIGHTEN %s" % common.VERSION, headless=self.args.headless)
 
         pixmap = QPixmap(":/application/images/enlightenLOGO.png")
-        pixmap = pixmap.scaled(pixmap.width()/2, pixmap.height()/2)
+        pixmap = pixmap.scaled(pixmap.width()/2, pixmap.height()/2) # eyeballed, default seemed to take whole screen
         self.splash = QSplashScreen()
         self.splash.setPixmap(pixmap)
         self.splash.show()
