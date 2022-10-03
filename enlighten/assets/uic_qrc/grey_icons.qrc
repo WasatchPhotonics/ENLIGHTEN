@@ -66,5 +66,6 @@
     <file>images/grey_icons/wrench.svg</file>
     <file>images/grey_icons/yes_xicon.svg</file>
     <file>images/grey_icons/zoom.svg</file>
+    <file>images/grey_icons/GridIcon.svg</file>
   </qresource>
 </RCC>
