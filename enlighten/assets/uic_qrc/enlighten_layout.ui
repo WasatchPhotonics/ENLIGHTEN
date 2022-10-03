@@ -2175,7 +2175,7 @@ QComboBox QListView
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>1134</width>
+                       <width>688</width>
                        <height>5978</height>
                       </rect>
                      </property>
@@ -7352,7 +7352,7 @@ p, li { white-space: pre-wrap; }
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>1134</width>
+                    <width>721</width>
                     <height>932</height>
                    </rect>
                   </property>
@@ -12797,7 +12797,7 @@ p, li { white-space: pre-wrap; }
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                        <horstretch>0</horstretch>
-                       <verstretch>1</verstretch>
+                       <verstretch>0</verstretch>
                       </sizepolicy>
                      </property>
                      <property name="minimumSize">
@@ -12842,7 +12842,7 @@ p, li { white-space: pre-wrap; }
                         <property name="sizePolicy">
                          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                           <horstretch>0</horstretch>
-                          <verstretch>1</verstretch>
+                          <verstretch>0</verstretch>
                          </sizepolicy>
                         </property>
                         <property name="styleSheet">
@@ -12872,7 +12872,7 @@ p, li { white-space: pre-wrap; }
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                              <horstretch>0</horstretch>
-                             <verstretch>1</verstretch>
+                             <verstretch>0</verstretch>
                             </sizepolicy>
                            </property>
                            <property name="maximumSize">
@@ -12912,7 +12912,7 @@ p, li { white-space: pre-wrap; }
                                <property name="sizePolicy">
                                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                                  <horstretch>0</horstretch>
-                                 <verstretch>1</verstretch>
+                                 <verstretch>0</verstretch>
                                 </sizepolicy>
                                </property>
                                <property name="maximumSize">
@@ -12942,7 +12942,7 @@ p, li { white-space: pre-wrap; }
                                   <x>0</x>
                                   <y>0</y>
                                   <width>824</width>
-                                  <height>300</height>
+                                  <height>262</height>
                                  </rect>
                                 </property>
                                 <property name="wpClear" stdset="0">
@@ -12969,13 +12969,13 @@ p, li { white-space: pre-wrap; }
                                    <property name="sizePolicy">
                                     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                                      <horstretch>0</horstretch>
-                                     <verstretch>1</verstretch>
+                                     <verstretch>0</verstretch>
                                     </sizepolicy>
                                    </property>
                                    <property name="minimumSize">
                                     <size>
                                      <width>0</width>
-                                     <height>300</height>
+                                     <height>0</height>
                                     </size>
                                    </property>
                                    <property name="maximumSize">
@@ -13009,15 +13009,37 @@ p, li { white-space: pre-wrap; }
                                     <property name="bottomMargin">
                                      <number>0</number>
                                     </property>
+                                    <property name="verticalSpacing">
+                                     <number>7</number>
+                                    </property>
                                     <item row="0" column="0">
                                      <widget class="QStackedWidget" name="stackedWidget_scope_capture_details_spectrum">
+                                      <property name="sizePolicy">
+                                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                       </sizepolicy>
+                                      </property>
+                                      <property name="minimumSize">
+                                       <size>
+                                        <width>0</width>
+                                        <height>0</height>
+                                       </size>
+                                      </property>
                                       <property name="Comment" stdset="0">
                                        <string>MZ: pyqtgraph widgets are inserted here</string>
                                       </property>
                                       <widget class="QWidget" name="page_scope_capture_details_spectrum">
                                        <layout class="QGridLayout" name="gridLayout_15">
                                         <item row="0" column="0">
-                                         <layout class="QGridLayout" name="layout_scope_capture_graphs" />
+                                         <layout class="QGridLayout" name="layout_scope_capture_graphs">
+                                          <property name="sizeConstraint">
+                                           <enum>QLayout::SetMinimumSize</enum>
+                                          </property>
+                                          <property name="spacing">
+                                           <number>0</number>
+                                          </property>
+                                         </layout>
                                         </item>
                                        </layout>
                                       </widget>
