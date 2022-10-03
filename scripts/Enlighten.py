@@ -1,4 +1,5 @@
 import multiprocessing
+from os import path
 import platform
 import argparse
 import logging
@@ -17,14 +18,17 @@ os.environ["BLINKA_FT232H"]="1" # used to allow SPI with FT232H
 
 # Required runtime imports for compiled .exe (see qsvg4.dll in InnoSetup)
 from PySide2 import QtGui, QtCore, QtWidgets, QtSvg, QtXml
+from PySide2.QtWidgets import QSplashScreen
+from PySide2.QtGui import QPixmap, QImageReader
 
+
+from enlighten.BasicWindow import BasicWindow
 from enlighten import common
 from wasatch.DeviceID import DeviceID
 from wasatch   import applog
 
 log = logging.getLogger(__name__)
 
-from enlighten.Controller import Controller
 
 def signal_handler(signal, frame):
     log.critical('Interrupted by Ctrl-C')
@@ -39,6 +43,8 @@ signal.signal(signal.SIGINT, signal_handler)
 class EnlightenApplication(object):
 
     def __init__(self,testing=False):
+        self.app = QtWidgets.QApplication(["windows:dpiawareness=1"])
+
         self.parser = self.create_parser()
         self.controller = None
         self.args = None
@@ -89,8 +95,23 @@ class EnlightenApplication(object):
     # method (which will tick QWidgets defined by the form in an event loop until 
     # something generates an exit signal).
     def run(self):
-        self.app = QtWidgets.QApplication(["windows:dpiawareness=1"])
+
+        # instantiate form (a QMainWindow with named "MainWindow")
+        # UI needs to be imported here in order to access qresources for the splash screen
+        self.form = BasicWindow(title="ENLIGHTEN %s" % common.VERSION,headless=self.args.headless)
+
+        pixmap = QPixmap(":/application/images/enlightenLOGO.png")
+        pixmap = pixmap.scaled(pixmap.width()/2, pixmap.height()/2)
+        self.splash = QSplashScreen()
+        self.splash.setPixmap(pixmap)
+        self.splash.show()
+
         self.main_logger = applog.MainLogger(self.args.log_level, logfile=self.args.logfile, timeout_sec=5, enable_stdout=not self.testing)
+
+        # This violates convention but Controller has so many imports that it takes a while to import
+        # This needs to occur here because the Qt app needs to be made before the splash screen
+        # So it has to occur in this function after both the app creation and splash screen creation
+        from enlighten.Controller import Controller
 
         log.debug("platform = %s", platform.platform())
 
@@ -104,6 +125,7 @@ class EnlightenApplication(object):
             serial_number     = self.args.serial_number,
             stylesheet_path   = self.args.stylesheet_path,
             set_all_dfu       = self.args.set_all_dfu,
+            form              = self.form,
             headless          = self.args.headless)
         # This requires explanation.  This is obviously a Qt "connect" binding,
         # but Controller is not a Qt widget, and does not inherit from/extend 
@@ -122,6 +144,7 @@ class EnlightenApplication(object):
         #sim_spec = DeviceID(label="MOCK:SiG_785:EEPROM-EM-9c65d19f4c.json")
         #self.controller.connect_new(sim_spec)
         # pass off control to Qt to manage its objects until application shutdown
+        self.splash.finish(self.controller.form)
         if not self.testing:
             self.app.exec_()
 

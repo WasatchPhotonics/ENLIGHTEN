@@ -26,13 +26,7 @@ class BasicWindow(QtWidgets.QMainWindow):
         self.create_signals()
         self.setWindowIcon(QtGui.QIcon(":/application/images/EnlightenIcon.ico"))
         self.setWindowTitle(title)
-        self.showMaximized()
-        if headless:
-            # hiding tends to mess with gui tests since the componets are also hidden
-            # So I replaced with minimizing, which I recognize is not a true headless
-            # self.hide()
-            self.showMinimized()
-
+ 
     def create_signals(self):
         class ViewClose(QtCore.QObject):
             exit = QtCore.Signal(str)
