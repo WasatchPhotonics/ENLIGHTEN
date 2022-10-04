@@ -44,6 +44,7 @@ class Measurements(object):
             label_count,
             layout,
             marquee,
+            get_roi_enabled,
             reprocess_callback):
 
         self.button_erase       = button_erase
@@ -58,6 +59,7 @@ class Measurements(object):
         self.label_count        = label_count
         self.layout             = layout
         self.marquee            = marquee
+        self.get_roi_enabled    = get_roi_enabled
         self.reprocess_callback = reprocess_callback
 
         self.measurements = []
