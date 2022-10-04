@@ -234,7 +234,7 @@ class BaselineCorrection:
                 spec.app_state.baseline_correction_enabled = self.enabled
             return
 
-        # apparently we're in a technique and spectrometer that supports baseline
+        # apparently we're in a view and spectrometer that supports baseline
         # correction (or we've been overridden by Advanced Options)
 
         name = self.combo_algo.currentText()

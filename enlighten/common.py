@@ -16,38 +16,38 @@ VERSION = "3.2.32"
 
 """ ENLIGHTEN's application version number (checked by scripts/deploy and bootstrap.bat) """
 
-class Techniques(IntEnum):
+class Views(IntEnum):
     HARDWARE            = 0
     SCOPE               = 1
     RAMAN               = 2 
     TRANSMISSION        = 3
     ABSORBANCE          = 4
 """
-It's important to keep this list in sync with the comboBoxTechnique items.
+It's important to keep this list in sync with the comboBox_view items.
 @todo consider auto-populating inside code
 """
 
-class TechniquesHelper:
+class ViewsHelper:
     pretty_names = {
-        Techniques.HARDWARE:     "Hardware",
-        Techniques.SCOPE:        "Scope",
-        Techniques.RAMAN:        "Raman",
-        Techniques.TRANSMISSION: "Transmission",
-        Techniques.ABSORBANCE:   "Absorbance"
+        Views.HARDWARE:     "Hardware",
+        Views.SCOPE:        "Scope",
+        Views.RAMAN:        "Raman",
+        Views.TRANSMISSION: "Transmission",
+        Views.ABSORBANCE:   "Absorbance"
     }
 
     def get_pretty_name(n):
-        return TechniquesHelper.pretty_names.get(n, "UNKNOWN")
+        return ViewsHelper.pretty_names.get(n, "UNKNOWN")
 
     def parse(s):
         s = s.upper()
-        if "HARDWARE"             in s: return Techniques.HARDWARE
-        if "SCOPE"                in s: return Techniques.SCOPE
-        if "RAMAN"                in s: return Techniques.RAMAN
-        if "ABS"                  in s: return Techniques.ABSORBANCE
-        if "TRANS" in s or "REFL" in s: return Techniques.TRANSMISSION
-        log.error("Invalid technique: %s", s)
-        return Techniques.SCOPE
+        if "HARDWARE"             in s: return Views.HARDWARE
+        if "SCOPE"                in s: return Views.SCOPE
+        if "RAMAN"                in s: return Views.RAMAN
+        if "ABS"                  in s: return Views.ABSORBANCE
+        if "TRANS" in s or "REFL" in s: return Views.TRANSMISSION
+        log.error("Invalid view: %s", s)
+        return Views.SCOPE
 
 class OperationModes(IntEnum):
     SETUP   = 0

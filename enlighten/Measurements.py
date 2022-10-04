@@ -224,7 +224,7 @@ class Measurements(object):
     ## 
     # Use the MeasurementFactory to instantiate a new Measurement, including
     # ThumbnailWidget, from the given spectrometer's latest ProcessedReading.
-    def create_from_spectrometer(self, spec, technique=None):
+    def create_from_spectrometer(self, spec, view=None):
         if spec is None or spec.app_state.processed_reading is None:
             return
 
@@ -235,7 +235,7 @@ class Measurements(object):
         measurement = self.factory.create_from_spectrometer(
             spec = spec, 
             is_collapsed = self.is_collapsed,
-            technique = technique)
+            view = view)
 
         self.add(measurement)
 

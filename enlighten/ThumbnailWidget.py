@@ -41,7 +41,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
             is_collapsed,
             measurement,
             stylesheets,
-            technique,
+            view,
             focus_listener,
             kia = None):
 
@@ -54,7 +54,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
         self.kia            = kia
         self.measurement    = measurement
         self.stylesheets    = stylesheets
-        self.technique      = technique
+        self.view           = view
         self.focus_listener = focus_listener
                            
         self.is_displayed  = False
@@ -195,10 +195,10 @@ class ThumbnailWidget(QtWidgets.QFrame):
             return False
 
         # things get weird for loaded Measurements
-        ok = self.technique is None or \
-             (isinstance(self.technique, common.Techniques) and self.technique == common.Techniques.RAMAN) or \
-             "raman" in str(self.technique).lower()
-        log.debug("should_add_id = %s (self.technique %s)", ok, self.technique)
+        ok = self.view is None or \
+             (isinstance(self.view, common.Views) and self.view == common.Views.RAMAN) or \
+             "raman" in str(self.view).lower()
+        log.debug("should_add_id = %s (self.view %s)", ok, self.view)
         return ok
 
     ##

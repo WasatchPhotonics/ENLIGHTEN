@@ -217,7 +217,7 @@ class Measurement(object):
                            'Declared Score',
                            'Scan Averaging',
                            'Boxcar',
-                           'Technique',
+                           'View',
                            'Baseline Correction Algo',
                            'ROI Pixel Start',
                            'ROI Pixel End',
@@ -254,7 +254,7 @@ class Measurement(object):
         self.spec                     = None
         self.thumbnail_widget         = None
         self.timestamp                = None
-        self.technique                = None
+        self.view                     = None
 
     ##
     # There are three valid instantiation patterns:
@@ -266,7 +266,7 @@ class Measurement(object):
             save_options        = None,
             settings            = None,
             source_pathname     = None,
-            technique           = None,
+            view                = None,
             timestamp           = None,
             spec                = None,
             measurement         = None,
@@ -301,7 +301,7 @@ class Measurement(object):
             # the ProcessedReading. (Taking a deepcopy, because with plug-ins who
             # knows...)
             self.processed_reading  = copy.deepcopy(spec.app_state.processed_reading)
-            self.technique          = spec.app_state.technique_name
+            self.view               = spec.app_state.view_name
             self.timestamp          = datetime.datetime.now()
             self.baseline_correction_algo = spec.app_state.baseline_correction_algo
 
@@ -714,7 +714,7 @@ class Measurement(object):
         if field == "blank":                     return self.settings.eeprom.serial_number # for Multispec
         if field == "note":                      return self.save_options.note() if self.save_options is not None else ""
         if field == "temperature":               return self.processed_reading.reading.detector_temperature_degC if self.processed_reading.reading is not None else -99
-        if field == "technique":                 return self.technique
+        if field == "view":                      return self.view
         if field == "baseline correction algo":  return self.baseline_correction_algo
         if field == "ccd c0":                    return wavecal[0]
         if field == "ccd c1":                    return wavecal[1]

@@ -451,7 +451,7 @@ class Controller:
                             self.laser_temperature,
                             self.battery_feature]:
                 feature.process_reading(spec, recent_read) 
-        if self.page_nav.get_current_technique() == common.Techniques.HARDWARE or self.form.ui.checkBox_feature_file_capture.isChecked():
+        if self.page_nav.get_current_view() == common.Viewss.HARDWARE or self.form.ui.checkBox_feature_file_capture.isChecked():
             self.hard_strip_timer.start(self.form.ui.spinBox_integration_time_ms.value())
             return
         self.hard_strip_timer.start(1000)
@@ -657,7 +657,7 @@ class Controller:
                 self.multispec.set_gave_up(device_id)
                 self.multispec.remove_in_process(device_id)
 
-    # also called by PageNavigation.set_technique_common
+    # also called by PageNavigation.set_view_common
     def update_feature_visibility(self):
         # disable anything that shouldn't be on without a spectrometer
         # (could grow this considerably)
@@ -1175,12 +1175,12 @@ class Controller:
             shortcut.activated.connect(callback)
             self.shortcuts[kseq] = shortcut
 
-        # techniques
-        make_shortcut("F1",     self.page_nav.set_technique_hardware)
-        make_shortcut("F2",     self.page_nav.set_technique_scope)
-        make_shortcut("F3",     self.page_nav.set_technique_raman)
-        make_shortcut("F4",     self.page_nav.set_technique_transmission)
-        make_shortcut("F5",     self.page_nav.set_technique_absorbance)
+        # views
+        make_shortcut("F1",     self.page_nav.set_view_hardware)
+        make_shortcut("F2",     self.page_nav.set_view_scope)
+        make_shortcut("F3",     self.page_nav.set_view_raman)
+        make_shortcut("F4",     self.page_nav.set_view_transmission)
+        make_shortcut("F5",     self.page_nav.set_view_absorbance)
 
         # operation modes
         make_shortcut("F6",     self.page_nav.set_operation_mode_setup)
@@ -1232,17 +1232,17 @@ class Controller:
         This is a GUI method (used as a callback) to generate one Measurement from
         the most-recent ProcessedReading of EACH connected spectrometer.
         
-        Originally there was no thought of Measurements "knowing" what technique
+        Originally there was no thought of Measurements "knowing" what view
         was in use when they were created.  However, we (currently) only want the
         ID button to show up on Raman measurements, so...let's see where this goes.
         """
-        technique = self.page_nav.get_current_technique()
+        view = self.page_nav.get_current_view()
 
         if self.save_options.save_all_spectrometers():
             for spec in self.multispec.get_spectrometers():
-                self.measurements.create_from_spectrometer(spec=spec, technique=technique)
+                self.measurements.create_from_spectrometer(spec=spec, view=view)
         else:
-            self.measurements.create_from_spectrometer(spec=self.current_spectrometer(), technique=technique)
+            self.measurements.create_from_spectrometer(spec=self.current_spectrometer(), view=view)
 
     # ##########################################################################
     # miscellaneous callbacks
@@ -1920,7 +1920,7 @@ class Controller:
         ########################################################################
 
         # add reference to ProcessedReading whether or not we're actively in a
-        # reference technique, so plugins etc can access it
+        # reference view, so plugins etc can access it
         if app_state and app_state.reference is not None:
             pr.reference = np.copy(spec.app_state.reference)
         elif ref is not None:
@@ -1935,7 +1935,7 @@ class Controller:
                 self.absorbance.process(pr, settings)
 
         ########################################################################
-        # non-reference techniques
+        # non-reference views
         ########################################################################
 
         if not self.page_nav.using_reference():

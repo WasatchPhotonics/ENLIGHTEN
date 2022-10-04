@@ -376,7 +376,7 @@ class BusinessObjects:
             button_logging                         = sfu.pushButton_hardware_tab_logging,
             button_setup                           = sfu.pushButton_setup,
             button_capture                         = sfu.pushButton_capture,
-            combo_technique                        = sfu.comboBox_technique,
+            combo_view                             = sfu.comboBox_view,
             stack_hardware                         = sfu.stackedWidget_hardware_setup_details,
             stack_main                             = sfu.stackedWidget_low,
 

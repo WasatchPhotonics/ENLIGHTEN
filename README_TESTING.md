@@ -21,19 +21,19 @@ To run only the release tests use ```pytest .\test -m release```
 
 ## Initial Test Plan
 
-- Scope Technique
+- Scope View
     - change integ time
     - laser works
     - change laser power
     - averaging works
     - TEC changes are reflected in Hardware Capture
     - save CSV
-- Raman Technique
+- Raman View
     - dark works
     - shows peaks
-- Reflectance/Transmission Technique
+- Reflectance/Transmission View
     - reference works
-- Absorbance Technique
+- Absorbance View
     - reference works
 
 All of the above with no Traceback reported in log.

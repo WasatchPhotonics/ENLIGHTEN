@@ -61,7 +61,7 @@ class RamanIntensityCorrection(object):
             return set(False, "Raman Intensity Correction requires an SRM calibration")
         elif spec.app_state.dark is None:
             return set(False, "Raman Intensity Correction requires a dark measurement")
-        elif not spec.app_state.technique_name in ["Raman", "Offset"]:
+        elif not spec.app_state.view_name in ["Raman", "Offset"]:
             return set(False, "Raman Intensity Correction is only valid for Raman measurements")
         else:
             return set(True, "Raman Intensity Correction optimizes peak intensity using SRM calibration")

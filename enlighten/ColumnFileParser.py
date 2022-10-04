@@ -157,7 +157,7 @@ class ColumnFileParser(object):
         SpectrometerSettings) that might work.  But where to put the function?
         
         Note that currently there is nowhere to put SpectrometerApplicationData 
-        that we parsed from the file (like technique).
+        that we parsed from the file (like view).
         
         In cases where we're looking for different field spellings, those may 
         have been added to better support other application file formats

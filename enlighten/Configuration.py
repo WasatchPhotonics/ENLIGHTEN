@@ -422,7 +422,7 @@ class Configuration(object):
                 "area_scan_live_pen_width": 1,
                 "area_scan_live_pen_style": "solid",
 
-                # scope techniques
+                # scope views
                 "scope_pen_color": "enlighten_default",
                 "scope_pen_width": 1,
                 "scope_pen_style": "solid",
