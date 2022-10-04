@@ -11689,7 +11689,7 @@ p, li { white-space: pre-wrap; }
                           <number>0</number>
                          </property>
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_42" stretch="1,0,0,0,0,0,0,1">
+                          <layout class="QHBoxLayout" name="horizontalLayout_42" stretch="1,0,0,0,1">
                            <item>
                             <layout class="QHBoxLayout" name="horizontalLayout_71">
                              <item>
@@ -11968,22 +11968,6 @@ p, li { white-space: pre-wrap; }
                             </spacer>
                            </item>
                            <item>
-                            <spacer name="horizontalSpacer_49">
-                             <property name="orientation">
-                              <enum>Qt::Horizontal</enum>
-                             </property>
-                             <property name="sizeType">
-                              <enum>QSizePolicy::MinimumExpanding</enum>
-                             </property>
-                             <property name="sizeHint" stdset="0">
-                              <size>
-                               <width>20</width>
-                               <height>20</height>
-                              </size>
-                             </property>
-                            </spacer>
-                           </item>
-                           <item>
                             <layout class="QHBoxLayout" name="horizontalLayout_26">
                              <item>
                               <widget class="QPushButton" name="pushButton_scope_toggle_dark">
@@ -12185,363 +12169,7 @@ p, li { white-space: pre-wrap; }
                              </property>
                              <property name="sizeHint" stdset="0">
                               <size>
-                               <width>20</width>
-                               <height>20</height>
-                              </size>
-                             </property>
-                            </spacer>
-                           </item>
-                           <item>
-                            <layout class="QHBoxLayout" name="horizontalLayout_72">
-                             <property name="spacing">
-                              <number>9</number>
-                             </property>
-                             <item>
-                              <widget class="QPushButton" name="pushButton_scope_capture_pause">
-                               <property name="sizePolicy">
-                                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                                 <horstretch>10</horstretch>
-                                 <verstretch>0</verstretch>
-                                </sizepolicy>
-                               </property>
-                               <property name="minimumSize">
-                                <size>
-                                 <width>30</width>
-                                 <height>30</height>
-                                </size>
-                               </property>
-                               <property name="maximumSize">
-                                <size>
-                                 <width>67</width>
-                                 <height>30</height>
-                                </size>
-                               </property>
-                               <property name="baseSize">
-                                <size>
-                                 <width>67</width>
-                                 <height>0</height>
-                                </size>
-                               </property>
-                               <property name="font">
-                                <font>
-                                 <pointsize>10</pointsize>
-                                 <weight>75</weight>
-                                 <bold>true</bold>
-                                </font>
-                               </property>
-                               <property name="toolTip">
-                                <string>Pause continuous acquisition</string>
-                               </property>
-                               <property name="text">
-                                <string />
-                               </property>
-                               <property name="icon">
-                                <iconset resource="grey_icons.qrc">
-                                 <normaloff>:/greys/images/grey_icons/pause.svg</normaloff>:/greys/images/grey_icons/pause.svg</iconset>
-                               </property>
-                               <property name="iconSize">
-                                <size>
-                                 <width>30</width>
-                                 <height>30</height>
-                                </size>
-                               </property>
-                              </widget>
-                             </item>
-                             <item>
-                              <widget class="QPushButton" name="pushButton_scope_capture_play">
-                               <property name="sizePolicy">
-                                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                                 <horstretch>10</horstretch>
-                                 <verstretch>0</verstretch>
-                                </sizepolicy>
-                               </property>
-                               <property name="minimumSize">
-                                <size>
-                                 <width>30</width>
-                                 <height>30</height>
-                                </size>
-                               </property>
-                               <property name="maximumSize">
-                                <size>
-                                 <width>67</width>
-                                 <height>30</height>
-                                </size>
-                               </property>
-                               <property name="baseSize">
-                                <size>
-                                 <width>67</width>
-                                 <height>0</height>
-                                </size>
-                               </property>
-                               <property name="font">
-                                <font>
-                                 <pointsize>10</pointsize>
-                                 <weight>75</weight>
-                                 <bold>true</bold>
-                                </font>
-                               </property>
-                               <property name="toolTip">
-                                <string>Start continuous acquisition</string>
-                               </property>
-                               <property name="text">
-                                <string />
-                               </property>
-                               <property name="icon">
-                                <iconset resource="grey_icons.qrc">
-                                 <normaloff>:/greys/images/grey_icons/right_triangle.svg</normaloff>:/greys/images/grey_icons/right_triangle.svg</iconset>
-                               </property>
-                               <property name="iconSize">
-                                <size>
-                                 <width>14</width>
-                                 <height>14</height>
-                                </size>
-                               </property>
-                              </widget>
-                             </item>
-                             <item>
-                              <widget class="QPushButton" name="pushButton_scope_capture_stop">
-                               <property name="sizePolicy">
-                                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                                 <horstretch>10</horstretch>
-                                 <verstretch>0</verstretch>
-                                </sizepolicy>
-                               </property>
-                               <property name="minimumSize">
-                                <size>
-                                 <width>30</width>
-                                 <height>30</height>
-                                </size>
-                               </property>
-                               <property name="maximumSize">
-                                <size>
-                                 <width>67</width>
-                                 <height>30</height>
-                                </size>
-                               </property>
-                               <property name="baseSize">
-                                <size>
-                                 <width>67</width>
-                                 <height>0</height>
-                                </size>
-                               </property>
-                               <property name="font">
-                                <font>
-                                 <pointsize>10</pointsize>
-                                 <weight>75</weight>
-                                 <bold>true</bold>
-                                </font>
-                               </property>
-                               <property name="toolTip">
-                                <string>Cancel current operation</string>
-                               </property>
-                               <property name="text">
-                                <string />
-                               </property>
-                               <property name="icon">
-                                <iconset resource="grey_icons.qrc">
-                                 <normaloff>:/greys/images/grey_icons/square.svg</normaloff>:/greys/images/grey_icons/square.svg</iconset>
-                               </property>
-                              </widget>
-                             </item>
-                             <item>
-                              <widget class="QPushButton" name="pushButton_scope_capture_save">
-                               <property name="sizePolicy">
-                                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                                 <horstretch>10</horstretch>
-                                 <verstretch>0</verstretch>
-                                </sizepolicy>
-                               </property>
-                               <property name="minimumSize">
-                                <size>
-                                 <width>30</width>
-                                 <height>30</height>
-                                </size>
-                               </property>
-                               <property name="maximumSize">
-                                <size>
-                                 <width>67</width>
-                                 <height>30</height>
-                                </size>
-                               </property>
-                               <property name="baseSize">
-                                <size>
-                                 <width>67</width>
-                                 <height>0</height>
-                                </size>
-                               </property>
-                               <property name="font">
-                                <font>
-                                 <pointsize>10</pointsize>
-                                 <weight>75</weight>
-                                 <bold>true</bold>
-                                </font>
-                               </property>
-                               <property name="toolTip">
-                                <string>Save on-screen measurement</string>
-                               </property>
-                               <property name="text">
-                                <string />
-                               </property>
-                               <property name="icon">
-                                <iconset resource="grey_icons.qrc">
-                                 <normaloff>:/greys/images/grey_icons/down_triangle.svg</normaloff>:/greys/images/grey_icons/down_triangle.svg</iconset>
-                               </property>
-                              </widget>
-                             </item>
-                             <item>
-                              <widget class="QPushButton" name="pushButton_scope_capture_start_collection">
-                               <property name="sizePolicy">
-                                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                                 <horstretch>10</horstretch>
-                                 <verstretch>0</verstretch>
-                                </sizepolicy>
-                               </property>
-                               <property name="minimumSize">
-                                <size>
-                                 <width>30</width>
-                                 <height>30</height>
-                                </size>
-                               </property>
-                               <property name="maximumSize">
-                                <size>
-                                 <width>67</width>
-                                 <height>30</height>
-                                </size>
-                               </property>
-                               <property name="baseSize">
-                                <size>
-                                 <width>67</width>
-                                 <height>0</height>
-                                </size>
-                               </property>
-                               <property name="font">
-                                <font>
-                                 <pointsize>10</pointsize>
-                                 <weight>75</weight>
-                                 <bold>true</bold>
-                                </font>
-                               </property>
-                               <property name="toolTip">
-                                <string>Start batch collection</string>
-                               </property>
-                               <property name="text">
-                                <string />
-                               </property>
-                               <property name="icon">
-                                <iconset resource="grey_icons.qrc">
-                                 <normaloff>:/greys/images/grey_icons/fast-forward.svg</normaloff>:/greys/images/grey_icons/fast-forward.svg</iconset>
-                               </property>
-                              </widget>
-                             </item>
-                             <item>
-                              <widget class="QPushButton" name="pushButton_scope_capture_step">
-                               <property name="sizePolicy">
-                                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                                 <horstretch>10</horstretch>
-                                 <verstretch>0</verstretch>
-                                </sizepolicy>
-                               </property>
-                               <property name="minimumSize">
-                                <size>
-                                 <width>30</width>
-                                 <height>30</height>
-                                </size>
-                               </property>
-                               <property name="maximumSize">
-                                <size>
-                                 <width>67</width>
-                                 <height>30</height>
-                                </size>
-                               </property>
-                               <property name="baseSize">
-                                <size>
-                                 <width>67</width>
-                                 <height>0</height>
-                                </size>
-                               </property>
-                               <property name="font">
-                                <font>
-                                 <pointsize>10</pointsize>
-                                 <weight>75</weight>
-                                 <bold>true</bold>
-                                </font>
-                               </property>
-                               <property name="toolTip">
-                                <string>Take one measurement</string>
-                               </property>
-                               <property name="text">
-                                <string />
-                               </property>
-                               <property name="icon">
-                                <iconset resource="grey_icons.qrc">
-                                 <normaloff>:/greys/images/grey_icons/step-forward.svg</normaloff>:/greys/images/grey_icons/step-forward.svg</iconset>
-                               </property>
-                               <property name="iconSize">
-                                <size>
-                                 <width>20</width>
-                                 <height>16</height>
-                                </size>
-                               </property>
-                              </widget>
-                             </item>
-                             <item>
-                              <widget class="QPushButton" name="pushButton_scope_capture_step_save">
-                               <property name="sizePolicy">
-                                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                                 <horstretch>10</horstretch>
-                                 <verstretch>0</verstretch>
-                                </sizepolicy>
-                               </property>
-                               <property name="minimumSize">
-                                <size>
-                                 <width>30</width>
-                                 <height>30</height>
-                                </size>
-                               </property>
-                               <property name="maximumSize">
-                                <size>
-                                 <width>67</width>
-                                 <height>30</height>
-                                </size>
-                               </property>
-                               <property name="baseSize">
-                                <size>
-                                 <width>67</width>
-                                 <height>0</height>
-                                </size>
-                               </property>
-                               <property name="font">
-                                <font>
-                                 <pointsize>10</pointsize>
-                                 <weight>75</weight>
-                                 <bold>true</bold>
-                                </font>
-                               </property>
-                               <property name="toolTip">
-                                <string>Take and save one measurement</string>
-                               </property>
-                               <property name="text">
-                                <string />
-                               </property>
-                               <property name="icon">
-                                <iconset resource="grey_icons.qrc">
-                                 <normaloff>:/greys/images/grey_icons/step-and-save.svg</normaloff>:/greys/images/grey_icons/step-and-save.svg</iconset>
-                               </property>
-                              </widget>
-                             </item>
-                            </layout>
-                           </item>
-                           <item>
-                            <spacer name="horizontalSpacer_43">
-                             <property name="orientation">
-                              <enum>Qt::Horizontal</enum>
-                             </property>
-                             <property name="sizeType">
-                              <enum>QSizePolicy::MinimumExpanding</enum>
-                             </property>
-                             <property name="sizeHint" stdset="0">
-                              <size>
-                               <width>20</width>
+                               <width>0</width>
                                <height>20</height>
                               </size>
                              </property>
@@ -13362,6 +12990,9 @@ p, li { white-space: pre-wrap; }
                         <layout class="QHBoxLayout" name="horizontalLayout_40">
                          <item>
                           <layout class="QHBoxLayout" name="horizontalLayout_scope_status_bar">
+                           <property name="spacing">
+                            <number>0</number>
+                           </property>
                            <item>
                             <widget class="QLabel" name="label_StatusBar_min_name">
                              <property name="sizePolicy">
@@ -13716,6 +13347,366 @@ p, li { white-space: pre-wrap; }
         <item row="0" column="0">
          <widget class="QFrame" name="controlWidget_shaded">
           <layout class="QVBoxLayout" name="verticalLayout_153">
+           <item>
+            <widget class="QFrame" name="frame_vcr_control">
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <property name="wpGrad" stdset="0">
+              <bool>false</bool>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_38">
+              <property name="leftMargin">
+               <number>9</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>9</number>
+              </property>
+              <property name="bottomMargin">
+               <number>9</number>
+              </property>
+              <item>
+               <widget class="QPushButton" name="pushButton_scope_capture_stop">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>10</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>30</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>67</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="baseSize">
+                 <size>
+                  <width>67</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string>Cancel current operation</string>
+                </property>
+                <property name="text">
+                 <string />
+                </property>
+                <property name="icon">
+                 <iconset resource="grey_icons.qrc">
+                  <normaloff>:/greys/images/grey_icons/square.svg</normaloff>:/greys/images/grey_icons/square.svg</iconset>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_scope_capture_play">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>10</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>30</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>67</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="baseSize">
+                 <size>
+                  <width>67</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string>Start continuous acquisition</string>
+                </property>
+                <property name="text">
+                 <string />
+                </property>
+                <property name="icon">
+                 <iconset resource="grey_icons.qrc">
+                  <normaloff>:/greys/images/grey_icons/right_triangle.svg</normaloff>:/greys/images/grey_icons/right_triangle.svg</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>14</width>
+                  <height>14</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_scope_capture_pause">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>10</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>30</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>67</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="baseSize">
+                 <size>
+                  <width>67</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string>Pause continuous acquisition</string>
+                </property>
+                <property name="text">
+                 <string />
+                </property>
+                <property name="icon">
+                 <iconset resource="grey_icons.qrc">
+                  <normaloff>:/greys/images/grey_icons/pause.svg</normaloff>:/greys/images/grey_icons/pause.svg</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>30</width>
+                  <height>30</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_scope_capture_save">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>10</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>30</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>67</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="baseSize">
+                 <size>
+                  <width>67</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string>Save on-screen measurement</string>
+                </property>
+                <property name="text">
+                 <string />
+                </property>
+                <property name="icon">
+                 <iconset resource="grey_icons.qrc">
+                  <normaloff>:/greys/images/grey_icons/down_triangle.svg</normaloff>:/greys/images/grey_icons/down_triangle.svg</iconset>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_scope_capture_start_collection">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>10</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>30</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>67</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="baseSize">
+                 <size>
+                  <width>67</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string>Start batch collection</string>
+                </property>
+                <property name="text">
+                 <string />
+                </property>
+                <property name="icon">
+                 <iconset resource="grey_icons.qrc">
+                  <normaloff>:/greys/images/grey_icons/fast-forward.svg</normaloff>:/greys/images/grey_icons/fast-forward.svg</iconset>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_scope_capture_step">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>10</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>30</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>67</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="baseSize">
+                 <size>
+                  <width>67</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string>Take one measurement</string>
+                </property>
+                <property name="text">
+                 <string />
+                </property>
+                <property name="icon">
+                 <iconset resource="grey_icons.qrc">
+                  <normaloff>:/greys/images/grey_icons/step-forward.svg</normaloff>:/greys/images/grey_icons/step-forward.svg</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>20</width>
+                  <height>16</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_scope_capture_step_save">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>10</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>30</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>67</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="baseSize">
+                 <size>
+                  <width>67</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="toolTip">
+                 <string>Take and save one measurement</string>
+                </property>
+                <property name="text">
+                 <string />
+                </property>
+                <property name="icon">
+                 <iconset resource="grey_icons.qrc">
+                  <normaloff>:/greys/images/grey_icons/step-and-save.svg</normaloff>:/greys/images/grey_icons/step-and-save.svg</iconset>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
            <item>
             <widget class="QLabel" name="label_hardware_capture_control">
              <property name="font">
@@ -18171,7 +18162,6 @@ p, li { white-space: pre-wrap; }
   <tabstop>pushButton_setup</tabstop>
   <tabstop>pushButton_lock_axes</tabstop>
   <tabstop>pushButton_zoom_graph</tabstop>
-  <tabstop>pushButton_scope_capture_pause</tabstop>
   <tabstop>pushButton_copy_to_clipboard</tabstop>
   <tabstop>scrollArea_scope_capture_details</tabstop>
   <tabstop>controlWidget_scrollArea</tabstop>
