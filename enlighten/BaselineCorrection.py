@@ -80,6 +80,7 @@ class BaselineCorrection:
         self.multispec       = multispec
         self.page_nav        = page_nav
         self.vignette_roi    = vignette_roi
+        self.curve           = None
 
         self.current_algo_name = BaselineCorrection.DEFAULT_ALGO_NAME
         self.enabled = False
@@ -252,6 +253,9 @@ class BaselineCorrection:
         self.enabled = self.cb_enabled.isChecked()
         if spec is not None:
             spec.app_state.baseline_correction_enabled = self.enabled
+
+        if self.curve is None:
+            return
 
         self.show_curve = self.cb_show_curve.isChecked()
         self.curve.setVisible(self.show_curve)

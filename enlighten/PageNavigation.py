@@ -18,8 +18,9 @@ class PageNavigation:
             combo_view,
             button_details,
             button_logging,
-            button_setup,
-            button_capture,
+            button_raman,
+            button_non_raman,
+            button_expert,
             stack_hardware,
             stack_main,
 
@@ -39,8 +40,9 @@ class PageNavigation:
                                 
         self.button_details     = button_details
         self.button_logging     = button_logging
-        self.button_setup       = button_setup
-        self.button_capture     = button_capture 
+        self.button_raman       = button_raman
+        self.button_non_raman   = button_non_raman
+        self.button_expert      = button_expert
         self.combo_view         = combo_view
         self.stack_hardware     = stack_hardware 
         self.stack_main         = stack_main 
@@ -50,40 +52,32 @@ class PageNavigation:
         self.scroll_area = scroll_area
         self.textEdit_log = textEdit_log
 
-        # all views default to setup except scope
-        self.view_operation_mode = {}
-        for view in list(common.Views):
-            if view == common.Views.SCOPE:
-                self.view_operation_mode[view] = common.OperationModes.CAPTURE
-            else:
-                self.view_operation_mode[view] = common.OperationModes.SETUP
+        self.operation_mode = common.OperationModes.RAMAN
         self.current_view = common.Views.SCOPE
-        self.current_operation_mode = common.OperationModes.CAPTURE
         self.has_used_raman = False
 
-        self.button_setup       .clicked            .connect(self.set_operation_mode_setup)
-        self.button_capture     .clicked            .connect(self.set_operation_mode_capture)
+        self.button_raman       .clicked            .connect(self.set_operation_mode_raman)
+        self.button_non_raman   .clicked            .connect(self.set_operation_mode_non_raman)
+        self.button_expert      .clicked            .connect(self.set_operation_mode_expert)
         self.combo_view         .currentIndexChanged.connect(self.update_view_callback)
         self.button_details     .clicked            .connect(self.set_hardware_details_active)
         self.button_logging     .clicked            .connect(self.set_hardware_logging_active)
 
     def post_init(self):
         self.set_view_scope()
-        self.set_operation_mode_capture()
+        self.sfu.frame_hardware_capture_control_cb.hide()
+        self.sfu.label_hardware_capture_control.hide()
+        self.set_operation_mode_non_raman()
 
     # ##########################################################################
     # activity introspection
     # ##########################################################################
 
-    def doing_scope_capture     (self): return self.get_main_page() == common.Pages.SCOPE_CAPTURE
+    def doing_scope_capture     (self): return self.get_main_page() == common.Pages.SPEC_CAPTURE
     def doing_hardware_capture  (self): return self.get_main_page() == common.Pages.HARDWARE_CAPTURE
+    def doing_settings          (self): return self.current_view == common.Views.SETTINGS
     def doing_hardware          (self): return self.current_view == common.Views.HARDWARE
     def doing_scope             (self): return self.current_view == common.Views.SCOPE
-    def doing_raman             (self): return self.current_view == common.Views.RAMAN
-    def doing_transmission      (self): return self.current_view == common.Views.TRANSMISSION
-    def doing_absorbance        (self): return self.current_view == common.Views.ABSORBANCE
-    def using_transmission      (self): return self.current_view in [ common.Views.TRANSMISSION, common.Views.ABSORBANCE ]
-    def using_reference         (self): return self.current_view in [ common.Views.TRANSMISSION, common.Views.ABSORBANCE ]
 
     def get_current_view(self): 
         return self.current_view
@@ -100,9 +94,6 @@ class PageNavigation:
     def set_view(self, view):
         if view == common.Views.HARDWARE     : return self.set_view_hardware()
         if view == common.Views.SCOPE        : return self.set_view_scope()
-        if view == common.Views.RAMAN        : return self.set_view_raman()
-        if view == common.Views.TRANSMISSION : return self.set_view_transmission()
-        if view == common.Views.ABSORBANCE   : return self.set_view_absorbance()
 
         log.error("set_view: Unsupported view: %s", view)
         self.set_view_scope()
@@ -121,6 +112,7 @@ class PageNavigation:
             self.sfu.label_hardware_capture_control.hide()
 
         if self.doing_hardware()    : return self.set_view_hardware()
+        if self.doing_settings()    : return self.set_view_settings()
         if self.doing_scope()       : return self.set_view_scope()
         if self.doing_raman()       : return self.set_view_raman()
         if self.doing_transmission(): return self.set_view_transmission()
@@ -135,12 +127,18 @@ class PageNavigation:
         else:
             self.set_view_hardware()
 
+    def set_view_settings(self):
+        self.set_view_common(common.Views.SETTINGS)
+        self.set_main_page(common.Pages.SPEC_SETTINGS)
+
     def set_view_hardware(self):
         log.info("setting view to hardware")
         self.set_view_common(common.Views.HARDWARE)
+        self.set_main_page(common.Pages.HARDWARE_SETTINGS)
 
     def set_view_scope(self):
         self.set_view_common(common.Views.SCOPE)
+        self.set_main_page(common.Pages.SPEC_CAPTURE)
         self.graph.set_x_axis(common.Axes.WAVELENGTHS)
         self.graph.set_y_axis(common.Axes.COUNTS)
 
@@ -150,7 +148,6 @@ class PageNavigation:
             self.marquee.error("Raman mode requires an excitation wavelength")
             return self.set_view_scope()
 
-        self.set_view_common(common.Views.RAMAN)
         self.graph.set_x_axis(common.Axes.WAVENUMBERS)
         self.graph.set_y_axis(common.Axes.COUNTS)
 
@@ -172,22 +169,17 @@ class PageNavigation:
                 pass
 
     def set_view_transmission(self):
-        self.set_view_common(common.Views.TRANSMISSION)
         self.graph.set_x_axis(common.Axes.WAVELENGTHS)
         self.graph.set_y_axis(common.Axes.PERCENT)
 
     def set_view_absorbance(self):
-        self.set_view_common(common.Views.ABSORBANCE)
         self.graph.set_x_axis(common.Axes.WAVELENGTHS)
         self.graph.set_y_axis(common.Axes.AU)
 
     def set_view_common(self, view):
         log.debug("set_view_common: view %d", view)
         self.combo_view.setCurrentIndex(view)
-        self.frame_transmission_options.setVisible(self.using_transmission())
-
-        # switch to last-used operation mode for the given view
-        self.set_operation_mode(self.view_operation_mode[view])
+        #self.frame_transmission_options.setVisible(self.using_transmission())
 
         self.graph.reset_axes()
 
@@ -215,10 +207,39 @@ class PageNavigation:
         widget.verticalScrollBar().setValue(widget.verticalScrollBar().minimum())
         
     def set_main_page(self, page):
+        log.debug(f"setting main page to index {page}")
         self.stack_main.setCurrentIndex(page)
 
     def get_main_page(self):
         return self.stack_main.currentIndex()
+
+    def using_reference(self):
+        return False
+
+    def doing_raman(self):
+        return self.operation_mode == common.OperationModes.RAMAN
+    
+    def set_operation_mode_raman(self):
+        log.debug(f"raman mode operation set")
+        self.stylesheets.apply(self.button_raman, "left_rounded_active")
+        self.stylesheets.apply(self.button_non_raman, "center_rounded_inactive")
+        self.stylesheets.apply(self.button_expert, "right_rounded_inactive")
+        self.operation_mode = common.OperationModes.RAMAN
+        self.update_feature_visibility()
+
+    def set_operation_mode_non_raman(self):
+        self.stylesheets.apply(self.button_raman, "left_rounded_inactive")
+        self.stylesheets.apply(self.button_non_raman, "center_rounded_active")
+        self.stylesheets.apply(self.button_expert, "right_rounded_inactive")
+        self.operation_mode = common.OperationModes.NON_RAMAN
+        self.update_feature_visibility()
+
+    def set_operation_mode_expert(self):
+        self.stylesheets.apply(self.button_raman, "left_rounded_inactive")
+        self.stylesheets.apply(self.button_non_raman, "center_rounded_inactive")
+        self.stylesheets.apply(self.button_expert, "right_rounded_active")
+        self.operation_mode = common.OperationModes.EXPERT
+        self.update_feature_visibility()
 
     def set_operation_mode(self, mode):
         if mode == common.OperationModes.SETUP  : return self.set_operation_mode_setup()
@@ -226,21 +247,6 @@ class PageNavigation:
 
         log.error("Unsupported operation mode: %s", mode)
         self.set_operation_mode_capture()
-
-    def set_operation_mode_setup(self):
-        self.set_operation_mode_common(common.OperationModes.SETUP)
-        if self.doing_hardware(): 
-            self.set_main_page(common.Pages.HARDWARE_SETUP)
-        else:
-            self.set_main_page(common.Pages.SCOPE_SETUP)
-
-    def set_operation_mode_capture(self):
-        log.debug("set_operation_mode_capture")
-        self.set_operation_mode_common(common.OperationModes.CAPTURE)
-        if self.doing_hardware():
-            self.set_main_page(common.Pages.HARDWARE_CAPTURE)
-        else:
-            self.set_main_page(common.Pages.SCOPE_CAPTURE)
 
     def set_operation_mode_common(self, mode):
         # cache the newly-set operation mode for the current view, so the
@@ -251,27 +257,6 @@ class PageNavigation:
         # is fire-and-forget, but that's one case when we later want to
         # introspect and know what mode we're supposedly in.
         self.operation_mode = mode
-
-        if self.doing_hardware():
-            # Hardware view, so buttons should be (setup, capture)
-            if mode == common.OperationModes.SETUP:
-                self.stylesheets.apply(self.button_setup, "left_rounded_active")
-                self.stylesheets.apply(self.button_capture, "right_rounded_inactive")
-            elif mode == common.OperationModes.CAPTURE:
-                self.stylesheets.apply(self.button_setup, "left_rounded_inactive")
-                self.stylesheets.apply(self.button_capture, "right_rounded_active")
-            else:
-                log.error("unknown operation mode (hardware view): %s", mode)
-        else:
-            # Scope or other view, so buttons should be (setup, capture)
-            if mode == common.OperationModes.SETUP:
-                self.stylesheets.apply(self.button_setup, "left_rounded_active")
-                self.stylesheets.apply(self.button_capture, "right_rounded_inactive")
-            elif mode == common.OperationModes.CAPTURE:
-                self.stylesheets.apply(self.button_setup, "left_rounded_inactive")
-                self.stylesheets.apply(self.button_capture, "right_rounded_active")
-            else:
-                log.error("unknown operation mode (scopish view): %s", mode)
 
         # All connected spectrometers always share the same view.  It's a
         # valid question if view should then be stored in app_state, since
@@ -284,9 +269,7 @@ class PageNavigation:
 
         if label == "hardware": return common.Views.HARDWARE
         if label == "scope":    return common.Views.SCOPE
-        if label == "raman":    return common.Views.RAMAN
-        if "abs" in label:      return common.Views.ABSORBANCE
-        if "trans"  in label:   return common.Views.TRANSMISSION
+        if label == "settings": return common.Views.SETTINGS
 
         log.error("unknown view %s", label)
         return common.Views.HARDWARE

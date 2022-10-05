@@ -2,6 +2,7 @@ import logging
 import os
 
 from enum import IntEnum
+from pyexpat import ExpatError
 
 log = logging.getLogger(__name__)
 
@@ -17,11 +18,9 @@ VERSION = "3.2.32"
 """ ENLIGHTEN's application version number (checked by scripts/deploy and bootstrap.bat) """
 
 class Views(IntEnum):
-    HARDWARE            = 0
-    SCOPE               = 1
-    RAMAN               = 2 
-    TRANSMISSION        = 3
-    ABSORBANCE          = 4
+    SCOPE               = 0
+    SETTINGS            = 1
+    HARDWARE            = 2
 """
 It's important to keep this list in sync with the comboBox_view items.
 @todo consider auto-populating inside code
@@ -31,9 +30,6 @@ class ViewsHelper:
     pretty_names = {
         Views.HARDWARE:     "Hardware",
         Views.SCOPE:        "Scope",
-        Views.RAMAN:        "Raman",
-        Views.TRANSMISSION: "Transmission",
-        Views.ABSORBANCE:   "Absorbance"
     }
 
     def get_pretty_name(n):
@@ -50,8 +46,9 @@ class ViewsHelper:
         return Views.SCOPE
 
 class OperationModes(IntEnum):
-    SETUP   = 0
-    CAPTURE = 1
+    RAMAN     = 0
+    NON_RAMAN = 1
+    EXPERT    = 2
 
 class OperationModesHelper:
     def parse(s):
@@ -62,10 +59,10 @@ class OperationModesHelper:
         return OperationModes.SETUP
 
 class Pages(IntEnum):
-    HARDWARE_SETUP   = 0
-    HARDWARE_CAPTURE = 1
-    SCOPE_SETUP      = 2
-    SCOPE_CAPTURE    = 3
+    HARDWARE_SETTINGS     = 0
+    HARDWARE_CAPTURE      = 1
+    SPEC_SETTINGS         = 2
+    SPEC_CAPTURE          = 3
 
 class Axes(IntEnum):
     PIXELS      = 0

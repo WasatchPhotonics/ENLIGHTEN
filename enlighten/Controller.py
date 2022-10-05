@@ -238,7 +238,7 @@ class Controller:
         self.graph.rehide_curves()
 
         # immediately show Scope Capture screen
-        self.page_nav.set_main_page(common.Pages.SCOPE_CAPTURE)
+        self.page_nav.set_main_page(common.Pages.SPEC_CAPTURE)
 
         # configure acquisition loop
         self.setup_main_event_loops() # MZ: move to end?
@@ -451,7 +451,7 @@ class Controller:
                             self.laser_temperature,
                             self.battery_feature]:
                 feature.process_reading(spec, recent_read) 
-        if self.page_nav.get_current_view() == common.Viewss.HARDWARE or self.form.ui.checkBox_feature_file_capture.isChecked():
+        if self.page_nav.get_current_view() == common.Views.HARDWARE or self.form.ui.checkBox_feature_file_capture.isChecked():
             self.hard_strip_timer.start(self.form.ui.spinBox_integration_time_ms.value())
             return
         self.hard_strip_timer.start(1000)
@@ -1183,11 +1183,11 @@ class Controller:
         make_shortcut("F5",     self.page_nav.set_view_absorbance)
 
         # operation modes
-        make_shortcut("F6",     self.page_nav.set_operation_mode_setup)
-        make_shortcut("Ctrl+1", self.page_nav.set_operation_mode_setup)
+        #make_shortcut("F6",     self.page_nav.set_operation_mode_setup)
+        #make_shortcut("Ctrl+1", self.page_nav.set_operation_mode_setup)
 
-        make_shortcut("F7",     self.page_nav.set_operation_mode_capture)
-        make_shortcut("Ctrl+2", self.page_nav.set_operation_mode_capture)
+        #make_shortcut("F7",     self.page_nav.set_operation_mode_capture)
+        #make_shortcut("Ctrl+2", self.page_nav.set_operation_mode_capture)
 
         # Dark/Reference
         make_shortcut("F8",     self.dark_feature.toggle)
