@@ -17787,6 +17787,12 @@ p, li { white-space: pre-wrap; }
                     </property>
                     <item>
                      <widget class="QPushButton" name="systemStatusWidget_pushButton_hardware">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                        <horstretch>7</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="minimumSize">
                        <size>
                         <width>1</width>
@@ -17795,7 +17801,7 @@ p, li { white-space: pre-wrap; }
                       </property>
                       <property name="maximumSize">
                        <size>
-                        <width>60</width>
+                        <width>300</width>
                         <height>30</height>
                        </size>
                       </property>
@@ -17813,6 +17819,12 @@ p, li { white-space: pre-wrap; }
                     </item>
                     <item>
                      <widget class="QPushButton" name="systemStatusWidget_pushButton_light">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                        <horstretch>7</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="minimumSize">
                        <size>
                         <width>1</width>
@@ -17821,7 +17833,7 @@ p, li { white-space: pre-wrap; }
                       </property>
                       <property name="maximumSize">
                        <size>
-                        <width>60</width>
+                        <width>300</width>
                         <height>30</height>
                        </size>
                       </property>
@@ -17848,6 +17860,12 @@ p, li { white-space: pre-wrap; }
                     </item>
                     <item>
                      <widget class="QPushButton" name="systemStatusWidget_pushButton_temperature">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                        <horstretch>7</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="minimumSize">
                        <size>
                         <width>1</width>
@@ -17856,7 +17874,7 @@ p, li { white-space: pre-wrap; }
                       </property>
                       <property name="maximumSize">
                        <size>
-                        <width>60</width>
+                        <width>300</width>
                         <height>30</height>
                        </size>
                       </property>
