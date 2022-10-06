@@ -8,6 +8,10 @@ log = logging.getLogger(__name__)
 # This class is not yet fully refactored.
 class PageNavigation:
 
+    EMISSION = 0
+    ABSORBANCE = 1
+    TRANSMISSION = 2
+
     def __init__(self,
             graph,
             marquee,
@@ -55,19 +59,22 @@ class PageNavigation:
         self.operation_mode = common.OperationModes.RAMAN
         self.current_view = common.Views.SCOPE
         self.has_used_raman = False
+        self.current_raman_type = self.sfu.technique_comboBox.currentIndex()
 
-        self.button_raman       .clicked            .connect(self.set_operation_mode_raman)
-        self.button_non_raman   .clicked            .connect(self.set_operation_mode_non_raman)
-        self.button_expert      .clicked            .connect(self.set_operation_mode_expert)
-        self.combo_view         .currentIndexChanged.connect(self.update_view_callback)
-        self.button_details     .clicked            .connect(self.set_hardware_details_active)
-        self.button_logging     .clicked            .connect(self.set_hardware_logging_active)
+        self.button_raman           .clicked            .connect(self.set_operation_mode_raman)
+        self.button_non_raman       .clicked            .connect(self.set_operation_mode_non_raman)
+        self.button_expert          .clicked            .connect(self.set_operation_mode_expert)
+        self.combo_view             .currentIndexChanged.connect(self.update_view_callback)
+        self.sfu.technique_comboBox .currentIndexChanged.connect(self.update_trans_callback)
+        self.button_details         .clicked            .connect(self.set_hardware_details_active)
+        self.button_logging         .clicked            .connect(self.set_hardware_logging_active)
 
     def post_init(self):
         self.set_view_scope()
         self.sfu.frame_hardware_capture_control_cb.hide()
         self.sfu.label_hardware_capture_control.hide()
         self.set_operation_mode_non_raman()
+        self.frame_transmission_options.hide()
 
     # ##########################################################################
     # activity introspection
@@ -98,6 +105,14 @@ class PageNavigation:
         log.error("set_view: Unsupported view: %s", view)
         self.set_view_scope()
 
+    def update_trans_callback(self):
+        self.current_raman_type = self.sfu.technique_comboBox.currentIndex()
+        if self.current_raman_type == self.EMISSION:
+            self.frame_transmission_options.hide()
+        elif self.current_raman_type == self.ABSORBANCE:
+            self.frame_transmission_options.hide()
+        elif self.current_raman_type == self.TRANSMISSION:
+            self.frame_transmission_options.show()
 
     # called whenever the user changes the view via the GUI combobox
     def update_view_callback(self):
@@ -218,6 +233,11 @@ class PageNavigation:
 
     def doing_raman(self):
         return self.operation_mode == common.OperationModes.RAMAN
+
+    def set_technique_absorbance(self):
+        self.set_technique_common(common.Techniques.ABSORBANCE)
+        self.graph.set_x_axis(common.Axes.WAVELENGTHS)
+        self.graph.set_y_axis(common.Axes.AU)
     
     def set_operation_mode_raman(self):
         log.debug(f"raman mode operation set")
@@ -226,6 +246,7 @@ class PageNavigation:
         self.stylesheets.apply(self.button_expert, "right_rounded_inactive")
         self.operation_mode = common.OperationModes.RAMAN
         self.update_feature_visibility()
+        self.display_raman_technqiue()
 
     def set_operation_mode_non_raman(self):
         self.stylesheets.apply(self.button_raman, "left_rounded_inactive")
@@ -233,6 +254,8 @@ class PageNavigation:
         self.stylesheets.apply(self.button_expert, "right_rounded_inactive")
         self.operation_mode = common.OperationModes.NON_RAMAN
         self.update_feature_visibility()
+        self.hide_raman_technqiue()
+        self.frame_transmission_options.hide()
 
     def set_operation_mode_expert(self):
         self.stylesheets.apply(self.button_raman, "left_rounded_inactive")
@@ -240,6 +263,7 @@ class PageNavigation:
         self.stylesheets.apply(self.button_expert, "right_rounded_active")
         self.operation_mode = common.OperationModes.EXPERT
         self.update_feature_visibility()
+        self.display_raman_technqiue()
 
     def set_operation_mode(self, mode):
         if mode == common.OperationModes.SETUP  : return self.set_operation_mode_setup()
@@ -264,9 +288,19 @@ class PageNavigation:
         # consistency and convenience.
         self.multispec.set_app_state("view_name", self.get_current_view_name(), all=True)
 
+    def display_raman_technqiue(self):
+        self.sfu.technqiueWidget_label.show()
+        self.sfu.techniqueWidget_shaded.show()
+
+    def hide_raman_technqiue(self):
+        self.sfu.technqiueWidget_label.hide()
+        self.sfu.techniqueWidget_shaded.hide()
+
     def determine_current_view(self):
         label = self.combo_view.currentText().lower()
 
+        if label == "scope" and self.doing_raman() and self.current_raman_type == self.ABSORBANCE:
+            return common.Views.ABSORBANCE
         if label == "hardware": return common.Views.HARDWARE
         if label == "scope":    return common.Views.SCOPE
         if label == "settings": return common.Views.SETTINGS

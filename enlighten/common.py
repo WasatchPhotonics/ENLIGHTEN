@@ -21,6 +21,7 @@ class Views(IntEnum):
     SCOPE               = 0
     SETTINGS            = 1
     HARDWARE            = 2
+    ABSORBANCE          = 3
 """
 It's important to keep this list in sync with the comboBox_view items.
 @todo consider auto-populating inside code
