@@ -1184,10 +1184,12 @@ class Controller:
 
         # operation modes
         #make_shortcut("F6",     self.page_nav.set_operation_mode_setup)
-        #make_shortcut("Ctrl+1", self.page_nav.set_operation_mode_setup)
+        make_shortcut("Ctrl+1", self.page_nav.set_operation_mode_raman)
 
         #make_shortcut("F7",     self.page_nav.set_operation_mode_capture)
-        #make_shortcut("Ctrl+2", self.page_nav.set_operation_mode_capture)
+        make_shortcut("Ctrl+2", self.page_nav.set_operation_mode_non_raman)
+
+        make_shortcut("Ctrl+3", self.page_nav.set_operation_mode_expert)
 
         # Dark/Reference
         make_shortcut("F8",     self.dark_feature.toggle)
