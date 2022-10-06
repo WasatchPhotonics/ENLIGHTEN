@@ -271,7 +271,7 @@ class Controller:
         self.other_devices = []
 
         # init is done so display the GUI and destory the splash screen
-        self.form.setGeometry(0, 0, 755, 559)
+        self.form.setGeometry(0, 0, 800, 600)
         self.form.show()
 
         if headless:

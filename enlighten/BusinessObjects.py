@@ -372,8 +372,6 @@ class BusinessObjects:
             save_options                           = ctl.save_options,
             stylesheets                            = ctl.stylesheets,
 
-            button_details                         = sfu.pushButton_hardware_tab_details,
-            button_logging                         = sfu.pushButton_hardware_tab_logging,
             button_raman                           = sfu.pushButton_raman,
             button_non_raman                       = sfu.pushButton_non_raman,
             button_expert                          = sfu.pushButton_expert,
@@ -424,6 +422,7 @@ class BusinessObjects:
             parent                      = ctl.form,
 
             button_login                = sfu.pushButton_admin_login,
+            combo_views                 = sfu.comboBox_view,
 
             oem_widgets                 = [ sfu.pushButton_write_eeprom, sfu.pushButton_importEEPROM, sfu.pushButton_exportEEPROM, sfu.pushButton_restore_eeprom, sfu.pushButton_reset_fpga ],
             advanced_widgets            = [ sfu.doubleSpinBox_lightSourceWidget_excitation_nm,

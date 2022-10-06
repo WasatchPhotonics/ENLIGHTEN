@@ -16,12 +16,17 @@ application.
 VERSION = "3.2.32"
 
 """ ENLIGHTEN's application version number (checked by scripts/deploy and bootstrap.bat) """
+class Techniques(IntEnum):
+    EMISSION            = 0 
+    ABSORBANCE          = 1
+    TRANSMISSION        = 2
 
 class Views(IntEnum):
     SCOPE               = 0
     SETTINGS            = 1
     HARDWARE            = 2
-    ABSORBANCE          = 3
+    LOG                 = 3
+    FACTORY             = 4
 """
 It's important to keep this list in sync with the comboBox_view items.
 @todo consider auto-populating inside code

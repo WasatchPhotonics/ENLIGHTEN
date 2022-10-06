@@ -26,6 +26,7 @@ from .PluginWorker      import PluginWorker
 from .TableModel        import TableModel
 
 from .. import common
+from ..ScrollStealFilter import ScrollStealFilter
 
 from enlighten.Graph    import Graph
 
@@ -242,6 +243,7 @@ class PluginController:
 
         # events
         log.debug("registering observer on MeasurementFactory")
+        self.combo_module.installEventFilter(ScrollStealFilter(self.combo_module))
         self.measurement_factory.register_observer(self.events_factory_callback)
         self.measurements.register_observer("export", self.export_event_callback)
 
