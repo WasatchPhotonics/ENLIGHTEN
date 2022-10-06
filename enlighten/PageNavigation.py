@@ -1,6 +1,7 @@
 import logging
 
 from . import common
+from .ScrollStealFilter import ScrollStealFilter
 
 log = logging.getLogger(__name__)
 
@@ -43,6 +44,7 @@ class PageNavigation:
         self.stack_hardware     = stack_hardware 
         self.stack_main         = stack_main 
         self.combo_technique    = self.sfu.technique_comboBox
+        self.combo_technique.installEventFilter(ScrollStealFilter(self.combo_technique))
 
         self.frame_transmission_options = frame_transmission_options 
         self.update_feature_visibility = update_feature_visibility
