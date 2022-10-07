@@ -98,9 +98,13 @@ Example (both starting from ~/work/code/ENLIGHTEN):
 
 Raspberry Pi have a unique ability to power-cycle the entire internal USB hub, 
 forcing re-enumeration on all devices, and power-cycling those which are powered
-via USB.  This is the command to do so:
+via USB.  This can be done with commands like:
 
-    $ sudo ( uhubctl -l 2 -a 0 ; sleep 2 ; uhubctl -l 2 -a 1 )
+    $ sudo uhubctl -l 2 -a 0 && sleep 2 && uhubctl -l 2 -a 1 
+
+or
+
+    $ sudo uhubctl --action 2 --location 2 --repeat 2 --delay 5 --wait 1000
 
 # Deprecated
 
