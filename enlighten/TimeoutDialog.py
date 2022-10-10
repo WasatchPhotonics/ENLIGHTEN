@@ -6,7 +6,7 @@
 
 from fileinput import close
 import PySide2
-from PySide2.QtWidgets import QMessageBox, QMessageBox
+from PySide2.QtWidgets import QMessageBox
 
 class TimeoutDialog(QMessageBox):
     def __init__(self, *args):
