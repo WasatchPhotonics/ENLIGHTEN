@@ -502,7 +502,7 @@ class RamanShiftCorrectionFeature(object):
             shift_cm = peak.wavenumber - measured_cm
 
             # was this match "good enough"?
-            if shift_cm > self.MAX_WAVENUMBER_SHIFT:
+            if abs(shift_cm) > self.MAX_WAVENUMBER_SHIFT:
 
                 # it's okay to fail to match any one ASTM peak...
                 log.debug("failed to match ASTM peak %.2f to any declared peak in the measurement")
