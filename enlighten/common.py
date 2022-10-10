@@ -2,7 +2,6 @@ import logging
 import os
 
 from enum import IntEnum
-from pyexpat import ExpatError
 
 log = logging.getLogger(__name__)
 
