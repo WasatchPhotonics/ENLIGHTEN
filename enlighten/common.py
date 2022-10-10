@@ -5,12 +5,6 @@ from enum import IntEnum
 
 log = logging.getLogger(__name__)
 
-# needed to allow plugins to access tensorflow
-try:
-    import tensorflow
-except:
-    log.warning(f"tensorflow not found. skipping. some plugins may not work")
-
 """
 Namespace containing various enums and constants used elsewhere within the 
 application.
@@ -18,7 +12,7 @@ application.
 @todo consider making "common" a package (directory), and each of these classes
       can be modules (files) within it
 """
-VERSION = "3.2.31"
+VERSION = "3.2.33"
 
 """ ENLIGHTEN's application version number (checked by scripts/deploy and bootstrap.bat) """
 

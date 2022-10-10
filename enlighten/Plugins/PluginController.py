@@ -16,6 +16,7 @@ import importlib.util
 from time import sleep
 from queue import Queue
 from PySide2 import QtGui, QtWidgets, QtCore
+from PySide2.QtWidgets import QMessageBox, QCheckBox
 from PySide2.QtCore import Qt
 
 from .EnlightenApplicationInfoReal import EnlightenApplicationInfoReal
@@ -364,6 +365,16 @@ class PluginController:
             return
 
         connected = self.cb_connected.isChecked()
+
+        warn_suppress = self.config.get("advanced_options", "suppress_plugin_warning", default=False)
+        if not warn_suppress and connected:
+            plugin_ok, suppress = self.display_plugin_warning()
+            if not plugin_ok:
+                self.cb_connected.setChecked(False)
+                return
+            if suppress:
+                self.config.set("advanced_options", "suppress_plugin_warning", True)
+
         if connected:
             log.debug("we just connected")
 
@@ -1255,3 +1266,16 @@ class PluginController:
             log.error(f"While trying to clear table widget ran into error", exc_info=1)
 
         self.plugin_curves = {}
+
+    def display_plugin_warning(self):
+        suppress_cb = QCheckBox("Don't show again.", self.cb_connected)
+        warn_msg = QMessageBox(self.cb_connected)
+        warn_msg.setWindowTitle("Plugin Warning")
+        warn_msg.setText("Plugins allow additional code to run. Verify that you trust the plugin and it is safe before running it.")
+        warn_msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        warn_msg.setIcon(QMessageBox.Warning)
+        warn_msg.setCheckBox(suppress_cb)
+        clk_btn = warn_msg.exec_()
+        plugin_ok = (clk_btn == QMessageBox.Ok)
+        suppress_checked = warn_msg.checkBox().isChecked()
+        return (plugin_ok, suppress_checked)

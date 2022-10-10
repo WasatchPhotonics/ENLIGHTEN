@@ -2,6 +2,10 @@
 
 # 3.2 Open-Source
 
+- 2022-09-28 3.2.33
+    - change tensorflow to hidden import to speed up start
+- 2022-09-27 3.2.32
+    - add warning dialogue for plugins
 - 2022-09-22 3.2.31
     - add graph grid button and roi button to tool bar
 - 2022-09-19 3.2.30
