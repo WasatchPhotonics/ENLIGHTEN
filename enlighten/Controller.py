@@ -1179,8 +1179,8 @@ class Controller:
         make_shortcut("F1",     self.page_nav.set_view_hardware)
         make_shortcut("F2",     self.page_nav.set_view_scope)
         make_shortcut("F3",     self.page_nav.set_view_raman)
-        make_shortcut("F4",     self.page_nav.set_view_transmission)
-        make_shortcut("F5",     self.page_nav.set_view_absorbance)
+        make_shortcut("F4",     self.page_nav.set_technique_transmission)
+        make_shortcut("F5",     self.page_nav.set_technique_absorbance)
 
         # operation modes
         #make_shortcut("F6",     self.page_nav.set_operation_mode_setup)

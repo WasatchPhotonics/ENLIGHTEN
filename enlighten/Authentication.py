@@ -66,7 +66,7 @@ class Authentication(object):
             parent,
 
             button_login,
-            combo_views,
+            combo_view,
 
             oem_widgets         = None,
             advanced_widgets    = None,
@@ -77,7 +77,7 @@ class Authentication(object):
         self.marquee                            = marquee
 
         self.button_login                       = button_login
-        self.combo_views                        = combo_views
+        self.combo_view                        = combo_view
 
         self.oem_widgets                        = oem_widgets
         self.advanced_widgets                   = advanced_widgets
@@ -124,10 +124,10 @@ class Authentication(object):
         self.gui.colorize_button(self.button_login, self.level != self.BASIC)
         self.update_widgets()
         if self.level > self.BASIC:
-            self.combo_views.addItem("Factory")
+            self.combo_view.addItem("Factory")
         else:
             try:
-                self.combo_views.removeItem(self.combo_views.findText("Factory"))
+                self.combo_view.removeItem(self.combo_view.findText("Factory"))
             except:
                 log.error("Couldn't remove factory screen on deauth")
 

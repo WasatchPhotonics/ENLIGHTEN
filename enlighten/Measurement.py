@@ -254,7 +254,7 @@ class Measurement(object):
         self.spec                     = None
         self.thumbnail_widget         = None
         self.timestamp                = None
-        self.view                     = None
+        self.technique                = None
 
     ##
     # There are three valid instantiation patterns:
@@ -714,7 +714,7 @@ class Measurement(object):
         if field == "blank":                     return self.settings.eeprom.serial_number # for Multispec
         if field == "note":                      return self.save_options.note() if self.save_options is not None else ""
         if field == "temperature":               return self.processed_reading.reading.detector_temperature_degC if self.processed_reading.reading is not None else -99
-        if field == "view":                      return self.view
+        if field == "technique":                 return self.technique
         if field == "baseline correction algo":  return self.baseline_correction_algo
         if field == "ccd c0":                    return wavecal[0]
         if field == "ccd c1":                    return wavecal[1]

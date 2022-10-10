@@ -9,6 +9,17 @@ log = logging.getLogger(__name__)
 # This class is not yet fully refactored.
 class PageNavigation:
 
+    technique_callbacks = {
+        common.Techniques.NONE: lambda self, tech: self.set_technique_common(common.Techniques.NONE),
+        common.Techniques.EMISSION: lambda self, tech: self.set_technique_common(common.Techniques.EMISSION),
+        common.Techniques.RAMAN: lambda self, tech: self.set_technique_common(common.Techniques.RAMAN),
+        common.Techniques.REFLECTANCE_TRANSMISSION: lambda self, tech: self.set_technique_transmission(),
+        common.Techniques.ABSORBANCE: lambda self, tech: self.set_technique_absorbance(),
+        common.Techniques.COLOR: lambda self, tech: self.set_technique_common(common.Techniques.COLOR),
+        common.Techniques.FLUORESCENCE: lambda self, tech: self.set_technique_common(common.Techniques.FLUORESCENCE),
+        common.Techniques.RELATIVE_IRRADIANCE: lambda self, tech: self.set_technique_common(common.Techniques.RELATIVE_IRRADIANCE)
+        }
+
     def __init__(self,
             graph,
             marquee,
@@ -100,15 +111,14 @@ class PageNavigation:
         self.set_view_scope()
 
     def update_technique_callback(self):
-        self.current_technique = self.sfu.technique_comboBox.currentIndex()
-        if self.current_technique == common.Techniques.EMISSION:
-            self.frame_transmission_options.hide()
-        elif self.current_technique == common.Techniques.ABSORBANCE:
-            self.frame_transmission_options.hide()
-            self.set_technique_absorbance()
-        elif self.current_technique == common.Techniques.TRANSMISSION:
-            self.frame_transmission_options.show()
-            self.set_technique_transmission
+        log.debug(f"technique callback triggered")
+        self.current_technique = self.determine_current_technique()
+        log.debug(f"setting to technique {self.current_technique}")
+        callback = self.technique_callbacks.get(self.current_technique, None)
+        if callback is not None:
+            callback(self, self.current_technique)
+        else:
+            log.error("Determined technique was invalid for callback? Shouldn't be here.")
 
     def set_technique_raman(self):
         spec = self.multispec.current_spectrometer()
@@ -116,7 +126,7 @@ class PageNavigation:
             self.marquee.error("Raman mode requires an excitation wavelength")
             return self.set_operation_mode_non_raman()
 
-        self.set_technique_common(common.Techniques.EMISSION)
+        self.set_technique_common(common.Techniques.RAMAN)
         self.graph.set_x_axis(common.Axes.WAVENUMBERS)
         self.graph.set_y_axis(common.Axes.COUNTS)
 
@@ -155,8 +165,6 @@ class PageNavigation:
         if self.doing_scope()           : return self.set_view_scope()
         if self.doing_raman()           : return self.set_view_raman()
         if self.doing_log()             : return self.set_view_logging()
-        if self.doing_transmission()    : return self.set_view_transmission()
-        if self.doing_absorbance()      : return self.set_view_absorbance()
         
         log.error("update_view_callback: unknown view: %s", self.current_view)
         self.set_view_scope()
@@ -202,6 +210,7 @@ class PageNavigation:
 
         self.graph.set_x_axis(common.Axes.WAVENUMBERS)
         self.graph.set_y_axis(common.Axes.COUNTS)
+        self.set_technique_common(common.Techniques.RAMAN)
 
         # Per Dieter, Raman mode should default to APLS. Note that we don't
         # currently track settings (baseline correction, integration time, laser
@@ -220,13 +229,15 @@ class PageNavigation:
                 # self.baseline_correction.reset(enable=True)
                 pass
 
-    def set_view_transmission(self):
+    def set_technique_transmission(self):
         self.graph.set_x_axis(common.Axes.WAVELENGTHS)
         self.graph.set_y_axis(common.Axes.PERCENT)
+        self.set_technique_common(common.Techniques.REFLECTANCE_TRANSMISSION)
 
-    def set_view_absorbance(self):
+    def set_technique_absorbance(self):
         self.graph.set_x_axis(common.Axes.WAVELENGTHS)
         self.graph.set_y_axis(common.Axes.AU)
+        self.set_technique_common(common.Techniques.ABSORBANCE)
 
     def set_view_common(self, view):
         log.debug("set_view_common: view %d", view)
@@ -264,10 +275,10 @@ class PageNavigation:
     def get_main_page(self):
         return self.stack_main.currentIndex()
 
-    def doing_transmission      (self): return self.current_technique == common.Techniques.TRANSMISSION
+    def doing_transmission      (self): return self.current_technique == common.Techniques.REFLECTANCE_TRANSMISSION
     def doing_absorbance        (self): return self.current_technique == common.Techniques.ABSORBANCE
-    def using_transmission      (self): return self.current_technique in [ common.Techniques.TRANSMISSION, common.Techniques.ABSORBANCE ]
-    def using_reference         (self): return self.current_technique in [ common.Techniques.TRANSMISSION, common.Techniques.ABSORBANCE ]
+    def using_transmission      (self): return self.current_technique in [ common.Techniques.REFLECTANCE_TRANSMISSION, common.Techniques.ABSORBANCE ]
+    def using_reference         (self): return self.current_technique in [ common.Techniques.REFLECTANCE_TRANSMISSION, common.Techniques.ABSORBANCE ]
 
     def doing_raman(self):
         return self.operation_mode == common.OperationModes.RAMAN
@@ -287,10 +298,17 @@ class PageNavigation:
 
     def set_technique_common(self, technique):
         log.debug("set_technique_common: technique %d", technique)
-        self.combo_technique.setCurrentIndex(technique)
         self.frame_transmission_options.setVisible(self.using_transmission())
 
         self.graph.reset_axes()
+
+        self.current_technique = technique
+        technique_name = common.TechniquesHelper.get_pretty_name(self.current_technique)
+        # All connected spectrometers always share the same view.  It's a
+        # valid question if view should then be stored in app_state, since
+        # it's not really a per-spectrometer attribute, but adding for
+        # consistency and convenience.
+        self.multispec.set_app_state("technique_name", technique_name, all=True)
 
         # Business Objects
         self.update_feature_visibility()
@@ -321,13 +339,6 @@ class PageNavigation:
         self.update_feature_visibility()
         self.display_non_raman_technqiue()
 
-    def set_operation_mode(self, mode):
-        if mode == common.OperationModes.SETUP  : return self.set_operation_mode_setup()
-        if mode == common.OperationModes.CAPTURE: return self.set_operation_mode_capture()
-
-        log.error("Unsupported operation mode: %s", mode)
-        self.set_operation_mode_capture()
-
     def set_operation_mode_common(self, mode):
         # cache the newly-set operation mode for the current view, so the
         # next time we switch back to this view we'll restore this mode
@@ -338,19 +349,23 @@ class PageNavigation:
         # introspect and know what mode we're supposedly in.
         self.operation_mode = mode
 
-        # All connected spectrometers always share the same view.  It's a
-        # valid question if view should then be stored in app_state, since
-        # it's not really a per-spectrometer attribute, but adding for
-        # consistency and convenience.
-        self.multispec.set_app_state("view_name", self.get_current_view_name(), all=True)
-
     def display_non_raman_technqiue(self):
-        self.sfu.technqiueWidget_label.show()
+        self.sfu.techniqueWidget_label.show()
         self.sfu.techniqueWidget_shaded.show()
 
     def hide_non_raman_technqiue(self):
-        self.sfu.technqiueWidget_label.hide()
+        self.sfu.techniqueWidget_label.hide()
         self.sfu.techniqueWidget_shaded.hide()
+
+    def determine_current_technique(self):
+        label = self.combo_technique.currentText().lower()
+        if self.operation_mode == common.OperationModes.RAMAN:
+            return common.Techniques.RAMAN
+        else:
+            if label == "emission": return common.Techniques.EMISSION
+            if label == "absorbance": return common.Techniques.ABSORBANCE
+            if label == "trans/refl": return common.Techniques.REFLECTANCE_TRANSMISSION
+        return common.Techniques.NONE
 
     def determine_current_view(self):
         label = self.combo_view.currentText().lower()

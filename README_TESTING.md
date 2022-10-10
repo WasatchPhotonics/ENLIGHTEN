@@ -28,12 +28,12 @@ To run only the release tests use ```pytest .\test -m release```
     - averaging works
     - TEC changes are reflected in Hardware Capture
     - save CSV
-- Raman View
+- Raman Mode
     - dark works
     - shows peaks
-- Reflectance/Transmission View
+- Reflectance/Transmission Technique
     - reference works
-- Absorbance View
+- Absorbance Technique
     - reference works
 
 All of the above with no Traceback reported in log.

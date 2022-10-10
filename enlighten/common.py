@@ -16,9 +16,29 @@ VERSION = "3.2.32"
 
 """ ENLIGHTEN's application version number (checked by scripts/deploy and bootstrap.bat) """
 class Techniques(IntEnum):
-    EMISSION            = 0 
-    ABSORBANCE          = 1
-    TRANSMISSION        = 2
+    NONE                     = 0
+    EMISSION                 = 1
+    RAMAN                    = 2
+    REFLECTANCE_TRANSMISSION = 3
+    ABSORBANCE               = 4
+    COLOR                    = 5
+    FLUORESCENCE             = 6
+    RELATIVE_IRRADIANCE      = 7
+
+class TechniquesHelper:
+    pretty_names = {
+        Techniques.NONE: "None",
+        Techniques.EMISSION: "Emission",
+        Techniques.RAMAN: "Raman",
+        Techniques.REFLECTANCE_TRANSMISSION: "Reflectance/Transmission",
+        Techniques.ABSORBANCE: "Absorbance",
+        Techniques.COLOR: "Color",
+        Techniques.FLUORESCENCE: "Fluorescence",
+        Techniques.RELATIVE_IRRADIANCE: "Relative Irradiance",
+        }
+
+    def get_pretty_name(n):
+        return TechniquesHelper.pretty_names.get(n, "UNKNOWN")
 
 class Views(IntEnum):
     SCOPE               = 0

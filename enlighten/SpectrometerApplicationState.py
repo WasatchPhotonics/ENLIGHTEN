@@ -34,7 +34,7 @@ class SpectrometerApplicationState(object):
         self.waterfall = []
         self.missing_acquisition_timeout = None
         self.pending_disconnect = False
-        self.view_name = None
+        self.technique_name = None
         self.baseline_correction_algo = None
         self.baseline_correction_enabled = False # MZ: is this used? should it be?
         self.spec_timeout_prompt_shown = False
@@ -65,7 +65,7 @@ class SpectrometerApplicationState(object):
         log.info("  Secondary ADC Fast:         %s", self.secondary_adc_data_fast)
         log.info("  Secondary ADC Medium:       %s", self.secondary_adc_data_medium)
         log.info("  Secondary ADC Slow:         %s", self.secondary_adc_data_slow)
-        log.info("  View Name:                  %s", self.view_name)
+        log.info("  Technique Name:             %s", self.technique_name)
         log.info("  Baseline Correction Algo:   %s", self.baseline_correction_algo)
         log.info("  Baseline Correction Enabled:%s", self.baseline_correction_enabled)
         if self.processed_reading is not None:
