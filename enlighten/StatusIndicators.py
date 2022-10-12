@@ -123,7 +123,8 @@ class StatusIndicators:
             # Light Source (Lamp, Laser etc)
             ####################################################################
 
-            if settings.eeprom.has_laser:
+            all_specs = self.multispec.get_spectrometers()
+            if settings.eeprom.has_laser and len(all_specs) <= 1:
                 
                 if reading is None:
                     if settings.state.laser_enabled:
@@ -143,22 +144,20 @@ class StatusIndicators:
                     else:
                         lamp = "disconnected"
                         lamp_tt = f"laser disarmed (cannot fire)"
-
-            # default behavior should be to do the normal processing
-            # Multispec case here checks all and will overwrite if a laser is on
-            all_specs = self.multispec.get_spectrometers()
-            specs_lasers_on = [s.settings.state.laser_enabled for s in all_specs]
-            if any(specs_lasers_on):
-                lamp = "warning"
-                lamp_tt = "laser is firing"
-
-            elif settings.eeprom.gen15:
+            elif settings.eeprom.gen15 and len(all_specs) <= 1:
                 if settings.state.laser_enabled:
                     lamp = "warning"
                     lamp_tt = "lamp enabled"
                 else:
                     lamp = "connected"
                     lamp_tt = "lamp disabled"
+            else:
+                # default behavior should be to do the normal processing
+                # Multispec case here checks all and will overwrite if a laser is on
+                specs_lasers_on = [s.settings.state.laser_enabled for s in all_specs]
+                if any(specs_lasers_on):
+                    lamp = "warning"
+                    lamp_tt = "laser is firing"
 
             ####################################################################
             # Detector Temperature
