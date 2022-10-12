@@ -2451,6 +2451,9 @@ class Controller:
         else:
             self.form.ui.pushButton_roi_toggle.setStyleSheet(self.default_roi_btn)
 
+    def get_roi_enabled(self):
+        return self.roi_enabled
+
     def display_response_error(self, spec: Spectrometer, response_error: str) -> bool:
         """
         @returns True if:

@@ -413,6 +413,7 @@ class BusinessObjects:
             label_count                 = sfu.label_session_count,
             layout                      = sfu.verticalLayout_scope_capture_save,
             marquee                     = ctl.marquee,
+            get_roi_enabled             = ctl.get_roi_enabled,
             reprocess_callback          = ctl.reprocess)
         ctl.graph.measurements = ctl.measurements
 
