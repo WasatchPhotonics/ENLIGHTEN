@@ -689,7 +689,7 @@ class Measurements(object):
                     spec = m.spec
                     if spec is not None:
                         roi = spec.settings.eeprom.get_horizontal_roi()
-                        if roi is not None:
+                        if roi is not None and self.get_roi_enabled():
                             if roi.contains(pixel):
                                 pixel -= roi.start              # YOU ARE HERE...I think this is Allie's bug
                                 a = pr.processed_vignetted
@@ -756,7 +756,7 @@ class Measurements(object):
             for pixel in range(max_pixels):
                 if spectrometer_count == 1:
                     roi = settingss[0].eeprom.get_horizontal_roi()
-                    if roi is not None and not roi.contains(pixel):
+                    if roi is not None and not roi.contains(pixel) and self.get_roi_enabled():
                         continue
 
                 row = []
