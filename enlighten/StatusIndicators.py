@@ -144,6 +144,14 @@ class StatusIndicators:
                         lamp = "disconnected"
                         lamp_tt = f"laser disarmed (cannot fire)"
 
+            # default behavior should be to do the normal processing
+            # Multispec case here checks all and will overwrite if a laser is on
+            all_specs = self.multispec.get_spectrometers()
+            specs_lasers_on = [s.settings.state.laser_enabled for s in all_specs]
+            if any(specs_lasers_on):
+                lamp = "warning"
+                lamp_tt = "laser is firing"
+
             elif settings.eeprom.gen15:
                 if settings.state.laser_enabled:
                     lamp = "warning"

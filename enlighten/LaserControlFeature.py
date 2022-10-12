@@ -185,6 +185,10 @@ class LaserControlFeature:
     def refresh_laser_button(self):
         spec = self.multispec.current_spectrometer()
         enabled = spec.settings.state.laser_enabled if spec else False
+        if enabled:
+            self.button_toggle.setText("Laser Off")
+        else:
+            self.button_toggle.setText("Laser On")
         self.gui.colorize_button(self.button_toggle, enabled)
 
     def configure_laser_power_controls_percent(self):

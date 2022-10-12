@@ -14955,7 +14955,7 @@ p, li { white-space: pre-wrap; }
                            <string>Fire laser (ctrl-L)</string>
                           </property>
                           <property name="text">
-                           <string>Toggle Laser</string>
+                           <string>Laser On</string>
                           </property>
                           <property name="icon">
                            <iconset resource="grey_icons.qrc">
