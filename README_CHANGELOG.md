@@ -2,6 +2,8 @@
 
 # 3.2 Open-Source
 
+- 2022-10-10 3.2.34
+    - fix Raman Shift Correction
 - 2022-09-28 3.2.33
     - change tensorflow to hidden import to speed up start
 - 2022-10-03 3.2.32
