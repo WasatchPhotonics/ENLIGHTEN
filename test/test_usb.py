@@ -68,6 +68,7 @@ class TestUSB:
     @pytest.mark.release
     def test_set_int_time(self,app):
         sim_spec = create_sim_spec(app,"WP-00887","WP-00887-mock.json")
+        log.info(f"test_set_int_time: sim_spec = {sim_spec}")
         sim_spec_obj = app.controller.multispec.get_spectrometer(sim_spec)
         #log.info(f"{sim_spec}")
         #sim_spec = create_sim_spec(app,"SiG_785","EEPROM-EM-9c65d19f4c.json")

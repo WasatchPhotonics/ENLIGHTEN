@@ -31,22 +31,29 @@ def fixture():
     enlighten_app.run()
     yield enlighten_app
 
+# returns DeviceID
 def create_sim_spec(app,name,eeprom,eeprom_overrides=None,spectra_option=None):
+    log.info("create_sim_spec: instantiating MockUSBDevice")
     sim_spec = MockUSBDevice(name,eeprom,eeprom_overrides,spectra_option)
+    log.info(f"create_sim_spec: back from instantiating MockUSBDevice...sim_spec = {sim_spec}")
     if app.controller.multispec.is_disconnecting(sim_spec):
         app.controller.multispec.set_disconnecting(sim_spec, False)
     app.controller.connect_new(sim_spec)
     res = False
     @wait_until(timeout=5000)
     def check_connect():
+        log.info(f"create_sim_spec.check_connect: calling check_ready_initialize")
         app.controller.check_ready_initialize()
+        log.info(f"create_sim_spec.check_connect: calling Multispec.get_spectrometer({sim_spec})")
         spec = app.controller.multispec.get_spectrometer(sim_spec)
+        log.info(f"create_sim_spec.check_connect: Multispec.get_spectrometer returned spec = {spec}")
         if spec:
             return spec.device.device_id
     res = check_connect() # res = wait_until(timeout=9000)(check_connect)()
     spec_obj = app.controller.multispec.get_spectrometer(sim_spec)
     app.controller.attempt_reading(spec_obj)
     app.controller.attempt_reading(spec_obj)
+    log.info(f"create_sim_spec: returning result (device_id): {res}")
     return res
 
 def disconnect_spec(app,spec):

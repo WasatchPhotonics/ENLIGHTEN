@@ -405,6 +405,11 @@ class Multispec(object):
         return False
 
     def get_spectrometer(self, device_id) -> Spectrometer:
+        log.debug(f"get_spectrometer: asked to get device_id {device_id}")
+        log.debug(f"get_spectrometer: currently have these spectrometer keys:")
+        for k in sorted(self.spectrometers, key=str):
+            log.debug(f"  {k}")
+
         return self.spectrometers.get(device_id,None)
 
     def is_autocolor(self) -> bool:
