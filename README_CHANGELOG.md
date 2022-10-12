@@ -2,6 +2,10 @@
 
 # 3.2 Open-Source
 
+- 2022-10-12 3.2.35
+    - Change laser toggle button to on/off
+    - Change status indicator for lamp to be warning when any laser is on
+    - Remove laser units combo box
 - 2022-10-10 3.2.34
     - fix Raman Shift Correction
 - 2022-09-28 3.2.33
