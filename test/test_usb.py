@@ -74,7 +74,26 @@ class TestUSB:
         #sim_spec = create_sim_spec(app,"SiG_785","EEPROM-EM-9c65d19f4c.json")
         @wait_until(timeout=3000)
         def check():
-            value = sim_spec_obj.device.device_id.int_time
+            # MZ: Question: should the enlighten.Spectrometer object returned by
+            # enlighten.Multispec.get_spectrometer() actually provide access to 
+            # the MockUSBDevice?  I kind of feel like no.  Not strongly, but I'd
+            # rather this test operate at the level of enlighten.Spectrometer.state.
+            #
+            # Yes this would be a better / stronger test if it were actually checking
+            # the MockUSBDevice.int_time parameter.  The question is whether ENLIGHTEN
+            # actually has access to that object, which is instantiated within by
+            # FeatureIdentificationDevice's ctor inside WrapperWorker's child thread.
+            #
+            # Historically, that object would not have been passed back through the
+            # multi-process queues.  I'm less clear on whether ENLIGHTEN has access
+            # to it now, in the multi-threaded architecture.
+            #
+            # This would benefit from an Entity-Relationship diagram :-)
+            #
+            # value = sim_spec_obj.device.device_id.int_time
+            value = sim_spec_obj.settings.state.integration_time_ms
+
+            log.info(f"test_set_int_time.check: value = {value}")
             if init_int+1 == value:
                 return value
         if sim_spec:
