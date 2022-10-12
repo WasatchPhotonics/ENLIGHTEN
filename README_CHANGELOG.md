@@ -2,6 +2,8 @@
 
 # 3.2 Open-Source
 
+- 2022-10-12 3.2.36
+    - merged pluginWarning / ROI fixes
 - 2022-10-12 3.2.35
     - Change laser toggle button to on/off
     - Change status indicator for lamp to be warning when any laser is on
