@@ -109,6 +109,11 @@ class LaserControlFeature:
 
         settings = spec.settings
 
+        if spec.settings.is_mml() and spec.settings.eeprom.has_laser_power_calibration():
+            self.combo_unit.setCurrentIndex(1)
+        else:
+            self.combo_unit.setCurrentIndex(0)
+
         has_calibration = settings.eeprom.has_laser_power_calibration()
         log.debug("update_visibility: laser power calibration %s", has_calibration)
 
