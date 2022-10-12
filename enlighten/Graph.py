@@ -199,7 +199,7 @@ class Graph(object):
         self.plot.setLabel(text=text+"<br>", axis="bottom")
         self.x_axis_locked = locked
 
-    ## when the View changes, update axis as appropriate 
+    ## when the Mode changes, update axis as appropriate 
     def set_x_axis(self, enum):
         log.debug("set_x_axis: %s", enum)
         old_axis = self.current_x_axis
@@ -276,7 +276,7 @@ class Graph(object):
 
     ##
     # Only sets the "intention" to use the specified axis label; in reference-
-    # based views, don't actually switch to the target axis until processing
+    # based modes, don't actually switch to the target axis until processing
     # requirements are met (i.e., a reference has been taken).
     def set_y_axis(self, enum):
         self.intended_y_axis = enum
