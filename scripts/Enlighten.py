@@ -141,7 +141,7 @@ class EnlightenApplication(object):
         # The sim_spec code is used for debugging with the test framework during peculiar issues
         #####
         self.controller.control_exit_signal.exit.connect(self.closeEvent)
-        #sim_spec = DeviceID(label="MOCK:SiG_785:EEPROM-EM-9c65d19f4c.json")
+        #sim_spec = DeviceID(label="MOCK:WP-00887:WP-00887-mock.json")
         #self.controller.connect_new(sim_spec)
         # pass off control to Qt to manage its objects until application shutdown
         self.splash.finish(self.controller.form)

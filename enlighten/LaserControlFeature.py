@@ -24,7 +24,6 @@ class LaserControlFeature:
                  button_dn,
                  button_up,
                  button_toggle,
-                 combo_unit,
                  spinbox_excitation,    # doubleSpinBox on Laser Control widget, not EEPROMEditor
                  spinbox_power,         # doubleSpinBox
                  slider_power,
@@ -41,7 +40,6 @@ class LaserControlFeature:
         self.button_dn          = button_dn
         self.button_up          = button_up
         self.button_toggle      = button_toggle
-        self.combo_unit         = combo_unit
         self.spinbox_excitation = spinbox_excitation
         self.spinbox_power      = spinbox_power
         self.slider_power       = slider_power
@@ -55,7 +53,6 @@ class LaserControlFeature:
         self.button_dn          .clicked            .connect(self.dn_callback)
         self.button_up          .clicked            .connect(self.up_callback)
         self.button_toggle      .clicked            .connect(self.toggle_callback)
-        self.combo_unit         .currentIndexChanged.connect(self.unit_callback)
         self.slider_power       .sliderPressed      .connect(self.slider_power_press_callback)
         self.slider_power       .sliderMoved        .connect(self.spinbox_power.setValue)
         self.slider_power       .sliderReleased     .connect(self.slider_power_callback)
@@ -89,9 +86,8 @@ class LaserControlFeature:
 
         state.laser_power_perc = 100
         state.laser_power_mW = settings.eeprom.max_laser_power_mW
-        state.use_mW = settings.eeprom.has_laser_power_calibration()
-
-        self.combo_unit.setCurrentIndex(common.LaserPowerUnits.MILLIWATT if state.use_mW else common.LaserPowerUnits.PERCENT)
+        state.use_mW = settings.eeprom.has_laser_power_calibration() and settings.is_mml()
+        log.debug(f"For spec has cali {settings.eeprom.has_laser_power_calibration()} and is mml {settings.is_mml()} thus use milli is {state.use_mW}")
 
         self.set_laser_enable(False)
         
@@ -109,27 +105,18 @@ class LaserControlFeature:
 
         settings = spec.settings
 
-        if spec.settings.is_mml() and spec.settings.eeprom.has_laser_power_calibration():
-            self.combo_unit.setCurrentIndex(1)
-        else:
-            self.combo_unit.setCurrentIndex(0)
-
         has_calibration = settings.eeprom.has_laser_power_calibration()
         log.debug("update_visibility: laser power calibration %s", has_calibration)
 
         if not has_calibration:
-            self.combo_unit.setVisible(False)
             self.configure_laser_power_controls_percent()
         else:
-            self.combo_unit.setVisible(True)
-
-            # go with whatever the GUI combobox is currently set to
-            settings.state.use_mW = self.combo_unit.currentIndex() == common.LaserPowerUnits.MILLIWATT
-
             if settings.state.use_mW:
                 self.configure_laser_power_controls_mW()
             else:
                 self.configure_laser_power_controls_percent()
+
+        self.refresh_laser_button()
 
     # expose this setter for BatchCollection
     def set_laser_enable(self, flag, spec=None, all=False):
@@ -207,7 +194,6 @@ class LaserControlFeature:
 
         spinbox  = self.spinbox_power
         slider   = self.slider_power
-        combobox = self.combo_unit
         settings = spec.settings
 
         if settings.state.use_mW:
@@ -220,7 +206,6 @@ class LaserControlFeature:
         util.set_min_max(spinbox, 1, 100, value)
         settings.state.use_mW = False
 
-        combobox.setCurrentIndex(common.LaserPowerUnits.PERCENT)
         spinbox.setSuffix("%")
 
         spinbox.setValue(value)
@@ -236,7 +221,6 @@ class LaserControlFeature:
 
         spinbox  = self.spinbox_power
         slider   = self.slider_power
-        combobox = self.combo_unit
         settings = spec.settings
 
         if settings.state.use_mW:
@@ -257,7 +241,6 @@ class LaserControlFeature:
                                   settings.eeprom.max_laser_power_mW, value)
         settings.state.use_mW = True
 
-        combobox.setCurrentIndex(common.LaserPowerUnits.MILLIWATT)
         spinbox.setSuffix("mW")
 
         spec.change_device_setting("laser_power_require_modulation", True)
@@ -336,9 +319,6 @@ class LaserControlFeature:
 
         spec.settings.eeprom.excitation_nm_float = value
         self.eeprom_editor.widget_callback("excitation_nm_float", reset_from_eeprom=True)
-
-    def unit_callback(self):
-        self.update_visibility()
 
     # gets called by BatteryFeature when a new battery reading is received
     def battery_callback(self, perc, charging):

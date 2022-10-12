@@ -2175,8 +2175,8 @@ QComboBox QListView
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>1134</width>
-                       <height>5978</height>
+                       <width>688</width>
+                       <height>5844</height>
                       </rect>
                      </property>
                      <property name="minimumSize">
@@ -7352,7 +7352,7 @@ p, li { white-space: pre-wrap; }
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>1134</width>
+                    <width>721</width>
                     <height>932</height>
                    </rect>
                   </property>
@@ -13722,9 +13722,9 @@ p, li { white-space: pre-wrap; }
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>0</y>
+                <y>-1023</y>
                 <width>222</width>
-                <height>3111</height>
+                <height>3067</height>
                </rect>
               </property>
               <property name="styleSheet">
@@ -15126,28 +15126,6 @@ p, li { white-space: pre-wrap; }
                            </layout>
                           </item>
                          </layout>
-                        </item>
-                        <item>
-                         <widget class="QComboBox" name="comboBox_laser_power_unit">
-                          <property name="font">
-                           <font>
-                            <pointsize>10</pointsize>
-                           </font>
-                          </property>
-                          <property name="focusPolicy">
-                           <enum>Qt::StrongFocus</enum>
-                          </property>
-                          <item>
-                           <property name="text">
-                            <string>Percent (%)</string>
-                           </property>
-                          </item>
-                          <item>
-                           <property name="text">
-                            <string>milliwatts (mW)</string>
-                           </property>
-                          </item>
-                         </widget>
                         </item>
                         <item>
                          <widget class="QDoubleSpinBox" name="doubleSpinBox_lightSourceWidget_excitation_nm">
@@ -18160,7 +18138,6 @@ p, li { white-space: pre-wrap; }
   <tabstop>pushButton_laser_power_dn</tabstop>
   <tabstop>pushButton_laser_power_up</tabstop>
   <tabstop>doubleSpinBox_laser_power</tabstop>
-  <tabstop>comboBox_laser_power_unit</tabstop>
   <tabstop>doubleSpinBox_lightSourceWidget_excitation_nm</tabstop>
   <tabstop>slider_integration_time_ms</tabstop>
   <tabstop>pushButton_integration_time_ms_dn</tabstop>
