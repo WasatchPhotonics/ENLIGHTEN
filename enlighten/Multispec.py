@@ -488,14 +488,25 @@ class Multispec(object):
         
         # this is where newly connected spectrometers receive their curve color
         log.debug("Multispec.add: adding curve %s", spec.label)
-        left_roi_region = pyqtgraph.LinearRegionItem((0, spec.settings.eeprom.roi_horizontal_start), movable=False)
-        right_roi_region = pyqtgraph.LinearRegionItem((spec.settings.eeprom.roi_horizontal_end, spec.settings.eeprom.active_pixels_horizontal), movable=False)
-        spec.roi_region_left = left_roi_region
-        spec.roi_region_right = right_roi_region
+        pen = self.make_pen(spec)
         spec.curve = self.graph.add_curve(
-            pen=self.make_pen(spec),
+            pen=pen,
             name=spec.label,
             spec=spec)
+
+        region_color = pen.color()
+        region_color.setAlpha(20)
+        left_roi_region = pyqtgraph.LinearRegionItem((0, spec.settings.eeprom.roi_horizontal_start), 
+                                                     pen = region_color,
+                                                     brush = region_color,
+                                                     movable=False)
+        right_roi_region = pyqtgraph.LinearRegionItem((spec.settings.eeprom.roi_horizontal_end, spec.settings.eeprom.active_pixels_horizontal),
+                                                     pen = region_color,
+                                                     brush = region_color,
+                                                     movable=False)
+        spec.roi_region_left = left_roi_region
+        spec.roi_region_right = right_roi_region
+
         self.update_widget()
         self.graph.update_roi_regions(spec)
 
@@ -541,6 +552,8 @@ class Multispec(object):
         label = spec.label
 
         self.graph.remove_curve(label)
+        self.graph.remove_roi_region(spec.roi_region_right)
+        self.graph.remove_roi_region(spec.roi_region_left)
 
         # this should cause combo_callback to trigger, calling 
         # Controller.initialize_new_device and thus updating Multispec.device_id to 
