@@ -44,6 +44,7 @@ class Measurements(object):
             label_count,
             layout,
             marquee,
+            get_roi_enabled,
             reprocess_callback):
 
         self.button_erase       = button_erase
@@ -58,6 +59,7 @@ class Measurements(object):
         self.label_count        = label_count
         self.layout             = layout
         self.marquee            = marquee
+        self.get_roi_enabled    = get_roi_enabled
         self.reprocess_callback = reprocess_callback
 
         self.measurements = []
@@ -687,13 +689,10 @@ class Measurements(object):
                     spec = m.spec
                     if spec is not None:
                         roi = spec.settings.eeprom.get_horizontal_roi()
-                        if roi is not None:
+                        if roi is not None and m.roi_active:
                             if roi.contains(pixel):
                                 pixel -= roi.start              # YOU ARE HERE...I think this is Allie's bug
                                 a = pr.processed_vignetted
-
-            elif header == "processed":
-                a = pr.processed
             elif header == "reference":
                 a = pr.reference
             elif header == "dark":
@@ -704,7 +703,7 @@ class Measurements(object):
             if a is not None and pixel < len(a):
                 value = a[pixel]
             else:
-                value = 0
+                return ""
 
             # Override default precision (which was based on whether a "reference" column
             # is being exported) with this indication of whether a reference component was
@@ -725,6 +724,8 @@ class Measurements(object):
             # Interpolate each Measurement to an InterpolatedProcessedReading.
             # Keep handle to last IPR, as we can use it for the "global" 
             # pixel, wavelength and wavenumber axes.
+            max_roi_end = float("-inf")
+            min_roi_start = float("inf")
             for m in self.measurements:
                 ipr = interp.interpolate_processed_reading(
                     m.processed_reading, 
@@ -733,9 +734,20 @@ class Measurements(object):
                     settings=m.settings)
                 if ipr is None:
                     log.error("failed export due to interpolation error")
+                if m.roi_active:
+                    roi = m.settings.eeprom.get_horizontal_roi()
+                    if roi.start < min_roi_start:
+                        min_roi_start = int(roi.start)
+                    if roi.end > max_roi_end:
+                        max_roi_end = int(roi.end)
                 m.ipr = ipr
 
-            for pixel in range(ipr.pixels):
+            if max_roi_end != float("-inf") and min_roi_start != float("inf"):
+                px_range = range(min_roi_start, max_roi_end)
+            else:
+                px_range = range(ipr.pixels)
+
+            for pixel in px_range:
                 row = []
                 for settings in settingss:
                     for header in x_headers:
@@ -754,7 +766,7 @@ class Measurements(object):
             for pixel in range(max_pixels):
                 if spectrometer_count == 1:
                     roi = settingss[0].eeprom.get_horizontal_roi()
-                    if roi is not None and not roi.contains(pixel):
+                    if roi is not None and not roi.contains(pixel) and self.get_roi_enabled():
                         continue
 
                 row = []

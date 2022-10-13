@@ -2,9 +2,18 @@
 
 # 3.2 Open-Source
 
+- 2022-10-12 3.2.36
+    - merged pluginWarning / ROI fixes
+- 2022-10-12 3.2.35
+    - Change laser toggle button to on/off
+    - Change status indicator for lamp to be warning when any laser is on
+    - Remove laser units combo box
+- 2022-10-10 3.2.34
+    - fix Raman Shift Correction
 - 2022-09-28 3.2.33
     - change tensorflow to hidden import to speed up start
-- 2022-09-27 3.2.32
+- 2022-10-03 3.2.32
+    - add splash screen on start up
     - add warning dialogue for plugins
 - 2022-09-22 3.2.31
     - add graph grid button and roi button to tool bar

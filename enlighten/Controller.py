@@ -25,7 +25,6 @@ from pygtail import Pygtail # for log screen
 # these aren't actually used...solves an import issue for MacOS I think
 import matplotlib
 import matplotlib.pyplot as plt
-matplotlib.use('TkAgg')
 
 from . import util
 from . import common
@@ -46,7 +45,6 @@ from wasatch.ProcessedReading         import ProcessedReading
 from .BusinessObjects                 import BusinessObjects
 from .Spectrometer                    import Spectrometer
 from .TimeoutDialog                   import TimeoutDialog
-from .BasicWindow                     import BasicWindow
 from wasatch.RealUSBDevice            import RealUSBDevice
 
 log = logging.getLogger(__name__)
@@ -97,6 +95,7 @@ class Controller:
                 serial_number     = None,
                 stylesheet_path   = None,
                 set_all_dfu       = False,
+                form              = None,
                 headless          = False,
             ):
         """
@@ -128,6 +127,11 @@ class Controller:
         self.set_all_dfu            = set_all_dfu
         self.headless               = headless
         self.spec_timeout           = 30
+        self.form                   = form
+
+        if form is None:
+            log.error("Got a None value for form. Cannot start without QResources")
+            return
 
         # Before we apply the commanded debug level, set the logger to DEBUG so
         # initialization (enumeration, etc) is always captured in customer logfiles,
@@ -151,8 +155,6 @@ class Controller:
         # GUI Configuration
         ########################################################################
 
-        # instantiate form (a QMainWindow with named "MainWindow")
-        self.form = BasicWindow(title="ENLIGHTEN %s" % common.VERSION,headless=self.headless)
 
         # hide these immediately (KIA shouldn't be visible in Scope)
         sfu = self.form.ui
@@ -267,6 +269,16 @@ class Controller:
 
         self.header("Controller ctor done")
         self.other_devices = []
+
+        # init is done so display the GUI and destory the splash screen
+        self.form.showMaximized()
+
+        if headless:
+            # hiding tends to mess with gui tests since the componets are also hidden
+            # So I replaced with minimizing, which I recognize is not a true headless
+            # self.hide()
+            self.showMinimized()
+
 
     def disconnect_device(self, spec=None, closing=False):
         if spec in self.other_devices:
@@ -2438,6 +2450,9 @@ class Controller:
             self.form.ui.pushButton_roi_toggle.setStyleSheet("background-color: #aa0000")
         else:
             self.form.ui.pushButton_roi_toggle.setStyleSheet(self.default_roi_btn)
+
+    def get_roi_enabled(self):
+        return self.roi_enabled
 
     def display_response_error(self, spec: Spectrometer, response_error: str) -> bool:
         """
