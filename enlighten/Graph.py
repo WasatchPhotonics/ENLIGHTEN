@@ -186,6 +186,9 @@ class Graph(object):
         if self.x_axis_locked:
             return
         self.set_x_axis(self.combo_axis.currentIndex())
+        if not (self.multispec is None):
+            for spec in self.multispec.get_spectrometers():
+                self.update_roi_regions(spec)
 
     def update_marker(self):
         self.show_marker = self.cb_marker.isChecked()
