@@ -494,31 +494,35 @@ class Graph(object):
 
         if self.in_pixels():
             log.debug("setting bounds in px")
-            log.debug(f"setting region bounds to 0 and {roi_start}")
             spec.roi_region_left.setRegion((0, roi_start))
             spec.roi_region_right.setRegion((roi_end, spec.settings.eeprom.active_pixels_horizontal))
         elif self.in_wavelengths():
             log.debug(f"setting bounds in nm")
             spectrum_start_nm = utils.pixel_to_wavelength(0, spec.settings.eeprom.wavelength_coeffs)
             spectrum_end_nm = utils.pixel_to_wavelength(spec.settings.eeprom.active_pixels_horizontal, spec.settings.eeprom.wavelength_coeffs)
+
             roi_start_nm = utils.pixel_to_wavelength(roi_start, spec.settings.eeprom.wavelength_coeffs)
             roi_end_nm = utils.pixel_to_wavelength(roi_end, spec.settings.eeprom.wavelength_coeffs)
+
             spec.roi_region_left.setRegion((spectrum_start_nm, roi_start_nm))
             spec.roi_region_right.setRegion((roi_end_nm, spectrum_end_nm))
+
         elif self.in_wavenumbers():
-            log.debug(f"setting bounds in cm")
             spectrum_start_nm = utils.pixel_to_wavelength(0, spec.settings.eeprom.wavelength_coeffs)
             spectrum_end_nm = utils.pixel_to_wavelength(spec.settings.eeprom.active_pixels_horizontal, spec.settings.eeprom.wavelength_coeffs)
+            
             roi_start_nm = utils.pixel_to_wavelength(roi_start, spec.settings.eeprom.wavelength_coeffs)
-            log.debug(f"for pixel 0 spectrum start is {spectrum_start_nm} and pixel {roi_start} in nm is {roi_start_nm}")
             roi_end_nm = utils.pixel_to_wavelength(roi_end, spec.settings.eeprom.wavelength_coeffs)
+
             spectrum_start_cm = utils.wavelength_to_wavenumber(spec.settings.eeprom.excitation_nm, spectrum_start_nm)
             spectrum_end_cm = utils.wavelength_to_wavenumber(spec.settings.eeprom.excitation_nm, spectrum_end_nm)
+
             roi_start_cm = utils.wavelength_to_wavenumber(spec.settings.eeprom.excitation_nm_float, roi_start_nm)
             roi_end_cm = utils.wavelength_to_wavenumber(spec.settings.eeprom.excitation_nm_float, roi_end_nm)
-            log.debug(f"in cm spectrum start is {spectrum_start_cm} while roi start {roi_start} is {roi_start_cm}")
+
             spec.roi_region_left.setRegion((-1*spectrum_start_cm, -1*roi_start_cm))
             spec.roi_region_right.setRegion((-1*roi_end_cm, -1*spectrum_end_cm))
+
         if self.get_roi_enabled():
             self.remove_roi_region(spec.roi_region_left)
             self.remove_roi_region(spec.roi_region_right)
