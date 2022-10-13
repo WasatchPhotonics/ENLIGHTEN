@@ -295,6 +295,9 @@ class Graph(object):
     def add_roi_region(self, region):
         self.plot.addItem(region)
 
+    def remove_roi_region(self, region):
+        self.plot.removeItem(region)
+
     ## 
     # This was originally used used by ThumbnailWidget, when clicking the "show 
     # trace" thumbnail button. It's now also being used by 
