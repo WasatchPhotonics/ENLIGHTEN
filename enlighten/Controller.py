@@ -2447,6 +2447,8 @@ class Controller:
     def toggle_roi_process(self):
         self.roi_enabled = not self.roi_enabled
         self.graph.cursor.set_range(self.generate_x_axis())
+        if self.graph.cursor.is_outside_range():
+            self.graph.cursor.center()
         if self.roi_enabled:
             self.form.ui.pushButton_roi_toggle.setStyleSheet("background-color: #aa0000")
         else:
