@@ -2417,7 +2417,7 @@ class Controller:
         else:
             retval = np.array(list(range(settings.pixels())), dtype=np.float32) 
 
-        if vignetted:
+        if vignetted and self.get_roi_enabled():
             return self.vignette_roi.crop(retval, roi=settings.eeprom.get_horizontal_roi())
 
         if regions:
@@ -2446,6 +2446,7 @@ class Controller:
 
     def toggle_roi_process(self):
         self.roi_enabled = not self.roi_enabled
+        self.graph.cursor.set_range(self.generate_x_axis())
         if self.roi_enabled:
             self.form.ui.pushButton_roi_toggle.setStyleSheet("background-color: #aa0000")
         else:
