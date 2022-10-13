@@ -101,6 +101,7 @@ class Multispec(object):
         self.hide_others = False
 
         self.graph.multispec = self # cross-register
+        self.graph.get_roi_enabled = get_roi_enabled
 
         self.reset_seen()
         self.combo_spectrometer.clear()
@@ -496,7 +497,7 @@ class Multispec(object):
             name=spec.label,
             spec=spec)
         self.update_widget()
-        self.update_roi_regions(spec)
+        self.graph.update_roi_regions(spec)
 
     def get_combo_index(self, spec) -> int:
         label = spec.label

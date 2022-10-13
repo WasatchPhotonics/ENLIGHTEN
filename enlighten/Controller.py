@@ -2454,7 +2454,7 @@ class Controller:
         else:
             self.form.ui.pushButton_roi_toggle.setStyleSheet(self.default_roi_btn)
         for spec in self.multispec.get_spectrometers():
-            self.multispec.update_roi_regions(spec)
+            self.graph.update_roi_regions(spec)
 
     def get_roi_enabled(self):
         return self.roi_enabled
