@@ -63,46 +63,65 @@ class TestUSB:
         assert type(sim_spec) is MockUSBDevice
         disconnect_spec(app,sim_spec)
 
-    # description: a release test that checks the gui change results in the mock device integration time changing
-    # author: Evan Dort
+    @wait_until(timeout=5000)
+    def disconnect_complete(self, caplog):
+        if "exiting because of downstream poison-pill command from ENLIGHTEN" in caplog.text:
+            return True
+
+    # description: a release test that checks the gui change results in the SPECTROMETER_SETTINGS integration time changing
+    # author: Mark Zieg
     @pytest.mark.release
-    def test_set_int_time(self,app):
-        sim_spec = create_sim_spec(app,"WP-00887","WP-00887-mock.json")
-        log.info(f"test_set_int_time: sim_spec = {sim_spec}")
+    def test_set_int_time_enlighten(self, app, caplog):
+        sim_spec = create_sim_spec(app, "WP-00887", "WP-00887-mock.json")
         sim_spec_obj = app.controller.multispec.get_spectrometer(sim_spec)
-        #log.info(f"{sim_spec}")
-        #sim_spec = create_sim_spec(app,"SiG_785","EEPROM-EM-9c65d19f4c.json")
+
         @wait_until(timeout=3000)
         def check():
-            # MZ: Question: should the enlighten.Spectrometer object returned by
-            # enlighten.Multispec.get_spectrometer() actually provide access to 
-            # the MockUSBDevice?  I kind of feel like no.  Not strongly, but I'd
-            # rather this test operate at the level of enlighten.Spectrometer.state.
-            #
-            # Yes this would be a better / stronger test if it were actually checking
-            # the MockUSBDevice.int_time parameter.  The question is whether ENLIGHTEN
-            # actually has access to that object, which is instantiated within by
-            # FeatureIdentificationDevice's ctor inside WrapperWorker's child thread.
-            #
-            # Historically, that object would not have been passed back through the
-            # multi-process queues.  I'm less clear on whether ENLIGHTEN has access
-            # to it now, in the multi-threaded architecture.
-            #
-            # This would benefit from an Entity-Relationship diagram :-)
-            #
-            # value = sim_spec_obj.device.device_id.int_time
             value = sim_spec_obj.settings.state.integration_time_ms
+            log.info(f"test_set_int_time_enlighten.check: value = {value}")
+            return value
 
-            log.info(f"test_set_int_time.check: value = {value}")
-            if init_int+1 == value:
-                return value
         if sim_spec:
             init_int = app.controller.form.ui.spinBox_integration_time_ms.value()
             int_up_btn = app.controller.form.ui.pushButton_integration_time_ms_up
             int_up_btn.click()
+
             res = check()
             assert res == init_int + 1
-            disconnect_spec(app,sim_spec)
+
+            disconnect_spec(app, sim_spec)
+            assert self.disconnect_complete(caplog)
+        else:
+            assert False, f"No sim_spec, received {sim_spec} for sim_spec"
+
+    # description: a release test that checks the GUI change results in the MOCK DEVICE integration time changing
+    # author: Evan Dort
+    @pytest.mark.release
+    def test_set_int_time_mock(self, app, caplog):
+        sim_spec = create_sim_spec(app, "WP-00887", "WP-00887-mock.json")
+        sim_spec_obj = app.controller.multispec.get_spectrometer(sim_spec)
+
+        @wait_until(timeout=5000)
+        def check(expected):
+            # first make sure the command has actually made it downstream to the mock
+            if f"MockUSBDevice.set_int_time: value now {expected}" not in caplog.text:
+                return
+
+            # now make sure the mock has been properly updated
+            mock = sim_spec_obj.get_mock()
+            value = mock.int_time
+            return value
+
+        if sim_spec:
+            init_int = app.controller.form.ui.spinBox_integration_time_ms.value()
+            int_up_btn = app.controller.form.ui.pushButton_integration_time_ms_up
+            int_up_btn.click()
+
+            res = check(init_int + 1)
+            assert res == init_int + 1
+
+            disconnect_spec(app, sim_spec)
+            assert self.disconnect_complete(caplog)
         else:
             assert False, f"No sim_spec, received {sim_spec} for sim_spec"
 
@@ -164,22 +183,32 @@ class TestUSB:
     # description: test that toggling the laser button changes the mock device laser
     # author: Evan Dort
     @pytest.mark.release
-    def test_laser_toggle(self,app):
-        sim_spec = create_sim_spec(app,"WP-00887","WP-00887-mock.json")
+    def test_laser_toggle(self, app, caplog):
+        sim_spec = create_sim_spec(app,"WP-00887", "WP-00887-mock.json")
         sim_spec_obj = app.controller.multispec.get_spectrometer(sim_spec)
 
         @wait_until(timeout=2000)
         def check(expected_value):
-            if sim_spec.laser_enable == expected_value:
-                return True
+            # first make sure the command has actually made it downstream to the mock
+            if f"MockUSBDevice.cmd_toggle_laser: setting {expected_value}" not in caplog.text:
+                return
 
-        laser_btn = app.controller.form.ui.pushButton_laser_toggle
+            # now make sure the mock was correctly updated
+            mock = sim_spec_obj.get_mock()
+            return mock.laser_enable == expected_value
+
+        laser_btn = app.controller.form.ui.pushButton_laser_toggle 
+
         laser_btn.click()
         laser_enabled = check(True)
+
         laser_btn.click()
         laser_disabled = check(False)
+
         assert laser_enabled and laser_disabled
-        disconnect_spec(app,sim_spec)
+
+        disconnect_spec(app, sim_spec)
+        assert self.disconnect_complete(caplog)
 
     # description: test that on disconnect the mock device receives a request to shut down its laser
     # author: Evan Dort
