@@ -68,8 +68,14 @@ class TestUSB:
         if "exiting because of downstream poison-pill command from ENLIGHTEN" in caplog.text:
             return True
 
-    # description: a release test that checks the gui change results in the SPECTROMETER_SETTINGS integration time changing
+    # description: a release test that checks the gui change results in the 
+    #              SPECTROMETER_SETTINGS integration time changing 
     # author: Mark Zieg
+    #
+    # This is an example test that shows how to write tests which are validated 
+    # against spectrometer state within ENLIGHTEN (as opposed to within the Mock
+    # spectrometer itself).
+    #
     @pytest.mark.release
     def test_set_int_time_enlighten(self, app, caplog):
         sim_spec = create_sim_spec(app, "WP-00887", "WP-00887-mock.json")
@@ -94,8 +100,14 @@ class TestUSB:
         else:
             assert False, f"No sim_spec, received {sim_spec} for sim_spec"
 
-    # description: a release test that checks the GUI change results in the MOCK DEVICE integration time changing
+    # description: a release test that checks the GUI change results in the 
+    #              MOCK DEVICE integration time changing
     # author: Evan Dort
+    #
+    # This is an example test that shows how to write tests which are validated 
+    # against the Mock spectrometer (virtual hardware) in the Wasatch.PY driver, 
+    # as opposed to within ENLIGHTEN's "application state".
+    #
     @pytest.mark.release
     def test_set_int_time_mock(self, app, caplog):
         sim_spec = create_sim_spec(app, "WP-00887", "WP-00887-mock.json")
@@ -190,8 +202,8 @@ class TestUSB:
         @wait_until(timeout=2000)
         def check(expected_value):
             # first make sure the command has actually made it downstream to the mock
-            if f"MockUSBDevice.cmd_toggle_laser: setting {expected_value}" not in caplog.text:
-                return
+            # if f"MockUSBDevice.cmd_toggle_laser: setting {expected_value}" not in caplog.text:
+            #     return
 
             # now make sure the mock was correctly updated
             mock = sim_spec_obj.get_mock()
@@ -235,8 +247,14 @@ class TestUSB:
 
         @wait_until(timeout=3000)
         def check():
-            if sim_spec.detector_tec_enable:
-                return True
+            # if sim_spec.detector_tec_enable:
+            #     return True
+            # if f"MockUSBDevice.cmd_set_detector_tec_enable: setting {expected_value}" not in caplog.text:
+            #     return
+
+            # now make sure the mock was correctly updated
+            mock = sim_spec_obj.get_mock()
+            return mock.detector_tec_enable 
 
         sim_spec = create_sim_spec(app,"WP-00887","WP-00887-mock.json")
         sim_spec_obj = app.controller.multispec.get_spectrometer(sim_spec)
@@ -343,6 +361,3 @@ class TestUSB:
         res = check()
         assert res
         disconnect_spec(app,sim_spec)
-
-
-
