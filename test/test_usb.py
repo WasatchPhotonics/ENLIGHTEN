@@ -200,11 +200,6 @@ class TestUSB:
 
         @wait_until(timeout=2000)
         def check(expected_value):
-            # first make sure the command has actually made it downstream to the mock
-            # if f"MockUSBDevice.cmd_toggle_laser: setting {expected_value}" not in caplog.text:
-            #     return
-
-            # now make sure the mock was correctly updated
             mock = sim_spec_obj.get_mock()
             return mock.laser_enable == expected_value
 
