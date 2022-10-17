@@ -277,7 +277,7 @@ class Controller:
             # hiding tends to mess with gui tests since the componets are also hidden
             # So I replaced with minimizing, which I recognize is not a true headless
             # self.hide()
-            self.showMinimized()
+            self.form.showMinimized()
 
 
     def disconnect_device(self, spec=None, closing=False):
