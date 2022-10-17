@@ -52,6 +52,7 @@ class Multispec(object):
             stylesheets,
             eject_button,
             controller_disconnect,
+            get_roi_enabled,
 
             lockable_widgets):
 
@@ -71,6 +72,7 @@ class Multispec(object):
         self.eject_button          = eject_button
         self.controller_disconnect = controller_disconnect
         self.lockable_widgets      = lockable_widgets
+        self.get_roi_enabled       = get_roi_enabled
 
         self.device_id = None
         self.ejected = set()
@@ -80,6 +82,7 @@ class Multispec(object):
         self.spec_laser_temp_curves = {}
         self.spec_hardware_live_curves = {}
         self.spec_detector_temp_curves = {}
+        self.spec_roi_curtains = {}
         self.reset_spec_objs = {}
         self.spec_in_reset = defaultdict(int) # deafult of int() is 0
         self.spec_hardware_feature_curves = defaultdict(dict)
@@ -98,6 +101,7 @@ class Multispec(object):
         self.hide_others = False
 
         self.graph.multispec = self # cross-register
+        self.graph.get_roi_enabled = get_roi_enabled
 
         self.reset_seen()
         self.combo_spectrometer.clear()
@@ -484,11 +488,27 @@ class Multispec(object):
         
         # this is where newly connected spectrometers receive their curve color
         log.debug("Multispec.add: adding curve %s", spec.label)
+        pen = self.make_pen(spec)
         spec.curve = self.graph.add_curve(
-            pen=self.make_pen(spec),
+            pen=pen,
             name=spec.label,
             spec=spec)
+
+        region_color = pen.color()
+        region_color.setAlpha(20)
+        left_roi_region = pyqtgraph.LinearRegionItem((0, spec.settings.eeprom.roi_horizontal_start), 
+                                                     pen = region_color,
+                                                     brush = region_color,
+                                                     movable=False)
+        right_roi_region = pyqtgraph.LinearRegionItem((spec.settings.eeprom.roi_horizontal_end, spec.settings.eeprom.active_pixels_horizontal),
+                                                     pen = region_color,
+                                                     brush = region_color,
+                                                     movable=False)
+        spec.roi_region_left = left_roi_region
+        spec.roi_region_right = right_roi_region
+
         self.update_widget()
+        self.graph.update_roi_regions(spec)
 
     def get_combo_index(self, spec) -> int:
         label = spec.label
@@ -532,6 +552,8 @@ class Multispec(object):
         label = spec.label
 
         self.graph.remove_curve(label)
+        self.graph.remove_roi_region(spec.roi_region_right)
+        self.graph.remove_roi_region(spec.roi_region_left)
 
         # this should cause combo_callback to trigger, calling 
         # Controller.initialize_new_device and thus updating Multispec.device_id to 
@@ -700,3 +722,7 @@ class Multispec(object):
 
     def check_hardware_curve_present(self, name, spec_id) -> bool:
         return spec_id in self.spec_hardware_feature_curves[name]
+
+
+
+

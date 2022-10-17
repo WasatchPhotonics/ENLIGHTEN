@@ -7,6 +7,8 @@ from PySide2 import QtCore, QtWidgets, QtGui
 from . import common
 from .ScrollStealFilter import ScrollStealFilter
 
+from wasatch import utils
+
 log = logging.getLogger(__name__)
 
 ##
@@ -184,6 +186,9 @@ class Graph(object):
         if self.x_axis_locked:
             return
         self.set_x_axis(self.combo_axis.currentIndex())
+        if not (self.multispec is None):
+            for spec in self.multispec.get_spectrometers():
+                self.update_roi_regions(spec)
 
     def update_marker(self):
         self.show_marker = self.cb_marker.isChecked()
@@ -291,6 +296,12 @@ class Graph(object):
                 self.current_y_axis = self.intended_y_axis
 
         self.plot.setLabel(axis="left", text=common.AxesHelper.get_pretty_name(self.current_y_axis))
+
+    def add_roi_region(self, region):
+        self.plot.addItem(region)
+
+    def remove_roi_region(self, region):
+        self.plot.removeItem(region)
 
     ## 
     # This was originally used used by ThumbnailWidget, when clicking the "show 
@@ -475,3 +486,58 @@ class Graph(object):
                 spectra.append(curve.getData()[-1])
 
         self.clipboard.copy_spectra(spectra)
+
+    def update_roi_regions(self, spec):
+        # Here there shouldn't be a default, spec should be explicit
+        if spec is None:
+            return
+
+        roi_start = spec.settings.eeprom.roi_horizontal_start
+        roi_end = spec.settings.eeprom.roi_horizontal_end
+
+        if self.in_pixels():
+            log.debug("setting bounds in px")
+            spec.roi_region_left.setRegion((0, roi_start))
+            spec.roi_region_right.setRegion((roi_end, spec.settings.eeprom.active_pixels_horizontal))
+        elif self.in_wavelengths():
+            log.debug(f"setting bounds in nm")
+            spectrum_start_nm = utils.pixel_to_wavelength(0, spec.settings.eeprom.wavelength_coeffs)
+            spectrum_end_nm = utils.pixel_to_wavelength(spec.settings.eeprom.active_pixels_horizontal, spec.settings.eeprom.wavelength_coeffs)
+
+            roi_start_nm = utils.pixel_to_wavelength(roi_start, spec.settings.eeprom.wavelength_coeffs)
+            roi_end_nm = utils.pixel_to_wavelength(roi_end, spec.settings.eeprom.wavelength_coeffs)
+
+            spec.roi_region_left.setRegion((spectrum_start_nm, roi_start_nm))
+            spec.roi_region_right.setRegion((roi_end_nm, spectrum_end_nm))
+
+        elif self.in_wavenumbers():
+            spectrum_start_nm = utils.pixel_to_wavelength(0, spec.settings.eeprom.wavelength_coeffs)
+            spectrum_end_nm = utils.pixel_to_wavelength(spec.settings.eeprom.active_pixels_horizontal, spec.settings.eeprom.wavelength_coeffs)
+            
+            roi_start_nm = utils.pixel_to_wavelength(roi_start, spec.settings.eeprom.wavelength_coeffs)
+            roi_end_nm = utils.pixel_to_wavelength(roi_end, spec.settings.eeprom.wavelength_coeffs)
+
+            spectrum_start_cm = utils.wavelength_to_wavenumber(spec.settings.eeprom.excitation_nm, spectrum_start_nm)
+            spectrum_end_cm = utils.wavelength_to_wavenumber(spec.settings.eeprom.excitation_nm, spectrum_end_nm)
+
+            roi_start_cm = utils.wavelength_to_wavenumber(spec.settings.eeprom.excitation_nm_float, roi_start_nm)
+            roi_end_cm = utils.wavelength_to_wavenumber(spec.settings.eeprom.excitation_nm_float, roi_end_nm)
+
+            spec.roi_region_left.setRegion((-1*spectrum_start_cm, -1*roi_start_cm))
+            spec.roi_region_right.setRegion((-1*roi_end_cm, -1*spectrum_end_cm))
+
+        if self.get_roi_enabled():
+            self.remove_roi_region(spec.roi_region_left)
+            self.remove_roi_region(spec.roi_region_right)
+        else:
+            if roi_start == 0:
+                spec.roi_region_left.setOpacity(0)
+            else:
+                spec.roi_region_left.setOpacity(1)
+
+            if roi_end >= spec.settings.eeprom.active_pixels_horizontal - 1:
+                spec.roi_region_right.setOpacity(0)
+            else:
+                spec.roi_region_right.setOpacity(1)
+            self.add_roi_region(spec.roi_region_left)
+            self.add_roi_region(spec.roi_region_right)

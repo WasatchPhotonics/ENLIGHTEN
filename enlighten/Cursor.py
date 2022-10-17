@@ -166,6 +166,7 @@ class Cursor(object):
             curve = spec.curve
             x_axis   = curve.getData()[ 0]
             spectrum = curve.getData()[-1] 
+            log.debug(f"in update x axis from graph is len {len(x_axis)}")
 
             # Find the CLOSEST index on the x-axis to the cursor's x-index
             # https://stackoverflow.com/questions/2566412/find-nearest-value-in-numpy-array
@@ -194,6 +195,7 @@ class Cursor(object):
 
     def moved_callback(self, pos):
         x_axis = self.generate_x_axis() # assume selected spectrometer
+        log.debug(f"cursor moved callback x_axis len is {len(x_axis)}")
         if x_axis is None:
             log.error("moved_callback: no x_axis?!")
             self.ds_value.setEnabled(False)

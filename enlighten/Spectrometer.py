@@ -44,6 +44,8 @@ class Spectrometer(object):
 
         self.device_id = self.device.device_id 
         self.settings = self.device.settings
+        self.roi_region_left = None
+        self.roi_region_right = None
         self.app_state = SpectrometerApplicationState(self.device_id)
 
         self.wp_model_info = model_info.get_by_model(self.settings.full_model())
