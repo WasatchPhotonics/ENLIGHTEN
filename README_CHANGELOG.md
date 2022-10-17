@@ -2,6 +2,8 @@
 
 # 3.2 Open-Source
 
+- 2022-10-17 3.2.37
+    - updates to regression tests
 - 2022-10-12 3.2.36
     - merged pluginWarning / ROI fixes
 - 2022-10-12 3.2.35
