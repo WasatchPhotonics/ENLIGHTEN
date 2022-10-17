@@ -84,7 +84,6 @@ class TestUSB:
         @wait_until(timeout=3000)
         def check():
             value = sim_spec_obj.settings.state.integration_time_ms
-            log.info(f"test_set_int_time_enlighten.check: value = {value}")
             return value
 
         if sim_spec:
@@ -247,12 +246,6 @@ class TestUSB:
 
         @wait_until(timeout=3000)
         def check():
-            # if sim_spec.detector_tec_enable:
-            #     return True
-            # if f"MockUSBDevice.cmd_set_detector_tec_enable: setting {expected_value}" not in caplog.text:
-            #     return
-
-            # now make sure the mock was correctly updated
             mock = sim_spec_obj.get_mock()
             return mock.detector_tec_enable 
 
