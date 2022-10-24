@@ -1,3 +1,4 @@
+from asyncio.windows_events import CONNECT_PIPE_INIT_DELAY
 import logging
 
 log = logging.getLogger(__name__)
@@ -48,6 +49,7 @@ from .GuideFeature                    import GuideFeature
 from .CloudManager                    import CloudManager
 from .EEPROMWriter                    import EEPROMWriter
 from .Stylesheets                     import Stylesheets
+from .MockManager                     import MockManager
 from .DarkFeature                     import DarkFeature
 from .SaveOptions                     import SaveOptions
 from .FileManager                     import FileManager
@@ -833,6 +835,14 @@ class BusinessObjects:
             cb_enabled                  = sfu.checkBox_region_enabled,
             multispec                   = ctl.multispec,
             spinbox                     = sfu.spinBox_region)
+
+        ctl.mock_mgr = MockManager(
+            cb_via_file = sfu.checkBox_virtual_from_file,
+            connect_btn = sfu.pushButton_connect_virtual,
+            connect_new = ctl.connect_new,
+            disconnect = ctl.disconnect_device,
+            multispec = ctl.multispec
+            )
 
         self.header("done with Business Object creation")
 

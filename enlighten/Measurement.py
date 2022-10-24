@@ -277,6 +277,7 @@ class Measurement(object):
 
         self.save_options       = save_options
         self.measurements       = measurements
+        self.view               = None
 
         if spec:
             log.debug("instantiating from spectrometer %s", str(spec))

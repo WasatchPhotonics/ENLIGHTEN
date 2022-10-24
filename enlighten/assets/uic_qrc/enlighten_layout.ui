@@ -2544,7 +2544,7 @@ QComboBox QListView
                        <x>0</x>
                        <y>0</y>
                        <width>688</width>
-                       <height>5814</height>
+                       <height>5948</height>
                       </rect>
                      </property>
                      <property name="minimumSize">
@@ -8391,7 +8391,7 @@ p, li { white-space: pre-wrap; }
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>656</width>
+              <width>606</width>
               <height>1475</height>
              </rect>
             </property>
@@ -13813,9 +13813,9 @@ p, li { white-space: pre-wrap; }
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-1534</y>
+                <y>0</y>
                 <width>224</width>
-                <height>3235</height>
+                <height>3412</height>
                </rect>
               </property>
               <property name="styleSheet">
@@ -14048,6 +14048,96 @@ p, li { white-space: pre-wrap; }
                       </widget>
                      </item>
                     </layout>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_241">
+                 <property name="font">
+                  <font>
+                   <weight>75</weight>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Virtual Spectrometer</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QFrame" name="frame_virtual_spec">
+                 <property name="frameShape">
+                  <enum>QFrame::StyledPanel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Raised</enum>
+                 </property>
+                 <property name="wpGrad" stdset="0">
+                  <bool>false</bool>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_156">
+                  <property name="leftMargin">
+                   <number>9</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>5</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>9</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>9</number>
+                  </property>
+                  <item>
+                   <widget class="QCheckBox" name="checkBox_virtual_from_file">
+                    <property name="text">
+                     <string>Create From File</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="pushButton_connect_virtual">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>30</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>Connect</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="label_47">
+                    <property name="text">
+                     <string>Sample</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="comboBox_virtual_sample">
+                    <property name="currentText">
+                     <string>Dark</string>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>Dark</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Cyclohexane</string>
+                     </property>
+                    </item>
                    </widget>
                   </item>
                  </layout>
