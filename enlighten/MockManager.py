@@ -1,4 +1,5 @@
 import os
+import json
 import logging
 from typing import Optional
 
@@ -65,8 +66,12 @@ class MockManager:
         spectra = mock_device.get_available_spectra()
         self.combo_compound.clear()
         if mock_device.rasa_virtual:
-            for default in self.default_compounds:
-                self.combo_compound.addItem(default)
+            with open(os.path.join(os.getcwd(), "enlighten", "assets", "example_data", "mock_raman", "mocks.json")) as f:
+                mock_spectra_info = json.load(f)
+                log.debug(f"generating readings for mock spectrometer")
+                mock_device.generate_readings(mock_spectra_info)
+                for default in self.default_compounds:
+                    self.combo_compound.addItem(default)
         else:
             for s in spectra:
                 self.combo_compound.addItem(s.capitalize())
