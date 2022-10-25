@@ -128,6 +128,7 @@ class Controller:
         self.headless               = headless
         self.spec_timeout           = 30
         self.form                   = form
+        self.other_devices          = []
 
         if form is None:
             log.error("Got a None value for form. Cannot start without QResources")
@@ -268,7 +269,6 @@ class Controller:
             }
 
         self.header("Controller ctor done")
-        self.other_devices = []
 
         # init is done so display the GUI and destory the splash screen
         self.form.show()
@@ -430,6 +430,7 @@ class Controller:
         devices connected at application launch).
         """
         self.marquee.info("searching for spectrometers", immediate=True, persist=True)
+        log.debug(f"other devices is {self.other_devices}")
         self.bus = WasatchBus()
         self.bus_timer = QtCore.QTimer()
         self.bus_timer.timeout.connect(self.tick_bus_listener)
@@ -506,6 +507,7 @@ class Controller:
         # do we see any spectrometers on the bus?  (WasatchBus will pre-filter to
         # only valid spectrometer devices)
         if other_device is not None and other_device not in self.other_devices:
+            log.debug(f"given other device adding {other_device} to the bus list")
             self.other_devices.append(other_device)
         self.bus.device_ids.extend(self.other_devices)
 
@@ -559,6 +561,7 @@ class Controller:
 
             if self.multispec.is_disconnecting(device_id):
                 log.info("connect_new: called connect on spectrometer that is disconnected, removing from record and passing to next bus update.")
+                self.bus.device_ids.remove(device_id)
                 self.multispec.set_disconnecting(device_id, False)
                 return
 
@@ -779,6 +782,8 @@ class Controller:
             self.multispec.add(device)
             hotplug = True
 
+        if device.mock:
+            self.mock_mgr.initialize_mock(device)
         spec = self.current_spectrometer()
         spec.app_state.spec_timeout_prompt_shown = False
         if spec is None:

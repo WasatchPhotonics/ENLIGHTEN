@@ -5,12 +5,16 @@ from typing import Optional
 from PySide2.QtWidgets import QFileDialog
 
 from .Spectrometer import Spectrometer
+from wasatch.WasatchDeviceWrapper import WasatchDeviceWrapper
 from wasatch.MockUSBDevice import MockUSBDevice
 from wasatch.DeviceID import DeviceID
 
 log = logging.getLogger(__name__)
 
 class MockManager:
+
+    default_compounds = ["Dark", "Cyclohexane"]
+
     def __init__(self,
                  cb_via_file,
                  combo_compound,
@@ -32,11 +36,11 @@ class MockManager:
         self.connect_btn = connect_btn
 
         self.connect_btn.clicked.connect(self.connect)
-
-
+        self.combo_compound.currentIndexChanged.connect(self.update_reading)
 
     def connect(self) -> None:
         if self.connected:
+            log.debug(f"MOCK MGR DISCONNECT CALLED")
             self.connected = False
             spec = self.get_mock_spec()
             self.disconnect(spec)
@@ -55,6 +59,18 @@ class MockManager:
         self.connect_new(sim_spec)
         self.connected = True
         self.connect_btn.setText("Disconnect")
+
+    def initialize_mock(self, device: WasatchDeviceWrapper):
+        mock_device = device.wrapper_worker.connected_device.hardware.device_type
+        spectra = mock_device.get_available_spectra()
+        self.combo_compound.clear()
+        if mock_device.rasa_virtual:
+            for default in self.default_compounds:
+                self.combo_compound.addItem(default)
+        else:
+            for s in spectra:
+                self.combo_compound.addItem(s.capitalize())
+
 
     def obtain_mock_id(self) -> Optional[str]:
         dialog = QFileDialog()
@@ -77,7 +93,7 @@ class MockManager:
         specs = self.multispec.get_spectrometers()
 
         for spec in specs:
-            if spec.mock:
+            if spec.device.mock:
                 return spec
 
         return None
@@ -88,4 +104,9 @@ class MockManager:
         if mock_spec is None:
             return None
         else:
-            return mock_spec.device.wrapper_worker.connected_device.dev.device_type
+            return mock_spec.device.wrapper_worker.connected_device.hardware.device_type
+
+    def update_reading(self) -> None:
+        reading = self.combo_compound.currentText().lower()
+        mock_dev = self.get_mock_device()
+        mock_dev.set_active_readings(reading)
