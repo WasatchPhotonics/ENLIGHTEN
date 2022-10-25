@@ -301,7 +301,7 @@ class Measurement(object):
             # the ProcessedReading. (Taking a deepcopy, because with plug-ins who
             # knows...)
             self.processed_reading  = copy.deepcopy(spec.app_state.processed_reading)
-            self.view               = spec.app_state.view_name
+            self.view               = spec.app_state.technique_name
             self.timestamp          = datetime.datetime.now()
             self.baseline_correction_algo = spec.app_state.baseline_correction_algo
 
