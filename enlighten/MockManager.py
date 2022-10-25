@@ -13,6 +13,7 @@ log = logging.getLogger(__name__)
 class MockManager:
     def __init__(self,
                  cb_via_file,
+                 combo_compound,
                  connect_btn,
                  connect_new,
                  disconnect,
@@ -26,6 +27,7 @@ class MockManager:
         self.disconnect = disconnect
 
         # UI
+        self.combo_compound = combo_compound
         self.cb_file = cb_via_file
         self.connect_btn = connect_btn
 
