@@ -345,6 +345,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
     def confirm_no_callback(self):
         self.confirm_widget.setVisible(False)
         self.gui.colorize_button(self.button_trash, False)
+        self.measurement.delete(from_disk=False, update_parent=True)
 
     ##
     # Passed from ConfirmWidget.button_yes
