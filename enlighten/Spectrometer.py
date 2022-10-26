@@ -4,7 +4,9 @@ import copy
 
 from .SpectrometerApplicationState import SpectrometerApplicationState
 
-from wasatch.SpectrometerState    import SpectrometerState
+from wasatch.SpectrometerState     import SpectrometerState
+from wasatch.AbstractUSBDevice     import AbstractUSBDevice
+from wasatch.MockUSBDevice         import MockUSBDevice
 
 log = logging.getLogger(__name__)
 
@@ -18,6 +20,46 @@ log = logging.getLogger(__name__)
 #
 # It is reasonable to ask whether ALL of SpectrometerApplicationState can be 
 # moved in here.
+#
+# @par Architecture
+#
+# \verbatim
+#                                       _______________         
+#                                      |   Controller  |        
+#                                      |_______________|        
+#                   +---------------------------^--------------------+
+#                  < >                                               |
+#         __________v___________                                _____v_____
+#        | WasatchDeviceWrapper | <------------.               | Multispec |
+#        |______________________|               `              |___________|
+#                   ^                           |                   < >
+#                   | .wrapper_worker           |                    | .spectrometers{}
+#            _______v_______                    |             _______v______
+#           | WrapperWorker |                   `--- .device | Spectrometer |
+#           |_______________|                                |______________|
+#                   ^
+#                   | .connected_device
+#            _______v_______
+#           | WasatchDevice |
+#           |_______________|
+#                   ^
+#                   | .hardware
+#     ______________v______________
+#    | FeatureIdentificationDevice | .device --> usb.core.Device
+#    |_____________________________|
+#                   ^
+#                   | .device_type
+#          _________v_________
+#         | AbstractUSBDevice |
+#         |___________________|
+#                  /_\ 
+#                   |
+#         +---------+-------+
+#  _______v_______   _______v_______ 
+# | MockUSBDevice | | RealUSBDevice |
+# |_______________| |_______________|
+#
+# \endverbatim
 #
 # @note fair bit of Controller can probably be moved into here
 # @note seems save to deepcopy and pass to plugins
@@ -40,10 +82,12 @@ class Spectrometer(object):
     def __init__(self, device, model_info):
         self.clear()
 
-        self.device = device
+        self.device = device # a WasatchDeviceWrapper
 
         self.device_id = self.device.device_id 
         self.settings = self.device.settings
+        self.roi_region_left = None
+        self.roi_region_right = None
         self.app_state = SpectrometerApplicationState(self.device_id)
 
         self.wp_model_info = model_info.get_by_model(self.settings.full_model())
@@ -198,3 +242,17 @@ class Spectrometer(object):
         log.info("change_device_setting[%s]: %s -> %s", device_id, setting, value)
         self.device.change_setting(setting, value)
 
+    def is_mock(self) -> bool:
+        return self.get_mock() is not None
+
+    def get_mock(self) -> MockUSBDevice:
+        device_type = self.get_device_type()
+        if device_type:
+            if isinstance(device_type, MockUSBDevice):
+                return device_type
+
+    def get_device_type(self) -> AbstractUSBDevice:
+        try:
+            return self.device.wrapper_worker.connected_device.hardware.device_type
+        except:
+            log.error(f"Spectrometer {self} doesn't seem to have an accessible device_type")

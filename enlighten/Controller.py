@@ -277,7 +277,7 @@ class Controller:
             # hiding tends to mess with gui tests since the componets are also hidden
             # So I replaced with minimizing, which I recognize is not a true headless
             # self.hide()
-            self.showMinimized()
+            self.form.showMinimized()
 
 
     def disconnect_device(self, spec=None, closing=False):
@@ -2419,7 +2419,7 @@ class Controller:
         else:
             retval = np.array(list(range(settings.pixels())), dtype=np.float32) 
 
-        if vignetted:
+        if vignetted and self.get_roi_enabled():
             return self.vignette_roi.crop(retval, roi=settings.eeprom.get_horizontal_roi())
 
         if regions:
@@ -2448,10 +2448,18 @@ class Controller:
 
     def toggle_roi_process(self):
         self.roi_enabled = not self.roi_enabled
+        self.graph.cursor.set_range(self.generate_x_axis())
+        if self.graph.cursor.is_outside_range():
+            self.graph.cursor.center()
         if self.roi_enabled:
             self.form.ui.pushButton_roi_toggle.setStyleSheet("background-color: #aa0000")
         else:
             self.form.ui.pushButton_roi_toggle.setStyleSheet(self.default_roi_btn)
+        for spec in self.multispec.get_spectrometers():
+            self.graph.update_roi_regions(spec)
+
+    def get_roi_enabled(self):
+        return self.roi_enabled
 
     def display_response_error(self, spec: Spectrometer, response_error: str) -> bool:
         """
@@ -2514,6 +2522,9 @@ class Controller:
 
     def get_grid_display(self):
         return self.grid_display
+
+    def get_roi_enabled(self):
+        return self.roi_enabled
 
     def graph_grid_toggle(self):
         self.grid_display = not self.grid_display

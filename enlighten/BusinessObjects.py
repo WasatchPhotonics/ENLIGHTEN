@@ -227,6 +227,7 @@ class BusinessObjects:
             stylesheets                 = ctl.stylesheets,
             eject_button                = sfu.pushButton_eject,
             controller_disconnect       = ctl.disconnect_device,
+            get_roi_enabled             = ctl.get_roi_enabled,
 
 			# Essentially, these are widgets corresponding to SpectrometerState fields,
             # SpectrometerApplicationState fields, or change_device_setting() keys
@@ -412,6 +413,7 @@ class BusinessObjects:
             label_count                 = sfu.label_session_count,
             layout                      = sfu.verticalLayout_scope_capture_save,
             marquee                     = ctl.marquee,
+            get_roi_enabled             = ctl.get_roi_enabled,
             reprocess_callback          = ctl.reprocess)
         ctl.graph.measurements = ctl.measurements
 
@@ -475,7 +477,6 @@ class BusinessObjects:
             button_dn                   = sfu.pushButton_laser_power_dn,
             button_up                   = sfu.pushButton_laser_power_up,
             button_toggle               = sfu.pushButton_laser_toggle,
-            combo_unit                  = sfu.comboBox_laser_power_unit,
             spinbox_excitation          = sfu.doubleSpinBox_lightSourceWidget_excitation_nm, # not EEPROMEditor
             spinbox_power               = sfu.doubleSpinBox_laser_power,
             slider_power                = sfu.verticalSlider_laser_power,

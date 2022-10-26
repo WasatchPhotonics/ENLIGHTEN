@@ -48,11 +48,13 @@ At writing that is:
 
 Then remaining packages:
 
-    $ sudo apt-get install pyside2-tools python3-xlwt libatlas-base-dev python3-pywt 2to3 python3-pil.imagetk libusb-0.1-4
+    $ sudo apt-get install pyside2-tools python3-xlwt libatlas-base-dev \
+                           python3-pywt 2to3 python3-pil.imagetk libusb-0.1-4
 
 And finally:
 
-    $ pip3 install superman pygtail pyusb pexpect pyqtgraph SPyC_Writer qimage2ndarray boto3 pandas
+    $ pip3 install superman pygtail pyusb pexpect pyqtgraph SPyC_Writer \
+                   qimage2ndarray boto3 pandas pyudev crcmod
 
 If you also want to build and deploy installers, the following additional utilities are required:
 
@@ -96,9 +98,13 @@ Example (both starting from ~/work/code/ENLIGHTEN):
 
 Raspberry Pi have a unique ability to power-cycle the entire internal USB hub, 
 forcing re-enumeration on all devices, and power-cycling those which are powered
-via USB.  This is the command to do so:
+via USB.  This can be done with commands like:
 
-    $ sudo ( uhubctl -l 2 -a 0 ; sleep 2 ; uhubctl -l 2 -a 1 )
+    $ sudo uhubctl -l 2 -a 0 && sleep 2 && uhubctl -l 2 -a 1 
+
+or
+
+    $ sudo uhubctl --action 2 --location 2 --repeat 2 --delay 5 --wait 1000
 
 # Deprecated
 

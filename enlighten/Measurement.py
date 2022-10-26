@@ -255,6 +255,7 @@ class Measurement(object):
         self.thumbnail_widget         = None
         self.timestamp                = None
         self.technique                = None
+        self.roi_active               = False
 
     ##
     # There are three valid instantiation patterns:
@@ -277,6 +278,7 @@ class Measurement(object):
 
         self.save_options       = save_options
         self.measurements       = measurements
+        self.roi_active         = False
 
         if spec:
             log.debug("instantiating from spectrometer %s", str(spec))
@@ -1067,7 +1069,8 @@ class Measurement(object):
 
         # vignetting
         roi = None
-        if self.settings is not None:
+        if self.settings is not None and self.measurements.get_roi_enabled():
+            self.roi_active = True
             roi = self.settings.eeprom.get_horizontal_roi()
         cropped = roi is not None and pr.is_cropped()
 

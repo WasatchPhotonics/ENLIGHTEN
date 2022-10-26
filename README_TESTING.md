@@ -1,10 +1,20 @@
 # Regression Testing
 
-This module uses pytest in order to run tests.
+This module uses pytest in order to run tests.  Mocks are provided by wasatch.MockUSBDevice.
 
-To run the tests in the /test folder from the CLI call:
+## Running Tests
+
+To run all tests in the /test folder from the CLI call:
 
 	pytest .\test
+
+To run only the release tests:
+
+    pytest .\test -m release
+
+To run a single test:
+
+    pytest -v .\test\test_usb.py::TestUSB::test_set_int_time_enlighten
 
 ## Writing a Test
 
@@ -12,12 +22,6 @@ The short summary is classes start with Test, functions start with test_. Pytest
 
 - https://docs.pytest.org/en/6.2.x/getting-started.html#create-your-first-test
 - https://docs.pytest.org/en/6.2.x/example/markers.html#mark-examples
-
-To run only the release tests use ```pytest .\test -m release```
-
-## User Testing
-
-- 1920x1080 resolution (production)
 
 ## Initial Test Plan
 
@@ -36,4 +40,4 @@ To run only the release tests use ```pytest .\test -m release```
 - Absorbance Technique
     - reference works
 
-All of the above with no Traceback reported in log.
+All of the above with no Traceback or CRITICAL reported in log.

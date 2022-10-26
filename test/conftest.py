@@ -31,6 +31,7 @@ def fixture():
     enlighten_app.run()
     yield enlighten_app
 
+# returns DeviceID
 def create_sim_spec(app,name,eeprom,eeprom_overrides=None,spectra_option=None):
     sim_spec = MockUSBDevice(name,eeprom,eeprom_overrides,spectra_option)
     if app.controller.multispec.is_disconnecting(sim_spec):

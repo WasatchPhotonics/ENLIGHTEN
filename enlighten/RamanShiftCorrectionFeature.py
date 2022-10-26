@@ -269,10 +269,10 @@ class RamanShiftCorrectionFeature(object):
     # In this case, we get called after each new processed_reading so we can 
     # re-scale the peaks against the current maxima.
     def update_graph(self):
-        log.debug("updating graph")
+        # log.debug("updating graph")
 
         if not self.curve_visible:
-            log.debug("not visible")
+            # log.debug("not visible")
             return
 
         if self.compound_name is None:
@@ -304,7 +304,7 @@ class RamanShiftCorrectionFeature(object):
             
         max_intensity = max(pr.processed)
         min_intensity = min(pr.processed)
-        log.debug("min = %d, max = %d", min_intensity, max_intensity)
+        # log.debug("min = %d, max = %d", min_intensity, max_intensity)
 
         if len(compound.peaks) == 0:
             self.curve.setData([])
@@ -339,10 +339,10 @@ class RamanShiftCorrectionFeature(object):
 
             peak_cm = peak.wavenumber
             if peak_cm < x_min_cm:
-                log.debug("can't see %s peak at %.2f (too low)", self.compound_name, peak_cm)
+                # log.debug("can't see %s peak at %.2f (too low)", self.compound_name, peak_cm)
                 continue
             elif peak_cm > x_max_cm:
-                log.debug("can't see %s peak at %.2f (too high)", self.compound_name, peak_cm)
+                # log.debug("can't see %s peak at %.2f (too high)", self.compound_name, peak_cm)
                 continue
 
             intensity = peak.intensity
@@ -502,7 +502,7 @@ class RamanShiftCorrectionFeature(object):
             shift_cm = peak.wavenumber - measured_cm
 
             # was this match "good enough"?
-            if shift_cm > self.MAX_WAVENUMBER_SHIFT:
+            if abs(shift_cm) > self.MAX_WAVENUMBER_SHIFT:
 
                 # it's okay to fail to match any one ASTM peak...
                 log.debug("failed to match ASTM peak %.2f to any declared peak in the measurement")

@@ -63,26 +63,76 @@ class TestUSB:
         assert type(sim_spec) is MockUSBDevice
         disconnect_spec(app,sim_spec)
 
-    # description: a release test that checks the gui change results in the mock device integration time changing
-    # author: Evan Dort
+    @wait_until(timeout=5000)
+    def disconnect_complete(self, caplog):
+        if "exiting because of downstream poison-pill command from ENLIGHTEN" in caplog.text:
+            return True
+
+    # description: a release test that checks the gui change results in the 
+    #              SPECTROMETER_SETTINGS integration time changing 
+    # author: Mark Zieg
+    #
+    # This is an example test that shows how to write tests which are validated 
+    # against spectrometer state within ENLIGHTEN (as opposed to within the Mock
+    # spectrometer itself).
+    #
     @pytest.mark.release
-    def test_set_int_time(self,app):
-        sim_spec = create_sim_spec(app,"WP-00887","WP-00887-mock.json")
+    def test_set_int_time_enlighten(self, app, caplog):
+        sim_spec = create_sim_spec(app, "WP-00887", "WP-00887-mock.json")
         sim_spec_obj = app.controller.multispec.get_spectrometer(sim_spec)
-        #log.info(f"{sim_spec}")
-        #sim_spec = create_sim_spec(app,"SiG_785","EEPROM-EM-9c65d19f4c.json")
+
         @wait_until(timeout=3000)
         def check():
-            value = sim_spec_obj.device.device_id.int_time
-            if init_int+1 == value:
-                return value
+            value = sim_spec_obj.settings.state.integration_time_ms
+            return value
+
         if sim_spec:
             init_int = app.controller.form.ui.spinBox_integration_time_ms.value()
             int_up_btn = app.controller.form.ui.pushButton_integration_time_ms_up
             int_up_btn.click()
+
             res = check()
             assert res == init_int + 1
-            disconnect_spec(app,sim_spec)
+
+            disconnect_spec(app, sim_spec)
+            assert self.disconnect_complete(caplog)
+        else:
+            assert False, f"No sim_spec, received {sim_spec} for sim_spec"
+
+    # description: a release test that checks the GUI change results in the 
+    #              MOCK DEVICE integration time changing
+    # author: Evan Dort
+    #
+    # This is an example test that shows how to write tests which are validated 
+    # against the Mock spectrometer (virtual hardware) in the Wasatch.PY driver, 
+    # as opposed to within ENLIGHTEN's "application state".
+    #
+    @pytest.mark.release
+    def test_set_int_time_mock(self, app, caplog):
+        sim_spec = create_sim_spec(app, "WP-00887", "WP-00887-mock.json")
+        sim_spec_obj = app.controller.multispec.get_spectrometer(sim_spec)
+
+        @wait_until(timeout=5000)
+        def check(expected):
+            # first make sure the command has actually made it downstream to the mock
+            if f"MockUSBDevice.set_int_time: value now {expected}" not in caplog.text:
+                return
+
+            # now make sure the mock has been properly updated
+            mock = sim_spec_obj.get_mock()
+            value = mock.int_time
+            return value
+
+        if sim_spec:
+            init_int = app.controller.form.ui.spinBox_integration_time_ms.value()
+            int_up_btn = app.controller.form.ui.pushButton_integration_time_ms_up
+            int_up_btn.click()
+
+            res = check(init_int + 1)
+            assert res == init_int + 1
+
+            disconnect_spec(app, sim_spec)
+            assert self.disconnect_complete(caplog)
         else:
             assert False, f"No sim_spec, received {sim_spec} for sim_spec"
 
@@ -144,22 +194,27 @@ class TestUSB:
     # description: test that toggling the laser button changes the mock device laser
     # author: Evan Dort
     @pytest.mark.release
-    def test_laser_toggle(self,app):
-        sim_spec = create_sim_spec(app,"WP-00887","WP-00887-mock.json")
+    def test_laser_toggle(self, app, caplog):
+        sim_spec = create_sim_spec(app,"WP-00887", "WP-00887-mock.json")
         sim_spec_obj = app.controller.multispec.get_spectrometer(sim_spec)
 
         @wait_until(timeout=2000)
         def check(expected_value):
-            if sim_spec.laser_enable == expected_value:
-                return True
+            mock = sim_spec_obj.get_mock()
+            return mock.laser_enable == expected_value
 
-        laser_btn = app.controller.form.ui.pushButton_laser_toggle
+        laser_btn = app.controller.form.ui.pushButton_laser_toggle 
+
         laser_btn.click()
         laser_enabled = check(True)
+
         laser_btn.click()
         laser_disabled = check(False)
+
         assert laser_enabled and laser_disabled
-        disconnect_spec(app,sim_spec)
+
+        disconnect_spec(app, sim_spec)
+        assert self.disconnect_complete(caplog)
 
     # description: test that on disconnect the mock device receives a request to shut down its laser
     # author: Evan Dort
@@ -186,8 +241,8 @@ class TestUSB:
 
         @wait_until(timeout=3000)
         def check():
-            if sim_spec.detector_tec_enable:
-                return True
+            mock = sim_spec_obj.get_mock()
+            return mock.detector_tec_enable 
 
         sim_spec = create_sim_spec(app,"WP-00887","WP-00887-mock.json")
         sim_spec_obj = app.controller.multispec.get_spectrometer(sim_spec)
@@ -294,6 +349,3 @@ class TestUSB:
         res = check()
         assert res
         disconnect_spec(app,sim_spec)
-
-
-

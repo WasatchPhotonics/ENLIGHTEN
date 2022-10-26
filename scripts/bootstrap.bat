@@ -279,6 +279,7 @@ pyinstaller ^
     --paths="../Wasatch.PY" ^
     --hidden-import="scipy._lib.messagestream" ^
     --hidden-import="scipy.special.cython_special" ^
+    --hidden-import="tensorflow" ^
     --icon "../enlighten/assets/uic_qrc/images/EnlightenIcon.ico" ^
     --specpath="%cd%/scripts" ^
     scripts/Enlighten.py
