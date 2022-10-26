@@ -14,8 +14,6 @@ log = logging.getLogger(__name__)
 
 class MockManager:
 
-    default_compounds = ["Dark", "Cyclohexane"]
-
     def __init__(self,
                  cb_via_file,
                  combo_compound,
@@ -70,8 +68,8 @@ class MockManager:
                 mock_spectra_info = json.load(f)
                 log.debug(f"generating readings for mock spectrometer")
                 mock_device.generate_readings(mock_spectra_info)
-                for default in self.default_compounds:
-                    self.combo_compound.addItem(default)
+                for sample in mock_device.spec_readings:
+                    self.combo_compound.addItem(sample.capitalize())
         else:
             for s in spectra:
                 self.combo_compound.addItem(s.capitalize())
