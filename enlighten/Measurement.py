@@ -331,8 +331,8 @@ class Measurement(object):
         else:
             raise Exception("Measurement requires exactly one of (spec, source_pathname, measurement, dict)")
 
-        self.prefix = self.save_options.prefix()
-        self.suffix = self.save_options.suffix()
+        self.prefix = self.save_options.prefix() if self.save_options is not None else ""
+        self.suffix = self.save_options.suffix() if self.save_options is not None else ""
         self.generate_id()
 
     ##
