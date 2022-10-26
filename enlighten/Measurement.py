@@ -233,7 +233,9 @@ class Measurement(object):
                            'Battery %',
                            'Device ID',
                            'FW Version',
-                           'FPGA Version']
+                           'FPGA Version',
+                           'PREFIX',
+                           'SUFFIX']
     EXTRA_HEADER_FIELDS_SET = set(EXTRA_HEADER_FIELDS)
 
     def clear(self):
@@ -329,6 +331,8 @@ class Measurement(object):
         else:
             raise Exception("Measurement requires exactly one of (spec, source_pathname, measurement, dict)")
 
+        self.prefix = self.save_options.prefix()
+        self.suffix = self.save_options.suffix()
         self.generate_id()
 
     ##
@@ -747,6 +751,8 @@ class Measurement(object):
         if field == "fpga version":              return self.settings.fpga_firmware_version 
         if field == "laser power %":             return self.processed_reading.reading.laser_power_perc if self.processed_reading.reading is not None else 0
         if field == "device id":                 return str(self.settings.device_id)
+        if field == "prefix":                    return self.prefix
+        if field == "suffix":                    return self.suffix
 
         if field == "laser power mw":            
             if self.processed_reading.reading is not None and \
