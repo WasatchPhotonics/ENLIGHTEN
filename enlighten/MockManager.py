@@ -60,19 +60,15 @@ class MockManager:
         self.connect_btn.setText("Disconnect")
 
     def initialize_mock(self, device: WasatchDeviceWrapper):
-        mock_device = device.wrapper_worker.connected_device.hardware.device_type
-        spectra = mock_device.get_available_spectra()
         self.combo_compound.clear()
-        if mock_device.rasa_virtual:
-            with open(os.path.join(os.getcwd(), "enlighten", "assets", "example_data", "mock_raman", "mocks.json")) as f:
-                mock_spectra_info = json.load(f)
-                log.debug(f"generating readings for mock spectrometer")
-                mock_device.generate_readings(mock_spectra_info)
-                for sample in mock_device.spec_readings:
-                    self.combo_compound.addItem(sample.capitalize())
-        else:
-            for s in spectra:
-                self.combo_compound.addItem(s.capitalize())
+        mock_device = device.wrapper_worker.connected_device.hardware.device_type
+        with open(os.path.join(os.getcwd(), "enlighten", "assets", "example_data", "mock_raman", "mocks.json")) as f:
+            mock_spectra_info = json.load(f)
+            log.debug(f"generating readings for mock spectrometer")
+            mock_device.generate_readings(mock_spectra_info)
+        spectra = mock_device.get_available_spectra()
+        for s in spectra:
+            self.combo_compound.addItem(s.capitalize())
 
 
     def obtain_mock_id(self) -> Optional[str]:
