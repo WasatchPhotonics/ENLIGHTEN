@@ -2436,7 +2436,7 @@ QComboBox QListView
         </sizepolicy>
        </property>
        <property name="currentIndex">
-        <number>3</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="page_hardware_setup">
         <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -2542,8 +2542,8 @@ QComboBox QListView
                      <property name="geometry">
                       <rect>
                        <x>0</x>
-                       <y>0</y>
-                       <width>688</width>
+                       <y>-5226</y>
+                       <width>1134</width>
                        <height>5948</height>
                       </rect>
                      </property>
@@ -14054,7 +14054,7 @@ p, li { white-space: pre-wrap; }
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="label_241">
+                <widget class="QLabel" name="label_virtual_spec">
                  <property name="font">
                   <font>
                    <weight>75</weight>
@@ -14063,6 +14063,9 @@ p, li { white-space: pre-wrap; }
                  </property>
                  <property name="text">
                   <string>Virtual Spectrometer</string>
+                 </property>
+                 <property name="initiallyVisible" stdset="0">
+                  <bool>false</bool>
                  </property>
                 </widget>
                </item>
@@ -14075,6 +14078,9 @@ p, li { white-space: pre-wrap; }
                   <enum>QFrame::Raised</enum>
                  </property>
                  <property name="wpGrad" stdset="0">
+                  <bool>false</bool>
+                 </property>
+                 <property name="initiallyVisible" stdset="0">
                   <bool>false</bool>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_156">

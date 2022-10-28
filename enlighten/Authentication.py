@@ -152,6 +152,7 @@ class Authentication(object):
             for widget in widgets:
                 widget.setEnabled(auth)
                 initiallyVisible = widget.property("initiallyVisible")
+                log.debug(f"setting viz for widget {widget} and init {initiallyVisible}")
                 if initiallyVisible is not None and isinstance(initiallyVisible, bool):
                     widget.setVisible(initiallyVisible or auth)
 
