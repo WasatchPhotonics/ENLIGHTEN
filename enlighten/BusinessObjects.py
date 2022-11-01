@@ -429,7 +429,7 @@ class BusinessObjects:
             oem_widgets                 = [ sfu.pushButton_write_eeprom, sfu.pushButton_importEEPROM,
                                            sfu.pushButton_exportEEPROM, sfu.pushButton_restore_eeprom, sfu.pushButton_reset_fpga ],
             advanced_widgets            = [ sfu.doubleSpinBox_lightSourceWidget_excitation_nm,
-                                            sfu.label_virtual_spec, sfu.frame_virtual_spec,
+                                            #sfu.label_virtual_spec, sfu.frame_virtual_spec,
                                             sfu.tabWidget_advanced_features ])
 
         self.header("instantiating EEPROMWriter")
