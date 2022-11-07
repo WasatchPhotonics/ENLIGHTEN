@@ -841,6 +841,7 @@ class BusinessObjects:
         ctl.mock_mgr = MockManager(
             cb_via_file = sfu.checkBox_virtual_from_file,
             combo_compound = sfu.comboBox_virtual_sample,
+            combo_virtual = sfu.comboBox_default_virtual,
             connect_btn = sfu.pushButton_connect_virtual,
             connect_new = ctl.connect_new,
             disconnect = ctl.disconnect_device,

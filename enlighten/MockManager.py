@@ -14,9 +14,13 @@ log = logging.getLogger(__name__)
 
 class MockManager:
 
+    mock_defaults = {"WP-785-ER": ("WP_785_ER", "WP_785_ER.json"),
+                     "NIR1": ("WP_00998_NIR1", "WP_00998.json")}
+
     def __init__(self,
                  cb_via_file,
                  combo_compound,
+                 combo_virtual,
                  connect_btn,
                  connect_new,
                  disconnect,
@@ -28,6 +32,7 @@ class MockManager:
         self.connect_new = connect_new
         self.multispec = multispec
         self.disconnect = disconnect
+        self.combo_virtual = combo_virtual
 
         # UI
         self.combo_compound = combo_compound
@@ -53,7 +58,12 @@ class MockManager:
             log.debug(f"mock connect got id str of {mock_id_str}")
             sim_spec = DeviceID(label=mock_id_str)
         else:
-            sim_spec = DeviceID(label="MOCK::")
+            selected_default = self.combo_virtual.currentText()
+            folder, eeprom = self.mock_defaults.get(selected_default, (None,None))
+            if folder != None and eeprom != None:
+                sim_spec = DeviceID(label=f"MOCK:{folder}:{eeprom}")
+            else:
+                return
 
         self.connect_new(sim_spec)
         self.connected = True

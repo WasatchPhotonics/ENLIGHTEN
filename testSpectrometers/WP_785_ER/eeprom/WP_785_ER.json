@@ -7,7 +7,7 @@
     "BaudRate": 300,
     "IncBattery": false,
     "IncCooling": true,
-    "IncLaser": false,
+    "IncLaser": true,
     "StartupIntTimeMS": 8,
     "StartupTempC": -15,
     "StartupTriggerMode": 0,
