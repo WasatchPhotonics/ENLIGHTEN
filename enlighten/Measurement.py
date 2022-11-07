@@ -234,8 +234,10 @@ class Measurement(object):
                            'Device ID',
                            'FW Version',
                            'FPGA Version',
+                           'NOTE',
                            'PREFIX',
                            'SUFFIX']
+                           
     EXTRA_HEADER_FIELDS_SET = set(EXTRA_HEADER_FIELDS)
 
     def clear(self):
@@ -258,6 +260,7 @@ class Measurement(object):
         self.timestamp                = None
         self.technique                = None
         self.roi_active               = False
+        self.note                     = ""
         self.prefix                   = ""
         self.suffix                   = ""
 
@@ -287,6 +290,7 @@ class Measurement(object):
         if spec:
             log.debug("instantiating from spectrometer %s", str(spec))
             self.spec = spec
+            self.note = self.save_options.note() if self.save_options is not None else ""
             self.prefix = self.save_options.prefix() if self.save_options is not None else ""
             self.suffix = self.save_options.suffix() if self.save_options is not None else ""
 
@@ -720,7 +724,6 @@ class Measurement(object):
         if field == "integration time":          return self.settings.state.integration_time_ms
         if field == "timestamp":                 return self.timestamp
         if field == "blank":                     return self.settings.eeprom.serial_number # for Multispec
-        if field == "note":                      return self.save_options.note() if self.save_options is not None else ""
         if field == "temperature":               return self.processed_reading.reading.detector_temperature_degC if self.processed_reading.reading is not None else -99
         if field == "technique":                 return self.technique
         if field == "baseline correction algo":  return self.baseline_correction_algo
@@ -753,6 +756,7 @@ class Measurement(object):
         if field == "fpga version":              return self.settings.fpga_firmware_version 
         if field == "laser power %":             return self.processed_reading.reading.laser_power_perc if self.processed_reading.reading is not None else 0
         if field == "device id":                 return str(self.settings.device_id)
+        if field == "note":                      return self.note
         if field == "prefix":                    return self.prefix
         if field == "suffix":                    return self.suffix
 
