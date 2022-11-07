@@ -234,7 +234,10 @@ class Measurement(object):
                            'Device ID',
                            'FW Version',
                            'FPGA Version',
-                           'NOTE']
+                           'NOTE',
+                           'PREFIX',
+                           'SUFFIX']
+                           
     EXTRA_HEADER_FIELDS_SET = set(EXTRA_HEADER_FIELDS)
 
     def clear(self):
@@ -258,6 +261,8 @@ class Measurement(object):
         self.technique                = None
         self.roi_active               = False
         self.note                     = ""
+        self.prefix                   = ""
+        self.suffix                   = ""
 
     ##
     # There are three valid instantiation patterns:
@@ -286,6 +291,8 @@ class Measurement(object):
             log.debug("instantiating from spectrometer %s", str(spec))
             self.spec = spec
             self.note = self.save_options.note() if self.save_options is not None else ""
+            self.prefix = self.save_options.prefix() if self.save_options is not None else ""
+            self.suffix = self.save_options.suffix() if self.save_options is not None else ""
 
             # Use deepcopy() to ensure that subsequent changes to integration 
             # time, laser power, excitation etc do not retroactively change the 
@@ -750,6 +757,8 @@ class Measurement(object):
         if field == "laser power %":             return self.processed_reading.reading.laser_power_perc if self.processed_reading.reading is not None else 0
         if field == "device id":                 return str(self.settings.device_id)
         if field == "note":                      return self.note
+        if field == "prefix":                    return self.prefix
+        if field == "suffix":                    return self.suffix
 
         if field == "laser power mw":            
             if self.processed_reading.reading is not None and \
