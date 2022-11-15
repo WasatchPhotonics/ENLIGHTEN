@@ -988,7 +988,7 @@ class Controller:
 
         # updates from initialization to match time window in spinbox
         # call StripChartFeature getter
-        spec.app_state.reset_temperature_data(time_window=sfu.spinBox_strip_window.value(), hotplug=hotplug)
+        spec.app_state.reset_rolling_data(time_window=sfu.spinBox_strip_window.value(), hotplug=hotplug)
 
     def rehide_curves(self):
         """

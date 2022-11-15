@@ -40,7 +40,7 @@ class SpectrometerApplicationState(object):
         self.spec_timeout_prompt_shown = False
         self.missed_reading_count = 0
 
-        self.reset_temperature_data()
+        self.reset_rolling_data()
 
     def __init__(self, device_id):
         self.device_id = device_id
@@ -89,13 +89,14 @@ class SpectrometerApplicationState(object):
         self.reference_excitation = None
 
     ## @todo remove sfu (add setters for secondary adc windows)
-    def reset_temperature_data(self, sfu=None, time_window=3, hotplug=True):
+    def reset_rolling_data(self, sfu=None, time_window=3, hotplug=True):
         # 1. raw data (all recent measurements, updated at a FAST rate)
         # 2. smoothed (use to display on-screen label at a MEDIUM rate)
         # 3. historical (on-screen graph trendline, updated at a SLOW rate)
         if not hotplug:
             return
         self.laser_temperature_data = RollingDataSet(time_window)
+        self.battery_data = RollingDataSet(time_window)
 
         self.detector_temperatures_degC                  = RollingDataSet(time_window)
         self.detector_temperatures_degC_averaged         = RollingDataSet(time_window) # MZ: basically just slows down display graph rate
@@ -114,6 +115,7 @@ class SpectrometerApplicationState(object):
 
     def update_rolling_data(self, window_value):
 
+        self.battery_data.update_window(window_value)
         self.laser_temperature_data.update_window(window_value)
         self.detector_temperatures_degC.update_window(window_value)
         self.detector_temperatures_degC_averaged.update_window(window_value) 
