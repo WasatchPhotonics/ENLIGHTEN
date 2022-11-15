@@ -2,6 +2,8 @@
 
 # 3.2 Open-Source
 
+- 2022-11-15 3.2.38
+    - add battery data to hardware strip charts
 - 2022-10-17 3.2.37
     - updates to regression tests
 - 2022-10-12 3.2.36
