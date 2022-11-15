@@ -33,6 +33,7 @@ class BatteryFeature:
 
         self.lb_raw    = lb_raw 
         self.lb_parsed = lb_parsed
+        self.lb_perc = self.sfu.label_hardware_capture_details_battery
 
         self.populate_placeholder()
         self.multispec.register_strip_feature(self)
@@ -63,7 +64,7 @@ class BatteryFeature:
 
         if hasattr(spec.settings.eeprom,"has_battery"):
             if not spec.settings.eeprom.has_battery:
-                self.lb_degC.setText("No Battery")
+                self.lb_perc.setText("No Battery")
                 return
 
         app_state = spec.app_state
@@ -90,10 +91,10 @@ class BatteryFeature:
         try:
             self.graph.set_data(curve=active_curve, y=y, x=x_time)
         except:
-            log.error("error plotting laser temperature", exc_info=1)
+            log.error("error plotting battery data", exc_info=1)
 
         if spec == current_spec:
-            self.lb_degC.setText("%.2f %" % self.perc)
+            self.lb_perc.setText(f"{self.perc:.2f} %")
 
     def _update_labels(self, reading):
         self.lb_raw.setText("0x%06x" % reading.battery_raw)
@@ -101,10 +102,11 @@ class BatteryFeature:
             self.perc, "charging" if self.charging else "discharging"))
 
     def populate_placeholder(self):
+        log.debug(f"adding battery graph")
         self.sfu.battery_graph = pyqtgraph.PlotWidget(name="Battery Data")
         self.sfu.battery_graph.invertX(True)
         self.sfu.stackedWidget_battery.addWidget(self.sfu.battery_graph)
-        self.sfu.stackedWidget_laser_temperature.setCurrentIndex(1)
+        self.sfu.stackedWidget_battery.setCurrentIndex(1)
 
     def add_spec_curve(self, spec):
         if self.multispec.check_hardware_curve_present(self.name, spec.device_id):
@@ -122,7 +124,7 @@ class BatteryFeature:
                 self.sfu.battery_graph.removeItem(curve)
         self.multispec.remove_hardware_curve(self.name, spec.device_id)
         if self.multispec.get_spectrometers() == []:
-            self.lb_degC.setText("99.99 %")
+            self.lb_perc.setText("99.99 %")
 
     def clear_data(self):
         for spec in self.multispec.get_spectrometers():
@@ -152,6 +154,19 @@ class BatteryFeature:
             rds = app_state.battery_data
             copy_str.append(rds.get_csv_data("Battery Data",spec.label))
         self.clipboard.raw_set_text('\n'.join(copy_str))
+
+    def update_visibility(self):
+        spec = self.multispec.current_spectrometer()
+        if spec is None:
+            visible = False
+        else:
+            if spec.settings.eeprom.has_battery:
+                visible = True
+            else:
+                visible = False
+
+        self.sfu.frame_hardware_capture_battery.setVisible(visible)
+
 
 
 
