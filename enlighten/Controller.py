@@ -848,6 +848,7 @@ class Controller:
         if hotplug:
             self.detector_temperature.init_hotplug()
         self.detector_temperature.update_visibility()
+        self.battery_feature.update_visibility()
 
         ########################################################################
         # Now override the EEPROM and Detector defaults with the .INI file
@@ -916,6 +917,8 @@ class Controller:
                 self.laser_temperature.add_spec_curve(spec)
             if spec.settings.eeprom.has_cooling:
                 self.detector_temperature.add_spec_curve(spec)
+            if spec.settings.eeprom.has_battery:
+                self.battery_feature.add_spec_curve(spec)
             # This plots on the live graph on the hardware capture page
             # This graph is held by the area scan object and is a 1D spectra
             # Not the scan waterfall that is a 2D layout
@@ -988,7 +991,7 @@ class Controller:
 
         # updates from initialization to match time window in spinbox
         # call StripChartFeature getter
-        spec.app_state.reset_temperature_data(time_window=sfu.spinBox_strip_window.value(), hotplug=hotplug)
+        spec.app_state.reset_rolling_data(time_window=sfu.spinBox_strip_window.value(), hotplug=hotplug)
 
     def rehide_curves(self):
         """
