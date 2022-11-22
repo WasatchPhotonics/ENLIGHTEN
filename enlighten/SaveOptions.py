@@ -261,13 +261,13 @@ class SaveOptions(object):
     # Accessors
     # ##########################################################################
 
-    def wrap_name(self, name):
+    def wrap_name(self, name, pre, post):
         def clean(foo):
             return re.sub(r"[:/\\]", "-", foo) 
 
         s = name
-        pre = clean(self.prefix())
-        post = clean(self.suffix())
+        pre = clean(pre)
+        post = clean(post)
         if len(pre) > 0:
             s = "%s-%s" % (pre, s)
         if len(post) > 0:
