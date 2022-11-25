@@ -844,8 +844,12 @@ class BusinessObjects:
             combo_virtual = sfu.comboBox_default_virtual,
             connect_btn = sfu.pushButton_connect_virtual,
             connect_new = ctl.connect_new,
+            lamp_btn = sfu.pushButton_virtual_lamp,
             disconnect = ctl.disconnect_device,
-            multispec = ctl.multispec
+            multispec = ctl.multispec,
+            gui = ctl.gui,
+            label_or = sfu.label_virtual_or,
+            label_sample = sfu.label_virtual_sample
             )
 
         self.header("done with Business Object creation")

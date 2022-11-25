@@ -2436,7 +2436,7 @@ QComboBox QListView
         </sizepolicy>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>3</number>
        </property>
        <widget class="QWidget" name="page_hardware_setup">
         <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -7643,7 +7643,7 @@ p, li { white-space: pre-wrap; }
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>721</width>
+                    <width>1134</width>
                     <height>932</height>
                    </rect>
                   </property>
@@ -8391,7 +8391,7 @@ p, li { white-space: pre-wrap; }
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>606</width>
+              <width>656</width>
               <height>1475</height>
              </rect>
             </property>
@@ -11032,8 +11032,8 @@ p, li { white-space: pre-wrap; }
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>230</width>
-                  <height>653</height>
+                  <width>235</width>
+                  <height>722</height>
                  </rect>
                 </property>
                 <property name="maximumSize">
@@ -11306,8 +11306,8 @@ p, li { white-space: pre-wrap; }
                                   <rect>
                                    <x>0</x>
                                    <y>0</y>
-                                   <width>190</width>
-                                   <height>206</height>
+                                   <width>199</width>
+                                   <height>277</height>
                                   </rect>
                                  </property>
                                  <layout class="QVBoxLayout" name="verticalLayout_scope_capture_save_design">
@@ -12648,8 +12648,8 @@ p, li { white-space: pre-wrap; }
                                  <rect>
                                   <x>0</x>
                                   <y>0</y>
-                                  <width>96</width>
-                                  <height>30</height>
+                                  <width>835</width>
+                                  <height>232</height>
                                  </rect>
                                 </property>
                                 <property name="wpClear" stdset="0">
@@ -13813,9 +13813,9 @@ p, li { white-space: pre-wrap; }
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-484</y>
+                <y>-298</y>
                 <width>224</width>
-                <height>3478</height>
+                <height>3480</height>
                </rect>
               </property>
               <property name="styleSheet">
@@ -14104,7 +14104,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLabel" name="label_48">
+                   <widget class="QLabel" name="label_virtual_or">
                     <property name="text">
                      <string>OR</string>
                     </property>
@@ -14147,28 +14147,64 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLabel" name="label_47">
+                   <widget class="QLabel" name="label_virtual_sample">
                     <property name="text">
                      <string>Sample</string>
                     </property>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QComboBox" name="comboBox_virtual_sample">
-                    <property name="currentText">
-                     <string>Dark</string>
-                    </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_145">
                     <item>
-                     <property name="text">
-                      <string>Dark</string>
-                     </property>
+                     <widget class="QComboBox" name="comboBox_virtual_sample">
+                      <property name="currentText">
+                       <string>Dark</string>
+                      </property>
+                      <item>
+                       <property name="text">
+                        <string>Dark</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Cyclohexane</string>
+                       </property>
+                      </item>
+                     </widget>
                     </item>
                     <item>
-                     <property name="text">
-                      <string>Cyclohexane</string>
-                     </property>
+                     <widget class="QPushButton" name="pushButton_virtual_lamp">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="minimumSize">
+                       <size>
+                        <width>30</width>
+                        <height>26</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>30</width>
+                        <height>26</height>
+                       </size>
+                      </property>
+                      <property name="toolTip">
+                       <string>Take Reference</string>
+                      </property>
+                      <property name="text">
+                       <string />
+                      </property>
+                      <property name="icon">
+                       <iconset resource="grey_icons.qrc">
+                        <normaloff>:/greys/images/grey_icons/bulb-light.svg</normaloff>:/greys/images/grey_icons/bulb-light.svg</iconset>
+                      </property>
+                     </widget>
                     </item>
-                   </widget>
+                   </layout>
                   </item>
                  </layout>
                 </widget>
