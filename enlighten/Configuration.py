@@ -2,6 +2,7 @@ from PySide2 import QtCore
 
 import os
 import re
+import shutil
 import logging
 import textwrap
 import threading
@@ -86,6 +87,7 @@ class Configuration(object):
         self.load_defaults()
         self.stub_missing()
         self.stub_test()
+        self.stub_plugin()
 
         try:
             self.reload()
@@ -118,6 +120,27 @@ class Configuration(object):
             os.makedirs(self.directory)
         except Exception as exc:
             log.critical("failed to create config directory", exc_info=1)
+
+    def stub_plugin(self):
+        """Create the plugins folder if it does not exist"""
+        log.debug(f"starting plugin stub")
+        plugin_dst = os.path.join(self.directory, "plugins")
+        if os.path.exists(plugin_dst):
+            log.debug(f"plugin destination exists. Assumming created so not stubbing")
+            return
+        os.mkdir(plugin_dst)
+
+        cwd = os.getcwd()
+        #parent_dir = os.path.dirname(cwd)
+        plugin_src = os.path.join(cwd, "pluginExamples")
+
+        if os.path.exists(plugin_src):
+            plugin_src_items = os.listdir(plugin_src)
+            log.debug(f"in search items {plugin_src} found items {plugin_src_items}")
+            shutil.copytree(plugin_src, plugin_dst, dirs_exist_ok=True)
+        else:
+            log.error(f"couldn't find plugin src {plugin_src} so not creating stub")
+
 
     def stub_test(self):
         """ Create test spectra dir if not found. """

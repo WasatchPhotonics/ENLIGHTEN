@@ -2,6 +2,8 @@
 
 # 3.2 Open-Source
 
+- 2022-11-28 3.2.39
+    - add fix for international computers for plugins creation on install
 - 2022-11-15 3.2.38
     - add battery data to hardware strip charts
     - add string formatting to note, prefix, and suffix
