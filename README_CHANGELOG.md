@@ -2,6 +2,9 @@
 
 # 3.2 Open-Source
 
+- 2022-11-29 3.2.39
+    - dark-correct reference spectrum after-the-fact if collected in that order
+    - don't apply boxcar to dark or reference when in reference technique
 - 2022-11-15 3.2.38
     - add battery data to hardware strip charts
     - add string formatting to note, prefix, and suffix
