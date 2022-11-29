@@ -31,7 +31,7 @@ class TransmissionFeature:
     # (if no dark is available, just use sample / reference)
     #
     # @returns True if ProcessedReading.processed successfully updated
-    def process(self, processed_reading, settings):
+    def process(self, processed_reading, settings, app_state):
         pr = processed_reading
 
         if pr.dark is None:
@@ -42,6 +42,11 @@ class TransmissionFeature:
         if ref is None:
             self.marquee.error("Please take reference")
             return False
+
+        # dark-correct reference if not already done
+        if not app_state.reference_is_dark_corrected:
+            ref = ref.copy()
+            ref -= pr.dark
 
         sample = pr.get_processed()
         if sample is None:

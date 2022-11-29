@@ -22,7 +22,7 @@ class AbsorbanceFeature:
         self.marquee        = marquee                
         self.transmission   = transmission
 
-    def process(self, processed_reading, settings) -> bool:
+    def process(self, processed_reading, settings, app_state) -> bool:
         """
         Computes absorbance from the current processed spectrum,
         then stores it back into 'processed.'
@@ -32,7 +32,7 @@ class AbsorbanceFeature:
         """
         pr = processed_reading
 
-        if not self.transmission.process(pr, settings):
+        if not self.transmission.process(pr, settings, app_state):
             log.error("can't compute absorbance w/o transmission")
             return False
 
