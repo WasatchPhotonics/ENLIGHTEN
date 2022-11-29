@@ -26,7 +26,8 @@ class DarkFeature:
             stackedWidget_scope_setup_dark_spectrum,
             gui_make_pen):
         """
-        Encapsulates dark correction.
+        Encapsulates storage and display of dark spectra (but not the actual dark
+        correction).
         """
 
         self.generate_x_axis     = generate_x_axis

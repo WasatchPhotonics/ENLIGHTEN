@@ -628,7 +628,10 @@ class BusinessObjects:
             bt_dn                       = sfu.pushButton_boxcar_half_width_dn,
             bt_up                       = sfu.pushButton_boxcar_half_width_up,
             spinbox                     = sfu.spinBox_boxcar_half_width,
-            multispec                   = ctl.multispec)
+            
+            multispec                   = ctl.multispec,
+            page_nav                    = ctl.page_nav,
+            )
 
         self.header("instantiating IntegrationTimeFeature")
         ctl.integration_time_feature = IntegrationTimeFeature(
