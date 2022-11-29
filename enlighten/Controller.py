@@ -1932,15 +1932,15 @@ class Controller:
 
         if self.page_nav.using_reference():
             if self.page_nav.doing_transmission():
-                self.transmission.process(pr, settings)
+                self.transmission.process(pr, settings, spec.app_state)
             elif self.page_nav.doing_absorbance():
-                self.absorbance.process(pr, settings)
+                self.absorbance.process(pr, settings, spec.app_state)
 
         ########################################################################
         # non-reference techniques
         ########################################################################
 
-        if not self.page_nav.using_reference():
+        else:
 
             ####################################################################
             # Raman intensity correction
