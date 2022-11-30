@@ -3,7 +3,7 @@ import os
 import sys
 import time
 import copy
-import numpy as np
+import shutil
 import pickle
 import logging
 import platform
@@ -11,6 +11,7 @@ import tokenize
 import threading
 import pyqtgraph
 import traceback
+import numpy as np
 import importlib.util
 
 from time import sleep
@@ -207,6 +208,10 @@ class PluginController:
         self.layout_graphs              = layout_graphs
         self.measurements               = measurements
 
+        # start up check examples exist
+        self.directory = common.get_default_data_dir()
+        self.stub_plugin()
+
         # EnlightenApplicationInfo
         self.reset_enlighten_info()
 
@@ -245,6 +250,25 @@ class PluginController:
         log.debug("registering observer on MeasurementFactory")
         self.measurement_factory.register_observer(self.events_factory_callback)
         self.measurements.register_observer("export", self.export_event_callback)
+
+    def stub_plugin(self):
+        """Create the plugins folder if it does not exist"""
+        log.debug(f"starting plugin stub")
+        plugin_dst = os.path.join(self.directory, "plugins")
+        if os.path.exists(plugin_dst):
+            log.debug(f"plugin destination exists. Assumming created so not stubbing")
+            return
+        os.mkdir(plugin_dst)
+
+        cwd = os.getcwd()
+        plugin_src = os.path.join(cwd, "pluginExamples")
+
+        if os.path.exists(plugin_src):
+            plugin_src_items = os.listdir(plugin_src)
+            log.debug(f"in search items {plugin_src} found items {plugin_src_items}")
+            shutil.copytree(plugin_src, plugin_dst, dirs_exist_ok=True)
+        else:
+            log.error(f"couldn't find plugin src {plugin_src} so not creating stub")
 
     ##
     # releases any custom attributes created for a plugin
