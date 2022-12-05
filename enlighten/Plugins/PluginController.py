@@ -157,6 +157,7 @@ class PluginController:
             kia_feature,
             measurements_clipboard,
             get_grid_display,
+            vignette_feature,
 
             button_process,
             cb_connected,
@@ -192,6 +193,7 @@ class PluginController:
         self.kia_feature                = kia_feature
         self.measurements_clipboard     = measurements_clipboard
         self.get_grid_display           = get_grid_display
+        self.vignette_feature           = vignette_feature
 
         # widgets
         self.button_process             = button_process
@@ -287,7 +289,8 @@ class PluginController:
             plugin_settings = self.get_current_settings,
             measurement_factory = self.measurement_factory,
             measurements_clipboard = self.measurements_clipboard,
-            read_measurements = self.measurements.read_measurements) # leaving read measurement call for legacy purposes
+            read_measurements = self.measurements.read_measurements,
+            vignette_feature= self.vignette_feature) # leaving read measurement call for legacy purposes
 
     def initialize_python_path(self):
         for path in self.plugin_dirs:

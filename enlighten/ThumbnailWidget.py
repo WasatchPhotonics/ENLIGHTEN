@@ -466,7 +466,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
             roi = self.measurement.settings.eeprom.get_horizontal_roi()
             if roi is not None and self.graph.vignette_roi is not None:
                 spectrum = self.measurement.processed_reading.processed_vignetted
-                #x_axis = self.graph.vignette_roi.crop(x_axis, roi=roi)
+                x_axis = self.graph.vignette_roi.crop(x_axis, roi=roi)
 
         # use named color if found in label
         color = self.selected_color

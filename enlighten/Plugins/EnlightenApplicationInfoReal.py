@@ -19,6 +19,7 @@ class EnlightenApplicationInfoReal(EnlightenApplicationInfo):
             measurement_factory,
             measurements_clipboard,
             read_measurements,# present for legacy reasons
+            vignette_feature,
             dependencies = {}):
 
         self.get_x_axis_unit_callback = graph_scope.get_x_axis_unit
@@ -30,6 +31,7 @@ class EnlightenApplicationInfoReal(EnlightenApplicationInfo):
         self.kia_feature = kia_feature
         self.dependencies = dependencies
         self.read_measurements = read_measurements
+        self.vignette_feature = vignette_feature
 
     def get_x_axis_unit(self):
         return self.get_x_axis_unit_callback()

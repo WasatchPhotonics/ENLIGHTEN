@@ -751,6 +751,7 @@ class BusinessObjects:
             kia_feature                 = ctl.kia_feature,
             measurements_clipboard      = ctl.measurements,
             get_grid_display            = ctl.get_grid_display,
+            vignette_feature            = ctl.vignette_roi,
 
             button_process              = sfu.pushButton_plugin_process,
             cb_connected                = sfu.checkBox_plugin_connected,
