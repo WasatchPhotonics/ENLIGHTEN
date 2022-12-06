@@ -22,11 +22,21 @@ log = logging.getLogger(__name__)
 # Series-XS spectrometers have a laser watchdog feature which automatically turns
 # off the laser after a configured number of seconds has elapsed.  This works.
 #
-# The problem is that ENLIGHTEN doesn't *know* that the laser has been turned off,
-# and so the on-screen button still indicates that the laser is firing.  That's
-# not the end of the world.
+# What isn't yet finialized is a method for ENLIGHTEN to "know" whether and when
+# the firmware watchdog has disabled the laser.  We are actively updating firmware
+# to support this feature, but it's not yet ready.
 #
-# However, more problematically, 
+# Therefore, we're cheating a little and using an internal "watchdog", not to
+# disable the laser (the firmware watchdog already does this perfectly well, and
+# more safely than ENLIGHTEN could), but to update the on-screen button state so
+# the GUI correctly indicates when the watchdog has "probably" disabled the laser.
+#
+# This is NOT a good approach long-term, but it "behaves correctly" in testing,
+# and should be sufficient for an initial prototype.  
+# 
+# Note again that the actual SAFETY aspect of the system, that of turning off the
+# laser after a configured timeout, is in fact implemented and working in the
+# FPGA firmware where it belongs.  This is mainly window-dressing.
 class LaserControlFeature:
 
     def __init__(self,
@@ -212,6 +222,9 @@ class LaserControlFeature:
         self.status_indicators.update_visibility()
 
     def process_timeouts(self):
+        # you can 'return' here to confirm that the actual laser watchdog is in 
+        # fact running in firmware
+
         log.debug("process_timeouts")
         for device_id in self.device_watchdogs:
             time_stop = self.device_watchdogs[device_id]
