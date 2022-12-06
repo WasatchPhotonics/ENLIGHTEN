@@ -1575,7 +1575,6 @@ class Controller:
                 self.update_laser_status(reading)
 
     def update_laser_status(self, reading):
-        log.debug("update_laser_status: start")
         spec = self.multispec.current_spectrometer()
         if spec is None:
             return
@@ -1584,28 +1583,44 @@ class Controller:
             return
 
         if reading.laser_enabled is None:
-            log.debug("reading.laser_enabled is None...returning")
+            log.debug("update_laser_status: reading.laser_enabled is None")
             return
 
-        # MZ: I think this check no longer makes sense, because a single 
-        #     SpectrometerSettings (and therefore SpectrometerState) object is probably shared across Wasatch.PY and enlighten threads.
-        # if reading.laser_enabled == spec.settings.state.laser_enabled:
         if reading.laser_enabled == spec.app_state.laser_gui_firing:
-            log.debug(f"reading.laser_enabled {reading.laser_enabled} agrees with app_state {spec.app_state.laser_gui_firing}...returning")
+            log.debug(f"update_laser_status: reading.laser_enabled {reading.laser_enabled} agrees with app_state.laser_gui_firing {spec.app_state.laser_gui_firing}")
             return
 
+        log.debug(f"update_laser_status: reading.laser_enabled {reading.laser_enabled} != app_state {spec.app_state.laser_gui_firing}...we should probably sync Reading state to the GUI widget")
+
+        
+        ########################################################################
         # apparently the GUI laser status is inaccurate, so debounce and correct
-        # MZ: @todo: use the app_state for the spectrometer associated with this Reading
-        log.debug(f"update_laser_status: reading.laser_enabled {reading.laser_enabled} != app_state {spec.app_state.laser_gui_firing}")
-        log.debug(f"update_laser_status: last_laser_toggle {spec.app_state.last_laser_toggle}")
-        if spec.app_state.last_laser_toggle is not None:
-            debounce_ms = 500 + spec.settings.state.integration_time_ms * 2
-            elapsed_ms = (datetime.datetime.now() - spec.app_state.last_laser_toggle).total_seconds() * 1000.0
-            log.debug(f"update_laser_status: debounce_ms {debounce_ms}, elapsed_ms {elapsed_ms}")
-            if (elapsed_ms > debounce_ms):
-                log.debug("toggling laser because reading.laser_enabled %s but app_state.laser_gui_firing %s (and elapsed_ms %d > debounce_ms %d)",
-                    reading.laser_enabled, spec.app_state.laser_gui_firing, elapsed_ms, debounce_ms)
-                self.laser_control.toggle_laser()
+        ########################################################################
+
+        # MZ: the following code is unready in at least two respects:
+        #
+        # 1. we haven't yet updated the FW to give us an accurate 
+        #    reading.laser_enabled after watchdog lockdown (new drop expected 
+        #    tomorrow)
+        #
+        # 2. we should be checking against the spectrometer which provided the 
+        #    Reading, not the application-wide LaserControllerFeature object
+        #
+        # For now, allow the LaserControlFeature to maintain its own timeouts
+        # (basically "SW watchdogs"), ticked by Controller.status_timer.  These
+        # don't really add any SAFETY (the FW watchdog does that), but they do
+        # let us keep the application GUI more-or-less in sync with the expected
+        # hardware state.
+        #
+        # log.debug(f"update_laser_status: last_laser_toggle {spec.app_state.last_laser_toggle}")
+        # if spec.app_state.last_laser_toggle is not None:
+        #     debounce_ms = 500 + spec.settings.state.integration_time_ms * 2
+        #     elapsed_ms = (datetime.datetime.now() - spec.app_state.last_laser_toggle).total_seconds() * 1000.0
+        #     log.debug(f"update_laser_status: debounce_ms {debounce_ms}, elapsed_ms {elapsed_ms}")
+        #     if (elapsed_ms > debounce_ms):
+        #         log.debug("toggling laser because reading.laser_enabled %s but app_state.laser_gui_firing %s (and elapsed_ms %d > debounce_ms %d)",
+        #             reading.laser_enabled, spec.app_state.laser_gui_firing, elapsed_ms, debounce_ms)
+        #         self.laser_control.toggle_laser()
 
     def acquire_reading(self, spec: Spectrometer) -> AcquiredReading:
         """

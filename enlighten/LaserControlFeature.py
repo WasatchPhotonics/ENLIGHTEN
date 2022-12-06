@@ -190,18 +190,21 @@ class LaserControlFeature:
             spec.settings.state.laser_enabled = flag
             spec.change_device_setting("laser_enable", flag)
 
-        # store whether the GUI "thinks" the laser was last told to fire
+        # Store when (and if) the laser was last told to fire. This could be used
+        # with Controller.update_laser_status().
         #
         # spec.app_state.laser_gui_firing = flag
         # spec.app_state.last_laser_toggle = datetime.now()
 
-        # store when we think the watchdog will kick-off
-        if flag:
+        # For now, until we get a working Reading.laser_enabled, store when we 
+        # THINK the watchdog will kick-off
+        if flag and spec.settings.state.laser_watchdog_sec > 0:
             stop_time = datetime.now() + timedelta(seconds=spec.settings.state.laser_watchdog_sec)
             self.device_watchdogs[spec.device_id] = stop_time
             log.debug(f"watchdog on {spec.device_id} assumed to kick-on around {stop_time}")
         else:
             self.device_watchdogs[spec.device_id] = None
+            log.debug(f"cleared watchdog on {spec.device_id}")
 
         if self.multispec.is_current_spectrometer(spec):
             self.refresh_laser_button()
@@ -244,6 +247,19 @@ class LaserControlFeature:
         else:
             self.button_toggle.setText("Turn Laser On")
         self.gui.colorize_button(self.button_toggle, enabled)
+
+        self.refresh_watchdog_tooltip()
+
+    def refresh_watchdog_tooltip(self):
+        spec = self.multispec.current_spectrometer()
+        if spec is None:
+            return
+
+        watchdog_sec = spec.settings.state.laser_watchdog_sec
+        if watchdog_sec > 0:
+            self.spinbox_watchdog.setToolTip(f"Laser will automatically stop firing after {watchdog_sec} seconds")
+        else:
+            self.spinbox_watchdog.setToolTip("Laser watchdog disabled")
 
     def configure_laser_power_controls_percent(self):
         spec = self.multispec.current_spectrometer()
@@ -376,6 +392,11 @@ class LaserControlFeature:
         self.multispec.set_state("laser_watchdog_sec", sec)
         self.multispec.change_device_setting("laser_watchdog_sec", sec)
 
+        if spec.settings.state.laser_enabled:
+            self.set_laser_enable(False)
+
+        self.refresh_watchdog_tooltip()
+
     ## @todo consider making this a generic utility method (compare with EEPROMWriter)
     def confirm_disable(self) -> bool:
         spec = self.multispec.current_spectrometer()
@@ -398,6 +419,7 @@ class LaserControlFeature:
         if retval != QtWidgets.QMessageBox.Yes:
             log.debug("user declined to disable laser watchdog on %s", label)
             self.marquee.clear(token="laser_watchdog")
+            self.spinbox_watchdog.setValue(spec.settings.state.laser_watchdog_sec)
             return False
         return True
 
