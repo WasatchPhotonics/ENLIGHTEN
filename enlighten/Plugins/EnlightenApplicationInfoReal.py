@@ -25,6 +25,7 @@ class EnlightenApplicationInfoReal(EnlightenApplicationInfo):
         self.get_x_axis_unit_callback = graph_scope.get_x_axis_unit
         self.reference_is_dark_corrected = reference_is_dark_corrected
         self.save_options_directory_callback = save_options.get_directory
+        self.save_today_path = save_options.generate_today_dir
         self.plugin_settings = plugin_settings
         self.measurements_clipboard = measurements_clipboard
         self.measurement_factory = measurement_factory
