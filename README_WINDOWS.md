@@ -31,8 +31,7 @@ Wasatch.PY into a directory parallel to ENLIGHTEN, and adding to your PYTHONPATH
     $ git clone git@github.com:WasatchPhotonics/ENLIGHTEN.git
     $ git clone git@github.com:WasatchPhotonics/Wasatch.PY.git
     $ cd ENLIGHTEN
-    $ set PYTHONPATH=Z:\work\code\Wasatch.PY (or equivalent)
-    $ set PYTHONPATH=..\Wasatch.PY;pluginExamples;.
+    $ set PYTHONPATH=..\Wasatch.PY;pluginExamples;.;enlighten\assets\uic_qrc
 
 *Note:* when setting environment variables like PYTHONPATH under Windows, 
 _do not_ quote them (e.g., do *not* type: set PYTHONPATH="..\Wasatch.PY")

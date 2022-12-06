@@ -91,7 +91,7 @@ Example (both starting from ~/work/code/ENLIGHTEN):
 # Test
 
     $ cd work/code/enlighten
-    $ export PYTHONPATH=".:pluginExamples:../Wasatch.PY"
+    $ export PYTHONPATH="../Wasatch.PY:pluginExamples:.:enlighten/assets/uic_qrc"
     $ python3 scripts/Enlighten.py
 
 # Resetting USB Ports

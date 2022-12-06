@@ -435,6 +435,7 @@ class BusinessObjects:
 
             oem_widgets                 = [ sfu.pushButton_write_eeprom, sfu.pushButton_importEEPROM, sfu.pushButton_exportEEPROM, sfu.pushButton_restore_eeprom, sfu.pushButton_reset_fpga ],
             advanced_widgets            = [ sfu.doubleSpinBox_lightSourceWidget_excitation_nm,
+                                            sfu.label_lightSourceWidget_excitation_nm,
                                             sfu.tabWidget_advanced_features ])
 
         self.header("instantiating EEPROMWriter")
@@ -484,9 +485,11 @@ class BusinessObjects:
             button_dn                   = sfu.pushButton_laser_power_dn,
             button_up                   = sfu.pushButton_laser_power_up,
             button_toggle               = sfu.pushButton_laser_toggle,
+            lb_watchdog                 = sfu.label_laser_watchdog_sec,
             spinbox_excitation          = sfu.doubleSpinBox_lightSourceWidget_excitation_nm, # not EEPROMEditor
             spinbox_power               = sfu.doubleSpinBox_laser_power,
             slider_power                = sfu.verticalSlider_laser_power,
+            spinbox_watchdog            = sfu.spinBox_laser_watchdog_sec,
             guide                       = ctl.guide)
 
         self.header("instantiating LaserTemperatureFeature")
