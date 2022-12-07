@@ -85,14 +85,26 @@ Example (both starting from ~/work/code/ENLIGHTEN):
     $ scripts/rebuilt_resources.sh
 
     // on Raspberry Pi
-    $ rsync --progress --archive USER@MAC_IP:work/code/ENLIGHTEN/enlighten/assets/ enlighten/assets/
-    $ find . -name __pycache__ -exec rm -rf {} \;
+    $ rsync --progress --archive USER@MAC_IP:work/code/ENLIGHTEN/enlighten/assets/uic_qrc/ enlighten/assets/uic_qrc/
 
 # Test
 
     $ cd work/code/enlighten
-    $ export PYTHONPATH="../Wasatch.PY:pluginExamples:.:enlighten/assets/uic_qrc"
-    $ python3 scripts/Enlighten.py
+
+    $ export PYTHONPATH=".:pluginExamples:../Wasatch.PY:enlighten/assets/uic_qrc"
+    $ python scripts/Enlighten.py
+
+# Building an Installer
+
+(as above)
+
+    $ cd work/code/enlighten
+    $ export PYTHONPATH=".:pluginExamples:../Wasatch.PY:enlighten/assets/uic_qrc"
+    $ python scripts/Enlighten.py
+
+(then)
+
+    $ make rpi-installer
 
 # Resetting USB Ports
 
