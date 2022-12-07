@@ -40,6 +40,10 @@ class SpectrometerApplicationState(object):
         self.spec_timeout_prompt_shown = False
         self.missed_reading_count = 0
 
+        # to track separately from SpectrometerState, which is shared with Wasatch.PY thread
+        self.laser_gui_firing = False 
+        self.last_laser_toggle = None
+
         self.reset_rolling_data()
 
     def __init__(self, device_id):
@@ -59,6 +63,8 @@ class SpectrometerApplicationState(object):
         log.info("  Missing Acquisition Timeout:%s", self.missing_acquisition_timeout)
         log.info("  Pending Disconnect:         %s", self.pending_disconnect)
         log.info("  Laser Temperature:          %s", self.laser_temperature_data)
+        log.info("  Laser GUI Firing:           %s", self.laser_gui_firing)
+        log.info("  Last Laser Toggle:          %s", self.last_laser_toggle)
         log.info("  Detector Temperature:       %s", self.detector_temperatures_degC)
         log.info("  Detector Temperature Avg:   %s", self.detector_temperatures_degC_averaged)
         log.info("  Detector Temperature Disp:  %s", self.detector_temperatures_degC_averaged_display)

@@ -1,6 +1,9 @@
 # Version History
 
 # 3.2 Open-Source
+
+- 2022-12-06 3.2.41
+    - adding widget for laser watchdog
 - 2022-11-29 3.2.40
     - dark-correct reference spectrum after-the-fact if collected in that order
     - don't apply boxcar to dark or reference when in reference technique

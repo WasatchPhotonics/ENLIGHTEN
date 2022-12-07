@@ -90,6 +90,7 @@ Example (both starting from ~/work/code/ENLIGHTEN):
 # Test
 
     $ cd work/code/enlighten
+
     $ export PYTHONPATH=".:pluginExamples:../Wasatch.PY:enlighten/assets/uic_qrc"
     $ python scripts/Enlighten.py
 
