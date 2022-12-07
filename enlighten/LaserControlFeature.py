@@ -341,10 +341,11 @@ class LaserControlFeature:
             return
 
         is_xs = spec.settings.is_xs()
+
         self.spinbox_watchdog.setVisible(is_xs)
         self.lb_watchdog.setVisible(is_xs)
         
-        if init:
+        if init and is_xs:
             sec = spec.settings.eeprom.laser_watchdog_sec
             if sec <= 0:
                 sec = EEPROM.DEFAULT_LASER_WATCHDOG_SEC
