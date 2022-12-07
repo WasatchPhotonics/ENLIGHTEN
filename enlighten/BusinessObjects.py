@@ -175,11 +175,6 @@ class BusinessObjects:
             gui                         = ctl.gui,
             marquee                     = ctl.marquee)
 
-        self.header("instantiating BatteryFeature")
-        ctl.battery_feature = BatteryFeature(
-            lb_raw                      = sfu.label_battery_raw,
-            lb_parsed                   = sfu.label_battery_parsed)
-
         self.header("instantiating Graph")
         ctl.graph = Graph(
             clipboard                   = ctl.clipboard,
@@ -197,6 +192,11 @@ class BusinessObjects:
 
             layout_scope_capture        = sfu.layout_scope_capture_graphs,
             stacked_widget_scope_setup  = sfu.stackedWidget_scope_setup_live_spectrum)
+
+        self.header("instantiating HardwareFileOutputManager")
+        ctl.hardware_file_manager = HardwareFileOutputManager(
+            cb_output=sfu.checkBox_feature_file_capture,
+            spin_timeout=sfu.spinBox_hardware_capture_timeout)
 
         self.header("instantiating Cursor")
         ctl.cursor = Cursor(
@@ -248,6 +248,18 @@ class BusinessObjects:
         for feature in [ ctl.cursor, ctl.config, ctl.gui ]:
             feature.multispec = ctl.multispec
 
+        self.header("instantiating BatteryFeature")
+        ctl.battery_feature = BatteryFeature(
+            sfu                         = sfu,
+            graph                       = ctl.graph,
+            multispec                   = ctl.multispec,
+            clear_btn                   = sfu.battery_pushButton,
+            make_pen                    = ctl.gui.make_pen,
+            clipboard                   = ctl.clipboard,
+            hardware_file_manager       = ctl.hardware_file_manager,
+            lb_raw                      = sfu.label_battery_raw,
+            lb_parsed                   = sfu.label_battery_parsed)
+
         self.header("instantiating StatusIndicators")
         ctl.status_indicators = StatusIndicators(
             multispec                   = ctl.multispec,
@@ -256,11 +268,6 @@ class BusinessObjects:
             button_hardware             = sfu.systemStatusWidget_pushButton_hardware,
             button_lamp                 = sfu.systemStatusWidget_pushButton_light,
             button_temperature          = sfu.systemStatusWidget_pushButton_temperature)
-
-        self.header("instantiating HardwareFileOutputManager")
-        ctl.hardware_file_manager = HardwareFileOutputManager(
-            cb_output=sfu.checkBox_feature_file_capture,
-            spin_timeout=sfu.spinBox_hardware_capture_timeout)
 
         self.header("instantiating DetectorTemperatureFeature")
         ctl.detector_temperature = DetectorTemperatureFeature(
@@ -428,6 +435,7 @@ class BusinessObjects:
 
             oem_widgets                 = [ sfu.pushButton_write_eeprom, sfu.pushButton_importEEPROM, sfu.pushButton_exportEEPROM, sfu.pushButton_restore_eeprom, sfu.pushButton_reset_fpga ],
             advanced_widgets            = [ sfu.doubleSpinBox_lightSourceWidget_excitation_nm,
+                                            sfu.label_lightSourceWidget_excitation_nm,
                                             sfu.tabWidget_advanced_features ])
 
         self.header("instantiating EEPROMWriter")
@@ -477,9 +485,11 @@ class BusinessObjects:
             button_dn                   = sfu.pushButton_laser_power_dn,
             button_up                   = sfu.pushButton_laser_power_up,
             button_toggle               = sfu.pushButton_laser_toggle,
+            lb_watchdog                 = sfu.label_laser_watchdog_sec,
             spinbox_excitation          = sfu.doubleSpinBox_lightSourceWidget_excitation_nm, # not EEPROMEditor
             spinbox_power               = sfu.doubleSpinBox_laser_power,
             slider_power                = sfu.verticalSlider_laser_power,
+            spinbox_watchdog            = sfu.spinBox_laser_watchdog_sec,
             guide                       = ctl.guide)
 
         self.header("instantiating LaserTemperatureFeature")
@@ -621,7 +631,10 @@ class BusinessObjects:
             bt_dn                       = sfu.pushButton_boxcar_half_width_dn,
             bt_up                       = sfu.pushButton_boxcar_half_width_up,
             spinbox                     = sfu.spinBox_boxcar_half_width,
-            multispec                   = ctl.multispec)
+            
+            multispec                   = ctl.multispec,
+            page_nav                    = ctl.page_nav,
+            )
 
         self.header("instantiating IntegrationTimeFeature")
         ctl.integration_time_feature = IntegrationTimeFeature(

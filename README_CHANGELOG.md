@@ -2,6 +2,17 @@
 
 # 3.2 Open-Source
 
+- 2022-12-06 3.2.41
+    - adding widget for laser watchdog
+- 2022-11-29 3.2.40
+    - dark-correct reference spectrum after-the-fact if collected in that order
+    - don't apply boxcar to dark or reference when in reference technique
+- 2022-11-28 3.2.39
+    - i18n
+    - add fix for international computers for plugins creation on install
+- 2022-11-15 3.2.38
+    - add battery data to hardware strip charts
+    - add string formatting to note, prefix, and suffix
 - 2022-10-17 3.2.37
     - updates to regression tests
 - 2022-10-12 3.2.36

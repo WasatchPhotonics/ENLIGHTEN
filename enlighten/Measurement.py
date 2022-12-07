@@ -233,7 +233,11 @@ class Measurement(object):
                            'Battery %',
                            'Device ID',
                            'FW Version',
-                           'FPGA Version']
+                           'FPGA Version',
+                           'NOTE',
+                           'PREFIX',
+                           'SUFFIX']
+                           
     EXTRA_HEADER_FIELDS_SET = set(EXTRA_HEADER_FIELDS)
 
     def clear(self):
@@ -256,6 +260,9 @@ class Measurement(object):
         self.timestamp                = None
         self.technique                = None
         self.roi_active               = False
+        self.note                     = ""
+        self.prefix                   = ""
+        self.suffix                   = ""
 
     ##
     # There are three valid instantiation patterns:
@@ -293,6 +300,9 @@ class Measurement(object):
             # was disconnected (and optionally reconnected) after the Measurement
             # was saved, but before it was exported.
             self.settings = copy.deepcopy(spec.settings)
+            self.note = self.generate_format_field("note")
+            self.prefix = self.generate_format_field("prefix")
+            self.suffix = self.generate_format_field("suffix")
 
             # Copy things we want from SpectrometerApplicationState.
             #
@@ -409,7 +419,7 @@ class Measurement(object):
         if self.label is None:
             self.label = "%s %s" % (self.timestamp.strftime("%H:%M:%S"), self.settings.eeprom.serial_number)
 
-            self.label = self.generate_label()
+            self.label = self.generate_format_field("label")
 
             # append optional suffix
             # log.debug("checking for label_suffix")
@@ -423,12 +433,23 @@ class Measurement(object):
                 # during batch collection
                 self.measurements.factory.label_suffix = None
 
-    def generate_label(self):
+    def generate_format_field(self, field = None):
+        if field == None:
+            return ''
         try:
-            label = self.save_options.label_template()
+            fields = {
+                "label": self.save_options.label_template,
+                "prefix": self.save_options.prefix,
+                "suffix": self.save_options.suffix,
+                "note": self.save_options.note,
+                }
+            label = fields[field]()
         except:
-            label = "{time}"
-        log.debug(f"generate_label: starting with template {label}")
+            if field == "label":
+                label = "{time}"
+            else:
+                label == ""
+        log.debug(f"generate_format_field: starting with template {label}")
 
         while True:
             m = re.search(r"{([a-z0-9_]+)}", label, re.IGNORECASE)
@@ -450,7 +471,7 @@ class Measurement(object):
                 value = f"{value:.3f}"
 
             label = label.replace("{%s}" % code, str(value))
-            log.debug(f"generate_label: {code} -> {value} (label now {label})")
+            log.debug(f"generate_format_field: {code} -> {value} ({field} now {label})")
 
     def generate_basename(self):
         if self.save_options is None:
@@ -459,7 +480,7 @@ class Measurement(object):
             if self.renamed_manually and self.save_options.allow_rename_files():
                 return util.normalize_filename(self.label)
             else:
-                return self.save_options.wrap_name(self.measurement_id)
+                return self.save_options.wrap_name(self.measurement_id, self.prefix, self.suffix)
 
     def dump(self):
         log.debug("Measurement:")
@@ -714,7 +735,6 @@ class Measurement(object):
         if field == "integration time":          return self.settings.state.integration_time_ms
         if field == "timestamp":                 return self.timestamp
         if field == "blank":                     return self.settings.eeprom.serial_number # for Multispec
-        if field == "note":                      return self.save_options.note() if self.save_options is not None else ""
         if field == "temperature":               return self.processed_reading.reading.detector_temperature_degC if self.processed_reading.reading is not None else -99
         if field == "technique":                 return self.technique
         if field == "baseline correction algo":  return self.baseline_correction_algo
@@ -747,6 +767,9 @@ class Measurement(object):
         if field == "fpga version":              return self.settings.fpga_firmware_version 
         if field == "laser power %":             return self.processed_reading.reading.laser_power_perc if self.processed_reading.reading is not None else 0
         if field == "device id":                 return str(self.settings.device_id)
+        if field == "note":                      return self.note
+        if field == "prefix":                    return self.prefix
+        if field == "suffix":                    return self.suffix
 
         if field == "laser power mw":            
             if self.processed_reading.reading is not None and \

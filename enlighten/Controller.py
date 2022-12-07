@@ -208,12 +208,6 @@ class Controller:
 
         sfu.label_python_version.setText(util.python_version())
 
-        # ######################################################################
-        # logical state
-        # ######################################################################
-
-        self.last_laser_toggle = None
-
         ########################################################################
         # Populate Placeholders
         ########################################################################
@@ -848,6 +842,7 @@ class Controller:
         if hotplug:
             self.detector_temperature.init_hotplug()
         self.detector_temperature.update_visibility()
+        self.battery_feature.update_visibility()
 
         ########################################################################
         # Now override the EEPROM and Detector defaults with the .INI file
@@ -916,6 +911,8 @@ class Controller:
                 self.laser_temperature.add_spec_curve(spec)
             if spec.settings.eeprom.has_cooling:
                 self.detector_temperature.add_spec_curve(spec)
+            if spec.settings.eeprom.has_battery:
+                self.battery_feature.add_spec_curve(spec)
             # This plots on the live graph on the hardware capture page
             # This graph is held by the area scan object and is a 1D spectra
             # Not the scan waterfall that is a 2D layout
@@ -988,7 +985,7 @@ class Controller:
 
         # updates from initialization to match time window in spinbox
         # call StripChartFeature getter
-        spec.app_state.reset_temperature_data(time_window=sfu.spinBox_strip_window.value(), hotplug=hotplug)
+        spec.app_state.reset_rolling_data(time_window=sfu.spinBox_strip_window.value(), hotplug=hotplug)
 
     def rehide_curves(self):
         """
@@ -1404,6 +1401,12 @@ class Controller:
                     log.debug("Error reading or processing StatusMessage on %s", spec.device_id, exc_info=1)
 
         ########################################################################       
+        # Tick BusinessObjects too lazy to create their own timers
+        ########################################################################       
+
+        self.laser_control.process_timeouts()
+
+        ########################################################################       
         # Tick plug-ins
         ########################################################################       
 
@@ -1568,28 +1571,58 @@ class Controller:
             else:
                 sfu.label_ambient_temperature.setText("unknown")
 
-            # update laser status
-            # self.update_laser_status(reading)
+            # update laser status 
+            if spec.settings.is_xs():
+                log.debug("XS, so updating laser status")
+                self.update_laser_status(reading)
 
     def update_laser_status(self, reading):
         spec = self.multispec.current_spectrometer()
         if spec is None:
             return
 
-        if reading is None or reading.laser_enabled is None:
+        if reading is None:
             return
 
-        if reading.laser_enabled == spec.settings.state.laser_enabled:
+        if reading.laser_enabled is None:
+            log.debug("update_laser_status: reading.laser_enabled is None")
             return
 
+        if reading.laser_enabled == spec.app_state.laser_gui_firing:
+            log.debug(f"update_laser_status: reading.laser_enabled {reading.laser_enabled} agrees with app_state.laser_gui_firing {spec.app_state.laser_gui_firing}")
+            return
+
+        log.debug(f"update_laser_status: reading.laser_enabled {reading.laser_enabled} != app_state {spec.app_state.laser_gui_firing}...we should probably sync Reading state to the GUI widget")
+
+        
+        ########################################################################
         # apparently the GUI laser status is inaccurate, so debounce and correct
-        if self.last_laser_toggle is not None:
-            debounce_ms = 100 + spec.settings.state.integration_time_ms * 2
-            elapsed_ms = (datetime.datetime.now() - self.last_laser_toggle).total_seconds() * 1000.0
-            if (elapsed_ms > debounce_ms):
-                log.debug("toggling laser because reading.laser_enabled %s but state.laser_enabled %s (and elapsed_ms %d > debounce_ms %d)",
-                    reading.laser_enabled, spec.settings.state.laser_enabled, elapsed_ms, debounce_ms)
-                self.toggle_laser()
+        ########################################################################
+
+        # MZ: the following code is unready in at least two respects:
+        #
+        # 1. we haven't yet updated the FW to give us an accurate 
+        #    reading.laser_enabled after watchdog lockdown (new drop expected 
+        #    tomorrow)
+        #
+        # 2. we should be checking against the spectrometer which provided the 
+        #    Reading, not the application-wide LaserControllerFeature object
+        #
+        # For now, allow the LaserControlFeature to maintain its own timeouts
+        # (basically "SW watchdogs"), ticked by Controller.status_timer.  These
+        # don't really add any SAFETY (the FW watchdog does that), but they do
+        # let us keep the application GUI more-or-less in sync with the expected
+        # hardware state.
+        #
+        # log.debug(f"update_laser_status: last_laser_toggle {spec.app_state.last_laser_toggle}")
+        # if spec.app_state.last_laser_toggle is not None:
+        #     debounce_ms = 500 + spec.settings.state.integration_time_ms * 2
+        #     elapsed_ms = (datetime.datetime.now() - spec.app_state.last_laser_toggle).total_seconds() * 1000.0
+        #     log.debug(f"update_laser_status: debounce_ms {debounce_ms}, elapsed_ms {elapsed_ms}")
+        #     if (elapsed_ms > debounce_ms):
+        #         log.debug("toggling laser because reading.laser_enabled %s but app_state.laser_gui_firing %s (and elapsed_ms %d > debounce_ms %d)",
+        #             reading.laser_enabled, spec.app_state.laser_gui_firing, elapsed_ms, debounce_ms)
+        #         self.laser_control.toggle_laser()
 
     def acquire_reading(self, spec: Spectrometer) -> AcquiredReading:
         """
@@ -1931,15 +1964,15 @@ class Controller:
 
         if self.page_nav.using_reference():
             if self.page_nav.doing_transmission():
-                self.transmission.process(pr, settings)
+                self.transmission.process(pr, settings, spec.app_state)
             elif self.page_nav.doing_absorbance():
-                self.absorbance.process(pr, settings)
+                self.absorbance.process(pr, settings, spec.app_state)
 
         ########################################################################
         # non-reference views
         ########################################################################
 
-        if not self.page_nav.using_reference():
+        else:
 
             ####################################################################
             # Raman intensity correction

@@ -170,6 +170,7 @@ class EEPROMEditor(object):
         self.bind_checkBox        (sfu.checkBox_ee_hardware_even_odd,         "hardware_even_odd")
         self.bind_checkBox        (sfu.checkBox_ee_sig_laser_tec,             "sig_laser_tec")
         self.bind_checkBox        (sfu.checkBox_ee_has_interlock_feedback,    "has_interlock_feedback")
+        self.bind_checkBox        (sfu.checkBox_ee_has_shutter,               "has_shutter")
 
         # To be clear: we're editing the float version of excitation_nm.  Edits 
         # are automatically rounded and re-saved to the integral version.  We 
@@ -279,6 +280,8 @@ class EEPROMEditor(object):
         self.bind_spinBox         (sfu.spinBox_ee_regions_count,              "region_count")
         self.bind_spinBox         (sfu.spinBox_ee_regions_4_vertical_start,   "roi_vertical_region_4_start")
         self.bind_spinBox         (sfu.spinBox_ee_regions_4_vertical_end,     "roi_vertical_region_4_end")
+        self.bind_spinBox         (sfu.spinBox_ee_laser_watchdog_sec,         "laser_watchdog_sec")
+        self.bind_spinBox         (sfu.spinBox_ee_light_source_type,          "light_source_type")
         for region in range(2, 5):
             for node in ("start", "end"):
                 self.bind_spinBox(getattr(sfu, f"spinBox_ee_regions_{region}_horiz_{node}"), f"roi_horiz_region_{region}_{node}")

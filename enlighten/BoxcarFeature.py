@@ -13,13 +13,18 @@ class BoxcarFeature(object):
     def __init__(self,
             bt_dn,
             bt_up,
+            spinbox,
+
             multispec,
-            spinbox):
+            page_nav,
+            ):
 
         self.bt_dn      = bt_dn
         self.bt_up      = bt_up
-        self.multispec  = multispec
         self.spinbox    = spinbox
+
+        self.multispec  = multispec
+        self.page_nav   = page_nav
 
         self.bt_dn      .clicked        .connect(self.dn_callback)
         self.bt_up      .clicked        .connect(self.up_callback)
@@ -64,8 +69,9 @@ class BoxcarFeature(object):
 
         pr.set_processed(wasatch_utils.apply_boxcar(pr.get_processed(), half_width))
 
-        if pr.recordable_dark is not None:
-            pr.recordable_dark = wasatch_utils.apply_boxcar(pr.recordable_dark, half_width)
-
-        if pr.recordable_reference is not None:
-            pr.recordable_reference = wasatch_utils.apply_boxcar(pr.recordable_reference, half_width)
+        if not self.page_nav.using_reference():
+            if pr.recordable_dark is not None:
+                pr.recordable_dark = wasatch_utils.apply_boxcar(pr.recordable_dark, half_width)
+            
+            if pr.recordable_reference is not None:
+                pr.recordable_reference = wasatch_utils.apply_boxcar(pr.recordable_reference, half_width)

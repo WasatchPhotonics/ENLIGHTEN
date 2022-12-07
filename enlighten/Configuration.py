@@ -2,6 +2,7 @@ from PySide2 import QtCore
 
 import os
 import re
+import shutil
 import logging
 import textwrap
 import threading
