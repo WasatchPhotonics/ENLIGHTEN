@@ -25,6 +25,7 @@ class EnlightenApplicationInfoReal(EnlightenApplicationInfo):
 
         self.get_x_axis_unit_callback = graph_scope.get_x_axis_unit
         self.reference_is_dark_corrected = reference_is_dark_corrected
+        self.save_options = save_options
         self.save_options_directory_callback = save_options.get_directory
         self.save_today_path = save_options.generate_today_dir
         self.plugin_settings = plugin_settings
@@ -47,6 +48,9 @@ class EnlightenApplicationInfoReal(EnlightenApplicationInfo):
 
     def get_reference_is_dark_corrected(self):
         return self.reference_is_dark_corrected()
+
+    def get_save_options(self):
+        return self.save_options
 
     def get_plugin_fields(self):
         return self.plugin_fields
