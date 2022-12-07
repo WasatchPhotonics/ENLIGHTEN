@@ -2441,6 +2441,8 @@ class Controller:
 
         wasatch_device.change_setting("reset_fpga", None)
 
+    def get_plugin_graph(self):
+        return self.plugin_controller.graph_plugin
 
     def update_hardware_window(self):
         for spec in self.multispec.spectrometers.values():

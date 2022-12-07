@@ -401,6 +401,7 @@ class BusinessObjects:
             file_manager                = ctl.file_manager,
             focus_listener              = ctl.focus_listener,
             graph                       = ctl.graph,
+            plugin_graph                = ctl.get_plugin_graph,
             gui                         = ctl.gui,
             render_curve                = ctl.thumbnail_render_curve,
             render_graph                = ctl.thumbnail_render_graph,

@@ -290,7 +290,8 @@ class PluginController:
             measurement_factory = self.measurement_factory,
             measurements_clipboard = self.measurements_clipboard,
             read_measurements = self.measurements.read_measurements,
-            vignette_feature= self.vignette_feature) # leaving read measurement call for legacy purposes
+            vignette_feature = self.vignette_feature,
+            plugin_fields = self.get_plugin_fields) # leaving read measurement call for legacy purposes
 
     def initialize_python_path(self):
         for path in self.plugin_dirs:
@@ -746,6 +747,10 @@ class PluginController:
 
         log.debug("successfully reconfigured GUI for plugin %s", module_name)
         return True
+
+    def get_plugin_fields(self):
+        """Used by the plugin to programmatically change fields"""
+        return self.plugin_field_widgets
 
     ##
     # Make it easy for plug-in authors to see exceptions when debugging their class.

@@ -20,6 +20,7 @@ class EnlightenApplicationInfoReal(EnlightenApplicationInfo):
             measurements_clipboard,
             read_measurements,# present for legacy reasons
             vignette_feature,
+            plugin_fields,
             dependencies = {}):
 
         self.get_x_axis_unit_callback = graph_scope.get_x_axis_unit
@@ -33,6 +34,7 @@ class EnlightenApplicationInfoReal(EnlightenApplicationInfo):
         self.dependencies = dependencies
         self.read_measurements = read_measurements
         self.vignette_feature = vignette_feature
+        self.plugin_fields = plugin_fields
 
     def get_x_axis_unit(self):
         return self.get_x_axis_unit_callback()
@@ -45,3 +47,6 @@ class EnlightenApplicationInfoReal(EnlightenApplicationInfo):
 
     def get_reference_is_dark_corrected(self):
         return self.reference_is_dark_corrected()
+
+    def get_plugin_fields(self):
+        return self.plugin_fields
