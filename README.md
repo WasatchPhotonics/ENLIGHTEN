@@ -69,4 +69,3 @@ extend ENLIGHTEN in countless ways we never imagined.
 - [Backlog](README_BACKLOG.md)
 - [History](README_HISTORY.md)
 - [Changelog](README_CHANGELOG.md)
-
