@@ -2993,7 +2993,7 @@ QComboBox QListView
                                                </property>
                                               </widget>
                                              </item>
-                                             <item row="13" column="0">
+                                             <item row="14" column="0">
                                               <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_excitation_nm_float">
                                                <property name="minimumSize">
                                                 <size>
@@ -3024,14 +3024,14 @@ QComboBox QListView
                                                </property>
                                               </widget>
                                              </item>
-                                             <item row="13" column="1">
+                                             <item row="14" column="1">
                                               <widget class="QLabel" name="label_83">
                                                <property name="text">
                                                 <string>Excitation (nm)</string>
                                                </property>
                                               </widget>
                                              </item>
-                                             <item row="14" column="0">
+                                             <item row="15" column="0">
                                               <widget class="QSpinBox" name="spinBox_ee_slit_size_um">
                                                <property name="minimumSize">
                                                 <size>
@@ -3059,14 +3059,14 @@ QComboBox QListView
                                                </property>
                                               </widget>
                                              </item>
-                                             <item row="14" column="1">
+                                             <item row="15" column="1">
                                               <widget class="QLabel" name="label_86">
                                                <property name="text">
                                                 <string>Slit Size (µm)</string>
                                                </property>
                                               </widget>
                                              </item>
-                                             <item row="15" column="0">
+                                             <item row="16" column="0">
                                               <widget class="QSpinBox" name="spinBox_ee_startup_integration_time_ms">
                                                <property name="minimumSize">
                                                 <size>
@@ -3091,14 +3091,14 @@ QComboBox QListView
                                                </property>
                                               </widget>
                                              </item>
-                                             <item row="15" column="1">
+                                             <item row="16" column="1">
                                               <widget class="QLabel" name="label_13">
                                                <property name="text">
                                                 <string>Startup Integration Time (ms)</string>
                                                </property>
                                               </widget>
                                              </item>
-                                             <item row="16" column="0">
+                                             <item row="17" column="0">
                                               <widget class="QSpinBox" name="spinBox_ee_startup_temp_degC">
                                                <property name="minimumSize">
                                                 <size>
@@ -3123,14 +3123,14 @@ QComboBox QListView
                                                </property>
                                               </widget>
                                              </item>
-                                             <item row="16" column="1">
+                                             <item row="17" column="1">
                                               <widget class="QLabel" name="label_21">
                                                <property name="text">
                                                 <string>Startup Detector Temp (°C)</string>
                                                </property>
                                               </widget>
                                              </item>
-                                             <item row="17" column="0">
+                                             <item row="18" column="0">
                                               <widget class="QSpinBox" name="spinBox_ee_startup_triggering_scheme">
                                                <property name="minimumSize">
                                                 <size>
@@ -3149,14 +3149,14 @@ QComboBox QListView
                                                </property>
                                               </widget>
                                              </item>
-                                             <item row="17" column="1">
+                                             <item row="18" column="1">
                                               <widget class="QLabel" name="label_29">
                                                <property name="text">
                                                 <string>Startup Triggering Scheme</string>
                                                </property>
                                               </widget>
                                              </item>
-                                             <item row="18" column="0">
+                                             <item row="19" column="0">
                                               <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_detector_gain">
                                                <property name="minimumSize">
                                                 <size>
@@ -3184,7 +3184,7 @@ QComboBox QListView
                                                </property>
                                               </widget>
                                              </item>
-                                             <item row="19" column="0">
+                                             <item row="20" column="0">
                                               <widget class="QSpinBox" name="spinBox_ee_detector_offset">
                                                <property name="minimumSize">
                                                 <size>
@@ -3206,14 +3206,14 @@ QComboBox QListView
                                                </property>
                                               </widget>
                                              </item>
-                                             <item row="19" column="1">
+                                             <item row="20" column="1">
                                               <widget class="QLabel" name="label_142">
                                                <property name="text">
                                                 <string>Detector Offset (InGaAs even)</string>
                                                </property>
                                               </widget>
                                              </item>
-                                             <item row="20" column="0">
+                                             <item row="21" column="0">
                                               <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_detector_gain_odd">
                                                <property name="minimumSize">
                                                 <size>
@@ -3238,7 +3238,7 @@ QComboBox QListView
                                                </property>
                                               </widget>
                                              </item>
-                                             <item row="21" column="0">
+                                             <item row="22" column="0">
                                               <widget class="QSpinBox" name="spinBox_ee_detector_offset_odd">
                                                <property name="minimumSize">
                                                 <size>
@@ -3260,28 +3260,28 @@ QComboBox QListView
                                                </property>
                                               </widget>
                                              </item>
-                                             <item row="20" column="1">
+                                             <item row="21" column="1">
                                               <widget class="QLabel" name="label_143">
                                                <property name="text">
                                                 <string>Detector Gain (InGaAs odd)</string>
                                                </property>
                                               </widget>
                                              </item>
-                                             <item row="21" column="1">
+                                             <item row="22" column="1">
                                               <widget class="QLabel" name="label_161">
                                                <property name="text">
                                                 <string>Detector Offset (InGaAs odd)</string>
                                                </property>
                                               </widget>
                                              </item>
-                                             <item row="22" column="0">
+                                             <item row="23" column="0">
                                               <widget class="QLabel" name="label_ee_format">
                                                <property name="text">
                                                 <string>fmt</string>
                                                </property>
                                               </widget>
                                              </item>
-                                             <item row="22" column="1">
+                                             <item row="23" column="1">
                                               <widget class="QLabel" name="label_216">
                                                <property name="text">
                                                 <string>Format</string>
@@ -3344,7 +3344,7 @@ QComboBox QListView
                                                </property>
                                               </widget>
                                              </item>
-                                             <item row="18" column="1">
+                                             <item row="19" column="1">
                                               <layout class="QHBoxLayout" name="horizontalLayout_92">
                                                <item>
                                                 <widget class="QLabel" name="label_31">
@@ -3428,8 +3428,24 @@ QComboBox QListView
                                                </property>
                                               </widget>
                                              </item>
+
+                                             <item row="13" column="0">
+                                              <widget class="QCheckBox" name="checkBox_ee_has_shutter">
+                                               <property name="text">
+                                                <string />
+                                               </property>
+                                              </widget>
+                                             </item>
+                                             <item row="13" column="1">
+                                              <widget class="QLabel" name="label_46_2">
+                                               <property name="text">
+                                                <string>Internal Shutter</string>
+                                               </property>
+                                              </widget>
+                                             </item>
                                             </layout>
                                            </item>
+
                                           </layout>
                                          </widget>
                                         </item>
@@ -4708,6 +4724,59 @@ QComboBox QListView
                                                </property>
                                               </widget>
                                              </item>
+
+
+                                             <item row="13" column="0">
+                                              <widget class="QSpinBox" name="spinBox_ee_laser_watchdog_sec">
+                                               <property name="minimumSize">
+                                                <size>
+                                                 <width>75</width>
+                                                 <height>0</height>
+                                                </size>
+                                               </property>
+                                               <property name="alignment">
+                                                <set>Qt::AlignCenter</set>
+                                               </property>
+                                               <property name="maximum">
+                                                <number>1200</number>
+                                               </property>
+                                               <property name="value">
+                                                <number>10</number>
+                                               </property>
+                                              </widget>
+                                             </item>
+                                             <item row="13" column="1">
+                                              <widget class="QLabel" name="label_47">
+                                               <property name="text">
+                                                <string>Laser Watchdog (sec)</string>
+                                               </property>
+                                              </widget>
+                                             </item>
+                                             <item row="14" column="0">
+                                              <widget class="QSpinBox" name="spinBox_ee_light_source_type">
+                                               <property name="minimumSize">
+                                                <size>
+                                                 <width>75</width>
+                                                 <height>0</height>
+                                                </size>
+                                               </property>
+                                               <property name="alignment">
+                                                <set>Qt::AlignCenter</set>
+                                               </property>
+                                               <property name="maximum">
+                                                <number>255</number>
+                                               </property>
+                                              </widget>
+                                             </item>
+                                             <item row="14" column="1">
+                                              <widget class="QLabel" name="label_48">
+                                               <property name="text">
+                                                <string>Light Source Type</string>
+                                               </property>
+                                              </widget>
+                                             </item>
+
+
                                             </layout>
                                            </item>
                                           </layout>
@@ -7893,6 +7962,192 @@ p, li { white-space: pre-wrap; }
                             <property name="maximum">
                              <number>2000</number>
                             </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QFrame" name="frame_hardware_capture_battery">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>0</width>
+                           <height>300</height>
+                          </size>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>16777215</width>
+                           <height>300</height>
+                          </size>
+                         </property>
+                         <property name="frameShape">
+                          <enum>QFrame::StyledPanel</enum>
+                         </property>
+                         <property name="frameShadow">
+                          <enum>QFrame::Raised</enum>
+                         </property>
+                         <layout class="QHBoxLayout" name="horizontalLayout_38">
+                          <item>
+                           <widget class="QSplitter" name="splitter_3">
+                            <property name="orientation">
+                             <enum>Qt::Horizontal</enum>
+                            </property>
+                            <widget class="QFrame" name="frame_hardware_capture_battery_inner">
+                             <property name="frameShape">
+                              <enum>QFrame::StyledPanel</enum>
+                             </property>
+                             <property name="frameShadow">
+                              <enum>QFrame::Raised</enum>
+                             </property>
+                             <property name="lineWidth">
+                              <number>1</number>
+                             </property>
+                             <layout class="QHBoxLayout" name="horizontalLayout_58">
+                              <property name="spacing">
+                               <number>0</number>
+                              </property>
+                              <property name="sizeConstraint">
+                               <enum>QLayout::SetDefaultConstraint</enum>
+                              </property>
+                              <property name="leftMargin">
+                               <number>0</number>
+                              </property>
+                              <property name="topMargin">
+                               <number>0</number>
+                              </property>
+                              <property name="rightMargin">
+                               <number>0</number>
+                              </property>
+                              <property name="bottomMargin">
+                               <number>0</number>
+                              </property>
+                              <item>
+                               <widget class="QFrame" name="frame_hardware_capture_battery_nest">
+                                <property name="frameShape">
+                                 <enum>QFrame::StyledPanel</enum>
+                                </property>
+                                <property name="frameShadow">
+                                 <enum>QFrame::Raised</enum>
+                                </property>
+                                <layout class="QVBoxLayout" name="verticalLayout_99">
+                                 <property name="spacing">
+                                  <number>0</number>
+                                 </property>
+                                 <property name="leftMargin">
+                                  <number>0</number>
+                                 </property>
+                                 <property name="topMargin">
+                                  <number>0</number>
+                                 </property>
+                                 <property name="rightMargin">
+                                  <number>0</number>
+                                 </property>
+                                 <property name="bottomMargin">
+                                  <number>0</number>
+                                 </property>
+                                 <item>
+                                  <widget class="QFrame" name="frame_hclt_header_2">
+                                   <property name="frameShape">
+                                    <enum>QFrame::StyledPanel</enum>
+                                   </property>
+                                   <property name="frameShadow">
+                                    <enum>QFrame::Raised</enum>
+                                   </property>
+                                   <layout class="QHBoxLayout" name="horizontalLayout_41">
+                                    <item>
+                                     <widget class="QLabel" name="label_battery">
+                                      <property name="font">
+                                       <font>
+                                        <pointsize>14</pointsize>
+                                       </font>
+                                      </property>
+                                      <property name="text">
+                                       <string>Battery Charge</string>
+                                      </property>
+                                      <property name="textFormat">
+                                       <enum>Qt::PlainText</enum>
+                                      </property>
+                                      <property name="alignment">
+                                       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                                      </property>
+                                     </widget>
+                                    </item>
+                                    <item>
+                                     <widget class="QLabel" name="label_hardware_capture_details_battery">
+                                      <property name="font">
+                                       <font>
+                                        <pointsize>26</pointsize>
+                                        <weight>75</weight>
+                                        <bold>true</bold>
+                                       </font>
+                                      </property>
+                                      <property name="text">
+                                       <string>99.99 %</string>
+                                      </property>
+                                      <property name="alignment">
+                                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                      </property>
+                                     </widget>
+                                    </item>
+                                    <item>
+                                     <widget class="QPushButton" name="pushButton_battery_copy">
+                                      <property name="sizePolicy">
+                                       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                       </sizepolicy>
+                                      </property>
+                                      <property name="styleSheet">
+                                       <string notr="true">padding: 5px;</string>
+                                      </property>
+                                      <property name="text">
+                                       <string />
+                                      </property>
+                                      <property name="icon">
+                                       <iconset resource="grey_icons.qrc">
+                                        <normaloff>:/greys/images/grey_icons/clipboard.svg</normaloff>:/greys/images/grey_icons/clipboard.svg</iconset>
+                                      </property>
+                                     </widget>
+                                    </item>
+                                    <item>
+                                     <widget class="QPushButton" name="battery_pushButton">
+                                      <property name="sizePolicy">
+                                       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                                        <horstretch>0</horstretch>
+                                        <verstretch>0</verstretch>
+                                       </sizepolicy>
+                                      </property>
+                                      <property name="styleSheet">
+                                       <string notr="true">padding: 5px</string>
+                                      </property>
+                                      <property name="text">
+                                       <string>Clear</string>
+                                      </property>
+                                     </widget>
+                                    </item>
+                                   </layout>
+                                  </widget>
+                                 </item>
+                                 <item>
+                                  <widget class="QStackedWidget" name="stackedWidget_battery">
+                                   <property name="currentIndex">
+                                    <number>0</number>
+                                   </property>
+                                   <widget class="QWidget" name="page_hardware_capture_battery" />
+                                  </widget>
+                                 </item>
+                                </layout>
+                               </widget>
+                              </item>
+                             </layout>
+                            </widget>
                            </widget>
                           </item>
                          </layout>
@@ -14948,6 +15203,7 @@ p, li { white-space: pre-wrap; }
                  </layout>
                 </widget>
                </item>
+
                <item>
                 <widget class="QFrame" name="frame_lightSourceControl">
                  <property name="minimumSize">
@@ -15232,41 +15488,94 @@ p, li { white-space: pre-wrap; }
                          </layout>
                         </item>
                         <item>
-                         <widget class="QDoubleSpinBox" name="doubleSpinBox_lightSourceWidget_excitation_nm">
-                          <property name="focusPolicy">
-                           <enum>Qt::StrongFocus</enum>
+                         <layout class="QHBoxLayout" name="horizontalLayout_48">
+                          <property name="spacing">
+                           <number>0</number>
                           </property>
-                          <property name="toolTip">
-                           <string>Adjust laser wavelength</string>
+                          <item>
+                           <widget class="QDoubleSpinBox" name="doubleSpinBox_lightSourceWidget_excitation_nm">
+                            <property name="minimumSize">
+                             <size>
+                              <width>100</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="focusPolicy">
+                             <enum>Qt::StrongFocus</enum>
+                            </property>
+                            <property name="toolTip">
+                             <string>Adjust laser wavelength</string>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignCenter</set>
+                            </property>
+                            <property name="decimals">
+                             <number>3</number>
+                            </property>
+                            <property name="minimum">
+                             <double>0.000000000000000</double>
+                            </property>
+                            <property name="maximum">
+                             <double>2500.000000000000000</double>
+                            </property>
+                            <property name="singleStep">
+                             <double>0.010000000000000</double>
+                            </property>
+                            <property name="value">
+                             <double>785.000000000000000</double>
+                            </property>
+                            <property name="initiallyVisible" stdset="0">
+                             <bool>false</bool>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QLabel" name="label_lightSourceWidget_excitation_nm">
+                            <property name="text">
+                             <string>Excitation (nm)</string>
+                            </property>
+                            <property name="initiallyVisible" stdset="0">
+                             <bool>false</bool>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </item>
+                        <item>
+                         <layout class="QHBoxLayout" name="horizontalLayout_45">
+                          <property name="spacing">
+                           <number>0</number>
                           </property>
-                          <property name="alignment">
-                           <set>Qt::AlignCenter</set>
-                          </property>
-                          <property name="prefix">
-                           <string>excitation </string>
-                          </property>
-                          <property name="suffix">
-                           <string>nm</string>
-                          </property>
-                          <property name="decimals">
-                           <number>3</number>
-                          </property>
-                          <property name="minimum">
-                           <double>0.000000000000000</double>
-                          </property>
-                          <property name="maximum">
-                           <double>2500.000000000000000</double>
-                          </property>
-                          <property name="singleStep">
-                           <double>0.010000000000000</double>
-                          </property>
-                          <property name="value">
-                           <double>785.000000000000000</double>
-                          </property>
-                          <property name="initiallyVisible" stdset="0">
-                           <bool>false</bool>
-                          </property>
-                         </widget>
+                          <item>
+                           <widget class="QSpinBox" name="spinBox_laser_watchdog_sec">
+                            <property name="minimumSize">
+                             <size>
+                              <width>100</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignCenter</set>
+                            </property>
+                            <property name="minimum">
+                             <number>0</number>
+                            </property>
+                            <property name="maximum">
+                             <number>1200</number>
+                            </property>
+                            <property name="value">
+                             <number>10</number>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QLabel" name="label_laser_watchdog_sec">
+                            <property name="text">
+                             <string>Watchdog (sec)</string>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
                         </item>
                         <item>
                          <widget class="QCheckBox" name="checkBox_raman_mode_enable">
@@ -15287,6 +15596,7 @@ p, li { white-space: pre-wrap; }
                  </layout>
                 </widget>
                </item>
+
                <item>
                 <widget class="QFrame" name="frame_accessory_widget">
                  <property name="frameShape">
