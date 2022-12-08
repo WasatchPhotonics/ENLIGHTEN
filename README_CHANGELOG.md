@@ -1,6 +1,12 @@
 # Version History
 
 # 3.2 Open-Source
+- 2022-12-08 3.2.41
+    - expose save options to plugins
+    - plugins can programmatically change input fields
+    - plugins can save in same date dir as regular save
+    - fix graphing issues for plugins
+    - add measurement metadata so plugin thumbnail overlays show on other graph
 - 2022-11-29 3.2.40
     - dark-correct reference spectrum after-the-fact if collected in that order
     - don't apply boxcar to dark or reference when in reference technique
