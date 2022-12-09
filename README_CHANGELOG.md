@@ -1,7 +1,7 @@
 # Version History
 
 # 3.2 Open-Source
-- 2022-12-08 3.2.41
+- 2022-12-08 3.2.42
     - expose save options to plugins
     - plugins can programmatically change input fields
     - plugins can save in same date dir as regular save
