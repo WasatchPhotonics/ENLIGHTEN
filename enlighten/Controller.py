@@ -2444,7 +2444,7 @@ class Controller:
 
     def get_plugin_graph(self) -> Graph:
         """Check if the current plugin has a graph and return it otherwise return the main graph"""
-        module_info = self.plugin_contoller.get_current_module_info()
+        module_info = self.plugin_controller.get_current_module_info()
         if module_info is None:
             return self.graph
         config = module_info.config
