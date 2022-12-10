@@ -10,7 +10,7 @@ from EnlightenPlugin import EnlightenPluginBase,    \
 log = logging.getLogger(__name__)
 
 ##
-# Migrated the Relative Irradiance technique from ENLIGHTEN core to a plugin.
+# Migrated the Relative Irradiance view from ENLIGHTEN core to a plugin.
 #
 # Note that the sample will be dark-corrected if the user has enabled dark
 # correction in ENLIGHTEN.  The reference will be dark-corrected if the user

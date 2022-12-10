@@ -25,13 +25,13 @@ class TestGUI:
     def test_tile(self,app):
         assert "ENLIGHTEN" in app.controller.form.windowTitle()
 
-    # description: release test that the first page is the scope technique and spectra is set to play
+    # description: release test that the first page is the scope view and spectra is set to play
     # author: Evan Dort
     @pytest.mark.release
     def test_init_tech_and_play(self,app):
-        curr_tech = app.controller.page_nav.current_technique
+        curr_tech = app.controller.page_nav.current_view
         paused = app.controller.vcr_controls.is_paused()
-        assert curr_tech == common.Techniques.SCOPE and not paused
+        assert curr_tech == common.Views.SCOPE and not paused
 
     # description: test that changing the axis combo box changes the graph axes
     # author: Evan Dort
