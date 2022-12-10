@@ -1,11 +1,9 @@
-from threading import Thread
 import webbrowser
 import pyqtgraph
-import functools
 import datetime
 import logging
-import numpy as np
 import struct
+import numpy as np
 import copy
 import math
 import time
@@ -19,7 +17,7 @@ from PySide2.QtCore import QObject, QEvent
 from PySide2.QtWidgets import QMessageBox, QVBoxLayout, QWidget, QLabel, QMessageBox
 
 from collections import defaultdict
-
+from threading import Thread
 from pygtail import Pygtail # for log screen
 
 # these aren't actually used...solves an import issue for MacOS I think
@@ -34,18 +32,19 @@ from wasatch import applog
 from wasatch import utils as wasatch_utils
 
 from wasatch.WasatchDeviceWrapper     import WasatchDeviceWrapper
-from wasatch.DeviceFinderUSB          import DeviceFinderUSB
 from wasatch.SpectrometerResponse     import ErrorLevel
+from wasatch.ProcessedReading         import ProcessedReading
+from wasatch.DeviceFinderUSB          import DeviceFinderUSB
+from wasatch.RealUSBDevice            import RealUSBDevice
 from wasatch.StatusMessage            import StatusMessage
 from wasatch.WasatchBus               import WasatchBus
 from wasatch.BLEDevice                import BLEDevice
 from wasatch.Reading                  import Reading
 
-from wasatch.ProcessedReading         import ProcessedReading
+from .ThumbnailWidget                 import ThumbnailWidget
 from .BusinessObjects                 import BusinessObjects
-from .Spectrometer                    import Spectrometer
 from .TimeoutDialog                   import TimeoutDialog
-from wasatch.RealUSBDevice            import RealUSBDevice
+from .Spectrometer                    import Spectrometer
 
 log = logging.getLogger(__name__)
 
@@ -121,7 +120,6 @@ class Controller:
         self.max_memory_growth      = max_memory_growth
         self.run_sec                = run_sec
         self.dialog_open            = False
-        self.grid_display           = False
         self.serial_number_desired  = serial_number
         self.stylesheet_path        = stylesheet_path
         self.set_all_dfu            = set_all_dfu
@@ -189,6 +187,7 @@ class Controller:
 
         self.shutting_down = False
         self.exit_code = 0
+        self.has_connected = False # track first spectrometer connection
 
         # add Qt signal handlers to this Controller object
         self.create_signals()
@@ -231,8 +230,8 @@ class Controller:
         self.business_objects.create_rest()
         self.graph.rehide_curves()
 
-        # immediately show Scope Capture screen
-        self.page_nav.set_main_page(common.Pages.SCOPE_CAPTURE)
+        # immediately show Scope view
+        self.page_nav.set_main_page(common.Pages.SCOPE)
 
         # configure acquisition loop
         self.setup_main_event_loops() # MZ: move to end?
@@ -250,29 +249,17 @@ class Controller:
 
         self.page_nav.post_init()
 
-        sfu.pushButton_graphGrid.clicked.connect(self.graph_grid_toggle)
-        sfu.pushButton_roi_toggle.clicked.connect(self.toggle_roi_process)
-        self.default_roi_btn = self.form.ui.pushButton_roi_toggle.styleSheet()
-        self.default_graph_btn = self.form.ui.pushButton_graphGrid.styleSheet()
-        self.form.ui.pushButton_roi_toggle.setStyleSheet("background-color: #aa0000")
-        self.roi_enabled = True
-        self.enlighten_graphs = {
-                "scope graph": [self.graph, "plot"],
-                "plugin graph": [self.plugin_controller, "graph_plugin", "plot"],
-            }
-
         self.header("Controller ctor done")
         self.other_devices = []
 
         # init is done so display the GUI and destory the splash screen
-        self.form.showMaximized()
+        self.form.show()
 
         if headless:
             # hiding tends to mess with gui tests since the componets are also hidden
             # So I replaced with minimizing, which I recognize is not a true headless
             # self.hide()
             self.form.showMinimized()
-
 
     def disconnect_device(self, spec=None, closing=False):
         if spec in self.other_devices:
@@ -444,7 +431,7 @@ class Controller:
                             self.laser_temperature,
                             self.battery_feature]:
                 feature.process_reading(spec, recent_read) 
-        if self.page_nav.get_current_technique() == common.Techniques.HARDWARE or self.form.ui.checkBox_feature_file_capture.isChecked():
+        if self.page_nav.get_current_view() == common.Views.HARDWARE or self.form.ui.checkBox_feature_file_capture.isChecked():
             self.hard_strip_timer.start(self.form.ui.spinBox_integration_time_ms.value())
             return
         self.hard_strip_timer.start(1000)
@@ -650,7 +637,7 @@ class Controller:
                 self.multispec.set_gave_up(device_id)
                 self.multispec.remove_in_process(device_id)
 
-    # also called by PageNavigation.set_technique_common
+    # also called by PageNavigation.set_view_common
     def update_feature_visibility(self):
         # disable anything that shouldn't be on without a spectrometer
         # (could grow this considerably)
@@ -930,7 +917,6 @@ class Controller:
         for feature in [ self.dark_feature, self.reference_feature ]:
             feature.clear(quiet=True) if hotplug else feature.display()
 
-
         ########################################################################
         # Business Objects
         ########################################################################
@@ -941,7 +927,8 @@ class Controller:
             # cursor
             self.cursor.center()
             for feature in [ self.accessory_control,
-                             self.laser_control ]:
+                             self.laser_control,
+                             self.vignette_roi ]:
                 feature.init_hotplug()
 
         for feature in [ self.accessory_control,
@@ -953,15 +940,24 @@ class Controller:
                          self.gain_db_feature,
                          self.graph,
                          self.laser_control,
-                        #self.multi_pos,
                          self.raman_shift_correction,
                          self.raman_intensity_correction,
                          self.raman_mode_feature,
                          self.reference_feature,
                          self.richardson_lucy,
                          self.status_indicators,
-                         self.vcr_controls ]:
+                         self.vcr_controls,
+                         self.vignette_roi ]:
             feature.update_visibility()
+
+        ########################################################################
+        # Change to Raman if first connected device is Raman
+        ########################################################################
+
+        if not self.has_connected:
+            self.has_connected = True
+            if spec.settings.has_excitation():
+                self.page_nav.set_operation_mode_raman()
 
         ########################################################################
         # Batch Collection should kick-off on the FIRST connected spectrometer
@@ -1125,8 +1121,8 @@ class Controller:
         self.thumbnail_render_graph.hideAxis("bottom")
         self.thumbnail_render_graph.setMinimumHeight(120)
         self.thumbnail_render_graph.setMaximumHeight(120)
-        self.thumbnail_render_graph.setMinimumWidth(170)
-        self.thumbnail_render_graph.setMaximumWidth(170)
+        self.thumbnail_render_graph.setMinimumWidth(ThumbnailWidget.MIN_WIDTH)
+        self.thumbnail_render_graph.setMaximumWidth(ThumbnailWidget.MAX_WIDTH)
 
         # insert the graph into the layout
         layout.insertWidget(0, self.thumbnail_render_graph)
@@ -1161,7 +1157,11 @@ class Controller:
         sfu.checkBox_graph_alternating_pixels       .stateChanged       .connect(self.graph_alternating_pixels_callback)
 
     def bind_shortcuts(self):
-        """ Set up application-wide shortcut keys (called AFTER business object creation). """
+        """ 
+        Set up application-wide shortcut keys (called AFTER business object creation). 
+
+        @todo Rev4: update manual
+        """
         log.debug("Set up shortcuts")
 
         self.shortcuts = {}
@@ -1171,40 +1171,20 @@ class Controller:
             shortcut.activated.connect(callback)
             self.shortcuts[kseq] = shortcut
 
-        # techniques
-        make_shortcut("F1",     self.page_nav.set_technique_hardware)
-        make_shortcut("F2",     self.page_nav.set_technique_scope)
-        make_shortcut("F3",     self.page_nav.set_technique_raman)
-        make_shortcut("F4",     self.page_nav.set_technique_transmission)
-        make_shortcut("F5",     self.page_nav.set_technique_absorbance)
-
-        # operation modes
-        make_shortcut("F6",     self.page_nav.set_operation_mode_setup)
-        make_shortcut("Ctrl+1", self.page_nav.set_operation_mode_setup)
-
-        make_shortcut("F7",     self.page_nav.set_operation_mode_capture)
-        make_shortcut("Ctrl+2", self.page_nav.set_operation_mode_capture)
-
-        # Dark/Reference
-        make_shortcut("F8",     self.dark_feature.toggle)
-        make_shortcut("Ctrl+D", self.dark_feature.toggle)
-
-        make_shortcut("F9",     self.reference_feature.toggle)
-        make_shortcut("Ctrl+R", self.reference_feature.toggle)
-
-        # Play/Pause/Save
-        make_shortcut("F10",    self.vcr_controls.play)
-        make_shortcut("F11",    self.vcr_controls.pause)
-
-        make_shortcut("F12",    self.vcr_controls.save)
-        make_shortcut("Ctrl+S", self.vcr_controls.save)
+        # views
+        make_shortcut("Ctrl+1", self.page_nav.set_view_scope)
+        make_shortcut("Ctrl+2", self.page_nav.set_view_settings)
+        make_shortcut("Ctrl+3", self.page_nav.set_view_hardware)
 
         # Convenience
         make_shortcut("Ctrl+A", self.authentication.login) # authenticate, advanced
         make_shortcut("Ctrl+C", self.graph.copy_to_clipboard_callback)
+        make_shortcut("Ctrl+D", self.dark_feature.toggle)
         make_shortcut("Ctrl+H", self.page_nav.toggle_hardware_and_scope)
         make_shortcut("Ctrl+L", self.laser_control.toggle_laser)
         make_shortcut("Ctrl+P", self.vcr_controls.toggle) # pause/play
+        make_shortcut("Ctrl+R", self.reference_feature.toggle)
+        make_shortcut("Ctrl+S", self.vcr_controls.save)
 
         # Cursor
         make_shortcut(QtGui.QKeySequence.MoveToPreviousWord, self.cursor.dn_callback) # ctrl-left
@@ -1228,17 +1208,17 @@ class Controller:
         This is a GUI method (used as a callback) to generate one Measurement from
         the most-recent ProcessedReading of EACH connected spectrometer.
         
-        Originally there was no thought of Measurements "knowing" what technique
+        Originally there was no thought of Measurements "knowing" what view
         was in use when they were created.  However, we (currently) only want the
         ID button to show up on Raman measurements, so...let's see where this goes.
         """
-        technique = self.page_nav.get_current_technique()
+        view = self.page_nav.get_current_view()
 
         if self.save_options.save_all_spectrometers():
             for spec in self.multispec.get_spectrometers():
-                self.measurements.create_from_spectrometer(spec=spec, technique=technique)
+                self.measurements.create_from_spectrometer(spec=spec, view=view)
         else:
-            self.measurements.create_from_spectrometer(spec=self.current_spectrometer(), technique=technique)
+            self.measurements.create_from_spectrometer(spec=self.current_spectrometer(), view=view)
 
     # ##########################################################################
     # miscellaneous callbacks
@@ -1944,15 +1924,15 @@ class Controller:
 
         # This should be done before any processing that involves multiple
         # pixels, e.g. offset, boxcar, baseline correction, or Richardson-Lucy.
-        if self.roi_enabled:
-            self.vignette_roi.process(pr, settings)
+        log.debug("process_reading: calling vignette_roi.process")
+        self.vignette_roi.process(pr, settings)
 
         ########################################################################
         # Reference
         ########################################################################
 
         # add reference to ProcessedReading whether or not we're actively in a
-        # reference technique, so plugins etc can access it
+        # reference view, so plugins etc can access it
         if app_state and app_state.reference is not None:
             pr.reference = np.copy(spec.app_state.reference)
         elif ref is not None:
@@ -1967,7 +1947,7 @@ class Controller:
                 self.absorbance.process(pr, settings, spec.app_state)
 
         ########################################################################
-        # non-reference techniques
+        # non-reference views
         ########################################################################
 
         else:
@@ -2450,7 +2430,7 @@ class Controller:
         else:
             retval = np.array(list(range(settings.pixels())), dtype=np.float32) 
 
-        if vignetted and self.get_roi_enabled():
+        if vignetted and self.vignette_roi.enabled:
             return self.vignette_roi.crop(retval, roi=settings.eeprom.get_horizontal_roi())
 
         if regions:
@@ -2460,37 +2440,18 @@ class Controller:
 
         return retval
 
-    def perform_fpga_reset(self, spec = None):
+    def perform_fpga_reset(self, spec=None):
         if spec is None:
             spec = self.multispec.current_spectrometer()
-
         if spec is None:
             return
 
-        wasatch_device = spec.device
-
-        wasatch_device.change_setting("reset_fpga", None)
-
+        spec.device.change_setting("reset_fpga", None)
 
     def update_hardware_window(self):
         for spec in self.multispec.spectrometers.values():
             # call StripChartFeature getter
             spec.app_state.update_rolling_data(self.form.ui.spinBox_strip_window.value())
-
-    def toggle_roi_process(self):
-        self.roi_enabled = not self.roi_enabled
-        self.graph.cursor.set_range(self.generate_x_axis())
-        if self.graph.cursor.is_outside_range():
-            self.graph.cursor.center()
-        if self.roi_enabled:
-            self.form.ui.pushButton_roi_toggle.setStyleSheet("background-color: #aa0000")
-        else:
-            self.form.ui.pushButton_roi_toggle.setStyleSheet(self.default_roi_btn)
-        for spec in self.multispec.get_spectrometers():
-            self.graph.update_roi_regions(spec)
-
-    def get_roi_enabled(self):
-        return self.roi_enabled
 
     def display_response_error(self, spec: Spectrometer, response_error: str) -> bool:
         """
@@ -2550,32 +2511,6 @@ class Controller:
     def open_log(self):
         # Interestingly a few threads explained that this will open the default text editor
         webbrowser.open(os.path.join(common.get_default_data_dir(), "enlighten.log"))
-
-    def get_grid_display(self):
-        return self.grid_display
-
-    def get_roi_enabled(self):
-        return self.roi_enabled
-
-    def graph_grid_toggle(self):
-        self.grid_display = not self.grid_display
-        log.debug(f"setting grid display to {self.grid_display}")
-        if self.grid_display:
-            self.form.ui.pushButton_graphGrid.setStyleSheet("background-color: #aa0000")
-        else:
-            self.form.ui.pushButton_graphGrid.setStyleSheet(self.default_graph_btn)
-        def resolve_graph_plot(head, attr):
-            if head != None and hasattr(head, attr):
-                return getattr(head, attr)
-            else:
-                None
-
-        for name, obj_path in self.enlighten_graphs.items():
-            plot = functools.reduce(resolve_graph_plot, obj_path)
-            if plot != None:
-                plot.showGrid(self.grid_display, self.grid_display)
-            else:
-                log.error(f"{name} couldn't set grid")
 
     def clear_response_errors(self, spec):
         """

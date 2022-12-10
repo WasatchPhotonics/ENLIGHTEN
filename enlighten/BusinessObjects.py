@@ -50,6 +50,7 @@ from .EEPROMWriter                    import EEPROMWriter
 from .Stylesheets                     import Stylesheets
 from .DarkFeature                     import DarkFeature
 from .SaveOptions                     import SaveOptions
+from .GridFeature                     import GridFeature
 from .FileManager                     import FileManager
 from .VCRControls                     import VCRControls
 from .BLEManager                      import BLEManager
@@ -178,10 +179,7 @@ class BusinessObjects:
         self.header("instantiating Graph")
         ctl.graph = Graph(
             clipboard                   = ctl.clipboard,
-            generate_x_axis             = ctl.generate_x_axis,
             gui                         = ctl.gui,
-            hide_when_zoomed            = [ sfu.frame_new_save_col_holder, sfu.controlWidget ],
-            rehide_curves               = ctl.rehide_curves,
 
             button_copy                 = sfu.pushButton_copy_to_clipboard,
             button_invert               = sfu.pushButton_invert_x_axis,
@@ -189,9 +187,12 @@ class BusinessObjects:
             button_zoom                 = sfu.pushButton_zoom_graph,
             cb_marker                   = sfu.checkBox_graph_marker,
             combo_axis                  = sfu.displayAxis_comboBox_axis,
-
-            layout_scope_capture        = sfu.layout_scope_capture_graphs,
-            stacked_widget_scope_setup  = sfu.stackedWidget_scope_setup_live_spectrum)
+            generate_x_axis             = ctl.generate_x_axis,
+            hide_when_zoomed            = [ sfu.frame_new_save_col_holder, sfu.controlWidget ],
+            layout                      = sfu.layout_scope_capture_graphs,
+            rehide_curves               = ctl.rehide_curves,
+            stacked_widget              = sfu.stackedWidget_scope_setup_live_spectrum,
+            )
 
         self.header("instantiating HardwareFileOutputManager")
         ctl.hardware_file_manager = HardwareFileOutputManager(
@@ -204,7 +205,6 @@ class BusinessObjects:
             button_up                   = sfu.pushButton_cursor_up,
             cb_enable                   = sfu.checkBox_cursor_scope_enabled,
             ds_value                    = sfu.doubleSpinBox_cursor_scope,
-            generate_x_axis             = ctl.generate_x_axis,
             graph                       = ctl.graph)
 
         self.header("instantiating ImageResources")
@@ -227,7 +227,6 @@ class BusinessObjects:
             stylesheets                 = ctl.stylesheets,
             eject_button                = sfu.pushButton_eject,
             controller_disconnect       = ctl.disconnect_device,
-            get_roi_enabled             = ctl.get_roi_enabled,
 
 			# Essentially, these are widgets corresponding to SpectrometerState fields,
             # SpectrometerApplicationState fields, or change_device_setting() keys
@@ -289,8 +288,12 @@ class BusinessObjects:
 
         self.header("instantiating VignetteROIFeature")
         ctl.vignette_roi = VignetteROIFeature(
-            multispec                   = ctl.multispec)
-        ctl.graph.vignette_roi = ctl.vignette_roi
+            graph                       = ctl.graph,
+            multispec                   = ctl.multispec,
+            stylesheets                 = ctl.stylesheets,
+
+            button                      = sfu.pushButton_roi_toggle,
+            )
 
         self.header("instantiating TransmissionFeature")
         ctl.transmission = TransmissionFeature(
@@ -380,11 +383,10 @@ class BusinessObjects:
             save_options                           = ctl.save_options,
             stylesheets                            = ctl.stylesheets,
 
-            button_details                         = sfu.pushButton_hardware_tab_details,
-            button_logging                         = sfu.pushButton_hardware_tab_logging,
-            button_setup                           = sfu.pushButton_setup,
-            button_capture                         = sfu.pushButton_capture,
-            combo_technique                        = sfu.comboBox_technique,
+            button_raman                           = sfu.pushButton_raman,
+            button_non_raman                       = sfu.pushButton_non_raman,
+            button_expert                          = sfu.pushButton_expert,
+            combo_view                             = sfu.comboBox_view,
             stack_hardware                         = sfu.stackedWidget_hardware_setup_details,
             stack_main                             = sfu.stackedWidget_low,
 
@@ -421,8 +423,8 @@ class BusinessObjects:
             label_count                 = sfu.label_session_count,
             layout                      = sfu.verticalLayout_scope_capture_save,
             marquee                     = ctl.marquee,
-            get_roi_enabled             = ctl.get_roi_enabled,
-            reprocess_callback          = ctl.reprocess)
+            reprocess_callback          = ctl.reprocess,
+            vignette_roi                = ctl.vignette_roi)
         ctl.graph.measurements = ctl.measurements
 
         self.header("instantiating Authentication")
@@ -432,6 +434,7 @@ class BusinessObjects:
             parent                      = ctl.form,
 
             button_login                = sfu.pushButton_admin_login,
+            combo_view                 = sfu.comboBox_view,
 
             oem_widgets                 = [ sfu.pushButton_write_eeprom, sfu.pushButton_importEEPROM, sfu.pushButton_exportEEPROM, sfu.pushButton_restore_eeprom, sfu.pushButton_reset_fpga ],
             advanced_widgets            = [ sfu.doubleSpinBox_lightSourceWidget_excitation_nm,
@@ -469,6 +472,7 @@ class BusinessObjects:
             cb_enable                   = sfu.checkBox_raman_intensity_correction,
             guide                       = ctl.guide,
             multispec                   = ctl.multispec,
+            page_nav                    = ctl.page_nav,
             vignette_roi                = ctl.vignette_roi)
 
         self.header("instantiating LaserControlFeature")
@@ -524,11 +528,11 @@ class BusinessObjects:
 
         self.header("instantiating CloudManager")
         ctl.cloud_manager = CloudManager(
-            cb_enabled     = sfu.checkBox_cloud_config_download_enabled,
-            restore_button = sfu.pushButton_restore_eeprom,
+            cb_enabled                  = sfu.checkBox_cloud_config_download_enabled,
+            restore_button              = sfu.pushButton_restore_eeprom,
 
-            config         = ctl.config,
-            eeprom_editor  = ctl.eeprom_editor)
+            config                      = ctl.config,
+            eeprom_editor               = ctl.eeprom_editor)
 
         self.header("instantiating VCRControls")
         ctl.vcr_controls = VCRControls(
@@ -552,7 +556,6 @@ class BusinessObjects:
             cb_show_curve               = sfu.checkBox_baselineCorrection_show,
             combo_algo                  = sfu.comboBox_baselineCorrection_algo,
             config                      = ctl.config,
-            generate_x_axis             = ctl.generate_x_axis,
             guide                       = ctl.guide,
             multispec                   = ctl.multispec,
             page_nav                    = ctl.page_nav,
@@ -574,29 +577,28 @@ class BusinessObjects:
             button_store                = sfu.pushButton_dark_store,
             button_toggle               = sfu.pushButton_scope_toggle_dark,
             lb_timestamp                = sfu.label_dark_timestamp,
-            stackedWidget_scope_setup_dark_spectrum = sfu.stackedWidget_scope_setup_dark_spectrum,
+            stacked_widget              = sfu.stackedWidget_scope_setup_dark_spectrum,
             gui_make_pen                = ctl.gui.make_pen)
 
         self.header("instantiating ReferenceFeature")
         ctl.reference_feature = ReferenceFeature(
-            generate_x_axis                                 = ctl.generate_x_axis,
-            graph                                           = ctl.graph,
-            gui                                             = ctl.gui,
-            marquee                                         = ctl.marquee,
-            measurement_factory                             = ctl.measurement_factory,
-            multispec                                       = ctl.multispec,
-            page_nav                                        = ctl.page_nav,
-            save_options                                    = ctl.save_options,
-            set_curve_data                                  = ctl.set_curve_data,
+            graph                       = ctl.graph,
+            gui                         = ctl.gui,
+            marquee                     = ctl.marquee,
+            measurement_factory         = ctl.measurement_factory,
+            multispec                   = ctl.multispec,
+            page_nav                    = ctl.page_nav,
+            save_options                = ctl.save_options,
+            set_curve_data              = ctl.set_curve_data,
                                         
-            button_clear                                    = sfu.pushButton_reference_clear,
-            button_load                                     = sfu.pushButton_reference_load,
-            button_store                                    = sfu.pushButton_reference_store,
-            button_toggle                                   = sfu.pushButton_scope_toggle_reference,
-            frame_setup                                     = sfu.frame_scopeSetup_spectra_reference_white,
-            lb_timestamp                                    = sfu.label_reference_timestamp,
-            stackedWidget_scope_setup_reference_spectrum    = sfu.stackedWidget_scope_setup_reference_spectrum,
-            gui_make_pen                                    = ctl.gui.make_pen)
+            button_clear                = sfu.pushButton_reference_clear,
+            button_load                 = sfu.pushButton_reference_load,
+            button_store                = sfu.pushButton_reference_store,
+            button_toggle               = sfu.pushButton_scope_toggle_reference,
+            frame_setup                 = sfu.frame_scopeSetup_spectra_reference_white,
+            lb_timestamp                = sfu.label_reference_timestamp,
+            stacked_widget              = sfu.stackedWidget_scope_setup_reference_spectrum,
+            gui_make_pen                = ctl.gui.make_pen)
 
         self.header("instantiating BatchCollection")
         ctl.batch_collection = BatchCollection(
@@ -720,7 +722,6 @@ class BusinessObjects:
         ctl.richardson_lucy = RichardsonLucy(
             cb_enable                   = sfu.checkBox_richardson_lucy,
             config                      = ctl.config,
-            generate_x_axis             = ctl.generate_x_axis,
             graph                       = ctl.graph,
             multispec                   = ctl.multispec,
             vignette_roi                = ctl.vignette_roi)
@@ -732,10 +733,10 @@ class BusinessObjects:
 
         self.header("instantiating HardwareCaptureControlFeature")
         ctl.hardware_control_feature = HardwareCaptureControlFeature(
-            sfu                 = sfu,
-            graph               = ctl.graph,
-            laser_feature       = ctl.laser_temperature,
-            detector_feature    = ctl.detector_temperature)
+            sfu                         = sfu,
+            graph                       = ctl.graph,
+            laser_feature               = ctl.laser_temperature,
+            detector_feature            = ctl.detector_temperature)
 
         self.header("instantiating PluginController")
         ctl.plugin_controller = PluginController(
@@ -753,7 +754,6 @@ class BusinessObjects:
             save_options                = ctl.save_options,
             kia_feature                 = ctl.kia_feature,
             measurements_clipboard      = ctl.measurements,
-            get_grid_display            = ctl.get_grid_display,
 
             button_process              = sfu.pushButton_plugin_process,
             cb_connected                = sfu.checkBox_plugin_connected,
@@ -768,6 +768,17 @@ class BusinessObjects:
             lb_widget                   = sfu.label_plugin_widget,
             vlayout_fields              = sfu.verticalLayout_plugin_fields,
             measurements                = ctl.measurements)
+
+        self.header("instantiating GridFeature")
+        ctl.grid = GridFeature(
+            button                      = sfu.pushButton_graphGrid,
+            gui                         = ctl.gui,
+            stylesheets                 = ctl.stylesheets,
+            plots                       = {
+                                            "scope graph" : [ctl.graph, "plot"],
+                                            "plugin graph": [ctl.plugin_controller, "graph_plugin", "plot"],
+                                          })
+        ctl.plugin_controller.grid = ctl.grid
 
         self.header("instantiating AreaScanFeature")
         ctl.area_scan = AreaScanFeature(

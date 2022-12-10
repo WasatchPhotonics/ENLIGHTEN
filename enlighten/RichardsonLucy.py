@@ -25,14 +25,12 @@ class RichardsonLucy(object):
     def __init__(self, 
             cb_enable,
             config,
-            generate_x_axis,
             graph,
             multispec,
             vignette_roi):
 
         self.cb_enable       = cb_enable
         self.config          = config
-        self.generate_x_axis = generate_x_axis
         self.graph           = graph
         self.multispec       = multispec
         self.vignette_roi    = vignette_roi
@@ -148,7 +146,7 @@ class RichardsonLucy(object):
         if spec is None:
             return
 
-        x_axis = self.generate_x_axis(unit=unit, vignetted=True)
+        x_axis = self.graph.generate_x_axis(unit=unit, vignetted=True)
         if x_axis is None:
             log.debug("no x-axis")
             return 

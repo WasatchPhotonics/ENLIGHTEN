@@ -1,5 +1,13 @@
 # Version History
 
+# 4.0 GUI Cleanup
+
+- 2022-12-09 4.0.0
+    - Marquee and VCRControls always visible
+    - better widget scaling at lower resolutions
+    - refactored Techniques, Modes and Views
+    - refactored GridFeature and VignetteROIFeature
+
 # 3.2 Open-Source
 
 - 2022-12-06 3.2.41

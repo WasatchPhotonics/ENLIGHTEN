@@ -7,6 +7,7 @@ import copy
 from wasatch.ProcessedReading import ProcessedReading
 
 from wasatch import utils as wasatch_utils
+from .ScrollStealFilter import ScrollStealFilter
 
 log = logging.getLogger(__name__)
 
@@ -83,6 +84,11 @@ class InterpolationFeature(object):
         self._update_widgets()
 
         self.update_visibility()
+
+        # disable scroll stealing
+        for key, item in self.__dict__.items():
+            if key.startswith("dsb_"):
+                item.installEventFilter(ScrollStealFilter(item))
 
     def total_pixels(self):
         return 0 if self.new_axis is None else len(self.new_axis) 

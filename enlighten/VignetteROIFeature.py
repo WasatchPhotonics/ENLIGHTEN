@@ -3,23 +3,92 @@ import logging
 log = logging.getLogger(__name__)
 
 ##
-# Changing how this works from initial implementation.  Dropping the checkbox, 
-# and enabling the feature for any spectrometer which has vignetting (ROI Horizontal 
-# Start/Stop) defined in its EEPROM.
+# Encapsulate the horizontal ROI feature.
+#
+# It is very important to understand what it means for this feature to be 
+# "enabled," and how that is visualized.
+#
+# BY DEFAULT, spectrometers with "vignetted" spectra (spectrometers with valid 
+# horizontal_roi_start/stop fields populated in the EEPROM) DO NOT show the 
+# cropped "wings" of the spectra in ENLIGHTEN.  The whole purpose of configuring
+# a horizontal ROI is to NOT SHOW those noisy, filtered, useless fringes.
+#
+# Therefore, the DEFAULT mode is to crop the ROI.  This means the VignetteROI 
+# feature is ENABLED, and the button is visualized in a non-scary "gray" style.
+#
+# The RARE case is for a user to wish to see those low-signal fringes, and 
+# therefore we visualize that mode (with "curtains" on the ends) with the RED,
+# SCARY style.
+#           
+#     enabled:       True        False
+#     button CSS:    gray        red
+#     vignette:      yes         no
+#
 class VignetteROIFeature(object):
     
     def __init__(self,
-            multispec):
+            graph,
+            multispec,
+            stylesheets,
+
+            button):
+
+        self.graph = graph
         self.multispec = multispec
+        self.stylesheets = stylesheets
+
+        self.button = button
+
+        self.enabled = True
+
         self.observers = set()
+
+        # self-register with Graph
+        self.graph.vignette_roi = self
+
+        self.button.clicked.connect(self.toggle)
+
+        self.update_visibility()
+
+    def toggle(self):
+        self.enabled = not self.enabled
+        
+        # re-center cursor if disabling ROI made current position fall off the graph
+        self.graph.cursor.set_range(self.graph.generate_x_axis())
+        if self.graph.cursor.is_outside_range():
+            self.graph.cursor.center()
+
         self.update_visibility()
 
     ## provided for RichardsonLucy to flush its Gaussian cache
     def register_observer(self, callback):
         self.observers.add(callback)
 
+    def init_hotplug(self):
+        """ auto-enable for spectrometers with ROI """
+        spec = self.multispec.current_spectrometer()
+        self.enabled = spec and spec.settings.eeprom.has_horizontal_roi()
+
     def update_visibility(self):
         spec = self.multispec.current_spectrometer()
+
+        if spec and spec.settings.eeprom.has_horizontal_roi():
+            self.button.setVisible(True)
+
+            if self.enabled:
+                self.stylesheets.apply(self.button, "gray_gradient_button") 
+                self.button.setToolTip("spectra vignetted per EEPROM horizontal ROI")
+            else:
+                self.stylesheets.apply(self.button, "red_gradient_button")
+                self.button.setToolTip("unvignetted spectra shown (curtains indicate ROI limits)")
+
+        else:
+            self.button.setVisible(False)
+            self.enabled = False
+
+        for spec in self.multispec.get_spectrometers():
+            self.graph.update_roi_regions(spec)
+
         for callback in self.observers:
             callback()
 
@@ -37,6 +106,7 @@ class VignetteROIFeature(object):
     #                      have no choice to un-vignette it now (other than by
     #                      prefixing/suffixing zeros or something).  
     # @returns cropped spectrum
+    # @note does not currently check .enabled
     def crop(self, spectrum, spec=None, roi=None, force=False):
         if spectrum is None:
             return
@@ -55,7 +125,7 @@ class VignetteROIFeature(object):
         if not roi.valid() or roi.start >= orig_len or roi.end >= orig_len:
             return spectrum
 
-        log.debug("crop: cropping spectrum of %d pixels to %d (%d to %d)", orig_len, roi.len, roi.start, roi.end)
+        # log.debug("crop: cropping spectrum of %d pixels to %d (%s)", orig_len, roi.len, roi)
         return roi.crop(spectrum)
         
     ##
@@ -63,7 +133,12 @@ class VignetteROIFeature(object):
     # 
     # @param pr (In/Out) ProcessedReading
     # @param settings (Input) SpectrometerSettings
+    #
+    # @returns Nothing (side-effect: populates pr.processed_vignetted)
     def process(self, pr, settings=None):
+        if not self.enabled:
+            return
+
         if pr is None or pr.processed is None:
             return
 
@@ -79,4 +154,3 @@ class VignetteROIFeature(object):
             return 
             
         pr.processed_vignetted = self.crop(pr.processed, roi=roi)
-        log.debug("process: processed_vignetted has %d pixels", len(pr.processed_vignetted))

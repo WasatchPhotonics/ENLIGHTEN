@@ -64,7 +64,6 @@ class BaselineCorrection:
             cb_show_curve,      # whether we should show the computed baseline (whether it's being subtracted or not)
             combo_algo,
             config,
-            generate_x_axis,
             guide,
             multispec,
             page_nav,
@@ -75,11 +74,11 @@ class BaselineCorrection:
         self.cb_show_curve   = cb_show_curve
         self.combo_algo      = combo_algo
         self.config          = config
-        self.generate_x_axis = generate_x_axis
         self.guide           = guide
         self.multispec       = multispec
         self.page_nav        = page_nav
         self.vignette_roi    = vignette_roi
+        self.curve           = None
 
         self.current_algo_name = BaselineCorrection.DEFAULT_ALGO_NAME
         self.enabled = False
@@ -234,7 +233,7 @@ class BaselineCorrection:
                 spec.app_state.baseline_correction_enabled = self.enabled
             return
 
-        # apparently we're in a technique and spectrometer that supports baseline
+        # apparently we're in a view and spectrometer that supports baseline
         # correction (or we've been overridden by Advanced Options)
 
         name = self.combo_algo.currentText()
@@ -252,6 +251,9 @@ class BaselineCorrection:
         self.enabled = self.cb_enabled.isChecked()
         if spec is not None:
             spec.app_state.baseline_correction_enabled = self.enabled
+
+        if self.curve is None:
+            return
 
         self.show_curve = self.cb_show_curve.isChecked()
         self.curve.setVisible(self.show_curve)
@@ -281,7 +283,7 @@ class BaselineCorrection:
             return
 
         spectrum = pr.get_processed()
-        x_axis = self.generate_x_axis(spec=spec, vignetted=pr.is_cropped())
+        x_axis = self.graph.generate_x_axis(spec=spec, vignetted=pr.is_cropped())
 
         baseline = self.generate_baseline(spectrum=spectrum, x_axis=x_axis)
         if baseline is None:

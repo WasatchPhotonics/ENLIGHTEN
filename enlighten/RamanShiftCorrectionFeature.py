@@ -153,7 +153,7 @@ class RamanShiftCorrectionFeature(object):
         self.widgets_visible = self.astm_compounds is not None and \
                                spec is not None and \
                                spec.settings.has_excitation() and \
-                               self.page_nav.doing_raman()
+                               (self.page_nav.doing_raman() or self.page_nav.doing_expert())
 
         self.frame.setVisible(self.widgets_visible)
         self.button.setVisible(self.widgets_visible)
