@@ -159,25 +159,21 @@ class PageNavigation:
         self.set_main_page(common.Pages.SETTINGS)
 
     def set_view_logging(self):
-        log.info("setting view to hardware")
-        self.set_view_common(common.Views.HARDWARE)
-        self.stack_hardware.setCurrentIndex(1)
-        self.set_main_page(common.Pages.HARDWARE)
+        self.set_view_common(common.Views.LOG)
+        self.set_main_page(common.Pages.LOG)
 
     def set_view_hardware(self):
-        log.info("setting view to hardware")
         self.set_view_common(common.Views.HARDWARE)
-        self.stack_hardware.setCurrentIndex(0)
         self.set_main_page(common.Pages.HARDWARE)
 
     def set_view_factory(self):
-        log.info("setting view to factory")
         self.set_view_common(common.Views.HARDWARE)
         self.set_main_page(common.Pages.FACTORY)
 
     def set_view_scope(self):
         self.set_view_common(common.Views.SCOPE)
         self.set_main_page(common.Pages.SCOPE)
+
         self.graph.set_x_axis(common.Axes.WAVELENGTHS)
         self.graph.set_y_axis(common.Axes.COUNTS)
 
@@ -193,10 +189,7 @@ class PageNavigation:
 
     def set_view_common(self, view):
         log.debug("set_view_common: view %d", view)
-
         self.graph.reset_axes()
-
-        # Business Objects
         self.update_feature_visibility()
 
     # ##########################################################################

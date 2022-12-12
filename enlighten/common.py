@@ -89,6 +89,7 @@ class Pages(IntEnum):
     FACTORY               = 1 # AreaScan etc
     SETTINGS              = 2 # SaveOptions etc
     SCOPE                 = 3 # Graph etc
+    LOG                   = 4 # Log view
 
 class Axes(IntEnum):
     PIXELS      = 0
