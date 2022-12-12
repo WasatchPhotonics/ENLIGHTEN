@@ -385,7 +385,6 @@ class BusinessObjects:
             button_non_raman            = sfu.pushButton_non_raman,
             button_expert               = sfu.pushButton_expert,
             combo_view                  = sfu.comboBox_view,
-            stack_hardware              = sfu.stackedWidget_hardware_setup_details,
             stack_main                  = sfu.stackedWidget_low,
 
             textEdit_log                = sfu.textEdit_log,                      # todo move to LoggingFeature
@@ -397,7 +396,6 @@ class BusinessObjects:
             fr_region                   = sfu.frame_region_control,
 
             update_feature_visibility   = ctl.update_feature_visibility,
-            scroll_area                 = sfu.scrollArea_hsd,
             sfu                         = sfu)
 
         self.header("instantiating MeasurementFactory")

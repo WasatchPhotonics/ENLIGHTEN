@@ -31,11 +31,9 @@ class PageNavigation:
             button_raman,
             button_non_raman,
             button_expert,
-            stack_hardware,
             stack_main,
 
             update_feature_visibility,
-            scroll_area,
 
             textEdit_log,                       # todo move to LoggingFeature
             fr_transmission_options,
@@ -59,7 +57,6 @@ class PageNavigation:
         self.button_non_raman   = button_non_raman
         self.button_expert      = button_expert
         self.combo_view         = combo_view
-        self.stack_hardware     = stack_hardware 
         self.stack_main         = stack_main 
         self.combo_technique    = self.sfu.technique_comboBox
 
@@ -71,7 +68,6 @@ class PageNavigation:
         self.fr_region          = fr_region
         
         self.update_feature_visibility = update_feature_visibility
-        self.scroll_area = scroll_area
         self.textEdit_log = textEdit_log
 
         self.operation_mode = common.OperationModes.RAMAN
@@ -196,22 +192,6 @@ class PageNavigation:
     # Page Navigation: Operation Mode
     # ##########################################################################
 
-    def set_hardware_details_active(self):
-        self.stack_hardware.setCurrentIndex(0)
-        self.stylesheets.apply(self.button_details, "tab_active")
-        self.stylesheets.apply(self.button_logging, "tab_inactive")
-
-    def set_hardware_logging_active(self):
-        self.stack_hardware.setCurrentIndex(1)
-        self.stylesheets.apply(self.button_details, "tab_inactive")
-        self.stylesheets.apply(self.button_logging, "tab_active")
-
-        self.scroll_to_top(self.scroll_area)
-        self.scroll_to_top(self.textEdit_log)
-
-    def scroll_to_top(self, widget):
-        widget.verticalScrollBar().setValue(widget.verticalScrollBar().minimum())
-        
     def set_main_page(self, page):
         log.debug(f"setting main page to index {page}")
         self.stack_main.setCurrentIndex(page)
