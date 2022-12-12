@@ -10,7 +10,6 @@ from .RamanIntensityCorrection        import RamanIntensityCorrection   # SRM
 from .AccessoryControlFeature         import AccessoryControlFeature
 from .LaserTemperatureFeature         import LaserTemperatureFeature
 from .IntegrationTimeFeature          import IntegrationTimeFeature
-from .AdvancedOptionsFeature          import AdvancedOptionsFeature
 from .ExternalTriggerFeature          import ExternalTriggerFeature
 from .ResourceMonitorFeature          import ResourceMonitorFeature
 from .InterpolationFeature            import InterpolationFeature
@@ -377,25 +376,31 @@ class BusinessObjects:
 
         self.header("instantiating PageNavigation")
         ctl.page_nav = PageNavigation(
-            graph                                  = ctl.graph,
-            marquee                                = ctl.marquee,
-            multispec                              = ctl.multispec,
-            save_options                           = ctl.save_options,
-            stylesheets                            = ctl.stylesheets,
+            graph                       = ctl.graph,
+            marquee                     = ctl.marquee,
+            multispec                   = ctl.multispec,
+            save_options                = ctl.save_options,
+            stylesheets                 = ctl.stylesheets,
 
-            button_raman                           = sfu.pushButton_raman,
-            button_non_raman                       = sfu.pushButton_non_raman,
-            button_expert                          = sfu.pushButton_expert,
-            combo_view                             = sfu.comboBox_view,
-            stack_hardware                         = sfu.stackedWidget_hardware_setup_details,
-            stack_main                             = sfu.stackedWidget_low,
+            button_raman                = sfu.pushButton_raman,
+            button_non_raman            = sfu.pushButton_non_raman,
+            button_expert               = sfu.pushButton_expert,
+            combo_view                  = sfu.comboBox_view,
+            stack_hardware              = sfu.stackedWidget_hardware_setup_details,
+            stack_main                  = sfu.stackedWidget_low,
 
-            textEdit_log                           = sfu.textEdit_log,                      # todo move to LoggingFeature
-            frame_transmission_options             = sfu.frame_transmission_options,        # todo move to TransmissionFeature
+            textEdit_log                = sfu.textEdit_log,                      # todo move to LoggingFeature
+            fr_transmission_options     = sfu.frame_transmission_options,        # todo move to TransmissionFeature
+            fr_area_scan                = sfu.frame_area_scan_widget,
+            fr_baseline                 = sfu.frame_baseline_correction,
+            fr_post                     = sfu.frame_post_processing,
+            fr_tec                      = sfu.frame_tec_control,
+            fr_region                   = sfu.frame_region_control,
+            fr_despike                  = sfu.frame_despike_widget,
 
-            update_feature_visibility              = ctl.update_feature_visibility,
-            scroll_area                            = sfu.scrollArea_hsd,
-            sfu                                    = sfu)
+            update_feature_visibility   = ctl.update_feature_visibility,
+            scroll_area                 = sfu.scrollArea_hsd,
+            sfu                         = sfu)
 
         self.header("instantiating MeasurementFactory")
         ctl.measurement_factory = MeasurementFactory(
@@ -826,27 +831,6 @@ class BusinessObjects:
             multispec                   = ctl.multispec,
             sb_freq_hz                  = sfu.spinBox_accessory_cont_strobe_freq_hz,
             sb_width_us                 = sfu.spinBox_accessory_cont_strobe_width_us)
-
-        self.header("instantiating AdvancedOptionsFeature")
-        ctl.advanced_options = AdvancedOptionsFeature(
-            cb_enable                   = sfu.checkBox_AdvancedOptions,
-            cb_area_scan                = sfu.checkBox_AdvancedOptions_AreaScan,
-            cb_baseline                 = sfu.checkBox_AdvancedOptions_BaselineCorrection,
-            cb_post                     = sfu.checkBox_AdvancedOptions_PostProcessing,
-            cb_region                   = sfu.checkBox_AdvancedOptions_Region,
-            cb_tec                      = sfu.checkBox_AdvancedOptions_TECControl,
-            cb_despike                  = sfu.checkBox_AdvancedOptions_Despike,
-            config                      = ctl.config,
-            fr_subopt                   = sfu.frame_AdvancedOptions_SubOptions,
-            fr_area_scan                = sfu.frame_area_scan_widget,
-            fr_baseline                 = sfu.frame_baseline_correction,
-            fr_post                     = sfu.frame_post_processing,
-            fr_tec                      = sfu.frame_tec_control,
-            fr_region                   = sfu.frame_region_control,
-            fr_despike                  = sfu.frame_despike_widget,
-            multispec                   = ctl.multispec,
-            stylesheets                 = ctl.stylesheets)
-        ctl.baseline_correction.advanced_options = ctl.advanced_options
 
         self.header("instantiating HighGainModeFeature")
         ctl.high_gain_mode = HighGainModeFeature(

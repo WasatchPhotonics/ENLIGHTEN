@@ -319,7 +319,6 @@ class Controller:
 
         if self.multispec.count() == 0:
             self.marquee.info("searching for spectrometers", immediate=True, persist=True)
-            self.advanced_options.update_visibility()
 
         self.status_indicators.update_visibility()
 
@@ -497,7 +496,7 @@ class Controller:
             self.marquee.info("no spectrometers found...calling remove_all") 
             self.multispec.remove_all()
 
-            self.update_feature_visibility
+            self.update_feature_visibility()
             return
 
         # handle the special case in which the user specified a single 
@@ -642,7 +641,6 @@ class Controller:
         # disable anything that shouldn't be on without a spectrometer
         # (could grow this considerably)
         for feature in [ self.accessory_control,
-                         self.advanced_options,
                          self.raman_mode_feature,
                          self.raman_intensity_correction,
                          self.raman_shift_correction,
@@ -932,7 +930,6 @@ class Controller:
                 feature.init_hotplug()
 
         for feature in [ self.accessory_control,
-                         self.advanced_options,
                          self.area_scan,
                          self.boxcar,
                          self.dark_feature,

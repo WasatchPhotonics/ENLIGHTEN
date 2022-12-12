@@ -20,9 +20,8 @@ class BaselineCorrection:
     - implicit operation: automatically enabled, with default algo (AirPLS), when in
       Raman Mode, but ONLY if a horizontally vignetted ROI is configured. (MZ: is this true?)
     
-    - explicit operation: if user checked "Advanced Options" then "Baseline Correction"
-      in the "Advanced Options" widget, then manually clicked "Enabled" in the Baseline
-      Correction widget.
+    - explicit operation: if user enabled "Expert Mode", then manually clicked 
+      "Enabled" in the Baseline Correction widget.
     
     @par ModPoly
     
@@ -211,14 +210,14 @@ class BaselineCorrection:
 
     def update_visibility(self):
         allowed = False
+
         # implicit operation allowed if RAMAN with VIGNETTING
         if self.page_nav.doing_raman():
             allowed = True
 
-        # explicit operation through Advanced Options
-        if self.advanced_options is not None:
-            if self.advanced_options.baseline_visible:
-                allowed = True
+        # explicit operation through Expert Mode
+        if self.page_nav.doing_expert():
+            allowed = True
 
         spec = self.multispec.current_spectrometer()
 
@@ -234,7 +233,7 @@ class BaselineCorrection:
             return
 
         # apparently we're in a view and spectrometer that supports baseline
-        # correction (or we've been overridden by Advanced Options)
+        # correction (or we're in Expert Mode)
 
         name = self.combo_algo.currentText()
         try:

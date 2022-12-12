@@ -1,18 +1,20 @@
-#!/bin/bash
+#!/usr/bin/bash
 #
 # Run supporting pyrcc files to generate resource files and future
 # designer conversions into python code. Run this from the home project
 # directory like:
 # <project root> $ ./scripts/rebuild_resources.sh
 
-LAYOUT_ONLY=false
-ICONS_ONLY=false
+QUICK=false
 PAUSE=false
-while [ "$1" != "" ]; do
+echo "args: $*"
+echo "first arg: $1"
+while [ "$1" != "" ]
+do
+    echo "evaluating arg '$1'"
     case $1 in
-        --layout) LAYOUT_ONLY=true; shift ;;
-         --icons)  ICONS_ONLY=true; shift ;;
-         --pause)       PAUSE=true; shift ;;
+         --quick) QUICK=true; ;;
+         --pause) PAUSE=true; ;;
     esac
     shift
 done
@@ -71,10 +73,12 @@ else
     fi
 fi
 
-echo "OS   = $OS"
-echo "RCC  = $RCC"
-echo "UIC  = $UIC"
-echo "2to3 = $TWO_TO_THREE"
+echo "QUICK = $QUICK"
+echo "PAUSE = $PAUSE"
+echo "OS    = $OS"
+echo "RCC   = $RCC"
+echo "UIC   = $UIC"
+echo "2to3  = $TWO_TO_THREE"
 echo
 
 FAILED=false
@@ -105,7 +109,7 @@ fi
 # Embed latest CSS into Qt Designer layout
 ################################################################################
 
-if ! $ICONS_ONLY
+if ! $QUICK
 then
 	python scripts/embed_stylesheet.py
 	echo
@@ -120,7 +124,7 @@ fi
 # Convert Qt files to Python
 ################################################################################
 
-if ! $LAYOUT_ONLY
+if ! $QUICK
 then
 	# Process all of the QT Resource Files
 	for FILE in */assets/uic_qrc/*.qrc
@@ -135,25 +139,22 @@ then
 	echo
 fi
 
-if ! $ICONS_ONLY
-then
-    for FILE in */assets/uic_qrc/*.ui
-    do 
-        BASENAME=$(echo $FILE | awk -F/ '{print $NF}')
-        ROOT=$(echo $FILE | cut -d '.' -f 1)
-        DEST=${ROOT}.py
+for FILE in */assets/uic_qrc/*.ui
+do 
+BASENAME=$(echo $FILE | awk -F/ '{print $NF}')
+ROOT=$(echo $FILE | cut -d '.' -f 1)
+DEST=${ROOT}.py
 
-		if $LAYOUT_ONLY && [ $BASENAME != "enlighten_layout.ui" ]
-		then
-            echo "skipping $FILE"
-            continue
-		fi
+	if $QUICK && [ $BASENAME != "enlighten_layout.ui" ]
+	then
+    echo "skipping $FILE"
+    continue
+	fi
 
-        echo -n "converting $FILE"
-        $UIC_PRE $UIC $FILE -o $DEST && convertToPy3 $DEST
-        echo "...done"
-    done
-fi
+echo -n "converting $FILE"
+$UIC_PRE $UIC $FILE -o $DEST && convertToPy3 $DEST
+echo "...done"
+done
 
 # make uic_qrc a valid Python module
 touch enlighten/assets/uic_qrc/__init__.py

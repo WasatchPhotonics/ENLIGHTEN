@@ -36,8 +36,16 @@ class PageNavigation:
 
             update_feature_visibility,
             scroll_area,
+
             textEdit_log,                       # todo move to LoggingFeature
-            frame_transmission_options,         # todo move to TransmissionFeature
+            fr_transmission_options,
+            fr_area_scan,
+            fr_baseline,
+            fr_post,
+            fr_tec,
+            fr_region,
+            fr_despike,
+
             sfu,
             ):
 
@@ -55,9 +63,15 @@ class PageNavigation:
         self.stack_hardware     = stack_hardware 
         self.stack_main         = stack_main 
         self.combo_technique    = self.sfu.technique_comboBox
-        self.combo_technique.installEventFilter(ScrollStealFilter(self.combo_technique))
 
-        self.frame_transmission_options = frame_transmission_options 
+        self.fr_transmission_options = fr_transmission_options
+        self.fr_area_scan       = fr_area_scan
+        self.fr_baseline        = fr_baseline
+        self.fr_post            = fr_post
+        self.fr_tec             = fr_tec
+        self.fr_region          = fr_region
+        self.fr_despike         = fr_despike
+        
         self.update_feature_visibility = update_feature_visibility
         self.scroll_area = scroll_area
         self.textEdit_log = textEdit_log
@@ -67,6 +81,8 @@ class PageNavigation:
         self.has_used_raman = False
         self.current_technique = self.sfu.technique_comboBox.currentIndex()
 
+        self.combo_technique.installEventFilter(ScrollStealFilter(self.combo_technique))
+
         self.button_raman           .clicked            .connect(self.set_operation_mode_raman)
         self.button_non_raman       .clicked            .connect(self.set_operation_mode_non_raman)
         self.button_expert          .clicked            .connect(self.set_operation_mode_expert)
@@ -75,9 +91,9 @@ class PageNavigation:
 
     def post_init(self):
         self.set_view_scope()
-        self.sfu.frame_hardware_capture_control_cb.hide()
+        self.sfu.frame_FactoryMode_Options.hide()
         self.set_operation_mode_non_raman()
-        self.frame_transmission_options.hide()
+        self.fr_transmission_options.hide()
 
     # ##########################################################################
     # activity introspection
@@ -123,12 +139,7 @@ class PageNavigation:
         self.current_view = self.determine_current_view()
         log.debug("update_view_callback: current_view now %d", self.current_view)
 
-        if self.doing_factory():
-            log.debug("doing factory so showing hardware_capture_control_cb")
-            self.sfu.frame_hardware_capture_control_cb.show()
-        else:
-            log.debug("not doing factory so hiding hardware_capture_control_cb")
-            self.sfu.frame_hardware_capture_control_cb.hide()
+        self.sfu.frame_FactoryMode_Options.setVisible(self.doing_factory())
 
         if self.doing_hardware()        : return self.set_view_hardware()
         if self.doing_factory()         : return self.set_view_factory()
@@ -184,7 +195,6 @@ class PageNavigation:
 
     def set_view_common(self, view):
         log.debug("set_view_common: view %d", view)
-        #self.frame_transmission_options.setVisible(self.using_transmission())
 
         self.graph.reset_axes()
 
@@ -242,7 +252,7 @@ class PageNavigation:
 
     def set_technique_common(self, technique):
         log.debug("set_technique_common: technique %d", technique)
-        self.frame_transmission_options.setVisible(self.using_transmission())
+        self.fr_transmission_options.setVisible(self.using_transmission())
 
         self.graph.reset_axes()
 
@@ -267,14 +277,14 @@ class PageNavigation:
 
         self.graph.set_x_axis(common.Axes.WAVENUMBERS)
         self.graph.set_y_axis(common.Axes.COUNTS)
+        self.operation_mode = common.OperationModes.RAMAN
         self.set_technique_common(common.Techniques.RAMAN)
 
         self.stylesheets.apply(self.button_raman, "left_rounded_active")
         self.stylesheets.apply(self.button_non_raman, "center_rounded_inactive")
         self.stylesheets.apply(self.button_expert, "right_rounded_inactive")
-        self.operation_mode = common.OperationModes.RAMAN
-        self.update_feature_visibility()
         self.hide_non_raman_technique()
+        self.update_expert_widgets()
 
         # Per Dieter, Raman mode should default to APLS. Note that we don't
         # currently track settings (baseline correction, integration time, laser
@@ -291,15 +301,35 @@ class PageNavigation:
         self.operation_mode = common.OperationModes.NON_RAMAN
         self.update_feature_visibility()
         self.display_non_raman_technique()
-        self.frame_transmission_options.hide()
+        self.update_expert_widgets()
 
     def set_operation_mode_expert(self):
+        log.debug("set_operation_mode_expert: start")
         self.stylesheets.apply(self.button_raman, "left_rounded_inactive")
         self.stylesheets.apply(self.button_non_raman, "center_rounded_inactive")
         self.stylesheets.apply(self.button_expert, "right_rounded_active")
         self.operation_mode = common.OperationModes.EXPERT
         self.update_feature_visibility()
         self.display_non_raman_technique()
+        self.update_expert_widgets()
+
+    def update_expert_widgets(self):
+        is_ingaas = False
+        has_cooling = False
+        flag = self.doing_expert()
+
+        spec = self.multispec.current_spectrometer()
+        if spec is None:
+            flag = False
+        else:
+            is_ingaas = spec.settings.is_ingaas()
+            has_cooling = spec.settings.eeprom.has_cooling
+
+        self.fr_post        .setVisible(flag)
+        self.fr_baseline    .setVisible(flag)
+        self.fr_tec         .setVisible(flag and has_cooling)
+        self.fr_area_scan   .setVisible(flag and not is_ingaas)
+        self.fr_region      .setVisible(False) # spec.settings.is_imx()
 
     def set_operation_mode_common(self, mode):
         # cache the newly-set operation mode for the current view, so the
@@ -312,12 +342,10 @@ class PageNavigation:
         self.operation_mode = mode
 
     def display_non_raman_technique(self):
-        self.sfu.techniqueWidget_label.show()
-        self.sfu.techniqueWidget_shaded.show()
+        self.sfu.frame_TechniqueWidget.show()
 
     def hide_non_raman_technique(self):
-        self.sfu.techniqueWidget_label.hide()
-        self.sfu.techniqueWidget_shaded.hide()
+        self.sfu.frame_TechniqueWidget.hide()
 
     def determine_current_technique(self):
         label = self.combo_technique.currentText().lower()

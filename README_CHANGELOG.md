@@ -7,6 +7,7 @@
     - better widget scaling at lower resolutions
     - refactored Techniques, Modes and Views
     - refactored GridFeature and VignetteROIFeature
+    - fixed bug when multiple thumbnails have same label
 
 # 3.2 Open-Source
 
