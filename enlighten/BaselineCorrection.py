@@ -77,13 +77,14 @@ class BaselineCorrection:
         self.multispec       = multispec
         self.page_nav        = page_nav
         self.vignette_roi    = vignette_roi
-        self.curve           = None
+        self.graph           = graph
 
         self.current_algo_name = BaselineCorrection.DEFAULT_ALGO_NAME
         self.enabled = False
         self.allowed = False
         self.show_curve = False
         self.advanced_options = None
+        self.curve = None
 
         # per Dieter 2020-05-22
         self.airpls_smoothness_param = 20
@@ -113,7 +114,7 @@ class BaselineCorrection:
         # we need to know when Vignetting is turned on/off
         self.vignette_roi.register_observer(self.update_visibility)
 
-        self.curve = graph.add_curve("baseline", rehide=False, in_legend=False)
+        self.curve = self.graph.add_curve("baseline", rehide=False, in_legend=False)
         self.curve.setVisible(False)
 
     def init_from_config(self):

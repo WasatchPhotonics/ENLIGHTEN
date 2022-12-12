@@ -44,7 +44,6 @@ class PageNavigation:
             fr_post,
             fr_tec,
             fr_region,
-            fr_despike,
 
             sfu,
             ):
@@ -70,7 +69,6 @@ class PageNavigation:
         self.fr_post            = fr_post
         self.fr_tec             = fr_tec
         self.fr_region          = fr_region
-        self.fr_despike         = fr_despike
         
         self.update_feature_visibility = update_feature_visibility
         self.scroll_area = scroll_area

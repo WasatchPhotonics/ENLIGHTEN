@@ -26,7 +26,6 @@ from .AbsorbanceFeature               import AbsorbanceFeature
 from .StatusBarFeature                import StatusBarFeature
 from .RamanModeFeature                import RamanModeFeature
 from .StatusIndicators                import StatusIndicators
-from .DespikingFeature                import DespikingFeature
 from .ReferenceFeature                import ReferenceFeature
 from .AreaScanFeature                 import AreaScanFeature
 from .BatchCollection                 import BatchCollection
@@ -396,7 +395,6 @@ class BusinessObjects:
             fr_post                     = sfu.frame_post_processing,
             fr_tec                      = sfu.frame_tec_control,
             fr_region                   = sfu.frame_region_control,
-            fr_despike                  = sfu.frame_despike_widget,
 
             update_feature_visibility   = ctl.update_feature_visibility,
             scroll_area                 = sfu.scrollArea_hsd,
@@ -676,10 +674,6 @@ class BusinessObjects:
             multispec                   = ctl.multispec,
             page_nav                    = ctl.page_nav,
             vcr_controls                = ctl.vcr_controls)
-
-        ctl.despiking_feature = DespikingFeature(
-            spin_tau                    = sfu.doubleSpinBox_tau_despike,
-            spin_window                 = sfu.spinBox_window_despike)
 
         # TODO: refactor like PluginController
         self.header("instantiating KIAFeature")
