@@ -78,7 +78,8 @@ class ReferenceFeature:
             return
 
         [ widget.setVisible(True) for widget in self.visibility_widgets ]
-        self.gui.colorize_button(self.button_toggle, spec.app_state.dark)
+
+        self.gui.colorize_button(self.button_toggle, spec.app_state.has_reference())
 
     def toggle(self):
         spec = self.multispec.current_spectrometer()

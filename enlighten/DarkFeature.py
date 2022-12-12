@@ -65,7 +65,7 @@ class DarkFeature:
         if spec is None:
             return
 
-        self.gui.colorize_button(self.button_toggle, spec.app_state.dark)
+        self.gui.colorize_button(self.button_toggle, spec.app_state.has_dark())
 
     def toggle(self):
         spec = self.multispec.current_spectrometer()
