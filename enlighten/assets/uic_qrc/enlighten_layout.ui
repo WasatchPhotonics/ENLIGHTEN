@@ -2420,7 +2420,7 @@ QComboBox QListView
        <property name="currentIndex">
         <number>3</number>
        </property>
-       <widget class="QWidget" name="page_hardware_setup">
+       <widget class="QWidget" name="page_hardware">
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <property name="spacing">
           <number>6</number>
@@ -2525,7 +2525,7 @@ QComboBox QListView
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>625</width>
+                       <width>1151</width>
                        <height>5254</height>
                       </rect>
                      </property>
@@ -7601,7 +7601,7 @@ p, li { white-space: pre-wrap; }
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="page_hardware_capture">
+       <widget class="QWidget" name="page_factory">
         <layout class="QHBoxLayout" name="horizontalLayout_3">
          <property name="spacing">
           <number>0</number>
@@ -7688,7 +7688,7 @@ p, li { white-space: pre-wrap; }
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>597</width>
+                    <width>1151</width>
                     <height>1194</height>
                    </rect>
                   </property>
@@ -8589,7 +8589,7 @@ p, li { white-space: pre-wrap; }
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="page_scope_setup">
+       <widget class="QWidget" name="page_settings">
         <layout class="QHBoxLayout" name="horizontalLayout_43">
          <property name="spacing">
           <number>0</number>
@@ -8622,7 +8622,7 @@ p, li { white-space: pre-wrap; }
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>562</width>
+              <width>669</width>
               <height>1332</height>
              </rect>
             </property>
@@ -11187,7 +11187,7 @@ p, li { white-space: pre-wrap; }
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="page_scope_capture">
+       <widget class="QWidget" name="page_scope">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -14232,9 +14232,9 @@ p, li { white-space: pre-wrap; }
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-1735</y>
+                <y>0</y>
                 <width>240</width>
-                <height>2487</height>
+                <height>2481</height>
                </rect>
               </property>
               <property name="sizePolicy">
