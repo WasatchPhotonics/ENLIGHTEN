@@ -1011,7 +1011,7 @@ class Controller:
         #     indicator colors.
         self.log_reader_timer = QtCore.QTimer()
         self.log_reader_timer.setSingleShot(True)
-        #self.log_reader_timer.timeout.connect(self.tick_log_reader)
+        self.log_reader_timer.timeout.connect(self.tick_log_reader)
         self.log_reader_timer.start(Controller.LOG_READER_TIMER_SLEEP_MS)
 
     # ##########################################################################
