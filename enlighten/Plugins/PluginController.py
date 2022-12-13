@@ -297,8 +297,17 @@ class PluginController:
             plugin_fields = self.get_plugin_fields) # leaving read measurement call for legacy purposes
 
     def initialize_python_path(self):
+        log.debug("initializing plugin path")
+        log.debug("Python include path was: %s", sys.path)
         for path in self.plugin_dirs:
-            sys.path.append(path)
+            if os.path.exists(path):
+                if path not in sys.path:
+                    log.debug(f"appending to system path: {path}")
+                    sys.path.append(path)
+                else:
+                    log.debug(f"already in system path: {path}")
+            else:
+                log.debug(f"plugin_dir not found: {path}")
         log.debug("Python include path now: %s", sys.path)
 
     ##
@@ -307,6 +316,10 @@ class PluginController:
     def find_all_plugins(self):
         module_infos = {}
         for start_dir in self.plugin_dirs:
+            if not os.path.exists(start_dir):
+                log.debug(f"missing start_dir: {start_dir}")
+                continue
+
             log.debug("looking for plugins under %s", start_dir)
             # Use scandir to get folder paths, search through the first level of folder
             try:
@@ -318,16 +331,22 @@ class PluginController:
             # goes through each classification folder and picks up the files
             plugin_files = [(file.path, folder) for folder in classification_folders for file in os.scandir(folder) if os.path.isfile(file.path)]
             for file, folder in plugin_files:
+                log.debug(f"find_all_plugins: file {file}, folder {folder}")
+                # find_all_plugins: file C:\Users\mzieg\Documents\EnlightenSpectra\plugins\Analysis\Despiking.py, folder C:\Users\mzieg\Documents\EnlightenSpectra\plugins\Analysis
+
                 try:
-                    filename = os.path.basename(file)
-                    pathname = file                                                              # pluginExamples/Demo/Foo.py
-                    relpath = os.path.relpath(file)                                              # Demo/Foo.py
-                    package = os.path.basename(os.path.dirname(relpath))                         # Demo
+                    filename = os.path.basename(file)                     # Despiking.py
+                    log.debug(f"find_all_plugins:   filename {filename}") # find_all_plugins:   filename Despiking.py
+
+                    package = os.path.basename(folder)
+                    log.debug(f"find_all_plugins:   package {package}")
 
                     if filename.endswith('.py') and filename != "EnlightenPlugin.py" and not filename.startswith("_"):
-                        module_info = PluginModuleInfo(pathname=pathname, package=package, filename=filename)
+                        module_info = PluginModuleInfo(pathname=file, package=package, filename=filename)
                         full_module_name = module_info.full_module_name
+                        log.debug(f"find_all_plugins:   full_module_name {full_module_name}")
                         if full_module_name not in module_infos:
+                            log.debug(f"find_all_plugins:   added module {full_module_name}")
                             module_infos[full_module_name] = module_info
                         else:
                             log.debug("skipping duplicate module_name %s", full_module_name)
@@ -786,7 +805,7 @@ class PluginController:
 
             if dep.dep_type == "existing_directory":
                 # create the dialog
-                dialog = QtWidgets.QFileDialog(parent = self.parent)
+                dialog = QtWidgets.QFileDialog(parent=self.parent, caption=dep.prompt)
                 dialog.setFileMode(QtWidgets.QFileDialog.Directory)
                 dialog.setOption(QtWidgets.QFileDialog.ShowDirsOnly)
 
