@@ -5,7 +5,7 @@ import logging
 from PySide2 import QtWidgets 
 
 from . import util
-from . import common
+from .common import LaserStates
 
 from wasatch.EEPROM                   import EEPROM
 
@@ -16,27 +16,6 @@ log = logging.getLogger(__name__)
 
 ##
 # Encapsulate laser control from the application side.
-#
-# @par Laser Watchdog (Series-XS)
-#
-# Series-XS spectrometers have a laser watchdog feature which automatically turns
-# off the laser after a configured number of seconds has elapsed.  This works.
-#
-# What isn't yet finialized is a method for ENLIGHTEN to "know" whether and when
-# the firmware watchdog has disabled the laser.  We are actively updating firmware
-# to support this feature, but it's not yet ready.
-#
-# Therefore, we're cheating a little and using an internal "watchdog", not to
-# disable the laser (the firmware watchdog already does this perfectly well, and
-# more safely than ENLIGHTEN could), but to update the on-screen button state so
-# the GUI correctly indicates when the watchdog has "probably" disabled the laser.
-#
-# This is NOT a good approach long-term, but it "behaves correctly" in testing,
-# and should be sufficient for an initial prototype.  
-# 
-# Note again that the actual SAFETY aspect of the system, that of turning off the
-# laser after a configured timeout, is in fact implemented and working in the
-# FPGA firmware where it belongs.  This is mainly window-dressing.
 class LaserControlFeature:
 
     def __init__(self,
@@ -94,8 +73,6 @@ class LaserControlFeature:
         self.spinbox_power      .valueChanged       .connect(self.set_laser_power_callback)
         self.spinbox_watchdog   .valueChanged       .connect(self.set_watchdog_callback)
 
-        self.device_watchdogs = {} # device_id -> datetime
-
         for key, item in self.__dict__.items():
             if key.startswith("spinbox_") or key.startswith("combo_"):
                 item.installEventFilter(ScrollStealFilter(item))
@@ -122,7 +99,6 @@ class LaserControlFeature:
         state.laser_power_perc = 100
         state.laser_power_mW = settings.eeprom.max_laser_power_mW
         state.use_mW = settings.eeprom.has_laser_power_calibration() and settings.is_mml()
-        log.debug(f"For spec has cali {settings.eeprom.has_laser_power_calibration()} and is mml {settings.is_mml()} thus use milli is {state.use_mW}")
 
         self.set_laser_enable(False)
         
@@ -200,40 +176,48 @@ class LaserControlFeature:
             spec.settings.state.laser_enabled = flag
             spec.change_device_setting("laser_enable", flag)
 
-        # Store when (and if) the laser was last told to fire. This could be used
-        # with Controller.update_laser_status().
-        #
-        # spec.app_state.laser_gui_firing = flag
-        # spec.app_state.last_laser_toggle = datetime.now()
-
-        # For now, until we get a working Reading.laser_enabled, store when we 
-        # THINK the watchdog will kick-off
-        if flag and spec.settings.state.laser_watchdog_sec > 0:
-            stop_time = datetime.now() + timedelta(seconds=spec.settings.state.laser_watchdog_sec)
-            self.device_watchdogs[spec.device_id] = stop_time
-            log.debug(f"watchdog on {spec.device_id} assumed to kick-on around {stop_time}")
-        else:
-            self.device_watchdogs[spec.device_id] = None
-            log.debug(f"cleared watchdog on {spec.device_id}")
+        spec.app_state.laser_state = LaserStates.REQUESTED if flag else LaserStates.DISABLED
 
         if self.multispec.is_current_spectrometer(spec):
             self.refresh_laser_button()
 
         self.status_indicators.update_visibility()
 
-    def process_timeouts(self):
-        # you can 'return' here to confirm that the actual laser watchdog is in 
-        # fact running in firmware
+    def process_reading(self, reading):
+        spec = self.multispec.current_spectrometer()
+        if spec is None:
+            return
 
-        log.debug("process_timeouts")
-        for device_id in self.device_watchdogs:
-            time_stop = self.device_watchdogs[device_id]
-            if time_stop is not None and time_stop <= datetime.now():
-                self.device_watchdogs[device_id] = None
-                spec = self.multispec.get_spectrometer(device_id)
-                if spec is not None:
-                    log.debug("disabling laser on {device_id} in GUI because watchdog assumed to have fired")
-                    self.set_laser_enable(False, spec=spec)
+        if reading is None:
+            return
+
+        if reading.laser_enabled is None:
+            log.debug("update_laser_status: reading.laser_enabled is None")
+            return
+
+        state = spec.app_state.laser_state
+
+        if reading.laser_enabled:
+            # reading says laser firing
+            if state == LaserStates.DISABLED:
+                log.critical("reading thinks laser firing when application thinks disabled?! Disabling...")
+                self.set_laser_enable(False, spec)
+            elif state == LaserStates.REQUESTED:
+                log.debug("the laser has started firing")
+                spec.app_state.laser_state = LaserStates.FIRING
+            elif state == LaserStates.FIRING:
+                log.debug("all agree laser firing")
+        else:
+            # reading says laser not firing
+            if state == LaserStates.DISABLED:
+                log.debug("all agree laser disabled")
+                return
+            elif state == LaserStates.REQUESTED:
+                log.debug("awaiting laserDelaySec")
+                return
+            elif state == LaserStates.FIRING:
+                log.info("laser stopped firing (watchdog or interlock?)")
+                self.set_laser_enable(False, spec)
 
     ## So Controller etc don't call directly into internal callbacks
     def toggle_laser(self):

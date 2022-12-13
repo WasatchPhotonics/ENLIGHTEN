@@ -127,6 +127,14 @@ class LaserPowerUnits(IntEnum):
     PERCENT     = 0
     MILLIWATT   = 1
 
+##
+# We don't actually have FW API to read all of these; final implementation should treat
+# enable, delayState, watchdogLockdown, interlockState, and isFiring as separate bits.
+class LaserStates(IntEnum):
+    DISABLED    = 0
+    REQUESTED   = 1
+    FIRING      = 2
+
 def get_default_data_dir():
     if os.name == "nt":
         return os.path.join(os.path.expanduser("~"), "Documents", "EnlightenSpectra")
