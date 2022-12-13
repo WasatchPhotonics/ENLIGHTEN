@@ -36,7 +36,7 @@ class Marquee(object):
         self.stylesheets = stylesheets
 
         self.original_height = self.frame.height()
-        self.original_height = 50 
+        self.original_height = 36
         self.height = self.original_height
         log.debug(f"original height = {self.original_height}")
         self.hide()

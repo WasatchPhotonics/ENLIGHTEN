@@ -49,12 +49,33 @@ At writing that is:
 Then remaining packages:
 
     $ sudo apt-get install pyside2-tools python3-xlwt libatlas-base-dev \
-                           python3-pywt 2to3 python3-pil.imagetk libusb-0.1-4
+                           python3-pywt 2to3 python3-pil.imagetk libusb-0.1-4 \
+			   libusb-dev
 
-And finally:
+And finally, install everything in requirements.txt OTHER THAN PySide2 :-)
 
-    $ pip3 install superman pygtail pyusb pexpect pyqtgraph SPyC_Writer \
-                   qimage2ndarray boto3 pandas pyudev crcmod
+    $ pip3 install \
+	adafruit-blinka \
+	bleak \
+	boto3 \
+	crcmod \
+	libusb \
+	pandas \
+	pefile \
+	pexpect \
+	pyftdi \
+	pygtail \
+	pyinstaller \
+	pyqtgraph \
+	pyudev \
+	pyusb \
+	pywavelets \
+	qimage2ndarray \
+	seabreeze \
+	spc_spectra \
+	SPyC_Writer \
+	superman \
+	tensorflow
 
 If you also want to build and deploy installers, the following additional utilities are required:
 
@@ -85,14 +106,26 @@ Example (both starting from ~/work/code/ENLIGHTEN):
     $ scripts/rebuilt_resources.sh
 
     // on Raspberry Pi
-    $ rsync --progress --archive USER@MAC_IP:work/code/ENLIGHTEN/enlighten/assets/ enlighten/assets/
-    $ find . -name __pycache__ -exec rm -rf {} \;
+    $ rsync --progress --archive USER@MAC_IP:work/code/ENLIGHTEN/enlighten/assets/uic_qrc/ enlighten/assets/uic_qrc/
 
 # Test
 
     $ cd work/code/enlighten
-    $ export PYTHONPATH=".:pluginExamples:../Wasatch.PY"
-    $ python3 scripts/Enlighten.py
+
+    $ export PYTHONPATH=".:pluginExamples:../Wasatch.PY:enlighten/assets/uic_qrc"
+    $ python scripts/Enlighten.py
+
+# Building an Installer
+
+(as above)
+
+    $ cd work/code/enlighten
+    $ export PYTHONPATH=".:pluginExamples:../Wasatch.PY:enlighten/assets/uic_qrc"
+    $ python scripts/Enlighten.py
+
+(then)
+
+    $ make rpi-installer
 
 # Resetting USB Ports
 

@@ -19,14 +19,13 @@ class Cursor(object):
             button_up,
             cb_enable,
             ds_value,
-            generate_x_axis,
             graph):
 
         self.button_dn       = button_dn
         self.button_up       = button_up
         self.cb_enable       = cb_enable
         self.ds_value        = ds_value
-        self.generate_x_axis = generate_x_axis
+        self.graph           = graph
 
         self.multispec       = None
         self.current_percent = None
@@ -35,9 +34,9 @@ class Cursor(object):
         self.observers = []
 
         # place a movable vertical line on the scope graph
-        self.cursor = pyqtgraph.InfiniteLine(movable=True, pen=graph.gui.make_pen(widget="scope_cursor"))
+        self.cursor = pyqtgraph.InfiniteLine(movable=True, pen=self.graph.gui.make_pen(widget="scope_cursor"))
         self.cursor.setVisible(False)
-        graph.add_item(self.cursor)
+        self.graph.add_item(self.cursor)
 
         # bindings
         self.cursor              .sigPositionChanged     .connect(self.moved_callback)
@@ -50,7 +49,7 @@ class Cursor(object):
         self.cb_enable.setChecked(False)
 
         # add Cursor to Graph
-        graph.cursor = self
+        self.graph.cursor = self
 
         self.px_to_wavelen = lambda x, spec: wasatch_utils.pixel_to_wavelength(x, spec.settings.eeprom.wavelength_coeffs)
         self.wavelen_to_wavenum = lambda x, spec: wasatch_utils.wavelength_to_wavenumber(x, spec.settings.eeprom.excitation_nm_float)
@@ -194,7 +193,7 @@ class Cursor(object):
             self.center()
 
     def moved_callback(self, pos):
-        x_axis = self.generate_x_axis() # assume selected spectrometer
+        x_axis = self.graph.generate_x_axis() # assume selected spectrometer
         log.debug(f"cursor moved callback x_axis len is {len(x_axis)}")
         if x_axis is None:
             log.error("moved_callback: no x_axis?!")
@@ -220,7 +219,7 @@ class Cursor(object):
         self.update()
 
     def move_perc(self, perc):
-        x_axis = self.generate_x_axis() # assume selected
+        x_axis = self.graph.generate_x_axis() # assume selected
         if x_axis is None:
             return
 
@@ -230,7 +229,7 @@ class Cursor(object):
         log.debug("move_perc: x = %.2f (%.2f%%)", x_value, perc)
 
     def is_outside_range(self):
-        x_axis = self.generate_x_axis() # assume selected
+        x_axis = self.graph.generate_x_axis() # assume selected
         if x_axis is None:
             return
 
@@ -238,7 +237,7 @@ class Cursor(object):
         return value < x_axis[0] or value > x_axis[-1]
 
     def center(self):
-        x_axis = self.generate_x_axis() # assume selected
+        x_axis = self.graph.generate_x_axis() # assume selected
         if x_axis is None:
             return
 

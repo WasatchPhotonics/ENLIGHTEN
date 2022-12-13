@@ -52,7 +52,6 @@ class Multispec(object):
             stylesheets,
             eject_button,
             controller_disconnect,
-            get_roi_enabled,
 
             lockable_widgets):
 
@@ -72,7 +71,6 @@ class Multispec(object):
         self.eject_button          = eject_button
         self.controller_disconnect = controller_disconnect
         self.lockable_widgets      = lockable_widgets
-        self.get_roi_enabled       = get_roi_enabled
 
         self.device_id = None
         self.ejected = set()
@@ -89,6 +87,7 @@ class Multispec(object):
         self.in_process = {} # a dict of device_id to WasatchDeviceWrapper (may be None if "gave up")
         self.disconnecting = {}
         self.ignore = {}
+        self.seen_serial_numbers = {} # dict of serial_number to...not sure yet.  Should include initial assigned color
 
         # This refers to the Multispec feature of "locking" spectrometer state 
         # changes so that they apply to all connected spectrometers (or if 
@@ -101,7 +100,6 @@ class Multispec(object):
         self.hide_others = False
 
         self.graph.multispec = self # cross-register
-        self.graph.get_roi_enabled = get_roi_enabled
 
         self.reset_seen()
         self.combo_spectrometer.clear()
@@ -483,6 +481,17 @@ class Multispec(object):
         self.device_id = device_id
 
         ########################################################################
+        # have we seen this one before?
+        ########################################################################
+
+        sn = spec.settings.eeprom.serial_number
+        if sn in self.seen_serial_numbers:
+            # @todo: re-use previous color
+            pass
+        else:
+            self.seen_serial_numbers[sn] = {}
+
+        ########################################################################
         # initialize graph trace
         ########################################################################
         
@@ -494,21 +503,32 @@ class Multispec(object):
             name=spec.label,
             spec=spec)
 
+        ########################################################################
+        # initialize horizontal ROI "curtains"
+        ########################################################################
+
         region_color = pen.color()
         region_color.setAlpha(20)
-        left_roi_region = pyqtgraph.LinearRegionItem((0, spec.settings.eeprom.roi_horizontal_start), 
-                                                     pen = region_color,
-                                                     brush = region_color,
-                                                     movable=False)
-        right_roi_region = pyqtgraph.LinearRegionItem((spec.settings.eeprom.roi_horizontal_end, spec.settings.eeprom.active_pixels_horizontal),
-                                                     pen = region_color,
-                                                     brush = region_color,
-                                                     movable=False)
-        spec.roi_region_left = left_roi_region
-        spec.roi_region_right = right_roi_region
 
-        self.update_widget()
+        spec.roi_region_left = None
+        spec.roi_region_right = None
+
+        if spec.settings.eeprom.has_horizontal_roi():
+            # initialize in pixel space (whether graphed in wavelengths or 
+            # wavenumbers, regions will have the SAME NUMBER of datapoints)
+            roi = spec.settings.eeprom.get_horizontal_roi()
+            spec.roi_region_left = pyqtgraph.LinearRegionItem((0, roi.start), 
+                                                              pen = region_color,
+                                                              brush = region_color,
+                                                              movable = False)
+            spec.roi_region_right = pyqtgraph.LinearRegionItem((roi.end, spec.settings.eeprom.active_pixels_horizontal),
+                                                              pen = region_color,
+                                                              brush = region_color,
+                                                              movable = False)
         self.graph.update_roi_regions(spec)
+
+        # done
+        self.update_widget()
 
     def get_combo_index(self, spec) -> int:
         label = spec.label

@@ -22,7 +22,7 @@ Notes:
 
     $ cd ~/work/code/enlighten
     $ conda activate conda_enlighten3
-    $ export PYTHONPATH="../Wasatch.PY:pluginExamples:."
+    $ export PYTHONPATH="../Wasatch.PY:pluginExamples:.:enlighten/assets/uic_qrc"
     $ python scripts/Enlighten.py --log-level debug 1>enlighten.out 2>enlighten.err
     
 # Installer Build Process

@@ -217,7 +217,7 @@ class Measurement(object):
                            'Declared Score',
                            'Scan Averaging',
                            'Boxcar',
-                           'Technique',
+                           'View',
                            'Baseline Correction Algo',
                            'ROI Pixel Start',
                            'ROI Pixel End',
@@ -276,7 +276,7 @@ class Measurement(object):
             save_options        = None,
             settings            = None,
             source_pathname     = None,
-            technique           = None,
+            view                = None,
             timestamp           = None,
             spec                = None,
             measurement         = None,
@@ -315,7 +315,7 @@ class Measurement(object):
             # the ProcessedReading. (Taking a deepcopy, because with plug-ins who
             # knows...)
             self.processed_reading  = copy.deepcopy(spec.app_state.processed_reading)
-            self.technique          = spec.app_state.technique_name
+            self.view               = spec.app_state.technique_name
             self.timestamp          = datetime.datetime.now()
             self.baseline_correction_algo = spec.app_state.baseline_correction_algo
 
@@ -574,7 +574,7 @@ class Measurement(object):
         if self.thumbnail_widget:
             self.thumbnail_widget.rename(label)
             was_displayed = self.thumbnail_widget.is_displayed
-            self.thumbnail_widget.remove_curve_from_graph(label=old_label) # remove using the old value
+            self.thumbnail_widget.remove_curve_from_graph() 
 
         # if they removed the label, nothing more to do
         if label is None:
@@ -1098,7 +1098,7 @@ class Measurement(object):
 
         # vignetting
         roi = None
-        if self.settings is not None and self.measurements is not None and self.measurements.get_roi_enabled():
+        if self.settings is not None and self.measurements is not None and self.measurements.vignette_roi.enabled:
             self.roi_active = True
             roi = self.settings.eeprom.get_horizontal_roi()
         cropped = roi is not None and pr.is_cropped()

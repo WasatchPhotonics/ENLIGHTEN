@@ -1,12 +1,25 @@
 # Version History
 
+# 4.0 GUI Refactoring
+
+- 2022-12-09 4.0.0
+    - better widget scaling at lower resolutions
+    - refactored Techniques, Modes and Views
+    - refactored GridFeature and VignetteROIFeature
+    - refactored LoggingFeature
+    - reflect laserWatchdog state in GUI
+    - fixed bug when multiple thumbnails have same label
+
 # 3.2 Open-Source
+
 - 2022-12-08 3.2.42
     - expose save options to plugins
     - plugins can programmatically change input fields
     - plugins can save in same date dir as regular save
     - fix graphing issues for plugins
     - add measurement metadata so plugin thumbnail overlays show on other graph
+- 2022-12-06 3.2.41
+    - adding widget for laser watchdog
 - 2022-11-29 3.2.40
     - dark-correct reference spectrum after-the-fact if collected in that order
     - don't apply boxcar to dark or reference when in reference technique

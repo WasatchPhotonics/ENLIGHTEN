@@ -23,7 +23,7 @@ class DarkFeature:
             button_store,
             button_toggle,
             lb_timestamp,
-            stackedWidget_scope_setup_dark_spectrum,
+            stacked_widget,
             gui_make_pen):
         """
         Encapsulates storage and display of dark spectra (but not the actual dark
@@ -38,7 +38,7 @@ class DarkFeature:
         self.save_options        = save_options
         self.set_curve_data      = set_curve_data
         self.raman_intensity_correction = raman_intensity_correction
-        self.stackedWidget_scope_setup_dark_spectrum = stackedWidget_scope_setup_dark_spectrum
+        self.stacked_widget      = stacked_widget
         self.button_clear        = button_clear
         self.button_load         = button_load
         self.button_store        = button_store
@@ -65,7 +65,7 @@ class DarkFeature:
         if spec is None:
             return
 
-        self.gui.colorize_button(self.button_toggle, spec.app_state.dark)
+        self.gui.colorize_button(self.button_toggle, spec.app_state.has_dark())
 
     def toggle(self):
         spec = self.multispec.current_spectrometer()
@@ -239,7 +239,6 @@ class DarkFeature:
         self.blockers.append((source,tooltip))
         b.setToolTip(tooltip)
         b.setEnabled(False)
-        return
 
     def populate_placeholder_scope_setup(self):
         policy = QtWidgets.QSizePolicy()
@@ -251,6 +250,5 @@ class DarkFeature:
 
         self.curve = chart.plot([], pen=self.gui_make_pen(widget="dark"))
 
-        placeholder = self.stackedWidget_scope_setup_dark_spectrum
-        placeholder.addWidget(chart)
-        placeholder.setCurrentIndex(1)
+        self.stacked_widget.addWidget(chart)
+        self.stacked_widget.setCurrentIndex(1)
