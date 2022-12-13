@@ -9,6 +9,7 @@ from PySide2 import QtGui, QtWidgets
 
 from .Wrapper import Wrapper
 from .Config  import Config 
+from ..ScrollStealFilter import ScrollStealFilter
 
 from .. import util
 
@@ -279,6 +280,11 @@ class Feature(object):
         self.table_recent       .cellClicked    .connect(self._table_recent_callback)
         self.table_results      .cellClicked    .connect(self._table_results_callback)
 
+        # disable scroll stealing
+        for key, item in self.__dict__.items():
+            if key.startswith("cb_") or key.startswith("sb_"):
+                item.installEventFilter(ScrollStealFilter(item))
+
         # validate installation
         self.is_installed = self._check_installed()
         if self.is_installed:
@@ -355,7 +361,7 @@ class Feature(object):
         results = False
         button = False
 
-        if self.is_installed and self.page_nav.doing_raman():
+        if self.is_installed and (self.page_nav.doing_raman() or self.page_nav.is_expert()):
             side = True
             button = True
             results = self.display_all
@@ -380,7 +386,7 @@ class Feature(object):
     # @private
     def _queue_tip(self):
         # only generate tips while we're on Raman Scope Capture
-        if not (self.page_nav.doing_raman() and self.page_nav.doing_scope_capture()):
+        if not (self.page_nav.doing_raman() and self.page_nav.doing_scope()):
             log.debug("not tipping because not raman")
             return
 

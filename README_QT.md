@@ -70,5 +70,5 @@ enlighten.KnowItAll.Feature.init_tables).
 
 You need to populate these in code; PySide2 numbers them incorrectly in code 
 generation.  Or rather, the FIRST QComboBox is rendered correctly 
-(comboBox_technique as it happens), but the item indexes of subsequent QComboList 
+(comboBox_view as it happens), but the item indexes of subsequent QComboList 
 widgets continue the original sequence.

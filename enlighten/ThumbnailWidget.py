@@ -27,8 +27,12 @@ class ThumbnailWidget(QtWidgets.QFrame):
 
     BUTTON_PADDING = 5
     BUTTON_Y    = 155
+
     OUTER_WIDTH = 190
     INNER_WIDTH = 188
+
+    MIN_WIDTH = 100
+    MAX_WIDTH = 170
 
     ## allows deep-copying of Measurements
     def __deepcopy__(self, memo):
@@ -41,7 +45,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
             is_collapsed,
             measurement,
             stylesheets,
-            technique,
+            view,
             focus_listener,
             kia = None):
 
@@ -54,7 +58,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
         self.kia            = kia
         self.measurement    = measurement
         self.stylesheets    = stylesheets
-        self.technique      = technique
+        self.view           = view
         self.focus_listener = focus_listener
                            
         self.is_displayed  = False
@@ -195,10 +199,10 @@ class ThumbnailWidget(QtWidgets.QFrame):
             return False
 
         # things get weird for loaded Measurements
-        ok = self.technique is None or \
-             (isinstance(self.technique, common.Techniques) and self.technique == common.Techniques.RAMAN) or \
-             "raman" in str(self.technique).lower()
-        log.debug("should_add_id = %s (self.technique %s)", ok, self.technique)
+        ok = self.view is None or \
+             (isinstance(self.view, common.Views) and self.view == common.Views.RAMAN) or \
+             "raman" in str(self.view).lower()
+        log.debug("should_add_id = %s (self.view %s)", ok, self.view)
         return ok
 
     ##
@@ -214,8 +218,8 @@ class ThumbnailWidget(QtWidgets.QFrame):
 
         le_name = QtWidgets.QLineEdit(self.measurement.label)
         self.stylesheets.apply(le_name, "clear_border")
-        le_name.setMinimumWidth(170)
-        le_name.setMaximumWidth(170)
+        le_name.setMinimumWidth(ThumbnailWidget.MIN_WIDTH)
+        le_name.setMaximumWidth(ThumbnailWidget.MAX_WIDTH)
         le_name.move(10, 10)
         le_name.setFont(font)
         le_name.setParent(self)
@@ -421,14 +425,14 @@ class ThumbnailWidget(QtWidgets.QFrame):
     # the chart.  This returns a bool so the clickable "toggle trace" button
     # can simply try to remove an existing trace as means of checking whether the
     # trace is currently shown on the graph or not.
-    def remove_curve_from_graph(self, label=None):
-        if label is None:
-            label = self.le_name.text()
-        if self.graph.remove_curve(label):
-            self.set_active(False)
-            self.curve = None
-            return True
-        return False
+    def remove_curve_from_graph(self):
+        if self.measurement is not None:
+            self.graph.remove_curve(measurement_id=self.measurement.measurement_id)
+        else:
+            self.graph.remove_curve(name=self.le_name.text())
+
+        self.set_active(False)
+        self.curve = None
 
     ##
     # @todo move some of this to Graph?

@@ -14,7 +14,6 @@ log = logging.getLogger(__name__)
 class ReferenceFeature:
 
     def __init__(self,
-            generate_x_axis,
             graph,
             gui,
             marquee,
@@ -29,10 +28,9 @@ class ReferenceFeature:
             button_toggle,
             frame_setup,
             lb_timestamp,
-            stackedWidget_scope_setup_reference_spectrum,
+            stacked_widget,
             gui_make_pen):
 
-        self.generate_x_axis     = generate_x_axis
         self.graph               = graph
         self.gui                 = gui
         self.marquee             = marquee
@@ -49,7 +47,7 @@ class ReferenceFeature:
         self.frame_setup         = frame_setup
         self.lb_timestamp        = lb_timestamp
         self.gui_make_pen        = gui_make_pen
-        self.stackedWidget_scope_setup_reference_spectrum = stackedWidget_scope_setup_reference_spectrum
+        self.stacked_widget      = stacked_widget
 
         self.populate_placeholder_scope_setup()
 
@@ -80,7 +78,8 @@ class ReferenceFeature:
             return
 
         [ widget.setVisible(True) for widget in self.visibility_widgets ]
-        self.gui.colorize_button(self.button_toggle, spec.app_state.dark)
+
+        self.gui.colorize_button(self.button_toggle, spec.app_state.has_reference())
 
     def toggle(self):
         spec = self.multispec.current_spectrometer()
@@ -140,7 +139,7 @@ class ReferenceFeature:
             return
 
         if spec.app_state.has_reference():
-            x_axis = self.generate_x_axis(spec=spec)
+            x_axis = self.graph.generate_x_axis(spec=spec)
             self.set_curve_data(self.curve, x=x_axis, y=spec.app_state.reference, label="display_reference")
 
             self.lb_timestamp.setText(spec.app_state.reference_timestamp.strftime("%Y-%m-%d %H:%M:%S"))
@@ -224,6 +223,5 @@ class ReferenceFeature:
 
         self.curve = chart.plot([], pen=self.gui_make_pen(widget="reference"))
 
-        placeholder = self.stackedWidget_scope_setup_reference_spectrum
-        placeholder.addWidget(chart)
-        placeholder.setCurrentIndex(1)
+        self.stacked_widget.addWidget(chart)
+        self.stacked_widget.setCurrentIndex(1)

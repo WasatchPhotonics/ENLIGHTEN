@@ -43,13 +43,7 @@ class Graph(object):
     # passes them in.  Perhaps we need a GraphFactory?
     def __init__(self,
             clipboard                   = None,
-            generate_x_axis             = None,
             gui                         = None,
-            hide_when_zoomed            = None,
-            legend                      = None, # passed by PluginController
-            lock_marker                 = False,# passed by PluginController (for 'xy' graphs)
-            plot                        = None, # passed by PluginController (pyqtgraph.PlotWidget)
-            rehide_curves               = None,     
                                         
             button_copy                 = None,
             button_invert               = None,
@@ -57,28 +51,34 @@ class Graph(object):
             button_zoom                 = None,
             cb_marker                   = None,
             combo_axis                  = None,
-            layout_scope_capture        = None, # passed by Controller/BusinessObjects
-            stacked_widget_scope_setup  = None, # by Controller/BusinessObjects
+            generate_x_axis             = None, # Graph makes this available to many other classes
+            hide_when_zoomed            = None,
             init_graph_axis             = True,   
+            layout                      = None, # passed by Controller/BusinessObjects
+            legend                      = None, # passed by PluginController
+            lock_marker                 = False,# passed by PluginController (for 'xy' graphs)
+            plot                        = None, # passed by PluginController (pyqtgraph.PlotWidget)
+            rehide_curves               = None,     
+            stacked_widget              = None, # by Controller/BusinessObjects
             ):               
 
-        self.plot                       = plot
         self.clipboard                  = clipboard
-        self.generate_x_axis            = generate_x_axis
         self.gui                        = gui
-        self.hide_when_zoomed           = hide_when_zoomed
-        self.legend                     = legend
-        self.lock_marker                = lock_marker
-        self.rehide_curves              = rehide_curves
-                                        
+
         self.button_copy                = button_copy
         self.button_invert              = button_invert
         self.button_lock_axes           = button_lock_axes
         self.button_zoom                = button_zoom
         self.cb_marker                  = cb_marker
         self.combo_axis                 = combo_axis
-        self.layout_scope_capture       = layout_scope_capture
-        self.stacked_widget_scope_setup = stacked_widget_scope_setup
+        self.generate_x_axis            = generate_x_axis
+        self.hide_when_zoomed           = hide_when_zoomed
+        self.layout                     = layout
+        self.legend                     = legend
+        self.lock_marker                = lock_marker
+        self.plot                       = plot
+        self.rehide_curves              = rehide_curves
+        self.stacked_widget             = stacked_widget
 
         # these are passed post-construction, or not at all (could add to ctor parameters anyway)
         self.cursor         = None
@@ -104,9 +104,9 @@ class Graph(object):
         self.combo_axis.setCurrentIndex(self.current_x_axis)
 
         # populate placeholders if requested
-        if stacked_widget_scope_setup:
+        if stacked_widget:
             self.populate_scope_setup()
-        if layout_scope_capture:
+        if layout:
             self.populate_scope_capture()
 
         # bindings
@@ -137,8 +137,8 @@ class Graph(object):
         self.live_plot .setSizePolicy(policy)
         self.live_curve = self.live_plot.plot([], pen=self.gui.make_pen(widget="live"))
 
-        self.stacked_widget_scope_setup.addWidget(self.live_plot)
-        self.stacked_widget_scope_setup.setCurrentIndex(1)
+        self.stacked_widget.addWidget(self.live_plot)
+        self.stacked_widget.setCurrentIndex(1)
 
     def populate_scope_capture(self):
         log.debug("populate_scope_capture: start")
@@ -148,7 +148,7 @@ class Graph(object):
         self.plot.setLabel(axis="bottom", text=common.AxesHelper.get_pretty_name(common.Axes.WAVELENGTHS))
         self.plot.setLabel(axis="left",   text=common.AxesHelper.get_pretty_name(common.Axes.COUNTS))
 
-        self.legend = self.plot.addLegend()
+        self.legend = self.plot.addLegend() # returns a LegendItem
 
         # populate the spectrum curve placeholder last, so it's "on top of" the others in Z-axis
         # Note: we'll create the curves themselves from initialize_new_device(hotswap)
@@ -166,7 +166,7 @@ class Graph(object):
         # 2 |   | B |   |   B = Bottom
         #   +---+---+---+
         #
-        self.layout_scope_capture.addWidget(self.plot, 1, 1)
+        self.layout.addWidget(self.plot, 1, 1)
 
     ## called by Cursor to add its InfiniteLine to the graph
     def add_item(self, item):
@@ -204,7 +204,7 @@ class Graph(object):
         self.plot.setLabel(text=text+"<br>", axis="bottom")
         self.x_axis_locked = locked
 
-    ## when the Technique changes, update axis as appropriate 
+    ## when the Mode changes, update axis as appropriate 
     def set_x_axis(self, enum):
         log.debug("set_x_axis: %s", enum)
         old_axis = self.current_x_axis
@@ -281,7 +281,7 @@ class Graph(object):
 
     ##
     # Only sets the "intention" to use the specified axis label; in reference-
-    # based techniques, don't actually switch to the target axis until processing
+    # based modes, don't actually switch to the target axis until processing
     # requirements are met (i.e., a reference has been taken).
     def set_y_axis(self, enum):
         self.intended_y_axis = enum
@@ -346,33 +346,40 @@ class Graph(object):
         if spec is not None:
             curve.device_id = spec.device_id
             log.debug("added curve %s for device %s", name, curve.device_id)
-        elif measurement is not None:
+
+        if measurement is not None:
             # used so we can re-scale displayed thumbnail traces when the current x-axis changes
             curve.measurement_id = measurement.measurement_id
             log.debug("added curve %s for measurement %s", name, curve.measurement_id)
-        else:
+
+        if spec is None and measurement is None:
             log.debug("added raw curve '%s'", name)
 
         if rehide and self.rehide_curves is not None:
             self.rehide_curves()
 
         if not in_legend:
-            self.legend.removeItem(name)
+            self.legend.removeItem(curve)
 
         return curve
 
-    ## If nobody else persists the curve, this will delete the curve object
+    ## 
+    # If nobody else persists the curve, this will delete the curve object
     # itself from memory, as well removing it from the graph.
     # 
     # @note apparently we don't need to call deleteLater() with pyqtgraph objects
     # @see https://github.com/pyqtgraph/pyqtgraph/issues/524#issuecomment-319860256
-    def remove_curve(self, name):
+    def remove_curve(self, name=None, measurement_id=None):
         for curve in self.plot.listDataItems():
-            this_name = curve.name()
-            if this_name == name:
+            if (measurement_id is not None and hasattr(curve, "measurement_id") and measurement_id == curve.measurement_id) or \
+               (name is not None and name == curve.name()):
                 self.plot.removeItem(curve)
-                self.legend.removeItem(name)
-                return True
+                self.legend.removeItem(curve)
+                return 
+
+    def remove_from_legend(self, name=None, measurement_id=None):
+        if name is None and measurement_id is None:
+            return False
 
     def update_curve_marker(self, curve):
         if self.lock_marker:
@@ -492,52 +499,41 @@ class Graph(object):
         if spec is None:
             return
 
-        roi_start = spec.settings.eeprom.roi_horizontal_start
-        roi_end = spec.settings.eeprom.roi_horizontal_end
+        # by default, hide the curtains
+        self.remove_roi_region(spec.roi_region_left)
+        self.remove_roi_region(spec.roi_region_right)
 
-        if self.in_pixels():
-            log.debug("setting bounds in px")
-            spec.roi_region_left.setRegion((0, roi_start))
-            spec.roi_region_right.setRegion((roi_end, spec.settings.eeprom.active_pixels_horizontal))
-        elif self.in_wavelengths():
-            log.debug(f"setting bounds in nm")
-            spectrum_start_nm = utils.pixel_to_wavelength(0, spec.settings.eeprom.wavelength_coeffs)
-            spectrum_end_nm = utils.pixel_to_wavelength(spec.settings.eeprom.active_pixels_horizontal, spec.settings.eeprom.wavelength_coeffs)
+        if not spec.settings.eeprom.has_horizontal_roi():
+            # log.debug("hiding curtains (no ROI to show)")
+            return
 
-            roi_start_nm = utils.pixel_to_wavelength(roi_start, spec.settings.eeprom.wavelength_coeffs)
-            roi_end_nm = utils.pixel_to_wavelength(roi_end, spec.settings.eeprom.wavelength_coeffs)
+        if not self.vignette_roi:
+            # log.debug("hiding curtains (no VigentteROI object)")
+            return
 
-            spec.roi_region_left.setRegion((spectrum_start_nm, roi_start_nm))
-            spec.roi_region_right.setRegion((roi_end_nm, spectrum_end_nm))
+        if self.vignette_roi.enabled:
+            # log.debug("hiding curtains (VignetteROI.enabled True), meaning finges should be hid")
+            return
 
-        elif self.in_wavenumbers():
-            spectrum_start_nm = utils.pixel_to_wavelength(0, spec.settings.eeprom.wavelength_coeffs)
-            spectrum_end_nm = utils.pixel_to_wavelength(spec.settings.eeprom.active_pixels_horizontal, spec.settings.eeprom.wavelength_coeffs)
-            
-            roi_start_nm = utils.pixel_to_wavelength(roi_start, spec.settings.eeprom.wavelength_coeffs)
-            roi_end_nm = utils.pixel_to_wavelength(roi_end, spec.settings.eeprom.wavelength_coeffs)
+        # log.debug("showing curtains, because VignetteROI.enabled False")
 
-            spectrum_start_cm = utils.wavelength_to_wavenumber(spec.settings.eeprom.excitation_nm, spectrum_start_nm)
-            spectrum_end_cm = utils.wavelength_to_wavenumber(spec.settings.eeprom.excitation_nm, spectrum_end_nm)
+        roi = spec.settings.eeprom.get_horizontal_roi()
+        axis = self.generate_x_axis(vignetted=False)
 
-            roi_start_cm = utils.wavelength_to_wavenumber(spec.settings.eeprom.excitation_nm_float, roi_start_nm)
-            roi_end_cm = utils.wavelength_to_wavenumber(spec.settings.eeprom.excitation_nm_float, roi_end_nm)
+        log.debug(f"update_roi_regions: roi {roi}, axis {len(axis)} elements")
 
-            spec.roi_region_left.setRegion((-1*spectrum_start_cm, -1*roi_start_cm))
-            spec.roi_region_right.setRegion((-1*roi_end_cm, -1*spectrum_end_cm))
+        spec.roi_region_left .setRegion((axis[0],       axis[roi.start]))
+        spec.roi_region_right.setRegion((axis[roi.end], axis[-1]       ))
 
-        if self.get_roi_enabled():
-            self.remove_roi_region(spec.roi_region_left)
-            self.remove_roi_region(spec.roi_region_right)
+        if roi.start == 0:
+            spec.roi_region_left.setOpacity(0)
         else:
-            if roi_start == 0:
-                spec.roi_region_left.setOpacity(0)
-            else:
-                spec.roi_region_left.setOpacity(1)
+            spec.roi_region_left.setOpacity(1)
 
-            if roi_end >= spec.settings.eeprom.active_pixels_horizontal - 1:
-                spec.roi_region_right.setOpacity(0)
-            else:
-                spec.roi_region_right.setOpacity(1)
-            self.add_roi_region(spec.roi_region_left)
-            self.add_roi_region(spec.roi_region_right)
+        if roi.end >= len(axis):
+            spec.roi_region_right.setOpacity(0)
+        else:
+            spec.roi_region_right.setOpacity(1)
+
+        self.add_roi_region(spec.roi_region_left)
+        self.add_roi_region(spec.roi_region_right)

@@ -25,14 +25,14 @@ The short summary is classes start with Test, functions start with test_. Pytest
 
 ## Initial Test Plan
 
-- Scope Technique
+- Scope View
     - change integ time
     - laser works
     - change laser power
     - averaging works
     - TEC changes are reflected in Hardware Capture
     - save CSV
-- Raman Technique
+- Raman Mode
     - dark works
     - shows peaks
 - Reflectance/Transmission Technique

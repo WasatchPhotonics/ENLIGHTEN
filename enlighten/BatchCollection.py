@@ -4,6 +4,7 @@ import datetime
 import logging
 
 from . import util
+from .ScrollStealFilter import ScrollStealFilter
 
 log = logging.getLogger(__name__)
 
@@ -221,6 +222,11 @@ class BatchCollection(object):
         self.spinbox_batch_period_sec      .valueChanged .connect(self.update_from_widgets)
         self.spinbox_laser_warmup_ms       .valueChanged .connect(self.update_from_widgets)
         self.spinbox_collection_timeout    .valueChanged .connect(self.update_from_widgets)
+
+        # disable scroll stealing
+        for key, item in self.__dict__.items():
+            if key.startswith("cb_") or key.startswith("rb_") or key.startswith("spinbox_"):
+                item.installEventFilter(ScrollStealFilter(item))
 
         # now perform one update
         self.update_from_widgets()
