@@ -18,7 +18,6 @@ from PySide2.QtWidgets import QMessageBox, QVBoxLayout, QWidget, QLabel, QMessag
 
 from collections import defaultdict
 from threading import Thread
-from pygtail import Pygtail # for log screen
 
 # these aren't actually used...solves an import issue for MacOS I think
 import matplotlib
@@ -73,7 +72,6 @@ class Controller:
     ACQUISITION_TIMER_SLEEP_MS      =  100
     STATUS_TIMER_SLEEP_MS           = 1000
     BUS_TIMER_SLEEP_MS              = 1000
-    LOG_READER_TIMER_SLEEP_MS       = 3000
     MAX_MISSED_READINGS             =    2
     USE_ERROR_DIALOG                = False
     SPEC_ERROR_MAX_RETRY            = 3
@@ -196,12 +194,6 @@ class Controller:
         self.start_time = datetime.datetime.now()
 
         # ######################################################################
-        # logging
-        # ######################################################################
-
-        self.log_reader_timer = None
-
-        # ######################################################################
         # versions
         # ######################################################################
 
@@ -235,9 +227,6 @@ class Controller:
 
         # configure acquisition loop
         self.setup_main_event_loops() # MZ: move to end?
-
-        # setup GUI access to log outputs
-        self.setup_log_interface()
 
         # setup timer to check for hardware changes
         self.setup_bus_listener()
@@ -332,14 +321,14 @@ class Controller:
         log.debug("stopping all timers")
         for feature in [ self.batch_collection,
                          self.status_indicators,
-                         self.ble_manager ]:
+                         self.ble_manager,
+                         self.logging_feature ]:
             feature.stop()
 
         for timer in [ self.bus_timer,
                        self.acquisition_timer,
                        self.status_timer,
-                       self.log_reader_timer,
-                       self.hard_strip_timer]: # StripChartFeature
+                       self.hard_strip_timer ]: # StripChartFeature
             if timer is not None:
                 timer.stop()
 
@@ -992,91 +981,6 @@ class Controller:
         for feature in [ self.baseline_correction,
                          self.raman_shift_correction ]:
             feature.update_visibility()
-
-    # ##########################################################################
-    # More GUI Setup
-    # ##########################################################################
-
-    def setup_log_interface(self):
-        """ @todo move to LoggingFeature """
-        try:
-            offset_file = applog.get_location() + ".offset"
-            if os.path.exists(offset_file):
-                os.remove(offset_file)
-        except:
-            log.info("error removing old Pygtail offset", exc_info=1)
-
-        # MZ: it seems like this happens all the time, even if we're not
-        #     viewing the log? Seems wasteful...but needed to flash the
-        #     indicator colors.
-        self.log_reader_timer = QtCore.QTimer()
-        self.log_reader_timer.setSingleShot(True)
-        self.log_reader_timer.timeout.connect(self.tick_log_reader)
-        self.log_reader_timer.start(Controller.LOG_READER_TIMER_SLEEP_MS)
-
-    # ##########################################################################
-    # Logging
-    # ##########################################################################
-
-    def tick_log_reader(self):
-        """
-        Periodically tail the logfile to the QTextEdit in Hardware -> Setup -> Logging.
-        
-        @todo move to LoggingFeature
-        """
-        if self.area_scan.enabled:
-            return
-
-        if self.shutting_down:
-            self.log_reader_timer.stop()
-            return
-
-        sfu = self.form.ui
-        if not sfu.checkBox_logging_pause.isChecked():
-            try:
-                sfu.textEdit_log.clear()
-
-                # is there a less memory-intensive way to do this?
-                # maybe implement ring-buffer inside the loop...
-                lines = []
-                for line in Pygtail(applog.get_location()):
-                    lines.append(line)
-
-                if len(lines) > 150:
-                    lines = lines[-150:]
-                    lines.insert(0, "...snip...")
-
-                for line in lines:
-                    line = re.sub(r"[\r\n]", "", line)
-                    line = self.colorize_log(line)
-                    sfu.textEdit_log.append(line)
-            except IOError as exc:
-                log.info("Cannot tail log file")
-
-            sfu.textEdit_log.moveCursor(QtGui.QTextCursor.End)
-
-        self.log_reader_timer.start(Controller.LOG_READER_TIMER_SLEEP_MS)
-
-    def colorize_log(self, line):
-        """
-        This gets ticked by tick_log_reader.
-        
-        @todo move to LoggingFeature
-        """
-        if " CRITICAL " in line:
-            color = "980000" # red
-        elif " ERROR " in line:
-            color = "ba8023" # orange
-        elif " WARNING " in line:
-            color = "cac401" # yellow
-        else:
-            color = None
-
-        if color:
-            self.status_indicators.raise_hardware_error()
-            return "<p><span style='color: #%s'>%s</span></p>" % (color, line)
-        else:
-            return "<p>" + line + "</p>"
 
     # ##########################################################################
     # Setup (populate widget placeholders)

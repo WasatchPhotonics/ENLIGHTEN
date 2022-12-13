@@ -22,6 +22,7 @@ class PageNavigation:
 
     def __init__(self,
             graph,
+            logging_feature,
             marquee,
             multispec,
             save_options,
@@ -35,7 +36,6 @@ class PageNavigation:
 
             update_feature_visibility,
 
-            textEdit_log,                       # todo move to LoggingFeature
             fr_transmission_options,
             fr_area_scan,
             fr_baseline,
@@ -47,6 +47,7 @@ class PageNavigation:
             ):
 
         self.graph              = graph
+        self.logging_feature    = logging_feature
         self.marquee            = marquee
         self.multispec          = multispec
         self.save_options       = save_options
@@ -68,7 +69,9 @@ class PageNavigation:
         self.fr_region          = fr_region
         
         self.update_feature_visibility = update_feature_visibility
-        self.textEdit_log = textEdit_log
+
+        # self-register
+        self.logging_feature.page_nav = self
 
         self.operation_mode = common.OperationModes.RAMAN
         self.current_view = common.Views.SCOPE
@@ -157,6 +160,7 @@ class PageNavigation:
     def set_view_logging(self):
         self.set_view_common(common.Views.LOG)
         self.set_main_page(common.Pages.LOG)
+        # self.logging_feature.start()
 
     def set_view_hardware(self):
         self.set_view_common(common.Views.HARDWARE)

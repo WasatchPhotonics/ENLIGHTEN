@@ -40,6 +40,7 @@ class VignetteROIFeature(object):
         self.button = button
 
         self.enabled = True
+        self.user_requested_enabled = True
 
         self.observers = set()
 
@@ -52,6 +53,9 @@ class VignetteROIFeature(object):
 
     def toggle(self):
         self.enabled = not self.enabled
+        self.user_requested_enabled = self.enabled
+
+        log.debug(f"toggle: user_requested_enabled = {self.user_requested_enabled}, enabled = {self.enabled}")
         
         # re-center cursor if disabling ROI made current position fall off the graph
         self.graph.cursor.set_range(self.graph.generate_x_axis())
@@ -67,12 +71,15 @@ class VignetteROIFeature(object):
     def init_hotplug(self):
         """ auto-enable for spectrometers with ROI """
         spec = self.multispec.current_spectrometer()
-        self.enabled = spec and spec.settings.eeprom.has_horizontal_roi()
+        self.enabled = spec is not None and spec.settings.eeprom.has_horizontal_roi() and self.user_requested_enabled
+        log.debug(f"init_hotplug: enabled = {self.enabled}")
 
     def update_visibility(self):
         spec = self.multispec.current_spectrometer()
 
-        if spec and spec.settings.eeprom.has_horizontal_roi():
+        self.enabled = self.user_requested_enabled
+
+        if spec is not None and spec.settings.eeprom.has_horizontal_roi():
             self.button.setVisible(True)
 
             if self.enabled:
@@ -85,6 +92,8 @@ class VignetteROIFeature(object):
         else:
             self.button.setVisible(False)
             self.enabled = False
+
+        log.debug(f"update_visibility: user_requested_enabled = {self.user_requested_enabled}, enabled = {self.enabled}")
 
         for spec in self.multispec.get_spectrometers():
             self.graph.update_roi_regions(spec)

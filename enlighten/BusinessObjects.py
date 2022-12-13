@@ -105,10 +105,13 @@ class BusinessObjects:
 
         self.header("instantiating LoggingFeature")
         ctl.logging_feature = LoggingFeature(
+            bt_copy     = sfu.pushButton_copy_log_to_clipboard,
+            cb_paused   = sfu.checkBox_logging_pause,
             cb_verbose  = sfu.checkBox_verbose_logging,
             config      = ctl.config,
             level       = ctl.log_level,
-            queue       = ctl.log_queue)
+            queue       = ctl.log_queue,
+            te_log      = sfu.textEdit_log)
 
         self.header("instantiating Colors")
         ctl.colors = Colors(ctl.config)
@@ -167,6 +170,7 @@ class BusinessObjects:
         ctl.clipboard = Clipboard(
             clipboard                   = ctl.app.clipboard(),
             marquee                     = ctl.marquee)
+        ctl.logging_feature.clipboard = ctl.clipboard
 
         self.header("instantiating GuideFeature")
         ctl.guide = GuideFeature(
@@ -259,6 +263,7 @@ class BusinessObjects:
 
         self.header("instantiating StatusIndicators")
         ctl.status_indicators = StatusIndicators(
+            logging_feature             = ctl.logging_feature,
             multispec                   = ctl.multispec,
             stylesheets                 = ctl.stylesheets,
 
@@ -376,6 +381,7 @@ class BusinessObjects:
         self.header("instantiating PageNavigation")
         ctl.page_nav = PageNavigation(
             graph                       = ctl.graph,
+            logging_feature             = ctl.logging_feature,
             marquee                     = ctl.marquee,
             multispec                   = ctl.multispec,
             save_options                = ctl.save_options,
@@ -387,7 +393,6 @@ class BusinessObjects:
             combo_view                  = sfu.comboBox_view,
             stack_main                  = sfu.stackedWidget_low,
 
-            textEdit_log                = sfu.textEdit_log,                      # todo move to LoggingFeature
             fr_transmission_options     = sfu.frame_transmission_options,        # todo move to TransmissionFeature
             fr_area_scan                = sfu.frame_area_scan_widget,
             fr_baseline                 = sfu.frame_baseline_correction,

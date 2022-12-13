@@ -92,5 +92,5 @@ class Clipboard(object):
         except:
             log.error("error copying table", exc_info=1)
 
-    def raw_set_text(self,text):
+    def raw_set_text(self, text):
         self.clipboard.setText(text)
