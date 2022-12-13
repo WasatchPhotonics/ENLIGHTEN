@@ -787,7 +787,7 @@ class PluginController:
             parent = self.parent,
             flags = Qt.Widget)
         mb.setInformativeText(detail) # setDetailText has sizing issues
-        mb.exec();
+        mb.exec()
 
     def satisfy_dependencies(self):
         log.debug("satisfy_dependencies: start")
@@ -804,8 +804,15 @@ class PluginController:
             log.debug(f"satisfying dependency {dep.name} of type {dep.dep_type}")
 
             if dep.dep_type == "existing_directory":
+                QtWidgets.QMessageBox(
+                    QtWidgets.QMessageBox.Question, 
+                    "ENLIGHTEN Plugin", 
+                    dep.prompt,
+                    parent = self.parent,
+                    flags = Qt.Widget).exec()
+
                 # create the dialog
-                dialog = QtWidgets.QFileDialog(parent=self.parent, caption=dep.prompt)
+                dialog = QtWidgets.QFileDialog(parent=self.parent)
                 dialog.setFileMode(QtWidgets.QFileDialog.Directory)
                 dialog.setOption(QtWidgets.QFileDialog.ShowDirsOnly)
 
