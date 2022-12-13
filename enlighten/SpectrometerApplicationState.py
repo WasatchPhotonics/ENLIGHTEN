@@ -1,6 +1,9 @@
 import logging
 
+from .common import LaserStates
+
 from wasatch.ProcessedReading import ProcessedReading
+
 from .RollingDataSet   import RollingDataSet
 
 log = logging.getLogger(__name__)
@@ -34,15 +37,15 @@ class SpectrometerApplicationState(object):
         self.waterfall = []
         self.missing_acquisition_timeout = None
         self.pending_disconnect = False
-        self.technique_name = None
         self.baseline_correction_algo = None
         self.baseline_correction_enabled = False # MZ: is this used? should it be?
         self.spec_timeout_prompt_shown = False
         self.missed_reading_count = 0
+        self.laser_state = LaserStates.DISABLED
 
         # to track separately from SpectrometerState, which is shared with Wasatch.PY thread
-        self.laser_gui_firing = False 
-        self.last_laser_toggle = None
+        # self.laser_gui_firing = False 
+        # self.last_laser_toggle = None
 
         self.reset_rolling_data()
 
@@ -63,15 +66,15 @@ class SpectrometerApplicationState(object):
         log.info("  Missing Acquisition Timeout:%s", self.missing_acquisition_timeout)
         log.info("  Pending Disconnect:         %s", self.pending_disconnect)
         log.info("  Laser Temperature:          %s", self.laser_temperature_data)
-        log.info("  Laser GUI Firing:           %s", self.laser_gui_firing)
-        log.info("  Last Laser Toggle:          %s", self.last_laser_toggle)
+        log.info("  Laser State:                %s", self.laser_state)
+       #log.info("  Laser GUI Firing:           %s", self.laser_gui_firing)
+       #log.info("  Last Laser Toggle:          %s", self.last_laser_toggle)
         log.info("  Detector Temperature:       %s", self.detector_temperatures_degC)
         log.info("  Detector Temperature Avg:   %s", self.detector_temperatures_degC_averaged)
         log.info("  Detector Temperature Disp:  %s", self.detector_temperatures_degC_averaged_display)
         log.info("  Secondary ADC Fast:         %s", self.secondary_adc_data_fast)
         log.info("  Secondary ADC Medium:       %s", self.secondary_adc_data_medium)
         log.info("  Secondary ADC Slow:         %s", self.secondary_adc_data_slow)
-        log.info("  Technique Name:             %s", self.technique_name)
         log.info("  Baseline Correction Algo:   %s", self.baseline_correction_algo)
         log.info("  Baseline Correction Enabled:%s", self.baseline_correction_enabled)
         if self.processed_reading is not None:

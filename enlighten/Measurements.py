@@ -44,8 +44,8 @@ class Measurements(object):
             label_count,
             layout,
             marquee,
-            get_roi_enabled,
-            reprocess_callback):
+            reprocess_callback,
+            vignette_roi):
 
         self.button_erase       = button_erase
         self.button_export      = button_export
@@ -59,8 +59,8 @@ class Measurements(object):
         self.label_count        = label_count
         self.layout             = layout
         self.marquee            = marquee
-        self.get_roi_enabled    = get_roi_enabled
         self.reprocess_callback = reprocess_callback
+        self.vignette_roi       = vignette_roi
 
         self.measurements = []
 
@@ -766,7 +766,7 @@ class Measurements(object):
             for pixel in range(max_pixels):
                 if spectrometer_count == 1:
                     roi = settingss[0].eeprom.get_horizontal_roi()
-                    if roi is not None and not roi.contains(pixel) and self.get_roi_enabled():
+                    if roi is not None and not roi.contains(pixel) and self.vignette_roi.enabled:
                         continue
 
                 row = []

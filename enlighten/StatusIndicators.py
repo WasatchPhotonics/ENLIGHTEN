@@ -45,18 +45,23 @@ class StatusIndicators:
     TEMPERATURE_WINDOW_SEC = 10
 
     def __init__(self,
-             multispec,
-             stylesheets,
+            logging_feature,
+            multispec,
+            stylesheets,
 
-             button_hardware,
-             button_lamp,
-             button_temperature):
+            button_hardware,
+            button_lamp,
+            button_temperature):
 
+        self.logging_feature    = logging_feature
         self.multispec          = multispec
         self.stylesheets        = stylesheets
         self.button_hardware    = button_hardware
         self.button_lamp        = button_lamp
         self.button_temperature = button_temperature
+
+        # self-register
+        self.logging_feature.status_indicators = self
                 
         self.last_hardware_error_time = None
 
@@ -79,6 +84,7 @@ class StatusIndicators:
         self.timer.stop()
 
     def raise_hardware_error(self):
+        log.debug("raising hardware error")
         self.last_hardware_error_time = datetime.datetime.now()
 
     ##
@@ -93,7 +99,7 @@ class StatusIndicators:
         lamp = "disconnected"
         temp = "disconnected"
 
-        hw_tt   = ""
+        hw_tt   = "disconnected"
         lamp_tt = ""
         temp_tt = ""
 
@@ -109,11 +115,12 @@ class StatusIndicators:
             # hardware status
             ####################################################################
 
+            hw_tt = f"no hardware errors within last {StatusIndicators.HARDWARE_WARNING_WINDOW_SEC} sec"
             if self.last_hardware_error_time is not None:
-                elapsed_sec = (datetime.datetime.now() - self.last_hardware_error_time).total_seconds()
+                elapsed_sec = int(round((datetime.datetime.now() - self.last_hardware_error_time).total_seconds()))
                 if elapsed_sec <= self.HARDWARE_WARNING_WINDOW_SEC:
                     hw = "warning"
-                    hw_tt = f"hardware error logged {elapsed_sec:f2} sec ago"
+                    hw_tt = f"hardware error logged {elapsed_sec} sec ago"
                 else:
                     hw = "connected"
             else:

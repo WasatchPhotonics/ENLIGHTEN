@@ -1,11 +1,9 @@
-from threading import Thread
 import webbrowser
 import pyqtgraph
-import functools
 import datetime
 import logging
-import numpy as np
 import struct
+import numpy as np
 import copy
 import math
 import time
@@ -19,8 +17,7 @@ from PySide2.QtCore import QObject, QEvent
 from PySide2.QtWidgets import QMessageBox, QVBoxLayout, QWidget, QLabel, QMessageBox
 
 from collections import defaultdict
-
-from pygtail import Pygtail # for log screen
+from threading import Thread
 
 # these aren't actually used...solves an import issue for MacOS I think
 import matplotlib
@@ -34,18 +31,19 @@ from wasatch import applog
 from wasatch import utils as wasatch_utils
 
 from wasatch.WasatchDeviceWrapper     import WasatchDeviceWrapper
-from wasatch.DeviceFinderUSB          import DeviceFinderUSB
 from wasatch.SpectrometerResponse     import ErrorLevel
+from wasatch.ProcessedReading         import ProcessedReading
+from wasatch.DeviceFinderUSB          import DeviceFinderUSB
+from wasatch.RealUSBDevice            import RealUSBDevice
 from wasatch.StatusMessage            import StatusMessage
 from wasatch.WasatchBus               import WasatchBus
 from wasatch.BLEDevice                import BLEDevice
 from wasatch.Reading                  import Reading
 
-from wasatch.ProcessedReading         import ProcessedReading
+from .ThumbnailWidget                 import ThumbnailWidget
 from .BusinessObjects                 import BusinessObjects
-from .Spectrometer                    import Spectrometer
 from .TimeoutDialog                   import TimeoutDialog
-from wasatch.RealUSBDevice            import RealUSBDevice
+from .Spectrometer                    import Spectrometer
 
 log = logging.getLogger(__name__)
 
@@ -74,7 +72,6 @@ class Controller:
     ACQUISITION_TIMER_SLEEP_MS      =  100
     STATUS_TIMER_SLEEP_MS           = 1000
     BUS_TIMER_SLEEP_MS              = 1000
-    LOG_READER_TIMER_SLEEP_MS       = 3000
     MAX_MISSED_READINGS             =    2
     USE_ERROR_DIALOG                = False
     SPEC_ERROR_MAX_RETRY            = 3
@@ -121,7 +118,6 @@ class Controller:
         self.max_memory_growth      = max_memory_growth
         self.run_sec                = run_sec
         self.dialog_open            = False
-        self.grid_display           = False
         self.serial_number_desired  = serial_number
         self.stylesheet_path        = stylesheet_path
         self.set_all_dfu            = set_all_dfu
@@ -189,18 +185,13 @@ class Controller:
 
         self.shutting_down = False
         self.exit_code = 0
+        self.has_connected = False # track first spectrometer connection
 
         # add Qt signal handlers to this Controller object
         self.create_signals()
 
         # resource tracking
         self.start_time = datetime.datetime.now()
-
-        # ######################################################################
-        # logging
-        # ######################################################################
-
-        self.log_reader_timer = None
 
         # ######################################################################
         # versions
@@ -231,14 +222,11 @@ class Controller:
         self.business_objects.create_rest()
         self.graph.rehide_curves()
 
-        # immediately show Scope Capture screen
-        self.page_nav.set_main_page(common.Pages.SPEC_CAPTURE)
+        # immediately show Scope view
+        self.page_nav.set_main_page(common.Pages.SCOPE)
 
         # configure acquisition loop
         self.setup_main_event_loops() # MZ: move to end?
-
-        # setup GUI access to log outputs
-        self.setup_log_interface()
 
         # setup timer to check for hardware changes
         self.setup_bus_listener()
@@ -249,17 +237,6 @@ class Controller:
         self.bind_shortcuts()
 
         self.page_nav.post_init()
-
-        sfu.pushButton_graphGrid.clicked.connect(self.graph_grid_toggle)
-        sfu.pushButton_roi_toggle.clicked.connect(self.toggle_roi_process)
-        self.default_roi_btn = self.form.ui.pushButton_roi_toggle.styleSheet()
-        self.default_graph_btn = self.form.ui.pushButton_graphGrid.styleSheet()
-        self.form.ui.pushButton_roi_toggle.setStyleSheet("background-color: #aa0000")
-        self.roi_enabled = True
-        self.enlighten_graphs = {
-                "scope graph": [self.graph, "plot"],
-                "plugin graph": [self.plugin_controller, "graph_plugin", "plot"],
-            }
 
         self.header("Controller ctor done")
         self.other_devices = []
@@ -272,7 +249,6 @@ class Controller:
             # So I replaced with minimizing, which I recognize is not a true headless
             # self.hide()
             self.form.showMinimized()
-
 
     def disconnect_device(self, spec=None, closing=False):
         if spec in self.other_devices:
@@ -332,7 +308,6 @@ class Controller:
 
         if self.multispec.count() == 0:
             self.marquee.info("searching for spectrometers", immediate=True, persist=True)
-            self.advanced_options.update_visibility()
 
         self.status_indicators.update_visibility()
 
@@ -346,14 +321,14 @@ class Controller:
         log.debug("stopping all timers")
         for feature in [ self.batch_collection,
                          self.status_indicators,
-                         self.ble_manager ]:
+                         self.ble_manager,
+                         self.logging_feature ]:
             feature.stop()
 
         for timer in [ self.bus_timer,
                        self.acquisition_timer,
                        self.status_timer,
-                       self.log_reader_timer,
-                       self.hard_strip_timer]: # StripChartFeature
+                       self.hard_strip_timer ]: # StripChartFeature
             if timer is not None:
                 timer.stop()
 
@@ -510,7 +485,7 @@ class Controller:
             self.marquee.info("no spectrometers found...calling remove_all") 
             self.multispec.remove_all()
 
-            self.update_feature_visibility
+            self.update_feature_visibility()
             return
 
         # handle the special case in which the user specified a single 
@@ -655,7 +630,6 @@ class Controller:
         # disable anything that shouldn't be on without a spectrometer
         # (could grow this considerably)
         for feature in [ self.accessory_control,
-                         self.advanced_options,
                          self.raman_mode_feature,
                          self.raman_intensity_correction,
                          self.raman_shift_correction,
@@ -930,7 +904,6 @@ class Controller:
         for feature in [ self.dark_feature, self.reference_feature ]:
             feature.clear(quiet=True) if hotplug else feature.display()
 
-
         ########################################################################
         # Business Objects
         ########################################################################
@@ -941,11 +914,11 @@ class Controller:
             # cursor
             self.cursor.center()
             for feature in [ self.accessory_control,
-                             self.laser_control ]:
+                             self.laser_control,
+                             self.vignette_roi ]:
                 feature.init_hotplug()
 
         for feature in [ self.accessory_control,
-                         self.advanced_options,
                          self.area_scan,
                          self.boxcar,
                          self.dark_feature,
@@ -953,15 +926,24 @@ class Controller:
                          self.gain_db_feature,
                          self.graph,
                          self.laser_control,
-                        #self.multi_pos,
                          self.raman_shift_correction,
                          self.raman_intensity_correction,
                          self.raman_mode_feature,
                          self.reference_feature,
                          self.richardson_lucy,
                          self.status_indicators,
-                         self.vcr_controls ]:
+                         self.vcr_controls,
+                         self.vignette_roi ]:
             feature.update_visibility()
+
+        ########################################################################
+        # Change to Raman if first connected device is Raman
+        ########################################################################
+
+        if not self.has_connected:
+            self.has_connected = True
+            if spec.settings.has_excitation():
+                self.page_nav.set_operation_mode_raman()
 
         ########################################################################
         # Batch Collection should kick-off on the FIRST connected spectrometer
@@ -999,91 +981,6 @@ class Controller:
         for feature in [ self.baseline_correction,
                          self.raman_shift_correction ]:
             feature.update_visibility()
-
-    # ##########################################################################
-    # More GUI Setup
-    # ##########################################################################
-
-    def setup_log_interface(self):
-        """ @todo move to LoggingFeature """
-        try:
-            offset_file = applog.get_location() + ".offset"
-            if os.path.exists(offset_file):
-                os.remove(offset_file)
-        except:
-            log.info("error removing old Pygtail offset", exc_info=1)
-
-        # MZ: it seems like this happens all the time, even if we're not
-        #     viewing the log? Seems wasteful...but needed to flash the
-        #     indicator colors.
-        self.log_reader_timer = QtCore.QTimer()
-        self.log_reader_timer.setSingleShot(True)
-        #self.log_reader_timer.timeout.connect(self.tick_log_reader)
-        self.log_reader_timer.start(Controller.LOG_READER_TIMER_SLEEP_MS)
-
-    # ##########################################################################
-    # Logging
-    # ##########################################################################
-
-    def tick_log_reader(self):
-        """
-        Periodically tail the logfile to the QTextEdit in Hardware -> Setup -> Logging.
-        
-        @todo move to LoggingFeature
-        """
-        if self.area_scan.enabled:
-            return
-
-        if self.shutting_down:
-            self.log_reader_timer.stop()
-            return
-
-        sfu = self.form.ui
-        if not sfu.checkBox_logging_pause.isChecked():
-            try:
-                sfu.textEdit_log.clear()
-
-                # is there a less memory-intensive way to do this?
-                # maybe implement ring-buffer inside the loop...
-                lines = []
-                for line in Pygtail(applog.get_location()):
-                    lines.append(line)
-
-                if len(lines) > 150:
-                    lines = lines[-150:]
-                    lines.insert(0, "...snip...")
-
-                for line in lines:
-                    line = re.sub(r"[\r\n]", "", line)
-                    line = self.colorize_log(line)
-                    sfu.textEdit_log.append(line)
-            except IOError as exc:
-                log.info("Cannot tail log file")
-
-            sfu.textEdit_log.moveCursor(QtGui.QTextCursor.End)
-
-        self.log_reader_timer.start(Controller.LOG_READER_TIMER_SLEEP_MS)
-
-    def colorize_log(self, line):
-        """
-        This gets ticked by tick_log_reader.
-        
-        @todo move to LoggingFeature
-        """
-        if " CRITICAL " in line:
-            color = "980000" # red
-        elif " ERROR " in line:
-            color = "ba8023" # orange
-        elif " WARNING " in line:
-            color = "cac401" # yellow
-        else:
-            color = None
-
-        if color:
-            self.status_indicators.raise_hardware_error()
-            return "<p><span style='color: #%s'>%s</span></p>" % (color, line)
-        else:
-            return "<p>" + line + "</p>"
 
     # ##########################################################################
     # Setup (populate widget placeholders)
@@ -1125,8 +1022,8 @@ class Controller:
         self.thumbnail_render_graph.hideAxis("bottom")
         self.thumbnail_render_graph.setMinimumHeight(120)
         self.thumbnail_render_graph.setMaximumHeight(120)
-        self.thumbnail_render_graph.setMinimumWidth(170)
-        self.thumbnail_render_graph.setMaximumWidth(170)
+        self.thumbnail_render_graph.setMinimumWidth(ThumbnailWidget.MIN_WIDTH)
+        self.thumbnail_render_graph.setMaximumWidth(ThumbnailWidget.MAX_WIDTH)
 
         # insert the graph into the layout
         layout.insertWidget(0, self.thumbnail_render_graph)
@@ -1161,52 +1058,33 @@ class Controller:
         sfu.checkBox_graph_alternating_pixels       .stateChanged       .connect(self.graph_alternating_pixels_callback)
 
     def bind_shortcuts(self):
-        """ Set up application-wide shortcut keys (called AFTER business object creation). """
-        log.debug("Set up shortcuts")
+        """ 
+        Set up application-wide shortcut keys (called AFTER business object creation). 
+        """
 
         self.shortcuts = {}
 
         def make_shortcut(kseq, callback):
+            log.debug(f"setting shortcut from {kseq} to {callback}")
             shortcut = QtWidgets.QShortcut(QtGui.QKeySequence(kseq), self.form)
             shortcut.activated.connect(callback)
             self.shortcuts[kseq] = shortcut
 
         # views
-        make_shortcut("F1",     self.page_nav.set_view_hardware)
-        make_shortcut("F2",     self.page_nav.set_view_scope)
-        make_shortcut("F3",     self.page_nav.set_view_raman)
-        make_shortcut("F4",     self.page_nav.set_technique_transmission)
-        make_shortcut("F5",     self.page_nav.set_technique_absorbance)
-
-        # operation modes
-        #make_shortcut("F6",     self.page_nav.set_operation_mode_setup)
-        make_shortcut("Ctrl+1", self.page_nav.set_operation_mode_raman)
-
-        #make_shortcut("F7",     self.page_nav.set_operation_mode_capture)
-        make_shortcut("Ctrl+2", self.page_nav.set_operation_mode_non_raman)
-
-        make_shortcut("Ctrl+3", self.page_nav.set_operation_mode_expert)
-
-        # Dark/Reference
-        make_shortcut("F8",     self.dark_feature.toggle)
-        make_shortcut("Ctrl+D", self.dark_feature.toggle)
-
-        make_shortcut("F9",     self.reference_feature.toggle)
-        make_shortcut("Ctrl+R", self.reference_feature.toggle)
-
-        # Play/Pause/Save
-        make_shortcut("F10",    self.vcr_controls.play)
-        make_shortcut("F11",    self.vcr_controls.pause)
-
-        make_shortcut("F12",    self.vcr_controls.save)
-        make_shortcut("Ctrl+S", self.vcr_controls.save)
+        make_shortcut("Ctrl+1", self.page_nav.set_view_scope)
+        make_shortcut("Ctrl+2", self.page_nav.set_view_settings)
+        make_shortcut("Ctrl+3", self.page_nav.set_view_hardware)
+        make_shortcut("Ctrl+4", self.page_nav.set_view_logging)
 
         # Convenience
         make_shortcut("Ctrl+A", self.authentication.login) # authenticate, advanced
         make_shortcut("Ctrl+C", self.graph.copy_to_clipboard_callback)
+        make_shortcut("Ctrl+D", self.dark_feature.toggle)
         make_shortcut("Ctrl+H", self.page_nav.toggle_hardware_and_scope)
         make_shortcut("Ctrl+L", self.laser_control.toggle_laser)
         make_shortcut("Ctrl+P", self.vcr_controls.toggle) # pause/play
+        make_shortcut("Ctrl+R", self.reference_feature.toggle)
+        make_shortcut("Ctrl+S", self.vcr_controls.save)
 
         # Cursor
         make_shortcut(QtGui.QKeySequence.MoveToPreviousWord, self.cursor.dn_callback) # ctrl-left
@@ -1401,12 +1279,6 @@ class Controller:
                     log.debug("Error reading or processing StatusMessage on %s", spec.device_id, exc_info=1)
 
         ########################################################################       
-        # Tick BusinessObjects too lazy to create their own timers
-        ########################################################################       
-
-        self.laser_control.process_timeouts()
-
-        ########################################################################       
         # Tick plug-ins
         ########################################################################       
 
@@ -1524,11 +1396,11 @@ class Controller:
         spec.app_state.spec_timeout_prompt_shown = False
 
         if spec.device.is_ble and acquired_reading.progress != 1:
-            self.form.ui.readingProgressBar.setValue(acquired_reading.progress*100)
+            sfu.readingProgressBar.setValue(acquired_reading.progress*100)
             # got an incomplete ble reading so stop proceeding for now
             return
         elif spec.device.is_ble:
-            self.form.ui.readingProgressBar.setValue(100)
+            sfu.readingProgressBar.setValue(100)
 
         # @todo need to update DetectorRegions so this will pass (use total_pixels)
 
@@ -1557,13 +1429,6 @@ class Controller:
         # active spectrometer gets additional processing
         if self.multispec.is_selected(device_id):
 
-            # display raw temperatures on Hardware Setup page
-            # if reading.secondary_adc_raw is not None:
-            #     text = "0x%03x" % reading.secondary_adc_raw
-            #     if reading.secondary_adc_calibrated is not None:
-            #         text += " (%.2f)" % reading.secondary_adc_calibrated
-            #     sfu.label_secondary_adc_raw.setText(text)
-
             # @todo move to AmbientTemperatureFeature
             # display ambient temperature on Hardware Setup
             if spec.settings.is_gen15() and reading.ambient_temperature_degC is not None:
@@ -1573,56 +1438,7 @@ class Controller:
 
             # update laser status 
             if spec.settings.is_xs():
-                log.debug("XS, so updating laser status")
-                self.update_laser_status(reading)
-
-    def update_laser_status(self, reading):
-        spec = self.multispec.current_spectrometer()
-        if spec is None:
-            return
-
-        if reading is None:
-            return
-
-        if reading.laser_enabled is None:
-            log.debug("update_laser_status: reading.laser_enabled is None")
-            return
-
-        if reading.laser_enabled == spec.app_state.laser_gui_firing:
-            log.debug(f"update_laser_status: reading.laser_enabled {reading.laser_enabled} agrees with app_state.laser_gui_firing {spec.app_state.laser_gui_firing}")
-            return
-
-        log.debug(f"update_laser_status: reading.laser_enabled {reading.laser_enabled} != app_state {spec.app_state.laser_gui_firing}...we should probably sync Reading state to the GUI widget")
-
-        
-        ########################################################################
-        # apparently the GUI laser status is inaccurate, so debounce and correct
-        ########################################################################
-
-        # MZ: the following code is unready in at least two respects:
-        #
-        # 1. we haven't yet updated the FW to give us an accurate 
-        #    reading.laser_enabled after watchdog lockdown (new drop expected 
-        #    tomorrow)
-        #
-        # 2. we should be checking against the spectrometer which provided the 
-        #    Reading, not the application-wide LaserControllerFeature object
-        #
-        # For now, allow the LaserControlFeature to maintain its own timeouts
-        # (basically "SW watchdogs"), ticked by Controller.status_timer.  These
-        # don't really add any SAFETY (the FW watchdog does that), but they do
-        # let us keep the application GUI more-or-less in sync with the expected
-        # hardware state.
-        #
-        # log.debug(f"update_laser_status: last_laser_toggle {spec.app_state.last_laser_toggle}")
-        # if spec.app_state.last_laser_toggle is not None:
-        #     debounce_ms = 500 + spec.settings.state.integration_time_ms * 2
-        #     elapsed_ms = (datetime.datetime.now() - spec.app_state.last_laser_toggle).total_seconds() * 1000.0
-        #     log.debug(f"update_laser_status: debounce_ms {debounce_ms}, elapsed_ms {elapsed_ms}")
-        #     if (elapsed_ms > debounce_ms):
-        #         log.debug("toggling laser because reading.laser_enabled %s but app_state.laser_gui_firing %s (and elapsed_ms %d > debounce_ms %d)",
-        #             reading.laser_enabled, spec.app_state.laser_gui_firing, elapsed_ms, debounce_ms)
-        #         self.laser_control.toggle_laser()
+                self.laser_control.process_reading(reading)
 
     def acquire_reading(self, spec: Spectrometer) -> AcquiredReading:
         """
@@ -1946,8 +1762,8 @@ class Controller:
 
         # This should be done before any processing that involves multiple
         # pixels, e.g. offset, boxcar, baseline correction, or Richardson-Lucy.
-        if self.roi_enabled:
-            self.vignette_roi.process(pr, settings)
+        log.debug("process_reading: calling vignette_roi.process")
+        self.vignette_roi.process(pr, settings)
 
         ########################################################################
         # Reference
@@ -2008,8 +1824,8 @@ class Controller:
             if not self.page_nav.using_reference():
                 self.richardson_lucy.process(pr, spec)
 
-        if self.form.ui.checkBox_despike_enable.isChecked():
-            pr = self.despiking_feature.process(pr)
+        # if self.form.ui.checkBox_despike_enable.isChecked():
+        #     pr = self.despiking_feature.process(pr)
 
         ########################################################################
         # Boxcar Smoothing
@@ -2452,7 +2268,7 @@ class Controller:
         else:
             retval = np.array(list(range(settings.pixels())), dtype=np.float32) 
 
-        if vignetted and self.get_roi_enabled():
+        if vignetted and self.vignette_roi.enabled:
             return self.vignette_roi.crop(retval, roi=settings.eeprom.get_horizontal_roi())
 
         if regions:
@@ -2462,37 +2278,18 @@ class Controller:
 
         return retval
 
-    def perform_fpga_reset(self, spec = None):
+    def perform_fpga_reset(self, spec=None):
         if spec is None:
             spec = self.multispec.current_spectrometer()
-
         if spec is None:
             return
 
-        wasatch_device = spec.device
-
-        wasatch_device.change_setting("reset_fpga", None)
-
+        spec.device.change_setting("reset_fpga", None)
 
     def update_hardware_window(self):
         for spec in self.multispec.spectrometers.values():
             # call StripChartFeature getter
             spec.app_state.update_rolling_data(self.form.ui.spinBox_strip_window.value())
-
-    def toggle_roi_process(self):
-        self.roi_enabled = not self.roi_enabled
-        self.graph.cursor.set_range(self.generate_x_axis())
-        if self.graph.cursor.is_outside_range():
-            self.graph.cursor.center()
-        if self.roi_enabled:
-            self.form.ui.pushButton_roi_toggle.setStyleSheet("background-color: #aa0000")
-        else:
-            self.form.ui.pushButton_roi_toggle.setStyleSheet(self.default_roi_btn)
-        for spec in self.multispec.get_spectrometers():
-            self.graph.update_roi_regions(spec)
-
-    def get_roi_enabled(self):
-        return self.roi_enabled
 
     def display_response_error(self, spec: Spectrometer, response_error: str) -> bool:
         """
@@ -2552,32 +2349,6 @@ class Controller:
     def open_log(self):
         # Interestingly a few threads explained that this will open the default text editor
         webbrowser.open(os.path.join(common.get_default_data_dir(), "enlighten.log"))
-
-    def get_grid_display(self):
-        return self.grid_display
-
-    def get_roi_enabled(self):
-        return self.roi_enabled
-
-    def graph_grid_toggle(self):
-        self.grid_display = not self.grid_display
-        log.debug(f"setting grid display to {self.grid_display}")
-        if self.grid_display:
-            self.form.ui.pushButton_graphGrid.setStyleSheet("background-color: #aa0000")
-        else:
-            self.form.ui.pushButton_graphGrid.setStyleSheet(self.default_graph_btn)
-        def resolve_graph_plot(head, attr):
-            if head != None and hasattr(head, attr):
-                return getattr(head, attr)
-            else:
-                None
-
-        for name, obj_path in self.enlighten_graphs.items():
-            plot = functools.reduce(resolve_graph_plot, obj_path)
-            if plot != None:
-                plot.showGrid(self.grid_display, self.grid_display)
-            else:
-                log.error(f"{name} couldn't set grid")
 
     def clear_response_errors(self, spec):
         """

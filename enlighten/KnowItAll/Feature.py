@@ -386,7 +386,7 @@ class Feature(object):
     # @private
     def _queue_tip(self):
         # only generate tips while we're on Raman Scope Capture
-        if not (self.page_nav.doing_raman() and self.page_nav.doing_scope_capture()):
+        if not (self.page_nav.doing_raman() and self.page_nav.doing_scope()):
             log.debug("not tipping because not raman")
             return
 

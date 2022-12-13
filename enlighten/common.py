@@ -13,7 +13,7 @@ application.
       can be modules (files) within it
 """
 
-VERSION = "3.2.41"
+VERSION = "4.0.0"
 
 """ ENLIGHTEN's application version number (checked by scripts/deploy and bootstrap.bat) """
 class Techniques(IntEnum):
@@ -54,8 +54,11 @@ It's important to keep this list in sync with the comboBox_view items.
 
 class ViewsHelper:
     pretty_names = {
-        Views.HARDWARE:     "Hardware",
-        Views.SCOPE:        "Scope",
+        Views.SCOPE:    "Scope",
+        Views.SETTINGS: "Settings",
+        Views.HARDWARE: "Hardware",
+        Views.LOG:      "Log",
+        Views.FACTORY:  "Factory",
     }
 
     def get_pretty_name(n):
@@ -76,19 +79,12 @@ class OperationModes(IntEnum):
     NON_RAMAN = 1
     EXPERT    = 2
 
-class OperationModesHelper:
-    def parse(s):
-        s = s.upper()
-        if "SETUP"   in s: return OperationModes.SETUP
-        if "CAPTURE" in s: return OperationModes.CAPTURE
-        log.error("Invalid operation mode: %s", s)
-        return OperationModes.SETUP
-
 class Pages(IntEnum):
-    HARDWARE_SETTINGS     = 0
-    HARDWARE_CAPTURE      = 1
-    SPEC_SETTINGS         = 2
-    SPEC_CAPTURE          = 3
+    HARDWARE              = 0 # EEPROM etc
+    FACTORY               = 1 # AreaScan etc
+    SETTINGS              = 2 # SaveOptions etc
+    SCOPE                 = 3 # Graph etc
+    LOG                   = 4 # Log view
 
 class Axes(IntEnum):
     PIXELS      = 0
@@ -125,6 +121,14 @@ class AxesHelper:
 class LaserPowerUnits(IntEnum):
     PERCENT     = 0
     MILLIWATT   = 1
+
+##
+# We don't actually have FW API to read all of these; final implementation should treat
+# enable, delayState, watchdogLockdown, interlockState, and isFiring as separate bits.
+class LaserStates(IntEnum):
+    DISABLED    = 0
+    REQUESTED   = 1
+    FIRING      = 2
 
 def get_default_data_dir():
     if os.name == "nt":

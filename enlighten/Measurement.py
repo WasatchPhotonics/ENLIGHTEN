@@ -569,7 +569,7 @@ class Measurement(object):
         if self.thumbnail_widget:
             self.thumbnail_widget.rename(label)
             was_displayed = self.thumbnail_widget.is_displayed
-            self.thumbnail_widget.remove_curve_from_graph(label=old_label) # remove using the old value
+            self.thumbnail_widget.remove_curve_from_graph() 
 
         # if they removed the label, nothing more to do
         if label is None:
@@ -1092,7 +1092,7 @@ class Measurement(object):
 
         # vignetting
         roi = None
-        if self.settings is not None and self.measurements.get_roi_enabled():
+        if self.settings is not None and self.measurements.vignette_roi.enabled:
             self.roi_active = True
             roi = self.settings.eeprom.get_horizontal_roi()
         cropped = roi is not None and pr.is_cropped()

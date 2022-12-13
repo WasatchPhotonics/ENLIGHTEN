@@ -157,7 +157,6 @@ class PluginController:
             save_options,
             kia_feature,
             measurements_clipboard,
-            get_grid_display,
 
             button_process,
             cb_connected,
@@ -192,7 +191,6 @@ class PluginController:
         self.save_options               = save_options
         self.kia_feature                = kia_feature
         self.measurements_clipboard     = measurements_clipboard
-        self.get_grid_display           = get_grid_display
 
         # widgets
         self.button_process             = button_process
@@ -208,6 +206,9 @@ class PluginController:
         self.vlayout_fields             = vlayout_fields
         self.layout_graphs              = layout_graphs
         self.measurements               = measurements
+
+        # provide post-creation
+        self.grid = None
 
         # start up check examples exist
         self.directory = common.get_default_data_dir()
@@ -825,7 +826,7 @@ class PluginController:
             return
 
         self.plugin_plot= pyqtgraph.PlotWidget(name=f"{config.name}")
-        if self.get_grid_display():
+        if self.grid is not None and self.grid.enabled:
             self.plugin_plot.showGrid(True, True)
         self.combo_graph_pos.setVisible(True)
         self.lb_graph_pos.setVisible(True)
