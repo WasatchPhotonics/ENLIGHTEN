@@ -2054,7 +2054,7 @@ QComboBox QListView
    <set>QMainWindow::AnimatedDocks</set>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,1,0">
+   <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,0,1">
     <property name="leftMargin">
      <number>5</number>
     </property>
@@ -2066,14 +2066,23 @@ QComboBox QListView
     </property>
     <item row="0" column="0">
      <widget class="QStackedWidget" name="stackedWidget_high">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>64</height>
+       </size>
+      </property>
       <property name="maximumSize">
        <size>
         <width>16777215</width>
         <height>64</height>
        </size>
-      </property>
-      <property name="styleSheet">
-       <string notr="true" />
       </property>
       <property name="currentIndex">
        <number>0</number>
@@ -2404,6 +2413,12 @@ QComboBox QListView
     </item>
     <item row="2" column="0">
      <widget class="QSplitter" name="splitter_left_vs_controls">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>2</verstretch>
+       </sizepolicy>
+      </property>
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
@@ -2418,11 +2433,11 @@ QComboBox QListView
         </sizepolicy>
        </property>
        <property name="currentIndex">
-        <number>4</number>
+        <number>0</number>
        </property>
        <widget class="QScrollArea" name="scrollArea_hardware">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -2444,7 +2459,7 @@ QComboBox QListView
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>619</width>
+           <width>1169</width>
            <height>5248</height>
           </rect>
          </property>
@@ -7293,6 +7308,12 @@ QComboBox QListView
         </widget>
        </widget>
        <widget class="QWidget" name="page_factory">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <layout class="QHBoxLayout" name="horizontalLayout_3">
          <property name="spacing">
           <number>0</number>
@@ -8281,6 +8302,12 @@ QComboBox QListView
         </layout>
        </widget>
        <widget class="QWidget" name="page_settings">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <layout class="QHBoxLayout" name="horizontalLayout_43">
          <property name="spacing">
           <number>0</number>
@@ -10880,7 +10907,7 @@ QComboBox QListView
        </widget>
        <widget class="QWidget" name="page_scope">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -10969,8 +10996,8 @@ QComboBox QListView
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>256</width>
-                  <height>780</height>
+                  <width>183</width>
+                  <height>631</height>
                  </rect>
                 </property>
                 <property name="sizePolicy">
@@ -11288,8 +11315,8 @@ QComboBox QListView
                                   <rect>
                                    <x>0</x>
                                    <y>0</y>
-                                   <width>222</width>
-                                   <height>375</height>
+                                   <width>190</width>
+                                   <height>210</height>
                                   </rect>
                                  </property>
                                  <property name="sizePolicy">
@@ -12706,8 +12733,8 @@ QComboBox QListView
                                  <rect>
                                   <x>0</x>
                                   <y>0</y>
-                                  <width>886</width>
-                                  <height>295</height>
+                                  <width>186</width>
+                                  <height>36</height>
                                  </rect>
                                 </property>
                                 <property name="wpClear" stdset="0">
@@ -13477,7 +13504,7 @@ QComboBox QListView
        </widget>
        <widget class="QWidget" name="page_logging">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -13682,7 +13709,7 @@ p, li { white-space: pre-wrap; }
       </widget>
       <widget class="QFrame" name="controlWidget">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
          <horstretch>5</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -18849,6 +18876,12 @@ p, li { white-space: pre-wrap; }
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>45</height>
+       </size>
       </property>
       <property name="wpBox" stdset="0">
        <bool>false</bool>

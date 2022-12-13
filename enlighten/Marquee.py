@@ -14,8 +14,11 @@ log = logging.getLogger(__name__)
 # removed.  If 'persist' is set, message will remain until overwritten.
 #
 # Also provides a button-less notification box that auto-fades over 2sec.
-class Marquee(object):
+class Marquee:
     
+    ORIG_HEIGHT = 36
+    RAMP_START_HEIGHT = 8
+
     DRAWER_DURATION_MS = 3000
     TOAST_DURATION_MS  = 3000
     TOAST_FADE_STEP_MS =   75
@@ -35,10 +38,13 @@ class Marquee(object):
         self.label       = label
         self.stylesheets = stylesheets
 
-        self.original_height = self.frame.height()
-        self.original_height = 36
-        self.height = self.original_height
+        self.original_height = self.frame.height() # 30
         log.debug(f"original height = {self.original_height}")
+
+        self.original_height = Marquee.ORIG_HEIGHT
+        self.height = self.original_height
+        log.debug(f"height = {self.height}")
+
         self.hide()
 
         self.bt_close.clicked.connect(self.close_callback)
@@ -169,8 +175,8 @@ class Marquee(object):
     #
     # @private
     def hide(self):
-        self.frame.setVisible(False)
-        self.set_height(8) # no need to start from scratch
+        self.frame.hide()
+        self.set_height(Marquee.RAMP_START_HEIGHT) # no need to start from scratch
 
     def reset_timers(self):
         self.grow_timer.stop()
@@ -200,7 +206,7 @@ class Marquee(object):
         self.shrink_timer.stop()
 
         self.stylesheets.set_benign(self.inner, benign)
-        self.frame.setVisible(True)
+        self.frame.show()
 
         self.set_height(self.original_height)
         self.schedule_shrink()
@@ -211,7 +217,7 @@ class Marquee(object):
     # @private
     def show_animated(self, benign=None):
         self.stylesheets.set_benign(self.inner, benign)
-        self.frame.setVisible(True)
+        self.frame.show()
 
         self.shrink_timer.stop()
 
