@@ -54,8 +54,11 @@ It's important to keep this list in sync with the comboBox_view items.
 
 class ViewsHelper:
     pretty_names = {
-        Views.HARDWARE:     "Hardware",
-        Views.SCOPE:        "Scope",
+        Views.SCOPE:    "Scope",
+        Views.SETTINGS: "Settings",
+        Views.HARDWARE: "Hardware",
+        Views.LOG:      "Log",
+        Views.FACTORY:  "Factory",
     }
 
     def get_pretty_name(n):
@@ -75,14 +78,6 @@ class OperationModes(IntEnum):
     RAMAN     = 0
     NON_RAMAN = 1
     EXPERT    = 2
-
-class OperationModesHelper:
-    def parse(s):
-        s = s.upper()
-        if "SETUP"   in s: return OperationModes.SETUP
-        if "CAPTURE" in s: return OperationModes.CAPTURE
-        log.error("Invalid operation mode: %s", s)
-        return OperationModes.SETUP
 
 class Pages(IntEnum):
     HARDWARE              = 0 # EEPROM etc

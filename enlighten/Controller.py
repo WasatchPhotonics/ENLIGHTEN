@@ -1060,14 +1060,12 @@ class Controller:
     def bind_shortcuts(self):
         """ 
         Set up application-wide shortcut keys (called AFTER business object creation). 
-
-        @todo Rev4: update manual
         """
-        log.debug("Set up shortcuts")
 
         self.shortcuts = {}
 
         def make_shortcut(kseq, callback):
+            log.debug(f"setting shortcut from {kseq} to {callback}")
             shortcut = QtWidgets.QShortcut(QtGui.QKeySequence(kseq), self.form)
             shortcut.activated.connect(callback)
             self.shortcuts[kseq] = shortcut
@@ -1076,6 +1074,7 @@ class Controller:
         make_shortcut("Ctrl+1", self.page_nav.set_view_scope)
         make_shortcut("Ctrl+2", self.page_nav.set_view_settings)
         make_shortcut("Ctrl+3", self.page_nav.set_view_hardware)
+        make_shortcut("Ctrl+4", self.page_nav.set_view_logging)
 
         # Convenience
         make_shortcut("Ctrl+A", self.authentication.login) # authenticate, advanced

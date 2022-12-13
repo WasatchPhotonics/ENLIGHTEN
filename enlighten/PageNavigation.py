@@ -74,7 +74,7 @@ class PageNavigation:
         self.logging_feature.page_nav = self
 
         self.operation_mode = common.OperationModes.RAMAN
-        self.current_view = common.Views.SCOPE
+        self.current_view = -1
         self.has_used_raman = False
         self.current_technique = self.sfu.technique_comboBox.currentIndex()
 
@@ -87,7 +87,9 @@ class PageNavigation:
         self.combo_technique        .currentIndexChanged.connect(self.update_technique_callback)
 
     def post_init(self):
-        self.set_view_scope()
+        self.graph.set_y_axis(common.Axes.COUNTS)
+
+        self.set_view(common.Views.SCOPE)
         self.sfu.frame_FactoryMode_Options.hide()
         self.set_operation_mode_non_raman()
         self.fr_transmission_options.hide()
@@ -112,14 +114,10 @@ class PageNavigation:
     # Views
     # ##########################################################################
 
-    # parameterized method provided for constructor; otherwise we use named
-    # functions which better support callbacks
-    def set_view(self, view):
-        if view == common.Views.HARDWARE     : return self.set_view_hardware()
-        if view == common.Views.SCOPE        : return self.set_view_scope()
-
-        log.error("set_view: Unsupported view: %s", view)
-        self.set_view_scope()
+    # parameterized method provided to ensure combo stays in sync
+    def set_view(self, index):
+        log.debug(f"set_view: changing combo index to {index}")
+        self.combo_view.setCurrentIndex(index)
 
     def update_technique_callback(self):
         log.debug(f"technique callback triggered")
@@ -145,37 +143,58 @@ class PageNavigation:
         if self.doing_log()             : return self.set_view_logging()
         
         log.error("update_view_callback: unknown view: %s", self.current_view)
-        self.set_view_scope()
+        self.set_view(common.Views.SCOPE)
 
     def toggle_hardware_and_scope(self):
         if self.doing_hardware():
-            self.set_view_scope()
+            self.set_view(common.Views.SCOPE)
         else:
-            self.set_view_hardware()
-
-    def set_view_settings(self):
-        self.set_view_common(common.Views.SETTINGS)
-        self.set_main_page(common.Pages.SETTINGS)
-
-    def set_view_logging(self):
-        self.set_view_common(common.Views.LOG)
-        self.set_main_page(common.Pages.LOG)
-        # self.logging_feature.start()
-
-    def set_view_hardware(self):
-        self.set_view_common(common.Views.HARDWARE)
-        self.set_main_page(common.Pages.HARDWARE)
-
-    def set_view_factory(self):
-        self.set_view_common(common.Views.HARDWARE)
-        self.set_main_page(common.Pages.FACTORY)
+            self.set_view(common.Views.HARDWARE)
 
     def set_view_scope(self):
-        self.set_view_common(common.Views.SCOPE)
+        log.debug("set_view_scope")
+        if self.current_view != common.Views.SCOPE:
+            self.set_view(common.Views.SCOPE)
+            return
+
+        self.set_view_common()
         self.set_main_page(common.Pages.SCOPE)
 
-        self.graph.set_x_axis(common.Axes.WAVELENGTHS)
-        self.graph.set_y_axis(common.Axes.COUNTS)
+    def set_view_settings(self):
+        log.debug("set_view_settings")
+        if self.current_view != common.Views.SETTINGS:
+            self.set_view(common.Views.SETTINGS)
+            return
+
+        self.set_view_common()
+        self.set_main_page(common.Pages.SETTINGS)
+
+    def set_view_hardware(self):
+        log.debug("set_view_hardware")
+        if self.current_view != common.Views.HARDWARE:
+            self.set_view(common.Views.HARDWARE)
+            return
+
+        self.set_view_common()
+        self.set_main_page(common.Pages.HARDWARE)
+
+    def set_view_logging(self):
+        log.debug("set_view_logging")
+        if self.current_view != common.Views.LOG:
+            self.set_view(common.Views.LOG)
+            return
+
+        self.set_view_common()
+        self.set_main_page(common.Pages.LOG)
+
+    def set_view_factory(self):
+        log.debug("set_view_factory")
+        if self.current_view != common.Views.FACTORY:
+            self.set_view(common.Views.FACTORY)
+            return
+
+        self.set_view_common()
+        self.set_main_page(common.Pages.FACTORY)
 
     def set_technique_transmission(self):
         self.graph.set_x_axis(common.Axes.WAVELENGTHS)
@@ -187,8 +206,13 @@ class PageNavigation:
         self.graph.set_y_axis(common.Axes.AU)
         self.set_technique_common(common.Techniques.ABSORBANCE)
 
-    def set_view_common(self, view):
-        log.debug("set_view_common: view %d", view)
+    def update_view_shortcut(self):
+        index = self.combo_view.currentIndex()
+        tt = f"Ctrl-{index+1} shortcut" if index < common.Views.FACTORY else ""
+        self.combo_view.setToolTip(tt)
+
+    def set_view_common(self):
+        self.update_view_shortcut()
         self.graph.reset_axes()
         self.update_feature_visibility()
 
@@ -196,9 +220,9 @@ class PageNavigation:
     # Page Navigation: Operation Mode
     # ##########################################################################
 
-    def set_main_page(self, page):
-        log.debug(f"setting main page to index {page}")
-        self.stack_main.setCurrentIndex(page)
+    def set_main_page(self, index):
+        log.debug(f"set_main_page: index {index}")
+        self.stack_main.setCurrentIndex(index)
 
     def get_main_page(self):
         return self.stack_main.currentIndex()
@@ -270,10 +294,14 @@ class PageNavigation:
             self.save_options.force_wavenumber()
 
     def set_operation_mode_non_raman(self):
+        self.graph.set_x_axis(common.Axes.WAVELENGTHS)
+
         self.stylesheets.apply(self.button_raman, "left_rounded_inactive")
         self.stylesheets.apply(self.button_non_raman, "center_rounded_active")
         self.stylesheets.apply(self.button_expert, "right_rounded_inactive")
+
         self.operation_mode = common.OperationModes.NON_RAMAN
+
         self.update_feature_visibility()
         self.display_non_raman_technique()
         self.update_expert_widgets()
