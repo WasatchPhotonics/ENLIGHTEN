@@ -435,6 +435,7 @@ class Controller:
         # if a spectrometer is already in the process of connecting, let it
         # finish before starting another one
         if self.multispec.have_any_in_process():
+            log.debug("tick_bus_listener: some in process")
             self.check_ready_initialize()
             return self.bus_timer.start(self.BUS_TIMER_SLEEP_MS)
 
@@ -445,6 +446,7 @@ class Controller:
         self.ble_manager.check_complete_scans()
 
         self.multispec.check_ejected_unplugged(self.bus.device_ids)
+
         ########################################################################
         # attempt connection to the first untried (not connected, not in-process)
         # device on the list

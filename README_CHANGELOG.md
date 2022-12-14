@@ -2,6 +2,8 @@
 
 # 4.0 GUI Cleanup
 
+- 2022-12-14 4.0.1
+    - persist initial spectrometer color assignment across disconnects within a session
 - 2022-12-09 4.0.0
     - better widget scaling at lower resolutions
     - refactored Techniques, Modes and Views
