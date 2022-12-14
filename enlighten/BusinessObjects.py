@@ -154,6 +154,7 @@ class BusinessObjects:
 
         self.header("instantiating Marquee")
         ctl.marquee = Marquee(
+            app                         = ctl.app,
             bt_close                    = sfu.pushButton_marquee_close,
             form                        = ctl.form,
             frame                       = sfu.frame_drawer_white,

@@ -25,12 +25,14 @@ class Marquee:
     TOAST_FADE_STEP_OPACITY_PERCENT = 0.05  # fade x% of original opacity each step
 
     def __init__(self, 
+            app,
             bt_close,
             form,        # needed for Toast parent
             frame,
             inner,
             label,
             stylesheets):
+        self.app         = app
         self.bt_close    = bt_close
         self.form        = form
         self.frame       = frame
@@ -210,6 +212,8 @@ class Marquee:
 
         self.set_height(self.original_height)
         self.schedule_shrink()
+
+        self.app.processEvents()
 
     ##
     # Kicks-off "grow" animation IFF not already fully expanded.
