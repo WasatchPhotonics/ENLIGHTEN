@@ -175,6 +175,12 @@ class ThumbnailWidget(QtWidgets.QFrame):
         self.confirm_widget.move(17, 30)
 
         ########################################################################
+        # Tooltip
+        ########################################################################
+
+        self.generate_tooltip()
+
+        ########################################################################
         # initial state
         ########################################################################
 
@@ -501,3 +507,15 @@ class ThumbnailWidget(QtWidgets.QFrame):
     # FIRST file to which other spectra were appended.)
     def disable_trash(self):
         self.button_trash.setVisible(False)
+
+    def generate_tooltip(self):
+        tt = ""
+        metadata = self.measurement.get_all_metadata()
+        for k in sorted(metadata):
+            v = metadata[k]
+            if v is not None:
+                s = str(v)
+                if len(s) > 0:
+                    tt += f"{k}: {s}\n"
+        self.body.setToolTip(tt.strip())
+        self.stylesheets.apply(self.body, "tooltip")
