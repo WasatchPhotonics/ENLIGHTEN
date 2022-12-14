@@ -154,6 +154,7 @@ class BusinessObjects:
 
         self.header("instantiating Marquee")
         ctl.marquee = Marquee(
+            app                         = ctl.app,
             bt_close                    = sfu.pushButton_marquee_close,
             form                        = ctl.form,
             frame                       = sfu.frame_drawer_white,
@@ -409,6 +410,7 @@ class BusinessObjects:
             file_manager                = ctl.file_manager,
             focus_listener              = ctl.focus_listener,
             graph                       = ctl.graph,
+            plugin_graph                = ctl.get_plugin_graph,
             gui                         = ctl.gui,
             render_curve                = ctl.thumbnail_render_curve,
             render_graph                = ctl.thumbnail_render_graph,
@@ -756,6 +758,7 @@ class BusinessObjects:
             save_options                = ctl.save_options,
             kia_feature                 = ctl.kia_feature,
             measurements_clipboard      = ctl.measurements,
+            vignette_feature            = ctl.vignette_roi,
 
             button_process              = sfu.pushButton_plugin_process,
             cb_connected                = sfu.checkBox_plugin_connected,

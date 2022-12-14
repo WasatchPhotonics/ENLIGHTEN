@@ -236,7 +236,8 @@ class Measurement(object):
                            'FPGA Version',
                            'NOTE',
                            'PREFIX',
-                           'SUFFIX']
+                           'SUFFIX',
+                           'PLUGIN NAME']
                            
     EXTRA_HEADER_FIELDS_SET = set(EXTRA_HEADER_FIELDS)
 
@@ -263,6 +264,7 @@ class Measurement(object):
         self.note                     = ""
         self.prefix                   = ""
         self.suffix                   = ""
+        self.plugin_name              = ""
 
     ##
     # There are three valid instantiation patterns:
@@ -399,6 +401,9 @@ class Measurement(object):
 
     def add_renamable(self, pathname):
         self.renamable_files.add(pathname)
+
+    def set_plugin_name(self, text: str) -> None:
+        self.plugin_name = text
 
     def generate_id(self):
         # It is unlikely that the same serial number will ever generate multiple 
@@ -770,6 +775,7 @@ class Measurement(object):
         if field == "note":                      return self.note
         if field == "prefix":                    return self.prefix
         if field == "suffix":                    return self.suffix
+        if field == "plugin name":               return self.plugin_name
 
         if field == "laser power mw":            
             if self.processed_reading.reading is not None and \
@@ -1092,7 +1098,7 @@ class Measurement(object):
 
         # vignetting
         roi = None
-        if self.settings is not None and self.measurements.vignette_roi.enabled:
+        if self.settings is not None and self.measurements is not None and self.measurements.vignette_roi.enabled:
             self.roi_active = True
             roi = self.settings.eeprom.get_horizontal_roi()
         cropped = roi is not None and pr.is_cropped()

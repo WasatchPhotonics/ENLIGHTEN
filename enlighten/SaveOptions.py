@@ -108,6 +108,12 @@ class SaveOptions(object):
         self.rb_by_col            = rb_by_col
         self.rb_by_row            = rb_by_row
 
+        # used for plugins indicating to save
+        self.save_with_raw = False
+        self.save_with_pixel = False
+        self.save_with_wavelength = False
+        self.save_with_wavenumber = False
+        
         # not passed in
         self.append_pathname = None
         self.appended_serial_numbers = set()
@@ -289,13 +295,13 @@ class SaveOptions(object):
     def save_dark               (self): return self.cb_dark.isChecked()
     def save_excel              (self): return self.cb_excel.isChecked()
     def save_json               (self): return self.cb_json.isChecked()
-    def save_pixel              (self): return self.cb_pixel.isChecked()
-    def save_raw                (self): return self.cb_raw.isChecked()
+    def save_pixel              (self): return self.cb_pixel.isChecked() or self.save_with_pixel
+    def save_raw                (self): return self.cb_raw.isChecked() or self.save_with_raw
     def save_text               (self): return self.cb_text.isChecked()
     def save_reference          (self): return self.cb_reference.isChecked()
     def save_something          (self): return self.save_csv() or self.save_excel() or self.save_json() or self.save_text()
-    def save_wavelength         (self): return self.cb_wavelength.isChecked()
-    def save_wavenumber         (self): return self.cb_wavenumber.isChecked() and self.cb_wavenumber.isEnabled()
+    def save_wavelength         (self): return self.cb_wavelength.isChecked() or self.save_with_wavelength
+    def save_wavenumber         (self): return self.cb_wavenumber.isChecked() and self.cb_wavenumber.isEnabled() or self.save_with_wavenumber
     def suffix                  (self): return self.le_suffix.text().strip()
     def save_processed          (self): return True
 
