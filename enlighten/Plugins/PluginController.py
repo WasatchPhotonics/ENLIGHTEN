@@ -427,6 +427,7 @@ class PluginController:
 
         if connected:
             log.debug("we just connected")
+            self.marquee.info(f"Connecting to plug-in {module_name}...", immediate=True)
 
             log.debug("reconfiguring GUI for %s", module_name)
             if not self.configure_gui_for_module(module_name):
@@ -804,12 +805,14 @@ class PluginController:
             log.debug(f"satisfying dependency {dep.name} of type {dep.dep_type}")
 
             if dep.dep_type == "existing_directory":
-                QtWidgets.QMessageBox(
-                    QtWidgets.QMessageBox.Question, 
-                    "ENLIGHTEN Plugin", 
-                    dep.prompt,
-                    parent = self.parent,
-                    flags = Qt.Widget).exec()
+                # display the prompt, if one was provided
+                if dep.prompt is not None:
+                    QtWidgets.QMessageBox(
+                        QtWidgets.QMessageBox.Question, 
+                        "ENLIGHTEN Plugin", 
+                        dep.prompt,
+                        parent = self.parent,
+                        flags = Qt.Widget).exec()
 
                 # create the dialog
                 dialog = QtWidgets.QFileDialog(parent=self.parent)
