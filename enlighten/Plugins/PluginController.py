@@ -805,14 +805,8 @@ class PluginController:
             log.debug(f"satisfying dependency {dep.name} of type {dep.dep_type}")
 
             if dep.dep_type == "existing_directory":
-                # display the prompt, if one was provided
                 if dep.prompt is not None:
-                    QtWidgets.QMessageBox(
-                        QtWidgets.QMessageBox.Question, 
-                        "ENLIGHTEN Plugin", 
-                        dep.prompt,
-                        parent = self.parent,
-                        flags = Qt.Widget).exec()
+                    self.marquee.info(dep.prompt, immediate=True)
 
                 # create the dialog
                 dialog = QtWidgets.QFileDialog(parent=self.parent)
@@ -820,11 +814,11 @@ class PluginController:
                 dialog.setOption(QtWidgets.QFileDialog.ShowDirsOnly)
 
                 # default to last selection 
+                dialog.setDirectory(common.get_default_data_dir())
                 if dep.persist:
-                    default_dir = self.config.get(persist_section, dep.name)
-                    if default_dir is not None:
-                        log.debug(f"defaulting dialog history to {default_dir}")
-                        dialog.setHistory([default_dir])
+                    last_dir = self.config.get(persist_section, dep.name)
+                    if last_dir is not None and os.path.exists(last_dir):
+                        dialog.setDirectory(last_dir)
 
                 # get the user's choice
                 value = dialog.getExistingDirectory()
@@ -1089,6 +1083,11 @@ class PluginController:
         if config is None:
             return
         try:
+            if response is None:
+                if self.worker.error_message is not None:
+                    self.display_exception(f"Plugin {self.module_name} experienced an exception", self.worker.error_message)
+                return
+
             request = response.request
             log.debug("handling response to request %d", request.request_id)
 
