@@ -497,6 +497,7 @@ class BusinessObjects:
             button_dn                   = sfu.pushButton_laser_power_dn,
             button_up                   = sfu.pushButton_laser_power_up,
             button_toggle               = sfu.pushButton_laser_toggle,
+            frame                       = sfu.frame_lightSourceControl,
             lb_watchdog                 = sfu.label_laser_watchdog_sec,
             spinbox_excitation          = sfu.doubleSpinBox_lightSourceWidget_excitation_nm, # not EEPROMEditor
             spinbox_power               = sfu.doubleSpinBox_laser_power,
@@ -835,6 +836,7 @@ class BusinessObjects:
         self.header("instantiating HighGainModeFeature")
         ctl.high_gain_mode = HighGainModeFeature(
             cb_enabled                  = sfu.checkBox_high_gain_mode_enabled,
+            config                      = ctl.config,
             multispec                   = ctl.multispec)
 
         self.header("instantiating RegionControlFeature")
