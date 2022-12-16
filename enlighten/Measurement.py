@@ -229,15 +229,16 @@ class Measurement(object):
                            'Raman Intensity Corrected',
                            'Deconvolved',
                            'Region',
+                           'High Gain Mode',
                            'Laser Power mW',
                            'Battery %',
                            'Device ID',
                            'FW Version',
                            'FPGA Version',
-                           'NOTE',
-                           'PREFIX',
-                           'SUFFIX',
-                           'PLUGIN NAME']
+                           'Note',
+                           'Prefix',
+                           'Suffix',
+                           'Plugin Name']
                            
     EXTRA_HEADER_FIELDS_SET = set(EXTRA_HEADER_FIELDS)
 
@@ -752,6 +753,7 @@ class Measurement(object):
         if field == "ccd gain":                  return self.settings.state.gain_db if self.settings.is_sig() else self.settings.eeprom.detector_gain # even
         if field == "ccd offset odd":            return self.settings.eeprom.detector_offset_odd
         if field == "ccd gain odd":              return self.settings.eeprom.detector_gain_odd
+        if field == "high gain mode":            return self.settings.state.high_gain_mode_enabled
         if field == "laser wavelength":          return self.settings.excitation()
         if field == "laser enable":              return self.settings.state.laser_enabled or self.settings.state.acquisition_laser_trigger_enable
         if field == "laser temperature":         return self.processed_reading.reading.laser_temperature_degC if self.processed_reading.reading is not None else -99
