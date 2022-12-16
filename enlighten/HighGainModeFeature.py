@@ -62,10 +62,10 @@ class HighGainModeFeature:
         return spec.settings.is_ingaas() or spec.device.is_andor()
 
     def recommended_default(self, spec):
-        """ Default high for Raman models, low for referenced-based techniques """
+        """ Default on for all InGaAs (Raman and otherwise), but not [yet] on by default for silicon Andor. """
         if spec is None:
             return False
-        return spec.settings.eeprom.has_excitation() 
+        return spec.settings.is_ingaas()
 
     def enable_callback(self):
         spec = self.multispec.current_spectrometer()
