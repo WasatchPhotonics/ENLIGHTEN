@@ -97,9 +97,11 @@ class DarkFeature:
         if spec is None:
             return
 
+        app_state = spec.app_state
+
         timestamp = datetime.datetime.now()
         if dark is None:
-            pr = spec.app_state.processed_reading
+            pr = app_state.processed_reading
             if pr is not None:
                 spectrum = pr.recordable_dark
                 if spectrum is not None:
@@ -107,8 +109,9 @@ class DarkFeature:
                     timestamp = pr.reading.timestamp
 
         if dark is not None:
-            spec.app_state.dark = dark
-            spec.app_state.dark_timestamp = timestamp
+            app_state.dark = dark
+            app_state.dark_timestamp = timestamp
+            app_state.dark_integration_time_ms = spec.state.integration_time_ms
 
             # should overwrite any KIA tips, no need for token
             self.marquee.info("dark stored")

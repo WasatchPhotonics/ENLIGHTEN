@@ -25,12 +25,19 @@ class SpectrometerApplicationState(object):
     def clear(self):
         self.device_id = None
         self.processed_reading = None
+
         self.dark                = None
         self.reference           = None
+
         self.dark_timestamp      = None
         self.reference_timestamp = None
+
         self.reference_is_dark_corrected = False
         self.reference_excitation = None
+
+        self.reference_integration_time_ms = 0
+        self.dark_integration_time_ms = 0
+
         self.reading_count = 0
         self.paused = False
         self.hidden = False
@@ -67,8 +74,6 @@ class SpectrometerApplicationState(object):
         log.info("  Pending Disconnect:         %s", self.pending_disconnect)
         log.info("  Laser Temperature:          %s", self.laser_temperature_data)
         log.info("  Laser State:                %s", self.laser_state)
-       #log.info("  Laser GUI Firing:           %s", self.laser_gui_firing)
-       #log.info("  Last Laser Toggle:          %s", self.last_laser_toggle)
         log.info("  Detector Temperature:       %s", self.detector_temperatures_degC)
         log.info("  Detector Temperature Avg:   %s", self.detector_temperatures_degC_averaged)
         log.info("  Detector Temperature Disp:  %s", self.detector_temperatures_degC_averaged_display)

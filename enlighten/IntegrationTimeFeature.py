@@ -142,3 +142,18 @@ class IntegrationTimeFeature(object):
             spec = self.multispec.current_spectrometer()
             if spec is not None:
                 spec.reset_acquisition_timeout()
+
+            ####################################################################
+            # remind users to keep dark/reference in sync
+            ####################################################################
+            
+            app_state = spec.app_state
+            refresh_dark      = app_state.has_dark()      and ms != app_state.dark_integration_time_ms 
+            refresh_reference = app_state.has_reference() and ms != app_state.reference_integration_time_ms 
+            if refresh_dark and refresh_reference:
+                self.marquee.info("Recommend re-taking dark and reference with new integration time")
+            elif refresh_reference:
+                self.marquee.info("Recommend re-taking reference with new integration time")
+            elif refresh_dark:
+                self.marquee.info("Recommend re-taking dark with new integration time")
+

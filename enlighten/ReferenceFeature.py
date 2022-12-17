@@ -107,14 +107,17 @@ class ReferenceFeature:
         if spec is None or spec.app_state is None:
             return
 
-        pr = spec.app_state.processed_reading
+        app_state = spec.app_state
+
+        pr = app_state.processed_reading
         if pr is not None:
             spectrum = pr.recordable_reference
             if spectrum is not None:
-                spec.app_state.reference = np.copy(spectrum)
-                spec.app_state.reference_timestamp = pr.reading.timestamp
-                spec.app_state.reference_is_dark_corrected = pr.dark_corrected
-                spec.app_state.reference_excitation = spec.settings.excitation()
+                app_state.reference = np.copy(spectrum)
+                app_state.reference_timestamp = pr.reading.timestamp
+                app_state.reference_is_dark_corrected = pr.dark_corrected
+                app_state.reference_excitation = spec.settings.excitation()
+                app_state.reference_integration_time_ms = spec.settings.state.integration_time_ms
                 self.marquee.info("reference stored")
 
         self.display()
