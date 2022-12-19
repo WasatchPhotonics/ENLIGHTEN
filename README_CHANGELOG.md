@@ -2,6 +2,11 @@
 
 # 4.0 GUI Refactoring
 
+- 2022-12-19 4.0.1
+    - improved plugin exception-handling
+    - improved plugin dependency messaging
+    - improved Marquee 'immediate' display
+    
 - 2022-12-09 4.0.0
     - better widget scaling at lower resolutions
     - refactored Techniques, Modes and Views
