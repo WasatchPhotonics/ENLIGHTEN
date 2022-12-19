@@ -35,7 +35,7 @@ class Stylesheets(object):
                     with open(pathname, "r") as f:
                         s = f.read() # .strip("\n")
                     self.css[basename] = s
-                    # log.debug("  loaded %s (%d bytes)", basename, len(s))
+                    log.debug("  loaded %s (%d bytes)", basename, len(s))
                 except:
                     log.error("unable to load %s", pathname, exc_info=1)
 
@@ -46,7 +46,7 @@ class Stylesheets(object):
             return
 
         try:
-            # log.debug("applying stylesheet %s to widget %s", name, widget.objectName())
+            log.debug("applying stylesheet %s to widget %s", name, widget.objectName())
             widget.setStyleSheet(css)
         except:
             log.error("unable to apply stylesheet '%s'", name, exc_info=1)
