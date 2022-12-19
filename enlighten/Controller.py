@@ -182,6 +182,10 @@ class Controller:
         self.stylesheets.apply(self.form, "enlighten") # MZ: I don't think this is working...
         log.debug("back from applying 'enlighten' stylesheet to the QForm")
 
+        if "light" in self.stylesheet_path:
+            pyqtgraph.setConfigOption('background', 'w')
+            pyqtgraph.setConfigOption('foreground', 'k')
+
         ########################################################################
         # Lifecycle
         ########################################################################

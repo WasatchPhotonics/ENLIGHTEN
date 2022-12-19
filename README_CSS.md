@@ -99,12 +99,40 @@ CSS.  And there are: several ways, in fact.  But Qt's CSS rendering engine
 doesn't seem to support the 'outline' property, nor the 'box-shadow' property,
 and I couldn't figure out how to successfully create a .QFrame[wpPanel] :: after
 shadow.
+    
+    MZ: Verify the above is still true in Qt5!
 
 There are _programmatic_ ways to do shadows / edged panels in Qt, but that would
 be comingling function and design, and wouldn't support skinning.  So anyway,
 for now we have frame_FOO_white[wpBox] enclosing frame_FOO_black[wpGrad], etc.
 
 Fix if you can.
+
+# Skins
+
+## Darkstyle
+
+The default ENLIGHTEN color palette is called Darkstyle and was tailored from 
+this:
+
+   https://github.com/ColinDuquesnoy/QDarkStyleSheet 
+
+## Light-Mode
+
+Trying to tailor from this:
+
+    https://raw.githubusercontent.com/ColinDuquesnoy/QDarkStyleSheet/master/qdarkstyle/light/lightstyle.qss
+
+Notes:
+
+- #383838 -> #19232D
+- #F0F0F0 -> #19232D
+- #787878 -> #FAFAFA
+- #787878 -> #788d9c
+- #14506e -> #daedff
+- #148cd2 -> #73c7ff
+- #32414B -> #C9CDD0
+
 
 # Path Forward
 

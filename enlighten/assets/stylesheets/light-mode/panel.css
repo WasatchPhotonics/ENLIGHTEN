@@ -1,10 +1,8 @@
 QFrame
 {
     color: #eee;
-  /*background: hsl(0, 0%, 21%);*/
-    background: hsl(255, 0%, 21%);
-  /*border: 2px solid #000000;*/
-    border: 2px solid white;
+    background: hsl(0, 0%, 21%);
+    border: 2px solid #000000;
     border-radius: 6px;
 }
 
