@@ -16,6 +16,7 @@ class IntegrationTimeFeature(object):
     def __init__(self,
             bt_dn,
             bt_up,
+            marquee,
             multispec,
             slider,
             spinbox
@@ -23,6 +24,7 @@ class IntegrationTimeFeature(object):
 
         self.bt_dn      = bt_dn
         self.bt_up      = bt_up
+        self.marquee    = marquee
         self.multispec  = multispec
         self.slider     = slider
         self.spinbox    = spinbox

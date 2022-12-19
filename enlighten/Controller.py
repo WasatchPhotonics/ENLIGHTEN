@@ -1745,8 +1745,11 @@ class Controller:
 
         # saturation check
         if pr.processed.max() >= 0xfffe:
-            # todo: self.status_indicators.detector_warning("detector saturated")
-            self.marquee.error("detector saturated")
+            # IMX detectors briefly saturate on every change of integration 
+            # time...perhaps we should take a couple throwaways in Wasatch.PY?
+            if not spec.settings.is_xs():
+                # todo: self.status_indicators.detector_warning("detector saturated")
+                self.marquee.error("detector saturated")
 
         # post-processing begins here
 

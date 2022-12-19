@@ -111,7 +111,7 @@ class DarkFeature:
         if dark is not None:
             app_state.dark = dark
             app_state.dark_timestamp = timestamp
-            app_state.dark_integration_time_ms = spec.state.integration_time_ms
+            app_state.dark_integration_time_ms = spec.settings.state.integration_time_ms
 
             # should overwrite any KIA tips, no need for token
             self.marquee.info("dark stored")
