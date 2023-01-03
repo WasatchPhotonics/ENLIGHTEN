@@ -830,18 +830,6 @@ class Controller:
             self.set_from_ini_file()
 
         ########################################################################
-        # Configure GUI based on device features (AFTER .ini file...)
-        ########################################################################
-
-        log.debug("Configure GUI based on device features")
-
-        # high-gain mode for InGaAs detectors
-        self.high_gain_mode.update()
-
-        # disable laser power control if not applicable
-        sfu.frame_lightSourceControl.setVisible(spec.settings.eeprom.has_laser)
-
-        ########################################################################
         # integration time and Gain
         ########################################################################
 
@@ -928,6 +916,7 @@ class Controller:
                          self.external_trigger,
                          self.gain_db_feature,
                          self.graph,
+                         self.high_gain_mode,
                          self.laser_control,
                          self.raman_shift_correction,
                          self.raman_intensity_correction,
