@@ -2,8 +2,10 @@
 
 # 4.0 GUI Refactoring
 
-- 2022-12-19 4.0.1
+- 2023-01-03 4.0.2
+    - persist initial spectrometer color assignment across disconnects within a session
     - added thumbnail tooltip
+- 2022-12-19 4.0.1
     - improved plugin exception-handling
     - improved plugin dependency messaging
     - improved Marquee 'immediate' display
