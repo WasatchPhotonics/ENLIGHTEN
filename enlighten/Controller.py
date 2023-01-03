@@ -25,6 +25,7 @@ import matplotlib.pyplot as plt
 
 from . import util
 from . import common
+from . import Graph
 
 import wasatch
 from wasatch import applog
@@ -2287,6 +2288,19 @@ class Controller:
             return
 
         spec.device.change_setting("reset_fpga", None)
+
+    def get_plugin_graph(self) -> Graph:
+        """
+        Check if the current plugin has a graph and return it otherwise return the main graph
+        """
+        module_info = self.plugin_controller.get_current_module_info()
+        if module_info is None:
+            return self.graph
+        config = module_info.config
+        if config.has_other_graph:
+            return self.plugin_controller.graph_plugin
+        else:
+            return self.graph
 
     def update_hardware_window(self):
         for spec in self.multispec.spectrometers.values():

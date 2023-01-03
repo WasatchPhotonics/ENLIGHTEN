@@ -46,6 +46,7 @@ class MeasurementFactory(object):
             file_manager,
             focus_listener,
             graph,
+            plugin_graph,
             gui,
             render_graph,
             render_curve,
@@ -63,6 +64,7 @@ class MeasurementFactory(object):
         self.render_curve   = render_curve
         self.save_options   = save_options
         self.stylesheets    = stylesheets
+        self.plugin_graph   = plugin_graph
 
         # will receive post-construction
         self.measurements = None    # backreference to Measurements 
@@ -108,9 +110,14 @@ class MeasurementFactory(object):
     # Create the ThumbnailWidget for a Measurement, then render and emplace the 
     # rasterized thumbnail image.  Also add Measurements back-reference.
     def create_thumbnail(self, measurement, is_collapsed=False):
+        if measurement.plugin_name == "":
+            graph = self.graph
+        else:
+            log.debug(f"graph is plugin so sending plugin graph")
+            graph = self.plugin_graph()
         measurement.thumbnail_widget = ThumbnailWidget(
             measurement     = measurement,
-            graph           = self.graph,
+            graph           = graph,
             gui             = self.gui,
             colors          = self.colors,
             stylesheets     = self.stylesheets,

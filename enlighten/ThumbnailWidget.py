@@ -175,6 +175,12 @@ class ThumbnailWidget(QtWidgets.QFrame):
         self.confirm_widget.move(17, 30)
 
         ########################################################################
+        # Tooltip
+        ########################################################################
+
+        self.generate_tooltip()
+
+        ########################################################################
         # initial state
         ########################################################################
 
@@ -443,15 +449,22 @@ class ThumbnailWidget(QtWidgets.QFrame):
         label = self.measurement.label
         pixels = self.measurement.settings.pixels()
         first_pixel = self.measurement.processed_reading.first_pixel
+        if self.measurement.plugin_name != "":
+            log.debug(f"plugin trying to add save to plot")
 
         # take axis unit from Graph, then load axis values from Measurement
         if self.graph.current_x_axis == common.Axes.WAVELENGTHS:
+            log.debug("axis is wavelengths so getting settings wavelengths")
             x_axis = self.measurement.settings.wavelengths
+            log.debug(f"wavelengths len is {len(x_axis)}")
         elif self.graph.current_x_axis == common.Axes.WAVENUMBERS:
+            log.debug("axis is waveunmbers so getting settings wavenumbers")
             x_axis = self.measurement.settings.wavenumbers
         elif first_pixel is None:
+            log.debug("generating from first pixel")
             x_axis = list(range(pixels))
         else:
+            log.debug("generating from range since all else didn't work")
             x_axis = list(range(first_pixel, first_pixel + pixels))
         if x_axis is None:
             # maybe from a loaded file with insufficient data?
@@ -461,14 +474,16 @@ class ThumbnailWidget(QtWidgets.QFrame):
         regions = self.measurement.settings.state.detector_regions
         log.debug(f"add_curve_to_graph: regions = {regions}")
         if regions:
+            log.debug(f"processing regions")
             x_axis = regions.chop(x_axis, flatten=True) # which region?
+            log.debug(f"after regions make x_axis {len(x_axis)}")
 
         log.debug("add_curve_to_graph: generated x_axis of %d elements (%.2f to %.2f)", len(x_axis), x_axis[0], x_axis[-1])
 
         spectrum = self.measurement.processed_reading.processed
         if self.measurement.processed_reading.is_cropped():
             roi = self.measurement.settings.eeprom.get_horizontal_roi()
-            if roi is not None and self.graph.vignette_roi is not None:
+            if roi is not None and self.graph is not None and self.graph.vignette_roi is not None:
                 spectrum = self.measurement.processed_reading.processed_vignetted
                 x_axis = self.graph.vignette_roi.crop(x_axis, roi=roi)
 
@@ -501,3 +516,15 @@ class ThumbnailWidget(QtWidgets.QFrame):
     # FIRST file to which other spectra were appended.)
     def disable_trash(self):
         self.button_trash.setVisible(False)
+
+    def generate_tooltip(self):
+        tt = ""
+        metadata = self.measurement.get_all_metadata()
+        for k in sorted(metadata):
+            v = metadata[k]
+            if v is not None:
+                s = str(v)
+                if len(s) > 0:
+                    tt += f"{k}: {s}\n"
+        self.body.setToolTip(tt.strip())
+        self.stylesheets.apply(self.body, "tooltip")
