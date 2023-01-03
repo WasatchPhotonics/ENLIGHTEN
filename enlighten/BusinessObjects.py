@@ -651,6 +651,7 @@ class BusinessObjects:
         ctl.integration_time_feature = IntegrationTimeFeature(
             bt_dn                       = sfu.pushButton_integration_time_ms_dn,
             bt_up                       = sfu.pushButton_integration_time_ms_up,
+            marquee                     = ctl.marquee,
             multispec                   = ctl.multispec,
             slider                      = sfu.slider_integration_time_ms,
             spinbox                     = sfu.spinBox_integration_time_ms)
