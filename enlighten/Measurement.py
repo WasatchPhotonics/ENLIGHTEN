@@ -796,6 +796,26 @@ class Measurement(object):
         #         fields.append("Position")
             
         return fields
+
+    def get_all_metadata(self) -> dict:
+        md = {}
+
+        for field in self.get_extra_header_fields():
+            md[field] = self.get_metadata(field)
+
+        for field in Measurement.CSV_HEADER_FIELDS:
+            if field not in Measurement.ROW_ONLY_FIELDS:
+                if field == "Timestamp":
+                    md["Timestamp"] = self.timestamp.strftime("%Y-%m-%d %H:%M:%S.%f")
+                else:
+                    md[field] = self.get_metadata(field)
+
+        if self.processed_reading.plugin_metadata is not None:
+            for k, v in self.processed_reading.plugin_metadata.items():
+                if k not in md:
+                    md[k] = v
+
+        return md
         
     # ##########################################################################
     # Excel
@@ -953,30 +973,12 @@ class Measurement(object):
         pixels      = len(pr.processed)
         
         m = {                   # m = Measurement
-            "metadata": {},
             "spectrum": {},
+            "metadata": self.get_all_metadata(),
         }
-        md = m["metadata"]      # md = Metadata
+
+        md = m["metadata"]
         sp = m["spectrum"]      # sp = Spectrum (should have used spectra?)
-
-        # output additional (name, value) metadata pairs at the top,
-        # not included in row-ordered CSV
-        for field in self.get_extra_header_fields():
-            md[field] = self.get_metadata(field)
-
-        # output (name, value) metadata pairs at the top,
-        # using the same names and order as our row-ordered CSV
-        for field in Measurement.CSV_HEADER_FIELDS:
-            if field not in Measurement.ROW_ONLY_FIELDS:
-                if field == "Timestamp":
-                    md["Timestamp"] = self.timestamp.strftime("%Y-%m-%d %H:%M:%S.%f")
-                else:
-                    md[field] = self.get_metadata(field)
-
-        if self.processed_reading.plugin_metadata is not None:
-            for k, v in self.processed_reading.plugin_metadata.items():
-                if k not in md:
-                    md[k] = v
 
         # interpolation
         ipr = None
