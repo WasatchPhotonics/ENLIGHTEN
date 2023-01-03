@@ -157,6 +157,7 @@ class PluginController:
             save_options,
             kia_feature,
             measurements_clipboard,
+            vignette_feature,
 
             button_process,
             cb_connected,
@@ -191,6 +192,7 @@ class PluginController:
         self.save_options               = save_options
         self.kia_feature                = kia_feature
         self.measurements_clipboard     = measurements_clipboard
+        self.vignette_feature           = vignette_feature
 
         # widgets
         self.button_process             = button_process
@@ -290,11 +292,22 @@ class PluginController:
             plugin_settings = self.get_current_settings,
             measurement_factory = self.measurement_factory,
             measurements_clipboard = self.measurements_clipboard,
-            read_measurements = self.measurements.read_measurements) # leaving read measurement call for legacy purposes
+            read_measurements = self.measurements.read_measurements,
+            vignette_feature = self.vignette_feature,
+            plugin_fields = self.get_plugin_fields) # leaving read measurement call for legacy purposes
 
     def initialize_python_path(self):
+        log.debug("initializing plugin path")
+        log.debug("Python include path was: %s", sys.path)
         for path in self.plugin_dirs:
-            sys.path.append(path)
+            if os.path.exists(path):
+                if path not in sys.path:
+                    log.debug(f"appending to system path: {path}")
+                    sys.path.append(path)
+                else:
+                    log.debug(f"already in system path: {path}")
+            else:
+                log.debug(f"plugin_dir not found: {path}")
         log.debug("Python include path now: %s", sys.path)
 
     ##
@@ -303,6 +316,10 @@ class PluginController:
     def find_all_plugins(self):
         module_infos = {}
         for start_dir in self.plugin_dirs:
+            if not os.path.exists(start_dir):
+                log.debug(f"missing start_dir: {start_dir}")
+                continue
+
             log.debug("looking for plugins under %s", start_dir)
             # Use scandir to get folder paths, search through the first level of folder
             try:
@@ -314,16 +331,22 @@ class PluginController:
             # goes through each classification folder and picks up the files
             plugin_files = [(file.path, folder) for folder in classification_folders for file in os.scandir(folder) if os.path.isfile(file.path)]
             for file, folder in plugin_files:
+                log.debug(f"find_all_plugins: file {file}, folder {folder}")
+                # find_all_plugins: file C:\Users\mzieg\Documents\EnlightenSpectra\plugins\Analysis\Despiking.py, folder C:\Users\mzieg\Documents\EnlightenSpectra\plugins\Analysis
+
                 try:
-                    filename = os.path.basename(file)
-                    pathname = file                                                              # pluginExamples/Demo/Foo.py
-                    relpath = os.path.relpath(file)                                              # Demo/Foo.py
-                    package = os.path.basename(os.path.dirname(relpath))                         # Demo
+                    filename = os.path.basename(file)                     # Despiking.py
+                    log.debug(f"find_all_plugins:   filename {filename}") # find_all_plugins:   filename Despiking.py
+
+                    package = os.path.basename(folder)
+                    log.debug(f"find_all_plugins:   package {package}")
 
                     if filename.endswith('.py') and filename != "EnlightenPlugin.py" and not filename.startswith("_"):
-                        module_info = PluginModuleInfo(pathname=pathname, package=package, filename=filename)
+                        module_info = PluginModuleInfo(pathname=file, package=package, filename=filename)
                         full_module_name = module_info.full_module_name
+                        log.debug(f"find_all_plugins:   full_module_name {full_module_name}")
                         if full_module_name not in module_infos:
+                            log.debug(f"find_all_plugins:   added module {full_module_name}")
                             module_infos[full_module_name] = module_info
                         else:
                             log.debug("skipping duplicate module_name %s", full_module_name)
@@ -404,6 +427,7 @@ class PluginController:
 
         if connected:
             log.debug("we just connected")
+            self.marquee.info(f"Connecting to plug-in {module_name}...", immediate=True)
 
             log.debug("reconfiguring GUI for %s", module_name)
             if not self.configure_gui_for_module(module_name):
@@ -747,6 +771,10 @@ class PluginController:
         log.debug("successfully reconfigured GUI for plugin %s", module_name)
         return True
 
+    def get_plugin_fields(self):
+        """Used by the plugin to programmatically change fields"""
+        return self.plugin_field_widgets
+
     ##
     # Make it easy for plug-in authors to see exceptions when debugging their class.
     #
@@ -760,7 +788,7 @@ class PluginController:
             parent = self.parent,
             flags = Qt.Widget)
         mb.setInformativeText(detail) # setDetailText has sizing issues
-        mb.exec();
+        mb.exec()
 
     def satisfy_dependencies(self):
         log.debug("satisfy_dependencies: start")
@@ -777,17 +805,20 @@ class PluginController:
             log.debug(f"satisfying dependency {dep.name} of type {dep.dep_type}")
 
             if dep.dep_type == "existing_directory":
+                if dep.prompt is not None:
+                    self.marquee.info(dep.prompt, immediate=True)
+
                 # create the dialog
-                dialog = QtWidgets.QFileDialog(parent = self.parent)
+                dialog = QtWidgets.QFileDialog(parent=self.parent)
                 dialog.setFileMode(QtWidgets.QFileDialog.Directory)
                 dialog.setOption(QtWidgets.QFileDialog.ShowDirsOnly)
 
                 # default to last selection 
+                dialog.setDirectory(common.get_default_data_dir())
                 if dep.persist:
-                    default_dir = self.config.get(persist_section, dep.name)
-                    if default_dir is not None:
-                        log.debug(f"defaulting dialog history to {default_dir}")
-                        dialog.setHistory([default_dir])
+                    last_dir = self.config.get(persist_section, dep.name)
+                    if last_dir is not None and os.path.exists(last_dir):
+                        dialog.setDirectory(last_dir)
 
                 # get the user's choice
                 value = dialog.getExistingDirectory()
@@ -1052,6 +1083,11 @@ class PluginController:
         if config is None:
             return
         try:
+            if response is None:
+                if self.worker.error_message is not None:
+                    self.display_exception(f"Plugin {self.module_name} experienced an exception", self.worker.error_message)
+                return
+
             request = response.request
             log.debug("handling response to request %d", request.request_id)
 

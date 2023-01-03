@@ -425,8 +425,10 @@ class LaserControlFeature:
     # This is a little convoluted because "laser enabled" was implemented
     # as a button rather than a checkbox.
     def toggle_callback(self):
+        log.debug("toggle_callback: start")
         spec = self.multispec.current_spectrometer()
         if spec is None:
+            log.debug("toggle_callback: no spectrometer?")
             return
 
         # invert the previous state

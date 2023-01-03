@@ -1,9 +1,12 @@
 # Version History
 
-# 4.0 GUI Cleanup
+# 4.0 GUI Refactoring
 
-- 2022-12-14 4.0.1
+- 2022-12-19 4.0.1
     - added thumbnail tooltip
+    - improved plugin exception-handling
+    - improved plugin dependency messaging
+    - improved Marquee 'immediate' display
 - 2022-12-09 4.0.0
     - better widget scaling at lower resolutions
     - refactored Techniques, Modes and Views
@@ -14,6 +17,12 @@
 
 # 3.2 Open-Source
 
+- 2022-12-08 3.2.42
+    - expose save options to plugins
+    - plugins can programmatically change input fields
+    - plugins can save in same date dir as regular save
+    - fix graphing issues for plugins
+    - add measurement metadata so plugin thumbnail overlays show on other graph
 - 2022-12-06 3.2.41
     - adding widget for laser watchdog
 - 2022-11-29 3.2.40
