@@ -31,6 +31,7 @@ class LaserControlFeature:
                  button_dn,
                  button_up,
                  button_toggle,
+                 frame,
                  lb_watchdog,
                  spinbox_excitation,    # doubleSpinBox on Laser Control widget, not EEPROMEditor
                  spinbox_power,         # doubleSpinBox
@@ -49,6 +50,7 @@ class LaserControlFeature:
         self.button_dn          = button_dn
         self.button_up          = button_up
         self.button_toggle      = button_toggle
+        self.frame              = frame
         self.lb_watchdog        = lb_watchdog
         self.spinbox_excitation = spinbox_excitation
         self.spinbox_power      = spinbox_power
@@ -96,15 +98,17 @@ class LaserControlFeature:
         settings = spec.settings
         state = settings.state
 
+        if not settings.eeprom.has_laser:
+            return
+
         state.laser_power_perc = 100
         state.laser_power_mW = settings.eeprom.max_laser_power_mW
         state.use_mW = settings.eeprom.has_laser_power_calibration() and settings.is_mml()
 
         self.set_laser_enable(False)
+        self.configure_watchdog(init=True)
         
         spec.change_device_setting("laser_power_high_resolution", True)
-
-        self.update_visibility(init=True)
 
     ##
     # Called by initialize_new_device when the user selected one of several 
@@ -117,6 +121,11 @@ class LaserControlFeature:
             return
 
         settings = spec.settings
+        has_laser = settings.eeprom.has_laser
+
+        self.frame.setVisible(has_laser)
+        if not has_laser:
+            return
 
         has_calibration = settings.eeprom.has_laser_power_calibration()
         log.debug("update_visibility: laser power calibration %s", has_calibration)
@@ -129,7 +138,7 @@ class LaserControlFeature:
             else:
                 self.configure_laser_power_controls_percent()
 
-        self.configure_watchdog(init)
+        self.configure_watchdog()
 
         self.refresh_laser_button()
 
@@ -324,19 +333,25 @@ class LaserControlFeature:
         if spec is None:
             return
 
+        has_laser = spec.settings.eeprom.has_laser
         is_xs = spec.settings.is_xs()
 
-        self.spinbox_watchdog.setVisible(is_xs)
-        self.lb_watchdog.setVisible(is_xs)
-        
-        if init and is_xs:
-            sec = spec.settings.eeprom.laser_watchdog_sec
-            if sec <= 0:
-                sec = EEPROM.DEFAULT_LASER_WATCHDOG_SEC
-                log.debug(f"declining to disable laser watchdog at connection, defaulting to {sec} sec")
+        if not (is_xs and has_laser):
+            self.spinbox_watchdog.setVisible(False)
+            self.lb_watchdog.setVisible(False)
+            return
 
+        self.spinbox_watchdog.setVisible(True)
+        self.lb_watchdog.setVisible(True)
+        
+        sec = spec.settings.eeprom.laser_watchdog_sec
+
+        if init and sec <= 0:
+            sec = EEPROM.DEFAULT_LASER_WATCHDOG_SEC
+            log.debug(f"declining to disable laser watchdog at connection, defaulting to {sec} sec")
             spec.settings.state.laser_watchdog_sec = sec
-            self.spinbox_watchdog.setValue(sec)
+
+        self.spinbox_watchdog.setValue(sec)
 
     # ##########################################################################
     # Callbacks
@@ -425,8 +440,10 @@ class LaserControlFeature:
     # This is a little convoluted because "laser enabled" was implemented
     # as a button rather than a checkbox.
     def toggle_callback(self):
+        log.debug("toggle_callback: start")
         spec = self.multispec.current_spectrometer()
         if spec is None:
+            log.debug("toggle_callback: no spectrometer?")
             return
 
         # invert the previous state

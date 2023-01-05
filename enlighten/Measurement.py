@@ -229,15 +229,16 @@ class Measurement(object):
                            'Raman Intensity Corrected',
                            'Deconvolved',
                            'Region',
+                           'High Gain Mode',
                            'Laser Power mW',
                            'Battery %',
                            'Device ID',
                            'FW Version',
                            'FPGA Version',
-                           'NOTE',
-                           'PREFIX',
-                           'SUFFIX',
-                           'PLUGIN NAME']
+                           'Note',
+                           'Prefix',
+                           'Suffix',
+                           'Plugin Name']
                            
     EXTRA_HEADER_FIELDS_SET = set(EXTRA_HEADER_FIELDS)
 
@@ -752,6 +753,7 @@ class Measurement(object):
         if field == "ccd gain":                  return self.settings.state.gain_db if self.settings.is_sig() else self.settings.eeprom.detector_gain # even
         if field == "ccd offset odd":            return self.settings.eeprom.detector_offset_odd
         if field == "ccd gain odd":              return self.settings.eeprom.detector_gain_odd
+        if field == "high gain mode":            return self.settings.state.high_gain_mode_enabled
         if field == "laser wavelength":          return self.settings.excitation()
         if field == "laser enable":              return self.settings.state.laser_enabled or self.settings.state.acquisition_laser_trigger_enable
         if field == "laser temperature":         return self.processed_reading.reading.laser_temperature_degC if self.processed_reading.reading is not None else -99
@@ -796,6 +798,26 @@ class Measurement(object):
         #         fields.append("Position")
             
         return fields
+
+    def get_all_metadata(self) -> dict:
+        md = {}
+
+        for field in self.get_extra_header_fields():
+            md[field] = self.get_metadata(field)
+
+        for field in Measurement.CSV_HEADER_FIELDS:
+            if field not in Measurement.ROW_ONLY_FIELDS:
+                if field == "Timestamp":
+                    md["Timestamp"] = self.timestamp.strftime("%Y-%m-%d %H:%M:%S.%f")
+                else:
+                    md[field] = self.get_metadata(field)
+
+        if self.processed_reading.plugin_metadata is not None:
+            for k, v in self.processed_reading.plugin_metadata.items():
+                if k not in md:
+                    md[k] = v
+
+        return md
         
     # ##########################################################################
     # Excel
@@ -953,30 +975,12 @@ class Measurement(object):
         pixels      = len(pr.processed)
         
         m = {                   # m = Measurement
-            "metadata": {},
             "spectrum": {},
+            "metadata": self.get_all_metadata(),
         }
-        md = m["metadata"]      # md = Metadata
+
+        md = m["metadata"]
         sp = m["spectrum"]      # sp = Spectrum (should have used spectra?)
-
-        # output additional (name, value) metadata pairs at the top,
-        # not included in row-ordered CSV
-        for field in self.get_extra_header_fields():
-            md[field] = self.get_metadata(field)
-
-        # output (name, value) metadata pairs at the top,
-        # using the same names and order as our row-ordered CSV
-        for field in Measurement.CSV_HEADER_FIELDS:
-            if field not in Measurement.ROW_ONLY_FIELDS:
-                if field == "Timestamp":
-                    md["Timestamp"] = self.timestamp.strftime("%Y-%m-%d %H:%M:%S.%f")
-                else:
-                    md[field] = self.get_metadata(field)
-
-        if self.processed_reading.plugin_metadata is not None:
-            for k, v in self.processed_reading.plugin_metadata.items():
-                if k not in md:
-                    md[k] = v
 
         # interpolation
         ipr = None

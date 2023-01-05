@@ -442,6 +442,7 @@ class Controller:
         # if a spectrometer is already in the process of connecting, let it
         # finish before starting another one
         if self.multispec.have_any_in_process():
+            log.debug("tick_bus_listener: some in process")
             self.check_ready_initialize()
             return self.bus_timer.start(self.BUS_TIMER_SLEEP_MS)
 
@@ -452,6 +453,7 @@ class Controller:
         self.ble_manager.check_complete_scans()
 
         self.multispec.check_ejected_unplugged(self.bus.device_ids)
+
         ########################################################################
         # attempt connection to the first untried (not connected, not in-process)
         # device on the list
@@ -834,18 +836,6 @@ class Controller:
             self.set_from_ini_file()
 
         ########################################################################
-        # Configure GUI based on device features (AFTER .ini file...)
-        ########################################################################
-
-        log.debug("Configure GUI based on device features")
-
-        # high-gain mode for InGaAs detectors
-        self.high_gain_mode.update()
-
-        # disable laser power control if not applicable
-        sfu.frame_lightSourceControl.setVisible(spec.settings.eeprom.has_laser)
-
-        ########################################################################
         # integration time and Gain
         ########################################################################
 
@@ -932,6 +922,7 @@ class Controller:
                          self.external_trigger,
                          self.gain_db_feature,
                          self.graph,
+                         self.high_gain_mode,
                          self.laser_control,
                          self.raman_shift_correction,
                          self.raman_intensity_correction,
@@ -1751,8 +1742,11 @@ class Controller:
 
         # saturation check
         if pr.processed.max() >= 0xfffe:
-            # todo: self.status_indicators.detector_warning("detector saturated")
-            self.marquee.error("detector saturated")
+            # IMX detectors briefly saturate on every change of integration 
+            # time...perhaps we should take a couple throwaways in Wasatch.PY?
+            if not spec.settings.is_xs():
+                # todo: self.status_indicators.detector_warning("detector saturated")
+                self.marquee.error("detector saturated")
 
         # post-processing begins here
 

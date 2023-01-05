@@ -87,7 +87,7 @@ class Multispec(object):
         self.in_process = {} # a dict of device_id to WasatchDeviceWrapper (may be None if "gave up")
         self.disconnecting = {}
         self.ignore = {}
-        self.seen_serial_numbers = {} # dict of serial_number to...not sure yet.  Should include initial assigned color
+        self.serial_colors = {} # dict of serial_number to color
 
         # This refers to the Multispec feature of "locking" spectrometer state 
         # changes so that they apply to all connected spectrometers (or if 
@@ -136,6 +136,7 @@ class Multispec(object):
 
     def register_strip_feature(self, feature):
         self.strip_features.append(feature)
+
     ##
     # The Qt Designer doesn't let us emplace pyqtgraph objects (I think?), so
     # add this button at runtime.
@@ -279,6 +280,7 @@ class Multispec(object):
         """
         if len(self.ejected) == 0:
             return
+
         plugged_in = set(connected_devices)
         physically_unplugged = self.ejected.difference(plugged_in)
         self.ejected = {dev for dev in self.ejected if dev not in physically_unplugged}
@@ -481,17 +483,6 @@ class Multispec(object):
         self.device_id = device_id
 
         ########################################################################
-        # have we seen this one before?
-        ########################################################################
-
-        sn = spec.settings.eeprom.serial_number
-        if sn in self.seen_serial_numbers:
-            # @todo: re-use previous color
-            pass
-        else:
-            self.seen_serial_numbers[sn] = {}
-
-        ########################################################################
         # initialize graph trace
         ########################################################################
         
@@ -689,6 +680,8 @@ class Multispec(object):
             if model_color in self.seen_model_colors.keys() and self.seen_model_colors.get(model_color, None) != spec:
                 if spec.assigned_color is not None:
                     color = spec.assigned_color
+                elif spec.settings.eeprom.serial_number in self.serial_colors:
+                    color = self.serial_colors[spec.settings.eeprom.serial_number]
                 else:
                     color = self.colors.get_next_random()
                     while color in self.seen_colors:
@@ -701,6 +694,8 @@ class Multispec(object):
             if color in self.seen_colors:
                 if spec.assigned_color is not None:
                     color = spec.assigned_color 
+                elif spec.settings.eeprom.serial_number in self.serial_colors:
+                    color = self.serial_colors[spec.settings.eeprom.serial_number]
                 else:
                     color = self.colors.get_next_random()
                     while color in self.seen_colors:
@@ -712,6 +707,7 @@ class Multispec(object):
         if spec.assigned_color is None:
             log.debug("spectrometer %s permanently assigned color %s", spec.label, color)
             spec.assigned_color = color
+            self.serial_colors[spec.settings.eeprom.serial_number] = color
 
         return color
 
