@@ -4,6 +4,7 @@
 
 - 2023-01-13 4.0.3
     - added dark-mode button
+    - hopefully improved laser watchdog handling on older (unsupported) models
 - 2023-01-03 4.0.2
     - persist initial spectrometer color assignment across disconnects within a session
     - added thumbnail tooltip

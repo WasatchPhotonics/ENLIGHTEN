@@ -105,6 +105,7 @@ class LaserControlFeature:
         state.laser_power_mW = settings.eeprom.max_laser_power_mW
         state.use_mW = settings.eeprom.has_laser_power_calibration() and settings.is_mml()
 
+
         self.set_laser_enable(False)
         self.configure_watchdog(init=True)
         
@@ -329,6 +330,7 @@ class LaserControlFeature:
         log.debug("configure_laser_power_controls_mW: value %s, suffix %s", value, spinbox.suffix())
 
     def configure_watchdog(self, init=False):
+        log.debug(f"configure_watchdog(init {init})")
         spec = self.multispec.current_spectrometer()
         if spec is None:
             return
@@ -347,6 +349,19 @@ class LaserControlFeature:
         sec = spec.settings.eeprom.laser_watchdog_sec
 
         if init and sec <= 0:
+            # Acknowledge that the watchdog was disabled in the EEPROM.
+            # We use this to disable annoying pop-up messages warning
+            # the user about disabling the watchdog.  It's also possible
+            # this is an older model that doesn't HAVE a watchdog.
+            spec.app_state.laser_watchdog_disabled = True
+            log.debug("watchdog was disabled in the EEPROM")
+
+            # Nonetheless, ignore the disabled state and re-enable the
+            # watchdog at runtime.  This is for safety and avoid product 
+            # damage.  If the user wants to change it back to zero in 
+            # ENLIGHTEN, they can (and we won't nag them about it), but
+            # they have to explicitly choose "unsafe / destructive" every
+            # session.
             sec = EEPROM.DEFAULT_LASER_WATCHDOG_SEC
             log.debug(f"declining to disable laser watchdog at connection, defaulting to {sec} sec")
             spec.settings.state.laser_watchdog_sec = sec
@@ -414,7 +429,16 @@ class LaserControlFeature:
     def confirm_disable(self) -> bool:
         spec = self.multispec.current_spectrometer()
         if spec is None:
-            return
+            return False
+
+        # If the user disabled the watchdog in the EEPROM, assume they
+        # know what they're doing and don't nag them.  Also, it could be
+        # an older spectrometer that didn't HAVE a watchdog and therefore
+        # the value "defaults" to zero — we don't want to annoy those users
+        # every connection either.
+        if spec.app_state.laser_watchdog_disabled:
+            return True
+
         label = spec.label
 
         log.debug("prompting user to confirm their decision to disable the laser watchdog")
