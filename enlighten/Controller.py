@@ -14,7 +14,7 @@ import re
 import PySide2
 from PySide2 import QtCore, QtWidgets, QtGui
 from PySide2.QtCore import QObject, QEvent
-from PySide2.QtWidgets import QMessageBox, QVBoxLayout, QWidget, QLabel, QMessageBox
+from PySide2.QtWidgets import QMessageBox, QVBoxLayout, QWidget, QLabel
 
 from collections import defaultdict
 from threading import Thread
@@ -109,7 +109,7 @@ class Controller:
                           as a percentage before ENLIGHTEN automatically shuts down
         @param run_sec    automatically exit after this many seconds
         @param serial_number only connect to this unit if found.
-        @param stylesheet_path pathname to CSS "skin" to use for overriding enlighten.css
+        @param stylesheet_path directory containing enlighten.css and associated styles
         @param set_all_dfu set each ARM spectrometer to DFU mode as they connect
         """
 
@@ -139,9 +139,7 @@ class Controller:
         log.info("ENLIGHTEN version %s",     common.VERSION)
         log.info("Wasatch.PY version %s",    wasatch.version)
         log.info("applog at %s",             applog.get_location())
-
         log.info("Stylesheet path %s",       self.stylesheet_path)
-
         log.info("Python version %s",        util.python_version())
         log.info(f"Operating system {sys.platform} {struct.calcsize('P')*8 } bit")
         log.info("PySide version %s",        PySide2.__version__)
@@ -152,7 +150,6 @@ class Controller:
         # GUI Configuration
         ########################################################################
 
-
         # hide these immediately (KIA shouldn't be visible in Scope)
         sfu = self.form.ui
         for widget in [ sfu.frame_kia_outer,
@@ -160,10 +157,10 @@ class Controller:
                         sfu.tabWidget_advanced_features
                       ]:
             widget.setVisible(False)
-        sfu.pushButton_reset_fpga.clicked.connect(self.perform_fpga_reset)
 
-        # immediately show Scope Capture screen
-        #self.set_main_page(common.Pages.SCOPE_CAPTURE)
+
+        # @todo this shouldn't go here
+        sfu.pushButton_reset_fpga.clicked.connect(self.perform_fpga_reset)
 
         ########################################################################
         # Create startup Business Objects
@@ -173,18 +170,6 @@ class Controller:
         self.seen_errors = defaultdict(lambda: defaultdict(int))
         self.business_objects = BusinessObjects(self)
         self.business_objects.create_first()
-
-        ########################################################################
-        # Support skinning
-        ########################################################################
-
-        log.debug("applying 'enlighten' stylesheet to the QForm")
-        self.stylesheets.apply(self.form, "enlighten") # MZ: I don't think this is working...
-        log.debug("back from applying 'enlighten' stylesheet to the QForm")
-
-        if "light" in self.stylesheet_path:
-            pyqtgraph.setConfigOption('background', 'w')
-            pyqtgraph.setConfigOption('foreground', 'k')
 
         ########################################################################
         # Lifecycle
@@ -229,7 +214,7 @@ class Controller:
         self.business_objects.create_rest()
         self.graph.rehide_curves()
 
-        # immediately show Scope view
+        # default to Scope view
         self.page_nav.set_main_page(common.Pages.SCOPE)
 
         # configure acquisition loop
@@ -252,9 +237,8 @@ class Controller:
         self.form.show()
 
         if headless:
-            # hiding tends to mess with gui tests since the componets are also hidden
+            # self.hide() messes with gui tests since the componets are also hidden
             # So I replaced with minimizing, which I recognize is not a true headless
-            # self.hide()
             self.form.showMinimized()
 
     def disconnect_device(self, spec=None, closing=False):

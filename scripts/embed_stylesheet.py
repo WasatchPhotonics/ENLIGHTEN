@@ -7,10 +7,10 @@ def error(msg):
     print(msg)
     sys.exit(1)
 
-# embed this stylesheet:
-css_path = 'enlighten/assets/stylesheets/default/enlighten.css'
+# embed the default DARK stylesheet...
+css_path = 'enlighten/assets/stylesheets/dark/enlighten.css'
 
-# into this Qt Designer file:
+# ...into this Qt Designer/Creator file:
 ui_path  = 'enlighten/assets/uic_qrc/enlighten_layout.ui'
 
 # load CSS

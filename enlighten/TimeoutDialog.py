@@ -4,9 +4,12 @@
 # all QObjects can run a local QTimer that can have a slot
 # Combine the two and you can have a timed dialog, or other widget really
 
+import logging
 from fileinput import close
-import PySide2
+from PySide2 import QtCore, QtWidgets
 from PySide2.QtWidgets import QMessageBox
+
+log = logging.getLogger(__name__)
 
 class TimeoutDialog(QMessageBox):
     def __init__(self, *args):
@@ -15,43 +18,50 @@ class TimeoutDialog(QMessageBox):
         self.autoclose = False
         self.msg = ""
         self.currentTime = 0
-        self.closeout_msg = f"Closing in {self.timeout-self.currentTime} seconds"
 
     def showEvent(self, QShowEvent):
         self.currentTime = 0
         if self.autoclose:
             self.startTimer(1000)
-        # https://wiki.qt.io/How_to_Center_a_Window_on_the_Screen
 
-        self.setGeometry(
-            QtWidgets.QStyle.alignedRect(
-                QtCore.Qt.LeftToRight,
-                QtCore.Qt.AlignCenter,
-                window.size(),
-                QtWidgets.qApp.desktop().availableGeometry(),
+        if False:
+            # from https://wiki.qt.io/How_to_Center_a_Window_on_the_Screen,
+            # but doesn't work in current state
+
+            app = QtWidgets.QApplication.instance()
+            window = app.activeWindow()
+
+            self.setGeometry(
+                QtWidgets.QStyle.alignedRect(
+                    QtCore.Qt.LeftToRight,
+                    QtCore.Qt.AlignCenter,
+                    window.size(),
+                    app.desktop().availableGeometry(),
+                )
             )
-        )
 
     def timerEvent(self, *args, **kwargs):
         self.currentTime += 1
-        self.closeout_msg = f"Closing in {self.timeout-self.currentTime} seconds"
-        self.setText(f"{self.msg} {self.closeout_msg}")
+        self.setText(self.msg)
         if self.currentTime >= self.timeout and self.timeout != -1:
             self.done(0)
 
     @staticmethod
     def showWithTimeout(parent, timeoutSeconds, message, title, icon=QMessageBox.Information, buttons=None):
         if buttons is None:
-            buttons = [("Ok", QMessageBox.Ok)]
+            log.debug("default buttons")
+            buttons = [("Ok", QMessageBox.AcceptRole)]
         if not isinstance(buttons, list):
+            log.debug("listifying buttons")
             buttons = [buttons]
         w = TimeoutDialog(parent)
         w.autoclose = True
         w.timeout = timeoutSeconds
-        w.setText(f"{message} Closing in {w.timeout} seconds")
+        w.setText(message)
         w.msg = message
         w.setWindowTitle(title)
         w.setIcon(icon)
+        log.debug(f"buttons = {repr(buttons)}")
         btns = [w.addButton(b[0], b[1]) for b in buttons]
         w.exec_()
         clicked_button = w.clickedButton()

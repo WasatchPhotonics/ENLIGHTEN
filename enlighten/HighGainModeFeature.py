@@ -59,7 +59,7 @@ class HighGainModeFeature:
         """ I believe that all Andor iDus detectors (incl DV416 and DU490) support multiple gain modes. """
         if spec is None:
             return False
-        return spec.settings.is_ingaas() or spec.device.is_andor()
+        return spec.settings.is_ingaas() or spec.settings.is_andor()
 
     def recommended_default(self, spec):
         """ Default on for all InGaAs (Raman and otherwise), but not [yet] on by default for silicon Andor. """
