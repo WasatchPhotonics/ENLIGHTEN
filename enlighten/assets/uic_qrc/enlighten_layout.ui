@@ -90,6 +90,15 @@ See Qt documentation:
 /* QWidget ----------------------------------------------------------------
 --------------------------------------------------------------------------- */
 
+* {
+  padding: 0px;
+  margin: 0px;
+  border: 0px;
+  border-style: none;
+  border-image: none;
+  outline: 0;
+}
+
 QWidget {
   background-color: #383838;
   color: hsl(0, 0%, 60%);
@@ -2179,22 +2188,7 @@ QComboBox QListView
              <property name="styleSheet">
               <string notr="true" />
              </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="0,0,0,0,0,0,0">
-              <property name="spacing">
-               <number>0</number>
-              </property>
-              <property name="leftMargin">
-               <number>8</number>
-              </property>
-              <property name="topMargin">
-               <number>0</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
-               <number>0</number>
-              </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
               <item>
                <widget class="QComboBox" name="comboBox_view">
                 <property name="sizePolicy">
@@ -2368,6 +2362,38 @@ QComboBox QListView
                  </size>
                 </property>
                </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_dark_mode">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>30</width>
+                  <height>26</height>
+                 </size>
+                </property>
+                <property name="toolTip">
+                 <string>Seek the light!</string>
+                </property>
+                <property name="text">
+                 <string />
+                </property>
+                <property name="icon">
+                 <iconset resource="grey_icons.qrc">
+                  <normaloff>:/greys/images/grey_icons/dark-mode.svg</normaloff>:/greys/images/grey_icons/dark-mode.svg</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>16</width>
+                  <height>14</height>
+                 </size>
+                </property>
+               </widget>
               </item>
               <item>
                <widget class="QPushButton" name="pushButton_help">
@@ -3435,14 +3461,14 @@ QComboBox QListView
                           <item row="15" column="1">
                            <widget class="QLabel" name="label_102">
                             <property name="text">
-                             <string>Calibration Date</string>
+                             <string>Manufacture Date</string>
                             </property>
                            </widget>
                           </item>
                           <item row="16" column="1">
                            <widget class="QLabel" name="label_103">
                             <property name="text">
-                             <string>Calibrated By</string>
+                             <string>Technician</string>
                             </property>
                            </widget>
                           </item>

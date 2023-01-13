@@ -13,7 +13,7 @@ application.
       can be modules (files) within it
 """
 
-VERSION = "4.0.1"
+VERSION = "4.0.3"
 
 """ ENLIGHTEN's application version number (checked by scripts/deploy and bootstrap.bat) """
 class Techniques(IntEnum):

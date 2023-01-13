@@ -124,7 +124,10 @@ class BusinessObjects:
             colors                      = ctl.colors,
             config                      = ctl.config,
             form                        = ctl.form,
-            stylesheets                 = ctl.stylesheets)
+            stylesheet_path             = ctl.stylesheet_path,
+            stylesheets                 = ctl.stylesheets,
+
+            bt_dark_mode                = sfu.pushButton_dark_mode)
 
     def create_rest(self):
         """
@@ -161,6 +164,7 @@ class BusinessObjects:
             inner                       = sfu.frame_drawer_black,
             label                       = sfu.label_drawer,
             stylesheets                 = ctl.stylesheets)
+        ctl.gui.marquee = ctl.marquee
 
         self.header("instantiating FileManager")
         ctl.file_manager = FileManager(

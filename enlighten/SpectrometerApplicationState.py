@@ -50,6 +50,9 @@ class SpectrometerApplicationState(object):
         self.missed_reading_count = 0
         self.laser_state = LaserStates.DISABLED
 
+        # we set this if the watchdog was already set to 0 in the EEPROM at initial connection
+        self.laser_watchdog_disabled = False
+
         # to track separately from SpectrometerState, which is shared with Wasatch.PY thread
         # self.laser_gui_firing = False 
         # self.last_laser_toggle = None

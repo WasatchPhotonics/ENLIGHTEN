@@ -309,9 +309,12 @@ class Configuration(object):
 
         return value
 
-    def get_bool(self, section, key):
+    def get_bool(self, section, key, default=False):
         """ Not using ConfigParser.getboolean() because we want to support defaults. """
-        return self.get(section, key).lower() == "true"
+        if self.has_option(section, key):
+            return self.get(section, key).lower() == "true"
+        else:
+            return default
 
     def get_int(self, section, key, default=0):
         value = default

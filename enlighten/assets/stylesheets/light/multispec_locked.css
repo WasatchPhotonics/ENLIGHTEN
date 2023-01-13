@@ -1,0 +1,24 @@
+QFrame {
+    background: rgb(29, 29, 29);
+    border-style: solid;
+    border: 2px solid #000000;
+    border-radius: 6px;
+    background-color: qlineargradient(spread:pad, 
+        x1:0, y1:0, 
+        x2:0, y2:1, 
+        stop:0.0 rgba(100,   8,   8, 255), 
+        stop:0.5 rgba(127,   8,   8, 255), 
+        stop:1.0 rgba( 90,   8,   8, 255)
+    );
+}
+    /* 
+    silver:
+        stop:0.0 rgba( 82,  82,  82, 255), 
+        stop:0.5 rgba(144, 144, 144, 255), 
+        stop:1.0 rgba( 71,  71,  71, 255)
+
+    bronze:
+        stop:0.0 rgba(128,  80,  29, 255), 
+        stop:0.5 rgba(204, 140,  20, 255), 
+        stop:1.0 rgba(140,  88,  32, 255)
+    */
