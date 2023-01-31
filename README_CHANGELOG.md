@@ -2,6 +2,9 @@
 
 # 4.0 GUI Refactoring
 
+- 2023-01-31 4.0.4
+    - fixed logo in light mode
+    - fixed installer bug?
 - 2023-01-13 4.0.3
     - added dark-mode button
     - hopefully improved laser watchdog handling on older (unsupported) models

@@ -1,6 +1,6 @@
 import logging
 import pyqtgraph
-# from PySide2.QtWidgets import QMessageBox, QVBoxLayout, QWidget, QLabel
+from PySide2 import QtGui
 
 from .TimeoutDialog import TimeoutDialog
 from . import common 
@@ -52,10 +52,12 @@ class GUI(object):
 
     def init_graph_color(self):
         self.dark_mode = self.config.get_bool(self.SECTION, "dark_mode", default=True)
+
         colors = ('w', 'k') if self.dark_mode else ('k', 'w')
         pyqtgraph.setConfigOption('foreground', colors[0])
         pyqtgraph.setConfigOption('background', colors[1])
         self.update_theme()
+        self.update_logo()
 
     def dark_mode_callback(self):
         self.dark_mode = not self.dark_mode
@@ -70,9 +72,21 @@ class GUI(object):
             self.bt_dark_mode.setToolTip("Embrace the dark!")
 
         self.update_theme()
+        self.update_logo()
 
     def update_theme(self):
         self.stylesheets.set_dark_mode(self.dark_mode)
+
+    def update_logo(self):
+        sfu = self.form.ui
+
+        path = ":/application/images/enlightenLOGO"
+        if not self.dark_mode:
+            path += "-light"
+        path += ".png"
+
+        pixmap = QtGui.QPixmap(path)
+        sfu.label_application_logo.setPixmap(pixmap)
 
     def colorize_button(self, button, flag):
         if button is None:
