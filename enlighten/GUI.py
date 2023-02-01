@@ -57,7 +57,6 @@ class GUI(object):
         pyqtgraph.setConfigOption('foreground', colors[0])
         pyqtgraph.setConfigOption('background', colors[1])
         self.update_theme()
-        self.update_logo()
 
     def dark_mode_callback(self):
         self.dark_mode = not self.dark_mode
@@ -66,19 +65,17 @@ class GUI(object):
         if self.marquee:
             self.marquee.info(f"Graphs will use {'dark' if self.dark_mode else 'light'} backgrounds when ENLIGHTEN restarts.")
 
+        self.update_theme()
+
+    def update_theme(self):
+        sfu = self.form.ui
+
+        self.stylesheets.set_dark_mode(self.dark_mode)
+
         if self.dark_mode:
             self.bt_dark_mode.setToolTip("Seek the light!")
         else:
             self.bt_dark_mode.setToolTip("Embrace the dark!")
-
-        self.update_theme()
-        self.update_logo()
-
-    def update_theme(self):
-        self.stylesheets.set_dark_mode(self.dark_mode)
-
-    def update_logo(self):
-        sfu = self.form.ui
 
         path = ":/application/images/enlightenLOGO"
         if not self.dark_mode:
