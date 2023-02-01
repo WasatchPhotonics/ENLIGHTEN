@@ -44,6 +44,13 @@ Then run a quick pre-development test:
 
     python scripts\Enlighten.py
 
+On subsequent runs, skip initialization steps:
+
+    $ cd ENLIGHTEN
+    $ set PYTHONPATH=..\Wasatch.PY;pluginExamples;.;enlighten\assets\uic_qrc
+    $ scripts\bootstrap.bat activate # uses existing conda environment
+    $ python scripts\Enlighten.py
+
 Note that to test ENLIGHTEN with a spectrometer, you'll need to install the
 libusb drivers.  Normally this is done for customers when they run the 
 ENLIGHTEN binary installer.  If you're running from a source distribution,
