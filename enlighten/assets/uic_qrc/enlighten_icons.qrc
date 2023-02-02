@@ -1,6 +1,7 @@
 <RCC>
   <qresource prefix="application">
     <file>images/enlightenLOGO.png</file>
+    <file>images/enlightenLOGO-light.png</file>
     <file>images/EnlightenIcon.ico</file>
     <file>images/EnlightenTextLogo.png</file>
     <file>images/emission/ar-1.png</file>

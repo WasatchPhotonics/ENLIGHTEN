@@ -5,8 +5,8 @@
 The following installation sequence is recommended:
 
 - [Miniconda](https://conda.io/miniconda.html) (latest for Python 3.x on Win64)
-- [Git for Windows](https://git-scm.com/download/win) (select "Run from Windows Command Prompt")
-    - optional but useful
+- [Git for Windows](https://git-scm.com/download/win) 
+    - select "Use Git and optional Unix tools from the Command Prompt"
 - [InnoSetup](http://www.jrsoftware.org/isinfo.php) (tested 6.0.4)
 - [Wasatch.PY](https://github.com/WasatchPhotonics/Wasatch.PY) (clone parallel to Enlighten)
 - [Enlighten](https://github.com/WasatchPhotonics/ENLIGHTEN) (clone parallel to Wasatch.PY)
@@ -36,14 +36,19 @@ Wasatch.PY into a directory parallel to ENLIGHTEN, and adding to your PYTHONPATH
 *Note:* when setting environment variables like PYTHONPATH under Windows, 
 _do not_ quote them (e.g., do *not* type: set PYTHONPATH="..\Wasatch.PY")
 
-To bootstrap and validate your development environment, just run this from a Git 
-Cmd shell:
+To bootstrap and validate your development environment, run this in CMD started as an administrator:
 
     scripts\bootstrap.bat
 
 Then run a quick pre-development test:
 
     python scripts\Enlighten.py
+
+On subsequent runs, skip initialization steps:
+
+    $ cd ENLIGHTEN
+    $ activate.bat
+    $ run.bat
 
 Note that to test ENLIGHTEN with a spectrometer, you'll need to install the
 libusb drivers.  Normally this is done for customers when they run the 
