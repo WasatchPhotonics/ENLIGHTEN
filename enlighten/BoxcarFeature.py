@@ -39,7 +39,7 @@ class BoxcarFeature(object):
         self.multispec.set_state("boxcar_half_width", value)
 
         if value > 0:
-            self.spinbox.setToolTip("averaging %d pixels" % (value * 2 + 1))
+            self.spinbox.setToolTip("boxcar half-width of %d pixels (%d-pixel moving average)" % (value, value * 2 + 1))
         else:
             self.spinbox.setToolTip("smoothing disabled (half-width)")
 
