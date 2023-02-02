@@ -91,6 +91,8 @@ if "%build_target%" == "just-installer" (
     goto JUST_INSTALLER
 )
 
+if "%build_target%" == "activate" goto ACTIVATE
+
 echo.
 echo %date% %time% ======================================================
 echo %date% %time% Purging last build
@@ -116,7 +118,7 @@ echo %date% %time% ======================================================
 echo.
 conda update -q conda
 if %errorlevel% neq 0 goto script_failure
-
+     
 echo.
 echo %date% %time% ======================================================
 echo %date% %time% Remove old Conda environment 
@@ -142,6 +144,7 @@ del /f /q environment.yml
 copy environments\conda-win10.yml environment.yml
 conda env create -n conda_enlighten3 
 
+:ACTIVATE
 echo.
 echo %date% %time% ======================================================
 echo %date% %time% Activating environment
@@ -150,6 +153,7 @@ echo.
 REM Use "source" from bash, "call" from batch and neither from Cmd
 call activate conda_enlighten3
 if %errorlevel% neq 0 goto script_failure
+if "%build_target%" == "activate" goto PAST_INSTALLER
 
 echo.
 echo %date% %time% ======================================================
