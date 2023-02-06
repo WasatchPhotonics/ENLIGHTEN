@@ -36,7 +36,7 @@ Wasatch.PY into a directory parallel to ENLIGHTEN, and adding to your PYTHONPATH
 *Note:* when setting environment variables like PYTHONPATH under Windows, 
 _do not_ quote them (e.g., do *not* type: set PYTHONPATH="..\Wasatch.PY")
 
-To bootstrap and validate your development environment, run this in CMD started as an administrator:
+To bootstrap and validate your development environment, run this in CMD [started as an administrator](https://stackoverflow.com/questions/61350929/not-a-conda-environment):
 
     scripts\bootstrap.bat
 
