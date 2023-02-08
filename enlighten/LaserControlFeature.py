@@ -36,6 +36,7 @@ class LaserControlFeature:
                  spinbox_excitation,    # doubleSpinBox on Laser Control widget, not EEPROMEditor
                  spinbox_power,         # doubleSpinBox
                  slider_power,
+                 checkbox_watchdog,
                  spinbox_watchdog,
                  guide):
 
@@ -55,6 +56,7 @@ class LaserControlFeature:
         self.spinbox_excitation = spinbox_excitation
         self.spinbox_power      = spinbox_power
         self.slider_power       = slider_power
+        self.checkbox_watchdog  = checkbox_watchdog
         self.spinbox_watchdog   = spinbox_watchdog
         self.raman_intensity_correction = raman_intensity_correction
 
@@ -74,6 +76,7 @@ class LaserControlFeature:
         self.spinbox_power      .valueChanged       .connect(self.slider_power.setValue)
         self.spinbox_power      .valueChanged       .connect(self.set_laser_power_callback)
         self.spinbox_watchdog   .valueChanged       .connect(self.set_watchdog_callback)
+        self.checkbox_watchdog  .stateChanged       .connect(self.set_watchdog_enable_callback)
 
         for key, item in self.__dict__.items():
             if key.startswith("spinbox_") or key.startswith("combo_"):
@@ -263,7 +266,7 @@ class LaserControlFeature:
             return
 
         watchdog_sec = spec.settings.state.laser_watchdog_sec
-        if watchdog_sec > 0:
+        if self.checkbox_watchdog.isChecked():
             self.spinbox_watchdog.setToolTip(f"Laser will automatically stop firing after {watchdog_sec} seconds")
         else:
             self.spinbox_watchdog.setToolTip("Laser watchdog disabled")
@@ -365,8 +368,11 @@ class LaserControlFeature:
             sec = EEPROM.DEFAULT_LASER_WATCHDOG_SEC
             log.debug(f"declining to disable laser watchdog at connection, defaulting to {sec} sec")
             spec.settings.state.laser_watchdog_sec = sec
-
-        self.spinbox_watchdog.setValue(sec)
+        
+            # TODO: hide watchdog config and show "No watchdog msg"
+        
+        else:
+            self.spinbox_watchdog.setValue(sec)
 
     # ##########################################################################
     # Callbacks
@@ -406,6 +412,43 @@ class LaserControlFeature:
         self.multispec.set_state("laser_power", value)
         self.multispec.change_device_setting(setting, value)
 
+    def set_watchdog_time(self, sec):
+        # maintain application state
+        self.multispec.set_state("laser_watchdog_sec", sec)
+        # set the spectrometer's watchdog time
+        self.multispec.change_device_setting("laser_watchdog_sec", sec)
+
+    # called when watchdog is checked ON or OFF
+    def set_watchdog_enable_callback(self):
+
+        if not self.checkbox_watchdog.isChecked():
+
+            log.debug("[wdsb] User initiated watchdog disable")
+
+            if self.confirm_disable():
+
+                log.debug("[wdsb] User confirmed watchdog disable")
+
+                # disable the watchdog
+                self.set_watchdog_time(0)
+                self.spinbox_watchdog.setVisible(False)
+                self.lb_watchdog.setVisible(False)
+            else:
+
+                log.debug("[wdsb] User cancelled watchdog disable")
+
+                # undo unchecking
+                self.checkbox_watchdog.setChecked(True)
+        else:
+
+            log.debug("[wdsb] User enabled watchdog")
+
+            # set the watchdog to the spinbox value
+            self.spinbox_watchdog.setVisible(True)
+            self.lb_watchdog.setVisible(True)
+            self.set_watchdog_callback()
+
+    # called when watchdog interval (sec) is changed
     def set_watchdog_callback(self):
         spec = self.multispec.current_spectrometer()
         if spec is None:
@@ -414,11 +457,12 @@ class LaserControlFeature:
         sec = self.spinbox_watchdog.value()
         log.debug(f"set_watchdog_callback: asked to set watchdog to {sec} seconds")
 
-        if sec <= 0 and not self.confirm_disable():
+        # not possible with spinbox min = 3
+        if sec < 3:
+            log.critical("Watchdog spinbox set below desired minimum (<3)")
             return
 
-        self.multispec.set_state("laser_watchdog_sec", sec)
-        self.multispec.change_device_setting("laser_watchdog_sec", sec)
+        self.set_watchdog_time(sec)
 
         if spec.settings.state.laser_enabled:
             self.set_laser_enable(False)
@@ -456,7 +500,6 @@ class LaserControlFeature:
         if retval != QtWidgets.QMessageBox.Yes:
             log.debug("user declined to disable laser watchdog on %s", label)
             self.marquee.clear(token="laser_watchdog")
-            self.spinbox_watchdog.setValue(spec.settings.state.laser_watchdog_sec)
             return False
         return True
 
