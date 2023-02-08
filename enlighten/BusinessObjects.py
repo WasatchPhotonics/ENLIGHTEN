@@ -506,6 +506,7 @@ class BusinessObjects:
             spinbox_excitation          = sfu.doubleSpinBox_lightSourceWidget_excitation_nm, # not EEPROMEditor
             spinbox_power               = sfu.doubleSpinBox_laser_power,
             slider_power                = sfu.verticalSlider_laser_power,
+            checkbox_watchdog           = sfu.checkBox_laser_watchdog,
             spinbox_watchdog            = sfu.spinBox_laser_watchdog_sec,
             guide                       = ctl.guide)
 

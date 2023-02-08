@@ -2206,7 +2206,6 @@ QComboBox QListView
                 <property name="font">
                  <font>
                   <pointsize>10</pointsize>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -2271,7 +2270,6 @@ QComboBox QListView
                 <property name="font">
                  <font>
                   <pointsize>9</pointsize>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -2300,7 +2298,6 @@ QComboBox QListView
                 <property name="font">
                  <font>
                   <pointsize>9</pointsize>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -2329,7 +2326,6 @@ QComboBox QListView
                 <property name="font">
                  <font>
                   <pointsize>9</pointsize>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -2471,7 +2467,7 @@ QComboBox QListView
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>20</height>
+          <height>24</height>
          </size>
         </property>
         <property name="verticalScrollBarPolicy">
@@ -2486,7 +2482,7 @@ QComboBox QListView
            <x>0</x>
            <y>0</y>
            <width>1169</width>
-           <height>5248</height>
+           <height>5592</height>
           </rect>
          </property>
          <property name="sizePolicy">
@@ -2539,7 +2535,6 @@ QComboBox QListView
                  <font>
                   <family>MS Shell Dlg 2</family>
                   <pointsize>18</pointsize>
-                  <weight>75</weight>
                   <bold>true</bold>
                   <kerning>false</kerning>
                  </font>
@@ -2616,7 +2611,6 @@ QComboBox QListView
                       <property name="font">
                        <font>
                         <pointsize>10</pointsize>
-                        <weight>75</weight>
                         <bold>true</bold>
                        </font>
                       </property>
@@ -2707,7 +2701,6 @@ QComboBox QListView
                           <property name="font">
                            <font>
                             <pointsize>10</pointsize>
-                            <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
@@ -3330,7 +3323,6 @@ QComboBox QListView
                           <property name="font">
                            <font>
                             <pointsize>10</pointsize>
-                            <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
@@ -3709,7 +3701,6 @@ QComboBox QListView
                           <property name="font">
                            <font>
                             <pointsize>10</pointsize>
-                            <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
@@ -4234,7 +4225,6 @@ QComboBox QListView
                           <property name="font">
                            <font>
                             <pointsize>10</pointsize>
-                            <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
@@ -4671,7 +4661,6 @@ QComboBox QListView
                           <property name="font">
                            <font>
                             <pointsize>10</pointsize>
-                            <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
@@ -4751,7 +4740,6 @@ QComboBox QListView
                           <property name="font">
                            <font>
                             <pointsize>10</pointsize>
-                            <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
@@ -5349,7 +5337,6 @@ QComboBox QListView
                              <property name="font">
                               <font>
                                <pointsize>10</pointsize>
-                               <weight>75</weight>
                                <bold>true</bold>
                               </font>
                              </property>
@@ -5583,7 +5570,6 @@ QComboBox QListView
                           <property name="font">
                            <font>
                             <pointsize>10</pointsize>
-                            <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
@@ -5831,7 +5817,6 @@ QComboBox QListView
                              <property name="font">
                               <font>
                                <pointsize>10</pointsize>
-                               <weight>75</weight>
                                <bold>true</bold>
                               </font>
                              </property>
@@ -6128,7 +6113,6 @@ QComboBox QListView
                              <property name="font">
                               <font>
                                <pointsize>10</pointsize>
-                               <weight>75</weight>
                                <bold>true</bold>
                               </font>
                              </property>
@@ -6581,7 +6565,6 @@ QComboBox QListView
                  <property name="font">
                   <font>
                    <pointsize>10</pointsize>
-                   <weight>75</weight>
                    <bold>true</bold>
                   </font>
                  </property>
@@ -6723,7 +6706,6 @@ QComboBox QListView
                  <property name="font">
                   <font>
                    <pointsize>10</pointsize>
-                   <weight>75</weight>
                    <bold>true</bold>
                   </font>
                  </property>
@@ -6876,7 +6858,6 @@ QComboBox QListView
                  <property name="font">
                   <font>
                    <pointsize>10</pointsize>
-                   <weight>75</weight>
                    <bold>true</bold>
                   </font>
                  </property>
@@ -7139,7 +7120,6 @@ QComboBox QListView
                 <property name="font">
                  <font>
                   <pointsize>10</pointsize>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -7244,7 +7224,6 @@ QComboBox QListView
                 <property name="font">
                  <font>
                   <pointsize>10</pointsize>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -7426,8 +7405,8 @@ QComboBox QListView
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>597</width>
-                    <height>1194</height>
+                    <width>571</width>
+                    <height>1206</height>
                    </rect>
                   </property>
                   <layout class="QVBoxLayout" name="verticalLayout">
@@ -7798,7 +7777,6 @@ QComboBox QListView
                                       <property name="font">
                                        <font>
                                         <pointsize>26</pointsize>
-                                        <weight>75</weight>
                                         <bold>true</bold>
                                        </font>
                                       </property>
@@ -7984,7 +7962,6 @@ QComboBox QListView
                                       <property name="font">
                                        <font>
                                         <pointsize>26</pointsize>
-                                        <weight>75</weight>
                                         <bold>true</bold>
                                        </font>
                                       </property>
@@ -8170,7 +8147,6 @@ QComboBox QListView
                                       <property name="font">
                                        <font>
                                         <pointsize>26</pointsize>
-                                        <weight>75</weight>
                                         <bold>true</bold>
                                        </font>
                                       </property>
@@ -8366,8 +8342,8 @@ QComboBox QListView
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>562</width>
-              <height>1332</height>
+              <width>581</width>
+              <height>1382</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -8559,7 +8535,6 @@ QComboBox QListView
                                    <property name="font">
                                     <font>
                                      <pointsize>8</pointsize>
-                                     <weight>75</weight>
                                      <bold>true</bold>
                                     </font>
                                    </property>
@@ -9304,7 +9279,6 @@ QComboBox QListView
                                <property name="font">
                                 <font>
                                  <pointsize>10</pointsize>
-                                 <weight>50</weight>
                                  <bold>false</bold>
                                 </font>
                                </property>
@@ -9441,7 +9415,6 @@ QComboBox QListView
                                <property name="font">
                                 <font>
                                  <pointsize>10</pointsize>
-                                 <weight>50</weight>
                                  <bold>false</bold>
                                 </font>
                                </property>
@@ -10480,7 +10453,6 @@ QComboBox QListView
                     <property name="font">
                      <font>
                       <pointsize>14</pointsize>
-                      <weight>50</weight>
                       <bold>false</bold>
                       <kerning>true</kerning>
                      </font>
@@ -10523,7 +10495,6 @@ QComboBox QListView
                       <property name="font">
                        <font>
                         <pointsize>10</pointsize>
-                        <weight>50</weight>
                         <bold>false</bold>
                        </font>
                       </property>
@@ -10562,7 +10533,6 @@ QComboBox QListView
                       <property name="font">
                        <font>
                         <pointsize>10</pointsize>
-                        <weight>50</weight>
                         <bold>false</bold>
                        </font>
                       </property>
@@ -10643,7 +10613,6 @@ QComboBox QListView
                     <property name="font">
                      <font>
                       <pointsize>14</pointsize>
-                      <weight>50</weight>
                       <bold>false</bold>
                       <kerning>true</kerning>
                      </font>
@@ -10683,7 +10652,6 @@ QComboBox QListView
                       <property name="font">
                        <font>
                         <pointsize>10</pointsize>
-                        <weight>50</weight>
                         <bold>false</bold>
                        </font>
                       </property>
@@ -10718,7 +10686,6 @@ QComboBox QListView
                       <property name="font">
                        <font>
                         <pointsize>10</pointsize>
-                        <weight>50</weight>
                         <bold>false</bold>
                        </font>
                       </property>
@@ -10744,7 +10711,6 @@ QComboBox QListView
                       <property name="font">
                        <font>
                         <pointsize>10</pointsize>
-                        <weight>50</weight>
                         <bold>false</bold>
                         <kerning>true</kerning>
                        </font>
@@ -10800,7 +10766,6 @@ QComboBox QListView
                     <property name="font">
                      <font>
                       <pointsize>14</pointsize>
-                      <weight>50</weight>
                       <bold>false</bold>
                       <kerning>true</kerning>
                      </font>
@@ -10840,7 +10805,6 @@ QComboBox QListView
                       <property name="font">
                        <font>
                         <pointsize>10</pointsize>
-                        <weight>50</weight>
                         <bold>false</bold>
                        </font>
                       </property>
@@ -10875,7 +10839,6 @@ QComboBox QListView
                       <property name="font">
                        <font>
                         <pointsize>10</pointsize>
-                        <weight>50</weight>
                         <bold>false</bold>
                        </font>
                       </property>
@@ -10895,7 +10858,6 @@ QComboBox QListView
                       <property name="font">
                        <font>
                         <pointsize>10</pointsize>
-                        <weight>50</weight>
                         <bold>false</bold>
                         <kerning>true</kerning>
                        </font>
@@ -11022,8 +10984,8 @@ QComboBox QListView
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>183</width>
-                  <height>631</height>
+                  <width>197</width>
+                  <height>649</height>
                  </rect>
                 </property>
                 <property name="sizePolicy">
@@ -11126,7 +11088,6 @@ QComboBox QListView
                            </property>
                            <property name="font">
                             <font>
-                             <weight>75</weight>
                              <bold>true</bold>
                             </font>
                            </property>
@@ -11342,7 +11303,7 @@ QComboBox QListView
                                    <x>0</x>
                                    <y>0</y>
                                    <width>190</width>
-                                   <height>210</height>
+                                   <height>206</height>
                                   </rect>
                                  </property>
                                  <property name="sizePolicy">
@@ -11444,7 +11405,6 @@ QComboBox QListView
                                       <property name="font">
                                        <font>
                                         <pointsize>10</pointsize>
-                                        <weight>50</weight>
                                         <bold>false</bold>
                                         <kerning>true</kerning>
                                        </font>
@@ -11602,7 +11562,6 @@ QComboBox QListView
                             <property name="font">
                              <font>
                               <pointsize>10</pointsize>
-                              <weight>50</weight>
                               <bold>false</bold>
                              </font>
                             </property>
@@ -11757,7 +11716,6 @@ QComboBox QListView
                       </property>
                       <property name="font">
                        <font>
-                        <weight>75</weight>
                         <bold>true</bold>
                        </font>
                       </property>
@@ -11831,7 +11789,6 @@ QComboBox QListView
                                 </property>
                                 <property name="font">
                                  <font>
-                                  <weight>50</weight>
                                   <bold>false</bold>
                                  </font>
                                 </property>
@@ -11863,7 +11820,6 @@ QComboBox QListView
                                 </property>
                                 <property name="font">
                                  <font>
-                                  <weight>50</weight>
                                   <bold>false</bold>
                                  </font>
                                 </property>
@@ -12759,8 +12715,8 @@ QComboBox QListView
                                  <rect>
                                   <x>0</x>
                                   <y>0</y>
-                                  <width>186</width>
-                                  <height>36</height>
+                                  <width>100</width>
+                                  <height>30</height>
                                  </rect>
                                 </property>
                                 <property name="wpClear" stdset="0">
@@ -12921,7 +12877,6 @@ QComboBox QListView
                                </property>
                                <property name="font">
                                 <font>
-                                 <weight>75</weight>
                                  <bold>true</bold>
                                 </font>
                                </property>
@@ -13110,7 +13065,6 @@ QComboBox QListView
                                </property>
                                <property name="font">
                                 <font>
-                                 <weight>75</weight>
                                  <bold>true</bold>
                                 </font>
                                </property>
@@ -13683,7 +13637,6 @@ QComboBox QListView
                   <font>
                    <family>DejaVu Sans Mono</family>
                    <pointsize>9</pointsize>
-                   <weight>50</weight>
                    <bold>false</bold>
                    <kerning>false</kerning>
                   </font>
@@ -13711,8 +13664,11 @@ QComboBox QListView
                  </property>
                  <property name="html">
                   <string notr="true">&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;style type="text/css"&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;meta charset="utf-8" /&gt;&lt;style type="text/css"&gt;
 p, li { white-space: pre-wrap; }
+hr { height: 1px; border-width: 0; }
+li.unchecked::marker { content: "\2610"; }
+li.checked::marker { content: "\2612"; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'DejaVu Sans Mono'; font-size:9pt; font-weight:400; font-style:normal;"&gt;
 &lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
@@ -13853,7 +13809,6 @@ p, li { white-space: pre-wrap; }
                      <property name="font">
                       <font>
                        <pointsize>10</pointsize>
-                       <weight>75</weight>
                        <bold>true</bold>
                       </font>
                      </property>
@@ -13904,7 +13859,6 @@ p, li { white-space: pre-wrap; }
                      <property name="font">
                       <font>
                        <pointsize>10</pointsize>
-                       <weight>75</weight>
                        <bold>true</bold>
                       </font>
                      </property>
@@ -13955,7 +13909,6 @@ p, li { white-space: pre-wrap; }
                      <property name="font">
                       <font>
                        <pointsize>10</pointsize>
-                       <weight>75</weight>
                        <bold>true</bold>
                       </font>
                      </property>
@@ -14000,7 +13953,6 @@ p, li { white-space: pre-wrap; }
                      <property name="font">
                       <font>
                        <pointsize>10</pointsize>
-                       <weight>75</weight>
                        <bold>true</bold>
                       </font>
                      </property>
@@ -14045,7 +13997,6 @@ p, li { white-space: pre-wrap; }
                      <property name="font">
                       <font>
                        <pointsize>10</pointsize>
-                       <weight>75</weight>
                        <bold>true</bold>
                       </font>
                      </property>
@@ -14096,7 +14047,6 @@ p, li { white-space: pre-wrap; }
                      <property name="font">
                       <font>
                        <pointsize>10</pointsize>
-                       <weight>75</weight>
                        <bold>true</bold>
                       </font>
                      </property>
@@ -14141,7 +14091,6 @@ p, li { white-space: pre-wrap; }
                      <property name="font">
                       <font>
                        <pointsize>10</pointsize>
-                       <weight>75</weight>
                        <bold>true</bold>
                       </font>
                      </property>
@@ -14170,7 +14119,7 @@ p, li { white-space: pre-wrap; }
              <property name="minimumSize">
               <size>
                <width>0</width>
-               <height>20</height>
+               <height>24</height>
               </size>
              </property>
              <property name="widgetResizable">
@@ -14182,7 +14131,7 @@ p, li { white-space: pre-wrap; }
                 <x>0</x>
                 <y>0</y>
                 <width>240</width>
-                <height>2481</height>
+                <height>2599</height>
                </rect>
               </property>
               <property name="sizePolicy">
@@ -14235,7 +14184,6 @@ p, li { white-space: pre-wrap; }
                     </property>
                     <property name="font">
                      <font>
-                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -14386,7 +14334,6 @@ p, li { white-space: pre-wrap; }
                     </property>
                     <property name="font">
                      <font>
-                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -14486,7 +14433,6 @@ p, li { white-space: pre-wrap; }
                             <property name="font">
                              <font>
                               <pointsize>10</pointsize>
-                              <weight>50</weight>
                               <bold>false</bold>
                              </font>
                             </property>
@@ -14673,7 +14619,6 @@ p, li { white-space: pre-wrap; }
                     </property>
                     <property name="font">
                      <font>
-                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -14842,7 +14787,6 @@ p, li { white-space: pre-wrap; }
                     </property>
                     <property name="font">
                      <font>
-                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -15005,7 +14949,6 @@ p, li { white-space: pre-wrap; }
                                 <property name="font">
                                  <font>
                                   <pointsize>10</pointsize>
-                                  <weight>75</weight>
                                   <bold>true</bold>
                                  </font>
                                 </property>
@@ -15050,7 +14993,6 @@ p, li { white-space: pre-wrap; }
                                 <property name="font">
                                  <font>
                                   <pointsize>10</pointsize>
-                                  <weight>75</weight>
                                   <bold>true</bold>
                                  </font>
                                 </property>
@@ -15182,6 +15124,16 @@ p, li { white-space: pre-wrap; }
                          </layout>
                         </item>
                         <item>
+                         <widget class="QCheckBox" name="checkBox_laser_watchdog">
+                          <property name="text">
+                           <string>Enable Watchdog</string>
+                          </property>
+                          <property name="checked">
+                           <bool>true</bool>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
                          <layout class="QHBoxLayout" name="horizontalLayout_45">
                           <property name="spacing">
                            <number>0</number>
@@ -15204,7 +15156,7 @@ p, li { white-space: pre-wrap; }
                              <set>Qt::AlignCenter</set>
                             </property>
                             <property name="minimum">
-                             <number>0</number>
+                             <number>3</number>
                             </property>
                             <property name="maximum">
                              <number>1200</number>
@@ -15291,7 +15243,6 @@ p, li { white-space: pre-wrap; }
                     </property>
                     <property name="font">
                      <font>
-                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -15614,7 +15565,6 @@ p, li { white-space: pre-wrap; }
                     </property>
                     <property name="font">
                      <font>
-                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -15761,7 +15711,6 @@ p, li { white-space: pre-wrap; }
                                 <property name="font">
                                  <font>
                                   <pointsize>10</pointsize>
-                                  <weight>75</weight>
                                   <bold>true</bold>
                                  </font>
                                 </property>
@@ -15806,7 +15755,6 @@ p, li { white-space: pre-wrap; }
                                 <property name="font">
                                  <font>
                                   <pointsize>10</pointsize>
-                                  <weight>75</weight>
                                   <bold>true</bold>
                                  </font>
                                 </property>
@@ -16029,7 +15977,6 @@ p, li { white-space: pre-wrap; }
                                 <property name="font">
                                  <font>
                                   <pointsize>10</pointsize>
-                                  <weight>75</weight>
                                   <bold>true</bold>
                                  </font>
                                 </property>
@@ -16074,7 +16021,6 @@ p, li { white-space: pre-wrap; }
                                 <property name="font">
                                  <font>
                                   <pointsize>10</pointsize>
-                                  <weight>75</weight>
                                   <bold>true</bold>
                                  </font>
                                 </property>
@@ -16184,7 +16130,6 @@ p, li { white-space: pre-wrap; }
                     </property>
                     <property name="font">
                      <font>
-                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -16405,7 +16350,6 @@ p, li { white-space: pre-wrap; }
                               <property name="font">
                                <font>
                                 <pointsize>10</pointsize>
-                                <weight>75</weight>
                                 <bold>true</bold>
                                </font>
                               </property>
@@ -16453,7 +16397,6 @@ p, li { white-space: pre-wrap; }
                               <property name="font">
                                <font>
                                 <pointsize>10</pointsize>
-                                <weight>75</weight>
                                 <bold>true</bold>
                                </font>
                               </property>
@@ -16513,7 +16456,6 @@ p, li { white-space: pre-wrap; }
                     </property>
                     <property name="font">
                      <font>
-                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -16604,7 +16546,6 @@ p, li { white-space: pre-wrap; }
                             <property name="font">
                              <font>
                               <pointsize>10</pointsize>
-                              <weight>75</weight>
                               <bold>true</bold>
                              </font>
                             </property>
@@ -16692,7 +16633,6 @@ p, li { white-space: pre-wrap; }
                             <property name="font">
                              <font>
                               <pointsize>10</pointsize>
-                              <weight>75</weight>
                               <bold>true</bold>
                              </font>
                             </property>
@@ -16783,7 +16723,6 @@ p, li { white-space: pre-wrap; }
                     </property>
                     <property name="font">
                      <font>
-                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -16898,7 +16837,6 @@ p, li { white-space: pre-wrap; }
                             <property name="font">
                              <font>
                               <pointsize>10</pointsize>
-                              <weight>75</weight>
                               <bold>true</bold>
                              </font>
                             </property>
@@ -16989,7 +16927,6 @@ p, li { white-space: pre-wrap; }
                             <property name="font">
                              <font>
                               <pointsize>10</pointsize>
-                              <weight>75</weight>
                               <bold>true</bold>
                              </font>
                             </property>
@@ -17059,7 +16996,6 @@ p, li { white-space: pre-wrap; }
                     </property>
                     <property name="font">
                      <font>
-                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -17253,7 +17189,6 @@ p, li { white-space: pre-wrap; }
                     </property>
                     <property name="font">
                      <font>
-                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -17382,7 +17317,6 @@ p, li { white-space: pre-wrap; }
                     </property>
                     <property name="font">
                      <font>
-                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -17500,7 +17434,6 @@ p, li { white-space: pre-wrap; }
                               <property name="font">
                                <font>
                                 <pointsize>10</pointsize>
-                                <weight>75</weight>
                                 <bold>true</bold>
                                </font>
                               </property>
@@ -17545,7 +17478,6 @@ p, li { white-space: pre-wrap; }
                               <property name="font">
                                <font>
                                 <pointsize>10</pointsize>
-                                <weight>75</weight>
                                 <bold>true</bold>
                                </font>
                               </property>
@@ -17670,7 +17602,6 @@ p, li { white-space: pre-wrap; }
                     </property>
                     <property name="font">
                      <font>
-                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -18074,7 +18005,6 @@ p, li { white-space: pre-wrap; }
                     </property>
                     <property name="font">
                      <font>
-                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -18264,7 +18194,6 @@ p, li { white-space: pre-wrap; }
                     </property>
                     <property name="font">
                      <font>
-                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -18415,7 +18344,6 @@ p, li { white-space: pre-wrap; }
                     </property>
                     <property name="font">
                      <font>
-                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -18500,7 +18428,6 @@ p, li { white-space: pre-wrap; }
                           </property>
                           <property name="font">
                            <font>
-                            <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
@@ -18711,7 +18638,6 @@ p, li { white-space: pre-wrap; }
                 </property>
                 <property name="font">
                  <font>
-                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -18809,7 +18735,6 @@ p, li { white-space: pre-wrap; }
                       <property name="font">
                        <font>
                         <pointsize>9</pointsize>
-                        <weight>75</weight>
                         <bold>true</bold>
                        </font>
                       </property>
@@ -18835,7 +18760,6 @@ p, li { white-space: pre-wrap; }
                       <property name="font">
                        <font>
                         <pointsize>9</pointsize>
-                        <weight>75</weight>
                         <bold>true</bold>
                        </font>
                       </property>
@@ -18870,7 +18794,6 @@ p, li { white-space: pre-wrap; }
                       <property name="font">
                        <font>
                         <pointsize>9</pointsize>
-                        <weight>75</weight>
                         <bold>true</bold>
                        </font>
                       </property>

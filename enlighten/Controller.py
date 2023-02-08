@@ -237,7 +237,7 @@ class Controller:
         self.form.show()
 
         if headless:
-            # self.hide() messes with gui tests since the componets are also hidden
+            # self.hide() messes with gui tests since the components are also hidden
             # So I replaced with minimizing, which I recognize is not a true headless
             self.form.showMinimized()
 

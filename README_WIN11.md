@@ -18,36 +18,37 @@ Windows environments have additional dependencies for KnowItAll support:
 
 Binary snapshots of key installers are retained for posterity in [Enlighten-dependencies](https://github.com/WasatchPhotonics/Enlighten-dependencies).
 
+## Getting Enlighten
+
+You must have a copy of Wasatch.PY in a parallel directory.
+
+    $ git clone git@github.com:WasatchPhotonics/ENLIGHTEN.git
+    $ git clone git@github.com:WasatchPhotonics/Wasatch.PY.git
+    $ cd ENLIGHTEN
+
 ## Configuration
 
 Enlighten is written in Python, so there is no "build" per se -- you don't have
 to explicitly compile classes the way you do in C++ or Java.
 
 However, you do need to properly configure your environment with all our library 
-dependencies and package requirements.  This includes checking out a copy of 
-Wasatch.PY into a directory parallel to ENLIGHTEN, and adding to your PYTHONPATH:
+dependencies and package requirements.
 
-    $ cd work\code (or wherever you base your code)
-    $ git clone git@github.com:WasatchPhotonics/ENLIGHTEN.git
-    $ git clone git@github.com:WasatchPhotonics/Wasatch.PY.git
-    $ cd ENLIGHTEN
-    $ set PYTHONPATH=..\Wasatch.PY;pluginExamples;.;enlighten\assets\uic_qrc
+To bootstrap and validate your development environment, run this in CMD [started as an administrator](https://stackoverflow.com/questions/61350929/not-a-conda-environment):
 
-*Note:* when setting environment variables like PYTHONPATH under Windows, 
-_do not_ quote them (e.g., do *not* type: set PYTHONPATH="..\Wasatch.PY")
+    $ scripts\bootstrap.bat
+    $ pip install -r requirements.txt
 
-To bootstrap and validate your development environment, run this in CMD started as an administrator:
+## Activating the environment
 
-    scripts\bootstrap.bat
+When interacting with Enlighten, be sure to activate your shell. This provides access to the dependencies, such as numpy and matplotlib, and it is required for running Enlighten or creating installers.
 
-Then run a quick pre-development test:
+    $ scripts\bootstrap.bat activate
 
-    python scripts\Enlighten.py
+## Running Enlighten
 
-On subsequent runs, skip initialization steps:
+From an activated shell, use the run script
 
-    $ cd ENLIGHTEN
-    $ activate.bat
     $ run.bat
 
 Note that to test ENLIGHTEN with a spectrometer, you'll need to install the
@@ -70,12 +71,9 @@ instead navigate here:
 
 ## Build a Release Installer
 
-The current recommended process is to build installers on Win10-64.
+From an activated shell, do not run as administrator
 
-To build an installer, you need to first install all dependencies for your
-platform, then run this from a Git Cmd shell:
-
-    scripts\bootstrap.bat installer
+    $ scripts\bootstrap.bat just-installer
 
 ## Convenience Scripts
 
