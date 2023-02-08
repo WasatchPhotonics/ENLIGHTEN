@@ -9,6 +9,8 @@ REM   scripts\bootstrap.bat                                       (bootstrap dev
 REM   scripts\bootstrap.bat installer 2>build.err | tee build.out (as above, then build installer)
 REM   scripts\bootstrap.bat just-installer                        (just build installer)
 
+set PYTHONPATH=..\Wasatch.PY;pluginExamples;.;enlighten\assets\uic_qrc
+
 REM parse ONE cmd-line arg
 if "%1" == "" (
     set "build_target=default"
