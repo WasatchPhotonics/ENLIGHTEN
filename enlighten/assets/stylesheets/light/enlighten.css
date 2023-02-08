@@ -126,6 +126,13 @@ QMainWindow::separator:vertical {
   image: url(":/qss_icons/images/darkstyle_icons/toolbar_separator_horizontal.png");
 }
 
+/* QMessageBox ---------------------------------------------------------------
+
+--------------------------------------------------------------------------- */
+QMessageBox {
+  background-color: hsl(0, 0%, 60%);
+}
+
 /* QToolTip ---------------------------------------------------------------
 https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qtooltip
 --------------------------------------------------------------------------- */
