@@ -76,7 +76,7 @@ class LaserControlFeature:
         self.spinbox_power      .valueChanged       .connect(self.slider_power.setValue)
         self.spinbox_power      .valueChanged       .connect(self.set_laser_power_callback)
         self.spinbox_watchdog   .valueChanged       .connect(self.set_watchdog_callback)
-        self.checkbox_watchdog  .stateChanged       .connect(self.set_watchdog_enable_callback)
+        self.checkbox_watchdog  .clicked       .connect(self.set_watchdog_enable_callback)
 
         for key, item in self.__dict__.items():
             if key.startswith("spinbox_") or key.startswith("combo_"):
@@ -419,15 +419,15 @@ class LaserControlFeature:
         self.multispec.change_device_setting("laser_watchdog_sec", sec)
 
     # called when watchdog is checked ON or OFF
-    def set_watchdog_enable_callback(self):
+    def set_watchdog_enable_callback(self, state):
 
-        if not self.checkbox_watchdog.isChecked():
+        if not state:
 
-            log.debug("[wdsb] User initiated watchdog disable")
+            log.debug("User initiated watchdog disable")
 
             if self.confirm_disable():
 
-                log.debug("[wdsb] User confirmed watchdog disable")
+                log.debug("User confirmed watchdog disable")
 
                 # disable the watchdog
                 self.set_watchdog_time(0)
@@ -435,13 +435,13 @@ class LaserControlFeature:
                 self.lb_watchdog.setVisible(False)
             else:
 
-                log.debug("[wdsb] User cancelled watchdog disable")
+                log.debug("User cancelled watchdog disable")
 
                 # undo unchecking
                 self.checkbox_watchdog.setChecked(True)
         else:
 
-            log.debug("[wdsb] User enabled watchdog")
+            log.debug("User enabled watchdog")
 
             # set the watchdog to the spinbox value
             self.spinbox_watchdog.setVisible(True)
