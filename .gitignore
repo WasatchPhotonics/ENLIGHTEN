@@ -36,6 +36,7 @@ out.txt
 err.txt
 wasatch_applog.txt
 .vs/
+settings.json
 
 node_modules
 keys.py
