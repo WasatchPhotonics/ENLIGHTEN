@@ -5,7 +5,6 @@
 - 2023-02-08 4.0.5
     - watchdog toggle via checkbox
     - minimum watchdog of 3 sec
-    - create installers from Windows 11
 - 2023-01-31 4.0.4
     - fixed logo in light mode
     - fixed installer bug?
