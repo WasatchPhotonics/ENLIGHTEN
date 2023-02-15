@@ -71,9 +71,12 @@ instead navigate here:
 
 ## Build a Release Installer
 
-From an activated shell, do not run as administrator
+Creating installers from Windows 11 is currently prone to runtime errors (missing dependencies psutil, \_fblas). 
 
-    $ scripts\bootstrap.bat just-installer
+The best method is to create installers from Windows 10, which are usable in Windows 11.
+
+~~From an activated shell, do not run as administrator~~
+~~$ scripts\bootstrap.bat just-installer~~
 
 ## Convenience Scripts
 
