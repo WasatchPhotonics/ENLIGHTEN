@@ -1,4 +1,4 @@
-# Windows 10 Development Environment
+# Windows 11 Development Environment
 
 ## Dependencies
 
