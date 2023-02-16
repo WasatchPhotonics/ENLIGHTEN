@@ -2,6 +2,9 @@
 
 # 4.0 GUI Refactoring
 
+- 2023-02-08 4.0.5
+    - watchdog toggle via checkbox
+    - minimum watchdog of 3 sec
 - 2023-01-31 4.0.4
     - fixed logo in light mode
     - fixed installer bug?
