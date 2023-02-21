@@ -18,9 +18,11 @@ TODO: enable-able only in non-Raman mode
     [x] fixes workaround sleep for error, error msg
 
 TODO: fix graphing bugs
-    [ ] graph only shows up sometimes?
-    [ ] series_names duplicates
-    -- remove need to "declare" series_names
+    [x] graph only shows up sometimes?
+        - forgot to "enable"!
+    [x] series_names duplicates
+        - seems to be caused by bad series_name declarations
+    [ ] add clear graph button
 
 TODO: actually compute the scalars
 TODO: actually compute AU/min
@@ -50,6 +52,10 @@ AChE = activity * 1.58e3
 activity = (sample mE - blank mE) * 1.58e3 / 10.6 
 """
 
+def remap(x, srcA, srcB, destA, destB):
+    i = (x-srcA)/(srcB-srcA)
+    return destA + int((destB - destA)*i)
+
 class Worek(EnlightenPluginBase):
 
     def __init__(self):
@@ -76,7 +82,8 @@ class Worek(EnlightenPluginBase):
             fields           = fields,
             is_blocking      = False,
             has_other_graph  = True,
-            series_names     = ["ChE Activity", "Hb Content"])
+            series_names     = ["ChE Activity", "Hb Content"],
+            x_axis_label = "time (sec)")
 
     def connect(self, enlighten_info):
         # if enlighten_info.ctl.page_nav.operation_mode != 4: # 4 = ABSORBANCE
@@ -95,19 +102,12 @@ class Worek(EnlightenPluginBase):
 
         self.sampleTimes.append(time.time() - self.startTime)
 
-        # request.settings.wavelengths (&wavenumbers)
-        # provide info about X axis
-        """
-        if unit == "nm":
-            series_x = settings.wavelengths
-        elif unit == "cm":
-            series_x = settings.wavenumbers
-        else:
-            series_x = list(range(len(spiky_spectra)))
-        """
+        # remap wavelengths from codomain to domain of settings.wavelength (linear fn: pix->nm)
+        pixel_412nm = remap(912, request.settings.wavelengths[0], request.settings.wavelengths[-1], 0, len(request.settings.wavelengths))
+        pixel_436nm = remap(1014, request.settings.wavelengths[0], request.settings.wavelengths[-1], 0, len(request.settings.wavelengths))
 
-        self.ChEActivity = spectrum
-        self.HbContent.append(0)
+        self.ChEActivity.append(spectrum[pixel_436nm])
+        self.HbContent.append(spectrum[pixel_412nm])
 
         # these quantities are 
         # - Hemoglobin concentration
@@ -123,12 +123,12 @@ class Worek(EnlightenPluginBase):
         return EnlightenPluginResponse(request,
             series = {
                 "ChE Activity" : {
-                    "x": np.arange(self.sampleTimes),
-                    "y": np.arange(self.ChEActivity)
+                    "x": np.array(self.sampleTimes),
+                    "y": np.array(self.ChEActivity)
                 },
                 "Hb Content" : {
-                    "x": np.arange(self.sampleTimes),
-                    "y": np.arange(self.HbContent)
+                    "x": np.array(self.sampleTimes),
+                    "y": np.array(self.HbContent)
                 }
             },
             outputs = { 

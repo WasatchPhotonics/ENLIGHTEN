@@ -172,8 +172,7 @@ class PluginController:
             lb_title,
             lb_widget,
             vlayout_fields,
-            measurements,
-            ctl):
+            measurements):
 
         log.debug("instantiating PluginController")
 
@@ -211,7 +210,6 @@ class PluginController:
         self.vlayout_fields             = vlayout_fields
         self.layout_graphs              = layout_graphs
         self.measurements               = measurements
-        self.ctl                        = ctl
 
         # provide post-creation
         self.grid = None
@@ -298,8 +296,7 @@ class PluginController:
             measurements_clipboard = self.measurements_clipboard,
             read_measurements = self.measurements.read_measurements,
             vignette_feature = self.vignette_feature,
-            plugin_fields = self.get_plugin_fields,
-            ctl = self.ctl) # leaving read measurement call for legacy purposes
+            plugin_fields = self.get_plugin_fields) # leaving read measurement call for legacy purposes
 
     def initialize_python_path(self):
         log.debug("initializing plugin path")
@@ -567,14 +564,16 @@ class PluginController:
         log.debug("create_worker: setting daemon")
         self.worker.setDaemon(True)
 
-        try:
-            self.worker.module_info.instance.connect()
-        except Exception as ex:
-            self.display_exception(f"Plugin {self.worker.module_info.module_name} failed to start", ex)
-
         log.debug("create_worker: starting")
         self.worker.start()
         log.debug("create_worker: done")
+
+        # freeze GUI briefly to give worker a chance to fail on connect()
+        sleep(0.05)
+
+        if self.worker.error_message is not None:
+            self.display_exception(f"Plugin {module_name} failed to start", self.worker.error_message)
+            return False
 
         log.debug("PluginWorker error message is empty")
         return True
