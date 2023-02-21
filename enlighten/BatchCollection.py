@@ -327,7 +327,7 @@ class BatchCollection(object):
 
             s += f"<p>Each batch will collect {self.measurement_count} measurements (<b>Measurement Count</b>). "
             s += "The measurements will all be acquired at the current integration time. "
-            s += f"The measurements will be spaced to <i>start</i> {self.measurement_period_ms}ms apart (<b>Measuremnet Period</b>).</p>"
+            s += f"The measurements will be spaced to <i>start</i> {self.measurement_period_ms}ms apart (<b>Measurement Period</b>).</p>"
 
             if self.laser_mode == "manual":
                 s += "<p>The laser will not be automatically turned on or off during the collection (<b>Laser Mode Manual</b>).</p>"
@@ -388,7 +388,8 @@ class BatchCollection(object):
 
         self.current_batch_count = 0
 
-        self.start_batch()
+        self.timer_batch.start(1000*self.batch_period_sec)
+        #self.start_batch()
         return True
 
     def start_batch(self):
@@ -538,7 +539,7 @@ class BatchCollection(object):
             self.stop()
             return
 
-        self.factory.label_suffix = "%d-of-%d" % (self.current_measurement_count + 1, self.measurement_count)
+        self.factory.label_suffix = "B%d %d-of-%d" % (self.current_batch_count + 1, self.current_measurement_count + 1, self.measurement_count)
 
         # compute (but don't yet schedule) next start-time now, so that the
         # measurement period can be "start-to-start"
