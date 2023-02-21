@@ -25,7 +25,9 @@ TODO: fix graphing bugs
     [ ] add clear graph button
 
 TODO: actually compute the scalars
+    - depends on slope
 TODO: actually compute AU/min
+    [ ] add start / stop measure slope buttons
     * maintain a history of Absorbance spectra
     * for wavelengths 436nm(ChE activity) & 412nm(Hb)
         - how much did it change in the past minute
@@ -56,6 +58,9 @@ def remap(x, srcA, srcB, destA, destB):
     i = (x-srcA)/(srcB-srcA)
     return destA + int((destB - destA)*i)
 
+ChE_label = "ChE Activity (436 nm)"
+Hb_label = "Hb Content (546 nm)"
+
 class Worek(EnlightenPluginBase):
 
     def __init__(self):
@@ -77,12 +82,27 @@ class Worek(EnlightenPluginBase):
             datatype    = "pandas", 
             direction   = "output"))
 
+        fields.append(EnlightenPluginField(
+            name        = "clear graph", 
+            datatype    = "button", 
+            direction   = "input"))
+
+        fields.append(EnlightenPluginField(
+            name        = "start measure slope", 
+            datatype    = "button", 
+            direction   = "input"))
+
+        fields.append(EnlightenPluginField(
+            name        = "stop measure slope", 
+            datatype    = "button", 
+            direction   = "input"))
+
         return EnlightenPluginConfiguration(
             name             = "Worek", 
             fields           = fields,
             is_blocking      = False,
             has_other_graph  = True,
-            series_names     = ["ChE Activity", "Hb Content"],
+            series_names     = [ChE_label, Hb_label],
             x_axis_label = "time (sec)")
 
     def connect(self, enlighten_info):
@@ -103,18 +123,19 @@ class Worek(EnlightenPluginBase):
         self.sampleTimes.append(time.time() - self.startTime)
 
         # remap wavelengths from codomain to domain of settings.wavelength (linear fn: pix->nm)
-        pixel_412nm = remap(912, request.settings.wavelengths[0], request.settings.wavelengths[-1], 0, len(request.settings.wavelengths))
+        # currently using 912/1024nm bc my test spectrometer does not go as low as 400
+        pixel_546nm = remap(912, request.settings.wavelengths[0], request.settings.wavelengths[-1], 0, len(request.settings.wavelengths))
         pixel_436nm = remap(1014, request.settings.wavelengths[0], request.settings.wavelengths[-1], 0, len(request.settings.wavelengths))
 
         self.ChEActivity.append(spectrum[pixel_436nm])
-        self.HbContent.append(spectrum[pixel_412nm])
+        self.HbContent.append(spectrum[pixel_546nm])
 
         # these quantities are 
         # - Hemoglobin concentration
         # - Enzyme Activity (AChE, BChE)
         # - Erythrocyte AChE
         dataframe = pd.DataFrame( 
-            [ -1, -1, -1 ],
+            [ -1, "--", -1 ],
             index = ["Hb (µmol/l Hb)", "Activity (µmol/l/min)", "AChE (mU/µmol Hb)"]
         )
 
@@ -122,17 +143,18 @@ class Worek(EnlightenPluginBase):
         
         return EnlightenPluginResponse(request,
             series = {
-                "ChE Activity" : {
+                ChE_label : {
                     "x": np.array(self.sampleTimes),
                     "y": np.array(self.ChEActivity)
                 },
-                "Hb Content" : {
+                Hb_label : {
                     "x": np.array(self.sampleTimes),
                     "y": np.array(self.HbContent)
                 }
             },
-            outputs = { 
-                "Output Levels": dataframe,        # for table
+            outputs = {
+                # table (looks like a spreadsheet under the graph)
+                "Output Levels": dataframe,
             })
 
     def disconnect(self):
