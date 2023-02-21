@@ -188,7 +188,6 @@ class BatchCollection(object):
 
         # this is a separate timer used to schedule multiple batches 
         self.timer_batch = QtCore.QTimer()
-        self.timer_batch.setSingleShot(True)
         self.timer_batch.timeout.connect(self.start_batch)
 
         # initial settings
@@ -246,7 +245,7 @@ class BatchCollection(object):
         self.cb_export_after_batch.setChecked(self.config.get_bool(s, "export_after_batch"))
 
         if self.config.has_option(s, "measurement_count"):
-            measure_count =self.config.get_int(s, "measurement_count") 
+            measure_count = self.config.get_int(s, "measurement_count") 
             self.spinbox_measurement_count.setValue(measure_count)
 
         if self.config.has_option(s, "measurement_period_ms"):
@@ -408,9 +407,7 @@ class BatchCollection(object):
         # we should only be ABLE to start a batch if we're paused, but...just to be sure:
         self.vcr_controls.pause(all=self.save_options.save_all_spectrometers())
 
-        # Compute "next start time" now, at the beginning of the batch,
-        # because it's defined as a PERIOD (start-to-start), not a DELAY.
-        # Do this regardless of whether we think there will be more batches or not.
+        # Compute "next start time" now to display in Marquee
         self.next_batch_start_time = datetime.datetime.now() + datetime.timedelta(seconds=self.batch_period_sec)
         log.debug("next batch would start at %s", self.next_batch_start_time)
 
@@ -505,16 +502,8 @@ class BatchCollection(object):
         # either batch_count is negative (loop forever), or we're not there yet,
         # so keep going
 
-        # compute HOW LONG until the next batch should start (the "when" was 
-        # determined in start_batch)
-        if now >= self.next_batch_start_time:
-            log.info("starting next batch immediately")
-            self.start_batch()
-        else:
-            sleep_ms = (self.next_batch_start_time - now).total_seconds() * 1000
-            log.info("starting next batch in %d ms", sleep_ms)
+        if now < self.next_batch_start_time:
             self.marquee.info("next batch @ %s" % self.next_batch_start_time.strftime('%H:%M:%S'), persist=True)
-            self.timer_batch.start(sleep_ms)
 
     def vcr_stop(self):
         self.factory.label_suffix = None
