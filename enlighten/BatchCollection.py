@@ -540,6 +540,7 @@ class BatchCollection(object):
             return
 
         self.factory.label_suffix = "B%d %d-of-%d" % (self.current_batch_count + 1, self.current_measurement_count + 1, self.measurement_count)
+        self.current_measurement_count += 1
 
         # compute (but don't yet schedule) next start-time now, so that the
         # measurement period can be "start-to-start"
@@ -558,7 +559,6 @@ class BatchCollection(object):
             self.stop()
             return
 
-        self.current_measurement_count += 1
         log.info("measurement %d/%d (batch %d/%d)",
             self.current_measurement_count, self.measurement_count,
             self.current_batch_count, self.batch_count)
