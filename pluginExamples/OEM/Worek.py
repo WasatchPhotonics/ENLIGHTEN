@@ -22,7 +22,9 @@ TODO: fix graphing bugs
         - forgot to "enable"!
     [x] series_names duplicates
         - seems to be caused by bad series_name declarations
-    [ ] add clear graph button
+    [x] add clear graph button
+    [ ] add callbacks to buttons
+    [ ] hide pd frame until calculation is made?
 
 TODO: actually compute the scalars
     - depends on slope
@@ -76,6 +78,8 @@ class Worek(EnlightenPluginBase):
 
         fields = []
 
+        NOOP = lambda *k: None
+
         # return a Pandas DataFrame for the GUI table
         fields.append(EnlightenPluginField(
             name        = "Output Levels", 
@@ -85,17 +89,22 @@ class Worek(EnlightenPluginBase):
         fields.append(EnlightenPluginField(
             name        = "clear graph", 
             datatype    = "button", 
-            direction   = "input"))
+            callback   = NOOP))
 
         fields.append(EnlightenPluginField(
             name        = "start measure slope", 
             datatype    = "button", 
-            direction   = "input"))
+            callback   = NOOP))
 
         fields.append(EnlightenPluginField(
             name        = "stop measure slope", 
             datatype    = "button", 
-            direction   = "input"))
+            callback    = NOOP))
+
+        fields.append(EnlightenPluginField(
+            name        = "calculate values", 
+            datatype    = "button", 
+            callback    = NOOP))
 
         return EnlightenPluginConfiguration(
             name             = "Worek", 
