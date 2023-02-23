@@ -54,25 +54,72 @@ hemo = A * 1000/10.8
 activity = (sample mE - blank mE) / 10.6
 AChE = activity * 1.58e3
 activity = (sample mE - blank mE) * 1.58e3 / 10.6 
+
+=== PLUGINS IN ENLIGHTEN ===
+
+- get_peak_from_wavelength
+- get_widget_from_name
+
 """
 
-def remap(x, srcA, srcB, destA, destB):
-    i = (x-srcA)/(srcB-srcA)
-    return destA + int((destB - destA)*i)
+def get_peak_from_wavelength(wavelength, request):
+
+    wl_arr = request.settings.wavelengths
+    spectrum = request.processed_reading.processed
+
+    for i in range(len(wl_arr)-1):
+        if wl_arr[i] <= wavelength < wl_arr[i+1]:
+            return spectrum[i]
+
+    if wl_arr[-1] == wavelength:
+        return spectrum[-1]
+
+    raise Exception("Target wavelength %d not available." % wavelength)
+
 
 ChE_label = "ChE Activity (436 nm)"
 Hb_label = "Hb Content (546 nm)"
+
+Slope_start_label = "Slope Start"
+Slope_end_label = "Slope End"
+Slope_label = "Slope"
 
 class Worek(EnlightenPluginBase):
 
     def __init__(self):
         super().__init__()
+        self.clear_graph()
+        self.start_recording()
+
+    def start_recording(self):
+        self._isrecording = True
+
+    def stop_recording(self):
+        self._isrecording = False
+
+    def clear_graph(self):
+        self.startTime = time.time()
 
         self.sampleTimes = []
         self.ChEActivity = []
         self.HbContent = []
 
-        self.startTime = time.time()
+        self.slope_start = None
+        self.slope_end = None
+
+    def get_widget_from_name(self, name):
+        widget = None
+        for elem in self.enlighten_info.plugin_fields():
+            if elem.field_name == name:
+                widget = elem
+        return widget.field_widget
+
+    def graph_slope(self):
+        # self.get_widget_from_name("slope start") will be a QtWidgets.QDoubleSpinBox
+        # same thing for slope_end_txtbox
+
+        self.slope_start = self.get_widget_from_name("slope start").value()
+        self.slope_end = self.get_widget_from_name("slope end").value()
 
     def get_configuration(self):
 
@@ -87,19 +134,36 @@ class Worek(EnlightenPluginBase):
             direction   = "output"))
 
         fields.append(EnlightenPluginField(
-            name        = "clear graph", 
+            name        = "clear", 
             datatype    = "button", 
-            callback   = NOOP))
+            callback    = self.clear_graph))
 
         fields.append(EnlightenPluginField(
-            name        = "start measure slope", 
+            name        = "start recording", 
             datatype    = "button", 
-            callback   = NOOP))
+            callback    = self.start_recording))
 
         fields.append(EnlightenPluginField(
-            name        = "stop measure slope", 
+            name        = "stop recording", 
             datatype    = "button", 
-            callback    = NOOP))
+            callback    = self.stop_recording))
+
+        fields.append(EnlightenPluginField(
+            name        = "slope start", 
+            minimum     = 0,
+            datatype    = "float", 
+            direction   = "input"))
+
+        fields.append(EnlightenPluginField(
+            name        = "slope end", 
+            minimum     = 0,
+            datatype    = "float", 
+            direction   = "input"))
+
+        fields.append(EnlightenPluginField(
+            name        = "graph slope", 
+            datatype    = "button", 
+            callback   = self.graph_slope))
 
         fields.append(EnlightenPluginField(
             name        = "calculate values", 
@@ -111,7 +175,7 @@ class Worek(EnlightenPluginBase):
             fields           = fields,
             is_blocking      = False,
             has_other_graph  = True,
-            series_names     = [ChE_label, Hb_label],
+            series_names     = [ChE_label, Hb_label, Slope_start_label, Slope_end_label, Slope_label],
             x_axis_label = "time (sec)")
 
     def connect(self, enlighten_info):
@@ -123,21 +187,15 @@ class Worek(EnlightenPluginBase):
         #     log.critical("Worek plugin requires Non-Raman>Technique>Absorbance")
         #     raise Exception("Worek plugin requires Non-Raman>Technique>Absorbance")
 
-        super().connect(enlighten_info)
-        return True
+        return super().connect(enlighten_info)
 
     def process_request(self, request):
         spectrum = request.processed_reading.processed
 
-        self.sampleTimes.append(time.time() - self.startTime)
-
-        # remap wavelengths from codomain to domain of settings.wavelength (linear fn: pix->nm)
-        # currently using 912/1024nm bc my test spectrometer does not go as low as 400
-        pixel_546nm = remap(912, request.settings.wavelengths[0], request.settings.wavelengths[-1], 0, len(request.settings.wavelengths))
-        pixel_436nm = remap(1014, request.settings.wavelengths[0], request.settings.wavelengths[-1], 0, len(request.settings.wavelengths))
-
-        self.ChEActivity.append(spectrum[pixel_436nm])
-        self.HbContent.append(spectrum[pixel_546nm])
+        if self._isrecording:
+            self.sampleTimes.append(time.time() - self.startTime)
+            self.ChEActivity.append(get_peak_from_wavelength(1014, request))
+            self.HbContent.append(get_peak_from_wavelength(912.29, request))
 
         # these quantities are 
         # - Hemoglobin concentration
@@ -145,22 +203,39 @@ class Worek(EnlightenPluginBase):
         # - Erythrocyte AChE
         dataframe = pd.DataFrame( 
             [ -1, "--", -1 ],
-            index = ["Hb (µmol/l Hb)", "Activity (µmol/l/min)", "AChE (mU/µmol Hb)"]
+            index = ["Hb (µmol/l Hb)", "Activity (µmol/l/min)", "AChE (mU/µmol Hb)" ]
         )
 
         dataframe = dataframe.T
         
+        series = {}
+        series[ChE_label] = {
+            "x": np.array(self.sampleTimes),
+            "y": np.array(self.ChEActivity)
+        }       
+        series[Hb_label] = {
+            "x": np.array(self.sampleTimes),
+            "y": np.array(self.HbContent)
+        }
+
+        if self.slope_start != None:
+            # draw a vertical line at the time when they click "start measure slope"
+            series[Slope_start_label] = {
+                "x": np.array([self.slope_start, self.slope_start]),
+                # set y coordinates of line to min and max of data so we can see it clearly
+                "y": np.array([min(self.ChEActivity+self.HbContent), max(self.ChEActivity+self.HbContent)])
+            }
+
+        if self.slope_end != None:
+            # draw a vertical line at the time when they click "end measure slope"
+            series[Slope_end_label] = {
+                "x": np.array([self.slope_end, self.slope_end]),
+                # set y coordinates of line to min and max of data so we can see it clearly
+                "y": np.array([min(self.ChEActivity+self.HbContent), max(self.ChEActivity+self.HbContent)])
+            }
+
         return EnlightenPluginResponse(request,
-            series = {
-                ChE_label : {
-                    "x": np.array(self.sampleTimes),
-                    "y": np.array(self.ChEActivity)
-                },
-                Hb_label : {
-                    "x": np.array(self.sampleTimes),
-                    "y": np.array(self.HbContent)
-                }
-            },
+            series = series,
             outputs = {
                 # table (looks like a spreadsheet under the graph)
                 "Output Levels": dataframe,
