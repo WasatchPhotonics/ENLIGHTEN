@@ -57,12 +57,12 @@ activity = (sample mE - blank mE) * 1.58e3 / 10.6
 
 === PLUGINS IN ENLIGHTEN ===
 
-- get_peak_from_wavelength
+- get_intensity_from_wavelength
 - get_widget_from_name
 
 """
 
-def get_peak_from_wavelength(wavelength, request):
+def get_intensity_from_wavelength(wavelength, request):
 
     wl_arr = request.settings.wavelengths
     spectrum = request.processed_reading.processed
@@ -194,8 +194,8 @@ class Worek(EnlightenPluginBase):
 
         if self._isrecording:
             self.sampleTimes.append(time.time() - self.startTime)
-            self.ChEActivity.append(get_peak_from_wavelength(1014, request))
-            self.HbContent.append(get_peak_from_wavelength(912.29, request))
+            self.ChEActivity.append(get_intensity_from_wavelength(1014, request))
+            self.HbContent.append(get_intensity_from_wavelength(912.29, request))
 
         # these quantities are 
         # - Hemoglobin concentration
