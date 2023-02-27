@@ -803,14 +803,21 @@ class Measurement(object):
         md = {}
 
         for field in self.get_extra_header_fields():
-            md[field] = self.get_metadata(field)
+            try:
+                md[field] = self.get_metadata(field)
+            except:
+                # get_all_metadata is used to generate a tooltip and field "ccd c0" may yield an index error
+                md[field] = "<missing>"
 
         for field in Measurement.CSV_HEADER_FIELDS:
             if field not in Measurement.ROW_ONLY_FIELDS:
                 if field == "Timestamp":
                     md["Timestamp"] = self.timestamp.strftime("%Y-%m-%d %H:%M:%S.%f")
                 else:
-                    md[field] = self.get_metadata(field)
+                    try:
+                        md[field] = self.get_metadata(field)
+                    except:
+                        md[field] = "<missing>"
 
         if self.processed_reading.plugin_metadata is not None:
             for k, v in self.processed_reading.plugin_metadata.items():
