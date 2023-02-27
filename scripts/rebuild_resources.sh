@@ -34,7 +34,7 @@ function convertToPy3()
 UIC_PRE=""
 
 # Change to Windows tool filenames if not on Linux
-if  (uname -s | grep -q '^MINGW') | (uname -s | grep -q '^MSYS_NT')
+if (uname -s | grep -q '^MINGW') || (uname -s | grep -q '^MSYS_NT')
 then
     # this line was needed when we moved to Qt5, because uic is now a python script 
     # rather than executable, and it therefore needs to be running in the appropriate
