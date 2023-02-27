@@ -1060,6 +1060,7 @@ class Controller:
 
         # Convenience
         make_shortcut("Ctrl+A", self.authentication.login) # authenticate, advanced
+        make_shortcut("Ctrl+E", self.measurements.rename_last_measurement)
         make_shortcut("Ctrl+C", self.graph.copy_to_clipboard_callback)
         make_shortcut("Ctrl+D", self.dark_feature.toggle)
         make_shortcut("Ctrl+H", self.page_nav.toggle_hardware_and_scope)
