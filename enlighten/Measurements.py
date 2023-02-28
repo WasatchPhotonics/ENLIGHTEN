@@ -224,7 +224,8 @@ class Measurements(object):
             self.add(m)
 
     def rename_last_measurement(self):
-        self.measurements[-1].thumbnail_widget.rename_callback()
+        if self.measurements:
+            self.measurements[-1].thumbnail_widget.rename_callback()
 
     ## 
     # Use the MeasurementFactory to instantiate a new Measurement, including
