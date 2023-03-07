@@ -62,27 +62,42 @@ activity = (sample mE - blank mE) * 1.58e3 / 10.6
 
 """
 
+def getY(x, domain, codomain):
+    """
+    given two arrays (domain, codomain) which describe a collection of points
+      domain: x0 x1 x2 x3 x4 ... xn
+    codomain: y0 y1 y2 y3 y4 ... yn
+
+    return the element from codomain such that the corresponding element from domain = x
+    ex: getY(4, [0,2,4,6,8], [1,3,5,7,9]) --> 5
+    """
+
+    for i in range(len(domain)-1):
+        if domain[i] <= x < domain[i+1]:
+            return codomain[i]
+
+    if domain[-1] == wavelength:
+        return codomain[-1]
+    
+    raise Exception("Value %d not found in domain" % wavelength)
+
 def get_intensity_from_wavelength(wavelength, request):
 
     wl_arr = request.settings.wavelengths
     spectrum = request.processed_reading.processed
 
-    for i in range(len(wl_arr)-1):
-        if wl_arr[i] <= wavelength < wl_arr[i+1]:
-            return spectrum[i]
-
-    if wl_arr[-1] == wavelength:
-        return spectrum[-1]
-
-    raise Exception("Target wavelength %d not available." % wavelength)
-
+    return getY(wavelength, wl_arr, spectrum)
 
 ChE_label = "ChE Activity (436 nm)"
 Hb_label = "Hb Content (546 nm)"
 
-Slope_start_label = "Slope Start"
-Slope_end_label = "Slope End"
-Slope_label = "Slope"
+Blank_start_label = "Blank Start"
+Blank_end_label = "Blank End"
+Sample_start_label = "Sample Start"
+Sample_end_label = "Sample End"
+
+ChE_Blank_slope_label = "ChE Blank Slope"
+ChE_Sample_slope_label = "ChE Sample Slope"
 
 class Worek(EnlightenPluginBase):
 
@@ -107,6 +122,9 @@ class Worek(EnlightenPluginBase):
         self.slope_start = None
         self.slope_end = None
 
+        self.ChEActivityY2 = None
+        self.ChEActivityY1 = None
+
     def get_widget_from_name(self, name):
         widget = None
         for elem in self.enlighten_info.plugin_fields():
@@ -118,8 +136,18 @@ class Worek(EnlightenPluginBase):
         # self.get_widget_from_name("slope start") will be a QtWidgets.QDoubleSpinBox
         # same thing for slope_end_txtbox
 
-        self.slope_start = self.get_widget_from_name("slope start").value()
-        self.slope_end = self.get_widget_from_name("slope end").value()
+        blank_start = self.get_widget_from_name("blank start").value()
+        blank_end = self.get_widget_from_name("blank end").value()
+        sample_start = self.get_widget_from_name("sample start").value()
+        sample_end = self.get_widget_from_name("sample end").value()
+
+        if not (blank_start < blank_end < sample_start < sample_end):
+            assert False # slope indicators in bad order
+
+        self.ChEActivityY1 = getY(blank_start, self.sampleTimes, self.ChEActivity)
+        self.ChEActivityY2 = getY(blank_end, self.sampleTimes, self.ChEActivity)
+        self.ChEActivityY3 = getY(sample_start, self.sampleTimes, self.ChEActivity)
+        self.ChEActivityY4 = getY(sample_end, self.sampleTimes, self.ChEActivity)
 
     def get_configuration(self):
 
@@ -149,33 +177,40 @@ class Worek(EnlightenPluginBase):
             callback    = self.stop_recording))
 
         fields.append(EnlightenPluginField(
-            name        = "slope start", 
+            name        = "blank start", 
             minimum     = 0,
             datatype    = "float", 
             direction   = "input"))
 
         fields.append(EnlightenPluginField(
-            name        = "slope end", 
+            name        = "blank end", 
             minimum     = 0,
             datatype    = "float", 
             direction   = "input"))
 
         fields.append(EnlightenPluginField(
-            name        = "graph slope", 
+            name        = "sample start", 
+            minimum     = 0,
+            datatype    = "float", 
+            direction   = "input"))
+
+        fields.append(EnlightenPluginField(
+            name        = "sample end", 
+            minimum     = 0,
+            datatype    = "float", 
+            direction   = "input"))
+
+        fields.append(EnlightenPluginField(
+            name        = "calculate", 
             datatype    = "button", 
             callback   = self.graph_slope))
-
-        fields.append(EnlightenPluginField(
-            name        = "calculate values", 
-            datatype    = "button", 
-            callback    = NOOP))
 
         return EnlightenPluginConfiguration(
             name             = "Worek", 
             fields           = fields,
             is_blocking      = False,
             has_other_graph  = True,
-            series_names     = [ChE_label, Hb_label, Slope_start_label, Slope_end_label, Slope_label],
+            series_names     = [ChE_label, Hb_label, Blank_start_label, Blank_end_label, Sample_start_label, Sample_end_label, ChE_Blank_slope_label, ChE_Sample_slope_label],
             x_axis_label = "time (sec)")
 
     def connect(self, enlighten_info):
@@ -196,17 +231,6 @@ class Worek(EnlightenPluginBase):
             self.sampleTimes.append(time.time() - self.startTime)
             self.ChEActivity.append(get_intensity_from_wavelength(1014, request))
             self.HbContent.append(get_intensity_from_wavelength(912.29, request))
-
-        # these quantities are 
-        # - Hemoglobin concentration
-        # - Enzyme Activity (AChE, BChE)
-        # - Erythrocyte AChE
-        dataframe = pd.DataFrame( 
-            [ -1, "--", -1 ],
-            index = ["Hb (µmol/l Hb)", "Activity (µmol/l/min)", "AChE (mU/µmol Hb)" ]
-        )
-
-        dataframe = dataframe.T
         
         series = {}
         series[ChE_label] = {
@@ -218,21 +242,69 @@ class Worek(EnlightenPluginBase):
             "y": np.array(self.HbContent)
         }
 
-        if self.slope_start != None:
-            # draw a vertical line at the time when they click "start measure slope"
-            series[Slope_start_label] = {
-                "x": np.array([self.slope_start, self.slope_start]),
-                # set y coordinates of line to min and max of data so we can see it clearly
-                "y": np.array([min(self.ChEActivity+self.HbContent), max(self.ChEActivity+self.HbContent)])
+        blank_start = self.get_widget_from_name("blank start").value()
+        blank_end = self.get_widget_from_name("blank end").value()
+        sample_start = self.get_widget_from_name("sample start").value()
+        sample_end = self.get_widget_from_name("sample end").value()
+
+        timing = [
+            (blank_start, Blank_start_label), 
+            (blank_end, Blank_end_label), 
+            (sample_start, Sample_start_label), 
+            (sample_end, Sample_end_label)
+        ]
+
+        for (value, label) in timing:
+            if value:
+                # draw a vertical line at the time when they click "start measure slope"
+                series[label] = {
+                    "x": np.array([value, value]),
+                    # set y coordinates of line to min and max of data so we can see it clearly
+                    "y": np.array([min(self.ChEActivity+self.HbContent), max(self.ChEActivity+self.HbContent)])
+                }
+
+        header = ["Sample (mE/min)", "Blank (mE/min)", "Hb (µmol/l Hb)", "Activity (µmol/l/min)", "AChE (mU/µmol Hb)" ]
+        if self.ChEActivityY1:
+            series[ChE_Blank_slope_label] = {
+                "x": np.array([blank_start, blank_end]),
+                "y": np.array([self.ChEActivityY1, self.ChEActivityY2])
             }
 
-        if self.slope_end != None:
-            # draw a vertical line at the time when they click "end measure slope"
-            series[Slope_end_label] = {
-                "x": np.array([self.slope_end, self.slope_end]),
-                # set y coordinates of line to min and max of data so we can see it clearly
-                "y": np.array([min(self.ChEActivity+self.HbContent), max(self.ChEActivity+self.HbContent)])
+            series[ChE_Sample_slope_label] = {
+                "x": np.array([sample_start, sample_end]),
+                "y": np.array([self.ChEActivityY3, self.ChEActivityY4])
             }
+
+            sample = (self.ChEActivityY4 - self.ChEActivityY3) / (sample_end - sample_start) * 60 # convert mE/sec to mE/min
+            blank = (self.ChEActivityY2 - self.ChEActivityY1) / (blank_end - blank_start) * 60 # convert mE/sec to mE/min
+
+            # use Hb absorption at blank_start
+            HbA0 = getY(blank_start, self.sampleTimes, self.HbContent)
+            HbC = HbA0 * 1000/10.8
+
+            Activity = (sample - blank) / 10.6
+
+            AchE = (Activity * 1.58 * 1000) / HbC
+
+            # these quantities are 
+            # - Sample rate (comes from slopes)
+            # - Blank rate
+            # --------------------------
+            # - Hemoglobin concentration (applying formulas)
+            # - Enzyme Activity (AChE, BChE)
+            # - Erythrocyte AChE
+            dataframe = pd.DataFrame( 
+                [ sample, blank, HbC, Activity, AchE ],
+                index = header
+            )
+        else:
+            # Show blank defaults if no slope is computed
+            dataframe = pd.DataFrame( 
+                [ "--", ] * len(header),
+                index = header
+            )
+
+        dataframe = dataframe.T
 
         return EnlightenPluginResponse(request,
             series = series,
