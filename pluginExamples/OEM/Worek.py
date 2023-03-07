@@ -14,31 +14,7 @@ HEMO-PLUGIN by s.bee
 Currently outputs three labeled scalars using dataframe
 
 TODO: enable-able only in non-Raman mode
-    [x] requires PluginWorker connect on main thread
-    [x] fixes workaround sleep for error, error msg
-
-TODO: fix graphing bugs
-    [x] graph only shows up sometimes?
-        - forgot to "enable"!
-    [x] series_names duplicates
-        - seems to be caused by bad series_name declarations
-    [x] add clear graph button
-    [ ] add callbacks to buttons
-    [ ] hide pd frame until calculation is made?
-
-TODO: actually compute the scalars
-    - depends on slope
-TODO: actually compute AU/min
-    [ ] add start / stop measure slope buttons
-    * maintain a history of Absorbance spectra
-    * for wavelengths 436nm(ChE activity) & 412nm(Hb)
-        - how much did it change in the past minute
-            - extrapolate from shorter time interval?
-                - results can vary wildly. 
-                    - 1AU/1ms -> 60kAU/m
-                    - .2AU/1s -> 18AU/m
-            - find avg derivative, or simply slope endpoints?
-                - might be the same due to IVT
+    - holding off on this for now because it requires changing Enlighten
 
 MISC:
 linear relationship btwn absorbance and enzyme: (1961)
