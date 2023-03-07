@@ -197,8 +197,8 @@ class Worek(EnlightenPluginBase):
 
         if self._isrecording:
             self.sampleTimes.append(time.time() - self.startTime)
-            self.ChEActivity.append(get_intensity_from_wavelength(1014, request))
-            self.HbContent.append(get_intensity_from_wavelength(912.29, request))
+            self.ChEActivity.append(get_intensity_from_wavelength(436, request))
+            self.HbContent.append(get_intensity_from_wavelength(546, request))
         
         series = {}
         series[ChE_label] = {
