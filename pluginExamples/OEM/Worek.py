@@ -91,11 +91,6 @@ def get_intensity_from_wavelength(wavelength, request):
 ChE_label = "ChE Activity (436 nm)"
 Hb_label = "Hb Content (546 nm)"
 
-Blank_start_label = "Blank Start"
-Blank_end_label = "Blank End"
-Sample_start_label = "Sample Start"
-Sample_end_label = "Sample End"
-
 ChE_Blank_slope_label = "ChE Blank Slope"
 ChE_Sample_slope_label = "ChE Sample Slope"
 
@@ -142,12 +137,14 @@ class Worek(EnlightenPluginBase):
         sample_end = self.get_widget_from_name("sample end").value()
 
         if not (blank_start < blank_end < sample_start < sample_end):
-            assert False # slope indicators in bad order
+            return False # slope indicators in bad order
 
         self.ChEActivityY1 = getY(blank_start, self.sampleTimes, self.ChEActivity)
         self.ChEActivityY2 = getY(blank_end, self.sampleTimes, self.ChEActivity)
         self.ChEActivityY3 = getY(sample_start, self.sampleTimes, self.ChEActivity)
         self.ChEActivityY4 = getY(sample_end, self.sampleTimes, self.ChEActivity)
+
+        return True
 
     def get_configuration(self):
 
@@ -200,17 +197,12 @@ class Worek(EnlightenPluginBase):
             datatype    = "float", 
             direction   = "input"))
 
-        fields.append(EnlightenPluginField(
-            name        = "calculate", 
-            datatype    = "button", 
-            callback   = self.graph_slope))
-
         return EnlightenPluginConfiguration(
             name             = "Worek", 
             fields           = fields,
             is_blocking      = False,
             has_other_graph  = True,
-            series_names     = [ChE_label, Hb_label, Blank_start_label, Blank_end_label, Sample_start_label, Sample_end_label, ChE_Blank_slope_label, ChE_Sample_slope_label],
+            series_names     = [ChE_label, Hb_label, ChE_Blank_slope_label, ChE_Sample_slope_label],
             x_axis_label = "time (sec)")
 
     def connect(self, enlighten_info):
@@ -247,24 +239,8 @@ class Worek(EnlightenPluginBase):
         sample_start = self.get_widget_from_name("sample start").value()
         sample_end = self.get_widget_from_name("sample end").value()
 
-        timing = [
-            (blank_start, Blank_start_label), 
-            (blank_end, Blank_end_label), 
-            (sample_start, Sample_start_label), 
-            (sample_end, Sample_end_label)
-        ]
-
-        for (value, label) in timing:
-            if value:
-                # draw a vertical line at the time when they click "start measure slope"
-                series[label] = {
-                    "x": np.array([value, value]),
-                    # set y coordinates of line to min and max of data so we can see it clearly
-                    "y": np.array([min(self.ChEActivity+self.HbContent), max(self.ChEActivity+self.HbContent)])
-                }
-
         header = ["Sample (mE/min)", "Blank (mE/min)", "Hb (µmol/l Hb)", "Activity (µmol/l/min)", "AChE (mU/µmol Hb)" ]
-        if self.ChEActivityY1:
+        if self.graph_slope():
             series[ChE_Blank_slope_label] = {
                 "x": np.array([blank_start, blank_end]),
                 "y": np.array([self.ChEActivityY1, self.ChEActivityY2])
