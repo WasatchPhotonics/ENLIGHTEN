@@ -64,8 +64,8 @@ def get_intensity_from_wavelength(wavelength, request):
 
     return getY(wavelength, wl_arr, spectrum)
 
-ChE_label = "ChE Activity (436 nm)"
-Hb_label = "Hb Content (546 nm)"
+ChE_label = "ChE Activity"
+Hb_label = "Hb Content"
 
 ChE_Blank_slope_label = "ChE Blank Slope"
 ChE_Sample_slope_label = "ChE Sample Slope"
@@ -75,9 +75,9 @@ class Worek(EnlightenPluginBase):
     def __init__(self):
         super().__init__()
         self.clear_graph()
-        self.start_recording()
 
     def start_recording(self):
+        self.clear_graph()
         self._isrecording = True
 
     def stop_recording(self):
@@ -135,12 +135,7 @@ class Worek(EnlightenPluginBase):
             direction   = "output"))
 
         fields.append(EnlightenPluginField(
-            name        = "clear", 
-            datatype    = "button", 
-            callback    = self.clear_graph))
-
-        fields.append(EnlightenPluginField(
-            name        = "start recording", 
+            name        = "start new recording", 
             datatype    = "button", 
             callback    = self.start_recording))
 
@@ -150,26 +145,46 @@ class Worek(EnlightenPluginBase):
             callback    = self.stop_recording))
 
         fields.append(EnlightenPluginField(
+            name        = "ChE Activity Wavelength", 
+            initial     = 436,
+            minimum     = 0,
+            maximum     = 10000,
+            datatype    = "float", 
+            direction   = "input"))
+        
+        fields.append(EnlightenPluginField(
+            name        = "Hb Content Wavelength", 
+            initial     = 546,
+            minimum     = 0,
+            maximum     = 10000,
+            datatype    = "float", 
+            direction   = "input"))
+
+        fields.append(EnlightenPluginField(
             name        = "blank start", 
             minimum     = 0,
+            maximum     = float("Inf"),
             datatype    = "float", 
             direction   = "input"))
 
         fields.append(EnlightenPluginField(
             name        = "blank end", 
             minimum     = 0,
+            maximum     = float("Inf"),
             datatype    = "float", 
             direction   = "input"))
 
         fields.append(EnlightenPluginField(
             name        = "sample start", 
             minimum     = 0,
+            maximum     = float("Inf"),
             datatype    = "float", 
             direction   = "input"))
 
         fields.append(EnlightenPluginField(
             name        = "sample end", 
             minimum     = 0,
+            maximum     = float("Inf"),
             datatype    = "float", 
             direction   = "input"))
 
@@ -197,8 +212,11 @@ class Worek(EnlightenPluginBase):
 
         if self._isrecording:
             self.sampleTimes.append(time.time() - self.startTime)
-            self.ChEActivity.append(get_intensity_from_wavelength(436, request))
-            self.HbContent.append(get_intensity_from_wavelength(546, request))
+            ChE_wavelength = self.get_widget_from_name("ChE Activity Wavelength").value()
+            Hb_wavelength = self.get_widget_from_name( "Hb Content Wavelength").value()
+
+            self.ChEActivity.append(get_intensity_from_wavelength(ChE_wavelength, request))
+            self.HbContent.append(get_intensity_from_wavelength(Hb_wavelength, request))
         
         series = {}
         series[ChE_label] = {
