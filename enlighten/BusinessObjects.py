@@ -780,8 +780,7 @@ class BusinessObjects:
             lb_title                    = sfu.label_plugin_title,
             lb_widget                   = sfu.label_plugin_widget,
             vlayout_fields              = sfu.verticalLayout_plugin_fields,
-            measurements                = ctl.measurements,
-            ctl                         = ctl)
+            measurements                = ctl.measurements)
 
         self.header("instantiating GridFeature")
         ctl.grid = GridFeature(
