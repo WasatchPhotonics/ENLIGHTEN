@@ -46,16 +46,18 @@ def getY(x, domain, codomain):
 
     return the element from codomain such that the corresponding element from domain = x
     ex: getY(4, [0,2,4,6,8], [1,3,5,7,9]) --> 5
+
+    if x is not in the domain, return the closest boundary element
     """
 
     for i in range(len(domain)-1):
         if domain[i] <= x < domain[i+1]:
             return codomain[i]
 
-    if domain[-1] == wavelength:
+    if domain[-1] >= x:
         return codomain[-1]
     
-    raise Exception("Value %d not found in domain" % wavelength)
+    return codomain[0]
 
 def get_intensity_from_wavelength(wavelength, request):
 
@@ -84,6 +86,7 @@ class Worek(EnlightenPluginBase):
         self._isrecording = False
 
     def clear_graph(self):
+        self._isrecording = False
         self.startTime = time.time()
 
         self.sampleTimes = []
