@@ -4,39 +4,9 @@ import logging
 
 import time
 
-from EnlightenPlugin import EnlightenPluginBase, EnlightenPluginField, EnlightenPluginResponse, EnlightenPluginConfiguration
+from EnlightenPlugin import *
 
 log = logging.getLogger(__name__)
-
-"""
-HEMO-PLUGIN by s.bee
-
-Currently outputs three labeled scalars using dataframe
-
-TODO: enable-able only in non-Raman mode
-    - holding off on this for now because it requires changing Enlighten
-
-MISC:
-linear relationship btwn absorbance and enzyme: (1961)
-    rate moles/1.  per min = dA/min / 1.36e4
-
-"Yellow" ~= 578 nm light (1961)
-
-1999 paper is explicit: 436nm (blue) for enzyme activity
-546 nm (green) absorption for hemoglobin determination
-
-1999:
-hemo = A * 1000/10.8
-activity = (sample mE - blank mE) / 10.6
-AChE = activity * 1.58e3
-activity = (sample mE - blank mE) * 1.58e3 / 10.6 
-
-=== PLUGINS IN ENLIGHTEN ===
-
-- get_intensity_from_wavelength
-- get_widget_from_name
-
-"""
 
 def getY(x, domain, codomain):
     """
@@ -59,12 +29,9 @@ def getY(x, domain, codomain):
     
     return codomain[0]
 
-def get_intensity_from_wavelength(wavelength, request):
+def get_intensity_from_wavelength(wavelength, wavelengths, spectrum):
 
-    wl_arr = request.settings.wavelengths
-    spectrum = request.processed_reading.processed
-
-    return getY(wavelength, wl_arr, spectrum)
+    return getY(wavelength, wavelengths, spectrum)
 
 ChE_label = "ChE Activity"
 Hb_label = "Hb Content"
@@ -128,8 +95,6 @@ class Worek(EnlightenPluginBase):
     def get_configuration(self):
 
         fields = []
-
-        NOOP = lambda *k: None
 
         # return a Pandas DataFrame for the GUI table
         fields.append(EnlightenPluginField(
@@ -211,15 +176,19 @@ class Worek(EnlightenPluginBase):
         return super().connect(enlighten_info)
 
     def process_request(self, request):
-        spectrum = request.processed_reading.processed
+        pr = request.processed_reading
 
+        spectrum = pr.get_processed()
+        
         if self._isrecording:
             self.sampleTimes.append(time.time() - self.startTime)
             ChE_wavelength = self.get_widget_from_name("ChE Activity Wavelength").value()
             Hb_wavelength = self.get_widget_from_name( "Hb Content Wavelength").value()
 
-            self.ChEActivity.append(get_intensity_from_wavelength(ChE_wavelength, request))
-            self.HbContent.append(get_intensity_from_wavelength(Hb_wavelength, request))
+            wl_arr = request.settings.wavelengths
+
+            self.ChEActivity.append(get_intensity_from_wavelength(ChE_wavelength, wl_arr, spectrum))
+            self.HbContent.append(get_intensity_from_wavelength(Hb_wavelength, wl_arr, spectrum))
         
         series = {}
         series[ChE_label] = {
