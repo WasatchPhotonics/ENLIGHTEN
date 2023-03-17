@@ -5,8 +5,8 @@
 The following installation sequence is recommended:
 
 - [Miniconda](https://conda.io/miniconda.html) (latest for Python 3.x on Win64)
-- [Git for Windows](https://git-scm.com/download/win) (select "Run from Windows Command Prompt")
-    - optional but useful
+- [Git for Windows](https://git-scm.com/download/win)
+    - select "Use Git and optional Unix tools from the Command Prompt"
 - [InnoSetup](http://www.jrsoftware.org/isinfo.php) (tested 6.0.4)
 - [Wasatch.PY](https://github.com/WasatchPhotonics/Wasatch.PY) (clone parallel to Enlighten)
 - [Enlighten](https://github.com/WasatchPhotonics/ENLIGHTEN) (clone parallel to Wasatch.PY)
@@ -18,32 +18,40 @@ Windows environments have additional dependencies for KnowItAll support:
 
 Binary snapshots of key installers are retained for posterity in [Enlighten-dependencies](https://github.com/WasatchPhotonics/Enlighten-dependencies).
 
+## Getting Enlighten Source
+
+You must have a copy of Wasatch.PY in a parallel directory.
+
+    $ git clone git@github.com:WasatchPhotonics/ENLIGHTEN.git
+    $ git clone git@github.com:WasatchPhotonics/Wasatch.PY.git
+    $ cd ENLIGHTEN
+
 ## Configuration
 
 Enlighten is written in Python, so there is no "build" per se -- you don't have
 to explicitly compile classes the way you do in C++ or Java.
 
 However, you do need to properly configure your environment with all our library 
-dependencies and package requirements.  This includes checking out a copy of 
-Wasatch.PY into a directory parallel to ENLIGHTEN, and adding to your PYTHONPATH:
+dependencies and package requirements.
 
-    $ cd work\code (or wherever you base your code)
-    $ git clone git@github.com:WasatchPhotonics/ENLIGHTEN.git
-    $ git clone git@github.com:WasatchPhotonics/Wasatch.PY.git
-    $ cd ENLIGHTEN
+This includes adding to your PYTHONPATH:
+
     $ set PYTHONPATH=..\Wasatch.PY;pluginExamples;.;enlighten\assets\uic_qrc
 
 *Note:* when setting environment variables like PYTHONPATH under Windows, 
 _do not_ quote them (e.g., do *not* type: set PYTHONPATH="..\Wasatch.PY")
 
-To bootstrap and validate your development environment, just run this from a Git 
-Cmd shell:
+## Activating the environment
 
-    scripts\bootstrap.bat
+When interacting with Enlighten, be sure to activate your shell. This provides access to the dependencies, such as numpy and matplotlib, and it is required for running Enlighten or creating installers.
 
-Then run a quick pre-development test:
+    $ scripts\bootstrap.bat activate
 
-    python scripts\Enlighten.py
+## Running Enlighten
+
+From an activated shell, use the run script
+
+    $ run.bat
 
 Note that to test ENLIGHTEN with a spectrometer, you'll need to install the
 libusb drivers.  Normally this is done for customers when they run the 
