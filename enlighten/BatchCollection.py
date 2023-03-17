@@ -188,6 +188,7 @@ class BatchCollection(object):
 
         # this is a separate timer used to schedule multiple batches 
         self.timer_batch = QtCore.QTimer()
+        self.timer_batch.setSingleShot(True)
         self.timer_batch.timeout.connect(self.start_batch)
 
         # initial settings
@@ -388,8 +389,7 @@ class BatchCollection(object):
 
         self.current_batch_count = 0
 
-        self.timer_batch.start(1000*self.batch_period_sec)
-        #self.start_batch()
+        self.start_batch()
         return True
 
     def start_batch(self):
@@ -408,7 +408,9 @@ class BatchCollection(object):
         # we should only be ABLE to start a batch if we're paused, but...just to be sure:
         self.vcr_controls.pause(all=self.save_options.save_all_spectrometers())
 
-        # Compute "next start time" now to display in Marquee
+        # Compute "next start time" now, at the beginning of the batch,
+        # because it's defined as a PERIOD (start-to-start), not a DELAY.
+        # Do this regardless of whether we think there will be more batches or not.
         self.next_batch_start_time = datetime.datetime.now() + datetime.timedelta(seconds=self.batch_period_sec)
         log.debug("next batch would start at %s", self.next_batch_start_time)
 
@@ -503,9 +505,17 @@ class BatchCollection(object):
         # either batch_count is negative (loop forever), or we're not there yet,
         # so keep going
 
-        if now < self.next_batch_start_time:
+        # compute HOW LONG until the next batch should start (the "when" was 
+        # determined in start_batch)
+        if now >= self.next_batch_start_time:
+            log.info("starting next batch immediately")
+            self.start_batch()
+        else:
+            sleep_ms = (self.next_batch_start_time - now).total_seconds() * 1000
+            log.info("starting next batch in %d ms", sleep_ms)
             self.marquee.info("next batch @ %s" % self.next_batch_start_time.strftime('%H:%M:%S'), persist=True)
-
+            self.timer_batch.start(sleep_ms)
+            
     def vcr_stop(self):
         self.factory.label_suffix = None
         self.stop()
@@ -540,7 +550,6 @@ class BatchCollection(object):
             return
 
         self.factory.label_suffix = "B%d %d-of-%d" % (self.current_batch_count + 1, self.current_measurement_count + 1, self.measurement_count)
-        self.current_measurement_count += 1
 
         # compute (but don't yet schedule) next start-time now, so that the
         # measurement period can be "start-to-start"
@@ -559,6 +568,7 @@ class BatchCollection(object):
             self.stop()
             return
 
+        self.current_measurement_count += 1
         log.info("measurement %d/%d (batch %d/%d)",
             self.current_measurement_count, self.measurement_count,
             self.current_batch_count, self.batch_count)

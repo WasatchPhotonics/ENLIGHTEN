@@ -144,7 +144,6 @@ class PluginController:
 
     def __init__(self,
             colors,
-            stylesheets,
             config,             # enlighten.Configuration
             generate_x_axis,
             get_last_processed_reading,
@@ -180,7 +179,6 @@ class PluginController:
 
         # business objects and callbacks
         self.colors                     = colors
-        self.stylesheets                = stylesheets
         self.config                     = config
         self.generate_x_axis            = generate_x_axis
         self.get_last_processed_reading = get_last_processed_reading
@@ -1336,7 +1334,6 @@ class PluginController:
     def display_plugin_warning(self):
         suppress_cb = QCheckBox("Don't show again.", self.cb_connected)
         warn_msg = QMessageBox(self.cb_connected)
-        self.stylesheets.apply(warn_msg, "enlighten")
         warn_msg.setWindowTitle("Plugin Warning")
         warn_msg.setText("Plugins allow additional code to run. Verify that you trust the plugin and it is safe before running it.")
         warn_msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)

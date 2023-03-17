@@ -752,7 +752,6 @@ class BusinessObjects:
         self.header("instantiating PluginController")
         ctl.plugin_controller = PluginController(
             colors                      = ctl.colors,
-            stylesheets                 = ctl.stylesheets,
             config                      = ctl.config,
             generate_x_axis             = ctl.generate_x_axis,
             get_last_processed_reading  = ctl.get_last_processed_reading,
