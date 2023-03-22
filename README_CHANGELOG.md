@@ -2,6 +2,12 @@
 
 # 4.0 GUI Refactoring
 
+- 2023-03-17 4.0.6
+    - Added Plugin Quick Start documentation
+    - Added Worek AChE Timeseries Plugin
+    - Ctrl-E to rename
+    - Fix bugs causing CSV files to fail to load
+    - Added Hello Graph Demo Plugin
 - 2023-02-08 4.0.5
     - watchdog toggle via checkbox
     - minimum watchdog of 3 sec

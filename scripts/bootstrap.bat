@@ -87,7 +87,11 @@ which python
 python --version
 if %errorlevel% neq 0 goto script_failure
 
-REM skip ahead if we only want to do the installer
+if "%build_target%" == "just-inno" (
+    goto PAST_PYINSTALLER
+)
+
+REM skip ahead if we only want to do the installer (both pyinstaller and innoinstaller)
 if "%build_target%" == "just-installer" (
     set "build_target=installer"
     goto JUST_INSTALLER

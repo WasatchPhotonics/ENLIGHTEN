@@ -461,6 +461,7 @@ class PluginController:
                 self.do_post_disconnect()
                 # YOU ARE HERE: the NEXT click on cb_connected is ignored, but 
                 #               the one after that seems to work...?
+                # SB: fixed in #101, bug with QT checkboxes when checkstate signal is used instead of clicked
                 return
 
             # allow the user to enable the plugin
