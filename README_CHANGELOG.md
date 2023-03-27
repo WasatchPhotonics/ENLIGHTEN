@@ -4,6 +4,7 @@
 
 - 2023-03-27 4.0.7
     - PluginController tweaks
+    - clamped Python to 3.10
 - 2023-03-17 4.0.6
     - Added Plugin Quick Start documentation
     - Added Worek AChE Timeseries Plugin
