@@ -2,6 +2,8 @@
 
 # 4.0 GUI Refactoring
 
+- 2023-03-27 4.0.7
+    - PluginController tweaks
 - 2023-03-17 4.0.6
     - Added Plugin Quick Start documentation
     - Added Worek AChE Timeseries Plugin
