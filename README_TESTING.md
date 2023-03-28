@@ -104,9 +104,33 @@ test_temp is similar to renaming, but it fails because of change in output forma
 
 test_set_startup_settings, test_gain_set, test_laser_shutdown seems to be related to sim_spec
 
-## Coverage
+## Testing upcoming tasks
 
-- CSV Save/Load
-- Clipboard Save
-- Switch to view: Scope/Settings/etc...
-- CombinedPlugin Connect
+Initial focus of TestGUI only.
+
+There are four existing failing tests. They all have something to do with changes that divert from the test's expectations (without necessarily signaling faulty behavior). One task is to update these tests.
+
+More significantly, we have the following userflows we would like to encapsulate in GUI tests.
+
+- CSV Save/Load (manually passing)
+- Clipboard Save (manually passing)
+- Switch to view
+    - Scope (manually passing)
+    - Settings (manually passing)
+    - Hardware (manually passing)
+    - Log (manually passing)
+- Plugin
+    - CombinedPlugin (Analysis folder)
+        - Connect (manually failing)
+        - Enable
+    - CombinedPlugin (CombinedPlugin folder)
+        - Connect (manually passing)
+        - Enable
+    - Worek
+        - Connect (manually passing)
+        - Enable
+    - Hello Graph
+        - Connect
+        - Enable
+- Batch Data Collection
+- Set HROI
