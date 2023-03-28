@@ -13,6 +13,7 @@ set "log_conf_pkg=0"
 set "regenerate_qt=0"
 set "pyinstaller=0"
 set "innosetup=0"
+set "runtests=0"
 
 if "%1" == "activate" (
     goto args_parsed
@@ -33,6 +34,10 @@ if "%1" == "rebuildall" (
     set "install_python_deps=1"
     set "update_conda=1"
     set "log_conf_pkg=1"
+    goto args_parsed
+)
+if "%1" == "test" (
+    set "runtests=1"
     goto args_parsed
 )
 
@@ -284,7 +289,7 @@ echo.
 set PYTHONPATH=.;%cd%\pluginExamples;%cd%\..\Wasatch.PY;%CONDA_PREFIX%\lib\site-packages
 echo PYTHONPATH = %PYTHONPATH%
 
-if "%regenerate_qt" == 1 (
+if "%regenerate_qt" == "1" (
     echo.
     echo %date% %time% ======================================================
     echo %date% %time% Regenerating Qt views
@@ -294,16 +299,15 @@ if "%regenerate_qt" == 1 (
     if %errorlevel% neq 0 goto script_failure
 )
 
-@REM echo.
-@REM echo %date% %time% ======================================================
-@REM echo %date% %time% Run tests...may take some time
-@REM echo %date% %time% ======================================================
-@REM echo.
-REM
-REM MZ: disabling this for now
-REM
-REM py.test tests -x
-REM if %errorlevel% neq 0 goto script_failure
+if "%runtests%" == "1" (
+    echo.
+    echo %date% %time% ======================================================
+    echo %date% %time% Run tests...may take some time
+    echo %date% %time% ======================================================
+    echo.
+    py.test test
+    if %errorlevel% neq 0 goto script_failure
+)
 
 if "%pyinstaller%" == "1" (
     echo.
