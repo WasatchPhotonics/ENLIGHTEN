@@ -3,8 +3,11 @@
 # 4.0 GUI Refactoring
 
 - 2023-03-27 4.0.7
-    - PluginController tweaks
-    - clamped Python to 3.9 to resolve build issues
+    - persist PluginController marquee while satisfying prerequisites
+    - clamped Python to 3.10 to resolve build issues
+    - removed matplotlib dependency from non-Mac platforms
+    - added cyclohexane peaks
+    - fixed PYTHONPATH issue affecting installer
 - 2023-03-17 4.0.6
     - Added Plugin Quick Start documentation
     - Added Worek AChE Timeseries Plugin
