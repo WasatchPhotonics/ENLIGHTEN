@@ -9,6 +9,7 @@ REM   scripts\bootstrap.bat                                       (bootstrap dev
 REM   scripts\bootstrap.bat installer 2>build.err | tee build.out (as above, then build installer)
 REM   scripts\bootstrap.bat just-installer                        (just build installer)
 
+REM note this gets overridden later in the script
 set PYTHONPATH=..\Wasatch.PY;pluginExamples;.;enlighten\assets\uic_qrc
 
 REM parse ONE cmd-line arg
@@ -223,7 +224,7 @@ echo %date% %time% ======================================================
 echo %date% %time% Setting Python path
 echo %date% %time% ======================================================
 echo.
-set PYTHONPATH=.;%cd%\pluginExamples;%cd%\..\Wasatch.PY;%CONDA_PREFIX%\lib\site-packages
+set PYTHONPATH=.;%cd%\pluginExamples;%cd%\..\Wasatch.PY;%cd%\enlighten\assets\uic_qrc;%CONDA_PREFIX%\lib\site-packages
 echo PYTHONPATH = %PYTHONPATH%
 
 echo.
