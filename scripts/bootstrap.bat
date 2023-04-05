@@ -15,27 +15,18 @@ set "pyinstaller=0"
 set "innosetup=0"
 
 if "%1" == "activate" (
-    echo %date% %time% configuring for activation
     goto args_parsed
 )
-
 if "%1" == "pyinstaller" (
-    echo %date% %time% configuring for pyinstallation
     set "regenerate_qt=1"
     set "pyinstaller=1"
-    echo %date% %time% jumping to label
     goto args_parsed
-    echo %date% %time% failed to jump
 )
-
 if "%1" == "innosetup" (
-    echo %date% %time% configuring for innosettingup
     set "innosetup=1"
     goto args_parsed
 )
-
-if "%1" == "rebuildall" (
-    echo %date% %time% configuring for rebuildingall
+if "%1" == "refreshdep" (
     set "rebuild_env=1"
     set "clear_pyinst_appdata=1"
     set "configure_conda=1"
@@ -45,9 +36,21 @@ if "%1" == "rebuildall" (
     goto args_parsed
 )
 
+if "%1" == "oneshot" (
+    set "rebuild_env=1"
+    set "clear_pyinst_appdata=1"
+    set "configure_conda=1"
+    set "install_python_deps=1"
+    set "update_conda=1"
+    set "log_conf_pkg=1"
+    set "regenerate_qt=1"
+    set "pyinstaller=1"
+    set "innosetup=1"
+    goto args_parsed
+)
+
 REM DEFINE CUSTOM ACTION HERE
 if "%1" == "custom" (
-    echo %date% %time% configuring for custom shenanigans
     set "rebuild_env=0"
     set "clear_pyinst_appdata=0"
     set "configure_conda=0"
@@ -70,7 +73,7 @@ echo.
 echo $ scripts\bootstrap innosetup
 echo run innosetup (to create windows installer)
 echo.
-echo $ scripts\bootstrap rebuildall
+echo $ scripts\bootstrap refreshdep
 echo This will take a while. Remove and recreate the conda environment and reinstall all dependencies from the internet.
 echo.
 echo $ scripts\bootstrap custom
@@ -92,7 +95,9 @@ echo %date% %time% Setting environment variables
 echo %date% %time% ======================================================
 REM capture start time
 set TIME_START=%time%
-set PYTHONPATH=..\Wasatch.PY;pluginExamples;.;enlighten\assets\uic_qrc
+set PYTHONPATH=.;..\Wasatch.PY;pluginExamples;%CONDA_PREFIX%\lib\site-packages;enlighten\assets\uic_qrc
+echo PYTHONPATH = %PYTHONPATH%
+
 if exist "C:\Program Files (x86)" (
     set "PROGRAM_FILES_X86=C:\Program Files (x86)"
 ) else (
@@ -155,10 +160,7 @@ if "%clear_pyinst_appdata%" == "1" (
     echo.
     echo removing %USERPROFILE%\AppData\Roaming\pyinstaller
     rd /s /q %USERPROFILE%\AppData\Roaming\pyinstaller
-) else (
-    echo NOT CLEARING PYINST APPDATA because clear_pyinst_appdata = %clear_pyinst_appdata%
 )
-
 if "%rebuild_env%" == "1" (
     echo.
     echo %date% %time% ======================================================
@@ -167,8 +169,6 @@ if "%rebuild_env%" == "1" (
     echo.
     echo removing %MINICONDA%\envs\conda_enlighten3
     rd /s /q %MINICONDA%\envs\conda_enlighten3
-) else (
-    echo NOT DELETING CONDA ENV because rebuild_env = %rebuild_env%
 )
 
 if "%configure_conda%" == "1" (
@@ -179,8 +179,6 @@ if "%configure_conda%" == "1" (
     echo.
     conda config --set always_yes yes --set changeps1 no
     if %errorlevel% neq 0 goto script_failure
-) else (
-    echo NOT CONFIGURING CONDA because configure_conda = %configure_conda%
 )
 
 if "%update_conda%" == "1" (
@@ -191,10 +189,8 @@ if "%update_conda%" == "1" (
     echo.
     conda update -q conda
     if %errorlevel% neq 0 goto script_failure
-) else (
-    echo NOT UPDATING CONDA because update_conda = %update_conda%
 )
-
+     
 if "%rebuild_env%" == "1" (
     echo.
     echo %date% %time% ======================================================
@@ -203,8 +199,6 @@ if "%rebuild_env%" == "1" (
     echo.
     conda env remove -n conda_enlighten3
     if %errorlevel% neq 0 goto script_failure
-) else (
-    echo "NOT REMOVING OLD CONDA ENV because rebuild_env = %rebuild_env%
 )
 
 if "%log_conf_pkg%" == "1" (
@@ -215,8 +209,6 @@ if "%log_conf_pkg%" == "1" (
     echo.
     conda info -a
     if %errorlevel% neq 0 goto script_failure
-) else (
-    echo NOT LOGGING CONDA CONFIG because log_conf_pkg = %log_conf_pkg%
 )
 
 if "%rebuild_env%" == "1" (
@@ -227,9 +219,7 @@ if "%rebuild_env%" == "1" (
     echo.
     del /f /q environment.yml
     copy environments\conda-win10.yml environment.yml
-    conda env create -n conda_enlighten3
-) else (
-    echo NOT CREATING CONDA ENV because rebuild_env = %rebuild_env%
+    conda env create -n conda_enlighten3 
 )
 
 echo.
@@ -268,10 +258,9 @@ if "%install_python_deps%" == "1" (
     python -m pip install -r requirements.txt
     REM Bootstrap bat is meant to make a windows installer
     REM because of this separately install pywin32 since it's only meant for windows
-    pip install pywin32
+    pip install pywin32 
     if %errorlevel% neq 0 goto script_failure
 
-    echo %date% %time% reinstalling and upgrading pyqt5
     python -m pip uninstall pyqt5
     python -m pip install --upgrade pyqt5
 
@@ -282,8 +271,6 @@ if "%install_python_deps%" == "1" (
     echo.
     pip install pyinstaller==4.10
     if %errorlevel% neq 0 goto script_failure
-) else (
-    echo NOT INSTALLING PYTHON DEPS because install_python_deps = %install_python_deps%
 )
 
 if "%log_conf_pkg%" == "1" (
@@ -292,7 +279,7 @@ if "%log_conf_pkg%" == "1" (
     echo %date% %time% Logging Conda packages
     echo %date% %time% ======================================================
     echo.
-    cmd /c "conda list --explicit"
+    cmd /c "conda list --explicit" 
     if %errorlevel% neq 0 goto script_failure
 
     echo.
@@ -300,19 +287,9 @@ if "%log_conf_pkg%" == "1" (
     echo %date% %time% Logging Pip packages
     echo %date% %time% ======================================================
     echo.
-    pip freeze
+    pip freeze 
     if %errorlevel% neq 0 goto script_failure
-) else (
-    echo NOT LOGGING CONDA/PIP because log_conf_pkg = %log_conf_pkg%
 )
-
-echo.
-echo %date% %time% ======================================================
-echo %date% %time% Setting Python path
-echo %date% %time% ======================================================
-echo.
-set PYTHONPATH=.;%cd%\pluginExamples;%cd%\..\Wasatch.PY;%CONDA_PREFIX%\lib\site-packages
-echo PYTHONPATH = %PYTHONPATH%
 
 if "%regenerate_qt%" == "1" (
     echo.
@@ -322,8 +299,6 @@ if "%regenerate_qt%" == "1" (
     echo.
     sh scripts\rebuild_resources.sh
     if %errorlevel% neq 0 goto script_failure
-) else (
-    echo NOT REGENERATING because regenerate_qt = %regenerate_qt%
 )
 
 @REM echo.
@@ -356,14 +331,13 @@ if "%pyinstaller%" == "1" (
     rem copy enlighten\assets\uic_qrc\images\EnlightenIcon.ico .
     rem set SPECPATH=%cd%/scripts
 
-    REM remove --windowed to debug the compiled .exe and see Python invocation
+    REM remove --windowed to debug the compiled .exe and see Python invocation 
     REM error messages
     REM
     REM --windowed ^
 
     REM pyinstaller --distpath="scripts/built-dist" --workpath="scripts/work-path" --noconfirm --clean scripts/enlighten.spec
 
-    echo %date% %time% actually running pyinstaller
     pyinstaller ^
         --distpath="scripts/built-dist" ^
         --workpath="scripts/work-path" ^
@@ -378,11 +352,7 @@ if "%pyinstaller%" == "1" (
         --specpath="%cd%/scripts" ^
         scripts/Enlighten.py
 
-    echo %date% %time% post-pyinstaller errorlevel %errorlevel%
-
     if %errorlevel% neq 0 goto script_failure
-) else (
-    echo NOT RUNNING PYINSTALLER because pyinstaller = %pyinstaller%
 )
 
 if "%innosetup%" == "1" (
@@ -412,8 +382,6 @@ if "%innosetup%" == "1" (
 
     copy scripts\windows_installer\Enlighten-Setup64-%ENLIGHTEN_VERSION%.exe .
     if %errorlevel% neq 0 goto script_failure
-) else (
-    echo NOT RUNNING INNO SETUP because innosetup = %innosetup%
 )
 
 echo.
