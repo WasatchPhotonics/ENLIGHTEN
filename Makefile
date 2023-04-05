@@ -53,9 +53,6 @@ clean:
              enlighten.{err,out} \
              doxygen.{err,out}
 	@find . -name \*.pyc -exec rm -v {} \;
-	@echo
-	@echo "You may have to run 'scripts/rebuild_resources.sh' TWICE to get grey_icons_rc.py(?)"
-	@echo
 
 deps:
 	@scripts/rebuild_resources.sh
