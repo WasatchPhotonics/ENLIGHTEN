@@ -95,7 +95,9 @@ echo %date% %time% Setting environment variables
 echo %date% %time% ======================================================
 REM capture start time
 set TIME_START=%time%
-set PYTHONPATH=..\Wasatch.PY;pluginExamples;.;enlighten\assets\uic_qrc
+set PYTHONPATH=.;..\Wasatch.PY;pluginExamples;%CONDA_PREFIX%\lib\site-packages;enlighten\assets\uic_qrc
+echo PYTHONPATH = %PYTHONPATH%
+
 if exist "C:\Program Files (x86)" (
     set "PROGRAM_FILES_X86=C:\Program Files (x86)"
 ) else (
@@ -288,14 +290,6 @@ if "%log_conf_pkg%" == "1" (
     pip freeze 
     if %errorlevel% neq 0 goto script_failure
 )
-
-echo.
-echo %date% %time% ======================================================
-echo %date% %time% Setting Python path
-echo %date% %time% ======================================================
-echo.
-set PYTHONPATH=.;%cd%\pluginExamples;%cd%\..\Wasatch.PY;%CONDA_PREFIX%\lib\site-packages
-echo PYTHONPATH = %PYTHONPATH%
 
 if "%regenerate_qt" == "1" (
     echo.
