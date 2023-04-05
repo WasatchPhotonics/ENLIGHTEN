@@ -26,13 +26,26 @@ if "%1" == "innosetup" (
     set "innosetup=1"
     goto args_parsed
 )
-if "%1" == "rebuildall" (
+if "%1" == "refreshdep" (
     set "rebuild_env=1"
     set "clear_pyinst_appdata=1"
     set "configure_conda=1"
     set "install_python_deps=1"
     set "update_conda=1"
     set "log_conf_pkg=1"
+    goto args_parsed
+)
+
+if "%1" == "oneshot" (
+    set "rebuild_env=1"
+    set "clear_pyinst_appdata=1"
+    set "configure_conda=1"
+    set "install_python_deps=1"
+    set "update_conda=1"
+    set "log_conf_pkg=1"
+    set "regenerate_qt=1"
+    set "pyinstaller=1"
+    set "innosetup=1"
     goto args_parsed
 )
 
@@ -60,7 +73,7 @@ echo.
 echo $ scripts\bootstrap innosetup
 echo run innosetup (to create windows installer)
 echo.
-echo $ scripts\bootstrap rebuildall
+echo $ scripts\bootstrap refreshdep
 echo This will take a while. Remove and recreate the conda environment and reinstall all dependencies from the internet.
 echo.
 echo $ scripts\bootstrap custom
@@ -233,7 +246,7 @@ REM echo %date% %time% ======================================================
 REM echo.
 REM python -m pip install --upgrade pip
 
-if "%install_python_deps%" == 1 (
+if "%install_python_deps%" == "1" (
     echo.
     echo %date% %time% ======================================================
     echo %date% %time% Installing Python pip dependencies [conda missing/bad]
@@ -284,7 +297,7 @@ echo.
 set PYTHONPATH=.;%cd%\pluginExamples;%cd%\..\Wasatch.PY;%CONDA_PREFIX%\lib\site-packages
 echo PYTHONPATH = %PYTHONPATH%
 
-if "%regenerate_qt" == 1 (
+if "%regenerate_qt" == "1" (
     echo.
     echo %date% %time% ======================================================
     echo %date% %time% Regenerating Qt views
