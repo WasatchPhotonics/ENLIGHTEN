@@ -14,6 +14,11 @@ set "regenerate_qt=0"
 set "pyinstaller=0"
 set "innosetup=0"
 
+REM Convoluted but safe way to generate an audible bell from a .bat
+REM without inserting control characters which confuse unix2dos etc.
+REM https://stackoverflow.com/a/64515648
+set "RING_BELL=echo x|choice /n 2>nul"
+
 if "%1" == "activate" (
     goto args_parsed
 )
@@ -387,9 +392,12 @@ if "%innosetup%" == "1" (
 echo.
 echo %date% %time% All steps completed successfully.
 echo %date% %time% Started at %TIME_START%
+%RING_BELL%
+
 goto:eof
 
 :script_failure
 echo.
 echo Boostrap script failed: errorlevel %errorlevel%
+%RING_BELL%
 exit /b 1
