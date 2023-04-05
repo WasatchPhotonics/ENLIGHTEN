@@ -291,7 +291,7 @@ if "%log_conf_pkg%" == "1" (
     if %errorlevel% neq 0 goto script_failure
 )
 
-if "%regenerate_qt" == "1" (
+if "%regenerate_qt%" == "1" (
     echo.
     echo %date% %time% ======================================================
     echo %date% %time% Regenerating Qt views
