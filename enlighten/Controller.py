@@ -1,5 +1,6 @@
 import webbrowser
 import pyqtgraph
+import platform
 import datetime
 import logging
 import struct
@@ -20,8 +21,9 @@ from collections import defaultdict
 from threading import Thread
 
 # these aren't actually used...solves an import issue for MacOS I think
-import matplotlib
-import matplotlib.pyplot as plt
+if "macOS" in platform.platform():
+    import matplotlib
+    import matplotlib.pyplot as plt
 
 from . import util
 from . import common
