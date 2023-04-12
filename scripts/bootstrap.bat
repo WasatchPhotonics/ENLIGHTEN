@@ -1,8 +1,8 @@
 @echo off
 
 REM This is an automated script to bootstrap a previously checked-out Enlighten
-REM source code distribution and prepare it for development (default) or create
-REM an installer.
+REM source code distribution and prepare it for development `activate` or create
+REM an installer `oneshot`.
 
 set "rebuild_env=0"
 set "clear_pyinst_appdata=0"
@@ -81,6 +81,9 @@ echo.
 echo $ scripts\bootstrap refreshdep
 echo This will take a while. Remove and recreate the conda environment and reinstall all dependencies from the internet.
 echo.
+echo $ scripts\bootstrap oneshot
+echo This will take a while. Perform all steps (including reinstalling dependencies) and produce an installer.
+echo.
 echo $ scripts\bootstrap custom
 echo If you need a very particular action sequence (for example run pyinstaller without regenerating Qt views), edit this file, search for DEFINE CUSTOM ACTION HERE, and change flags as desired.
 goto:eof
@@ -100,6 +103,7 @@ echo %date% %time% Setting environment variables
 echo %date% %time% ======================================================
 REM capture start time
 set TIME_START=%time%
+set PYTHONUTF8=1
 set PYTHONPATH=.;..\Wasatch.PY;pluginExamples;%CONDA_PREFIX%\lib\site-packages;enlighten\assets\uic_qrc
 echo PYTHONPATH = %PYTHONPATH%
 
