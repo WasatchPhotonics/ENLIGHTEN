@@ -15,7 +15,7 @@ from PySide2.QtWidgets import QInputDialog, QLineEdit, QMessageBox, QPushButton,
 
 from .common import get_default_data_dir
 from enlighten.device.EEPROMEditor import EEPROMEditor
-from .Configuration import Configuration
+from enlighten.file_io.Configuration import Configuration
 from . import util
 
 log = logging.getLogger(__name__)

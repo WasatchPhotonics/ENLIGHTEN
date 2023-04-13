@@ -2,7 +2,7 @@ import os
 import logging
 import datetime
 
-from . import common
+from enlighten import common
 
 log = logging.getLogger(__name__)
 

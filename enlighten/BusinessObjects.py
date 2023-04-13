@@ -2,10 +2,10 @@ import logging
 
 log = logging.getLogger(__name__)
 
-from .HardwareCaptureControlFeature   import HardwareCaptureControlFeature
+from enlighten.file_io.HardwareCaptureControlFeature import HardwareCaptureControlFeature
 from .RamanShiftCorrectionFeature     import RamanShiftCorrectionFeature     # single-point correction
 from .DetectorTemperatureFeature      import DetectorTemperatureFeature
-from .HardwareFileOutputManager       import HardwareFileOutputManager
+from enlighten.file_io.HardwareFileOutputManager import HardwareFileOutputManager
 from .RamanIntensityCorrection        import RamanIntensityCorrection   # SRM
 from .AccessoryControlFeature         import AccessoryControlFeature
 from .LaserTemperatureFeature         import LaserTemperatureFeature
@@ -35,11 +35,11 @@ from .PageNavigation                  import PageNavigation
 from .TakeOneFeature                  import TakeOneFeature
 from .RichardsonLucy                  import RichardsonLucy
 from enlighten.device.BatteryFeature import BatteryFeature
-from .LoggingFeature                  import LoggingFeature
+from enlighten.file_io.LoggingFeature import LoggingFeature
 from .FocusListener                   import FocusListener
 from .GainDBFeature                   import GainDBFeature
 from .BoxcarFeature                   import BoxcarFeature
-from .Configuration                   import Configuration
+from enlighten.file_io.Configuration import Configuration
 from .Measurements                    import Measurements
 from enlighten.device.EEPROMEditor import EEPROMEditor
 from .GuideFeature                    import GuideFeature
@@ -49,7 +49,7 @@ from .Stylesheets                     import Stylesheets
 from .DarkFeature                     import DarkFeature
 from .SaveOptions                     import SaveOptions
 from .GridFeature                     import GridFeature
-from .FileManager                     import FileManager
+from enlighten.file_io.FileManager import FileManager
 from .VCRControls                     import VCRControls
 from .BLEManager                      import BLEManager
 from .Clipboard                       import Clipboard

@@ -10,7 +10,7 @@ import configparser
 
 from enlighten.data.ColorNames import ColorNames
 
-from . import common
+from enlighten import common
 
 log = logging.getLogger(__name__)
 

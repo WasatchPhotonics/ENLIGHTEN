@@ -4,7 +4,7 @@ import logging
 import re
 import os
 
-from . import common
+from enlighten import common
 
 log = logging.getLogger(__name__)
 
