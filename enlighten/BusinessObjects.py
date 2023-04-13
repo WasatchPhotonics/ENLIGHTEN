@@ -43,7 +43,7 @@ from enlighten.file_io.Configuration import Configuration
 from enlighten.measurement.Measurements import Measurements
 from enlighten.device.EEPROMEditor import EEPROMEditor
 from .GuideFeature                    import GuideFeature
-from .CloudManager                    import CloudManager
+from enlighten.network.CloudManager import CloudManager
 from enlighten.device.EEPROMWriter import EEPROMWriter
 from .Stylesheets                     import Stylesheets
 from .DarkFeature                     import DarkFeature
@@ -51,7 +51,7 @@ from enlighten.measurement.SaveOptions import SaveOptions
 from .GridFeature                     import GridFeature
 from enlighten.file_io.FileManager import FileManager
 from .VCRControls                     import VCRControls
-from .BLEManager                      import BLEManager
+from enlighten.network.BLEManager import BLEManager
 from .Clipboard                       import Clipboard
 from enlighten.data.ModelInfo import ModelInfo
 from enlighten.device.Multispec import Multispec
