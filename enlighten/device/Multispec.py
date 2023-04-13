@@ -5,7 +5,7 @@ from PySide2 import QtGui
 import logging
 import re
 
-from enlighten.Spectrometer import Spectrometer
+from enlighten.scope.Spectrometer import Spectrometer
 from enlighten.ScrollStealFilter import ScrollStealFilter
 
 from wasatch.DeviceID import DeviceID

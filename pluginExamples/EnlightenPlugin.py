@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 
 log = logging.getLogger(__name__)
 
-from enlighten.Spectrometer           import Spectrometer
+from enlighten.scope.Spectrometer import Spectrometer
 from wasatch.ProcessedReading         import ProcessedReading
 from wasatch.SpectrometerSettings     import SpectrometerSettings
 

@@ -1,8 +1,8 @@
 import logging
 
-from . import util
-from .ScrollStealFilter import ScrollStealFilter
-from .MouseWheelFilter import MouseWheelFilter
+from enlighten import util
+from enlighten.ScrollStealFilter import ScrollStealFilter
+from enlighten.MouseWheelFilter import MouseWheelFilter
 
 log = logging.getLogger(__name__)
 

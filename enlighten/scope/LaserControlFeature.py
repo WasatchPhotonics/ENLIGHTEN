@@ -4,13 +4,13 @@ import logging
 
 from PySide2 import QtWidgets 
 
-from . import util
-from .common import LaserStates
+from enlighten import util
+from enlighten.common import LaserStates
 
 from wasatch.EEPROM                   import EEPROM
 
-from .ScrollStealFilter import ScrollStealFilter
-from .MouseWheelFilter import MouseWheelFilter
+from enlighten.ScrollStealFilter import ScrollStealFilter
+from enlighten.MouseWheelFilter import MouseWheelFilter
 
 log = logging.getLogger(__name__)
 

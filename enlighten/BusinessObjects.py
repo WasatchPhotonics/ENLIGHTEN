@@ -3,30 +3,30 @@ import logging
 log = logging.getLogger(__name__)
 
 from enlighten.file_io.HardwareCaptureControlFeature import HardwareCaptureControlFeature
-from .RamanShiftCorrectionFeature     import RamanShiftCorrectionFeature     # single-point correction
-from .DetectorTemperatureFeature      import DetectorTemperatureFeature
+from enlighten.scope.RamanShiftCorrectionFeature import RamanShiftCorrectionFeature     # single-point correction
+from enlighten.scope.DetectorTemperatureFeature import DetectorTemperatureFeature
 from enlighten.file_io.HardwareFileOutputManager import HardwareFileOutputManager
 from .RamanIntensityCorrection        import RamanIntensityCorrection   # SRM
-from .AccessoryControlFeature         import AccessoryControlFeature
-from .LaserTemperatureFeature         import LaserTemperatureFeature
-from .IntegrationTimeFeature          import IntegrationTimeFeature
-from .ExternalTriggerFeature          import ExternalTriggerFeature
+from enlighten.scope.AccessoryControlFeature import AccessoryControlFeature
+from enlighten.scope.LaserTemperatureFeature import LaserTemperatureFeature
+from enlighten.scope.IntegrationTimeFeature import IntegrationTimeFeature
+from enlighten.scope.ExternalTriggerFeature import ExternalTriggerFeature
 from .ResourceMonitorFeature          import ResourceMonitorFeature
 from .InterpolationFeature            import InterpolationFeature
 from .ScanAveragingFeature            import ScanAveragingFeature
-from .RegionControlFeature            import RegionControlFeature
+from enlighten.scope.RegionControlFeature import RegionControlFeature
 from enlighten.device.ManufacturingFeature import ManufacturingFeature
-from .LaserControlFeature             import LaserControlFeature
-from .HighGainModeFeature             import HighGainModeFeature
+from enlighten.scope.LaserControlFeature import LaserControlFeature
+from enlighten.scope.HighGainModeFeature import HighGainModeFeature
 from .TransmissionFeature             import TransmissionFeature
 from enlighten.measurement.MeasurementFactory import MeasurementFactory
 from .BaselineCorrection              import BaselineCorrection
 from .VignetteROIFeature              import VignetteROIFeature
 from .AbsorbanceFeature               import AbsorbanceFeature
 from .StatusBarFeature                import StatusBarFeature
-from .RamanModeFeature                import RamanModeFeature
+from enlighten.scope.RamanModeFeature import RamanModeFeature
 from .StatusIndicators                import StatusIndicators
-from .ReferenceFeature                import ReferenceFeature
+from enlighten.scope.ReferenceFeature import ReferenceFeature
 from enlighten.measurement.AreaScanFeature import AreaScanFeature
 from .BatchCollection                 import BatchCollection
 from enlighten.device.Authentication import Authentication
@@ -37,18 +37,18 @@ from .RichardsonLucy                  import RichardsonLucy
 from enlighten.device.BatteryFeature import BatteryFeature
 from enlighten.file_io.LoggingFeature import LoggingFeature
 from .FocusListener                   import FocusListener
-from .GainDBFeature                   import GainDBFeature
+from enlighten.scope.GainDBFeature import GainDBFeature
 from .BoxcarFeature                   import BoxcarFeature
 from enlighten.file_io.Configuration import Configuration
 from enlighten.measurement.Measurements import Measurements
 from enlighten.device.EEPROMEditor import EEPROMEditor
-from .GuideFeature                    import GuideFeature
+from enlighten.scope.GuideFeature import GuideFeature
 from enlighten.network.CloudManager import CloudManager
 from enlighten.device.EEPROMWriter import EEPROMWriter
 from .Stylesheets                     import Stylesheets
-from .DarkFeature                     import DarkFeature
+from enlighten.scope.DarkFeature import DarkFeature
 from enlighten.measurement.SaveOptions import SaveOptions
-from .GridFeature                     import GridFeature
+from enlighten.scope.GridFeature import GridFeature
 from enlighten.file_io.FileManager import FileManager
 from .VCRControls                     import VCRControls
 from enlighten.network.BLEManager import BLEManager
@@ -58,8 +58,8 @@ from enlighten.device.Multispec import Multispec
 from .Marquee                         import Marquee
 from .Colors                          import Colors
 from .Sounds                          import Sounds
-from .Cursor                          import Cursor
-from .Graph                           import Graph
+from enlighten.scope.Cursor import Cursor
+from enlighten.scope.Graph import Graph
 from .GUI                             import GUI
 
 from .KnowItAll.Feature               import Feature as KIAFeature

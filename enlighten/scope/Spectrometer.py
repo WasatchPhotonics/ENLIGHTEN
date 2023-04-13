@@ -2,7 +2,7 @@ import datetime
 import logging
 import copy
 
-from .SpectrometerApplicationState import SpectrometerApplicationState
+from enlighten.SpectrometerApplicationState import SpectrometerApplicationState
 
 from wasatch.SpectrometerState     import SpectrometerState
 from wasatch.AbstractUSBDevice     import AbstractUSBDevice

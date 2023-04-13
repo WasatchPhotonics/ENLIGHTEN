@@ -30,7 +30,7 @@ from .TableModel        import TableModel
 from .. import common
 from ..ScrollStealFilter import ScrollStealFilter
 
-from enlighten.Graph    import Graph
+from enlighten.scope.Graph import Graph
 
 # this is in ../../pluginExamples
 from EnlightenPlugin import EnlightenPluginField,   \

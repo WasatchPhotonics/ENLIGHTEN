@@ -4,8 +4,8 @@ import PySide2
 import pyqtgraph
 from PySide2 import QtCore, QtWidgets, QtGui
 
-from . import common
-from .ScrollStealFilter import ScrollStealFilter
+from enlighten import common
+from enlighten.ScrollStealFilter import ScrollStealFilter
 
 from wasatch import utils
 

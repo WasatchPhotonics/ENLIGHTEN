@@ -1,10 +1,10 @@
-from . import util
+from enlighten import util
 import logging
 
 log = logging.getLogger(__name__)
 
-from .ScrollStealFilter import ScrollStealFilter
-from .MouseWheelFilter import MouseWheelFilter
+from enlighten.ScrollStealFilter import ScrollStealFilter
+from enlighten.MouseWheelFilter import MouseWheelFilter
 ##
 # This class encapsulates control of detector gain (decibels), currently used 
 # only for Sony IMX detectors (SiG).  
