@@ -3,18 +3,6 @@
     "Type": "ENLIGHTEN Raman Compound ID Database",
     "Compounds": {
 
-        "Nitrogen": {
-            "Peaks": {
-                "2328.4": {}
-            }
-        },
-
-        "Oxygen": {
-            "Peaks": {
-                "1552.9": {}
-            }
-        },
-
         "Aspirin": {
             "Peaks": {
                 "322": {},
@@ -88,6 +76,18 @@
             "Alias": "IPA"
         },
 
+        "Nitrogen": {
+            "Peaks": {
+                "2328.4": {}
+            }
+        },
+
+        "Oxygen": {
+            "Peaks": {
+                "1552.9": {}
+            }
+        },
+        
         "Polystyrene": {
             "Peaks": {
                 "620.9": {},
