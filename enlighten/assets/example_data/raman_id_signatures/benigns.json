@@ -79,15 +79,17 @@
         "Nitrogen": {
             "Peaks": {
                 "2328.4": {}
-            }
+            },
+            "Alias": "N2"
         },
 
         "Oxygen": {
             "Peaks": {
                 "1552.9": {}
-            }
+            },
+            "Alias": "O2"
         },
-        
+
         "Polystyrene": {
             "Peaks": {
                 "620.9": {},
