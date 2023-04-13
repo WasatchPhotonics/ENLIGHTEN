@@ -207,7 +207,8 @@ if "%rebuild_env%" == "1" (
     echo %date% %time% ======================================================
     echo.
     conda env remove -n conda_enlighten3
-    if %errorlevel% neq 0 goto script_failure
+    REM SB: Do not errout if the env is already deleted, could be from 
+    REM previous partial run.
 )
 
 if "%log_conf_pkg%" == "1" (
@@ -278,7 +279,7 @@ if "%install_python_deps%" == "1" (
     echo %date% %time% Installing pyinstaller from pip
     echo %date% %time% ======================================================
     echo.
-    pip install pyinstaller==4.10
+    pip install pyinstaller==4.5.1
     if %errorlevel% neq 0 goto script_failure
 )
 
