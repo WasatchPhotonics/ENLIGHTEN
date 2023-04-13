@@ -13,6 +13,7 @@ set "log_conf_pkg=0"
 set "regenerate_qt=0"
 set "pyinstaller=0"
 set "innosetup=0"
+set "runtests=0"
 
 REM Convoluted but safe way to generate an audible bell from a .bat
 REM without inserting control characters which confuse unix2dos etc.
@@ -51,6 +52,11 @@ if "%1" == "oneshot" (
     set "regenerate_qt=1"
     set "pyinstaller=1"
     set "innosetup=1"
+    goto args_parsed
+)
+
+if "%1" == "test" (
+    set "runtests=1"
     goto args_parsed
 )
 
@@ -311,16 +317,15 @@ if "%regenerate_qt%" == "1" (
     if %errorlevel% neq 0 goto script_failure
 )
 
-@REM echo.
-@REM echo %date% %time% ======================================================
-@REM echo %date% %time% Run tests...may take some time
-@REM echo %date% %time% ======================================================
-@REM echo.
-REM
-REM MZ: disabling this for now
-REM
-REM py.test tests -x
-REM if %errorlevel% neq 0 goto script_failure
+if "%runtests%" == "1" (
+    echo.
+    echo %date% %time% ======================================================
+    echo %date% %time% Run tests...may take some time
+    echo %date% %time% ======================================================
+    echo.
+    py.test test
+    if %errorlevel% neq 0 goto script_failure
+)
 
 if "%pyinstaller%" == "1" (
     echo.
