@@ -88,7 +88,10 @@ echo $ scripts\bootstrap refreshdep
 echo This will take a while. Remove and recreate the conda environment and reinstall all dependencies from the internet.
 echo.
 echo $ scripts\bootstrap oneshot
-echo This will take a while. Perform all steps (including reinstalling dependencies) and produce an installer.
+echo This will take a while. Perform all steps (except for testing) and produce an installer.
+echo.
+echo $ scripts\bootstrap test
+echo This will take a while. Performs tests.
 echo.
 echo $ scripts\bootstrap custom
 echo If you need a very particular action sequence (for example run pyinstaller without regenerating Qt views), edit this file, search for DEFINE CUSTOM ACTION HERE, and change flags as desired.
