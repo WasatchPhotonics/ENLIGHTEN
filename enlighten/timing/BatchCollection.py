@@ -3,8 +3,8 @@ from PySide2 import QtCore, QtGui
 import datetime
 import logging
 
-from . import util
-from .ScrollStealFilter import ScrollStealFilter
+from enlighten import util
+from enlighten.ScrollStealFilter import ScrollStealFilter
 
 log = logging.getLogger(__name__)
 

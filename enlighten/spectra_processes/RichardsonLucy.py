@@ -2,7 +2,7 @@ import logging
 import numpy as np
 import math
 
-from . import util
+from enlighten import util
 
 log = logging.getLogger(__name__)
 

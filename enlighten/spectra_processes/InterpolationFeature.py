@@ -7,7 +7,7 @@ import copy
 from wasatch.ProcessedReading import ProcessedReading
 
 from wasatch import utils as wasatch_utils
-from .ScrollStealFilter import ScrollStealFilter
+from enlighten.ScrollStealFilter import ScrollStealFilter
 
 log = logging.getLogger(__name__)
 
