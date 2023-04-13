@@ -1,7 +1,7 @@
 import logging
 
-from . import common
-from .ScrollStealFilter import ScrollStealFilter
+from enlighten import common
+from enlighten.ScrollStealFilter import ScrollStealFilter
 
 log = logging.getLogger(__name__)
 

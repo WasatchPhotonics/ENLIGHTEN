@@ -4,11 +4,11 @@ import pyqtgraph
 import datetime
 import logging
 
-from .ConfirmWidget import ConfirmWidget
+from enlighten.ui.ConfirmWidget import ConfirmWidget
 
-from . import KnowItAll
-from . import common
-from . import util
+from enlighten import KnowItAll
+from enlighten import common
+from enlighten import util
 
 log = logging.getLogger(__name__)
 

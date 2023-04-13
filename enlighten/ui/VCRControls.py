@@ -1,6 +1,6 @@
 import logging
 
-from . import util
+from enlighten import util
 
 log = logging.getLogger(__name__)
 

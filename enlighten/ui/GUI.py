@@ -2,8 +2,8 @@ import logging
 import pyqtgraph
 from PySide2 import QtGui
 
-from .TimeoutDialog import TimeoutDialog
-from . import common 
+from enlighten.ui.TimeoutDialog import TimeoutDialog
+from enlighten import common
 
 from wasatch import utils as wasatch_utils
 

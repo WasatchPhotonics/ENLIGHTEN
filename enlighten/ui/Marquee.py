@@ -2,7 +2,7 @@ import webbrowser
 
 from PySide2 import QtCore, QtGui, QtWidgets
 
-from . import util
+from enlighten import util
 
 import logging
 

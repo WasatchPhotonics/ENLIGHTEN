@@ -43,9 +43,9 @@ from wasatch.WasatchBus               import WasatchBus
 from wasatch.BLEDevice                import BLEDevice
 from wasatch.Reading                  import Reading
 
-from .ThumbnailWidget                 import ThumbnailWidget
+from enlighten.ui.ThumbnailWidget import ThumbnailWidget
 from .BusinessObjects                 import BusinessObjects
-from .TimeoutDialog                   import TimeoutDialog
+from enlighten.ui.TimeoutDialog import TimeoutDialog
 from enlighten.scope.Spectrometer import Spectrometer
 
 log = logging.getLogger(__name__)

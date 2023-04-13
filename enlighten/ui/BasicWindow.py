@@ -5,7 +5,7 @@ from PySide2 import QtGui, QtCore, QtWidgets
 
 # This line imports the "enlighten_layout.py" module which is generated from 
 # enlighten_layout.ui when you run scripts/rebuild_resources.sh.  
-from .assets.uic_qrc import enlighten_layout
+from enlighten.assets.uic_qrc import enlighten_layout
 
 log = logging.getLogger(__name__)
 
