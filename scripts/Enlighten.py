@@ -21,8 +21,7 @@ from PySide2 import QtGui, QtCore, QtWidgets, QtSvg, QtXml
 from PySide2.QtWidgets import QSplashScreen
 from PySide2.QtGui import QPixmap, QImageReader
 
-
-from enlighten.BasicWindow import BasicWindow
+from enlighten.ui.BasicWindow import BasicWindow
 from enlighten import common
 from wasatch.DeviceID import DeviceID
 from wasatch   import applog

@@ -30,7 +30,7 @@ from .TableModel        import TableModel
 from .. import common
 from ..ScrollStealFilter import ScrollStealFilter
 
-from enlighten.Graph    import Graph
+from enlighten.scope.Graph import Graph
 
 # this is in ../../pluginExamples
 from EnlightenPlugin import EnlightenPluginField,   \
@@ -331,25 +331,19 @@ class PluginController:
             # goes through each classification folder and picks up the files
             plugin_files = [(file.path, folder) for folder in classification_folders for file in os.scandir(folder) if os.path.isfile(file.path)]
             for file, folder in plugin_files:
-                log.debug(f"find_all_plugins: file {file}, folder {folder}")
                 # find_all_plugins: file C:\Users\mzieg\Documents\EnlightenSpectra\plugins\Analysis\Despiking.py, folder C:\Users\mzieg\Documents\EnlightenSpectra\plugins\Analysis
-
                 try:
-                    filename = os.path.basename(file)                     # Despiking.py
-                    log.debug(f"find_all_plugins:   filename {filename}") # find_all_plugins:   filename Despiking.py
-
+                    filename = os.path.basename(file)
                     package = os.path.basename(folder)
-                    log.debug(f"find_all_plugins:   package {package}")
-
                     if filename.endswith('.py') and filename != "EnlightenPlugin.py" and not filename.startswith("_"):
+                        log.debug(f"find_all_plugins:   package {package}, filename {filename}, file {file}") # package Demo, filename BlockNullOdd.py
                         module_info = PluginModuleInfo(pathname=file, package=package, filename=filename)
                         full_module_name = module_info.full_module_name
-                        log.debug(f"find_all_plugins:   full_module_name {full_module_name}")
                         if full_module_name not in module_infos:
-                            log.debug(f"find_all_plugins:   added module {full_module_name}")
+                            log.debug(f"find_all_plugins:     added module {full_module_name}")
                             module_infos[full_module_name] = module_info
                         else:
-                            log.debug("skipping duplicate module_name %s", full_module_name)
+                            log.debug("    skipping duplicate module_name %s", full_module_name)
                 except Exception as e:
                     log.error(f"problem accessing file {file} of {e}")
                     continue
@@ -806,11 +800,11 @@ class PluginController:
             log.debug(f"satisfying dependency {dep.name} of type {dep.dep_type}")
 
             if dep.dep_type == "existing_directory":
-                if dep.prompt is not None:
-                    self.marquee.info(dep.prompt, immediate=True)
+                prompt = dep.prompt if dep.prompt else "Please select an existing directory"
+                self.marquee.info(prompt, persist=True, token="existing_directory")
 
                 # create the dialog
-                dialog = QtWidgets.QFileDialog(parent=self.parent)
+                dialog = QtWidgets.QFileDialog(parent=self.parent, caption=prompt)
                 dialog.setFileMode(QtWidgets.QFileDialog.Directory)
                 dialog.setOption(QtWidgets.QFileDialog.ShowDirsOnly)
 
@@ -830,6 +824,7 @@ class PluginController:
                 # persist for next time
                 if dep.persist:
                     self.config.set(persist_section, dep.name, value)
+                self.marquee.clear(token="existing_directory")
             else:
                 log.error(f"dependency {dep.name} has unsupported type {dep.dep_type}")
                 return False

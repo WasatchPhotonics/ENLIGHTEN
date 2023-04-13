@@ -1,8 +1,8 @@
 @echo off
 
 REM This is an automated script to bootstrap a previously checked-out Enlighten
-REM source code distribution and prepare it for development (default) or create
-REM an installer.
+REM source code distribution and prepare it for development `activate` or create
+REM an installer `oneshot`.
 
 set "rebuild_env=0"
 set "clear_pyinst_appdata=0"
@@ -14,6 +14,11 @@ set "regenerate_qt=0"
 set "pyinstaller=0"
 set "innosetup=0"
 set "runtests=0"
+
+REM Convoluted but safe way to generate an audible bell from a .bat
+REM without inserting control characters which confuse unix2dos etc.
+REM https://stackoverflow.com/a/64515648
+set "RING_BELL=echo x|choice /n 2>nul"
 
 if "%1" == "activate" (
     goto args_parsed
@@ -27,7 +32,7 @@ if "%1" == "innosetup" (
     set "innosetup=1"
     goto args_parsed
 )
-if "%1" == "rebuildall" (
+if "%1" == "refreshdep" (
     set "rebuild_env=1"
     set "clear_pyinst_appdata=1"
     set "configure_conda=1"
@@ -36,6 +41,20 @@ if "%1" == "rebuildall" (
     set "log_conf_pkg=1"
     goto args_parsed
 )
+
+if "%1" == "oneshot" (
+    set "rebuild_env=1"
+    set "clear_pyinst_appdata=1"
+    set "configure_conda=1"
+    set "install_python_deps=1"
+    set "update_conda=1"
+    set "log_conf_pkg=1"
+    set "regenerate_qt=1"
+    set "pyinstaller=1"
+    set "innosetup=1"
+    goto args_parsed
+)
+
 if "%1" == "test" (
     set "runtests=1"
     goto args_parsed
@@ -65,8 +84,11 @@ echo.
 echo $ scripts\bootstrap innosetup
 echo run innosetup (to create windows installer)
 echo.
-echo $ scripts\bootstrap rebuildall
+echo $ scripts\bootstrap refreshdep
 echo This will take a while. Remove and recreate the conda environment and reinstall all dependencies from the internet.
+echo.
+echo $ scripts\bootstrap oneshot
+echo This will take a while. Perform all steps (including reinstalling dependencies) and produce an installer.
 echo.
 echo $ scripts\bootstrap custom
 echo If you need a very particular action sequence (for example run pyinstaller without regenerating Qt views), edit this file, search for DEFINE CUSTOM ACTION HERE, and change flags as desired.
@@ -75,8 +97,8 @@ goto:eof
 :args_parsed
 
 if not exist scripts\bootstrap.bat (
-	echo Please run script as scripts\bootstrap.bat
-	goto script_failure
+    echo Please run script as scripts\bootstrap.bat
+    goto script_failure
 ) else (
     echo Running from %cd%
 )
@@ -87,7 +109,10 @@ echo %date% %time% Setting environment variables
 echo %date% %time% ======================================================
 REM capture start time
 set TIME_START=%time%
-set PYTHONPATH=..\Wasatch.PY;pluginExamples;.;enlighten\assets\uic_qrc
+set PYTHONUTF8=1
+set PYTHONPATH=.;..\Wasatch.PY;pluginExamples;%CONDA_PREFIX%\lib\site-packages;enlighten\assets\uic_qrc
+echo PYTHONPATH = %PYTHONPATH%
+
 if exist "C:\Program Files (x86)" (
     set "PROGRAM_FILES_X86=C:\Program Files (x86)"
 ) else (
@@ -188,7 +213,8 @@ if "%rebuild_env%" == "1" (
     echo %date% %time% ======================================================
     echo.
     conda env remove -n conda_enlighten3
-    if %errorlevel% neq 0 goto script_failure
+    REM SB: Do not errout if the env is already deleted, could be from 
+    REM previous partial run.
 )
 
 if "%log_conf_pkg%" == "1" (
@@ -238,7 +264,7 @@ REM echo %date% %time% ======================================================
 REM echo.
 REM python -m pip install --upgrade pip
 
-if "%install_python_deps%" == 1 (
+if "%install_python_deps%" == "1" (
     echo.
     echo %date% %time% ======================================================
     echo %date% %time% Installing Python pip dependencies [conda missing/bad]
@@ -259,7 +285,7 @@ if "%install_python_deps%" == 1 (
     echo %date% %time% Installing pyinstaller from pip
     echo %date% %time% ======================================================
     echo.
-    pip install pyinstaller==4.10
+    pip install pyinstaller==4.5.1
     if %errorlevel% neq 0 goto script_failure
 )
 
@@ -281,15 +307,7 @@ if "%log_conf_pkg%" == "1" (
     if %errorlevel% neq 0 goto script_failure
 )
 
-echo.
-echo %date% %time% ======================================================
-echo %date% %time% Setting Python path
-echo %date% %time% ======================================================
-echo.
-set PYTHONPATH=.;%cd%\pluginExamples;%cd%\..\Wasatch.PY;%CONDA_PREFIX%\lib\site-packages
-echo PYTHONPATH = %PYTHONPATH%
-
-if "%regenerate_qt" == "1" (
+if "%regenerate_qt%" == "1" (
     echo.
     echo %date% %time% ======================================================
     echo %date% %time% Regenerating Qt views
@@ -382,11 +400,14 @@ if "%innosetup%" == "1" (
 )
 
 echo.
-echo %date% %time% All steps completed successfully.
+echo %date% %time% All steps completed successfully.
 echo %date% %time% Started at %TIME_START%
+%RING_BELL%
+
 goto:eof
 
 :script_failure
 echo.
 echo Boostrap script failed: errorlevel %errorlevel%
+%RING_BELL%
 exit /b 1

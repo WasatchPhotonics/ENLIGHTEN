@@ -1,5 +1,6 @@
 import webbrowser
 import pyqtgraph
+import platform
 import datetime
 import logging
 import struct
@@ -20,12 +21,13 @@ from collections import defaultdict
 from threading import Thread
 
 # these aren't actually used...solves an import issue for MacOS I think
-import matplotlib
-import matplotlib.pyplot as plt
+if "macOS" in platform.platform():
+    import matplotlib
+    import matplotlib.pyplot as plt
 
 from . import util
 from . import common
-from . import Graph
+from .scope import Graph
 
 import wasatch
 from wasatch import applog
@@ -41,10 +43,10 @@ from wasatch.WasatchBus               import WasatchBus
 from wasatch.BLEDevice                import BLEDevice
 from wasatch.Reading                  import Reading
 
-from .ThumbnailWidget                 import ThumbnailWidget
+from enlighten.ui.ThumbnailWidget import ThumbnailWidget
 from .BusinessObjects                 import BusinessObjects
-from .TimeoutDialog                   import TimeoutDialog
-from .Spectrometer                    import Spectrometer
+from enlighten.ui.TimeoutDialog import TimeoutDialog
+from enlighten.scope.Spectrometer import Spectrometer
 
 log = logging.getLogger(__name__)
 
