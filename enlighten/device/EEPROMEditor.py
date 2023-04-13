@@ -7,9 +7,9 @@ from PySide2 import QtGui, QtWidgets # for product image
 from decimal import *
 from wasatch import utils as wasatch_utils
 
-from . import util
-from . import common
-from .Authentication import Authentication
+from enlighten import util
+from enlighten import common
+from enlighten.device.Authentication import Authentication
 from wasatch.EEPROM import EEPROM
 
 log = logging.getLogger(__name__)

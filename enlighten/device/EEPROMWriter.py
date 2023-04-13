@@ -4,7 +4,7 @@ import logging
 
 from PySide2 import QtGui, QtWidgets
 
-from . import common
+from enlighten import common
 
 log = logging.getLogger(__name__)
 

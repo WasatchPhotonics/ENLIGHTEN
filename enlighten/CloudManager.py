@@ -14,7 +14,7 @@ from PySide2 import QtCore, QtWidgets, QtGui
 from PySide2.QtWidgets import QInputDialog, QLineEdit, QMessageBox, QPushButton, QCheckBox
 
 from .common import get_default_data_dir
-from .EEPROMEditor import EEPROMEditor
+from enlighten.device.EEPROMEditor import EEPROMEditor
 from .Configuration import Configuration
 from . import util
 

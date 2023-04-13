@@ -5,13 +5,13 @@ from PySide2 import QtGui
 import logging
 import re
 
-from .Spectrometer import Spectrometer
-from .ScrollStealFilter import ScrollStealFilter
+from enlighten.Spectrometer import Spectrometer
+from enlighten.ScrollStealFilter import ScrollStealFilter
 
 from wasatch.DeviceID import DeviceID
 from wasatch.WasatchDeviceWrapper import WasatchDeviceWrapper
 
-from . import util
+from enlighten import util
 
 log = logging.getLogger(__name__)
 
