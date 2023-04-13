@@ -1,7 +1,7 @@
 import logging
 import colorsys
 
-from .ColorNames import ColorNames
+from enlighten.data.ColorNames import ColorNames
 
 log = logging.getLogger(__name__)
 

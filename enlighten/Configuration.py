@@ -8,7 +8,7 @@ import textwrap
 import threading
 import configparser
 
-from .ColorNames import ColorNames
+from enlighten.data.ColorNames import ColorNames
 
 from . import common
 

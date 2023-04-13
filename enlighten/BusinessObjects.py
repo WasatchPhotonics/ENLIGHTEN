@@ -53,7 +53,7 @@ from .FileManager                     import FileManager
 from .VCRControls                     import VCRControls
 from .BLEManager                      import BLEManager
 from .Clipboard                       import Clipboard
-from .ModelInfo                       import ModelInfo
+from enlighten.data.ModelInfo import ModelInfo
 from enlighten.device.Multispec import Multispec
 from .Marquee                         import Marquee
 from .Colors                          import Colors
