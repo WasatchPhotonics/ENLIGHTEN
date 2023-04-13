@@ -2,7 +2,7 @@ import datetime
 import logging
 import csv
 
-from .Measurement      import Measurement
+from enlighten.measurement.Measurement import Measurement
 
 from wasatch.ProcessedReading import ProcessedReading
 from wasatch.SpectrometerSettings import SpectrometerSettings

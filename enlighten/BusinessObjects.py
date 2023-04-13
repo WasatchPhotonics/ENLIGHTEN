@@ -19,7 +19,7 @@ from enlighten.device.ManufacturingFeature import ManufacturingFeature
 from .LaserControlFeature             import LaserControlFeature
 from .HighGainModeFeature             import HighGainModeFeature
 from .TransmissionFeature             import TransmissionFeature
-from .MeasurementFactory              import MeasurementFactory
+from enlighten.measurement.MeasurementFactory import MeasurementFactory
 from .BaselineCorrection              import BaselineCorrection
 from .VignetteROIFeature              import VignetteROIFeature
 from .AbsorbanceFeature               import AbsorbanceFeature
@@ -27,7 +27,7 @@ from .StatusBarFeature                import StatusBarFeature
 from .RamanModeFeature                import RamanModeFeature
 from .StatusIndicators                import StatusIndicators
 from .ReferenceFeature                import ReferenceFeature
-from .AreaScanFeature                 import AreaScanFeature
+from enlighten.measurement.AreaScanFeature import AreaScanFeature
 from .BatchCollection                 import BatchCollection
 from enlighten.device.Authentication import Authentication
 from .ImageResources                  import ImageResources
@@ -40,14 +40,14 @@ from .FocusListener                   import FocusListener
 from .GainDBFeature                   import GainDBFeature
 from .BoxcarFeature                   import BoxcarFeature
 from enlighten.file_io.Configuration import Configuration
-from .Measurements                    import Measurements
+from enlighten.measurement.Measurements import Measurements
 from enlighten.device.EEPROMEditor import EEPROMEditor
 from .GuideFeature                    import GuideFeature
 from .CloudManager                    import CloudManager
 from enlighten.device.EEPROMWriter import EEPROMWriter
 from .Stylesheets                     import Stylesheets
 from .DarkFeature                     import DarkFeature
-from .SaveOptions                     import SaveOptions
+from enlighten.measurement.SaveOptions import SaveOptions
 from .GridFeature                     import GridFeature
 from enlighten.file_io.FileManager import FileManager
 from .VCRControls                     import VCRControls

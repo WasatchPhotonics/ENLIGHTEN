@@ -7,19 +7,19 @@ import json
 import os
 import re
 
-from .ColumnFileParser import ColumnFileParser
-from .ExportFileParser import ExportFileParser
-from .TextFileParser   import TextFileParser
-from .SPCFileParser    import SPCFileParser
-from .ThumbnailWidget  import ThumbnailWidget
-from .DashFileParser   import DashFileParser
-from .Measurement      import Measurement
+from enlighten.ColumnFileParser import ColumnFileParser
+from enlighten.ExportFileParser import ExportFileParser
+from enlighten.TextFileParser import TextFileParser
+from enlighten.SPCFileParser import SPCFileParser
+from enlighten.ThumbnailWidget import ThumbnailWidget
+from enlighten.DashFileParser import DashFileParser
+from enlighten.measurement import Measurement
 
 from wasatch.ProcessedReading import ProcessedReading
 from wasatch.SpectrometerSettings import SpectrometerSettings
 from wasatch import utils as wasatch_utils
 
-from . import util
+from enlighten import util
 
 log = logging.getLogger(__name__)
 

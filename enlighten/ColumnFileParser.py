@@ -4,7 +4,7 @@ import csv
 import re
 import os
 
-from .Measurement      import Measurement
+from enlighten.measurement.Measurement import Measurement
 
 from wasatch.SpectrometerSettings import SpectrometerSettings
 from wasatch.Reading              import Reading

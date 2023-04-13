@@ -10,8 +10,8 @@ import os
 
 from wasatch.ProcessedReading import ProcessedReading
 
-from . import common
-from . import util
+from enlighten import common
+from enlighten import util
 from SPyC_Writer import SPCFileWriter
 from SPyC_Writer.SPCEnums import SPCFileType, SPCXType, SPCYType, SPCTechType
 

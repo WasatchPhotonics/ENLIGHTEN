@@ -3,8 +3,8 @@ import logging
 import re
 import os
 
-from . import common
-from . import util
+from enlighten import common
+from enlighten import util
 
 log = logging.getLogger(__name__)
 

@@ -8,12 +8,12 @@ import os
 import numpy as np
 from PySide2 import QtGui, QtWidgets
 
-from .Measurement import Measurement
+from enlighten.measurement import Measurement
 from SPyC_Writer import SPCFileWriter
 from SPyC_Writer.SPCEnums import SPCFileType, SPCXType, SPCYType, SPCTechType
 
-from . import common
-from . import util
+from enlighten import common
+from enlighten import util
 
 log = logging.getLogger(__name__)
 

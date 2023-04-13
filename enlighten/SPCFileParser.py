@@ -6,7 +6,7 @@ import os
 
 import numpy as np
 
-from .Measurement      import Measurement
+from enlighten.measurement.Measurement import Measurement
 
 log = logging.getLogger(__name__)
 
