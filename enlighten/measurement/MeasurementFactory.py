@@ -7,12 +7,12 @@ import json
 import os
 import re
 
-from enlighten.ColumnFileParser import ColumnFileParser
-from enlighten.ExportFileParser import ExportFileParser
-from enlighten.TextFileParser import TextFileParser
-from enlighten.SPCFileParser import SPCFileParser
+from enlighten.parser.ColumnFileParser import ColumnFileParser
+from enlighten.parser.ExportFileParser import ExportFileParser
+from enlighten.parser.TextFileParser import TextFileParser
+from enlighten.parser.SPCFileParser import SPCFileParser
 from enlighten.ThumbnailWidget import ThumbnailWidget
-from enlighten.DashFileParser import DashFileParser
+from enlighten.parser.DashFileParser import DashFileParser
 from enlighten.measurement import Measurement
 
 from wasatch.ProcessedReading import ProcessedReading
