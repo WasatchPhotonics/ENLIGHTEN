@@ -337,7 +337,8 @@ class Graph(object):
             y=y,
             x=x,
             pen=pen,
-            name=name)
+            name=name
+        )
         self.update_curve_marker(curve)
         log.debug("add_curve: added a %s (%s)", type(curve), str(curve))
 

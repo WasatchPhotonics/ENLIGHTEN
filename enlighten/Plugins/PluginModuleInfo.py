@@ -68,8 +68,10 @@ class PluginModuleInfo:
         # log.debug("instantiating %s (%s)", self.module_name, self.class_obj)
         self.instance = self.class_obj()
 
-        # log.debug("loading configuration")
-        self.config = self.instance.get_configuration()
+        # An OOP plugin will return an object itself
+        # A functional plugin will define its configuration via calls only and return None
+        # The calls will generate instance.configuration_obj behind the scenes
+        self.config = self.instance.get_configuration_obj()
         if self.config is None:
             log.error("unable to load configuration")
             return False

@@ -98,17 +98,13 @@ class PluginWorker(threading.Thread):
             log.debug("PluginWorker[%s] sending request %d", module_name, request.request_id)
             response = None
             try:
-                response = plugin.process_request(request)
+                # make wavelenghts/wavenumbers available to *to_pixel functions
+                plugin.settings = request.settings
+                response = plugin.process_request_obj(request)
             except:
                 log.critical("PluginWorker[%s] caught exception processing request %d, closing",
                     module_name, request.request_id, exc_info=1)
                 self.error_message = traceback.format_exc()
-                shutdown = True
-
-            if not shutdown and response is None:
-                log.critical("PluginWorker[%s] received upstream poison-pill, shutting down", module_name)
-                self.error_message = plugin.error_message
-                log.debug("PluginWorker.error_message = {self.error_message}")
                 shutdown = True
 
             if shutdown:

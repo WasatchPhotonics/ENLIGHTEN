@@ -34,7 +34,87 @@ class EnlightenPluginBase:
     def __init__(self):
         self.enlighten_info = None
         self.error_message = None
+
+        # these can be set by functional-plugins to autogenerate EPC
+        self.name = None
+        self._fields = []
+        self.is_blocking = False
+        self.has_other_graph = False
+        self.table = None
+
+    ### Begin functional-plugins backend ###
+
+    def field(self, **kwargs):
+        self._fields.append(EnlightenPluginField(**kwargs))
+
+    def get_widget_from_name(self, name):
+        widget = None
+        for elem in self.enlighten_info.plugin_fields():
+            if elem.field_name == name:
+                widget = elem
+        return widget.field_widget
+
+    def plot(self, **kwargs):
+        """
+        When plotting on the main scope graphenlighten_info=
+        domain is pixels and codomain is intensity.
+
+        To use a different codomain, convert it into pixels
+        """
         pass
+
+    def to_pixel(self, domain, x):
+        """
+        domain is an array where the index corresponds to a pixel number.
+        
+        if x occurs once in domain, this is like domain.index(x)
+        otherwise a most sensible index is selected
+        """
+
+        # select the index whose value is closest to x
+        return min(enumerate(domain), key=lambda P: abs(P[1]-x))[0]
+
+    def wavelength_to_pixel(self, wavelength):
+        return self.to_pixel(self.settings.wavelengths, wavelength)
+
+    def wavenumber_to_pixel(self):
+        raise NotImplementedError("wavenumber_to_pixels")
+
+    #### End functional-plugins backend ####
+
+    ### Begin backwards compatible object-returning wrappers ###
+    def get_configuration_obj(self):
+        config = self.get_configuration()
+        if config: return config
+
+        return EnlightenPluginConfiguration(
+            name = self.name, 
+            fields = self._fields,
+            is_blocking = self.is_blocking,
+            has_other_graph = self.has_other_graph,
+            series_names = [] # functional plugins define this on a frame-by-frame basis
+        )
+    
+    def process_request_obj(self, request):
+        response = self.process_request(request)
+        if response: return response
+
+        if self.table is not None:
+            return EnlightenPluginResponse(
+                request,
+                series = [],
+                outputs = {
+                    # table (looks like a spreadsheet under the graph)
+                    "Table": self.table,
+                }
+            )
+        else:
+            return EnlightenPluginResponse(
+                request,
+                series = [],
+                outputs = {}
+            )
+    #### End backwards compatible object-returning wrappers #####
 
     ##
     # Can be called BEFORE or AFTER connect. Should be idempotent. Ideally should

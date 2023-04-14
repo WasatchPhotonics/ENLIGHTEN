@@ -1075,6 +1075,9 @@ class PluginController:
     ##
     # @todo split-out outputs, series into their own methods
     def handle_response(self, response, orig_pr=None):
+
+        log.debug("handling response")
+
         config = self.get_current_configuration()
         if config is None:
             return
@@ -1106,6 +1109,8 @@ class PluginController:
             outputs = response.outputs
             if outputs is not None:
                 
+                log.debug("plugin response has output")
+
                 # handle scalar outputs
                 for pfw in self.plugin_field_widgets:
                     epf = pfw.field_config
@@ -1119,6 +1124,16 @@ class PluginController:
                         # log.debug(f"pandas dataframe {self.panda_field.name} = %s", dataframe)
                         model = TableModel(dataframe)
                         self.table_view.setModel(model)
+
+                # handle functional-plugin Pandas output
+                if "Table" in response.outputs.keys():
+                    if not self.table_view:
+                        self.create_output_table()
+
+                    log.debug("functional-plugin using panda table")
+                    dataframe = response.outputs["Table"]
+                    model = TableModel(dataframe)
+                    self.table_view.setModel(model)
 
             self.release_block(request)
 
