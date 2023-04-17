@@ -13,6 +13,8 @@ from enlighten.scope.Spectrometer import Spectrometer
 from wasatch.ProcessedReading         import ProcessedReading
 from wasatch.SpectrometerSettings     import SpectrometerSettings
 
+import numpy as np
+
 ##
 # Abstract Base Class (ABC) for all ENLIGHTEN-compatible plug-ins.
 #
@@ -42,6 +44,8 @@ class EnlightenPluginBase:
         self.has_other_graph = False
         self.table = None
 
+        self.series = {}
+
     ### Begin functional-plugins backend ###
 
     def field(self, **kwargs):
@@ -54,14 +58,39 @@ class EnlightenPluginBase:
                 widget = elem
         return widget.field_widget
 
-    def plot(self, **kwargs):
+    def plot(self, y, x=None, title=None, color=None, domainFn=None):
         """
-        When plotting on the main scope graphenlighten_info=
+        When plotting on the main scope graph
         domain is pixels and codomain is intensity.
 
-        To use a different codomain, convert it into pixels
+        To use a different domain, convert it into pixels
         """
-        pass
+        in_legend = True
+
+        if x is None: x = np.arange(len(y))
+
+        if domainFn is not None:
+            x = [domainFn(u) for u in x]
+
+        if title is None: 
+            title = "untitled"
+            in_legend = False
+
+        # create titles for untitled graphs: untitled, untitled2, untitled3
+        suffix = ""
+        i = 2
+        while title+suffix in self.series.keys():
+            suffix = str(i)
+            i += 1
+        title = title+suffix
+
+        self.series[title] = {
+            "x": x,
+            "y": y,
+            "color": color,
+            "title": title,
+            "in_legend": in_legend
+        }
 
     def to_pixel(self, domain, x):
         """
@@ -80,6 +109,24 @@ class EnlightenPluginBase:
     def wavenumber_to_pixel(self):
         raise NotImplementedError("wavenumber_to_pixels")
 
+    def area_under_curve(self, array, start, end):
+        """
+        Solves for area under array.
+
+        start and end describe the x-axis extents units of the
+        domain (wavelength for example)
+
+        the array values also have a unit (intensity)
+
+        the outcome has a unit of intensity*wavelength
+        or the product of the units in array and start,end.
+        """
+
+        # numeric integration is very easy on measured data
+        # there is no need for epsilons because the
+        # premultiplied delta is always 1.
+        return sum(array)*(end-start)
+
     #### End functional-plugins backend ####
 
     ### Begin backwards compatible object-returning wrappers ###
@@ -96,24 +143,28 @@ class EnlightenPluginBase:
         )
     
     def process_request_obj(self, request):
+
+        # clear series each frame
+        self.series = {}
+
         response = self.process_request(request)
         if response: return response
 
+        # if not yet returned, we are running a functional plugin,
+        # and so we want Enlighten to construct the EnlightenPluginResponse for us
+
+        outputs = {}
         if self.table is not None:
-            return EnlightenPluginResponse(
-                request,
-                series = [],
-                outputs = {
-                    # table (looks like a spreadsheet under the graph)
-                    "Table": self.table,
-                }
-            )
-        else:
-            return EnlightenPluginResponse(
-                request,
-                series = [],
-                outputs = {}
-            )
+            outputs = {
+                # table (looks like a spreadsheet under the graph)
+                "Table": self.table,
+            }
+
+        return EnlightenPluginResponse(
+            request,
+            series = self.series,
+            outputs = outputs
+        )
     #### End backwards compatible object-returning wrappers #####
 
     ##

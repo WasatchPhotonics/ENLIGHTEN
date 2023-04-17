@@ -1175,8 +1175,15 @@ class PluginController:
                     series = seriess.get(name, None)
 
                     if name not in self.plugin_curves:
+
+                        # SB: functional plugins use exclusively undeclared curves
+
                         log.debug(f"found undeclared curve {name}...adding")
-                        self.plugin_curves[name] = graph.add_curve(name=name, pen=self.gui.make_pen(), in_legend=False)
+                        self.plugin_curves[name] = graph.add_curve(
+                            name=name, 
+                            pen=self.gui.make_pen(color=series.get("color")), 
+                            in_legend=series.get("in_legend", True)
+                        )
                         if name not in config.series_names:
                             config.series_names.append(name)
 

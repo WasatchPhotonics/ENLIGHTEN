@@ -15,20 +15,20 @@ class BaselineFunctional(EnlightenPluginBase):
         self.name = "Baseline"
 
         self.field(
-            name = "wavelength", 
-            initial = 1000, minimum = 0, maximum = 10000,
+            name = "Wavelength", 
+            initial = 1014, minimum = 0, maximum = 10000,
             datatype = "float", direction = "input"
         )
         
         self.field(
-            name = "inner radius", 
-            initial = 10, minimum = 0, maximum = 10000,
+            name = "Peak Neighborhood", 
+            initial = 3, minimum = 0, maximum = 10000,
             datatype = "float", direction = "input"
         )
 
         self.field(
-            name = "outer radius", 
-            initial = 20, minimum = 0, maximum = 10000,
+            name = "Baseline Extent", 
+            initial = 10, minimum = 0, maximum = 10000,
             datatype = "float", direction = "input"
         )
 
@@ -39,58 +39,76 @@ class BaselineFunctional(EnlightenPluginBase):
         pr = request.processed_reading
         spectrum = pr.get_processed()
         
-        wavelength = self.get_widget_from_name("wavelength").value()
-        inner_radius = self.get_widget_from_name("inner radius").value()
-        outer_radius = self.get_widget_from_name("outer radius").value()
+        wavelength = self.get_widget_from_name("Wavelength").value()
+        inner_radius = self.get_widget_from_name("Peak Neighborhood").value()
+        outer_radius = self.get_widget_from_name("Baseline Extent").value()
 
-        # TODO: plot wrt to wavelengths (use self.wavelength_to_pixels)
+        left_start = wavelength-inner_radius-outer_radius
+        left_end = wavelength-inner_radius
+        right_start = wavelength+inner_radius
+        right_end = wavelength+inner_radius+outer_radius
 
         self.plot(
             title="Wavelength",
             color="red",
             x=[wavelength, wavelength],
-            y=[min(spectrum), max(spectrum)]
+            y=[min(spectrum), max(spectrum)],
         )
 
         self.plot(
-            title="Inner Radius",
-            color="yellow",
-            x=[wavelength-inner_radius, wavelength-inner_radius],
-            y=[min(spectrum), max(spectrum)]
+            title="Peak Neighborhood",
+            color="green",
+            x=[left_end, left_end],
+            y=[min(spectrum), max(spectrum)],
         )
         self.plot(
-            color="yellow",
-            x=[wavelength+inner_radius, wavelength+inner_radius],
-            y=[min(spectrum), max(spectrum)]
+            color="green",
+            x=[right_start, right_start],
+            y=[min(spectrum), max(spectrum)],
         )
 
         self.plot(
-            title="Outer Radius",
+            title="Baseline Extent",
             color="blue",
-            x=[wavelength-outer_radius, wavelength-outer_radius],
-            y=[min(spectrum), max(spectrum)]
+            x=[left_start, left_start],
+            y=[min(spectrum), max(spectrum)],
         )
         self.plot(
             color="blue",
-            x=[wavelength+outer_radius, wavelength+outer_radius],
-            y=[min(spectrum), max(spectrum)]
+            x=[right_end, right_end],
+            y=[min(spectrum), max(spectrum)],
         )
 
-        mean_baseline = 0
+        left_start_pixel = self.wavelength_to_pixel(left_start)
+        left_end_pixel = self.wavelength_to_pixel(left_end)
+        right_start_pixel = self.wavelength_to_pixel(right_start)
+        right_end_pixel = self.wavelength_to_pixel(right_end)
+
+        baseline_spectrum = list(spectrum[left_start_pixel:left_end_pixel]) + list(spectrum[right_start_pixel:right_end_pixel])
+        if baseline_spectrum:
+            mean_baseline = sum(baseline_spectrum)/len(baseline_spectrum)
+        elif list(spectrum):
+            # Provide some baseline if the user range is <=0
+            mean_baseline = min(spectrum)
+        else:
+            # Don't crash plugin if spectrometer goes offline for a moment
+            mean_baseline = 0
 
         self.plot(
             title="Baseline",
             color="orange",
-            x=[wavelength-outer_radius, wavelength-inner_radius],
-            y=[mean_baseline, mean_baseline]
+            x=[left_start, left_end],
+            y=[mean_baseline, mean_baseline],
         )
         self.plot(
             color="orange",
-            x=[wavelength+inner_radius, wavelength+outer_radius],
-            y=[mean_baseline, mean_baseline]
+            x=[right_start, right_end],
+            y=[mean_baseline, mean_baseline],
         )
 
+        peak = spectrum[self.wavelength_to_pixel(wavelength)]
+        area = self.area_under_curve(spectrum[left_end_pixel:right_start_pixel], left_end, right_start)
         self.table = pd.DataFrame( 
-            [ mean_baseline ],
-            index = ["Baseline"]
+            [ mean_baseline, peak, peak - mean_baseline, area ],
+            index = ["Baseline", "Original Peak", "Peak (baseline subtracted)", "Peak Area (baseline subtracted)"]
         ).T
