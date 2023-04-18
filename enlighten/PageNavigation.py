@@ -178,6 +178,9 @@ class PageNavigation:
         self.set_view_common()
         self.set_main_page(common.Pages.HARDWARE)
 
+    def is_expert(self):
+        return self.operation_mode == common.OperationModes.EXPERT
+
     def set_view_logging(self):
         log.debug("set_view_logging")
         if self.current_view != common.Views.LOG:
