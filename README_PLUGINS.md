@@ -69,27 +69,45 @@ Finally, omitting the x-values will generate a range that fits the y-values.
 
 ## Example
 
+```python
+from EnlightenPlugin import *
+
+class hello_graph(EnlightenPluginBase):
+
+    def get_configuration(self):
+        self.name = "Hello Graph",
+        self.has_other_graph = True,
+        self.series_names = self.my_series.keys(),
+        self.x_axis_label = "x-axis",
+        self.y_axis_label = "y-axis",
+
+    def process_request(self, request):
+        x_values = self.getAxis()
+        y_values = request.processed_reading.get_processed()
+        self.plot(x=x_values, y=y_values, title="Copy of Graph !", color="teal")
+```
+
 ## Advanced use
 
-# inline parameters
-self.name
-self.is_blocking
-self.has_other_graph
-self.table
-self.x_axis_label
-self.y_axis_label
+### inline parameters
+- self.name
+- self.is_blocking
+- self.has_other_graph
+- self.table
+- self.x_axis_label
+- self.y_axis_label
 
-# helper functions
-getAxis
-to_pixel
-wavelength_to_pixel
-wavenumber_to_pixel
-area_under_curve
+### helper functions
+- getAxis
+- to_pixel
+- wavelength_to_pixel
+- wavenumber_to_pixel
+- area_under_curve
 
-# api functions
-field
-get_widget_from_name
-plot
+### api functions
+- field
+- get_widget_from_name
+- plot
 
 ## More Information
 
