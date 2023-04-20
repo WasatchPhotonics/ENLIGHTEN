@@ -3,7 +3,8 @@ import sys
 import os
 
 """
-Transposes one or more CSV files like this:
+Transposes one or more input CSV files into a single concatenated, transposed output
+with added header rows and header column.
 
 one.csv
     1,  2,  3,  4
@@ -14,16 +15,15 @@ two.csv
     a, b, c
     d, e, f  
 
-...into this:
+...into this (whitespace added for legibility):
 
-    one, one, one, two, two
-    one-01, one-02, one-03, two-01, two-02
-    1,  5,  9, a, d
-    2,  6, 10, b, e
-    3,  7, 11, c, f
-    4,  8, 12
+     ,     one,    one,    one,    two,    two
+     ,     one-01, one-02, one-03, two-01, two-02
+    0,     1,      5,      9,      a,      d
+    1,     2,      6,      10,     b,      e
+    2,     3,      7,      11,     c,      f
+    3,     4,      8,      12
 
-Multiple input files are concatenated into a single output file.
 
 Invocation: 
     $ python scripts/transpose.py one.csv two.csv > ~/transposed.csv
