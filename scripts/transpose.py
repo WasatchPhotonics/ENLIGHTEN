@@ -5,24 +5,32 @@ import os
 """
 Transposes one or more CSV files like this:
 
-FILE-1:
+one.csv
     1,  2,  3,  4
     5,  6,  7,  8
     9, 10, 11, 12
 
-FILE-2:
-
+two.csv
     a, b, c
     d, e, f  
 
 ...into this:
 
+    one, one, one, two, two
+    one-01, one-02, one-03, two-01, two-02
     1,  5,  9, a, d
     2,  6, 10, b, e
     3,  7, 11, c, f
     4,  8, 12
 
 Multiple input files are concatenated into a single output file.
+
+Invocation: 
+    $ python scripts/transpose.py one.csv two.csv > ~/transposed.csv
+
+TODO:
+    - add --mean and --median options (computes new vectors from each input file)
+    - add --replace option (instead of APPENDING new computed vectors to output file, REPLACES the original input data)
 """
 
 filenames = sys.argv[1:]
