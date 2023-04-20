@@ -45,6 +45,8 @@ class EnlightenPluginBase:
         self.is_blocking = False
         self.has_other_graph = False
         self.table = None
+        self.x_axis_label = None
+        self.y_axis_label = None
 
         self.series = {}
 
@@ -74,9 +76,16 @@ class EnlightenPluginBase:
     def plot(self, y, x=None, title=None, color=None):
         """
         When plotting on the main scope graph
-        domain is pixels and codomain is intensity.
+        the (co)domain matches that existing graph.
 
-        To use a different domain, convert it into pixels
+        Set self.x_axis_label or self.y_axis_label to
+        provide your own axis labels when plotting
+        to a secondary graph.
+
+        @param x x values
+        @param y y values
+        @param title plot title, shown in legend
+        @param color color of plot line
         """
         in_legend = True
 
@@ -153,7 +162,9 @@ class EnlightenPluginBase:
             fields = self._fields,
             is_blocking = self.is_blocking,
             has_other_graph = self.has_other_graph,
-            series_names = [] # functional plugins define this on a frame-by-frame basis
+            series_names = [], # functional plugins define this on a frame-by-frame basis
+            x_axis_label = self.x_axis_label
+            y_axis_label = self.y_axis_label
         )
     
     def process_request_obj(self, request):
