@@ -163,7 +163,7 @@ class EnlightenPluginBase:
             is_blocking = self.is_blocking,
             has_other_graph = self.has_other_graph,
             series_names = [], # functional plugins define this on a frame-by-frame basis
-            x_axis_label = self.x_axis_label
+            x_axis_label = self.x_axis_label,
             y_axis_label = self.y_axis_label
         )
     
