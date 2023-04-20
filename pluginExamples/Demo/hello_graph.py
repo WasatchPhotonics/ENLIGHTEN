@@ -37,42 +37,11 @@ class hello_graph(EnlightenPluginBase):
     # Here we will define how the user interface changes
     # when the plugin is first connected
     def get_configuration(self):
-
-        # This variable is used in two places.
-        #
-        #   (1) Here. It is important that we define all
-        #   of the plots we are going to graph. Before
-        #   the plugin executes, the plot name will be
-        #   visible in the graph's legend.
-        #
-        #   (2) We will use it again in process_request.
-        #   Take care to use exactly the same string
-        #   when referencing your plot.
-        self.my_series = {
-            "Copy of Graph !": {}
-        }
-
-        # Disambiguation.
-        # Graph refers to the window which displays plots.
-        # Plots are the paths themselves which represent spectra or time-series, etc.
-        # 
-        # The main scope graph shows only one plot, the spectra.
-        # Your plugin's graph can display many plots.
-        #
-        # This plugin only shows one plot, to copy exactly the main graph.
-
-        # Here we will provide a friendly name for the plugin
-        # and the all-important has_other_graph= attribute
-        # which signals to Enlighten to draw a new graph window.
-        # We will also provide the series names for the legend
-        # and axis labels.
-        return EnlightenPluginConfiguration(
-            name = "Hello Graph",
-            has_other_graph = True,
-            series_names = self.my_series.keys(),
-            x_axis_label = "x-axis",
-            y_axis_label = "y-axis",
-        )
+        self.name = "Hello Graph",
+        self.has_other_graph = True,
+        self.series_names = self.my_series.keys(),
+        self.x_axis_label = "x-axis",
+        self.y_axis_label = "y-axis",
 
     # process_request is called continuously when a plugin is enabled.
     # Otherwise it is called when the "Process" button is clicked.
@@ -84,19 +53,14 @@ class hello_graph(EnlightenPluginBase):
         # 
         # Make sure your x-axis label is representative of the
         # quantity you use here
-        x_values = request.settings.wavelengths
+        x_values = self.getAxis()
 
         # This is where we copy data from the spectroscope !
         y_values = request.processed_reading.get_processed()
 
-        # Here using the same series name defined above,
-        # we prepare the plot to be sent back in an
-        # EnlightenPluginResponse
-        self.my_series["Copy of Graph !"] = {
-            "x": x_values,
-            "y": y_values
-        }
-
-        # EnlightenPluginResponse also takes the unmodified original request
-        # as a parameter
-        return EnlightenPluginResponse(request, series=self.my_series)
+        self.plot(
+            x=x_values, 
+            y=y_values,
+            title="Copy of Graph !",
+            color="teal"
+        )

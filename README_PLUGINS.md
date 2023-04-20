@@ -67,6 +67,30 @@ If you leave out the color, a random one is selected.
 
 Finally, omitting the x-values will generate a range that fits the y-values.
 
+## Example
+
+## Advanced use
+
+# inline parameters
+self.name
+self.is_blocking
+self.has_other_graph
+self.table
+self.x_axis_label
+self.y_axis_label
+
+# helper functions
+getAxis
+to_pixel
+wavelength_to_pixel
+wavenumber_to_pixel
+area_under_curve
+
+# api functions
+field
+get_widget_from_name
+plot
+
 ## More Information
 
 ENLIGHTEN's plug-in architecture is designed to allow end-users to write simple 
