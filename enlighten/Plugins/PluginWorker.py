@@ -98,8 +98,11 @@ class PluginWorker(threading.Thread):
             log.debug("PluginWorker[%s] sending request %d", module_name, request.request_id)
             response = None
             try:
-                # make wavelenghts/wavenumbers available to *to_pixel functions
+                # make the following available to plugin utility functions (functional-api)
                 plugin.settings = request.settings
+                plugin.spectrum = request.processed_reading.get_processed()
+
+                log.debug("about to call plugin's process request")
                 response = plugin.process_request_obj(request)
             except:
                 log.critical("PluginWorker[%s] caught exception processing request %d, closing",

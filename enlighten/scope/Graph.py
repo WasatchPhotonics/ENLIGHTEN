@@ -314,6 +314,7 @@ class Graph(object):
     def add_curve(self, name, y=[], x=None, pen=None, spec=None, measurement=None, rehide=True, in_legend=True):
         # I am not 100% sure what datatype is returned from 
         # pyqtgraph.PlotWidget.plot()...presumably a CurvePlotItem?
+        # SB. actually it returns a PlotDataItem
 
         if x is not None:
             if len(y) < len(x):
@@ -333,12 +334,20 @@ class Graph(object):
             log.debug(f"making pen for {name}")
             pen = self.gui.make_pen(widget=name)
 
-        curve = self.plot.plot(
-            y=y,
-            x=x,
-            pen=pen,
-            name=name
-        )
+        if in_legend:
+            curve = self.plot.plot(
+                y=y,
+                x=x,
+                pen=pen,
+                name=name
+            )
+        else:
+            curve = self.plot.plot(
+                y=y,                                                                                                                                                                                                                                         
+                x=x,
+                pen=pen,
+            )
+
         self.update_curve_marker(curve)
         log.debug("add_curve: added a %s (%s)", type(curve), str(curve))
 
@@ -358,9 +367,6 @@ class Graph(object):
 
         if rehide and self.rehide_curves is not None:
             self.rehide_curves()
-
-        if not in_legend:
-            self.legend.removeItem(curve)
 
         return curve
 

@@ -142,7 +142,7 @@ class PluginController:
 
         self.next_request_id = 0
 
-    def __init__(self,
+    def __init__(self, ctl,
             colors,
             config,             # enlighten.Configuration
             generate_x_axis,
@@ -176,6 +176,8 @@ class PluginController:
         log.debug("instantiating PluginController")
 
         self.clear()
+
+        self.ctl = ctl
 
         # business objects and callbacks
         self.colors                     = colors
@@ -244,11 +246,11 @@ class PluginController:
         self.mut = QtCore.QMutex()
 
         # bindings
-        self.button_process         .clicked                .connect(self.button_process_callback)
-        self.cb_connected           .clicked           .connect(self.connected_callback)
-        self.cb_enabled             .stateChanged           .connect(self.enabled_callback)
-        self.combo_module           .currentIndexChanged    .connect(self.combo_module_callback)
-        self.combo_graph_pos        .currentIndexChanged    .connect(self.graph_pos_callback)
+        self.button_process.clicked.connect(self.button_process_callback)
+        self.cb_connected.clicked.connect(self.connected_callback)
+        self.cb_enabled.stateChanged.connect(self.enabled_callback)
+        self.combo_module.currentIndexChanged.connect(self.combo_module_callback)
+        self.combo_graph_pos.currentIndexChanged.connect(self.graph_pos_callback)
 
         # events
         log.debug("registering observer on MeasurementFactory")
@@ -337,7 +339,7 @@ class PluginController:
                     package = os.path.basename(folder)
                     if filename.endswith('.py') and filename != "EnlightenPlugin.py" and not filename.startswith("_"):
                         log.debug(f"find_all_plugins:   package {package}, filename {filename}, file {file}") # package Demo, filename BlockNullOdd.py
-                        module_info = PluginModuleInfo(pathname=file, package=package, filename=filename)
+                        module_info = PluginModuleInfo(pathname=file, package=package, filename=filename, ctl=self.ctl)
                         full_module_name = module_info.full_module_name
                         if full_module_name not in module_infos:
                             log.debug(f"find_all_plugins:     added module {full_module_name}")
@@ -402,6 +404,7 @@ class PluginController:
     def connected_callback(self):
         log.debug("connected_callback: start")
         module_name = self.combo_module.currentText()
+
         if module_name not in self.module_infos:
             log.error(f"user somehow attempted to connect to invalid module {module_name}")
             self.cb_connected.setEnabled(False)
@@ -453,9 +456,6 @@ class PluginController:
                 log.error("failed to run worker, disconnecting")
                 self.cb_connected.setChecked(False)
                 self.do_post_disconnect()
-                # YOU ARE HERE: the NEXT click on cb_connected is ignored, but 
-                #               the one after that seems to work...?
-                # SB: fixed in #101, bug with QT checkboxes when checkstate signal is used instead of clicked
                 return
 
             # allow the user to enable the plugin
@@ -1096,14 +1096,14 @@ class PluginController:
                 return
 
             ####################################################################
-            # handle message
+            # handle message                                                   #
             ####################################################################
 
             if response.message is not None:
                 self.marquee.info(response.message)
 
             ####################################################################
-            # handle outputs
+            # handle outputs                                                   #
             ####################################################################
 
             outputs = response.outputs
@@ -1138,7 +1138,7 @@ class PluginController:
             self.release_block(request)
 
             ####################################################################
-            # handle graph series
+            # handle graph series                                              #
             ####################################################################
 
             seriess = response.series
@@ -1160,7 +1160,7 @@ class PluginController:
                 # matter if the plot is xy or line
 
                 # first blank any missing series
-                for name in config.series_names:
+                for name in self.plugin_curves: # config.series_names:
                     series = seriess.get(name, None)
                     if series is None:
                         log.debug(f"configured series {name} missing")
@@ -1178,14 +1178,14 @@ class PluginController:
 
                         # SB: functional plugins use exclusively undeclared curves
 
-                        log.debug(f"found undeclared curve {name}...adding")
+                        log.debug(f"found undeclared curve {name}...adding. in_legend={series.get('in_legend', True)}")
                         self.plugin_curves[name] = graph.add_curve(
                             name=name, 
                             pen=self.gui.make_pen(color=series.get("color")), 
                             in_legend=series.get("in_legend", True)
                         )
-                        if name not in config.series_names:
-                            config.series_names.append(name)
+                        # if name not in config.series_names and series.get("in_legend", True):
+                        #     config.series_names.append(name)
 
                     x_values = None
                     if isinstance(series, dict):
@@ -1227,13 +1227,13 @@ class PluginController:
                         log.error(f"Failed to update curve {name}", exc_info=1)
 
             ####################################################################
-            # handle metadata and overrides
+            # handle metadata and overrides                                    #
             ####################################################################
 
             self.apply_overrides(orig_pr, response)
 
             ####################################################################
-            # handle commands
+            # handle commands                                                  #
             ####################################################################
 
             self.apply_commands(response)
@@ -1265,9 +1265,9 @@ class PluginController:
             log.debug(f"applying {setting}")
             self.multispec.change_device_setting(setting, value)
 
-    # ##########################################################################
-    # events
-    # ##########################################################################
+    ############################################################################
+    # events                                                                   #
+    ############################################################################
 
     ##
     # If there is a connected plugin, and if it has an events hash, and if that
@@ -1292,9 +1292,9 @@ class PluginController:
     def export_event_callback(self, measurement):
         self.events_factory_callback(measurement, "export")
 
-    # ##########################################################################
-    # utility
-    # ##########################################################################
+    ############################################################################
+    # utility                                                                  #
+    ############################################################################
 
     def get_current_module_info(self):
         if self.module_name is None or self.module_name not in self.module_infos:
@@ -1324,6 +1324,7 @@ class PluginController:
         self.clear_plugin_layout(self.plugin_fields_layout)
         self.layout_graphs.setRowMinimumHeight(3,0)
 
+        log.debug("plugin curves = %s", self.plugin_curves)
         try:
             for curve in self.plugin_curves.keys():
                 log.info(f"attempting to remove curve {curve}")

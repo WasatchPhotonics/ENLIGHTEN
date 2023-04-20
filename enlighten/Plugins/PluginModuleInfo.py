@@ -25,7 +25,7 @@ log = logging.getLogger(__name__)
 # @see https://docs.python.org/3/library/types.html#types.ModuleType
 class PluginModuleInfo:
 
-    def __init__(self, pathname, package, filename):
+    def __init__(self, pathname, package, filename, ctl):
         
         self.pathname = pathname                                # /path/to/Foo.py
         self.package = package
@@ -42,6 +42,8 @@ class PluginModuleInfo:
         self.class_obj = None               # e.g. Foo.Foo (the class within the module object)
         self.instance = None                # a single instance of Foo.Foo() 
         self.config = None                  # an instance of EnlightenPluginConfiguration
+
+        self.ctl = ctl
 
         log.debug("instantiated %s", str(self))
 
@@ -66,7 +68,7 @@ class PluginModuleInfo:
         self.class_obj = getattr(self.module_obj, self.module_name)
 
         # log.debug("instantiating %s (%s)", self.module_name, self.class_obj)
-        self.instance = self.class_obj()
+        self.instance = self.class_obj(self.ctl)
 
         # An OOP plugin will return an object itself
         # A functional plugin will define its configuration via calls only and return None

@@ -8,27 +8,26 @@ from EnlightenPlugin import *
 
 log = logging.getLogger(__name__)
 
-class Baseline(EnlightenPluginBase):
+class LocalBaseline(EnlightenPluginBase):
 
     def get_configuration(self):
-
         self.name = "Baseline"
 
         self.field(
-            name = "Wavelength", 
-            initial = 1014, minimum = 0, maximum = 10000,
+            name = "x",
+            initial = 1014, minimum = -10000, maximum = 10000, step = .01,
             datatype = "float", direction = "input"
         )
         
         self.field(
-            name = "Peak Neighborhood", 
-            initial = 3, minimum = 0, maximum = 10000,
+            name = "Peak Neighborhood",
+            initial = 3, minimum = 0, maximum = 10000, step = .01,
             datatype = "float", direction = "input"
         )
 
         self.field(
-            name = "Baseline Extent", 
-            initial = 10, minimum = 0, maximum = 10000,
+            name = "Baseline Extent",
+            initial = 10, minimum = 0, maximum = 10000, step = .01,
             datatype = "float", direction = "input"
         )
 
@@ -38,20 +37,20 @@ class Baseline(EnlightenPluginBase):
     def process_request(self, request):
         pr = request.processed_reading
         spectrum = pr.get_processed()
-        
-        wavelength = self.get_widget_from_name("Wavelength").value()
+
+        x = self.get_widget_from_name("x").value()
         inner_radius = self.get_widget_from_name("Peak Neighborhood").value()
         outer_radius = self.get_widget_from_name("Baseline Extent").value()
 
-        left_start = wavelength-inner_radius-outer_radius
-        left_end = wavelength-inner_radius
-        right_start = wavelength+inner_radius
-        right_end = wavelength+inner_radius+outer_radius
+        left_start = x-inner_radius-outer_radius
+        left_end = x-inner_radius
+        right_start = x+inner_radius
+        right_end = x+inner_radius+outer_radius
 
         self.plot(
-            title="Wavelength",
+            title="x",
             color="red",
-            x=[wavelength, wavelength],
+            x=[x, x],
             y=[min(spectrum), max(spectrum)],
         )
 
@@ -79,10 +78,10 @@ class Baseline(EnlightenPluginBase):
             y=[min(spectrum), max(spectrum)],
         )
 
-        left_start_pixel = self.wavelength_to_pixel(left_start)
-        left_end_pixel = self.wavelength_to_pixel(left_end)
-        right_start_pixel = self.wavelength_to_pixel(right_start)
-        right_end_pixel = self.wavelength_to_pixel(right_end)
+        left_start_pixel = self.to_pixel(left_start)
+        left_end_pixel = self.to_pixel(left_end)
+        right_start_pixel = self.to_pixel(right_start)
+        right_end_pixel = self.to_pixel(right_end)
 
         baseline_spectrum = list(spectrum[left_start_pixel:left_end_pixel]) + list(spectrum[right_start_pixel:right_end_pixel])
         if baseline_spectrum:
@@ -106,8 +105,10 @@ class Baseline(EnlightenPluginBase):
             y=[mean_baseline, mean_baseline],
         )
 
-        peak = spectrum[self.wavelength_to_pixel(wavelength)]
-        area = self.area_under_curve(spectrum[left_end_pixel:right_start_pixel], left_end, right_start)
+        peak = spectrum[self.to_pixel(x)]
+        peak_region = spectrum[left_end_pixel:right_start_pixel]
+        peak_region_subtracted = [x-mean_baseline for x in peak_region]
+        area = self.area_under_curve(peak_region_subtracted, left_end, right_start)
         self.table = pd.DataFrame( 
             [ mean_baseline, peak, peak - mean_baseline, area ],
             index = ["Baseline", "Original Peak", "Peak (baseline subtracted)", "Peak Area (baseline subtracted)"]
