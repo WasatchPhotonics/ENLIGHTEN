@@ -145,10 +145,9 @@ class EnlightenPluginBase:
         or the product of the units in array and start,end.
         """
 
-        # numeric integration is very easy on measured data
-        # there is no need for epsilons because the
-        # premultiplied delta is always 1.
-        return sum(array)*(end-start)
+        # numeric integration has no need for epsilon 
+        # because the premultiplied delta is 1
+        return sum(array)*(end-start)/len(array)
 
     #### End functional-plugins backend ####
 

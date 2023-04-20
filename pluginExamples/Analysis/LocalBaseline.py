@@ -15,19 +15,19 @@ class LocalBaseline(EnlightenPluginBase):
 
         self.field(
             name = "x",
-            initial = 1014, minimum = -10000, maximum = 10000, step = .01,
+            initial = 1014, minimum = -10000, maximum = 10000, step = .2,
             datatype = "float", direction = "input"
         )
         
         self.field(
             name = "Peak Neighborhood",
-            initial = 3, minimum = 0, maximum = 10000, step = .01,
+            initial = 3, minimum = 0, maximum = 10000, step = .2,
             datatype = "float", direction = "input"
         )
 
         self.field(
             name = "Baseline Extent",
-            initial = 10, minimum = 0, maximum = 10000, step = .01,
+            initial = 10, minimum = 0, maximum = 10000, step = .2,
             datatype = "float", direction = "input"
         )
 
@@ -110,6 +110,6 @@ class LocalBaseline(EnlightenPluginBase):
         peak_region_subtracted = [x-mean_baseline for x in peak_region]
         area = self.area_under_curve(peak_region_subtracted, left_end, right_start)
         self.table = pd.DataFrame( 
-            [ mean_baseline, peak, peak - mean_baseline, area ],
+            [ f"{mean_baseline:.2f}", f"{peak:.2f}", f"{peak - mean_baseline:.2f}", f"{area:.2f}" ],
             index = ["Baseline", "Original Peak", "Peak (baseline subtracted)", "Peak Area (baseline subtracted)"]
         ).T
