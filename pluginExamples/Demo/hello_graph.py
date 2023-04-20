@@ -43,11 +43,11 @@ class hello_graph(EnlightenPluginBase):
         #   (1) Here. It is important that we define all
         #   of the plots we are going to graph. Before
         #   the plugin executes, the plot name will be
-        #   visible in the graph's legend
+        #   visible in the graph's legend.
         #
-        #   (2) We will use it again in process_request
-        #   take care to use exactly the same string
-        #    when referencing your plot
+        #   (2) We will use it again in process_request.
+        #   Take care to use exactly the same string
+        #   when referencing your plot.
         self.my_series = {
             "Copy of Graph !": {}
         }
