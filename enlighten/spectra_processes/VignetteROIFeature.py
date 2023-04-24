@@ -30,9 +30,7 @@ class VignetteROIFeature(object):
             graph,
             multispec,
             stylesheets,
-
             button):
-
         self.graph = graph
         self.multispec = multispec
         self.stylesheets = stylesheets
