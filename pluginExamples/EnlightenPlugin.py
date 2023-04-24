@@ -124,7 +124,19 @@ class EnlightenPluginBase:
             domain = self.getAxis()
 
         # select the index whose value is closest to x
-        return min(enumerate(domain), key=lambda P: abs(P[1]-x))[0]
+        target_x = min(enumerate(domain), key=lambda P: abs(P[1]-x))[0]
+
+        roi = self.settings.eeprom.get_horizontal_roi()
+
+        if roi:
+            # |-----|-----------target_x
+            # 0     roi.start
+
+            # to_pixel output is used to index spectrum
+            # which already has roi trimmed, so we must substract roi.start
+            return target_x-roi.start
+        else:
+            return target_x
 
     def wavelength_to_pixel(self, wavelength):
         return self.to_pixel(wavelength, self.settings.wavelengths)
@@ -144,6 +156,9 @@ class EnlightenPluginBase:
         the outcome has a unit of intensity*wavelength
         or the product of the units in array and start,end.
         """
+
+        if not array:
+            return 0
 
         # numeric integration has no need for epsilon 
         # because the premultiplied delta is 1
