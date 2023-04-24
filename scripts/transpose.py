@@ -1,3 +1,4 @@
+import argparse
 import csv
 import sys
 import os
@@ -26,27 +27,40 @@ two.csv
 
 
 Invocation: 
-    $ python scripts/transpose.py one.csv two.csv > ~/transposed.csv
-
-TODO:
-    - add --mean and --median options (computes new vectors from each input file)
-    - add --replace option (instead of APPENDING new computed vectors to output file, REPLACES the original input data)
+    $ python scripts/transpose.py [--mean] one.csv two.csv > ~/transposed.csv
 """
 
-filenames = sys.argv[1:]
-if len(filenames) == 0:
+parser = argparse.ArgumentParser(description="Transpose one or more input files from rows to columns")
+parser.add_argument("--average", action="store_true", help="average all rows in input file before transposing")
+parser.add_argument("filenames", type=str, nargs="+", help="input CSV files to transpose")
+(args, filenames) = parser.parse_known_args(sys.argv[1:])
+
+if len(args.filenames) == 0:
     print("Usage: list of filenames")
     sys.exit(1)
 
 # load all files into a dict (keyed on filename)
 data = {}
-for filename in filenames:
+for filename in args.filenames:
     short = os.path.splitext(os.path.basename(filename))[0]
-    data[short] = []
+    rows = []
     with open(filename) as f:
         reader = csv.reader(f)
         for row in reader:
-            data[short].append(row)
+            rows.append(row)
+
+    # perform any pre-processing on each file after loading
+    if args.average:
+        averaged = []
+        cols = len(rows[0])
+        for col in range(cols):
+            total = 0
+            for row in rows:
+                total += float(row[col])
+            averaged.append(total / len(rows))
+        rows = [ averaged ]
+
+    data[short] = rows
 
 # output header rows
 header_one = [ "" ]
@@ -72,5 +86,5 @@ for col in range(max_cols):
             value = ""
             if col < cols:
                 value = data[name][row][col]
-            values.append(str(value))
+            values.append(str(value).strip())
     print(", ".join(values))
