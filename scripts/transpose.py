@@ -25,9 +25,8 @@ two.csv
     2,     3,      7,      11,     c,      f
     3,     4,      8,      12
 
-
 Invocation: 
-    $ python scripts/transpose.py [--mean] one.csv two.csv > ~/transposed.csv
+    $ python scripts/transpose.py [--average] one.csv two.csv > ~/transposed.csv
 """
 
 parser = argparse.ArgumentParser(description="Transpose one or more input files from rows to columns")
