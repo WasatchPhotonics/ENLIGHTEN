@@ -111,9 +111,25 @@ class EnlightenPluginBase:
             "in_legend": in_legend
         }
 
+    def to_graph(self, x):
+        """
+        Undo to_pixel conversion, and set point back to 
+        currently selected graph X-Axis
+        """
+        domain = self.getAxis()
+
+        target_x = round(x)
+
+        roi = self.settings.eeprom.get_horizontal_roi()
+
+        if roi:
+            target_x = target_x+roi.start
+
+        return domain[target_x]
+
     def to_pixel(self, x, domain=None):
         """
-        domain is an array where the index corresponds to a pixel number.
+        domain is an array where the index corresponds to a detector pixel number.
         
         if x occurs once in domain, this is like domain.index(x)
         otherwise a most sensible index is selected

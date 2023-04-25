@@ -296,7 +296,8 @@ class PluginController:
             measurements_clipboard = self.measurements_clipboard,
             read_measurements = self.measurements.read_measurements,
             vignette_feature = self.vignette_feature,
-            plugin_fields = self.get_plugin_fields) # leaving read measurement call for legacy purposes
+            plugin_fields = self.get_plugin_fields
+        ) # leaving read measurement call for legacy purposes
 
     def initialize_python_path(self):
         log.debug("initializing plugin path")

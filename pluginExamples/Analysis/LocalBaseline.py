@@ -33,11 +33,25 @@ class LocalBaseline(EnlightenPluginBase):
 
         self.field(
             name = "Center",
-            datatype = "button", direction = "input"
+            datatype = "button",
+            callback = self.center
         )
 
         self.is_blocking = False
         self.has_other_graph = False
+
+    def center(self):
+
+        # PySide2.QtWidgets.QDoubleSpinBox
+        x_widget = self.get_widget_from_name("x")
+
+        x_pix = self.to_pixel(x_widget.value())
+        for i in range(100):
+            x_pix_n = x_pix-1+max(enumerate(self.spectrum[x_pix-1:x_pix+1+1]), key=lambda P: P[1])[0]
+            if x_pix_n == x_pix:
+                break
+            x_pix = x_pix_n
+        x_widget.setValue(self.to_graph(x_pix))
 
     def process_request(self, request):
         pr = request.processed_reading
