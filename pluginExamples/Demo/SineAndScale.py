@@ -14,8 +14,8 @@ log = logging.getLogger(__name__)
 # demonstrate persistence (state) in plugin; also use of input checkbox.
 class SineAndScale(EnlightenPluginBase):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, ctl):
+        super().__init__(ctl)
 
         self.sin_progress = 0
 

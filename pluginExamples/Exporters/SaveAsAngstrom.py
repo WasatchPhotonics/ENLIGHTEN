@@ -14,8 +14,8 @@ log = logging.getLogger(__name__)
 # file format than ENLIGHTEN.
 class SaveAsAngstrom(EnlightenPluginBase):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, ctl):
+        super().__init__(ctl)
 
         # e.g. C:\Users\mzieg\Documents\EnlightenSpectra\SaveAsAngstrom
         # @todo could now use enlighten_info.get_save_path()

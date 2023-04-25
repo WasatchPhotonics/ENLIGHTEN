@@ -10,9 +10,6 @@ log = logging.getLogger(__name__)
 ## negate alternating intensities
 class MakeOddNegative(EnlightenPluginBase):
 
-    def __init__(self):
-        super().__init__()
-
     def get_configuration(self):
         return EnlightenPluginConfiguration(
             name = "Negate Odd", 

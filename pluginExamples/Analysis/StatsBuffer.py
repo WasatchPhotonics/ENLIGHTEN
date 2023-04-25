@@ -13,8 +13,8 @@ log = logging.getLogger(__name__)
 # Adds min, max, mean, mode, median, +/-stdev series to the ENLIGHTEN scope.
 class StatsBuffer(EnlightenPluginBase):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, ctl):
+        super().__init__(ctl)
         self.series_names = ["Min", "Max", "Mean", "Median", "Mode", "Sigma.lo", "Sigma.hi"]
 
     def get_configuration(self):

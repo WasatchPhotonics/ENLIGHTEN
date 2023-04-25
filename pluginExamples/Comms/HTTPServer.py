@@ -41,8 +41,8 @@ class HTTPServer(EnlightenPluginBase):
     # handles.  Note this must be in UTF-8 bytes, not a Python string.
     latest_html = None
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, ctl):
+        super().__init__(ctl)
         self.thread = None
 
     def get_configuration(self):

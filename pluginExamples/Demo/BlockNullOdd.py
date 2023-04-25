@@ -14,9 +14,6 @@ log = logging.getLogger(__name__)
 #
 class BlockNullOdd(EnlightenPluginBase):
 
-    def __init__(self):
-        super().__init__()
-
     def get_configuration(self):
         return EnlightenPluginConfiguration(name            = "Null Odd Px (3 sec)", 
                                             has_other_graph = True, 

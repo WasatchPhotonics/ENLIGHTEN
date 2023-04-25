@@ -31,6 +31,11 @@ class LocalBaseline(EnlightenPluginBase):
             datatype = "float", direction = "input"
         )
 
+        self.field(
+            name = "Center",
+            datatype = "button", direction = "input"
+        )
+
         self.is_blocking = False
         self.has_other_graph = False
 

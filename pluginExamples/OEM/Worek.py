@@ -41,8 +41,8 @@ ChE_Sample_slope_label = "ChE Sample Slope"
 
 class Worek(EnlightenPluginBase):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, ctl):
+        super().__init__(ctl)
         self.clear_graph()
 
     def start_recording(self):
