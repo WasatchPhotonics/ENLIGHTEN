@@ -17,9 +17,6 @@ log = logging.getLogger(__name__)
 # enabled dark correction before taking the reference.
 class RelativeIrradiance(EnlightenPluginBase):
 
-    def __init__(self):
-        super().__init__()
-
     def get_configuration(self):
         fields = []
         fields.append(EnlightenPluginField(

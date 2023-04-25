@@ -13,9 +13,6 @@ log = logging.getLogger(__name__)
 # @see https://medium.com/analytics-vidhya/calling-r-from-python-magic-of-rpy2-d8cbbf991571
 class RscriptInvoke(EnlightenPluginBase):
 
-    def __init__(self):
-        super().__init__()
-
     def get_configuration(self):
         fields = []
         fields.append(EnlightenPluginField(name="Rscript", datatype="string", direction="input"))

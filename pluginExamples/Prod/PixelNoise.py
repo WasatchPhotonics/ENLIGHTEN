@@ -18,9 +18,6 @@ log = logging.getLogger(__name__)
 # requirement that the spectra must be "dark" (capped).
 class PixelNoise(EnlightenPluginBase):
 
-    def __init__(self):
-        super().__init__()
-
     def get_configuration(self):
         fields = []
 

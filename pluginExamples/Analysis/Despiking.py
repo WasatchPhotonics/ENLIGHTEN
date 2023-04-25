@@ -12,9 +12,6 @@ log = logging.getLogger(__name__)
 
 class Despiking(EnlightenPluginBase):
 
-    def __init__(self):
-        super().__init__()
-
     def get_configuration(self):
         fields = []
 
