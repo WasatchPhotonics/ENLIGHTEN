@@ -13,7 +13,7 @@ class hello_graph(EnlightenPluginBase):
     # process_request is called continuously when a plugin is enabled.
     # Otherwise it is called when the "Process" button is clicked.
     def process_request(self, request):
-        x_values = self.getAxis()
+        x_values = self.get_axis()
 
         # This is where we copy data from the spectroscope !
         y_values = request.processed_reading.get_processed()

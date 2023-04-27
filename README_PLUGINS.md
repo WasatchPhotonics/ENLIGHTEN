@@ -82,7 +82,7 @@ class hello_graph(EnlightenPluginBase):
         self.y_axis_label = "y-axis",
 
     def process_request(self, request):
-        x_values = self.getAxis()
+        x_values = self.get_axis()
         y_values = request.processed_reading.get_processed()
         self.plot(x=x_values, y=y_values, title="Copy of Graph !", color="teal")
 ```
@@ -98,7 +98,7 @@ class hello_graph(EnlightenPluginBase):
 - self.y_axis_label
 
 ### helper functions
-- getAxis
+- get_axis
 - to_pixel
 - wavelength_to_pixel
 - wavenumber_to_pixel

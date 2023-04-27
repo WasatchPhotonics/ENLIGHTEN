@@ -127,7 +127,7 @@ class LocalBaseline(EnlightenPluginBase):
         peak = spectrum[self.to_pixel(x)]
         peak_region = spectrum[left_end_pixel:right_start_pixel]
         peak_region_subtracted = [x-mean_baseline for x in peak_region]
-        area = self.area_under_curve(peak_region_subtracted, left_end, right_start)
+        area = np.trapz(peak_region_subtracted, self.get_axis()[left_end_pixel:right_start_pixel])
         self.table = pd.DataFrame(
             [ f"{mean_baseline:.2f}", f"{peak:.2f}", f"{peak - mean_baseline:.2f}", f"{area:.2f}" ],
             index = ["Baseline", "Original Peak", "Peak (baseline subtracted)", "Peak Area (baseline subtracted)"]

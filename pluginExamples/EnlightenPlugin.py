@@ -53,7 +53,7 @@ class EnlightenPluginBase:
         # plugins can do everything
         self.ctl = ctl
 
-    def getAxis(self):
+    def get_axis(self):
         if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVELENGTHS:
             return self.settings.wavelengths
         if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVENUMBERS:
@@ -116,7 +116,7 @@ class EnlightenPluginBase:
         Undo to_pixel conversion, and set point back to 
         currently selected graph X-Axis
         """
-        domain = self.getAxis()
+        domain = self.get_axis()
 
         target_x = round(x)
 
@@ -137,7 +137,7 @@ class EnlightenPluginBase:
         if domain is unspecified, the selected axis is used
         """
         if domain is None:
-            domain = self.getAxis()
+            domain = self.get_axis()
 
         # select the index whose value is closest to x
         target_x = min(enumerate(domain), key=lambda P: abs(P[1]-x))[0]
@@ -149,7 +149,7 @@ class EnlightenPluginBase:
             # 0     roi.start
 
             # to_pixel output is used to index spectrum
-            # which already has roi trimmed, so we must substract roi.start
+            # which already has roi trimmed, so we must subtract roi.start
             return target_x-roi.start
         else:
             return target_x
@@ -159,26 +159,6 @@ class EnlightenPluginBase:
 
     def wavenumber_to_pixel(self, wavenumber):
         return self.to_pixel(wavenumber, self.settings.wavenumbers)
-
-    def area_under_curve(self, array, start, end):
-        """
-        Solves for area under array.
-
-        start and end describe the x-axis extents units of the
-        domain (wavelength for example)
-
-        the array values also have a unit (intensity)
-
-        the outcome has a unit of intensity*wavelength
-        or the product of the units in array and start,end.
-        """
-
-        if not array:
-            return 0
-
-        # numeric integration has no need for epsilon 
-        # because the premultiplied delta is 1
-        return sum(array)*(end-start)/len(array)
 
     #### End functional-plugins backend ####
 
