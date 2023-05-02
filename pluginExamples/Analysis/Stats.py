@@ -15,9 +15,6 @@ log = logging.getLogger(__name__)
 #       tracking x-coord of each pixel, in all 3 axes?
 class Stats(EnlightenPluginBase):
 
-    def __init__(self):
-        super().__init__()
-
     def get_configuration(self):
         return EnlightenPluginConfiguration(
             name         = "Statistics", 

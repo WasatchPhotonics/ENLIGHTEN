@@ -13,6 +13,7 @@ set "log_conf_pkg=0"
 set "regenerate_qt=0"
 set "pyinstaller=0"
 set "innosetup=0"
+set "runtests=0"
 
 REM Convoluted but safe way to generate an audible bell from a .bat
 REM without inserting control characters which confuse unix2dos etc.
@@ -54,6 +55,11 @@ if "%1" == "oneshot" (
     goto args_parsed
 )
 
+if "%1" == "test" (
+    set "runtests=1"
+    goto args_parsed
+)
+
 REM DEFINE CUSTOM ACTION HERE
 if "%1" == "custom" (
     set "rebuild_env=0"
@@ -82,7 +88,10 @@ echo $ scripts\bootstrap refreshdep
 echo This will take a while. Remove and recreate the conda environment and reinstall all dependencies from the internet.
 echo.
 echo $ scripts\bootstrap oneshot
-echo This will take a while. Perform all steps (including reinstalling dependencies) and produce an installer.
+echo This will take a while. Perform all steps (except for testing) and produce an installer.
+echo.
+echo $ scripts\bootstrap test
+echo This will take a while. Performs tests.
 echo.
 echo $ scripts\bootstrap custom
 echo If you need a very particular action sequence (for example run pyinstaller without regenerating Qt views), edit this file, search for DEFINE CUSTOM ACTION HERE, and change flags as desired.
@@ -311,16 +320,15 @@ if "%regenerate_qt%" == "1" (
     if %errorlevel% neq 0 goto script_failure
 )
 
-@REM echo.
-@REM echo %date% %time% ======================================================
-@REM echo %date% %time% Run tests...may take some time
-@REM echo %date% %time% ======================================================
-@REM echo.
-REM
-REM MZ: disabling this for now
-REM
-REM py.test tests -x
-REM if %errorlevel% neq 0 goto script_failure
+if "%runtests%" == "1" (
+    echo.
+    echo %date% %time% ======================================================
+    echo %date% %time% Run tests...may take some time
+    echo %date% %time% ======================================================
+    echo.
+    py.test test
+    if %errorlevel% neq 0 goto script_failure
+)
 
 if "%pyinstaller%" == "1" (
     echo.

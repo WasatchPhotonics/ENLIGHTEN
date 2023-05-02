@@ -7,11 +7,15 @@ import logging
 import datetime
 from dataclasses import dataclass, field
 
+from enlighten import common
+
 log = logging.getLogger(__name__)
 
-from enlighten.Spectrometer           import Spectrometer
-from wasatch.ProcessedReading         import ProcessedReading
-from wasatch.SpectrometerSettings     import SpectrometerSettings
+from enlighten.scope.Spectrometer import Spectrometer
+from wasatch.ProcessedReading import ProcessedReading
+from wasatch.SpectrometerSettings import SpectrometerSettings
+
+import numpy as np
 
 ##
 # Abstract Base Class (ABC) for all ENLIGHTEN-compatible plug-ins.
@@ -31,10 +35,172 @@ from wasatch.SpectrometerSettings     import SpectrometerSettings
 #   following a failure in connect)
 class EnlightenPluginBase:
     
-    def __init__(self):
+    def __init__(self, ctl):
         self.enlighten_info = None
         self.error_message = None
-        pass
+
+        # these can be set by functional-plugins to autogenerate EPC
+        self.name = None
+        self._fields = []
+        self.is_blocking = False
+        self.has_other_graph = False
+        self.table = None
+        self.x_axis_label = None
+        self.y_axis_label = None
+
+        self.series = {}
+
+        # plugins can do everything
+        self.ctl = ctl
+
+    def get_axis(self):
+        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVELENGTHS:
+            return self.settings.wavelengths
+        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVENUMBERS:
+            return self.settings.wavenumbers
+        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.PIXELS:
+            return range(len(self.spectrum))
+
+    ### Begin functional-plugins backend ###
+
+    def field(self, **kwargs):
+        self._fields.append(EnlightenPluginField(**kwargs))
+
+    def get_widget_from_name(self, name):
+        widget = None
+        for elem in self.enlighten_info.plugin_fields():
+            if elem.field_name == name:
+                widget = elem
+        return widget.field_widget
+
+    def plot(self, y, x=None, title=None, color=None):
+        """
+        When plotting on the main scope graph
+        the (co)domain matches that existing graph.
+
+        Set self.x_axis_label or self.y_axis_label to
+        provide your own axis labels when plotting
+        to a secondary graph.
+
+        @param x x values
+        @param y y values
+        @param title plot title, shown in legend
+        @param color color of plot line
+        """
+        in_legend = True
+
+        if x is None: x = np.arange(len(y))
+
+        if title is None: 
+            title = "untitled"
+            in_legend = False
+
+        # create titles for untitled graphs: untitled, untitled2, untitled3
+        suffix = ""
+        i = 2
+        while title+suffix in self.series.keys():
+            suffix = str(i)
+            i += 1
+        title = title+suffix
+
+        self.series[title] = {
+            "x": x,
+            "y": y,
+            "color": color,
+            "title": title,
+            "in_legend": in_legend
+        }
+
+    def to_graph(self, x):
+        """
+        Undo to_pixel conversion, and set point back to 
+        currently selected graph X-Axis
+        """
+        domain = self.get_axis()
+
+        target_x = round(x)
+
+        roi = self.settings.eeprom.get_horizontal_roi()
+
+        if roi:
+            target_x = target_x+roi.start
+
+        return domain[target_x]
+
+    def to_pixel(self, x, domain=None):
+        """
+        domain is an array where the index corresponds to a detector pixel number.
+        
+        if x occurs once in domain, this is like domain.index(x)
+        otherwise a most sensible index is selected
+
+        if domain is unspecified, the selected axis is used
+        """
+        if domain is None:
+            domain = self.get_axis()
+
+        # select the index whose value is closest to x
+        target_x = min(enumerate(domain), key=lambda P: abs(P[1]-x))[0]
+
+        roi = self.settings.eeprom.get_horizontal_roi()
+
+        if roi:
+            # |-----|-----------target_x
+            # 0     roi.start
+
+            # to_pixel output is used to index spectrum
+            # which already has roi trimmed, so we must subtract roi.start
+            return target_x-roi.start
+        else:
+            return target_x
+
+    def wavelength_to_pixel(self, wavelength):
+        return self.to_pixel(wavelength, self.settings.wavelengths)
+
+    def wavenumber_to_pixel(self, wavenumber):
+        return self.to_pixel(wavenumber, self.settings.wavenumbers)
+
+    #### End functional-plugins backend ####
+
+    ### Begin backwards compatible object-returning wrappers ###
+    def get_configuration_obj(self):
+        config = self.get_configuration()
+        if config: return config
+
+        return EnlightenPluginConfiguration(
+            name = self.name, 
+            fields = self._fields,
+            is_blocking = self.is_blocking,
+            has_other_graph = self.has_other_graph,
+            series_names = [], # functional plugins define this on a frame-by-frame basis
+            x_axis_label = self.x_axis_label,
+            y_axis_label = self.y_axis_label
+        )
+    
+    def process_request_obj(self, request):
+
+        # clear series each frame
+        self.series = {}
+
+        response = self.process_request(request)
+        if response: return response
+
+        # if not yet returned, we are running a functional plugin,
+        # and so we want Enlighten to construct the EnlightenPluginResponse for us
+
+        outputs = {}
+        if self.table is not None:
+            outputs = {
+                # table (looks like a spreadsheet under the graph)
+                "Table": self.table,
+            }
+
+        return EnlightenPluginResponse(
+            request,
+            series = self.series,
+            outputs = outputs
+        )
+    #### End backwards compatible object-returning wrappers #####
 
     ##
     # Can be called BEFORE or AFTER connect. Should be idempotent. Ideally should

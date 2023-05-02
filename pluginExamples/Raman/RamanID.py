@@ -136,8 +136,8 @@ class RamanID(EnlightenPluginBase):
     # lifecycle
     # ##########################################################################
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, ctl):
+        super().__init__(ctl)
         self.library_dir = None
         self.count = 0
 

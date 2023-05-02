@@ -20,8 +20,8 @@ log = logging.getLogger(__name__)
 
 class ROI(EnlightenPluginBase):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, ctl):
+        super().__init__(ctl)
 
         self.pixel_mode = None
         self.detector_regions = DetectorRegions()

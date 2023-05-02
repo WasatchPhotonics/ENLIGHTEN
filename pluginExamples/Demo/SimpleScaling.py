@@ -14,9 +14,6 @@ log = logging.getLogger(__name__)
 # inputs.  Also shows adding a second trace to the main graph.
 class SimpleScaling(EnlightenPluginBase):
 
-    def __init__(self):
-        super().__init__()
-
     def get_configuration(self):
         return EnlightenPluginConfiguration(
             name         = "Scaling", 

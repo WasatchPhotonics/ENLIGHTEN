@@ -12,7 +12,8 @@ import scripts.Enlighten as enlighten
 from wasatch.MockUSBDevice import MockUSBDevice
 from conftest import wait_until, create_sim_spec, disconnect_spec
 
-log = logging.getLogger(__name__)
+logging.getLogger("enlighten").setLevel(logging.CRITICAL)
+logging.getLogger("wasatch").setLevel(logging.CRITICAL)
 
 class TestGUI:
 
@@ -28,10 +29,14 @@ class TestGUI:
     # description: release test that the first page is the scope view and spectra is set to play
     # author: Evan Dort
     @pytest.mark.release
-    def test_init_tech_and_play(self,app):
+    def test_init_technique(self,app):
         curr_tech = app.controller.page_nav.current_view
+        assert curr_tech == common.Views.SCOPE
+
+    @pytest.mark.release
+    def test_init_play(self,app):
         paused = app.controller.vcr_controls.is_paused()
-        assert curr_tech == common.Views.SCOPE and not paused
+        assert not paused
 
     # description: test that changing the axis combo box changes the graph axes
     # author: Evan Dort

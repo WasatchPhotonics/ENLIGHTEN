@@ -14,8 +14,8 @@ log = logging.getLogger(__name__)
 # file format than ENLIGHTEN.
 class LoadHook(EnlightenPluginBase):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, ctl):
+        super().__init__(ctl)
 
         self.notice_status = 0
         self.basename = "load_hook"

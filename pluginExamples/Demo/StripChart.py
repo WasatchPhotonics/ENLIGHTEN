@@ -16,8 +16,8 @@ log = logging.getLogger(__name__)
 # @todo this is an example of a plug-in that would benefit from multiple y-axes
 class StripChart(EnlightenPluginBase):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, ctl):
+        super().__init__(ctl)
 
         self.data = {} # datetime -> HardwareState
 

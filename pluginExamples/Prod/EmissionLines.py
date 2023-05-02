@@ -19,8 +19,8 @@ class EmissionLines(EnlightenPluginBase):
 
     MIN_REL_INTENSITY = 0.2
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, ctl):
+        super().__init__(ctl)
         self.lamps = self.get_lamps()
 
     def get_configuration(self):

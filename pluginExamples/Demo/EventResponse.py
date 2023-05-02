@@ -10,8 +10,8 @@ log = logging.getLogger(__name__)
 
 class EventResponse(EnlightenPluginBase):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, ctl):
+        super().__init__(ctl)
         self.event_count = 0
         self.events = []
 

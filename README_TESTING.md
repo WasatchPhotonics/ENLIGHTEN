@@ -41,3 +41,96 @@ The short summary is classes start with Test, functions start with test_. Pytest
     - reference works
 
 All of the above with no Traceback or CRITICAL reported in log.
+
+## Enlighten Testing Reboot of 2023-03-28
+
+Testing was paused from 2022-10-26 until now.
+
+Testing is being rebooted because a few features that had worked in the past were found broken in late versions of Enlighten:
+- CSV file reader
+- Plugin local import
+
+## Test Results
+
+We have 30 existing tests and 10 of them are failing.
+
+`test\test_gui.py::TestGUI::test_init_tech_and_play`
+
+This tests that the initial view is SCOPE and that the interface starts out set to play.
+
+I suspect that the initial view is what's causing this to fail, but this should be broken into two tests to make it more clear.
+
+`test\test_gui.py::TestGUI::test_hidden_advanced`
+
+This fails with an attribute error, hints that it's caused by a renaming
+
+`test\test_gui.py::TestGUI::test_enable_hidden_advanced`
+
+attribute error
+
+`test\test_gui.py::TestGUI::test_laser_default_mW`
+
+attribute error
+
+`test\test_usb.py::TestUSB::test_set_startup_settings`
+
+fails on sim_spec.got_start_int ??
+
+`test\test_usb.py::TestUSB::test_laser_shutdown`
+
+fails, with and expression
+
+`test\test_usb.py::TestUSB::test_temp`
+
+fails because UI now contains degrees Celcius symbols
+
+`test\test_usb.py::TestUSB::test_gain_set`
+
+???
+
+`test\test_usb.py::TestUSB::test_tec_toggle`
+
+attribute error
+
+`test\test_usb.py::TestUSB::test_set_tec`
+
+attribute error
+
+## Synopsis
+
+6 errors seem to be caused by renaming
+
+test_temp is similar to renaming, but it fails because of change in output format
+
+test_set_startup_settings, test_gain_set, test_laser_shutdown seems to be related to sim_spec
+
+## Testing upcoming tasks
+
+Initial focus of TestGUI only.
+
+There are four existing failing tests. They all have something to do with changes that divert from the test's expectations (without necessarily signaling faulty behavior). One task is to update these tests.
+
+More significantly, we have the following userflows we would like to encapsulate in GUI tests.
+
+- CSV Save/Load (manually passing)
+- Clipboard Save (manually passing)
+- Switch to view
+    - Scope (manually passing)
+    - Settings (manually passing)
+    - Hardware (manually passing)
+    - Log (manually passing)
+- Plugin
+    - CombinedPlugin (Analysis folder)
+        - Connect (manually failing)
+        - Enable
+    - CombinedPlugin (CombinedPlugin folder)
+        - Connect (manually passing)
+        - Enable
+    - Worek
+        - Connect (manually passing)
+        - Enable
+    - Hello Graph
+        - Connect
+        - Enable
+- Batch Data Collection
+- Set HROI

@@ -5,9 +5,6 @@ from EnlightenPlugin import EnlightenPluginBase,    \
 
 class HelloWorldPlugin(EnlightenPluginBase):
 
-    def __init__(self):
-        super().__init__()
-
     def get_configuration(self):
         fields = []
 

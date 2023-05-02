@@ -12,9 +12,6 @@ log = logging.getLogger(__name__)
 
 class SavitzkyGolay(EnlightenPluginBase):
 
-    def __init__(self):
-        super().__init__()
-
     def get_configuration(self):
         fields = []
         fields.append(EnlightenPluginField(name="Half-Length", datatype="int", minimum=1, maximum=50, initial=2, direction="input",

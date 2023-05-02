@@ -11,7 +11,7 @@ import sys
 import logging
 import argparse
 
-from enlighten.ExportFileParser import ExportFileParser
+from enlighten.parser.ExportFileParser import ExportFileParser
 from wasatch import applog
 
 parser = argparse.ArgumentParser(description="acquire from specified device, display line graph")
