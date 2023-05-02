@@ -2,6 +2,9 @@
 
 # 4.0 GUI Refactoring
 
+- 2023-05-02 4.0.8
+    - added LocalBaseline plugin
+    - refactored Business Objects package structure
 - 2023-03-27 4.0.7
     - persist PluginController marquee while satisfying prerequisites
     - clamped Python to 3.10 to resolve build issues
