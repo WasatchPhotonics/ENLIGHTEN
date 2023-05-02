@@ -368,7 +368,10 @@ if "%pyinstaller%" == "1" (
         --hidden-import="tensorflow" ^
         --icon "../enlighten/assets/uic_qrc/images/EnlightenIcon.ico" ^
         --specpath="%cd%/scripts" ^
+        --exclude-module _bootlocale ^
         scripts/Enlighten.py
+
+    REM @see https://stackoverflow.com/a/69521558
 
     if %errorlevel% neq 0 goto script_failure
 )
