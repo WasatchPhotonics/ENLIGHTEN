@@ -8,7 +8,7 @@ import os
 import numpy as np
 from PySide2 import QtGui, QtWidgets
 
-from enlighten.measurement import Measurement
+from enlighten.measurement.Measurement import Measurement
 from SPyC_Writer import SPCFileWriter
 from SPyC_Writer.SPCEnums import SPCFileType, SPCXType, SPCYType, SPCTechType
 
