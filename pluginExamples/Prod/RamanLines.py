@@ -32,7 +32,6 @@ class RamanLines(EnlightenPluginBase):
             fields.append(EnlightenPluginField(name=sample, direction="input", datatype=bool, initial=False))
         return EnlightenPluginConfiguration(
             name            = "RamanLines", 
-            series_names    = sorted(self.samples.keys()),
             fields          = fields)
 
     def connect(self, enlighten_info):
