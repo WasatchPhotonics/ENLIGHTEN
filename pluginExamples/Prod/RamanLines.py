@@ -12,9 +12,9 @@ log = logging.getLogger(__name__)
 ##
 # A simple plug-in to add Raman lines from common test samples to the current 
 # spectra.  The lines displayed are limited to those appearing within the current
-# spectrometer's configured wavenumber calibration.  Lines are scaled to the 
+# spectrometer's configured wavecal and ROI.  Lines are scaled to the 
 # current spectrum, and relative intensities are roughly set to approximate
-# typical appearance.
+# typical appearance against common transmission curves.
 class RamanLines(EnlightenPluginBase):
 
     MIN_REL_INTENSITY = 0.2
@@ -31,8 +31,8 @@ class RamanLines(EnlightenPluginBase):
         for sample in self.samples:
             fields.append(EnlightenPluginField(name=sample, direction="input", datatype=bool, initial=False))
         return EnlightenPluginConfiguration(
-            name            = "RamanLines", 
-            fields          = fields)
+            name = "RamanLines", 
+            fields = fields)
 
     def connect(self, enlighten_info):
         super().connect(enlighten_info)
@@ -59,7 +59,14 @@ class RamanLines(EnlightenPluginBase):
     def generate_series(self, sample, wavenumbers, spectrum):
         
         if wavenumbers is None or len(wavenumbers) == 0:
-            return []
+            return 
+
+        lft = wavenumbers[0]
+        rgt = wavenumbers[-1]
+        roi = self.settings.eeprom.get_horizontal_roi()
+        if roi:
+            lft = wavenumbers[roi.start]
+            rgt = wavenumbers[roi.end]
 
         # determine the vertical extent of the synthetic spectrum
         lo = min(spectrum)
@@ -71,21 +78,20 @@ class RamanLines(EnlightenPluginBase):
         max_rel_intensity = self.MIN_REL_INTENSITY
         for peak in sorted(lines.keys()):
             rel_intensity = lines[peak]
-            if peak >= wavenumbers[0] and peak <= wavenumbers[-1]:
+            if peak >= lft and peak <= rgt:
                 visible.append(peak)
                 max_rel_intensity = max(max_rel_intensity, rel_intensity)
 
-        series_x = [ wavenumbers[0] ]
+        series_x = [ lft ]
         series_y = [ lo ]
 
-        log.debug(f"displaying {len(visible)} {sample} peaks")
         for x in visible:
             rel_intensity = max(lines[x], self.MIN_REL_INTENSITY)
             y = lo + (hi - lo) * rel_intensity / max_rel_intensity
             series_x.extend((x - 0.1,  x, x + 0.1))
             series_y.extend((lo,       y,      lo))
 
-        series_x.append(wavenumbers[-1])
+        series_x.append(rgt)
         series_y.append(lo)
 
         return { "x": series_x, "y": series_y }
