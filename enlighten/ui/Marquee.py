@@ -17,7 +17,6 @@ log = logging.getLogger(__name__)
 class Marquee:
     
     ORIG_HEIGHT = 36
-    RAMP_START_HEIGHT = 8
 
     DRAWER_DURATION_MS = 3000
     TOAST_DURATION_MS  = 3000
@@ -40,12 +39,7 @@ class Marquee:
         self.label       = label
         self.stylesheets = stylesheets
 
-        self.original_height = self.frame.height() # 30
-        log.debug(f"original height = {self.original_height}")
-
-        self.original_height = Marquee.ORIG_HEIGHT
-        self.height = self.original_height
-        log.debug(f"height = {self.height}")
+        self.height = Marquee.ORIG_HEIGHT
 
         self.hide()
 
@@ -62,7 +56,7 @@ class Marquee:
         self.toast_opacity = 1.0
 
         ########################################################################
-        # for animated message drawer
+        # for message drawer
         ########################################################################
 
         # leave message on-screen until explicitly cleared or replaced
@@ -83,19 +77,14 @@ class Marquee:
 
         self.extra_ms = 0
         
-        self.grow_timer = QtCore.QTimer()
-        self.grow_timer.setSingleShot(True)
-        self.grow_timer.timeout.connect(self.tick_grow)
-
         # could probably use one, keeping separate for now
-        self.shrink_timer = QtCore.QTimer()
-        self.shrink_timer.setSingleShot(True)
-        self.shrink_timer.timeout.connect(self.tick_shrink)
+        self.clear_timer = QtCore.QTimer()
+        self.clear_timer.setSingleShot(True)
+        self.clear_timer.timeout.connect(self.tick_clear)
 
     def stop(self):
         self.toast_timer.stop()
-        self.grow_timer.stop()
-        self.shrink_timer.stop()
+        self.clear_timer.stop()
 
     # ##########################################################################
     # Message Drawer
@@ -106,7 +95,7 @@ class Marquee:
     #
     # @param persist: leave message up until replaced or cancelled by token
     # @param token: to be used for later cancellation / replacement events
-    # @param immediate: skip the "opening-drawer" animation
+    # @param immediate: ignored as we've removed animation
     # @param benign: see Stylesheets.set_benign
     # @param extra_ms: leave message up this much longer than default (relative)
     # @param period_sec: if longer than the default, use this display time (absolute)
@@ -131,10 +120,7 @@ class Marquee:
         log.info(msg)
         self.label.setText(msg)
 
-        if immediate:
-            self.show_immediate(benign)
-        else:
-            self.show_animated(benign)
+        self.show_immediate(benign)
 
     ## 
     # display an error warning to the user
@@ -157,10 +143,7 @@ class Marquee:
         self.label.setText(msg)
         self.last_token = token
 
-        if immediate:
-            self.show_immediate(benign)
-        else:
-            self.show_animated(benign)
+        self.show_immediate(benign)
 
     ##
     # Clear any non-persistant messages.  If token is provided and matches last message,
@@ -169,97 +152,38 @@ class Marquee:
     # @public
     def clear(self, token=None, force=False):
         if force or not self.persist or (token is not None and token == self.last_token):
-            self.shrink_timer.start(0)
+            self.schedule_clear()
 
     ## 
-    # This is a one-shot, doesn't start animation (intended to be called by ctor
-    # and end of "shrink" animation)
-    #
     # @private
     def hide(self):
-        self.frame.hide()
-        self.set_height(Marquee.RAMP_START_HEIGHT) # no need to start from scratch
+        self.label.clear()
 
+    ##
+    # Deliberately does not interact with Toast.
     def reset_timers(self):
-        self.grow_timer.stop()
-        self.shrink_timer.stop()
+        self.clear_timer.stop()
 
-    ## @private
-    def schedule_shrink(self, immediate=False):
+    def schedule_clear(self, immediate=False):
         self.reset_timers()
 
         if immediate:
-            self.shrink_timer.start(0)
-        elif self.persist:
-            self.set_height(self.original_height)
-        else:
-            # log.debug("scheduling shrink")
-            self.shrink_timer.start(self.DRAWER_DURATION_MS + self.extra_ms)
+            self.label.clear()
+        elif not self.persist:
+            self.clear_timer.start(self.DRAWER_DURATION_MS + self.extra_ms)
 
     def close_callback(self):
-        self.schedule_shrink(immediate=True)
+        self.schedule_clear(immediate=True)
 
-    ## 
-    # If we're doing an operation where the GUI thread may get kind of
-    # jaggy (USB connection), don't animate the opening, just show the
-    # message.
-    # @private
     def show_immediate(self, benign=None):
-        self.shrink_timer.stop()
-
+        self.clear_timer.stop()
         self.stylesheets.set_benign(self.inner, benign)
-        self.frame.show()
-
-        self.set_height(self.original_height)
-        self.schedule_shrink()
-
+        self.schedule_clear()
         self.app.processEvents()
 
-    ##
-    # Kicks-off "grow" animation IFF not already fully expanded.
-    #
-    # @private
-    def show_animated(self, benign=None):
-        self.stylesheets.set_benign(self.inner, benign)
-        self.frame.show()
+    def tick_clear(self):
+        self.label.clear()
 
-        self.shrink_timer.stop()
-
-        if self.height < self.original_height:
-            self.grow_timer.start()
-        else:
-            self.schedule_shrink()
-
-    def tick_grow(self):
-        try:
-            if self.set_height(self.height + 2) < self.original_height:
-                return self.grow_timer.start(int(self.height*0.5))
-        except:
-            log.error("exception growing drawer", exc_info=1)
-            self.set_height(self.original_height)
-
-        self.schedule_shrink()
-
-    def tick_shrink(self):
-        try:
-            if self.set_height(self.height - 2) > 8:
-                self.shrink_timer.start(int(self.height*0.5))
-            else:
-                self.hide()
-        except:
-            log.error("exception shrinking drawer", exc_info=1)
-            self.hide()
-
-    ## @private
-    def set_height(self, h):
-        h = max(0, min(h, self.original_height))
-        self.frame.setMinimumHeight(h)
-        self.frame.setMaximumHeight(h)
-        self.height = h
-        # log.debug(f"height now {h}")
-        return h
-            
-    ## @private
     def link_activated_callback(self, link):
         log.debug("activated link: [%s]", link)
         webbrowser.open(link)
@@ -303,4 +227,3 @@ class Marquee:
         except:
             log.error("exception fading toast dialog", exc_info=1)
             self.toast_dialog = None
-
