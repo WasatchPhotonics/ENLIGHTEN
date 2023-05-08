@@ -186,7 +186,7 @@ class Marquee:
         self.reset_timers()
 
         if immediate:
-            hide()
+            self.hide()
         elif not self.persist:
             self.clear_timer.start(self.DRAWER_DURATION_MS + self.extra_ms)
 
