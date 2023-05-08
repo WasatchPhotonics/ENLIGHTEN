@@ -218,6 +218,7 @@ class Controller:
 
         # default to Scope view
         self.page_nav.set_main_page(common.Pages.SCOPE)
+        self.page_nav.set_view_scope()
 
         # configure acquisition loop
         self.setup_main_event_loops() # MZ: move to end?
