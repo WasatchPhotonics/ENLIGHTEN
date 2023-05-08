@@ -625,6 +625,7 @@ class Controller:
         # disable anything that shouldn't be on without a spectrometer
         # (could grow this considerably)
         for feature in [ self.accessory_control,
+                         self.laser_control,
                          self.raman_mode_feature,
                          self.raman_intensity_correction,
                          self.raman_shift_correction,

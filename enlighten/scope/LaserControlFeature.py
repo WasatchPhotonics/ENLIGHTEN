@@ -33,6 +33,7 @@ class LaserControlFeature:
                  button_toggle,
                  frame,
                  lb_watchdog,
+                 lb_excitation,
                  spinbox_excitation,    # doubleSpinBox on Laser Control widget, not EEPROMEditor
                  spinbox_power,         # doubleSpinBox
                  slider_power,
@@ -53,6 +54,7 @@ class LaserControlFeature:
         self.button_toggle      = button_toggle
         self.frame              = frame
         self.lb_watchdog        = lb_watchdog
+        self.lb_excitation      = lb_excitation
         self.spinbox_excitation = spinbox_excitation
         self.spinbox_power      = spinbox_power
         self.slider_power       = slider_power
@@ -126,6 +128,7 @@ class LaserControlFeature:
 
         settings = spec.settings
         has_laser = settings.eeprom.has_laser
+        doing_expert = self.page_nav.doing_expert()
 
         self.frame.setVisible(has_laser)
         if not has_laser:
@@ -141,6 +144,9 @@ class LaserControlFeature:
                 self.configure_laser_power_controls_mW()
             else:
                 self.configure_laser_power_controls_percent()
+
+        self.spinbox_excitation.setVisible(doing_expert)
+        self.lb_excitation     .setVisible(doing_expert)
 
         self.configure_watchdog()
 
