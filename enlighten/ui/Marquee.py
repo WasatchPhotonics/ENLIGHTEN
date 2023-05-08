@@ -119,12 +119,7 @@ class Marquee:
 
         log.info(msg)
         self.label.setText(msg)
-
-        # set box opacity to 1
-        op = QtWidgets.QGraphicsOpacityEffect(self.frame)
-        op.setOpacity(1)
-        self.frame.setGraphicsEffect(op)
-        self.frame.setAutoFillBackground(True)
+        self.show()
 
         self.show_immediate(benign)
 
@@ -147,12 +142,7 @@ class Marquee:
 
         log.error(msg)
         self.label.setText(msg)
-
-        # set box opacity to 1
-        op = QtWidgets.QGraphicsOpacityEffect(self.frame)
-        op.setOpacity(1)
-        self.frame.setGraphicsEffect(op)
-        self.frame.setAutoFillBackground(True)
+        self.show()
 
         self.last_token = token
 
@@ -169,8 +159,23 @@ class Marquee:
 
     ## 
     # @private
+    def show(self):
+        # set box opacity to 1
+        op = QtWidgets.QGraphicsOpacityEffect(self.frame)
+        op.setOpacity(1)
+        self.frame.setGraphicsEffect(op)
+        self.frame.setAutoFillBackground(True)
+
+    ## 
+    # @private
     def hide(self):
         self.label.clear()
+        
+        # set box opacity to 0
+        op = QtWidgets.QGraphicsOpacityEffect(self.frame)
+        op.setOpacity(0)
+        self.frame.setGraphicsEffect(op)
+        self.frame.setAutoFillBackground(True)
 
     ##
     # Deliberately does not interact with Toast.
@@ -181,7 +186,7 @@ class Marquee:
         self.reset_timers()
 
         if immediate:
-            self.label.clear()
+            hide()
         elif not self.persist:
             self.clear_timer.start(self.DRAWER_DURATION_MS + self.extra_ms)
 
@@ -195,13 +200,7 @@ class Marquee:
         self.app.processEvents()
 
     def tick_clear(self):
-        self.label.clear()
-        
-        # set box opacity to 0
-        op = QtWidgets.QGraphicsOpacityEffect(self.frame)
-        op.setOpacity(0)
-        self.frame.setGraphicsEffect(op)
-        self.frame.setAutoFillBackground(True)
+        self.hide()
 
     def link_activated_callback(self, link):
         log.debug("activated link: [%s]", link)
