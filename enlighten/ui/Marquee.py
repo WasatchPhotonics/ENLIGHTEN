@@ -120,6 +120,12 @@ class Marquee:
         log.info(msg)
         self.label.setText(msg)
 
+        # set box opacity to 1
+        op = QtWidgets.QGraphicsOpacityEffect(self.frame)
+        op.setOpacity(1)
+        self.frame.setGraphicsEffect(op)
+        self.frame.setAutoFillBackground(True)
+
         self.show_immediate(benign)
 
     ## 
@@ -141,6 +147,13 @@ class Marquee:
 
         log.error(msg)
         self.label.setText(msg)
+
+        # set box opacity to 1
+        op = QtWidgets.QGraphicsOpacityEffect(self.frame)
+        op.setOpacity(1)
+        self.frame.setGraphicsEffect(op)
+        self.frame.setAutoFillBackground(True)
+
         self.last_token = token
 
         self.show_immediate(benign)
