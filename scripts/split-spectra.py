@@ -14,7 +14,7 @@ import argparse
 from enlighten.parser.ExportFileParser import ExportFileParser
 from wasatch import applog
 
-parser = argparse.ArgumentParser(description="acquire from specified device, display line graph")
+parser = argparse.ArgumentParser(description="Split 'export' CSV into individual per-measurement CSV files")
 parser.add_argument("--integration-time-ms",    type=int,   help="only export meansurements with this integration time")
 parser.add_argument("--label",                  type=str,   help="only export spectra matching this label (raw, dark, processed etc)")
 (args, filenames) = parser.parse_known_args(sys.argv[1:])
