@@ -2,6 +2,8 @@
 
 # 4.0 GUI Refactoring
 
+- 2023-??-?? 4.0.10
+    - "fixed" Marquee
 - 2023-05-03 4.0.9
     - fixed Save and Export
 - 2023-05-02 4.0.8
