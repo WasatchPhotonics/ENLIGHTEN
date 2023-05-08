@@ -183,6 +183,12 @@ class Marquee:
 
     def tick_clear(self):
         self.label.clear()
+        
+        # set box opacity to 0
+        op = QtWidgets.QGraphicsOpacityEffect(self.frame)
+        op.setOpacity(0)
+        self.frame.setGraphicsEffect(op)
+        self.frame.setAutoFillBackground(True)
 
     def link_activated_callback(self, link):
         log.debug("activated link: [%s]", link)
