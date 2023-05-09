@@ -171,6 +171,7 @@ class EnlightenPluginBase:
             name = self.name, 
             fields = self._fields,
             is_blocking = self.is_blocking,
+            block_enlighten = self.block_enlighten,
             has_other_graph = self.has_other_graph,
             series_names = [], # functional plugins define this on a frame-by-frame basis
             x_axis_label = self.x_axis_label,
@@ -181,6 +182,7 @@ class EnlightenPluginBase:
 
         # clear series each frame
         self.series = {}
+        self.metadata = {}
 
         response = self.process_request(request)
         if response: return response
@@ -195,10 +197,12 @@ class EnlightenPluginBase:
                 "Table": self.table,
             }
 
+        log.debug(f"returning metadata = {self.metadata}")
         return EnlightenPluginResponse(
             request,
             series = self.series,
-            outputs = outputs
+            outputs = outputs,
+            metadata = self.metadata
         )
     #### End backwards compatible object-returning wrappers #####
 

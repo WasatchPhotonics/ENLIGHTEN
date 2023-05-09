@@ -37,8 +37,8 @@ class LocalBaseline(EnlightenPluginBase):
             callback = self.center
         )
 
-        self.is_blocking = False
         self.has_other_graph = False
+        self.block_enlighten = True # for metadata
 
     def center(self):
 
@@ -132,3 +132,8 @@ class LocalBaseline(EnlightenPluginBase):
             [ f"{mean_baseline:.2f}", f"{peak:.2f}", f"{peak - mean_baseline:.2f}", f"{area:.2f}" ],
             index = ["Baseline", "Original Peak", "Peak (baseline subtracted)", "Peak Area (baseline subtracted)"]
         ).T
+
+        self.metadata["Baseline"] = mean_baseline
+        self.metadata["OriginalPeak"] = peak
+        self.metadata["PeakBaselineSubtracted"] = peak - mean_baseline
+        self.metadata["Area"] = area
