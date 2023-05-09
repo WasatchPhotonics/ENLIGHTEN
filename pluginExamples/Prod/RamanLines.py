@@ -1,65 +1,45 @@
-import os
+from EnlightenPlugin import *
+
 import logging
-
-from EnlightenPlugin import EnlightenPluginBase,    \
-                            EnlightenPluginField,    \
-                            EnlightenPluginResponse,  \
-                            EnlightenPluginDependency, \
-                            EnlightenPluginConfiguration
-
 log = logging.getLogger(__name__)
 
-##
-# A simple plug-in to add Raman lines from common test samples to the current 
-# spectra.  The lines displayed are limited to those appearing within the current
-# spectrometer's configured wavecal and ROI.  Lines are scaled to the 
-# current spectrum, and relative intensities are roughly set to approximate
-# typical appearance against common transmission curves.
 class RamanLines(EnlightenPluginBase):
-
+    """
+    A simple plug-in to add Raman lines from common test samples to the current 
+    spectra.  The lines displayed are limited to those appearing within the current
+    spectrometer's configured wavecal and ROI.  Lines are scaled to the 
+    current spectrum, and relative intensities are roughly set to approximate
+    typical appearance against common transmission curves.
+    """
     MIN_REL_INTENSITY = 0.2
 
-    def __init__(self, ctl):
-        super().__init__(ctl)
-        self.samples = self.get_samples()
-
     def get_configuration(self):
-        fields = []
-
-        # These would be better as a single drop-down combo box, but we haven't 
-        # yet added that as a supported plugin input type.
+        """
+        These would be better as a single drop-down combo box, but we haven't 
+        yet added that as a supported plugin input type.
+        """
+        self.name = "Raman Lines"
+        self.samples = self.get_samples()
         for sample in self.samples:
-            fields.append(EnlightenPluginField(name=sample, direction="input", datatype=bool, initial=False))
-        return EnlightenPluginConfiguration(
-            name = "RamanLines", 
-            fields = fields)
-
-    def connect(self, enlighten_info):
-        super().connect(enlighten_info)
-        return True
-
-    def disconnect(self):
-        super().disconnect()
+            self.field(name=sample, direction="input", datatype=bool, initial=False)
 
     def process_request(self, request):
-        pr = request.processed_reading
-        settings = request.settings
-
-        series_data = {}
         for sample in self.samples:
             if request.fields[sample]:
-                series_data[sample] = self.generate_series(sample=sample, wavenumbers=settings.wavenumbers, spectrum=pr.processed)
+                for p in self.generate_points(sample=sample):
+                    self.plot(
+                        title = f"{sample} {p[0]:7.03f}cm⁻¹",
+                        x = [p[0], p[0]],
+                        y = [min(self.spectrum), p[1]]
+                    )
 
-        return EnlightenPluginResponse(request=request, series=series_data)      
-
-    ## 
-    # Generate a synthetic spectrum, bounded in x to match the specified x-axis 
-    # in wavenumbers, bounded in y to match the min/max of the specified 
-    # spectrum, of the specified sample's Raman lines.
-    def generate_series(self, sample, wavenumbers, spectrum):
-        
-        if wavenumbers is None or len(wavenumbers) == 0:
-            return 
+    def generate_points(self, sample):
+        """
+        Generate Raman lines as a list of (x, y) tuples, where x is the Raman shift
+        in wavenumbers and y is the relative intensity scaled to the current 
+        spectrum, vignetting to only those points visible within the horizontal ROI.
+        """
+        wavenumbers = self.settings.wavenumbers
 
         lft = wavenumbers[0]
         rgt = wavenumbers[-1]
@@ -69,32 +49,26 @@ class RamanLines(EnlightenPluginBase):
             rgt = wavenumbers[roi.end]
 
         # determine the vertical extent of the synthetic spectrum
-        lo = min(spectrum)
-        hi = max(spectrum)
+        lo = min(self.spectrum)
+        hi = max(self.spectrum)
 
-        # determine which of this sample's Raman lines to visualize on the graph
-        lines = self.samples[sample]
+        # determine which peaks should be visible
+        peaks = self.samples[sample]
         visible = []
         max_rel_intensity = self.MIN_REL_INTENSITY
-        for peak in sorted(lines.keys()):
-            rel_intensity = lines[peak]
+        for peak in sorted(peaks.keys()):
             if peak >= lft and peak <= rgt:
                 visible.append(peak)
-                max_rel_intensity = max(max_rel_intensity, rel_intensity)
+                max_rel_intensity = max(max_rel_intensity, peaks[peak])
 
-        series_x = [ lft ]
-        series_y = [ lo ]
-
+        # scale peaks to current spectrum
+        points = []
         for x in visible:
-            rel_intensity = max(lines[x], self.MIN_REL_INTENSITY)
+            rel_intensity = max(peaks[x], self.MIN_REL_INTENSITY)
             y = lo + (hi - lo) * rel_intensity / max_rel_intensity
-            series_x.extend((x - 0.1,  x, x + 0.1))
-            series_y.extend((lo,       y,      lo))
+            points.append( (x, y) )
 
-        series_x.append(rgt)
-        series_y.append(lo)
-
-        return { "x": series_x, "y": series_y }
+        return points
 
     def get_samples(self):
         """
