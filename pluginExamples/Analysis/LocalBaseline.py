@@ -105,8 +105,10 @@ class LocalBaseline(EnlightenPluginBase):
         #peak_region_subtracted = [x-interpolated_baseline for x in peak_region]
         #area = np.trapz(peak_region_subtracted, self.get_axis()[left_end_pixel:right_start_pixel])
         
+        format_int = lambda i: f"{int(i):,}"
+
         self.table = pd.DataFrame(
-            [ f"{interpolated_baseline:.0f}", f"{peak:.0f}", f"{peak - interpolated_baseline:.0f}", "--" ],
+            [ format_int(interpolated_baseline), format_int(peak), format_int(peak - interpolated_baseline), "--" ],
             index = ["Baseline", "Original Peak", "Peak (baseline subtracted)", "Peak Area (baseline subtracted)"]
         ).T
 
