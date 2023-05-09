@@ -116,3 +116,8 @@ class LocalBaseline(EnlightenPluginBase):
         self.metadata["OriginalPeak"] = peak
         self.metadata["PeakBaselineSubtracted"] = peak - interpolated_baseline
         self.metadata["Area"] = "--"
+
+        # keep input parameters in metadata
+        self.metadata["Left"] = self.get_widget_from_name("Left").value()
+        self.metadata["Right"] = self.get_widget_from_name("Right").value()
+        self.metadata["x"] = self.get_widget_from_name("x").value()
