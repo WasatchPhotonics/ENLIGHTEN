@@ -719,6 +719,7 @@ class Controller:
                 default_missing("serial_number", device.settings.eeprom.detector_serial_number, "wp_serial_number")
                 default_missing("raman_intensity_coeffs", [])
 
+                # device.settings.eeprom is a Wasatch.PY EEPROM() object
                 device.settings.eeprom.raman_intensity_calibration_order = len(device.settings.eeprom.raman_intensity_coeffs) - 1
 
                 log.debug(f"calling save_config with: {device.settings.eeprom}")
