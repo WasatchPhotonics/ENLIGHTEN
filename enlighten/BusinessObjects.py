@@ -1,4 +1,3 @@
-from asyncio.windows_events import CONNECT_PIPE_INIT_DELAY
 import logging
 
 log = logging.getLogger(__name__)
