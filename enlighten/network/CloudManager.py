@@ -90,6 +90,7 @@ class CloudManager:
         return True
 
     def enable_callback(self):
+        self.config.set(self.CONFIG_SECTION, "enabled", self.cb_enabled.isChecked())
         self.save_config()
 
     def get_andor_eeprom(self, detector_serial: str) -> dict:
