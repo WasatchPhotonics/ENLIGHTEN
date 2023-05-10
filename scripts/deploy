@@ -91,7 +91,7 @@ fi
 # check for keys
 ################################################################################
 
-if ! [ -f enlighten/keys.py ]
+if ! [ -f enlighten/network/keys.py ]
 then
     echo "WARNING: keys.py not found"
 fi
