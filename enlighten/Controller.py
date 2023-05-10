@@ -685,6 +685,7 @@ class Controller:
         # initialize from cloud
         ########################################################################
 
+        # @todo: this should all be encapsulated under network or CloudManager
         if device.is_andor:
             # Note that currently we're doing this BEFORE determining if it's a 
             # hotplug; ideally, we should only need to connect to the Cloud
@@ -716,7 +717,12 @@ class Controller:
                 default_missing("model", None, "wp_model")
                 default_missing("detector", "iDus")
                 default_missing("serial_number", device.settings.eeprom.detector_serial_number, "wp_serial_number")
+                default_missing("raman_intensity_coeffs", [])
 
+                # device.settings.eeprom is a Wasatch.PY EEPROM() object
+                device.settings.eeprom.raman_intensity_calibration_order = len(device.settings.eeprom.raman_intensity_coeffs) - 1
+
+                log.debug(f"calling save_config with: {device.settings.eeprom}")
                 device.change_setting("save_config", device.settings.eeprom)
 
             sfu.label_detector_serial.setText(device.settings.eeprom.detector_serial_number)
