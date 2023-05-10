@@ -20,13 +20,13 @@ class LocalBaseline(EnlightenPluginBase):
         )
         
         self.field(
-            name = "Peak Neighborhood",
-            initial = 3, minimum = 0, maximum = 10000, step = .2,
+            name = "Left",
+            initial = 10, minimum = 0, maximum = 10000, step = .2,
             datatype = "float", direction = "input"
-        )
-
+        )        
+        
         self.field(
-            name = "Baseline Extent",
+            name = "Right",
             initial = 10, minimum = 0, maximum = 10000, step = .2,
             datatype = "float", direction = "input"
         )
@@ -58,13 +58,11 @@ class LocalBaseline(EnlightenPluginBase):
         spectrum = pr.get_processed()
 
         x = self.get_widget_from_name("x").value()
-        inner_radius = self.get_widget_from_name("Peak Neighborhood").value()
-        outer_radius = self.get_widget_from_name("Baseline Extent").value()
+        left = self.get_widget_from_name("Left").value()
+        right = self.get_widget_from_name("Right").value()
 
-        left_start = x-inner_radius-outer_radius
-        left_end = x-inner_radius
-        right_start = x+inner_radius
-        right_end = x+inner_radius+outer_radius
+        start = x-left
+        end = x+right
 
         self.plot(
             title="x",
@@ -74,66 +72,52 @@ class LocalBaseline(EnlightenPluginBase):
         )
 
         self.plot(
-            title="Peak Neighborhood",
-            color="green",
-            x=[left_end, left_end],
-            y=[min(spectrum), max(spectrum)],
-        )
-        self.plot(
-            color="green",
-            x=[right_start, right_start],
-            y=[min(spectrum), max(spectrum)],
-        )
-
-        self.plot(
-            title="Baseline Extent",
+            title="Range",
             color="blue",
-            x=[left_start, left_start],
+            x=[start, start],
             y=[min(spectrum), max(spectrum)],
         )
         self.plot(
             color="blue",
-            x=[right_end, right_end],
+            x=[end, end],
             y=[min(spectrum), max(spectrum)],
         )
 
-        left_start_pixel = self.to_pixel(left_start)
-        left_end_pixel = self.to_pixel(left_end)
-        right_start_pixel = self.to_pixel(right_start)
-        right_end_pixel = self.to_pixel(right_end)
+        start_pixel = self.to_pixel(start)
+        end_pixel = self.to_pixel(end)
 
-        baseline_spectrum = list(spectrum[left_start_pixel:left_end_pixel]) + list(spectrum[right_start_pixel:right_end_pixel])
-        if baseline_spectrum:
-            mean_baseline = sum(baseline_spectrum)/len(baseline_spectrum)
-        elif list(spectrum):
-            # Provide some baseline if the user range is <=0
-            mean_baseline = min(spectrum)
-        else:
-            # Don't crash plugin if spectrometer goes offline for a moment
-            mean_baseline = 0
+        sub_spectrum = list(spectrum[start_pixel:end_pixel+1])
+        if sub_spectrum:
 
-        self.plot(
-            title="Baseline",
-            color="orange",
-            x=[left_start, left_end],
-            y=[mean_baseline, mean_baseline],
-        )
-        self.plot(
-            color="orange",
-            x=[right_start, right_end],
-            y=[mean_baseline, mean_baseline],
-        )
+            i = (x-start)/(end-start)
+            interpolated_baseline = sub_spectrum[0]*(1-i) + sub_spectrum[-1]*i
+
+            self.plot(
+                title="Baseline",
+                color="orange",
+                x=[start, end],
+                y=[sub_spectrum[0], sub_spectrum[-1]],
+            )
 
         peak = spectrum[self.to_pixel(x)]
-        peak_region = spectrum[left_end_pixel:right_start_pixel]
-        peak_region_subtracted = [x-mean_baseline for x in peak_region]
-        area = np.trapz(peak_region_subtracted, self.get_axis()[left_end_pixel:right_start_pixel])
+
+        #peak_region = spectrum[left_end_pixel:right_start_pixel]
+        #peak_region_subtracted = [x-interpolated_baseline for x in peak_region]
+        #area = np.trapz(peak_region_subtracted, self.get_axis()[left_end_pixel:right_start_pixel])
+        
+        format_int = lambda i: f"{int(i):,}"
+
         self.table = pd.DataFrame(
-            [ f"{mean_baseline:.2f}", f"{peak:.2f}", f"{peak - mean_baseline:.2f}", f"{area:.2f}" ],
+            [ format_int(interpolated_baseline), format_int(peak), format_int(peak - interpolated_baseline), "--" ],
             index = ["Baseline", "Original Peak", "Peak (baseline subtracted)", "Peak Area (baseline subtracted)"]
         ).T
 
-        self.metadata["Baseline"] = mean_baseline
+        self.metadata["Baseline"] = interpolated_baseline
         self.metadata["OriginalPeak"] = peak
-        self.metadata["PeakBaselineSubtracted"] = peak - mean_baseline
-        self.metadata["Area"] = area
+        self.metadata["PeakBaselineSubtracted"] = peak - interpolated_baseline
+        self.metadata["Area"] = "--"
+
+        # keep input parameters in metadata
+        self.metadata["Left"] = self.get_widget_from_name("Left").value()
+        self.metadata["Right"] = self.get_widget_from_name("Right").value()
+        self.metadata["x"] = self.get_widget_from_name("x").value()
