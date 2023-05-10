@@ -7,6 +7,7 @@
     - added scripts/transpose.py
     - allow LocalBaseline plugin to save metadata
     - persist cloud permission
+    - fixed Raman Intensity Correction in 1064XL
 - 2023-05-03 4.0.9
     - fixed Save and Export
 - 2023-05-02 4.0.8
