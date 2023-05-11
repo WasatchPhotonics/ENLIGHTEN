@@ -211,6 +211,9 @@ class PageNavigation:
         tt = f"Ctrl-{index+1} shortcut" if index < common.Views.FACTORY else ""
         self.combo_view.setToolTip(tt)
 
+     def is_expert(self):
+         return self.operation_mode == common.OperationModes.EXPERT
+
     def set_view_common(self):
         self.update_view_shortcut()
         self.graph.reset_axes()
