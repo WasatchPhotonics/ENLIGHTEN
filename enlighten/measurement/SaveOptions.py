@@ -8,9 +8,10 @@ from enlighten import util
 
 log = logging.getLogger(__name__)
 
-##
-# Encapsulates the many options regarding how spectra are to be saved.
-class SaveOptions(object):
+class SaveOptions():
+    """
+    Encapsulates the many options regarding how spectra are to be saved.
+    """
 
     # ##########################################################################
     # Lifecycle
@@ -26,6 +27,7 @@ class SaveOptions(object):
         self.bt_location             = None
         self.cb_all                  = None
         self.cb_append               = None
+        self.cb_collated             = None
         self.cb_csv                  = None
         self.cb_spc                  = None
         self.cb_dark                 = None
@@ -55,6 +57,7 @@ class SaveOptions(object):
              cb_all,
              cb_allow_rename,
              cb_append,
+             cb_collated,
              cb_csv,
              cb_spc,
              cb_dark,
@@ -84,6 +87,7 @@ class SaveOptions(object):
         self.cb_all               = cb_all
         self.cb_allow_rename      = cb_allow_rename
         self.cb_append            = cb_append
+        self.cb_collated          = cb_collated
         self.cb_csv               = cb_csv
         self.cb_spc               = cb_spc
         self.cb_dark              = cb_dark
@@ -127,9 +131,6 @@ class SaveOptions(object):
         self.init_from_config()
         self.update_widgets()
 
-        # not yet implemented
-        #self.cb_spc.setVisible(False)
-
         # ######################################################################
         # binding
         # ######################################################################
@@ -138,6 +139,7 @@ class SaveOptions(object):
         self.cb_all             .stateChanged       .connect(self.update_widgets)
         self.cb_allow_rename    .stateChanged       .connect(self.update_widgets)
         self.cb_append          .stateChanged       .connect(self.update_widgets)
+        self.cb_collated        .stateChanged       .connect(self.update_widgets)
         self.cb_csv             .stateChanged       .connect(self.update_widgets)
         self.cb_spc             .stateChanged       .connect(self.update_widgets)
         self.cb_dark            .stateChanged       .connect(self.update_widgets)
@@ -170,6 +172,7 @@ class SaveOptions(object):
         self.rb_by_col    .setChecked(not by_row) #   neither is checked...
 
         self.init_checkbox(self.cb_csv,          "format_csv")
+        self.init_checkbox(self.cb_collated,     "collated")
         self.init_checkbox(self.cb_spc,          "format_spc")
         self.init_checkbox(self.cb_text,         "format_txt")
         self.init_checkbox(self.cb_excel,        "format_excel")
@@ -236,7 +239,6 @@ class SaveOptions(object):
         if self.suffix() != self.last_suffix: 
             self.reset_appendage()
             self.last_suffix = self.suffix()
-            
 
         ########################################################################
         # update config
@@ -244,6 +246,7 @@ class SaveOptions(object):
 
         s = "save"
         self.config.set(s, "order", "row" if self.save_by_row() else "col")
+        self.config.set(s, "collated",           self.save_collated())
         self.config.set(s, "format_csv",         self.save_csv())
         self.config.set(s, "format_spc",         self.save_spc())
         self.config.set(s, "format_txt",         self.save_text())
@@ -290,6 +293,7 @@ class SaveOptions(object):
     def save_all_spectrometers  (self): return self.cb_all.isChecked()
     def save_by_col             (self): return self.rb_by_col.isChecked()
     def save_by_row             (self): return self.rb_by_row.isChecked()
+    def save_collated           (self): return self.cb_collated.isChecked()
     def save_csv                (self): return self.cb_csv.isChecked()
     def save_spc                (self): return self.cb_spc.isChecked()
     def save_dark               (self): return self.cb_dark.isChecked()
