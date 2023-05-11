@@ -359,6 +359,7 @@ class BusinessObjects:
             cb_all                      = sfu.checkBox_save_all,
             cb_allow_rename             = sfu.checkBox_allow_rename_files,
             cb_append                   = sfu.checkBox_save_data_append,
+            cb_collated                 = sfu.checkBox_save_collated,
             cb_csv                      = sfu.checkBox_save_csv,
             cb_spc                      = sfu.checkBox_save_spc,
             cb_dark                     = sfu.checkBox_save_dark,

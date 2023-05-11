@@ -537,6 +537,24 @@ class Measurements(object):
     #       differently :-/
     #
     # @todo getting interpolation working here requires some thought.
+    #
+    # @para Collated
+    #
+    # If SaveOptions.save_collated(), then the columns are grouped by each 
+    # "subspectrum" (processed, raw, dark, reference etc). This changes the basic
+    # layout above to:
+    #
+    # \verbatim
+    # Enlighten ver
+    # MeasID         A  B  C     A  B  C     A  B  C    <-- metadata repeated for each subspectrum
+    # Serial         S1 S1 S2    S1 S1 S2    S1 S1 S2
+    # Label          Aa Bb Cc    Aa Bb Cc    Aa Bb Cc
+    # m1             x  y  z     x  y  z     x  y  z
+    # m2             x  y  z     x  y  z     x  y  z 
+    #
+    # S1    S2    Pr          Rw          Dk            <-- a "blank column" is inserted between each grouping, with the label of that subspectrum
+    # px wl px wl    Aa Bb Cc    Aa Bb Cc    Aa Bb Cc   <-- the Measurement.label is used as the header within each grouping
+    # \endverbatim
     def export_by_column(self, csv_writer):
 
         # could output some "Session" stuff up here
@@ -558,7 +576,7 @@ class Measurements(object):
         if self.save_options.save_wavenumber():
             x_headers.append("Wavenumber")
 
-        # count ProcessedReading headers (pr, rw, dk)
+        # count ProcessedReading subspectra headers (pr, rw, dk)
         pr_headers = []
         if self.save_options.save_processed():
             pr_headers.append("Processed")
@@ -569,13 +587,17 @@ class Measurements(object):
         if self.save_options.save_reference():
             pr_headers.append("Reference")
 
-        blank = ['']
+        # @todo: it would be cool if plugins could add their own subspectra
+        #        (new columns in the saved files)
+
+        BLANK = ['']
 
         # default to 5-digit precision for all spectral columns if a reference 
         # component is being exported
         prec = 5 if 'Reference' in pr_headers else 2
         max_pixels = max([settings.pixels() for settings in settingss])
 
+        ########################################################################
         # metadata
         ########################################################################
 
@@ -599,24 +621,40 @@ class Measurements(object):
                     if k not in fields:
                         fields.append(k)
 
+        # actually output the metadata to the CSV
         for field in fields:
             if field in Measurement.ROW_ONLY_FIELDS:
                 continue
             elif field.lower() == "enlighten version":
-                csv_writer.writerow(['ENLIGHTEN Version', common.VERSION])
+                # MZ: note version is always in 2nd column
+                csv_writer.writerow(['ENLIGHTEN Version', common.VERSION]) 
             else:
-                row = [ field ]
-                row.extend(blank * (len(settingss) * len(x_headers) - 1))
-                for m in self.measurements:
-                    value = m.get_metadata(field)
-                    row.append(value)
-                    row.extend(blank * (len(pr_headers) - 1))
+
+                # first start with the metadata field name
+                row = [ field ] 
+
+                # now insert blanks to skip past the x-axes to the first measurement
+                row.extend(BLANK * (len(settingss) * len(x_headers) - 1))
+
+                # now output the metadata atop the data columns
+                if self.save_options.save_collated():
+                    for header in pr_headers:
+                        row.extend(BLANK) # for the subspectrum name
+                        # now re-write the value above every measurement for this subspectrum
+                        for m in self.measurements:
+                            value = m.get_metadata(field)
+                            row.append(value)
+                else:                     
+                    for m in self.measurements:
+                        value = m.get_metadata(field)
+                        row.append(value)
+                        row.extend(BLANK * (len(pr_headers) - 1))
                 csv_writer.writerow(row)
 
         csv_writer.writerow([])
 
         ########################################################################
-        # header
+        # Header One
         ########################################################################
         
         # EnlightenVer
@@ -637,14 +675,19 @@ class Measurements(object):
             # columns (px/nm/cm can be regenerated), so we're just being nice to
             # other consumers.
             row.append(settings.eeprom.serial_number)
-            row.extend(blank * (len(x_headers) - 1))
-        for m in self.measurements:
-            row.append(m.label)
-            row.extend(blank * (len(pr_headers) - 1))
+            row.extend(BLANK * (len(x_headers) - 1))
+        if self.save_options.save_collated():
+            for header in pr_headers:
+                row.append(header)
+                row.extend(BLANK * len(self.measurements))
+        else:
+            for m in self.measurements:
+                row.append(m.label)
+                row.extend(BLANK * (len(pr_headers) - 1))
         csv_writer.writerow(row)
         
         ########################################################################
-        # Spectral Data
+        # Header Two
         ########################################################################
 
         # EnlightenVer
@@ -661,10 +704,20 @@ class Measurements(object):
         for settings in settingss:
             for header in x_headers:
                 row.append(header)
-        for m in self.measurements:
+        if self.save_options.save_collated():
             for header in pr_headers:
-                row.append(header)
+                row.extend(BLANK)
+                for m in self.measurements:
+                    row.append(m.label)
+        else:
+            for m in self.measurements:
+                for header in pr_headers:
+                    row.append(header)
         csv_writer.writerow(row)
+
+        ########################################################################
+        # Spectral Data
+        ########################################################################
 
         # after this point, all headers can be lowercase
         x_headers  = [ s.lower() for s in  x_headers ]
@@ -695,7 +748,7 @@ class Measurements(object):
                         roi = spec.settings.eeprom.get_horizontal_roi()
                         if roi is not None and m.roi_active:
                             if roi.contains(pixel):
-                                pixel -= roi.start              # YOU ARE HERE...I think this is Allie's bug
+                                pixel -= roi.start
                                 a = pr.processed_vignetted
             elif header == "reference":
                 a = pr.reference
@@ -756,9 +809,15 @@ class Measurements(object):
                 for settings in settingss:
                     for header in x_headers:
                         row.append(get_x_header_value(ipr.wavelengths, ipr.wavenumbers, header, pixel))
-                for m in self.measurements:
+                if self.save_options.save_collated():
                     for header in pr_headers:
-                        row.append(get_pr_header_value(m, header, pixel, pr=m.ipr.processed_reading))
+                        row.extend(BLANK)
+                        for m in self.measurements:
+                            row.append(get_pr_header_value(m, header, pixel, pr=m.ipr.processed_reading))
+                else:
+                    for m in self.measurements:
+                        for header in pr_headers:
+                            row.append(get_pr_header_value(m, header, pixel, pr=m.ipr.processed_reading))
                 csv_writer.writerow(row)
 
         else:
@@ -779,13 +838,22 @@ class Measurements(object):
                         for header in x_headers:
                             row.append(get_x_header_value(settings.wavelengths, settings.wavenumbers, header, pixel))
                     else:
-                        row.extend(blank * len(x_headers))
-                for m in self.measurements:
-                    if pixel < m.settings.pixels():
-                        for header in pr_headers:
-                            row.append(get_pr_header_value(m, header, pixel))
-                    else:
-                        row.extend(blank * len(pr_headers))
+                        row.extend(BLANK * len(x_headers))
+                if self.save_options.save_collated():
+                    for header in pr_headers:
+                        row.extend(BLANK)
+                        for m in self.measurements:
+                            if pixel < m.settings.pixels():
+                                row.append(get_pr_header_value(m, header, pixel))
+                            else:
+                                row.extend(BLANK)
+                else:
+                    for m in self.measurements:
+                        if pixel < m.settings.pixels():
+                            for header in pr_headers:
+                                row.append(get_pr_header_value(m, header, pixel))
+                        else:
+                            row.extend(BLANK * len(pr_headers))
                 csv_writer.writerow(row)
 
     ##
