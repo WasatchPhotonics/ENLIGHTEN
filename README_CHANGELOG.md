@@ -2,7 +2,7 @@
 
 # 4.0 GUI Refactoring
 
-- 2023-??-?? 4.0.11
+- 2023-05-?? 4.0.11
     - added collated export
 - 2023-05-10 4.0.10
     - "fixed" Marquee
