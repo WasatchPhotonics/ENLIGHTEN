@@ -4,6 +4,7 @@
 
 - 2023-05-?? 4.0.11
     - added collated export
+    - invert x-axis for 1064XL
 - 2023-05-10 4.0.10
     - "fixed" Marquee
     - added scripts/transpose.py
