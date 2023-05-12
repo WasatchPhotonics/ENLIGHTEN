@@ -7,6 +7,7 @@
 - 2023-05-10 4.0.10
     - "fixed" Marquee
     - added scripts/transpose.py
+    - fixed save on non-Raman
     - allow LocalBaseline plugin to save metadata
     - persist cloud permission
     - fixed Raman Intensity Correction in 1064XL

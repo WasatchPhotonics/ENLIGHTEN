@@ -25,6 +25,7 @@ class SpectrometerApplicationState(object):
     def clear(self):
         self.device_id = None
         self.processed_reading = None
+        self.technique_name = None
 
         self.dark                = None
         self.reference           = None

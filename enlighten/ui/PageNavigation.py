@@ -89,7 +89,10 @@ class PageNavigation:
     def post_init(self):
         self.graph.set_y_axis(common.Axes.COUNTS)
 
+        # always start in scope view
+        self.set_main_page(common.Pages.SCOPE)
         self.set_view(common.Views.SCOPE)
+
         self.sfu.frame_FactoryMode_Options.hide()
         self.set_operation_mode_non_raman()
         self.fr_transmission_options.hide()

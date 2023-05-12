@@ -216,9 +216,6 @@ class Controller:
         self.business_objects.create_rest()
         self.graph.rehide_curves()
 
-        # default to Scope view
-        self.page_nav.set_main_page(common.Pages.SCOPE)
-
         # configure acquisition loop
         self.setup_main_event_loops() # MZ: move to end?
 
