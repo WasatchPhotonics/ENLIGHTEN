@@ -2,7 +2,7 @@
 
 # 4.0 GUI Refactoring
 
-- 2023-05-?? 4.0.11
+- 2023-05-15 4.0.11
     - added collated export
     - invert x-axis for 1064XL
 - 2023-05-10 4.0.10
