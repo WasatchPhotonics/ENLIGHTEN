@@ -121,3 +121,4 @@ class LocalBaseline(EnlightenPluginBase):
         self.metadata["Left"] = self.get_widget_from_name("Left").value()
         self.metadata["Right"] = self.get_widget_from_name("Right").value()
         self.metadata["x"] = self.get_widget_from_name("x").value()
+        self.metadata["x unit"] = self.get_axis_name()

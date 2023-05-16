@@ -60,6 +60,17 @@ class EnlightenPluginBase:
             return self.settings.wavenumbers
         if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.PIXELS:
             return range(len(self.spectrum))
+        
+    def get_axis_name(self):
+        """
+        Printable axis name
+        """
+        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVELENGTHS:
+            return "Wavelengths (cm⁻¹)"
+        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVENUMBERS:
+            return "Wavenumbers (nm)"
+        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.PIXELS:
+            return "Pixels (px)"
 
     ### Begin functional-plugins backend ###
 
