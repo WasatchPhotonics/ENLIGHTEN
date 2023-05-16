@@ -60,7 +60,6 @@ if "%1" == "test" (
     goto args_parsed
 )
 
-REM DEFINE CUSTOM ACTION HERE
 if "%1" == "ui" (
     set "regenerate_qt=1"
     goto args_parsed
