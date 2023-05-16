@@ -61,6 +61,12 @@ if "%1" == "test" (
 )
 
 REM DEFINE CUSTOM ACTION HERE
+if "%1" == "ui" (
+    set "regenerate_qt=1"
+    goto args_parsed
+)
+
+REM DEFINE CUSTOM ACTION HERE
 if "%1" == "custom" (
     set "rebuild_env=0"
     set "clear_pyinst_appdata=0"
@@ -246,6 +252,8 @@ echo %date% %time% ======================================================
 echo %date% %time% Activating environment
 echo %date% %time% ======================================================
 echo.
+REM deactivate before activate in-case user runs `scripts\bootstrap activate` multiple times
+call deactivate
 REM Use "source" from bash, "call" from batch and neither from Cmd
 call activate conda_enlighten3
 if %errorlevel% neq 0 goto script_failure
