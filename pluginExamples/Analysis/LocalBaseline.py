@@ -14,6 +14,12 @@ class LocalBaseline(EnlightenPluginBase):
         self.name = "Baseline"
 
         self.field(
+            name = "count",
+            initial = 1, minimum = 0, maximum = 8, step = 1,
+            datatype = "int", direction = "input"
+        )
+
+        self.field(
             name = "x",
             initial = 1014, minimum = -10000, maximum = 10000, step = .2,
             datatype = "float", direction = "input"
@@ -122,3 +128,21 @@ class LocalBaseline(EnlightenPluginBase):
         self.metadata["Right"] = self.get_widget_from_name("Right").value()
         self.metadata["x"] = self.get_widget_from_name("x").value()
         self.metadata["x unit"] = self.get_axis_name()
+
+
+        # on get_widget_from_name("count") change...
+        if self.get_widget_from_name("count") != prev_count:
+            # delete all fields
+            self._fields.clear()
+
+            # idk if it's sufficient since PluginController would have already snagged _fields
+            # from get_configuration_obj
+
+            # if it's a shallow copy we could be in business
+
+
+            # for i in range(count):
+            # i_str = str(i+1) if i else "" # numbering is var, var2, var3, ...
+            # create fields X+i_str
+            # create fields Left+i_str
+            # create fields Right+i_str
