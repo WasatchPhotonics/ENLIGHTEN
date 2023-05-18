@@ -16,6 +16,7 @@ from wasatch.ProcessedReading import ProcessedReading
 from wasatch.SpectrometerSettings import SpectrometerSettings
 
 import numpy as np
+import os
 
 ##
 # Abstract Base Class (ABC) for all ENLIGHTEN-compatible plug-ins.
@@ -73,6 +74,17 @@ class EnlightenPluginBase:
             return "Pixels (px)"
 
     ### Begin functional-plugins backend ###
+
+    def log(self, *msgs):
+        # initially made this because the regular logger wasn't working
+        # but it actually makes sense for plugins to have their own log separate from enlighten
+        #with open(common.get_default_data_dir()+os.sep+'plugin_log.txt', 'at') as pl:
+        with open('C:/Users/sbee/Documents/EnlightenSpectra/plugin_log.txt', 'at') as pl:
+            pl.write(' '.join([str(msg) for msg in msgs]) + "\n")
+
+    def reset_configuration(self):
+        plugin_name = self.ctl.form.ui.comboBox_plugin_module.currentText()
+        self.ctl.plugin_controller.configure_gui_for_module(plugin_name)
 
     def field(self, **kwargs):
         self._fields.append(EnlightenPluginField(**kwargs))

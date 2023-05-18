@@ -1,21 +1,23 @@
 import pandas as pd
 import numpy as np
-import logging
 
 import time
 
 from EnlightenPlugin import *
 
-log = logging.getLogger(__name__)
+
 
 class LocalBaseline(EnlightenPluginBase):
+
+    prev_count = 1
 
     def get_configuration(self):
         self.name = "Baseline"
 
+        # warning: changing the count will not work without a spectrometer (since process_reading does not get called)
         self.field(
             name = "count",
-            initial = 1, minimum = 0, maximum = 8, step = 1,
+            initial = self.prev_count, minimum = 0, maximum = 8, step = 1,
             datatype = "int", direction = "input"
         )
 
@@ -60,6 +62,7 @@ class LocalBaseline(EnlightenPluginBase):
         x_widget.setValue(self.to_graph(x_pix))
 
     def process_request(self, request):
+
         pr = request.processed_reading
         spectrum = pr.get_processed()
 
@@ -129,20 +132,18 @@ class LocalBaseline(EnlightenPluginBase):
         self.metadata["x"] = self.get_widget_from_name("x").value()
         self.metadata["x unit"] = self.get_axis_name()
 
-
         # on get_widget_from_name("count") change...
-        if self.get_widget_from_name("count") != prev_count:
+        if self.get_widget_from_name("count").value() != self.prev_count:
             # delete all fields
-            self._fields.clear()
-
             # idk if it's sufficient since PluginController would have already snagged _fields
             # from get_configuration_obj
-
             # if it's a shallow copy we could be in business
-
+            self.prev_count = self.get_widget_from_name("count").value()
+            self.reset_configuration()
 
             # for i in range(count):
             # i_str = str(i+1) if i else "" # numbering is var, var2, var3, ...
             # create fields X+i_str
             # create fields Left+i_str
             # create fields Right+i_str
+        self.prev_count = self.get_widget_from_name("count").value()

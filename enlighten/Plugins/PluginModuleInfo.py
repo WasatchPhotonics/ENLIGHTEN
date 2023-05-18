@@ -58,7 +58,18 @@ class PluginModuleInfo:
     #         can display them to the user / plugin author
     def load(self):
         if self.is_loaded():
-            log.error("declining to re-load %s", self.full_module_name)
+            log.error("declining to reload %s", self.full_module_name)
+
+            # SB: edit, despite declining to reload the module we WILL reload the config
+            # this is useful because it lets a plugin reload its own config with variable
+            # conditions (for example, having n buttons)
+            self.config = self.instance.get_configuration_obj()
+            if self.config is None:
+                log.error("unable to reload configuration")
+                return False
+
+            # skipping validation for reloaded config
+
             return True
         
         # log.debug("loading %s", self.full_module_name)
