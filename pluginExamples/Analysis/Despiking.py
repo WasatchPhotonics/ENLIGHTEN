@@ -84,7 +84,7 @@ class Despiking(EnlightenPluginBase):
             "Despiked": {
                 "x": series_x,
                 "y": spiky_spectra,
-                },
+            },
             "Detrended Diff": {
                 'x': trend_x,
                 'y': nabla_counts,
