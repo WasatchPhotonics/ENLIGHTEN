@@ -130,6 +130,12 @@ class RamanLines(EnlightenPluginBase):
                 3072.3: 2
             },
 
+            "Calcium Carbonate": {
+                280: 2,
+                712: 1,
+                1085: 5 # EU Pharmacopoeia
+            }
+
             "Cyclohexane": {
                 801.3: 5,
                 1028.3: 3,
