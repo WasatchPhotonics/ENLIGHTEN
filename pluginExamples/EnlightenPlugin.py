@@ -78,8 +78,7 @@ class EnlightenPluginBase:
     def log(self, *msgs):
         # initially made this because the regular logger wasn't working
         # but it actually makes sense for plugins to have their own log separate from enlighten
-        #with open(common.get_default_data_dir()+os.sep+'plugin_log.txt', 'at') as pl:
-        with open('C:/Users/sbee/Documents/EnlightenSpectra/plugin_log.txt', 'at') as pl:
+        with open(common.get_default_data_dir()+os.sep+'plugin_log.txt', 'at') as pl:
             pl.write(' '.join([str(msg) for msg in msgs]) + "\n")
 
     def reset_configuration(self):
