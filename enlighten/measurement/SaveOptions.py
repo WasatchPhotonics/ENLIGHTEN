@@ -195,7 +195,9 @@ class SaveOptions():
         self.le_note            .setText   (re.sub(",", "", self.config.get(s, "note")))
 
     def init_checkbox(self, cb, option):
+        log.debug(f"init_checkbox (option {option})")
         value = self.config.get_bool("save", option)
+        log.debug(f"init_checkbox setting {value} to {cb}")
         cb.setChecked(value)
 
     ## Update widgets and config state when:
@@ -210,7 +212,9 @@ class SaveOptions():
         # decide which widgets should be ENABLED (not checked)
         ########################################################################
 
+        log.debug("update_widgets: checking save_csv")
         save_csv = self.save_csv()
+        log.debug(f"update_widgets: save_csv = {save_csv}")
 
         # these widgets are dependent on the CSV checkbox
         self.rb_by_row.setEnabled(save_csv)
@@ -244,6 +248,7 @@ class SaveOptions():
         # update config
         ########################################################################
 
+        log.debug(f"update_widgets: setting config from current checkbox state")
         s = "save"
         self.config.set(s, "order", "row" if self.save_by_row() else "col")
         self.config.set(s, "collated",           self.save_collated())

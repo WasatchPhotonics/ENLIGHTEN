@@ -86,7 +86,7 @@ class Configuration(object):
 
         self.load_defaults()
         self.stub_missing()
-        self.stub_test()
+        self.stub_test() # MZ: I don't think this belongs in Configuration
 
         try:
             self.reload()
@@ -341,11 +341,15 @@ class Configuration(object):
             return section in self.defaults
 
     def has_option(self, section, option):
+        # any option which is defaulted will always indicate "has_option -> true";
+        # .ini file may override value, but can't change that there IS a value
+        if section in self.defaults and option in self.defaults[section]:
+            return True
+
+        # non-default options may or may not be defined
         if self.config and self.config.has_section(section):
             return self.config.has_option(section, option)
-        else:
-            if section in self.defaults:
-                return option in self.defaults[section]
+
         return False            
 
     def process_color(self, value):
