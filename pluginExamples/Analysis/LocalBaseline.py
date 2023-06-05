@@ -63,8 +63,6 @@ class LocalBaseline(EnlightenPluginBase):
 
     def process_request(self, request):
 
-        self.log("This is a log")
-
         pr = request.processed_reading
         spectrum = pr.get_processed()
 
