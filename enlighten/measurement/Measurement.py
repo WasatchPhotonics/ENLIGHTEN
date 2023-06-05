@@ -684,20 +684,30 @@ class Measurement(object):
 
     ## @todo cloud etc
     def save(self):
+        saved = False
         if self.save_options.save_csv():
             self.save_csv_file()
+            saved = True
 
         if self.save_options.save_text():
             self.save_txt_file()
+            saved = True
 
         if self.save_options.save_excel():
             self.save_excel_file()
+            saved = True
 
         if self.save_options.save_json():
             self.save_json_file()
+            saved = True
 
         if self.save_options.save_spc():
             self.save_spc_file()
+            saved = True
+
+        if not saved:
+            if self.measurements:
+                self.measurements.marquee.error("No save formats selected -- spectrum not saved to disk")
 
     def save_csv_file(self):
         if self.save_options is not None and self.save_options.save_by_row():
