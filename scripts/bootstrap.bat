@@ -98,6 +98,9 @@ echo.
 echo $ scripts\bootstrap test
 echo This will take a while. Performs tests.
 echo.
+echo $ scripts\bootstrap ui
+echo Rebuild UI only.
+echo.
 echo $ scripts\bootstrap custom
 echo If you need a very particular action sequence (for example run pyinstaller without regenerating Qt views), edit this file, search for DEFINE CUSTOM ACTION HERE, and change flags as desired.
 goto:eof
