@@ -134,7 +134,7 @@ class RamanLines(EnlightenPluginBase):
                 280: 2,
                 712: 1,
                 1085: 5 # EU Pharmacopoeia
-            }
+            },
 
             "Cyclohexane": {
                 801.3: 5,
