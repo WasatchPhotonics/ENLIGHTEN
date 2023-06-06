@@ -1161,12 +1161,13 @@ class PluginController:
                 # matter if the plot is xy or line
 
                 # first blank any missing series
-                for name in self.plugin_curves: # config.series_names:
+                for name in self.plugin_curves:
                     series = seriess.get(name, None)
                     if series is None:
                         log.debug(f"configured series {name} missing")
                         if name in self.plugin_curves:
-                            graph.set_data(self.plugin_curves[name], y=[], x=[])
+                            #graph.set_data(self.plugin_curves[name], y=[], x=[])
+                            graph.remove_curve(name)
                         else:
                             log.debug(f"configured series {name} missing curve?")
 
@@ -1185,8 +1186,6 @@ class PluginController:
                             pen=self.gui.make_pen(color=series.get("color")), 
                             in_legend=series.get("in_legend", True)
                         )
-                        # if name not in config.series_names and series.get("in_legend", True):
-                        #     config.series_names.append(name)
 
                     x_values = None
                     if isinstance(series, dict):
