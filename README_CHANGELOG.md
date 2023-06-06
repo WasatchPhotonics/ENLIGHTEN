@@ -2,6 +2,9 @@
 
 # 4.0 GUI Refactoring
 
+- 2023-06-?? 4.0.12
+    - fixed Configuration defaults
+    - warn when saving but no formats selected
 - 2023-05-15 4.0.11
     - added collated export
     - invert x-axis for 1064XL
