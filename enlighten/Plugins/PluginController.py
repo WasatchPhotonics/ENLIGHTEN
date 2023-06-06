@@ -1166,7 +1166,6 @@ class PluginController:
                     if series is None:
                         log.debug(f"configured series {name} missing")
                         if name in self.plugin_curves:
-                            #graph.set_data(self.plugin_curves[name], y=[], x=[])
                             graph.remove_curve(name)
                         else:
                             log.debug(f"configured series {name} missing curve?")
