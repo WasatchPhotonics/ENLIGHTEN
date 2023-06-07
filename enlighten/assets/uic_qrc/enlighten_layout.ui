@@ -7006,7 +7006,7 @@ QComboBox QListView
                     </size>
                    </property>
                    <property name="toolTip">
-                    <string>VOIDS WARRANTY: Store any manual edits to the spectrometer’s internal EEPROM</string>
+                    <string>MAY VOID WARRANTY: Store any manual edits to the spectrometer’s internal EEPROM</string>
                    </property>
                    <property name="text">
                     <string>Write EEPROM</string>
