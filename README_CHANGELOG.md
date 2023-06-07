@@ -6,6 +6,7 @@
     - fixed Configuration defaults
     - warn when saving but no formats selected
     - fixed load-then-export
+    - updated Write EEPROM tooltip
 - 2023-05-15 4.0.11
     - added collated export
     - invert x-axis for 1064XL
