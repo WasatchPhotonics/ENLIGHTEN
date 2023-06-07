@@ -361,7 +361,10 @@ class Measurements(object):
 
         if filename is None:
             now = datetime.datetime.now()
-            default_filename = "Session-" + now.strftime("%Y%m%d-%H%M%S")
+
+            default_filename = f"{self.save_options.prefix()}-" if self.save_options.has_prefix() else "Session-"
+            default_filename += now.strftime("%Y%m%d-%H%M%S")
+            default_filename += f"-{self.save_options.suffix()}" if self.save_options.has_suffix() else ""
 
             # prompt the user to override the default filename
             # @todo give Controller.form to GUI, add gui.promptString()

@@ -308,6 +308,9 @@ class SaveOptions():
     def save_wavenumber         (self): return self.cb_wavenumber.isChecked() and self.cb_wavenumber.isEnabled() or self.save_with_wavenumber
     def suffix                  (self): return self.le_suffix.text().strip()
     def save_processed          (self): return True
+    def has_prefix              (self): return len(self.prefix()) > 0
+    def has_suffix              (self): return len(self.suffix()) > 0
+    def has_note                (self): return len(self.note()) > 0
 
     # ##########################################################################
     # Methods
