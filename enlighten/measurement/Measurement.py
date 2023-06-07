@@ -1189,10 +1189,6 @@ class Measurement(object):
 
             for pixel in range(pixels):
 
-                # don't output cropped rows
-                if roi is not None and not roi.contains(pixel):
-                    continue
-
                 values = []
                 if self.save_options is not None:
                     if self.save_options.save_pixel()      : values.append(pixel)
@@ -1208,13 +1204,18 @@ class Measurement(object):
                             values.append(formatted(precision, pr.processed_vignetted, pixel - roi.start))
                         else:
                             # this is a cropped pixel, so arguably it could be None (,,), @na, -1
-                            # or various other things, but this will probably break the least downstream
-                            values.append(0)
+                            # or 0, or various other things, but consensus converged on "NA"
+                            values.append("NA")
 
+                    # Note that we're always output raw/dark/ref (if selected), regardless of ROI (makes sense).
+                    # I'm less sure why we don't interpolate raw/dark/ref, or how this comes out in the file if
+                    # we are interpolating...
                     if self.save_options.save_raw()        : values.append(formatted(precision, pr.raw,       pixel))
                     if self.save_options.save_dark()       : values.append(formatted(precision, pr.dark,      pixel))
                     if self.save_options.save_reference()  : values.append(formatted(precision, pr.reference, pixel))
                 else:
+                    # MZ: I don't remember the use-case for this.  May involve 
+                    # this class being imported and used by an outside script?
                     values.append(formatted(2, wavenumbers,  pixel))
                     values.append(formatted(precision, pr.processed, pixel)) 
 

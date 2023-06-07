@@ -760,7 +760,7 @@ class Measurements(object):
             if a is not None and pixel < len(a):
                 value = a[pixel]
             else:
-                return ""
+                return "NA"
 
             # Override default precision (which was based on whether a "reference" column
             # is being exported) with this indication of whether a reference component was
@@ -793,10 +793,8 @@ class Measurements(object):
                     log.error("failed export due to interpolation error")
                 if m.roi_active:
                     roi = m.settings.eeprom.get_horizontal_roi()
-                    if roi.start < min_roi_start:
-                        min_roi_start = int(roi.start)
-                    if roi.end > max_roi_end:
-                        max_roi_end = int(roi.end)
+                    min_roi_start = min(min_roi_start, int(roi.start))
+                    max_roi_end = max(max_roi_end, int(roi.end))
                 m.ipr = ipr
 
             if max_roi_end != float("-inf") and min_roi_start != float("inf"):
@@ -846,7 +844,7 @@ class Measurements(object):
                             if pixel < m.settings.pixels():
                                 row.append(get_pr_header_value(m, header, pixel))
                             else:
-                                row.extend(BLANK)
+                                row.extend("NA")
                 else:
                     for m in self.measurements:
                         if pixel < m.settings.pixels():
