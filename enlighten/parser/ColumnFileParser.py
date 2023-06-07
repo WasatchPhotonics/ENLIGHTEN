@@ -83,10 +83,20 @@ class ColumnFileParser(object):
     # ##########################################################################
 
     def get_safe_float(self, field):
+        field = field.lower()
         if field not in self.metadata or self.metadata[field] is None:
             return 0
 
-        s = self.metadata[field].strip()
+        v = self.metadata[field]
+        if type(v) is list:
+            if len(v) == 1:
+                s = v[0]
+            else:
+                s = str(v)
+        else:
+            s = str(v)
+
+        s = s.strip()
         if len(s) == 0:
             return 0
 
@@ -248,7 +258,6 @@ class ColumnFileParser(object):
             if coeffs is not None:
                 eeprom.wavelength_coeffs = coeffs
         elif coeffs is not None:
-            log.debug("loaded metadata wavecal coeffs")
             eeprom.wavelength_coeffs = coeffs
 
             # this will also render wavenumbers if possible
@@ -272,9 +281,11 @@ class ColumnFileParser(object):
             c1 = self.get_safe_float("CCD C1")
             c2 = self.get_safe_float("CCD C2")
             c3 = self.get_safe_float("CCD C3")
+            c4 = self.get_safe_float("CCD C4")
             if c0 > 0:
-                return [ c0, c1, c2, c3 ]
+                return [ c0, c1, c2, c3, c4 ]
         except Exception as e:
+            log.debug("get_wavecal_coeffs_from_metadata: ignoring {e}")
             return
 
     def get_header_col(self, field):

@@ -754,10 +754,10 @@ class Measurement(object):
         if field == "temperature":               return self.processed_reading.reading.detector_temperature_degC if self.processed_reading.reading is not None else -99
         if field == "technique":                 return self.technique
         if field == "baseline correction algo":  return self.baseline_correction_algo
-        if field == "ccd c0":                    return wavecal[0]
-        if field == "ccd c1":                    return wavecal[1]
-        if field == "ccd c2":                    return wavecal[2]
-        if field == "ccd c3":                    return wavecal[3]
+        if field == "ccd c0":                    return 0 if len(wavecal) < 1 else wavecal[0] 
+        if field == "ccd c1":                    return 0 if len(wavecal) < 2 else wavecal[1]
+        if field == "ccd c2":                    return 0 if len(wavecal) < 3 else wavecal[2]
+        if field == "ccd c3":                    return 0 if len(wavecal) < 4 else wavecal[3]
         if field == "ccd c4":                    return 0 if len(wavecal) < 5 else wavecal[4]
         if field == "ccd offset":                return self.settings.eeprom.detector_offset # even
         if field == "ccd gain":                  return self.settings.state.gain_db if self.settings.is_sig() else self.settings.eeprom.detector_gain # even
