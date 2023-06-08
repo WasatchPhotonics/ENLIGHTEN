@@ -45,7 +45,7 @@ class ColumnFileParser(object):
 
     def parse(self) -> Measurement:
         # read through the input file by line, loading data locally
-        self.csv_loader.load_data()
+        self.csv_loader.load_data(scalar_metadata=True)
 
         # put loaded data into where it goes in ENLIGHTEN datatypes
         self.post_process_metadata()
@@ -61,17 +61,16 @@ class ColumnFileParser(object):
             processed_reading = self.processed_reading,
             save_options      = self.save_options)
 
-        # log.info(f"\nAfter creating measurement the wave coeffs are {m.settings.eeprom.wavelength_coeffs}\n")
-
-        # note that label often won't be what the user expected, because they
-        # may have editted it in the Capture Bar AFTER the file was created,
-        # and currently we don't re-save the file when the label is changed.
-        # (nor do we rename the file with the label, as that would rule-out
-        # many characters and syntax in the label)
         if "Label" in self.metadata:
             m.label = self.metadata["Label"]
         else:
+            # this was probably for an external script
             m.label = os.path.splitext(os.path.basename(self.pathname))[0]
+
+        # attributes of Measurement itself
+        for k in ["Note", "Prefix", "Suffix"]:
+            if k in self.metadata:
+                setattr(m, k.lower(), self.metadata[k])
 
         # this parser only loads a single measurement, so the file is renamable
         m.add_renamable(self.pathname)
@@ -83,29 +82,19 @@ class ColumnFileParser(object):
     # ##########################################################################
 
     def get_safe_float(self, field):
-        field = field.lower()
         if field not in self.metadata or self.metadata[field] is None:
             return 0
 
         v = self.metadata[field]
-        if type(v) is list:
-            if len(v) == 1:
-                s = v[0]
-            else:
-                s = str(v)
-        else:
-            s = str(v)
-
-        s = s.strip()
-        if len(s) == 0:
+        if len(v.strip()) == 0:
             return 0
 
         try:
-            value = float(s)
+            value = float(v)
             log.debug(f"parsed float {field} as {value}")
             return value
         except:
-            log.error(f"failed to convert {field} to float: {s}")
+            log.error(f"failed to convert {field} to float: {v}")
             return 0
 
     def parse_timestamp(self, ts):
@@ -197,6 +186,8 @@ class ColumnFileParser(object):
             eeprom.active_pixels_horizontal = len(self.processed_reading.processed)
         log.debug("active_pixels_horizontal = %d", eeprom.active_pixels_horizontal)
 
+        # fields where name changed in different versions / generators
+
         # serial number
         for key in ["Serial Number", "Serial"]:
             if key in metadata:
@@ -218,6 +209,7 @@ class ColumnFileParser(object):
                 state.integration_time_ms = int(self.get_safe_float(key))
 
         eeprom.model                      = metadata.get("Model")
+        eeprom.detector                   = metadata.get("Detector")
         eeprom.detector_offset            = int(self.get_safe_float("CCD Offset"))
         eeprom.detector_gain              = self.get_safe_float("CCD Gain")
         eeprom.excitation_nm_float        = self.get_safe_float("Laser Wavelength")
@@ -227,6 +219,9 @@ class ColumnFileParser(object):
                                           
         state.laser_enabled               = metadata.get("Laser Enable", "false").lower().strip() == "true"
         state.scans_to_average            = int(self.get_safe_float("Scan Averaging"))
+
+        self.settings.microcontroller_firmware_version = metadata.get("FW Version")
+        self.settings.fpga_firmware_version = metadata.get("FPGA Version")
 
         reading.laser_temperature_degC    = self.get_safe_float("Laser Temperature")
 
