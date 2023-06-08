@@ -1165,15 +1165,26 @@ class PluginController:
                 # plot each series to the selected graph; at this point it doesn't
                 # matter if the plot is xy or line
 
-                # first blank any missing series
-                for name in self.plugin_curves: # config.series_names:
+                # first blank any missing series, this happens quickly, immediately blanking the graph
+                to_remove = []
+                for name in self.plugin_curves:
                     series = seriess.get(name, None)
                     if series is None:
                         log.debug(f"configured series {name} missing")
                         if name in self.plugin_curves:
-                            graph.set_data(self.plugin_curves[name], y=[], x=[])
+                            graph.remove_curve(name)
+                            to_remove.append(name)
                         else:
                             log.debug(f"configured series {name} missing curve?")
+                
+                # now perform the slower option of removing from configuration
+                # this happens slowly, ~.2 sec per curve, enough that you would
+                # see them being removed one by one if this was included in the
+                # above loop
+                for name in to_remove:
+                    del self.plugin_curves[name]
+                
+                #del self.plugin_curves[name]
 
                 # now graph every provided series (declared or otherwise)
                 for name in sorted(seriess):
@@ -1190,8 +1201,6 @@ class PluginController:
                             pen=self.gui.make_pen(color=series.get("color")), 
                             in_legend=series.get("in_legend", True)
                         )
-                        # if name not in config.series_names and series.get("in_legend", True):
-                        #     config.series_names.append(name)
 
                     x_values = None
                     if isinstance(series, dict):
