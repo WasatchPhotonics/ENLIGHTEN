@@ -85,14 +85,13 @@ class MeasurementFactory(object):
 
     ## Create a Measurement from a Spectrometer, using its most-recent 
     #  ProcessedReading.
-    def create_from_spectrometer(self, spec, is_collapsed, view=None, generate_thumbnail=True, save=True):
+    def create_from_spectrometer(self, spec, is_collapsed, generate_thumbnail=True, save=True):
         log.debug("creating Measurement from spec %s", spec.label)
 
         # instantiate the Measurement
         measurement = Measurement(
             save_options = self.save_options,
             spec         = spec,
-            view         = view,
             measurements = self.measurements)
         log.debug("created Measurement %s from reading %d", measurement.measurement_id, measurement.processed_reading.reading.session_count)
 

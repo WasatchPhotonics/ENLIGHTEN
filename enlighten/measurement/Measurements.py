@@ -230,7 +230,7 @@ class Measurements(object):
     ## 
     # Use the MeasurementFactory to instantiate a new Measurement, including
     # ThumbnailWidget, from the given spectrometer's latest ProcessedReading.
-    def create_from_spectrometer(self, spec, view=None):
+    def create_from_spectrometer(self, spec):
         if spec is None or spec.app_state.processed_reading is None:
             return
 
@@ -240,8 +240,7 @@ class Measurements(object):
         # using the current "collapsed" state
         measurement = self.factory.create_from_spectrometer(
             spec = spec, 
-            is_collapsed = self.is_collapsed,
-            view = view)
+            is_collapsed = self.is_collapsed)
 
         self.add(measurement)
 
@@ -828,10 +827,11 @@ class Measurements(object):
             #####################################################################           
 
             for pixel in range(max_pixels):
-                if spectrometer_count == 1:
-                    roi = settingss[0].eeprom.get_horizontal_roi()
-                    if roi is not None and not roi.contains(pixel) and self.vignette_roi.enabled:
-                        continue
+                # MZ: always export all rows
+                # if spectrometer_count == 1:
+                #     roi = settingss[0].eeprom.get_horizontal_roi()
+                #     if roi is not None and not roi.contains(pixel) and self.vignette_roi.enabled:
+                #         continue
 
                 row = []
                 for settings in settingss:

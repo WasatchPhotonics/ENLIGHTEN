@@ -161,6 +161,11 @@ class ColumnFileParser(object):
         In cases where we're looking for different field spellings, those may 
         have been added to better support other application file formats
         (such as RamanSpecCal).
+
+        Defects:
+        
+        - we're not currently instantiating a SpectrometerApplicationState so have nowhere to store technique_name
+        - we're not loading DeviceID (could)
         """
         metadata = self.metadata
 

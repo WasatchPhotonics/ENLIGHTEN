@@ -276,7 +276,6 @@ class Measurement(object):
             save_options        = None,
             settings            = None,
             source_pathname     = None,
-            technique           = None,
             timestamp           = None,
             spec                = None,
             measurement         = None,

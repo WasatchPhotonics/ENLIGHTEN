@@ -194,8 +194,12 @@ class ExportFileParser(object):
                 settings          = em.settings,
                 processed_reading = em.processed_reading,
                 save_options      = self.save_options)
-            if "Label" in em.metadata:
-                m.label = em.metadata["Label"]
+
+            # additional Measurement attributes
+            for k in ["Label", "Prefix", "Suffix", "Note"]: 
+                if k in em.metadata:
+                    setattr(m, k.lower(), em.metadata[k])
+
             self.measurements.append(m)
 
         # if only a single Measurement was found within the export (rare),
