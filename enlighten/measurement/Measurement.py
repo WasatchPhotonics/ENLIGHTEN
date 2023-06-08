@@ -217,7 +217,7 @@ class Measurement(object):
                            'Declared Score',
                            'Scan Averaging',
                            'Boxcar',
-                           'View',
+                           'Technique',
                            'Baseline Correction Algo',
                            'ROI Pixel Start',
                            'ROI Pixel End',
@@ -235,7 +235,6 @@ class Measurement(object):
                            'Device ID',
                            'FW Version',
                            'FPGA Version',
-                           'Note',
                            'Prefix',
                            'Suffix',
                            'Plugin Name']
@@ -277,7 +276,7 @@ class Measurement(object):
             save_options        = None,
             settings            = None,
             source_pathname     = None,
-            view                = None,
+            technique           = None,
             timestamp           = None,
             spec                = None,
             measurement         = None,
@@ -316,7 +315,7 @@ class Measurement(object):
             # the ProcessedReading. (Taking a deepcopy, because with plug-ins who
             # knows...)
             self.processed_reading  = copy.deepcopy(spec.app_state.processed_reading)
-            self.view               = spec.app_state.technique_name
+            self.technique          = spec.app_state.technique_name
             self.timestamp          = datetime.datetime.now()
             self.baseline_correction_algo = spec.app_state.baseline_correction_algo
 
