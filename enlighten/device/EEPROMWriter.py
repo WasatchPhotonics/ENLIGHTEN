@@ -57,7 +57,7 @@ class EEPROMWriter(object):
             box.setWindowTitle(label)
             box.setText("Do you wish to update your EEPROM? " + 
                 "Misconfiguration could 'brick' your spectrometer and require manufacturer RMA. ")
-            box.setInformativeText("Incorrect usage of the EEPROM voids warranty.")
+            box.setInformativeText("Incorrect usage of the EEPROM may void warranty.")
             box.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel)
 
             retval = box.exec_()

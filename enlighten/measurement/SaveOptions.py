@@ -221,8 +221,10 @@ class SaveOptions():
         self.cb_dark.setEnabled(True)
         self.cb_reference.setEnabled(True)
 
-        # dependent on excitation
-        self.cb_wavenumber.setEnabled(spec.has_excitation() if spec else False)
+        # MZ: always enable wavenumbers, as we might want to load/export Raman 
+        #     data even when not connected to a Raman spectrometer
+        # self.cb_wavenumber.setEnabled(spec.has_excitation() if spec else False)
+        self.cb_wavenumber.setEnabled(True)
 
         ########################################################################
         # Reset append_pathname when disabled or prefix/suffix changes
@@ -308,6 +310,9 @@ class SaveOptions():
     def save_wavenumber         (self): return self.cb_wavenumber.isChecked() and self.cb_wavenumber.isEnabled() or self.save_with_wavenumber
     def suffix                  (self): return self.le_suffix.text().strip()
     def save_processed          (self): return True
+    def has_prefix              (self): return len(self.prefix()) > 0
+    def has_suffix              (self): return len(self.suffix()) > 0
+    def has_note                (self): return len(self.note()) > 0
 
     # ##########################################################################
     # Methods

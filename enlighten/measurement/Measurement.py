@@ -1,4 +1,4 @@
-import datetime 
+import datetime
 import logging
 import numpy
 import xlwt
@@ -22,9 +22,9 @@ log = logging.getLogger(__name__)
 
 ##
 # Encapsulates a single saved measurement from one spectrometer, comprising
-# a ProcessedReading (optionally containing the original Reading object that 
-# generated it), metadata (Settings), as well as a ThumbnailWidget for display 
-# on the capture bar.  Note that other than the ProcessedReading, 
+# a ProcessedReading (optionally containing the original Reading object that
+# generated it), metadata (Settings), as well as a ThumbnailWidget for display
+# on the capture bar.  Note that other than the ProcessedReading,
 # SpectrometerApplicationState is NOT retained in the Measurement.
 #
 # A Measurement object is created when:
@@ -36,16 +36,16 @@ log = logging.getLogger(__name__)
 # If a Measurement is loaded from disk, it will not contain the original Reading
 # object.  Also, the metadata may be limited.
 #
-# If a Measurement is generated live, it will also have a reference to the 
+# If a Measurement is generated live, it will also have a reference to the
 # spectrometer which generated it.
 #
-# Regardless of whether the Measurement was generated from a live capture 
-# (Acquire) or loaded from disk, a ThumbnailWidget will be generated (not 
+# Regardless of whether the Measurement was generated from a live capture
+# (Acquire) or loaded from disk, a ThumbnailWidget will be generated (not
 # necessarily instantly) for visualization.
 #
 # As some Measurements may be displayed in different x-axis coordinates, we need
 # to store the "current / selected / displayed" x-axis for the Measurement. I'm
-# tentatively thinking to do that in the ThumbnailWidget, as it's kind of an 
+# tentatively thinking to do that in the ThumbnailWidget, as it's kind of an
 # attribute of the trace, but we'll see.
 #
 # I am not sure whether we really need separate Thumbnail and ThumbnailWidget
@@ -57,27 +57,27 @@ log = logging.getLogger(__name__)
 # different attributes and controlled background timing, a MeasurementFactory
 # is provided to separately encapsulate the process of construction.
 #
-# Each Measurement has a .measurement_id, which is permanent.  The id is used 
-# as the default label attribute (both for file basenames and for on-screen 
-# display), but the label may be subsequently changed by the user.  
+# Each Measurement has a .measurement_id, which is permanent.  The id is used
+# as the default label attribute (both for file basenames and for on-screen
+# display), but the label may be subsequently changed by the user.
 #
 # @par Pathnames and Persistence
 #
-# There is no simple .pathname attribute for the Measurement, as one Measurement 
-# may have been saved to any or all of several different file types.  
-# 
-# AT PRESENT, it is assumed that the creation of a Measurement will include 
-# saving the Measurement to one or more output files at creation, but this is not 
-# a long-term requirement (we may decide to support "session traces" which are 
+# There is no simple .pathname attribute for the Measurement, as one Measurement
+# may have been saved to any or all of several different file types.
+#
+# AT PRESENT, it is assumed that the creation of a Measurement will include
+# saving the Measurement to one or more output files at creation, but this is not
+# a long-term requirement (we may decide to support "session traces" which are
 # never actually persisted to disk; Spectrasuite and OceanView have these).
 #
-# There is a .pathnames set which aggregates all the pathnames which are known 
-# related to this Measurement, though it is not guaranteed complete in the case 
+# There is a .pathnames set which aggregates all the pathnames which are known
+# related to this Measurement, though it is not guaranteed complete in the case
 # of loaded files from other sessions.  (Ideally all such files would contain
-# the original measurement_id somewhere within them, though not necessarily in 
+# the original measurement_id somewhere within them, though not necessarily in
 # the pathname.)
 #
-# If a Measurement has been deserialized from disk, it will have a 
+# If a Measurement has been deserialized from disk, it will have a
 # .source_pathname attribute to indicate the source file from which it was
 # instantiated.
 #
@@ -90,21 +90,21 @@ log = logging.getLogger(__name__)
 # @par Renaming Measurements
 #
 # Renaming Measurements is a potentially thorny issue.  Early versions of
-# ENLIGHTEN renamed the output file(s) when you changed the label of on-screen 
+# ENLIGHTEN renamed the output file(s) when you changed the label of on-screen
 # thumbnail, and customers wish to retain that ability (ticket from 2019-07-19).
 #
-# However, there is all kinds of ugliness down this hole: 
+# However, there is all kinds of ugliness down this hole:
 #
-# - What if you were appending measurements to one big CSV? 
-# - What if you loaded the measurement for comparison from archival spectra? 
+# - What if you were appending measurements to one big CSV?
+# - What if you loaded the measurement for comparison from archival spectra?
 # - What if you loeaded the measurement from a big export file?
 #
 # My current decision is that we will retain the historical ability to rename
 # any file(s) saved from the given Measurement IFF the files were CREATED
-# by the CURRENT ENLIGHTEN session; OR if the spectrum was loaded from a 
+# by the CURRENT ENLIGHTEN session; OR if the spectrum was loaded from a
 # single file (not an export or appended collection).
 #
-# This distinction is made when Measurements are loaded or saved, and 
+# This distinction is made when Measurements are loaded or saved, and
 # tracked via a renameable_files list.  It's not as simple as checking
 # whether the spectrum was created or loaded, because it matters what
 # type of file it was loaded from, or which type of file it was saved to.
@@ -118,7 +118,7 @@ log = logging.getLogger(__name__)
 #
 # Also, relabeling the Measurement on-screen, and even renaming the underlying
 # file artifacts DOES NOT re-write or update the file contents.  The "label"
-# field in the file metadata is not updated.  It would not be particularly hard 
+# field in the file metadata is not updated.  It would not be particularly hard
 # to re-save the file, but this seems like it would have many risks if a newer
 # version of ENLIGHTEN changed the file format, or if there had been extra data
 # in the file (ignored during a load operation, or added by the user post-save)
@@ -126,7 +126,7 @@ log = logging.getLogger(__name__)
 #
 # @par Thumbnails and resources
 #
-# Originally, ENLIGHTEN had no "Measurements", only "Thumbnails" -- the 
+# Originally, ENLIGHTEN had no "Measurements", only "Thumbnails" -- the
 # spectra was literally stored (only) as the y-values of the thumbnail
 # graph, with no x-axis, no metadata etc.  So it was an improvement to
 # move forward to "Measurements with Thumbnails".  But there is a resource
@@ -138,8 +138,8 @@ log = logging.getLogger(__name__)
 # on scroll events (similar to a Swift TableView, where cells are populated
 # as they scroll into view, and are released when offscreen).
 #
-# And possibly move away from the heavy "Widget" (with a couple Frames, 
-# Buttons, the pyqtgraph etc) to a simpler table or tree view which would 
+# And possibly move away from the heavy "Widget" (with a couple Frames,
+# Buttons, the pyqtgraph etc) to a simpler table or tree view which would
 # probably use less memory.
 #
 # For now, I'm compromising by treating the on-screen thumbnails as a ringbuffer,
@@ -147,7 +147,7 @@ log = logging.getLogger(__name__)
 # limit.
 #
 # Note that the MeasurementFactory automatically saves new Measurements to disk
-# (per SaveOptions) as they are created from Spectrometers, BEFORE they are 
+# (per SaveOptions) as they are created from Spectrometers, BEFORE they are
 # handed to Measurements for addition to the Thumbnail bar.  The process of
 # creating a Measurement (from Spectrometer) and saving it to disk is atomic,
 # so there is no need to worry that automatic deletion of Measurements for
@@ -155,11 +155,11 @@ log = logging.getLogger(__name__)
 #
 # @par Exploits
 #
-# It is ASSUMED that the user used the same Settings (integration time, boxcar 
+# It is ASSUMED that the user used the same Settings (integration time, boxcar
 # smoothing, scan averaging etc) when taking the 'raw', 'dark' and 'reference'
 # component spectra in generation of the 'processed' component.  Only a single
 # Settings object is retained for the entire ProcessedReading, which is copied
-# when the Measurement is created.  
+# when the Measurement is created.
 #
 # That is, if the user does something like this, the wrong integration time would
 # be stored with the Measurement:
@@ -169,7 +169,7 @@ log = logging.getLogger(__name__)
 # 3. set integration time 200ms
 # 4. click "Acquire" to save the current on-screen (paused) measurement
 #
-# There are various ways we could address this weakness (e.g., snap a Deep Copy 
+# There are various ways we could address this weakness (e.g., snap a Deep Copy
 # of Settings on pause()), but it's not a priority at this time.
 #
 # @todo more robust / defined behavior with duplicate labels across Measurements
@@ -177,7 +177,7 @@ log = logging.getLogger(__name__)
 class Measurement(object):
 
     ##
-    # These appear in legacy saved spectra files as-written (Dash format), so 
+    # These appear in legacy saved spectra files as-written (Dash format), so
     # don't casually screw with them (could break customer applications).
     #
     # Note that all are scalars (no lists).
@@ -201,7 +201,7 @@ class Measurement(object):
                          'Laser Temperature',
                          'Pixel Count']
     CSV_HEADER_FIELDS_SET = set(CSV_HEADER_FIELDS)
-    
+
     ## These CSV_HEADER_FIELDS only need to be used for row-ordered files
     ROW_ONLY_FIELDS = ['Blank', 'Line Number']
 
@@ -217,7 +217,7 @@ class Measurement(object):
                            'Declared Score',
                            'Scan Averaging',
                            'Boxcar',
-                           'View',
+                           'Technique',
                            'Baseline Correction Algo',
                            'ROI Pixel Start',
                            'ROI Pixel End',
@@ -235,11 +235,10 @@ class Measurement(object):
                            'Device ID',
                            'FW Version',
                            'FPGA Version',
-                           'Note',
                            'Prefix',
                            'Suffix',
                            'Plugin Name']
-                           
+
     EXTRA_HEADER_FIELDS_SET = set(EXTRA_HEADER_FIELDS)
 
     def clear(self):
@@ -250,7 +249,7 @@ class Measurement(object):
         self.declared_score           = 0
         self.label                    = None
         self.measurement_id           = None
-        self.measurements             = None 
+        self.measurements             = None
         self.processed_reading        = None
         self.renamable_files          = set()
         self.renamed_manually         = False
@@ -272,12 +271,11 @@ class Measurement(object):
     #
     # - with spec (take latest from that Spectrometer)
     # - with source_pathname (deserializing from disk)
-    def __init__(self, 
+    def __init__(self,
             processed_reading   = None,
             save_options        = None,
             settings            = None,
             source_pathname     = None,
-            view                = None,
             timestamp           = None,
             spec                = None,
             measurement         = None,
@@ -294,11 +292,11 @@ class Measurement(object):
             log.debug("instantiating from spectrometer %s", str(spec))
             self.spec = spec
 
-            # Use deepcopy() to ensure that subsequent changes to integration 
-            # time, laser power, excitation etc do not retroactively change the 
-            # historical state of the shared Spectrometer objects.  This also 
-            # ensures that "live" Measurements always have a copy of the Settings 
-            # of the spectrometer from which they were collected (including 
+            # Use deepcopy() to ensure that subsequent changes to integration
+            # time, laser power, excitation etc do not retroactively change the
+            # historical state of the shared Spectrometer objects.  This also
+            # ensures that "live" Measurements always have a copy of the Settings
+            # of the spectrometer from which they were collected (including
             # EEPROM etc).  It also helps with the case when a spectrometer
             # was disconnected (and optionally reconnected) after the Measurement
             # was saved, but before it was exported.
@@ -309,19 +307,19 @@ class Measurement(object):
 
             # Copy things we want from SpectrometerApplicationState.
             #
-            # Original thought was to deepcopy SpectrometerApplicationState, but 
-            # the waterfall instances could get large.  And has duplicates of 
-            # reference and dark, plus SIX RollingDataSet histories of detector 
-            # and laser temperature.  For now, assuming we DON'T, and just taking 
+            # Original thought was to deepcopy SpectrometerApplicationState, but
+            # the waterfall instances could get large.  And has duplicates of
+            # reference and dark, plus SIX RollingDataSet histories of detector
+            # and laser temperature.  For now, assuming we DON'T, and just taking
             # the ProcessedReading. (Taking a deepcopy, because with plug-ins who
             # knows...)
             self.processed_reading  = copy.deepcopy(spec.app_state.processed_reading)
-            self.view               = spec.app_state.technique_name
+            self.technique          = spec.app_state.technique_name
             self.timestamp          = datetime.datetime.now()
             self.baseline_correction_algo = spec.app_state.baseline_correction_algo
 
         elif source_pathname:
-            log.debug("instantiating from source pathname %s", source_pathname)            
+            log.debug("instantiating from source pathname %s", source_pathname)
             self.processed_reading  = processed_reading
             self.source_pathname    = source_pathname
             self.timestamp          = timestamp
@@ -356,14 +354,14 @@ class Measurement(object):
         m.thumbnail_widget = None
         m.settings = copy.deepcopy(self.settings)
         m.processed_reading = copy.deepcopy(self.processed_reading)
-        
+
         return m
 
     ##
-    # This is experimental.  Eventually we want to be able to load Measurements 
-    # saved as JSON.  We should also be able to receive externally-generated 
+    # This is experimental.  Eventually we want to be able to load Measurements
+    # saved as JSON.  We should also be able to receive externally-generated
     # Measurements sent via JSON via the External API.  This is reasonably key
-    # to both.  Also it's handy to use this as a free-form intermediate format 
+    # to both.  Also it's handy to use this as a free-form intermediate format
     # for parsing external formats like SPC.
     def init_from_dict(self, d):
 
@@ -391,8 +389,8 @@ class Measurement(object):
             self.processed_reading.processed_vignetted = self.processed_reading.processed
 
     ##
-    # We presumably loaded a measurement from disk, reprocessed it, and are now 
-    # replacing the contents of the Measurement object with the reprocessed 
+    # We presumably loaded a measurement from disk, reprocessed it, and are now
+    # replacing the contents of the Measurement object with the reprocessed
     # spectra, preparatory to re-saving (with a new timestamp and measurement_id.
     def replace_processed_reading(self, pr):
         self.processed_reading = pr
@@ -407,7 +405,7 @@ class Measurement(object):
         self.plugin_name = text
 
     def generate_id(self):
-        # It is unlikely that the same serial number will ever generate multiple 
+        # It is unlikely that the same serial number will ever generate multiple
         # measurements at the same timestamp in microseconds.
         sn = self.settings.eeprom.serial_number
 
@@ -435,7 +433,7 @@ class Measurement(object):
                 self.label += " %s" % self.measurements.factory.label_suffix
                 # log.debug("applying label_suffix (%s): %s", self.measurements.factory.label_suffix, self.label)
 
-                # this complicates saving from multiple spectrometers 
+                # this complicates saving from multiple spectrometers
                 # during batch collection
                 self.measurements.factory.label_suffix = None
 
@@ -510,15 +508,15 @@ class Measurement(object):
     ##
     # Display on the graph, if not already shown.
     def display(self):
-        if self.thumbnail_widget is not None: 
+        if self.thumbnail_widget is not None:
             self.thumbnail_widget.add_curve_to_graph()
 
-    ## 
-    # Release any resources associated with this Measurement.  Note that this 
+    ##
+    # Release any resources associated with this Measurement.  Note that this
     # will automatically delete the ThumbnailWidget from its parent layout (if
     # emplaced), and mark the object tree for garbage collection within PySide/Qt.
     def delete(self, from_disk=False, update_parent=False):
-        log.debug("deleting Measurement %s (from_disk %s, update_parent %s)", 
+        log.debug("deleting Measurement %s (from_disk %s, update_parent %s)",
             self.measurement_id, from_disk, update_parent)
 
         if from_disk:
@@ -529,17 +527,17 @@ class Measurement(object):
                 except:
                     pass
             self.renamable_files = set()
-                
+
         if update_parent:
             # This deletion request came from within the Measurement (presumably
             # from the ThumbnailWidget's Trash or Erase icons), so re-invoke the
-            # deletion request through our parent, so that parent resources are 
-            # likewise deleted.  We do NOT need to pass the from_disk flag, as 
-            # we've already executed that, and we haven't given Measurements the 
+            # deletion request through our parent, so that parent resources are
+            # likewise deleted.  We do NOT need to pass the from_disk flag, as
+            # we've already executed that, and we haven't given Measurements the
             # ability to pass that down anyway.
             #
             # MZ: this feels a bit kludgy?
-            
+
             if self.measurements is not None:
                 self.measurements.delete_measurement(measurement=self)
                 return
@@ -575,7 +573,7 @@ class Measurement(object):
         if self.thumbnail_widget:
             self.thumbnail_widget.rename(label)
             was_displayed = self.thumbnail_widget.is_displayed
-            self.thumbnail_widget.remove_curve_from_graph() 
+            self.thumbnail_widget.remove_curve_from_graph()
 
         # if they removed the label, nothing more to do
         if label is None:
@@ -599,26 +597,26 @@ class Measurement(object):
         self.save()
 
     ##
-    # The measurement has been relabled (say, "cyclohexane").  So if 
-    # pathnames contains "old.csv" and "old.xls", we want to rename them to 
-    # "cyclohexane.csv" and "cyclohexane.xls".  However, if those files 
+    # The measurement has been relabled (say, "cyclohexane").  So if
+    # pathnames contains "old.csv" and "old.xls", we want to rename them to
+    # "cyclohexane.csv" and "cyclohexane.xls".  However, if those files
     # already exist, we don't want to overwrite them (maybe the user is
     # looking at a lot of cyclohexane).  So if cyclohexane.csv already
     # exists, just make cyclohexane-1.csv, etc.  Whatever number we pick,
     # apply it to all the pathnames (cyclohexane-1.xls, even if there wasn't
     # already a cyclohexane.xls).
     #
-    # Also note that there are at least four ways this Measurement could have been 
+    # Also note that there are at least four ways this Measurement could have been
     # instantiated:
-    # 1. It could have been loaded from ONE individual CSV (not necessarily within 
-    #    EnlightenSpectra/YYYY-MM-DD).  
+    # 1. It could have been loaded from ONE individual CSV (not necessarily within
+    #    EnlightenSpectra/YYYY-MM-DD).
     #    - Renaming possible, but possibly not a good idea? <-- supported
     #
     # 2. It could have been one of a SET of Measurements loaded from a big CSV
-    #    (an appended row-order or an exported column-order CSV).  
+    #    (an appended row-order or an exported column-order CSV).
     #    - Renaming considered NOT POSSIBLE.
     #
-    # 3. It could have been generated from live data and saved to one or more 
+    # 3. It could have been generated from live data and saved to one or more
     #    single-spectrum files with various extensions (csv, xls, json, png etc).
     #    - Renaming possible and apparently customer desirable <-- supported
     #
@@ -644,7 +642,7 @@ class Measurement(object):
 
         # determine what suffix we're going to use, if any
 
-        n = 0 # potential suffix 
+        n = 0 # potential suffix
         while True:
             conflict = False
             for ext in exts:
@@ -717,20 +715,20 @@ class Measurement(object):
 
     ##
     # This function is provided because legacy Dash and ENLIGHTEN saved row-
-    # ordered CSV files with very specific column headers and sequence which we 
+    # ordered CSV files with very specific column headers and sequence which we
     # don't want to casually break.
     #
     # @todo Note that temperature fields come from the underlying Reading object,
-    #       and in the case that we loaded previously-saved spectra from disk, 
-    #       we're not currently re-instantiating Reading objects (only the 
-    #       ProcessedReading, which is all that's needed for on-screen traces), 
+    #       and in the case that we loaded previously-saved spectra from disk,
+    #       we're not currently re-instantiating Reading objects (only the
+    #       ProcessedReading, which is all that's needed for on-screen traces),
     #       so currently those output a deliberately-suspicious -99.
     #
     # @todo replace if/elif with dict of lambdas
     def get_metadata(self, field):
         field = field.lower()
 
-        # allow plugins to stomp metadata 
+        # allow plugins to stomp metadata
         if self.processed_reading.plugin_metadata is not None:
             pm = self.processed_reading.plugin_metadata
             for k, v in pm.items():
@@ -754,10 +752,10 @@ class Measurement(object):
         if field == "temperature":               return self.processed_reading.reading.detector_temperature_degC if self.processed_reading.reading is not None else -99
         if field == "technique":                 return self.technique
         if field == "baseline correction algo":  return self.baseline_correction_algo
-        if field == "ccd c0":                    return wavecal[0]
-        if field == "ccd c1":                    return wavecal[1]
-        if field == "ccd c2":                    return wavecal[2]
-        if field == "ccd c3":                    return wavecal[3]
+        if field == "ccd c0":                    return 0 if len(wavecal) < 1 else wavecal[0]
+        if field == "ccd c1":                    return 0 if len(wavecal) < 2 else wavecal[1]
+        if field == "ccd c2":                    return 0 if len(wavecal) < 3 else wavecal[2]
+        if field == "ccd c3":                    return 0 if len(wavecal) < 4 else wavecal[3]
         if field == "ccd c4":                    return 0 if len(wavecal) < 5 else wavecal[4]
         if field == "ccd offset":                return self.settings.eeprom.detector_offset # even
         if field == "ccd gain":                  return self.settings.state.gain_db if self.settings.is_sig() else self.settings.eeprom.detector_gain # even
@@ -781,7 +779,7 @@ class Measurement(object):
         if field == "wavenumber correction":     return self.settings.state.wavenumber_correction
         if field == "battery %":                 return self.processed_reading.reading.battery_percentage if self.processed_reading.reading is not None else 0
         if field == "fw version":                return self.settings.microcontroller_firmware_version
-        if field == "fpga version":              return self.settings.fpga_firmware_version 
+        if field == "fpga version":              return self.settings.fpga_firmware_version
         if field == "laser power %":             return self.processed_reading.reading.laser_power_perc if self.processed_reading.reading is not None else 0
         if field == "device id":                 return str(self.settings.device_id)
         if field == "note":                      return self.note
@@ -789,11 +787,11 @@ class Measurement(object):
         if field == "suffix":                    return self.suffix
         if field == "plugin name":               return self.plugin_name
 
-        if field == "laser power mw":            
+        if field == "laser power mw":
             if self.processed_reading.reading is not None and \
                 self.processed_reading.reading.laser_power_mW is not None and \
                 self.processed_reading.reading.laser_power_mW > 0:
-                return self.processed_reading.reading.laser_power_mW 
+                return self.processed_reading.reading.laser_power_mW
             else:
                 return ""
 
@@ -806,7 +804,7 @@ class Measurement(object):
         # if self.spec is not None:
         #     if self.settings.eeprom.multi_wavecal is not None:
         #         fields.append("Position")
-            
+
         return fields
 
     def get_all_metadata(self) -> dict:
@@ -835,19 +833,19 @@ class Measurement(object):
                     md[k] = v
 
         return md
-        
+
     # ##########################################################################
     # Excel
     # ##########################################################################
 
-    ## 
+    ##
     # Save the spectra in xls format (currently, one worksheet per x-axis)
     #
     # As with save_csv_file_by_column(), currently disregarding SaveOptions
     # selections of what x-axis and ProcessedReading fields to include, because
     # there is little benefit to removing them from individual files. We can
     # always add this later if requested.
-    # 
+    #
     # @note Only saving one column of data at this time. Make sure to
     # limit the total columns to 255 when saving multiple spectra.
     def save_excel_file(self):
@@ -983,14 +981,14 @@ class Measurement(object):
     # ##########################################################################
 
     ##
-    # Express the current Measurement as a single JSON-compatible dict.  Use this 
+    # Express the current Measurement as a single JSON-compatible dict.  Use this
     # for both save_json_file and External.Feature.
     def to_dict(self):
         pr          = self.processed_reading
         wavelengths = self.settings.wavelengths
         wavenumbers = self.settings.wavenumbers
         pixels      = len(pr.processed)
-        
+
         m = {                   # m = Measurement
             "spectrum": {},
             "metadata": self.get_all_metadata(),
@@ -1045,9 +1043,9 @@ class Measurement(object):
                                       experiment_type = SPCTechType.SPCTechRmn,
                                       log_text = log_text,
                                       )
-            spc_writer.write_spc_file(pathname, 
-                                      self.processed_reading.processed, 
-                                      numpy.asarray(self.spec.settings.wavelengths), 
+            spc_writer.write_spc_file(pathname,
+                                      self.processed_reading.processed,
+                                      numpy.asarray(self.spec.settings.wavelengths),
                                       )
         elif current_x == common.Axes.WAVENUMBERS:
             spc_writer = SPCFileWriter.SPCFileWriter(SPCFileType.TXVALS,
@@ -1056,8 +1054,8 @@ class Measurement(object):
                                       experiment_type = SPCTechType.SPCTechRmn,
                                       log_text = log_text,
                                       )
-            spc_writer.write_spc_file(pathname, 
-                                      self.processed_reading.processed, 
+            spc_writer.write_spc_file(pathname,
+                                      self.processed_reading.processed,
                                       numpy.asarray(self.spec.settings.wavenumbers),
                                       )
         elif current_x == common.Axes.PIXELS:
@@ -1065,11 +1063,11 @@ class Measurement(object):
                                       experiment_type = SPCTechType.SPCTechRmn,
                                       log_text = log_text,
                                       )
-            spc_writer.write_spc_file(pathname, 
+            spc_writer.write_spc_file(pathname,
                                       self.processed_reading.processed,
                                       y_units = SPCYType.SPCYCount,
                                       )
-        else :
+        else:
             log.error(f"current x axis doesn't match vaild values. Aborting SPC save")
             return
 
@@ -1077,9 +1075,9 @@ class Measurement(object):
     # Save the Measurement in a JSON file for simplified programmatic parsing.
     # in the next column and so on (similar layout as the Excel output).
     #
-    # As with save_excel_file(), currently disregarding SaveOptions selections 
-    # of what x-axis and ProcessedReading fields to include, because there is 
-    # little benefit to removing them from individual files. We can always add 
+    # As with save_excel_file(), currently disregarding SaveOptions selections
+    # of what x-axis and ProcessedReading fields to include, because there is
+    # little benefit to removing them from individual files. We can always add
     # this later if requested.
     def save_json_file(self, use_basename=False):
         today_dir = self.generate_today_dir()
@@ -1094,13 +1092,13 @@ class Measurement(object):
 
         log.info("saved JSON %s", pathname)
         self.add_renamable(pathname)
-    
+
     # ##########################################################################
     # Column-ordered CSV
     # ##########################################################################
 
     ##
-    # Save the Measurement in a CSV file with the x-axis in one column, spectra 
+    # Save the Measurement in a CSV file with the x-axis in one column, spectra
     # in the next column and so on (similar layout as the Excel output).
     #
     # Note that currently this is NOT writing UTF-8 / Unicode, although KIA-
@@ -1110,7 +1108,7 @@ class Measurement(object):
         wavelengths = self.settings.wavelengths
         wavenumbers = self.settings.wavenumbers
         pixels      = len(pr.raw)
-        
+
         today_dir = self.generate_today_dir()
         if use_basename:
             pathname = "%s.%s" % (self.basename, ext)
@@ -1164,16 +1162,16 @@ class Measurement(object):
 
             headers = []
             if self.save_options is not None:
-                if self.save_options.save_pixel()      : headers.append("Pixel")         
-                if self.save_options.save_wavelength() : headers.append("Wavelength")    
-                if self.save_options.save_wavenumber() : headers.append("Wavenumber")    
-                if self.save_options.save_processed()  : headers.append("Processed")     
-                if self.save_options.save_raw()        : headers.append("Raw")           
-                if self.save_options.save_dark()       : headers.append("Dark")          
-                if self.save_options.save_reference()  : headers.append("Reference")     
+                if self.save_options.save_pixel():       headers.append("Pixel")
+                if self.save_options.save_wavelength():  headers.append("Wavelength")
+                if self.save_options.save_wavenumber():  headers.append("Wavenumber")
+                if self.save_options.save_processed():   headers.append("Processed")
+                if self.save_options.save_raw():         headers.append("Raw")
+                if self.save_options.save_dark():        headers.append("Dark")
+                if self.save_options.save_reference():   headers.append("Reference")
             else:
                 headers.append("Wavenumber")
-                headers.append("Processed")     
+                headers.append("Processed")
 
             if include_header:
                 out.writerow(headers)
@@ -1189,34 +1187,35 @@ class Measurement(object):
 
             for pixel in range(pixels):
 
-                # don't output cropped rows
-                if roi is not None and not roi.contains(pixel):
-                    continue
-
                 values = []
                 if self.save_options is not None:
-                    if self.save_options.save_pixel()      : values.append(pixel)
-                    if self.save_options.save_wavelength() : values.append(formatted(2,         wavelengths,  pixel))
-                    if self.save_options.save_wavenumber() : values.append(formatted(2,         wavenumbers,  pixel))
+                    if self.save_options.save_pixel():       values.append(pixel)
+                    if self.save_options.save_wavelength():  values.append(formatted(2,         wavelengths,  pixel))
+                    if self.save_options.save_wavenumber():  values.append(formatted(2,         wavenumbers,  pixel))
 
-                    if self.save_options.save_processed(): 
+                    if self.save_options.save_processed():
                         if not cropped:
-                            values.append(formatted(precision, pr.processed, pixel)) 
+                            values.append(formatted(precision, pr.processed, pixel))
                         elif interp.enabled:
                             values.append(formatted(precision, pr.processed_vignetted, pixel))
                         elif roi.contains(pixel):
                             values.append(formatted(precision, pr.processed_vignetted, pixel - roi.start))
                         else:
                             # this is a cropped pixel, so arguably it could be None (,,), @na, -1
-                            # or various other things, but this will probably break the least downstream
-                            values.append(0)
+                            # or 0, or various other things, but consensus converged on "NA"
+                            values.append("NA")
 
-                    if self.save_options.save_raw()        : values.append(formatted(precision, pr.raw,       pixel))
-                    if self.save_options.save_dark()       : values.append(formatted(precision, pr.dark,      pixel))
-                    if self.save_options.save_reference()  : values.append(formatted(precision, pr.reference, pixel))
+                    # Note that we're always output raw/dark/ref (if selected), regardless of ROI (makes sense).
+                    # I'm less sure why we don't interpolate raw/dark/ref, or how this comes out in the file if
+                    # we are interpolating...
+                    if self.save_options.save_raw():         values.append(formatted(precision, pr.raw,       pixel))
+                    if self.save_options.save_dark():        values.append(formatted(precision, pr.dark,      pixel))
+                    if self.save_options.save_reference():   values.append(formatted(precision, pr.reference, pixel))
                 else:
+                    # MZ: I don't remember the use-case for this.  May involve
+                    # this class being imported and used by an outside script?
                     values.append(formatted(2, wavenumbers,  pixel))
-                    values.append(formatted(precision, pr.processed, pixel)) 
+                    values.append(formatted(precision, pr.processed, pixel))
 
                 out.writerow(values)
         log.info("saved columnar %s", pathname)
@@ -1241,27 +1240,27 @@ class Measurement(object):
     # @note left static for Measurements.export_by_row
     @staticmethod
     def generate_dash_file_header(serial_numbers):
-        header = [ "Dash Output v2.1", 
+        header = [ "Dash Output v2.1",
                    "ENLIGHTEN version: %s" % common.VERSION,
-                   "Row", 
+                   "Row",
                    "Pixel Data" ]
         header.extend(serial_numbers)
         return header
-    
+
     ##
     # Save a spectrum in CSV format with the whole spectrum on one line,
     # such that multiple acquisitions could be appended with one line
-    # per spectrum.  
+    # per spectrum.
     #
-    # This is was the ONLY supported save format in Dash and legacy ENLIGHTEN, 
-    # and still makes great sense for batch collections (it's much easier to 
+    # This is was the ONLY supported save format in Dash and legacy ENLIGHTEN,
+    # and still makes great sense for batch collections (it's much easier to
     # append lines than columns to an existing file).
     #
     # At the moment, this method is also being used to append new measurements
     # to existing files.
     #
     # Right now, we're using serial number in a new Measurement's measurement_id,
-    # hence label, hence filename.  Having serial_number in a row-ordered CSV 
+    # hence label, hence filename.  Having serial_number in a row-ordered CSV
     # which aggregates multiple spectrometers is potentially confusing, but when
     # we save the first spectrum we don't know that's the intention.
     #
@@ -1318,7 +1317,7 @@ class Measurement(object):
             else:
                 # we're creating a new file
                 verb = "saved"
-                with open(pathname, "w", newline="") as f: 
+                with open(pathname, "w", newline="") as f:
                     csv_writer = csv.writer(f)
 
                     # write the full header anytime the target does not yet exist
@@ -1343,13 +1342,13 @@ class Measurement(object):
     ##
     # For row-ordered CSVs, output any x-axis fields that have been selected.
     # Only do this if they have not yet been output for a given spectrometer.
-    # 
+    #
     # To support multiple spectrometers, we're adding the spectrometer's serial
     # number (as well as the x-axis unit) to the Notes field.
     #
-    # @note the Dash file format reprints wavecal coeffs and excitation in every 
-    #       line, so technically the recipient could regenerate pixels, 
-    #       wavelengths and wavenumbers for every spectrum anyway.  These are 
+    # @note the Dash file format reprints wavecal coeffs and excitation in every
+    #       line, so technically the recipient could regenerate pixels,
+    #       wavelengths and wavenumbers for every spectrum anyway.  These are
     #       just convenience rows.
     #
     def write_x_axis_lines(self, csv_writer):
@@ -1368,19 +1367,19 @@ class Measurement(object):
     ##
     # For row-ordered CSVs, output any ProcessedReading fields which have been
     # selected.
-    # 
-    # In column-ordered files, it's not a big deal to always store dark / 
-    # reference / raw, because they're easy to ignore if you're not using them.  
-    # However, in row-ordered files, those extra lines can be really confusing, 
-    # partly because of the "prefix columns" enforced by the file format 
-    # (repeating wavecal coeffs etc), but also because when "appending" to 
+    #
+    # In column-ordered files, it's not a big deal to always store dark /
+    # reference / raw, because they're easy to ignore if you're not using them.
+    # However, in row-ordered files, those extra lines can be really confusing,
+    # partly because of the "prefix columns" enforced by the file format
+    # (repeating wavecal coeffs etc), but also because when "appending" to
     # existing files, it becomes very hard to tell which lines are spectrum-vs-
-    # component.  So anyway, be careful not to print extra lines here that the 
+    # component.  So anyway, be careful not to print extra lines here that the
     # user didn't request.
     #
-    # Regardless, there's no "caching" these across Measurements, because 
-    # technically the user could have (and often would) take a new dark and 
-    # reference repeatedly during a session. (They're not 'reasonably persistent' 
+    # Regardless, there's no "caching" these across Measurements, because
+    # technically the user could have (and often would) take a new dark and
+    # reference repeatedly during a session. (They're not 'reasonably persistent'
     # as with the x-axis.)
     def write_processed_reading_lines(self, csv_writer):
         if self.save_options.save_processed():
@@ -1400,10 +1399,10 @@ class Measurement(object):
             csv_writer.writerow(row)
 
     ##
-    # Generate a single row of output for row-ordered CSV files.  The contents 
-    # of the generated row depend on the 'field' parameter.  
+    # Generate a single row of output for row-ordered CSV files.  The contents
+    # of the generated row depend on the 'field' parameter.
     #
-    # Metadata is only populated for x-axis fields and the FIRST ProcessedReading 
+    # Metadata is only populated for x-axis fields and the FIRST ProcessedReading
     # array.
     def build_row(self, field):
         field = field.lower()
@@ -1437,7 +1436,7 @@ class Measurement(object):
 
         if a is None:
             return None
-            
+
         row = []
 
         # don't repeat metadata for spectrum components
@@ -1460,17 +1459,17 @@ class Measurement(object):
 
         return row
 
-    ## Called (by way of ThumbnailWidget -> KnowItAll.Feature -> Measurements) 
+    ## Called (by way of ThumbnailWidget -> KnowItAll.Feature -> Measurements)
     # when KnowItAll has generated a KnowItAll.DeclaredMatch for this Measurement.
     def id_callback(self, declared_match):
         # store the match
         self.declared_match = declared_match
-        
+
         # re-save files using current SaveOptions (will store new label, overwriting old files with old name)
         # (these will definitely be in TODAY directory, regardless of where they were loaded from)
         self.save()
 
-        # close-out the pending button click on the thumbnail (basically just 
+        # close-out the pending button click on the thumbnail (basically just
         # turns the button back from red to gray)
         if self.thumbnail_widget is not None:
             self.thumbnail_widget.id_complete_callback()
@@ -1492,15 +1491,15 @@ class Measurement(object):
             a = pr.processed
         else:
             return False
-        
+
         return a is not None and len(a) > 0
 
-    ## 
+    ##
     # Passed a SpectrometerSettings object (containing wavelengths, wavenumbers
     # etc), return a copy of this Measurement's ProcessedReading which has been
-    # interpolated to the passed x-axis.  
+    # interpolated to the passed x-axis.
     #
-    # Interpolate on wavelength if available, otherwise wavenumbers, otherwise 
+    # Interpolate on wavelength if available, otherwise wavenumbers, otherwise
     # just copy the uninterpolated pixel data.
     #
     # Who calls this?
@@ -1521,11 +1520,11 @@ class Measurement(object):
            new_x =  new_settings.wavenumbers
         else:
             log.error("no interpolation possible")
-            return 
+            return
 
-        log.debug("interpolating from (%.2f, %.2f) to (%.2f, %.2f)", 
+        log.debug("interpolating from (%.2f, %.2f) to (%.2f, %.2f)",
             old_x[0], old_x[-1], new_x[0], new_x[-1]);
-        
+
         if pr.raw is not None and len(pr.raw) > 0:
             pr.raw = numpy.interp(new_x, old_x, pr.raw)
 
@@ -1537,5 +1536,5 @@ class Measurement(object):
 
         if pr.processed is not None and len(pr.processed) > 0:
             pr.processed = numpy.interp(new_x, old_x, pr.processed)
-        
+
         log.debug("interpolation complete")

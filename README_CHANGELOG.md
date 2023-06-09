@@ -5,7 +5,13 @@
 - 2023-06-?? 4.0.12
     - fixed Configuration defaults
     - warn when saving but no formats selected
+    - fixed load-then-export
     - updated Write EEPROM tooltip
+    - always save all rows of column-ordered CSV spectra regardless of ROI
+    - output "NA" rather than 0 for values omitted due to ROI or spectral range
+    - use prefix and suffix in export filenames
+    - stop forcing loaded data to lowercase
+    - improved data consistency in loaded CSVs
 - 2023-05-15 4.0.11
     - added collated export
     - invert x-axis for 1064XL
