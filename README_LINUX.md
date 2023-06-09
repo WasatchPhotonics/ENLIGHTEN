@@ -36,8 +36,8 @@ E.g.:
 
 ## Clone repositories
 
-    $ git clone git@bitbucket.org:wasatchphotonics/enlighten.git
-    $ git clone https://github.com/wasatchphotonics/Wasatch.PY.git
+    $ git clone git@github.com:wasatchphotonics/Enlighten.git
+    $ git clone git@github.com:wasatchphotonics/Wasatch.PY.git
 
 ## update USB permissions
 
