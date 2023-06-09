@@ -79,6 +79,10 @@ class EmissionLines(EnlightenPluginBase):
 
         @see https://physics.nist.gov/PhysRefData/ASD/lines_form.html
         @see https://www.oceaninsight.com/products/light-sources/calibration-sources/wavelength-calibration-sources/
+
+        @returns dict of emission lamp sources (Argon etc), each containing a 
+                 dict of wavelength with relative intensity (relative to other 
+                 lines of the same element)
         """
         return {
             "Ar": {
