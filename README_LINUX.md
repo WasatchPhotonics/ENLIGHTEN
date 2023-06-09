@@ -60,6 +60,7 @@ Create conda env:
 Run demo:
 
     $ conda activate wasatch3
+    $ pip install crcmod bleak
     $ python -u demo.py
     $ conda deactivate
 
