@@ -1106,9 +1106,9 @@ class Controller:
 
         if self.save_options.save_all_spectrometers():
             for spec in self.multispec.get_spectrometers():
-                self.measurements.create_from_spectrometer(spec=spec, view=view)
+                self.measurements.create_from_spectrometer(spec=spec)
         else:
-            self.measurements.create_from_spectrometer(spec=self.current_spectrometer(), view=view)
+            self.measurements.create_from_spectrometer(spec=self.current_spectrometer())
 
     # ##########################################################################
     # miscellaneous callbacks

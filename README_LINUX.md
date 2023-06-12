@@ -36,24 +36,22 @@ E.g.:
 
 ## Clone repositories
 
-    $ mkdir ~/work/code
-    $ cd ~/work/code
-    $ git clone git@bitbucket.org:wasatchphotonics/enlighten.git
-    $ git clone https://github.com/wasatchphotonics/Wasatch.PY.git
+    $ git clone git@github.com:wasatchphotonics/Enlighten.git
+    $ git clone git@github.com:wasatchphotonics/Wasatch.PY.git
 
 ## update USB permissions
 
 By default only root can access USB devices; this allows standard users to access
 our VID/PID.
 
-    $ cd ~/code/Wasatch.PY
+    $ cd Wasatch.PY
     $ sudo cp udev/10-wasatch.rules /etc/udev/rules.d
 
 ## Verify that Wasatch.PY driver works
 
 Create conda env:
 
-    $ cd ~/work/code/Wasatch.PY
+    $ cd Wasatch.PY
     $ rm environment.yml
     $ cp environments/conda-linux.yml environment.yml
     $ conda update -n base -c defaults conda
@@ -62,18 +60,19 @@ Create conda env:
 Run demo:
 
     $ conda activate wasatch3
+    $ pip install crcmod bleak
     $ python -u demo.py
     $ conda deactivate
 
 ## Create ENLIGHTEN conda environment
 
-    $ cd ~/work/code/enlighten
+    $ cd enlighten
     $ cp environments/conda-linux.yml environment.yml
     $ conda env create -n conda_enlighten3  
 
 ## Activate ENLIGHTEN conda environment
 
-    $ cd ~/work/code/enlighten
+    $ cd enlighten
     $ conda activate conda_enlighten3
     $ export PYTHONPATH="../Wasatch.PY:pluginExamples:.:enlighten/assets/uic_qrc"
 

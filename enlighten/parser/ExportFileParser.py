@@ -5,6 +5,7 @@ import re
 
 from enlighten.measurement.Measurement import Measurement
 
+from wasatch.Reading import Reading
 from wasatch.ProcessedReading import ProcessedReading
 from wasatch.SpectrometerSettings import SpectrometerSettings
 
@@ -16,13 +17,12 @@ class ExportedMeasurement(object):
     
     @todo this can probably be generalized and re-used for ColumnFileParser at 
           least, and likely DashFileParser as well.
-    @todo populate temperature and laser temperature
     """
     def __init__(self):
         self.headers = []
         self.header_count = 1
         self.metadata = {}
-        self.processed_reading = ProcessedReading()
+        self.processed_reading = ProcessedReading(reading=Reading())
 
 class ExportFileParser(object):
     """
@@ -47,6 +47,8 @@ class ExportFileParser(object):
     
     A unit-test of sorts for this class can be found in 
     enlighten/scripts/split-spectra.py.
+
+    @warning this does not currently work with "collated" exports.
     """ 
     def __init__(self, pathname, save_options, encoding="utf-8"):
         self.pathname = pathname
@@ -82,7 +84,7 @@ class ExportFileParser(object):
     # Private methods
     # ##########################################################################
 
-    def post_process_metadata(self, em):
+    def post_process_metadata(self, em: ExportedMeasurement):
         """ @see ColumnFileParser.post_process_metadata """
         if self.format == 1:
             metadata = self.global_metadata
@@ -136,7 +138,6 @@ class ExportFileParser(object):
 
         def get_string(key):
             return metadata.get(key, "")
-            
 
         # TODO: add get_metadata with try-except
         eeprom.wavelength_coeffs        = []
@@ -144,12 +145,14 @@ class ExportFileParser(object):
         eeprom.wavelength_coeffs.append(get_float("CCD C1"))
         eeprom.wavelength_coeffs.append(get_float("CCD C2"))
         eeprom.wavelength_coeffs.append(get_float("CCD C3"))
-        eeprom.serial_number            = metadata["Serial Number"] if "Serial Number" in metadata else "unknown"
-        eeprom.model                    = metadata["Model"] if "Model" in metadata else "unknown"
+        eeprom.wavelength_coeffs.append(get_float("CCD C4"))
+        eeprom.serial_number            = metadata.get("Serial Number")
+        eeprom.model                    = metadata.get("Model")
+        eeprom.detector                 = metadata.get("Detector")
         eeprom.detector_offset          = get_int("CCD Offset")
         eeprom.detector_gain            = get_float("CCD Gain")
-        eeprom.excitation_nm            = get_float("Laser Wavelength")
-        eeprom.excitation               = eeprom.excitation_nm
+        eeprom.excitation_nm_float      = get_float("Laser Wavelength")
+        eeprom.excitation_nm            = eeprom.excitation_nm
         eeprom.active_pixels_horizontal = get_int("Pixel Count")
         eeprom.roi_horizontal_start     = get_int("ROI Pixel Start")
         eeprom.roi_horizontal_end       = get_int("ROI Pixel End")
@@ -158,6 +161,12 @@ class ExportFileParser(object):
         state.laser_enabled             = get_string("Laser Enable").lower().strip() == "true"
         state.scans_to_average          = get_int("Scan Averaging") 
         state.boxcar_half_width         = get_int("Boxcar")
+
+        em.settings.microcontroller_firmware_version = metadata.get("FW Version")
+        em.settings.fpga_firmware_version = metadata.get("FPGA Version")
+
+        em.processed_reading.reading.detector_temperature_degC = get_float("Temperature")
+        em.processed_reading.reading.laser_temperature_degC = get_float("Laser Temperature")
 
         if "Laser Power" in metadata:
             state.laser_power_perc      = get_float("Laser Power")
@@ -185,8 +194,12 @@ class ExportFileParser(object):
                 settings          = em.settings,
                 processed_reading = em.processed_reading,
                 save_options      = self.save_options)
-            if "Label" in em.metadata:
-                m.label = em.metadata["Label"]
+
+            # additional Measurement attributes
+            for k in ["Label", "Prefix", "Suffix", "Note"]: 
+                if k in em.metadata:
+                    setattr(m, k.lower(), em.metadata[k])
+
             self.measurements.append(m)
 
         # if only a single Measurement was found within the export (rare),
@@ -402,7 +415,6 @@ class ExportFileParser(object):
             for i in range(em.header_count):
                 try:
                     header = em.headers[i].lower()
-                    log.debug(f"for em {em}, trying to process header {header}")
                 except:
                     continue
 
@@ -413,6 +425,10 @@ class ExportFileParser(object):
                     # skip nulls
                     if len(value) == 0:
                         continue
+
+                    # MZ: honestly not sure how to handle these
+                    if value == "NA":
+                        value = 0
 
                     if   header == "processed": array = em.processed_reading.processed
                     elif header == "raw":       array = em.processed_reading.raw      

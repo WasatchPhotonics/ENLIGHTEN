@@ -230,7 +230,7 @@ class Measurements(object):
     ## 
     # Use the MeasurementFactory to instantiate a new Measurement, including
     # ThumbnailWidget, from the given spectrometer's latest ProcessedReading.
-    def create_from_spectrometer(self, spec, view=None):
+    def create_from_spectrometer(self, spec):
         if spec is None or spec.app_state.processed_reading is None:
             return
 
@@ -240,8 +240,7 @@ class Measurements(object):
         # using the current "collapsed" state
         measurement = self.factory.create_from_spectrometer(
             spec = spec, 
-            is_collapsed = self.is_collapsed,
-            view = view)
+            is_collapsed = self.is_collapsed)
 
         self.add(measurement)
 
@@ -361,7 +360,10 @@ class Measurements(object):
 
         if filename is None:
             now = datetime.datetime.now()
-            default_filename = "Session-" + now.strftime("%Y%m%d-%H%M%S")
+
+            default_filename = f"{self.save_options.prefix()}-" if self.save_options.has_prefix() else "Session-"
+            default_filename += now.strftime("%Y%m%d-%H%M%S")
+            default_filename += f"-{self.save_options.suffix()}" if self.save_options.has_suffix() else ""
 
             # prompt the user to override the default filename
             # @todo give Controller.form to GUI, add gui.promptString()
@@ -760,7 +762,7 @@ class Measurements(object):
             if a is not None and pixel < len(a):
                 value = a[pixel]
             else:
-                return ""
+                return "NA"
 
             # Override default precision (which was based on whether a "reference" column
             # is being exported) with this indication of whether a reference component was
@@ -793,10 +795,8 @@ class Measurements(object):
                     log.error("failed export due to interpolation error")
                 if m.roi_active:
                     roi = m.settings.eeprom.get_horizontal_roi()
-                    if roi.start < min_roi_start:
-                        min_roi_start = int(roi.start)
-                    if roi.end > max_roi_end:
-                        max_roi_end = int(roi.end)
+                    min_roi_start = min(min_roi_start, int(roi.start))
+                    max_roi_end = max(max_roi_end, int(roi.end))
                 m.ipr = ipr
 
             if max_roi_end != float("-inf") and min_roi_start != float("inf"):
@@ -827,10 +827,11 @@ class Measurements(object):
             #####################################################################           
 
             for pixel in range(max_pixels):
-                if spectrometer_count == 1:
-                    roi = settingss[0].eeprom.get_horizontal_roi()
-                    if roi is not None and not roi.contains(pixel) and self.vignette_roi.enabled:
-                        continue
+                # MZ: always export all rows
+                # if spectrometer_count == 1:
+                #     roi = settingss[0].eeprom.get_horizontal_roi()
+                #     if roi is not None and not roi.contains(pixel) and self.vignette_roi.enabled:
+                #         continue
 
                 row = []
                 for settings in settingss:
@@ -846,7 +847,7 @@ class Measurements(object):
                             if pixel < m.settings.pixels():
                                 row.append(get_pr_header_value(m, header, pixel))
                             else:
-                                row.extend(BLANK)
+                                row.extend("NA")
                 else:
                     for m in self.measurements:
                         if pixel < m.settings.pixels():

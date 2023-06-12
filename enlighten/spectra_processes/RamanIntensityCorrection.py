@@ -132,7 +132,10 @@ class RamanIntensityCorrection(object):
             # probably a faster Numpy way to do this
             for i in range(len(pr.processed_vignetted)):
                 pr.processed_vignetted[i] *= factors[i + roi.start]
-        else:    
+        else:
+            # note that this scales the entire spectrum, within and without the 
+            # ROI, even though the factors are really only applicable/sensible/
+            # defined within the ROI
             pr.processed *= factors
 
         pr.raman_intensity_corrected = True

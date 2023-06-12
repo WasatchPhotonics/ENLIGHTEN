@@ -497,8 +497,8 @@ class LaserControlFeature:
         box.setWindowTitle(label)
         box.setText("Are you sure you wish to disable the laser watchdog? " +
             "Running the laser without watchdog could damage the instrument, risk human injury " +
-            "and void your warranty.")
-        box.setInformativeText("Disabling watchdog voids warranty.")
+            "and may void your warranty.")
+        box.setInformativeText("Disabling watchdog may void warranty.")
         box.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel)
 
         retval = box.exec_()

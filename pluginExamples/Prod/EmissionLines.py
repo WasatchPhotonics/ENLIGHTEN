@@ -1,67 +1,49 @@
-import os
+from EnlightenPlugin import *
+
 import logging
-
-from EnlightenPlugin import EnlightenPluginBase,    \
-                            EnlightenPluginField,    \
-                            EnlightenPluginResponse,  \
-                            EnlightenPluginDependency, \
-                            EnlightenPluginConfiguration
-
 log = logging.getLogger(__name__)
 
-##
-# A simple plug-in to add emission lines from standard gas lamps to the current 
-# spectra.  The lines displayed are limited to those appearing within the current
-# spectrometer's configured wavelength calibration.  Lines are scaled to the 
-# current spectrum, and relative intensities are roughly set to approximate
-# typical appearance.
 class EmissionLines(EnlightenPluginBase):
-
+    """
+    A simple plug-in to add emission lines from standard gas lamps to the current
+    spectra.  The lines displayed are limited to those appearing within the current
+    spectrometer's configured wavelength calibration.  Lines are scaled to the
+    current spectrum, and relative intensities are roughly set to approximate
+    typical appearance.
+    """
     MIN_REL_INTENSITY = 0.2
 
-    def __init__(self, ctl):
-        super().__init__(ctl)
-        self.lamps = self.get_lamps()
-
     def get_configuration(self):
-        fields = []
-
-        # These would be better as a single drop-down combo box, but we haven't 
-        # yet added that as a supported plugin input type.
+        """
+        These would be better as a single drop-down combo box, but we haven't
+        yet added that as a supported plugin input type.
+        """
+        self.name = "Emission Lines"
+        self.lamps = self.get_lamps()
         for lamp in self.lamps:
-            fields.append(EnlightenPluginField(name=lamp, direction="input", datatype=bool, initial=False))
-        return EnlightenPluginConfiguration(
-            name            = "EmissionLines", 
-            series_names    = sorted(self.lamps.keys()),
-            fields          = fields)
-
-    def connect(self, enlighten_info):
-        super().connect(enlighten_info)
-        return True
-
-    def disconnect(self):
-        super().disconnect()
+            self.field(name=lamp, direction="input", datatype=bool, initial=False)
 
     def process_request(self, request):
-        pr = request.processed_reading
-        settings = request.settings
-
-        series_data = {}
         for lamp in self.lamps:
             if request.fields[lamp]:
-                series_data[lamp] = self.generate_series(lamp=lamp, wavelengths=settings.wavelengths, spectrum=pr.processed)
+                for p in self.generate_points(lamp=lamp):
+                    self.plot(
+                        title = f"{lamp} {p[0]:7.03f}cm⁻¹",
+                        x = [p[0], p[0]],
+                        y = [min(self.spectrum), p[1]]
+                    )
 
-        return EnlightenPluginResponse(request=request, series=series_data)      
+    def generate_points(self, lamp):
+        """
+        Generate a synthetic spectrum, bounded in x to match the specified x-axis
+        in wavelengths, bounded in y to match the min/max of the specified
+        spectrum, of the specified lamp's emission lines.
+        """
+        wavelengths = self.settings.wavelengths
 
-    ## 
-    # Generate a synthetic spectrum, bounded in x to match the specified x-axis 
-    # in wavelengths, bounded in y to match the min/max of the specified 
-    # spectrum, of the specified lamp's emission lines.
-    def generate_series(self, lamp, wavelengths, spectrum):
-        
         # determine the vertical extent of the synthetic spectrum
-        lo = min(spectrum)
-        hi = max(spectrum)
+        lo = min(self.spectrum)
+        hi = max(self.spectrum)
 
         # determine which of this lamp's emission lines to visualize on the graph
         lines = self.lamps[lamp]
@@ -73,37 +55,35 @@ class EmissionLines(EnlightenPluginBase):
                 visible.append(peak)
                 max_rel_intensity = max(max_rel_intensity, rel_intensity)
 
-        series_x = [ wavelengths[0] ]
-        series_y = [ lo ]
-
-        log.debug(f"displaying {len(visible)} {lamp} peaks")
+        points = []
         for x in visible:
             rel_intensity = max(lines[x], self.MIN_REL_INTENSITY)
             y = lo + (hi - lo) * rel_intensity / max_rel_intensity
-            series_x.extend((x - 0.1,  x, x + 0.1))
-            series_y.extend((lo,       y,      lo))
+            points.append((x, y))
 
-        series_x.append(wavelengths[-1])
-        series_y.append(lo)
+        return points
 
-        return { "x": series_x, "y": series_y }
-
-    ## 
-    # Emission lines with relative intensities of 0 appear in literature, but are
-    # either unverified or hard to see with our spectrometers in empirical usage.
-    #
-    # Relative intensity will realistically vary by model, but these values are a
-    # reasonable starting point.
-    #
-    # @todo for completeness add He, Rn
-    #
-    # @par Sources
-    # 
-    # Data taken from NIST, as well as calibration lamp vendor websites.
-    #
-    # @see https://physics.nist.gov/PhysRefData/ASD/lines_form.html
-    # @see https://www.oceaninsight.com/products/light-sources/calibration-sources/wavelength-calibration-sources/
     def get_lamps(self):
+        """
+        Emission lines with relative intensities of 0 appear in literature, but are
+        either unverified or hard to see with our spectrometers in empirical usage.
+
+        Relative intensity will realistically vary by model, but these values are a
+        reasonable starting point.
+
+        @todo for completeness add He, Rn
+
+        @par Sources
+
+        Data taken from NIST, as well as calibration lamp vendor websites.
+
+        @see https://physics.nist.gov/PhysRefData/ASD/lines_form.html
+        @see https://www.oceaninsight.com/products/light-sources/calibration-sources/wavelength-calibration-sources/
+
+        @returns dict of emission lamp sources (Argon etc), each containing a 
+                 dict of wavelength with relative intensity (relative to other 
+                 lines of the same element)
+        """
         return {
             "Ar": {
                  696.543: 1,
@@ -194,7 +174,7 @@ class EmissionLines(EnlightenPluginBase):
                  978.450: 1,
                 1013.976: 1,
             },
-            "Kr":  {  
+            "Kr":  {
                  427.397: 2,
                  428.297: .5,
                  431.958: 3,

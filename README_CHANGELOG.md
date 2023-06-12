@@ -3,8 +3,20 @@
 # 4.0 GUI Refactoring
 
 - 2023-06-?? 4.0.12
-    - fixed Configuration defaults
-    - warn when saving but no formats selected
+    - persistence
+        - fixed Configuration defaults
+        - updated Write EEPROM tooltip
+    - file_io
+        - warn when saving but no formats selected
+        - fixed load-then-export use-case
+        - always save all rows of column-ordered CSV spectra regardless of ROI
+        - output "NA" rather than 0 for values omitted due to ROI or spectral range
+        - use prefix and suffix in export filenames
+        - stop forcing loaded data to lowercase
+        - improved data consistency in loaded CSVs
+    - plugins
+        - moved RamanLines to Raman
+        - simplified Prod.EmissionLines 
 - 2023-05-15 4.0.11
     - added collated export
     - invert x-axis for 1064XL

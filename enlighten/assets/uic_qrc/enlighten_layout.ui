@@ -7006,7 +7006,7 @@ QComboBox QListView
                     </size>
                    </property>
                    <property name="toolTip">
-                    <string>VOIDS WARRANTY: Store any manual edits to the spectrometer’s internal EEPROM</string>
+                    <string>MAY VOID WARRANTY: Store any manual edits to the spectrometer’s internal EEPROM</string>
                    </property>
                    <property name="text">
                     <string>Write EEPROM</string>
@@ -9215,130 +9215,34 @@ QComboBox QListView
                     </widget>
                    </item>
                    <item>
-                    <widget class="QFrame" name="frame_plugin_option_white">
+                    <widget class="QFrame" name="frame_plugin_moved_hint">
                      <property name="frameShape">
                       <enum>QFrame::StyledPanel</enum>
-                     </property>
-                     <property name="frameShadow">
+                    </property>
+                    <property name="frameShadow">
                       <enum>QFrame::Raised</enum>
-                     </property>
-                     <property name="wpBox" stdset="0">
+                    </property>
+                    <property name="wpPanel" stdset="0">
                       <bool>false</bool>
-                     </property>
-                     <layout class="QVBoxLayout" name="verticalLayout_154">
-                      <property name="leftMargin">
-                       <number>0</number>
-                      </property>
-                      <property name="topMargin">
-                       <number>0</number>
-                      </property>
-                      <property name="rightMargin">
-                       <number>0</number>
-                      </property>
-                      <property name="bottomMargin">
-                       <number>0</number>
-                      </property>
+                    </property>
+                    <layout class="QVBoxLayout" name="verticalLayout_156">
                       <item>
-                       <widget class="QFrame" name="frame_plugin_option_black">
-                        <property name="frameShape">
-                         <enum>QFrame::StyledPanel</enum>
+                      <widget class="QLabel" name="label_plugin_section">
+                        <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                        </sizepolicy>
                         </property>
-                        <property name="frameShadow">
-                         <enum>QFrame::Raised</enum>
+                        <property name="font">
+                        <font>
+                          <pointsize>12</pointsize>
+                        </font>
                         </property>
-                        <property name="wpPanel" stdset="0">
-                         <bool>false</bool>
+                        <property name="text">
+                        <string>Plugin settings have been moved to the right side panel.</string>
                         </property>
-                        <layout class="QVBoxLayout" name="verticalLayout_151">
-                         <item>
-                          <widget class="QLabel" name="label_plugin_section">
-                           <property name="sizePolicy">
-                            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                             <horstretch>0</horstretch>
-                             <verstretch>0</verstretch>
-                            </sizepolicy>
-                           </property>
-                           <property name="font">
-                            <font>
-                             <pointsize>14</pointsize>
-                            </font>
-                           </property>
-                           <property name="text">
-                            <string>Plugins</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_88">
-                           <property name="sizeConstraint">
-                            <enum>QLayout::SetMinimumSize</enum>
-                           </property>
-                           <item>
-                            <spacer name="horizontalSpacer_47">
-                             <property name="orientation">
-                              <enum>Qt::Horizontal</enum>
-                             </property>
-                             <property name="sizeType">
-                              <enum>QSizePolicy::Fixed</enum>
-                             </property>
-                             <property name="sizeHint" stdset="0">
-                              <size>
-                               <width>20</width>
-                               <height>28</height>
-                              </size>
-                             </property>
-                            </spacer>
-                           </item>
-                           <item>
-                            <layout class="QHBoxLayout" name="horizontalLayout_61">
-                             <item>
-                              <widget class="QComboBox" name="comboBox_plugin_module">
-                               <property name="sizePolicy">
-                                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                                 <horstretch>0</horstretch>
-                                 <verstretch>0</verstretch>
-                                </sizepolicy>
-                               </property>
-                               <property name="minimumSize">
-                                <size>
-                                 <width>200</width>
-                                 <height>0</height>
-                                </size>
-                               </property>
-                               <property name="maximumSize">
-                                <size>
-                                 <width>300</width>
-                                 <height>16777215</height>
-                                </size>
-                               </property>
-                               <property name="font">
-                                <font>
-                                 <pointsize>10</pointsize>
-                                 <weight>50</weight>
-                                 <bold>false</bold>
-                                </font>
-                               </property>
-                               <property name="focusPolicy">
-                                <enum>Qt::StrongFocus</enum>
-                               </property>
-                              </widget>
-                             </item>
-                             <item>
-                              <widget class="QCheckBox" name="checkBox_plugin_connected">
-                               <property name="toolTip">
-                                <string>Loads and "starts" the selected plug-in</string>
-                               </property>
-                               <property name="text">
-                                <string>Connected</string>
-                               </property>
-                              </widget>
-                             </item>
-                            </layout>
-                           </item>
-                          </layout>
-                         </item>
-                        </layout>
-                       </widget>
+                      </widget>
                       </item>
                      </layout>
                     </widget>
@@ -16509,6 +16413,382 @@ p, li { white-space: pre-wrap; }
                 </widget>
                </item>
                <item>
+                   <widget class="QLabel" name="label_plugin_selection_widget">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Plugins</string>
+                    </property>
+                   </widget>
+                  </item>
+                <item>
+                <widget class="QFrame" name="frame_plugin_option_white">
+                  <property name="frameShape">
+                  <enum>QFrame::StyledPanel</enum>
+                  </property>
+                  <property name="frameShadow">
+                  <enum>QFrame::Raised</enum>
+                  </property>
+                  <property name="wpBox" stdset="0">
+                  <bool>false</bool>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_154">
+                  <property name="leftMargin">
+                    <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                    <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                    <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                    <number>0</number>
+                  </property>
+                  <item>
+                    <widget class="QFrame" name="frame_plugin_option_black">
+                    <property name="frameShape">
+                      <enum>QFrame::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                      <enum>QFrame::Raised</enum>
+                    </property>
+                    <property name="wpPanel" stdset="0">
+                      <bool>false</bool>
+                    </property>
+                    <layout class="QVBoxLayout" name="verticalLayout_151">
+                      <item>
+                        <widget class="QComboBox" name="comboBox_plugin_module">
+                          <property name="sizePolicy">
+                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                          </sizepolicy>
+                          </property>
+                          <property name="minimumSize">
+                          <size>
+                            <width>200</width>
+                            <height>0</height>
+                          </size>
+                          </property>
+                          <property name="maximumSize">
+                          <size>
+                            <width>300</width>
+                            <height>16777215</height>
+                          </size>
+                          </property>
+                          <property name="font">
+                          <font>
+                            <pointsize>10</pointsize>
+                            <weight>50</weight>
+                            <bold>false</bold>
+                          </font>
+                          </property>
+                          <property name="focusPolicy">
+                          <enum>Qt::StrongFocus</enum>
+                          </property>
+                        </widget>
+                        </item>
+                        <item>
+                        <widget class="QCheckBox" name="checkBox_plugin_connected">
+                          <property name="toolTip">
+                          <string>Loads and "starts" the selected plug-in</string>
+                          </property>
+                          <property name="text">
+                          <string>Connected</string>
+                          </property>
+                        </widget>
+                      </item>
+                    </layout>
+                    </widget>
+                  </item>
+                  </layout>
+                </widget>
+                </item>
+               <item>
+                <widget class="QFrame" name="frame_plugin_control">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="lineWidth">
+                  <number>1</number>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_152">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label_plugin_widget">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Plugin Control</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QFrame" name="pluginWidget_border">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="lineWidth">
+                     <number>1</number>
+                    </property>
+                    <property name="wpBox" stdset="0">
+                     <bool>false</bool>
+                    </property>
+                    <layout class="QGridLayout" name="temperatureWidget_grid_2" rowstretch="0" columnstretch="0">
+                     <property name="sizeConstraint">
+                      <enum>QLayout::SetDefaultConstraint</enum>
+                     </property>
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="spacing">
+                      <number>0</number>
+                     </property>
+                     <item row="0" column="0">
+                      <widget class="QFrame" name="pluginWidget_shaded">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>16777215</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="lineWidth">
+                        <number>1</number>
+                       </property>
+                       <property name="wpGrad" stdset="0">
+                        <bool>false</bool>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_9">
+                        <item>
+                         <widget class="QLabel" name="label_plugin_title">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="maximumSize">
+                           <size>
+                            <width>16777215</width>
+                            <height>20</height>
+                           </size>
+                          </property>
+                          <property name="font">
+                           <font>
+                            <weight>75</weight>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="text">
+                           <string>Plugin Name</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QCheckBox" name="checkBox_plugin_enabled">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="toolTip">
+                           <string>Activates the plugin to process readings</string>
+                          </property>
+                          <property name="styleSheet">
+                           <string notr="true" />
+                          </property>
+                          <property name="text">
+                           <string>Enabled</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QFrame" name="frame_plugin_fields">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>20</height>
+                           </size>
+                          </property>
+                          <property name="frameShape">
+                           <enum>QFrame::StyledPanel</enum>
+                          </property>
+                          <property name="frameShadow">
+                           <enum>QFrame::Raised</enum>
+                          </property>
+                          <property name="wpBox" stdset="0">
+                           <bool>false</bool>
+                          </property>
+                          <layout class="QVBoxLayout" name="verticalLayout_148">
+                           <item>
+                            <layout class="QVBoxLayout" name="verticalLayout_plugin_fields" />
+                           </item>
+                          </layout>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QPushButton" name="pushButton_plugin_process">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>30</height>
+                           </size>
+                          </property>
+                          <property name="font">
+                           <font>
+                            <pointsize>9</pointsize>
+                           </font>
+                          </property>
+                          <property name="text">
+                           <string>Process</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <layout class="QHBoxLayout" name="horizontalLayout_79">
+                          <item>
+                           <widget class="QLabel" name="label_plugin_graph_pos">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="text">
+                             <string>Graph</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QComboBox" name="comboBox_plugin_graph_pos">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="font">
+                             <font>
+                              <pointsize>10</pointsize>
+                             </font>
+                            </property>
+                            <property name="focusPolicy">
+                             <enum>Qt::StrongFocus</enum>
+                            </property>
+                            <item>
+                             <property name="text">
+                              <string>Bottom</string>
+                             </property>
+                            </item>
+                            <item>
+                             <property name="text">
+                              <string>Top</string>
+                             </property>
+                            </item>
+                            <item>
+                             <property name="text">
+                              <string>Left</string>
+                             </property>
+                            </item>
+                            <item>
+                             <property name="text">
+                              <string>Right</string>
+                             </property>
+                            </item>
+                            <item>
+                             <property name="text">
+                              <string>None</string>
+                             </property>
+                            </item>
+                           </widget>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
                 <widget class="QFrame" name="frame_scanAveraging">
                  <layout class="QVBoxLayout" name="verticalLayout_45">
                   <property name="leftMargin">
@@ -18388,279 +18668,6 @@ p, li { white-space: pre-wrap; }
                             <property name="value">
                              <number>1</number>
                             </property>
-                           </widget>
-                          </item>
-                         </layout>
-                        </item>
-                       </layout>
-                      </widget>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item>
-                <widget class="QFrame" name="frame_plugin_control">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="lineWidth">
-                  <number>1</number>
-                 </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_152">
-                  <property name="leftMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>0</number>
-                  </property>
-                  <item>
-                   <widget class="QLabel" name="label_plugin_widget">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <weight>75</weight>
-                      <bold>true</bold>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>Plugin Control</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QFrame" name="pluginWidget_border">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="lineWidth">
-                     <number>1</number>
-                    </property>
-                    <property name="wpBox" stdset="0">
-                     <bool>false</bool>
-                    </property>
-                    <layout class="QGridLayout" name="temperatureWidget_grid_2" rowstretch="0" columnstretch="0">
-                     <property name="sizeConstraint">
-                      <enum>QLayout::SetDefaultConstraint</enum>
-                     </property>
-                     <property name="leftMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="topMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="rightMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="bottomMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="spacing">
-                      <number>0</number>
-                     </property>
-                     <item row="0" column="0">
-                      <widget class="QFrame" name="pluginWidget_shaded">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>0</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>16777215</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="lineWidth">
-                        <number>1</number>
-                       </property>
-                       <property name="wpGrad" stdset="0">
-                        <bool>false</bool>
-                       </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_9">
-                        <item>
-                         <widget class="QLabel" name="label_plugin_title">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>16777215</width>
-                            <height>20</height>
-                           </size>
-                          </property>
-                          <property name="font">
-                           <font>
-                            <weight>75</weight>
-                            <bold>true</bold>
-                           </font>
-                          </property>
-                          <property name="text">
-                           <string>Plugin Name</string>
-                          </property>
-                          <property name="alignment">
-                           <set>Qt::AlignCenter</set>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QCheckBox" name="checkBox_plugin_enabled">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="toolTip">
-                           <string>Activates the plugin to process readings</string>
-                          </property>
-                          <property name="styleSheet">
-                           <string notr="true" />
-                          </property>
-                          <property name="text">
-                           <string>Enabled</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QFrame" name="frame_plugin_fields">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="minimumSize">
-                           <size>
-                            <width>0</width>
-                            <height>20</height>
-                           </size>
-                          </property>
-                          <property name="frameShape">
-                           <enum>QFrame::StyledPanel</enum>
-                          </property>
-                          <property name="frameShadow">
-                           <enum>QFrame::Raised</enum>
-                          </property>
-                          <property name="wpBox" stdset="0">
-                           <bool>false</bool>
-                          </property>
-                          <layout class="QVBoxLayout" name="verticalLayout_148">
-                           <item>
-                            <layout class="QVBoxLayout" name="verticalLayout_plugin_fields" />
-                           </item>
-                          </layout>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QPushButton" name="pushButton_plugin_process">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="minimumSize">
-                           <size>
-                            <width>0</width>
-                            <height>30</height>
-                           </size>
-                          </property>
-                          <property name="font">
-                           <font>
-                            <pointsize>9</pointsize>
-                           </font>
-                          </property>
-                          <property name="text">
-                           <string>Process</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_79">
-                          <item>
-                           <widget class="QLabel" name="label_plugin_graph_pos">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
-                            <property name="text">
-                             <string>Graph</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="QComboBox" name="comboBox_plugin_graph_pos">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
-                            <property name="font">
-                             <font>
-                              <pointsize>10</pointsize>
-                             </font>
-                            </property>
-                            <property name="focusPolicy">
-                             <enum>Qt::StrongFocus</enum>
-                            </property>
-                            <item>
-                             <property name="text">
-                              <string>Bottom</string>
-                             </property>
-                            </item>
-                            <item>
-                             <property name="text">
-                              <string>Top</string>
-                             </property>
-                            </item>
-                            <item>
-                             <property name="text">
-                              <string>Left</string>
-                             </property>
-                            </item>
-                            <item>
-                             <property name="text">
-                              <string>Right</string>
-                             </property>
-                            </item>
-                            <item>
-                             <property name="text">
-                              <string>None</string>
-                             </property>
-                            </item>
                            </widget>
                           </item>
                          </layout>

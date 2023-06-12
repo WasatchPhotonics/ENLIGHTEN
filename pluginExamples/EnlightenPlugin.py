@@ -44,6 +44,7 @@ class EnlightenPluginBase:
         self.name = None
         self._fields = []
         self.is_blocking = False
+        self.block_enlighten = False
         self.has_other_graph = False
         self.table = None
         self.x_axis_label = None
