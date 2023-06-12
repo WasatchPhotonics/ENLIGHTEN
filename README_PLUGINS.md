@@ -31,7 +31,7 @@ class hello_graph(EnlightenPluginBase):
     def process_request(self, request):
         x_values = self.get_axis()
         y_values = request.processed_reading.get_processed()
-        self.plot(x=x_values, y=y_values, title="Copy of Graph !", color="teal")
+        self.plot(x=x_values, y=y_values, title="Copy of Graph !", color="yellow")
 ```
 
 ## Advanced use
