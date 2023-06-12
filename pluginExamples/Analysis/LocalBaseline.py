@@ -5,8 +5,6 @@ import time
 
 from EnlightenPlugin import *
 
-
-
 class LocalBaseline(EnlightenPluginBase):
 
     prev_count = 1
@@ -46,7 +44,7 @@ class LocalBaseline(EnlightenPluginBase):
         )
 
         self.has_other_graph = False
-        self.block_enlighten = True # for metadata
+        self.block_enlighten = False # for metadata
 
     def center(self):
 
@@ -134,16 +132,7 @@ class LocalBaseline(EnlightenPluginBase):
 
         # on get_widget_from_name("count") change...
         if self.get_widget_from_name("count").value() != self.prev_count:
-            # delete all fields
-            # idk if it's sufficient since PluginController would have already snagged _fields
-            # from get_configuration_obj
-            # if it's a shallow copy we could be in business
             self.prev_count = self.get_widget_from_name("count").value()
             self.reset_configuration()
 
-            # for i in range(count):
-            # i_str = str(i+1) if i else "" # numbering is var, var2, var3, ...
-            # create fields X+i_str
-            # create fields Left+i_str
-            # create fields Right+i_str
         self.prev_count = self.get_widget_from_name("count").value()
