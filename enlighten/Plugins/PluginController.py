@@ -630,11 +630,6 @@ class PluginController:
         self.frame_fields.setVisible(False)
         self.clear_previous_layout()
 
-        # if we just selected a module, we should not yet be connected, therefore
-        # we can't and shouldn't be enabled
-        self.cb_enabled.setChecked(False)
-        self.cb_enabled.setEnabled(False)
-
         if module_name not in self.module_infos:
             log.error("configure_gui: invalid module")
             self.cb_connected.setEnabled(False)
