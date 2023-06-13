@@ -273,7 +273,10 @@ class PluginController:
         if os.path.exists(plugin_src):
             plugin_src_items = os.listdir(plugin_src)
             log.debug(f"in search items {plugin_src} found items {plugin_src_items}")
-            shutil.copytree(plugin_src, plugin_dst, dirs_exist_ok=True)
+
+            # This used shutil before, but dirs_exist_ok param is unavailable before python 3.8
+            #shutil.copytree(plugin_src, plugin_dst, dirs_exist_ok=True) 
+            os.system(f'cp -r "{plugin_src}" "{plugin_dst}"') 
         else:
             log.error(f"couldn't find plugin src {plugin_src} so not creating stub")
 

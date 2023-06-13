@@ -457,11 +457,16 @@ class BatchCollection(object):
     # I don't think we can easily do this right now, perhaps for good reason.
     def generate_export_filename(self, now):
         filename = "Batch"
-        if prefix := self.save_options.prefix():
+
+        prefix = self.save_options.prefix()
+        if prefix:
             filename += "-" + prefix
         filename += "-" + now.strftime("%Y%m%d-%H%M%S")
-        if suffix := self.save_options.suffix():
+
+        suffix = self.save_options.suffix()
+        if suffix:
             filename += "-" + suffix
+
         if self.batch_count > 1:
             filename += f"-{self.current_batch_count}-of-{self.batch_count}"
         filename = util.normalize_filename(filename)
