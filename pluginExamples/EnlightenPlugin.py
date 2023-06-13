@@ -187,6 +187,10 @@ class EnlightenPluginBase:
 
     ### Begin backwards compatible object-returning wrappers ###
     def get_configuration_obj(self):
+
+        # reset fields in-case plugin has been connected before
+        self._fields = []
+
         config = self.get_configuration()
         if config: return config
 
