@@ -2,7 +2,7 @@
 
 # 4.0 GUI Refactoring
 
-- 2023-06-?? 4.0.12
+- 2023-06-14 4.0.12
     - persistence
         - fixed Configuration defaults
         - updated Write EEPROM tooltip
@@ -15,6 +15,7 @@
         - stop forcing loaded data to lowercase
         - improved data consistency in loaded CSVs
     - plugins
+        - moved from Settings View to Control Palette
         - moved RamanLines to Raman
         - simplified Prod.EmissionLines 
 - 2023-05-15 4.0.11
