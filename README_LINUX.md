@@ -74,7 +74,7 @@ Run demo:
 
     $ cd enlighten
     $ conda activate conda_enlighten3
-    $ export PYTHONPATH="../Wasatch.PY:pluginExamples:.:enlighten/assets/uic_qrc"
+    $ export PYTHONPATH="../spyc_writer/src:../Wasatch.PY:pluginExamples:.:enlighten/assets/uic_qrc"
 
 ## Install pip dependencies (inside activated environment)
 
@@ -85,6 +85,8 @@ Run demo:
     $ python -m pip install pyudev
 
 ## Rebuild Qt artifacts
+
+    (Workaround to PySide2 dependency problem: rebuild_resources from Windows)
 
     $ scripts/rebuild_resources.sh
 
