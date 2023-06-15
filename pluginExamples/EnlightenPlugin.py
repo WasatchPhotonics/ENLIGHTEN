@@ -244,6 +244,16 @@ class EnlightenPluginRequest:
     creation_time = datetime.datetime.now()
     fields = field(default_factory=list)
 
+    def __init__(self, request_id=-1, spec=None, settings=None, creation_time=None, fields=None):
+        self.request_id = request_id
+        if spec:
+            self.spec = spec
+        if settings:
+            self.settings = settings
+        if creation_time:
+            self.creation_time = creation_time
+        if fields:
+            self.fields = fields
 
 class EnlightenApplicationInfo:
 
