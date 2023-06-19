@@ -69,11 +69,6 @@ class GainDBFeature(object):
         self.bt_up.clicked.connect(self.up_callback)
         self.bt_dn.clicked.connect(self.dn_callback)
 
-        # load gain_db from .ini
-        ini_gain_db = self.ctl.config.get_int("detector", "gain_db", 8)
-        log.debug("Get gain from INI: %s", ini_gain_db)
-        self.set_db(ini_gain_db)
-
         self.update_visibility()
 
     ##
@@ -107,9 +102,6 @@ class GainDBFeature(object):
         spec = self.multispec.current_spectrometer()
         spec.settings.state.gain_db = spec.settings.eeprom.detector_gain
 
-        self.spinbox.setValue(spec.settings.state.gain_db)
-        log.debug("GainDBFeature.init_hotplug: initialized to %.2f", spec.settings.state.gain_db)
-
     # called by initialize_new_device a little after the other function
     def reset(self, hotplug=False):
         if not self.update_visibility():
@@ -134,9 +126,10 @@ class GainDBFeature(object):
         self.spinbox.setMaximum(self.MAX_GAIN_DB)
         self.spinbox.blockSignals(False)
 
-        # apply the "real" value to spinbox.  This will clamp to supported limits, 
-        # update slider to clamped and send clamped downstream
-        self.spinbox.setValue(now_db)
+        # load gain_db from .ini, falling back to spec.settings.state (copied from EEPROM)
+        ini_gain_db = self.ctl.config.get_float("detector", "gain_db", now_db)
+        log.debug("Get gain from INI: %s", ini_gain_db)
+        self.set_db(ini_gain_db)
 
         log.info("spinbox limits (%d, %d) (current %d)",
             self.spinbox.minimum(), self.spinbox.maximum(), self.spinbox.value())
@@ -161,7 +154,8 @@ class GainDBFeature(object):
         self._quiet_set(self.slider, db)
 
         # save gain_db to .ini
-        self.ctl.config.set("detector", "gain_db", db)
+        log.debug("Save gain to INI: %s", db)
+        self.ctl.config.set("detector", "gain_db", float(db))
 
     def up_callback(self):
         util.incr_spinbox(self.spinbox)
