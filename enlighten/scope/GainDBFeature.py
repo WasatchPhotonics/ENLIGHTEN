@@ -70,7 +70,9 @@ class GainDBFeature(object):
         self.bt_dn.clicked.connect(self.dn_callback)
 
         # load gain_db from .ini
-        self.set_db(self.ctl.config.get_int("detector", "gain_db", 8))
+        ini_gain_db = self.ctl.config.get_int("detector", "gain_db", 8)
+        log.debug("Get gain from INI: %s", ini_gain_db)
+        self.set_db(ini_gain_db)
 
         self.update_visibility()
 
@@ -158,7 +160,8 @@ class GainDBFeature(object):
         self._quiet_set(self.spinbox, db)
         self._quiet_set(self.slider, db)
 
-        # TODO save gain_db to .ini
+        # save gain_db to .ini
+        self.ctl.config.set("detector", "gain_db", db)
 
     def up_callback(self):
         util.incr_spinbox(self.spinbox)
