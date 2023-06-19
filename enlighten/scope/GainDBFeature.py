@@ -46,7 +46,7 @@ class GainDBFeature(object):
             label,
             multispec,
             slider,
-            spinbox,     # actually doubleSpinBox
+            spinbox     # actually doubleSpinBox
         ):
 
         self.ctl = ctl
