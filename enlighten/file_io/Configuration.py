@@ -321,7 +321,7 @@ class Configuration(object):
         if self.has_option(section, key):
             try:
                 value = int(self.get(section, key))
-            except:
+            except ValueError:
                 log.error("invalid int for %s.%s got value of %s", section, key, self.get(section, key))
         return value
 
@@ -330,7 +330,7 @@ class Configuration(object):
         if self.has_option(section, key):
             try:
                 value = float(self.get(section, key))
-            except:
+            except ValueError:
                 log.error("invalid float for %s.%s got value of %s", section, key, self.get(section, key))
         return value
 
