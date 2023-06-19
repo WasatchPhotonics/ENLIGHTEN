@@ -81,9 +81,6 @@ class GainDBFeature(object):
         else:
             self.visible = spec.settings.is_micro()
 
-        # DEBUG
-        self.visible = True
-
         # normally we'd do this at the enclosing frame, but gain is currently 
         # nested within the detectorControlWidget, and a sub-frame breaks the
         # CSS, so...just disappear the widgets for now
