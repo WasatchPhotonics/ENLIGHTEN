@@ -3,7 +3,7 @@
 The following process was tested from a fresh Ubuntu 16.04 LTS VM running under
 Parallels 13.3.2 on MacOS 10.14.2.
 
-## Start from a fresh Ubuntu 16.04 VM
+## Start from a fresh Ubuntu 22.04 VM
 
 - enable Canonical Partners repo
 - update all
@@ -18,6 +18,12 @@ On Ubuntu, I found this was required to get Qt5 working
 (see [qt.io](https://forum.qt.io/topic/93247/qt-qpa-plugin-could-not-load-the-qt-platform-plugin-xcb-in-even-though-it-was-found)):
 
     $ sudo apt-get install libxcb-xinerama0
+
+The pyinstaller build will reflect the systems global installations, therefore when building Enlighten on Linux be sure to only have LibUSB0 installed. We reference our desired backend of libusb0 directly in pyusb, but for some reason libusb1 still intereferes. Maybe it's a bug in pyusb.
+
+    $ sudo apt remove libusb-1.0
+    $ sudo apt remove libusb-1.0-dev
+    $ sudo apt install libusb-0.1.14
 
 Optional but recommended:
 
