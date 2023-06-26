@@ -21,7 +21,7 @@ class SavitzkyGolay(EnlightenPluginBase):
         self.block_enlighten = True 
 
     def process_request(self, request):
-        win_len   = request.fields["Half-Length"] * 2 - 1
+        win_len   = request.fields["Half-Length"] * 2 + 1
         polyorder = max(request.fields["Poly Order"], win_len - 1)
         deriv     = request.fields["Deriv Order"]
         delta     = request.fields["Delta"]
