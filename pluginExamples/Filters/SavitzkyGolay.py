@@ -32,7 +32,7 @@ class SavitzkyGolay(EnlightenPluginBase):
         delta     = self.get_widget_from_name("Delta").value()
 
         smoothed = savgol_filter(
-            x             = request.processed_reading.processed 
+            x             = request.processed_reading.processed,
             window_length = win_len,    # < len(x)
             polyorder     = polyorder,  # < win_len
             deriv         = deriv,      #  # >= 0

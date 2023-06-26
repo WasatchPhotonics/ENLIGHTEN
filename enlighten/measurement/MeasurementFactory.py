@@ -99,6 +99,8 @@ class MeasurementFactory(object):
             self.create_thumbnail(measurement, is_collapsed)
 
         if save:
+            for observer in self.observers:
+                observer(measurement=measurement, event="pre-save")
             measurement.save()
             for observer in self.observers:
                 observer(measurement=measurement, event="save")
