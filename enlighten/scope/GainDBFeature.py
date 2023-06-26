@@ -124,9 +124,11 @@ class GainDBFeature(object):
         self.spinbox.blockSignals(False)
 
         # load gain_db from .ini, falling back to spec.settings.state (copied from EEPROM)
-        ini_gain_db = self.ctl.config.get_float("detector", "gain_db", now_db)
-        log.debug("Get gain from INI: %s", ini_gain_db)
-        self.set_db(ini_gain_db)
+        if spec:
+            serial_number = spec.settings.eeprom.serial_number
+            ini_gain_db = self.ctl.config.get_float(serial_number, "gain_db", now_db)
+            log.debug("Get gain from INI: %s", ini_gain_db)
+            self.set_db(ini_gain_db)
 
         log.info("spinbox limits (%d, %d) (current %d)",
             self.spinbox.minimum(), self.spinbox.maximum(), self.spinbox.value())
@@ -142,17 +144,15 @@ class GainDBFeature(object):
 
     def set_db(self, db):
         
-        # send gain update message to device
+        # save gain_db to application state
         self.multispec.set_state("gain_db", db)
+
+        # send gain update message to device
         self.multispec.change_device_setting("detector_gain", db)
 
         # ensure both gain widgets are correct, without generating additional events
         self._quiet_set(self.spinbox, db)
         self._quiet_set(self.slider, db)
-
-        # save gain_db to .ini
-        log.debug("Save gain to INI: %s", db)
-        self.ctl.config.set("detector", "gain_db", float(db))
 
     def up_callback(self):
         util.incr_spinbox(self.spinbox)
