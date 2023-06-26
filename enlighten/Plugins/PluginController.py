@@ -1289,6 +1289,10 @@ class PluginController:
     # hash has a 'save' callback, then relay the data.
     def events_factory_callback(self, measurement, event):
         log.debug(f"received Measurement from event {event}")
+
+        if event == "pre-save" and self.enabled:
+            measurement.set_plugin_name(self.module_name)
+
         config = self.get_current_configuration()
         if config is None or config.events is None:
             return
