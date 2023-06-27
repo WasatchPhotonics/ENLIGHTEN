@@ -196,9 +196,14 @@ class ExportFileParser(object):
                 save_options      = self.save_options)
 
             # additional Measurement attributes
-            for k in ["Label", "Prefix", "Suffix", "Note"]: 
-                if k in em.metadata:
-                    setattr(m, k.lower(), em.metadata[k])
+            if "Label" in em.metadata:
+                m.label = em.metadata["Label"]
+            if "Prefix" in em.metadata:
+                m.prefix = em.metadata["Prefix"]
+            if "Suffix" in em.metadata:
+                m.suffix = em.metadata["Suffix"]
+            if "Note" in em.metadata:
+                m.note = em.metadata["Note"]
 
             self.measurements.append(m)
 
