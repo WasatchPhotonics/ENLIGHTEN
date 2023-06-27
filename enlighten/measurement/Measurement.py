@@ -301,9 +301,6 @@ class Measurement(object):
             # was disconnected (and optionally reconnected) after the Measurement
             # was saved, but before it was exported.
             self.settings = copy.deepcopy(spec.settings)
-            self.note = self.generate_format_field("note")
-            self.prefix = self.generate_format_field("prefix")
-            self.suffix = self.generate_format_field("suffix")
 
             # Copy things we want from SpectrometerApplicationState.
             #
@@ -317,6 +314,11 @@ class Measurement(object):
             self.technique          = spec.app_state.technique_name
             self.timestamp          = datetime.datetime.now()
             self.baseline_correction_algo = spec.app_state.baseline_correction_algo
+
+            # do these AFTER we have a processed_reading
+            self.note = self.generate_format_field("note")
+            self.prefix = self.generate_format_field("prefix")
+            self.suffix = self.generate_format_field("suffix")
 
         elif source_pathname:
             log.debug("instantiating from source pathname %s", source_pathname)
