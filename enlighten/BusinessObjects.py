@@ -662,7 +662,7 @@ class BusinessObjects:
             spinbox                     = sfu.spinBox_integration_time_ms)
 
         self.header("instantiating GainDBFeature")
-        ctl.gain_db_feature = GainDBFeature(
+        ctl.gain_db_feature = GainDBFeature(ctl = ctl,
             bt_dn                       = sfu.pushButton_gain_dn,
             bt_up                       = sfu.pushButton_gain_up,
             label                       = sfu.label_gainWidget_title,

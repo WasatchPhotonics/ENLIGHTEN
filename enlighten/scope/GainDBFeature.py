@@ -5,6 +5,7 @@ log = logging.getLogger(__name__)
 
 from enlighten.ScrollStealFilter import ScrollStealFilter
 from enlighten.MouseWheelFilter import MouseWheelFilter
+
 ##
 # This class encapsulates control of detector gain (decibels), currently used 
 # only for Sony IMX detectors (SiG).  
@@ -39,6 +40,7 @@ class GainDBFeature(object):
     MAX_GAIN_DB = 72
 
     def __init__(self,
+            ctl,
             bt_dn,
             bt_up,
             label,
@@ -46,6 +48,8 @@ class GainDBFeature(object):
             slider,
             spinbox     # actually doubleSpinBox
         ):
+
+        self.ctl = ctl
 
         self.bt_dn      = bt_dn
         self.bt_up      = bt_up
@@ -58,18 +62,19 @@ class GainDBFeature(object):
         self.visible    = False
 
         # bindings
-        self.slider     .valueChanged       .connect(self.sync_slider_to_spinbox_callback)
-        self.slider                         .installEventFilter(MouseWheelFilter(self.slider))
-        self.spinbox    .valueChanged       .connect(self.sync_spinbox_to_slider_callback)
-        self.spinbox                        .installEventFilter(ScrollStealFilter(self.spinbox))
-        self.bt_up      .clicked            .connect(self.up_callback)
-        self.bt_dn      .clicked            .connect(self.dn_callback)
+        self.slider.valueChanged.connect(self.set_db)
+        self.slider.installEventFilter(MouseWheelFilter(self.slider))
+        self.spinbox.valueChanged.connect(self.set_db)
+        self.spinbox.installEventFilter(ScrollStealFilter(self.spinbox))
+        self.bt_up.clicked.connect(self.up_callback)
+        self.bt_dn.clicked.connect(self.dn_callback)
 
         self.update_visibility()
 
     ##
     # Only show these controls when an IMX-based spectrometer is selected
     def update_visibility(self):
+
         spec = self.multispec.current_spectrometer()
         if spec is None:
             self.visible = False
@@ -93,9 +98,6 @@ class GainDBFeature(object):
         # on hotplug, initialize GainDB widget from EEPROM value
         spec = self.multispec.current_spectrometer()
         spec.settings.state.gain_db = spec.settings.eeprom.detector_gain
-
-        self.spinbox.setValue(spec.settings.state.gain_db)
-        log.debug("GainDBFeature.init_hotplug: initialized to %.2f", spec.settings.state.gain_db)
 
     # called by initialize_new_device a little after the other function
     def reset(self, hotplug=False):
@@ -121,31 +123,39 @@ class GainDBFeature(object):
         self.spinbox.setMaximum(self.MAX_GAIN_DB)
         self.spinbox.blockSignals(False)
 
-        # apply the "real" value to spinbox.  This will clamp to supported limits, 
-        # update slider to clamped and send clamped downstream
-        self.spinbox.setValue(now_db)
+        # load gain_db from .ini, falling back to spec.settings.state (copied from EEPROM)
+        if spec:
+            serial_number = spec.settings.eeprom.serial_number
+            ini_gain_db = self.ctl.config.get_float(serial_number, "gain_db", now_db)
+            log.debug("Get gain from INI: %s", ini_gain_db)
+            self.set_db(ini_gain_db)
 
         log.info("spinbox limits (%d, %d) (current %d)",
             self.spinbox.minimum(), self.spinbox.maximum(), self.spinbox.value())
 
+    def _quiet_set(self, widget, value):
+        """
+        Set the value of a widget without invoking the ValueChanged event
+        """
+        widget.blockSignals(True)
+        widget.setValue(value)
+        widget.blockSignals(False)
+
+
     def set_db(self, db):
-        self.spinbox.setValue(db)
+        
+        # save gain_db to application state
+        self.multispec.set_state("gain_db", db)
+
+        # send gain update message to device
+        self.multispec.change_device_setting("detector_gain", db)
+
+        # ensure both gain widgets are correct, without generating additional events
+        self._quiet_set(self.spinbox, db)
+        self._quiet_set(self.slider, db)
 
     def up_callback(self):
         util.incr_spinbox(self.spinbox)
 
     def dn_callback(self):
         util.decr_spinbox(self.spinbox)
-
-    def sync_slider_to_spinbox_callback(self):
-        self.spinbox.setValue(self.slider.value()) 
-
-    def sync_spinbox_to_slider_callback(self):
-        db = self.spinbox.value()
-
-        self.slider.blockSignals(True)
-        self.slider.setValue(db)
-        self.slider.blockSignals(False)
-
-        self.multispec.set_state("gain_db", db)
-        self.multispec.change_device_setting("detector_gain", db)

@@ -321,7 +321,7 @@ class Configuration(object):
         if self.has_option(section, key):
             try:
                 value = int(self.get(section, key))
-            except:
+            except ValueError:
                 log.error("invalid int for %s.%s got value of %s", section, key, self.get(section, key))
         return value
 
@@ -330,7 +330,7 @@ class Configuration(object):
         if self.has_option(section, key):
             try:
                 value = float(self.get(section, key))
-            except:
+            except ValueError:
                 log.error("invalid float for %s.%s got value of %s", section, key, self.get(section, key))
         return value
 
@@ -527,8 +527,9 @@ class Configuration(object):
                     log.info("saving config for %s", sn)
 
                     # these application-session settings can always be saved
-                    self.set(sn, "integration_time_ms",                 state.integration_time_ms)
-                    self.set(sn, "boxcar_half_width",                   state.boxcar_half_width)
+                    self.set(sn, "integration_time_ms", state.integration_time_ms)
+                    self.set(sn, "boxcar_half_width", state.boxcar_half_width)
+                    self.set(sn, "gain_db", state.gain_db)
 
                     # only save EEPROM overrides if explicitly instructed
                     if full:
