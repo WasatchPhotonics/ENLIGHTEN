@@ -5,12 +5,17 @@ from EnlightenPlugin import *
 
 log = logging.getLogger(__name__)
 
-##
-# Adds min, max and mean series to the ENLIGHTEN scope.
-#
-# @todo "stitch" spectra from multiple spectrometer ranges? would require 
-#       tracking x-coord of each pixel, in all 3 axes?
 class Stats(EnlightenPluginBase):
+    """
+    Adds min, max and mean series to the ENLIGHTEN scope.  All stats are on-going, 
+    with a manual "reset" button to clear them.  
+
+    See StatsBuffer for additional statistics which require keeping a buffer of 
+    historical spectra in memory.
+
+    @todo "stitch" spectra from multiple spectrometer ranges? would require 
+          tracking x-coord of each pixel, in all 3 axes?
+    """
 
     def get_configuration(self):
         self.name = "Statistics"
