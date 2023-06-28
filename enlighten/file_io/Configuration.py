@@ -395,6 +395,8 @@ class Configuration(object):
             "format_excel": False,
             "format_json":  False,
 
+            "label_template": "{time} {serial_number}",
+
             "prefix":       "enlighten",
             "suffix":       "",
             "note":         "",
