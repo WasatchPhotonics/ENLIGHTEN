@@ -2,6 +2,9 @@
 
 # 4.0 GUI Refactoring
 
+- 2023-??-?? 4.0.13
+    - GUI
+        - added min/avg/max to thumbnail tooltips
 - 2023-06-14 4.0.12
     - persistence
         - fixed Configuration defaults

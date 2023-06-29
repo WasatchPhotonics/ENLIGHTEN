@@ -518,7 +518,14 @@ class ThumbnailWidget(QtWidgets.QFrame):
         self.button_trash.setVisible(False)
 
     def generate_tooltip(self):
-        tt = ""
+        # quick stats in first line
+        proc = self.measurement.processed_reading.processed
+        hi = int(max(proc))
+        lo = int(min(proc))
+        avg = int(sum(proc)/len(proc))
+        tt = f"Max {hi}, Avg {avg}, Min {lo}\n\n"
+
+        # followed by Measurement metadata
         metadata = self.measurement.get_all_metadata()
         for k in sorted(metadata):
             v = metadata[k]
