@@ -520,10 +520,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
     def generate_tooltip(self):
         # quick stats in first line
         proc = self.measurement.processed_reading.processed
-        hi = int(max(proc))
-        lo = int(min(proc))
-        avg = int(sum(proc)/len(proc))
-        tt = f"Max {hi}, Avg {avg}, Min {lo}\n\n"
+        tt = f"Max {int(max(proc))}, Avg {int(sum(proc)/len(proc))}, Min {int(min(proc))}\n\n"
 
         # followed by Measurement metadata
         metadata = self.measurement.get_all_metadata()
