@@ -903,7 +903,7 @@ class Controller:
             self.cursor.center()
             for feature in [ self.accessory_control,
                              self.laser_control,
-                             self.crop_roi ]:
+                             self.horiz_roi ]:
                 feature.init_hotplug()
 
         for feature in [ self.accessory_control,
@@ -922,7 +922,7 @@ class Controller:
                          self.richardson_lucy,
                          self.status_indicators,
                          self.vcr_controls,
-                         self.crop_roi ]:
+                         self.horiz_roi ]:
             feature.update_visibility()
 
         ########################################################################
@@ -1755,8 +1755,8 @@ class Controller:
 
         # This should be done before any processing that involves multiple
         # pixels, e.g. offset, boxcar, baseline correction, or Richardson-Lucy.
-        log.debug("process_reading: calling crop_roi.process")
-        self.crop_roi.process(pr, settings)
+        log.debug("process_reading: calling horiz_roi.process")
+        self.horiz_roi.process(pr, settings)
 
         ########################################################################
         # Reference
@@ -2261,8 +2261,8 @@ class Controller:
         else:
             retval = np.array(list(range(settings.pixels())), dtype=np.float32) 
 
-        if cropped and self.crop_roi.enabled:
-            return self.crop_roi.crop(retval, roi=settings.eeprom.get_horizontal_roi())
+        if cropped and self.horiz_roi.enabled:
+            return self.horiz_roi.crop(retval, roi=settings.eeprom.get_horizontal_roi())
 
         if regions:
             log.debug("generate_x_axis: chopping into regions")

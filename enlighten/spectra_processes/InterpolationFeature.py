@@ -57,17 +57,17 @@ class InterpolationFeature(object):
             multispec,
             rb_wavelength,
             rb_wavenumber,
-            crop_roi):
+            horiz_roi ):
 
-        self.config           = config
-        self.cb_enabled       = cb_enabled
-        self.dsb_end          = dsb_end
-        self.dsb_incr         = dsb_incr
-        self.dsb_start        = dsb_start
-        self.multispec        = multispec
-        self.rb_wavelength    = rb_wavelength
-        self.rb_wavenumber    = rb_wavenumber
-        self.crop_roi         = crop_roi
+        self.config         = config
+        self.cb_enabled     = cb_enabled
+        self.dsb_end        = dsb_end
+        self.dsb_incr       = dsb_incr
+        self.dsb_start      = dsb_start
+        self.multispec      = multispec
+        self.rb_wavelength  = rb_wavelength
+        self.rb_wavenumber  = rb_wavenumber
+        self.horiz_roi      = horiz_roi
 
         self.mutex = QtCore.QMutex()
         self.new_axis = None
@@ -227,7 +227,7 @@ class InterpolationFeature(object):
             roi is not None)
         if pr.processed_cropped is not None and settings is not None and roi is not None:
             log.debug("interpolating cropped spectrum to new axis of %d pixels", len(self.new_axis))
-            old_axis_cropped = self.crop_roi.crop(old_axis, roi=roi)
+            old_axis_cropped = self.horiz_roi.crop(old_axis, roi=roi)
             ipr.processed_reading.processed_cropped = np.interp(self.new_axis, old_axis_cropped, pr.processed_cropped)
 
         return ipr

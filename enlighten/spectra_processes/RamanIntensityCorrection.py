@@ -17,13 +17,13 @@ class RamanIntensityCorrection(object):
             guide,
             multispec,
             page_nav,
-            crop_roi,):
+            horiz_roi,):
 
         self.cb_enable      = cb_enable
         self.guide          = guide
         self.multispec      = multispec
         self.page_nav       = page_nav
-        self.crop_roi       = crop_roi
+        self.horiz_roi      = horiz_roi # MZ: not used?
 
         self.dark_feature   = None # provided post-construction
 

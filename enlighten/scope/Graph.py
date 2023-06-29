@@ -81,10 +81,10 @@ class Graph(object):
         self.stacked_widget             = stacked_widget
 
         # these are passed post-construction, or not at all (could add to ctor parameters anyway)
-        self.cursor         = None
-        self.multispec      = None 
-        self.crop_roi       = None 
-        self.measurements   = None
+        self.cursor       = None
+        self.multispec    = None 
+        self.horiz_roi    = None 
+        self.measurements = None
 
         if init_graph_axis:
             self.current_x_axis = common.Axes.WAVELENGTHS
@@ -318,13 +318,13 @@ class Graph(object):
 
         if x is not None:
             if len(y) < len(x):
-                if self.crop_roi and measurement:
+                if self.horiz_roi and measurement:
                     roi = measurement.settings.eeprom.get_horizontal_roi()
                     if roi:
                         # force vignetting, as clearly y is cropped (likely loaded 
                         # from external file), and we really have no choice but to 
                         # use what was in effect when the Measurement was taken
-                        x = self.crop_roi.crop(x, roi=roi, force=True)
+                        x = self.horiz_roi.crop(x, roi=roi, force=True)
 
             if len(y) != len(x):
                 log.error("unable to correct thumbnail widget by vignetting (len(x) %d != len(y) %d)", len(x), len(y))
@@ -433,10 +433,10 @@ class Graph(object):
                 (xData, yData) = curve.getData()
                 xData = self.generate_x_axis(spec=spec)
                 if xData is not None and yData is not None:
-                    if len(yData) < len(xData) and self.crop_roi is not None:
+                    if len(yData) < len(xData) and self.horiz_roiis not None:
                         roi = spec.settings.eeprom.get_horizontal_roi()
                         if roi is not None:
-                            xData = self.crop_roi.crop(xData, roi=roi)
+                            xData = self.horiz_roi.crop(xData, roi=roi)
                     if len(xData) == len(yData):
                         self.set_data(curve=curve, y=yData, x=xData)
 
@@ -470,10 +470,10 @@ class Graph(object):
                     xData = list(range(len(yData)))
 
                 if xData is not None:
-                    if len(yData) < len(xData) and self.crop_roi is not None:
+                    if len(yData) < len(xData) and self.horiz_roiis not None:
                         roi = m.settings.eeprom.get_horizontal_roi()
                         if roi is not None:
-                            xData = self.crop_roi.crop(xData, roi=roi)
+                            xData = self.horiz_roi.crop(xData, roi=roi)
 
                     if len(yData) == len(xData):
                         self.set_data(curve=curve, y=yData, x=xData)
@@ -514,15 +514,15 @@ class Graph(object):
             # log.debug("hiding curtains (no ROI to show)")
             return
 
-        if not self.crop_roi:
-            # log.debug("hiding curtains (no CropROIFeature object)")
+        if not self.horiz_roi:
+            # log.debug("hiding curtains (no HorizROIFeature object)")
             return
 
-        if self.crop_roi.enabled:
-            # log.debug("hiding curtains (CropROIFeature.enabled True), meaning finges should be hid")
+        if self.horiz_roi.enabled:
+            # log.debug("hiding curtains (HorizROIFeature.enabled True), meaning fringes should be hidden")
             return
 
-        # log.debug("showing curtains, because CropROIFeature.enabled False")
+        # log.debug("showing curtains, because HorizROIFeature.enabled False")
 
         roi = spec.settings.eeprom.get_horizontal_roi()
         axis = self.generate_x_axis(cropped=False)

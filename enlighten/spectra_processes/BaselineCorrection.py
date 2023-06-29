@@ -66,18 +66,18 @@ class BaselineCorrection:
             guide,
             multispec,
             page_nav,
-            crop_roi,
+            horiz_roi,
             graph):
 
-        self.cb_enabled      = cb_enabled
-        self.cb_show_curve   = cb_show_curve
-        self.combo_algo      = combo_algo
-        self.config          = config
-        self.guide           = guide
-        self.multispec       = multispec
-        self.page_nav        = page_nav
-        self.crop_roi        = crop_roi
-        self.graph           = graph
+        self.cb_enabled     = cb_enabled
+        self.cb_show_curve  = cb_show_curve
+        self.combo_algo     = combo_algo
+        self.config         = config
+        self.guide          = guide
+        self.multispec      = multispec
+        self.page_nav       = page_nav
+        self.horiz_roi      = horiz_roi
+        self.graph          = graph
 
         self.current_algo_name = BaselineCorrection.DEFAULT_ALGO_NAME
         self.enabled = False
@@ -112,7 +112,7 @@ class BaselineCorrection:
         self.update_visibility()
 
         # we need to know when Vignetting is turned on/off
-        self.crop_roi.register_observer(self.update_visibility)
+        self.horiz_roi.register_observer(self.update_visibility)
 
         self.curve = self.graph.add_curve("baseline", rehide=False, in_legend=False)
         self.curve.setVisible(False)

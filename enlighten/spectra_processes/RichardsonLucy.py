@@ -27,13 +27,13 @@ class RichardsonLucy(object):
             config,
             graph,
             multispec,
-            crop_roi):
+            horiz_roi):
 
-        self.cb_enable       = cb_enable
-        self.config          = config
-        self.graph           = graph
-        self.multispec       = multispec
-        self.crop_roi        = crop_roi
+        self.cb_enable = cb_enable
+        self.config    = config
+        self.graph     = graph
+        self.multispec = multispec
+        self.horiz_roi = horiz_roi
 
         self.reset()
 
@@ -54,7 +54,7 @@ class RichardsonLucy(object):
 
         # If the user dis/enables or changes vignetting, re-generate guassian.  
         # (Alternative design would be to include ROI tuple in the cache key.)
-        self.crop_roi.register_observer(self.reset)
+        self.horiz_roi.register_observer(self.reset)
 
         self.cb_enable.setToolTip("apply Richardson-Lucy focal deconvolution")
 

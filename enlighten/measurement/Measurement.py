@@ -1119,7 +1119,7 @@ class Measurement(object):
 
         # vignetting
         roi = None
-        if self.settings is not None and self.measurements is not None and self.measurements.crop_roi.enabled:
+        if self.settings is not None and self.measurements is not None and self.measurements.horiz_roi.enabled:
             self.roi_active = True
             roi = self.settings.eeprom.get_horizontal_roi()
         cropped = roi is not None and pr.is_cropped()

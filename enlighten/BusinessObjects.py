@@ -295,7 +295,7 @@ class BusinessObjects:
             hardware_file_manager       = ctl.hardware_file_manager)
 
         self.header("instantiating CropROIFeature")
-        ctl.crop_roi = CropROIFeature(
+        ctl.horiz_roi = HorizROIFeature(
             graph                       = ctl.graph,
             multispec                   = ctl.multispec,
             stylesheets                 = ctl.stylesheets,
@@ -306,7 +306,7 @@ class BusinessObjects:
         self.header("instantiating TransmissionFeature")
         ctl.transmission = TransmissionFeature(
             marquee                     = ctl.marquee,
-            crop_roi                    = ctl.crop_roi,
+            horiz_roi                   = ctl.horiz_roi,
                                        
             cb_max_enable               = sfu.checkBox_enable_max_transmission,
             sb_max_perc                 = sfu.spinBox_max_transmission_perc)
@@ -345,7 +345,7 @@ class BusinessObjects:
             multispec                   = ctl.multispec,
             rb_wavelength               = sfu.radioButton_save_interpolation_wavelength,
             rb_wavenumber               = sfu.radioButton_save_interpolation_wavenumber,
-            crop_roi                    = ctl.crop_roi)
+            horiz_roi                   = ctl.horiz_roi)
 
         self.header("instantiating ExternalTriggerFeature")
         ctl.external_trigger = ExternalTriggerFeature(
@@ -437,7 +437,7 @@ class BusinessObjects:
             layout                      = sfu.verticalLayout_scope_capture_save,
             marquee                     = ctl.marquee,
             reprocess_callback          = ctl.reprocess,
-            crop_roi                    = ctl.crop_roi)
+            horiz_roi                   = ctl.horiz_roi)
         ctl.graph.measurements = ctl.measurements
 
         self.header("instantiating Authentication")
@@ -475,7 +475,7 @@ class BusinessObjects:
             stylesheets                 = ctl.stylesheets,
             update_gain_and_offset_callback = ctl.update_gain_and_offset,
             update_wavecal_callback     = ctl.update_wavecal,
-            crop_roi                    = ctl.crop_roi,
+            horiz_roi                   = ctl.horiz_roi,
             current_spectrometer        = ctl.current_spectrometer)
 
         self.header("instantiating RamanIntensityCorrection")
@@ -484,7 +484,7 @@ class BusinessObjects:
             guide                       = ctl.guide,
             multispec                   = ctl.multispec,
             page_nav                    = ctl.page_nav,
-            crop_roi                    = ctl.crop_roi)
+            horiz_roi                   = ctl.horiz_roi)
 
         self.header("instantiating LaserControlFeature")
         ctl.laser_control = LaserControlFeature(
@@ -573,7 +573,7 @@ class BusinessObjects:
             guide                       = ctl.guide,
             multispec                   = ctl.multispec,
             page_nav                    = ctl.page_nav,
-            crop_roi                    = ctl.crop_roi,
+            horiz_roi                   = ctl.horiz_roi,
             graph                       = ctl.graph)
 
         self.header("instantiating DarkFeature")
@@ -726,7 +726,7 @@ class BusinessObjects:
             table_recent                = sfu.tableWidget_id_match_recent,
             table_results               = sfu.tableWidget_id_match_results,
             vcr_controls                = ctl.vcr_controls,
-            crop_roi                    = ctl.crop_roi)
+            horiz_roi                   = ctl.horiz_roi)
         ctl.measurement_factory.kia = ctl.kia_feature
 
         self.header("instantiating RichardsonLucy")
@@ -735,7 +735,7 @@ class BusinessObjects:
             config                      = ctl.config,
             graph                       = ctl.graph,
             multispec                   = ctl.multispec,
-            crop_roi                    = ctl.crop_roi)
+            horiz_roi                   = ctl.horiz_roi)
 
         self.header("instantiating ManufacturingFeature")
         ctl.mfg = ManufacturingFeature(
@@ -766,7 +766,7 @@ class BusinessObjects:
             save_options                = ctl.save_options,
             kia_feature                 = ctl.kia_feature,
             measurements_clipboard      = ctl.measurements,
-            crop_roi                    = ctl.crop_roi,
+            horiz_roi                   = ctl.horiz_roi,
 
             button_process              = sfu.pushButton_plugin_process,
             cb_connected                = sfu.checkBox_plugin_connected,

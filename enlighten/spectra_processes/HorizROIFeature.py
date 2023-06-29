@@ -24,7 +24,7 @@ log = logging.getLogger(__name__)
 #     button CSS:    gray        red
 #     crop:          yes         no
 #
-class CropROIFeature(object):
+class HorizROIFeature(object):
     
     def __init__(self,
             graph,
@@ -43,7 +43,7 @@ class CropROIFeature(object):
         self.observers = set()
 
         # self-register with Graph
-        self.graph.crop_roi = self
+        self.graph.horiz_roi = self
 
         self.button.clicked.connect(self.toggle)
 

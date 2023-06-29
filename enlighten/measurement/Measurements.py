@@ -45,7 +45,7 @@ class Measurements(object):
             layout,
             marquee,
             reprocess_callback,
-            crop_roi):
+            horiz_roi):
 
         self.button_erase       = button_erase
         self.button_export      = button_export
@@ -60,7 +60,7 @@ class Measurements(object):
         self.layout             = layout
         self.marquee            = marquee
         self.reprocess_callback = reprocess_callback
-        self.crop_roi           = crop_roi
+        self.horiz_roi          = horiz_roi
 
         self.measurements = []
 
@@ -830,7 +830,7 @@ class Measurements(object):
                 # MZ: always export all rows
                 # if spectrometer_count == 1:
                 #     roi = settingss[0].eeprom.get_horizontal_roi()
-                #     if roi is not None and not roi.contains(pixel) and self.crop_roi.enabled:
+                #     if roi is not None and not roi.contains(pixel) and self.horiz_roi.enabled:
                 #         continue
 
                 row = []
