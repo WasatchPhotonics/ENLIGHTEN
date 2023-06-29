@@ -193,7 +193,7 @@ class Feature(object):
             table_recent,
             table_results,
             vcr_controls,
-            vignette_roi):
+            crop_roi):
 
         self.baseline_correction        = baseline_correction
         self.bt_alias                   = bt_alias
@@ -231,7 +231,7 @@ class Feature(object):
         self.table_recent               = table_recent
         self.table_results              = table_results
         self.vcr_controls               = vcr_controls
-        self.vignette_roi               = vignette_roi
+        self.crop_roi                   = crop_roi
 
         self.kia_pathname = None         # where KnowItAll is installed
         self.executable_pathname = None
@@ -774,10 +774,10 @@ class Feature(object):
 
         spectrum = pr.get_processed()
         if pr.is_cropped():
-            log.debug("vignetted spectrum")
+            log.debug("cropped spectrum")
             if roi is not None:
                 log.debug("cropping x-axis")
-                x_axis = self.vignette_roi.crop(x_axis, roi=roi)
+                x_axis = self.crop_roi.crop(x_axis, roi=roi)
 
         log.debug("new x_axis = %s", x_axis)
 

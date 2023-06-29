@@ -45,7 +45,7 @@ class Measurements(object):
             layout,
             marquee,
             reprocess_callback,
-            vignette_roi):
+            crop_roi):
 
         self.button_erase       = button_erase
         self.button_export      = button_export
@@ -60,7 +60,7 @@ class Measurements(object):
         self.layout             = layout
         self.marquee            = marquee
         self.reprocess_callback = reprocess_callback
-        self.vignette_roi       = vignette_roi
+        self.crop_roi           = crop_roi
 
         self.measurements = []
 
@@ -751,7 +751,7 @@ class Measurements(object):
                         if roi is not None and m.roi_active:
                             if roi.contains(pixel):
                                 pixel -= roi.start
-                                a = pr.processed_vignetted
+                                a = pr.processed_cropped
             elif header == "reference":
                 a = pr.reference
             elif header == "dark":
@@ -830,7 +830,7 @@ class Measurements(object):
                 # MZ: always export all rows
                 # if spectrometer_count == 1:
                 #     roi = settingss[0].eeprom.get_horizontal_roi()
-                #     if roi is not None and not roi.contains(pixel) and self.vignette_roi.enabled:
+                #     if roi is not None and not roi.contains(pixel) and self.crop_roi.enabled:
                 #         continue
 
                 row = []

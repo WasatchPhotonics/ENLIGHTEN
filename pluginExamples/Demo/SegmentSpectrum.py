@@ -10,7 +10,7 @@ from EnlightenPlugin import EnlightenPluginBase,    \
 log = logging.getLogger(__name__)
 
 ##
-# A simple plug-in to display a vignetted (cropped) segment of a spectrum.
+# A simple plug-in to display a cropped segment of a spectrum.
 # The purpose is to demonstrate input fields.
 class SegmentSpectrum(EnlightenPluginBase):
 

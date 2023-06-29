@@ -17,13 +17,13 @@ class RamanIntensityCorrection(object):
             guide,
             multispec,
             page_nav,
-            vignette_roi,):
+            crop_roi,):
 
         self.cb_enable      = cb_enable
         self.guide          = guide
         self.multispec      = multispec
         self.page_nav       = page_nav
-        self.vignette_roi   = vignette_roi
+        self.crop_roi       = crop_roi
 
         self.dark_feature   = None # provided post-construction
 
@@ -114,7 +114,7 @@ class RamanIntensityCorrection(object):
     # @param pr (In/Out) ProcessedReading
     # @param spec (Input) Spectrometer
     #
-    # @note supports vignetted ProcessedReading (assumes raman intensity correction factors span
+    # @note supports cropped ProcessedReading (assumes raman intensity correction factors span
     #       the uncorrected raw spectrum)
     def process(self, pr, spec):
         if not self.enabled or \
@@ -130,8 +130,8 @@ class RamanIntensityCorrection(object):
         if pr.is_cropped():
             roi = spec.settings.eeprom.get_horizontal_roi()
             # probably a faster Numpy way to do this
-            for i in range(len(pr.processed_vignetted)):
-                pr.processed_vignetted[i] *= factors[i + roi.start]
+            for i in range(len(pr.processed_cropped)):
+                pr.processed_cropped[i] *= factors[i + roi.start]
         else:
             # note that this scales the entire spectrum, within and without the 
             # ROI, even though the factors are really only applicable/sensible/

@@ -53,7 +53,7 @@ class BoxcarFeature(object):
         """
         @param pr (In/Out) ProcessedReading
         @param spec (Input) Spectrometer
-        @note supports vignetted ProcessedReading
+        @note supports cropped ProcessedReading
         """
         if pr is None:
             return

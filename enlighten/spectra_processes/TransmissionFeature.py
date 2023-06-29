@@ -10,13 +10,13 @@ class TransmissionFeature:
     
     def __init__(self,
             marquee,
-            vignette_roi,
+            crop_roi,
 
             cb_max_enable,
             sb_max_perc):
 
         self.marquee        = marquee
-        self.vignette_roi   = vignette_roi
+        self.crop_roi       = crop_roi
 
         self.cb_max_enable  = cb_max_enable
         self.sb_max_perc    = sb_max_perc
@@ -55,7 +55,7 @@ class TransmissionFeature:
 
         if pr.is_cropped() and settings is not None:
             roi = settings.eeprom.get_horizontal_roi()
-            ref = self.vignette_roi.crop(ref, roi=roi)
+            ref = self.crop_roi.crop(ref, roi=roi)
 
         if len(ref) != len(sample):
             self.marquee.error("reference and sample must be same size")

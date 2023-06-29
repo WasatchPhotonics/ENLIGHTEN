@@ -157,7 +157,7 @@ class PluginController:
             save_options,
             kia_feature,
             measurements_clipboard,
-            vignette_feature,
+            crop_feature,
 
             button_process,
             cb_connected,
@@ -194,7 +194,7 @@ class PluginController:
         self.save_options               = save_options
         self.kia_feature                = kia_feature
         self.measurements_clipboard     = measurements_clipboard
-        self.vignette_feature           = vignette_feature
+        self.crop_feature               = crop_feature
 
         # widgets
         self.button_process             = button_process
@@ -295,7 +295,7 @@ class PluginController:
             measurement_factory = self.measurement_factory,
             measurements_clipboard = self.measurements_clipboard,
             read_measurements = self.measurements.read_measurements,
-            vignette_feature = self.vignette_feature,
+            crop_feature = self.crop_feature,
             plugin_fields = self.get_plugin_fields
         ) # leaving read measurement call for legacy purposes
 

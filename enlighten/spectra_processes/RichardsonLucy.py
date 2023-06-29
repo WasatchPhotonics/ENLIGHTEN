@@ -27,13 +27,13 @@ class RichardsonLucy(object):
             config,
             graph,
             multispec,
-            vignette_roi):
+            crop_roi):
 
         self.cb_enable       = cb_enable
         self.config          = config
         self.graph           = graph
         self.multispec       = multispec
-        self.vignette_roi    = vignette_roi
+        self.crop_roi        = crop_roi
 
         self.reset()
 
@@ -54,7 +54,7 @@ class RichardsonLucy(object):
 
         # If the user dis/enables or changes vignetting, re-generate guassian.  
         # (Alternative design would be to include ROI tuple in the cache key.)
-        self.vignette_roi.register_observer(self.reset)
+        self.crop_roi.register_observer(self.reset)
 
         self.cb_enable.setToolTip("apply Richardson-Lucy focal deconvolution")
 
@@ -83,7 +83,7 @@ class RichardsonLucy(object):
     # @param spec (Input) Spectrometer
     # @see Dieter for algorithm explanation
     #
-    # @note supports vignetted ProcessedReading if available
+    # @note supports cropped ProcessedReading if available
     def process(self, pr, spec):
         if not self.enabled:
             return 
@@ -146,7 +146,7 @@ class RichardsonLucy(object):
         if spec is None:
             return
 
-        x_axis = self.graph.generate_x_axis(unit=unit, vignetted=True)
+        x_axis = self.graph.generate_x_axis(unit=unit, cropped=True)
         if x_axis is None:
             log.debug("no x-axis")
             return 

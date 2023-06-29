@@ -55,7 +55,7 @@ class EEPROMEditor(object):
                 stylesheets,
                 update_wavecal_callback, 
                 update_gain_and_offset_callback,
-                vignette_roi,
+                crop_roi,
                 current_spectrometer): 
         """
         @param authentication     So the EEPROMEditor will know which fields
@@ -67,7 +67,7 @@ class EEPROMEditor(object):
         @param update_gain_and_offset_callback if any EEPROM fields relating to gain
                                   or offset are editted, call this to update the
                                   spectrometer
-        @param vignette_roi       allows feature updates on value changes
+        @param crop_roi           allows feature updates on value changes
         
         @todo if we had business objects for DetectorFeature and WavecalFeature, 
               we could structure this better than the Controller callbacks
@@ -86,7 +86,7 @@ class EEPROMEditor(object):
         self.stylesheets                     = stylesheets
         self.update_wavecal_callback         = update_wavecal_callback
         self.update_gain_and_offset_callback = update_gain_and_offset_callback
-        self.vignette_roi                    = vignette_roi,
+        self.crop_roi                        = crop_roi,
         self.current_spectrometer            = current_spectrometer
 
         self.updated_from_eeprom = False
