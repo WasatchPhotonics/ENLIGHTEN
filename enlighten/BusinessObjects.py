@@ -21,7 +21,7 @@ from enlighten.scope.HighGainModeFeature import HighGainModeFeature
 from enlighten.spectra_processes.TransmissionFeature import TransmissionFeature
 from enlighten.measurement.MeasurementFactory import MeasurementFactory
 from enlighten.spectra_processes.BaselineCorrection import BaselineCorrection
-from enlighten.spectra_processes.CropROIFeature import CropROIFeature
+from enlighten.spectra_processes.HorizROIFeature import HorizROIFeature
 from enlighten.spectra_processes.AbsorbanceFeature import AbsorbanceFeature
 from enlighten.ui.StatusBarFeature import StatusBarFeature
 from enlighten.scope.RamanModeFeature import RamanModeFeature
@@ -294,7 +294,7 @@ class BusinessObjects:
             clipboard                   = ctl.clipboard,
             hardware_file_manager       = ctl.hardware_file_manager)
 
-        self.header("instantiating CropROIFeature")
+        self.header("instantiating HorizROIFeature")
         ctl.horiz_roi = HorizROIFeature(
             graph                       = ctl.graph,
             multispec                   = ctl.multispec,

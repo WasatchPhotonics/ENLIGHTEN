@@ -433,7 +433,7 @@ class Graph(object):
                 (xData, yData) = curve.getData()
                 xData = self.generate_x_axis(spec=spec)
                 if xData is not None and yData is not None:
-                    if len(yData) < len(xData) and self.horiz_roiis not None:
+                    if len(yData) < len(xData) and self.horiz_roi is not None:
                         roi = spec.settings.eeprom.get_horizontal_roi()
                         if roi is not None:
                             xData = self.horiz_roi.crop(xData, roi=roi)
@@ -470,7 +470,7 @@ class Graph(object):
                     xData = list(range(len(yData)))
 
                 if xData is not None:
-                    if len(yData) < len(xData) and self.horiz_roiis not None:
+                    if len(yData) < len(xData) and self.horiz_roi is not None:
                         roi = m.settings.eeprom.get_horizontal_roi()
                         if roi is not None:
                             xData = self.horiz_roi.crop(xData, roi=roi)

@@ -19,7 +19,7 @@ class EnlightenApplicationInfoReal(EnlightenApplicationInfo):
             measurement_factory,
             measurements_clipboard,
             read_measurements,# present for legacy reasons
-            crop_feature,
+            horiz_roi,
             plugin_fields,
             dependencies = {}):
 
@@ -34,7 +34,7 @@ class EnlightenApplicationInfoReal(EnlightenApplicationInfo):
         self.kia_feature = kia_feature
         self.dependencies = dependencies
         self.read_measurements = read_measurements
-        self.crop_feature = crop_feature
+        self.horiz_roi = horiz_roi 
         self.plugin_fields = plugin_fields
 
     def get_x_axis_unit(self):
