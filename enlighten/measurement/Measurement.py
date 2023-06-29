@@ -457,6 +457,8 @@ class Measurement(object):
 
             if macro == "time":
                 value = self.timestamp.strftime("%H:%M:%S")
+            elif self.processed_reading and self.processed_reading.reading and hasattr(self.processed_reading.reading, macro):
+                value = getattr(self.processed_reading.reading, macro)
             elif hasattr(self.settings.eeprom, macro):
                 value = getattr(self.settings.eeprom, macro)
             elif hasattr(self.settings.state, macro):
@@ -465,7 +467,13 @@ class Measurement(object):
                 value = self.get_metadata(macro)
 
             if isinstance(value, float):
-                value = f"{value:.3f}"
+                if macro in ['gain_db']:
+                    fmt = "{0:.1f}"
+                elif 'excitation' in macro:
+                    fmt = "{0:.3f}"
+                else
+                    fmt = "{0:.2f}"
+                value = fmt.format(value)
 
             template = template.replace("{%s}" % macro, str(value))
             log.debug(f"expand_template: {macro} -> {value} (now {template})")

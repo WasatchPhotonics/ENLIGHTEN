@@ -174,7 +174,7 @@ class Configuration(object):
 
     def parse(self):
         """ Load as ConfigParser object. """
-        self.config = configparser.ConfigParser()
+        self.config = configparser.ConfigParser(interpolation=None)
         self.config.optionxform = str
         try:
             self.config.read(self.pathname)
