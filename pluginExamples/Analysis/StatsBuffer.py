@@ -2,48 +2,45 @@ import numpy as np
 import scipy.stats 
 import logging
 
-from EnlightenPlugin import EnlightenPluginBase,    \
-                            EnlightenPluginField,    \
-                            EnlightenPluginResponse,  \
-                            EnlightenPluginConfiguration
+from EnlightenPlugin import *
 
 log = logging.getLogger(__name__)
 
-##
-# Adds min, max, mean, mode, median, +/-stdev series to the ENLIGHTEN scope.
 class StatsBuffer(EnlightenPluginBase):
+    """
+    This is similar to the Analysis.Stats plugin, but adds additional statistics
+    (mode, median, stdev) which require that a buffer of recent spectra be cached
+    in memory.  
 
-    def __init__(self, ctl):
-        super().__init__(ctl)
-        self.series_names = ["Min", "Max", "Mean", "Median", "Mode", "Sigma.lo", "Sigma.hi"]
+    Allows the user to set the history size, and displays the buffer size as it 
+    fills.
+
+    Allows the computed median to be exported back to ENLIGHTEN as the next 
+    potential dark measurement, meaning that you can use this to generate a
+    true "median dark" (which some spectroscopists prefer to "averaged dark").
+    """
 
     def get_configuration(self):
-        fields = []
+        self.name = "Buffered Statistics"
+        self.series_names = ["Min", "Max", "Mean", "Median", "Mode", "Sigma.lo", "Sigma.hi"]
 
         for name in self.series_names:
-            fields.append(EnlightenPluginField(name=name, datatype=bool, initial=True, direction="input", 
-                tooltip="Display {name}"))
+            self.field(name=name, datatype=bool, initial=True, direction="input", tooltip="Display {name}")
 
-        fields.append(EnlightenPluginField(name="History", direction="input", datatype=int, minimum=3, maximum=1000, initial=50,
-            tooltip="Number of historical spectra retained for statistics"))
+        self.field(name="History", direction="input", datatype=int, minimum=3, maximum=1000, initial=50, tooltip="Number of historical spectra retained for statistics")
+        self.field(name="Filled", datatype=int, initial=0, tooltip="Portion of potential history currently populated")
+        self.field(name="Export Median", datatype=bool, initial=False, direction="input", tooltip="Allow 'Store Dark' to use computed median (also add column to CSV)")
+        self.field(name="Clear", datatype="button", callback=self.reset, tooltip="Clear history")
 
-        fields.append(EnlightenPluginField(name="Filled", datatype=int, initial=0,
-            tooltip="Portion of potential history currently populated"))
+        self.block_enlighten = True
 
-        fields.append(EnlightenPluginField(name="Export Median", datatype=bool, initial=False, direction="input", 
-            tooltip="Allow 'Store Dark' to use computed median (also add column to CSV)"))
-
-        fields.append(EnlightenPluginField(name="Clear", datatype="button", callback=self.reset,
-            tooltip="Clear history"))
-
-        return EnlightenPluginConfiguration(name="Buffered Statistics", fields=fields, series_names=self.series_names)
-
-    def connect(self, enlighten_info):
-        super().connect(enlighten_info)
         self.reset()
-        return True
 
     def process_request(self, request):
+        self.series = {}
+        self.outputs = {}
+        self.metadata = {}
+        self.overrides = {}
         try:
             spectrum = np.array(request.processed_reading.processed, dtype=np.float32)
             history = request.fields["History"]
@@ -53,7 +50,6 @@ class StatsBuffer(EnlightenPluginBase):
             else:
                 self.metrics.update(spectrum, history)
 
-            series = {}     # only graph the selected series
             for name, y_values in zip(self.series_names, [ 
                     self.metrics.min,       # YOU MUST KEEP THIS
                     self.metrics.max,       # LIST SYNCHRONIZED
@@ -63,33 +59,16 @@ class StatsBuffer(EnlightenPluginBase):
                     self.metrics.sigma_lo, 
                     self.metrics.sigma_hi ]):
                 if request.fields[name]: 
-                    series[name] = y_values 
+                    self.plot(title=name, y=y_values)
 
-            overrides = {}
-            metadata  = {}
             if request.fields["Export Median"]:
-                overrides["recordable_dark"] = self.metrics.median  
-                metadata["MedianDark"] = self.metrics.median        
+                self.overrides["recordable_dark"] = self.metrics.median  
+                self.metadata["MedianDark"] = self.metrics.median        
 
-            return EnlightenPluginResponse(request, 
-                series = series,        # graph traces
-                metadata = metadata,    # add column in saved CSV
-                overrides = overrides,  # allow the user to "Take Dark" and get the median dark
-                outputs = {
-                    "Filled": self.metrics.height() 
-                }
-            )
+            self.outputs = { "Filled": self.metrics.height() }
         except:
+            log.error("something went awry", exc_info=1)
             self.reset()
-
-            return EnlightenPluginResponse(request, 
-                series = {},        # graph traces
-                metadata = {},    # add column in saved CSV
-                overrides = {},  # allow the user to "Take Dark" and get the median dark
-                outputs = {
-                    "Filled": [] 
-                }
-            )
 
     def reset(self):
         self.metrics = None
