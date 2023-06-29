@@ -5,6 +5,7 @@
 - 2023-??-?? 4.0.13
     - keyboard shortcuts
         - added ctrl-G/N/T per https://www.goodreads.com/quotes/9934315-it-is-a-curious-fact-and-one-to-which-no
+        - added F1 for help
 - 2023-06-14 4.0.12
     - persistence
         - fixed Configuration defaults

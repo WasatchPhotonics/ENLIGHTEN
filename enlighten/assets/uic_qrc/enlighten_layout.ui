@@ -2410,7 +2410,7 @@ QComboBox QListView
                  </size>
                 </property>
                 <property name="toolTip">
-                 <string>Got questions?</string>
+                 <string>Got questions? (F1)</string>
                 </property>
                 <property name="text">
                  <string />

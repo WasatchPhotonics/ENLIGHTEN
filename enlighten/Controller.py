@@ -1083,6 +1083,9 @@ class Controller:
         make_shortcut(QtGui.QKeySequence.MoveToPreviousWord, self.cursor.dn_callback) # ctrl-left
         make_shortcut(QtGui.QKeySequence.MoveToNextWord,     self.cursor.up_callback) # ctrl-right
 
+        # Help - this seems a pretty standard convention
+        make_shortcut("F1", self.help_callback)
+
     # ##########################################################################
     # GUI utility methods
     # ##########################################################################
