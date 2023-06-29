@@ -2,6 +2,11 @@
 
 # 4.0 GUI Refactoring
 
+- 2023-??-?? 4.0.13
+    - keyboard shortcuts
+        - added ctrl-G (Gain dB)
+        - added ctrl-N (Note)
+        - added ctrl-T (integration Time)
 - 2023-06-14 4.0.12
     - persistence
         - fixed Configuration defaults

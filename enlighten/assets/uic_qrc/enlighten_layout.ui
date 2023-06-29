@@ -11608,6 +11608,9 @@ QComboBox QListView
                               <property name="text">
                                <string>processed</string>
                               </property>
+                              <property name="toolTip">
+                               <string>added to saved metadata (ctrl-N)</string>
+                              </property>
                              </widget>
                             </item>
                             <item row="1" column="0">
@@ -15762,6 +15765,9 @@ p, li { white-space: pre-wrap; }
                                 <verstretch>0</verstretch>
                                </sizepolicy>
                               </property>
+                              <property name="toolTip">
+                               <string>set integration time in ms (ctrl-T)</string>
+                              </property>
                               <property name="font">
                                <font>
                                 <pointsize>8</pointsize>
@@ -16034,6 +16040,9 @@ p, li { white-space: pre-wrap; }
                                <font>
                                 <pointsize>8</pointsize>
                                </font>
+                              </property>
+                              <property name="toolTip">
+                               <string>change gain in dB (ctrl-G)</string>
                               </property>
                               <property name="focusPolicy">
                                <enum>Qt::StrongFocus</enum>
