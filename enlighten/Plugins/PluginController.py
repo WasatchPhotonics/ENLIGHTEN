@@ -33,10 +33,7 @@ from ..ScrollStealFilter import ScrollStealFilter
 from enlighten.scope.Graph import Graph
 
 # this is in ../../pluginExamples
-from EnlightenPlugin import EnlightenPluginField,   \
-                            EnlightenPluginRequest,  \
-                            EnlightenApplicationInfo, \
-                            EnlightenPluginConfiguration
+from EnlightenPlugin import *
 
 from wasatch import utils as wasatch_utils
 
@@ -157,7 +154,7 @@ class PluginController:
             save_options,
             kia_feature,
             measurements_clipboard,
-            vignette_feature,
+            horiz_roi,
 
             button_process,
             cb_connected,
@@ -194,7 +191,7 @@ class PluginController:
         self.save_options               = save_options
         self.kia_feature                = kia_feature
         self.measurements_clipboard     = measurements_clipboard
-        self.vignette_feature           = vignette_feature
+        self.horiz_roi                  = horiz_roi
 
         # widgets
         self.button_process             = button_process
@@ -295,7 +292,7 @@ class PluginController:
             measurement_factory = self.measurement_factory,
             measurements_clipboard = self.measurements_clipboard,
             read_measurements = self.measurements.read_measurements,
-            vignette_feature = self.vignette_feature,
+            horiz_roi = self.horiz_roi,
             plugin_fields = self.get_plugin_fields
         ) # leaving read measurement call for legacy purposes
 

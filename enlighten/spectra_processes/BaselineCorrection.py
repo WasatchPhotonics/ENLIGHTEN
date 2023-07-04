@@ -18,7 +18,7 @@ class BaselineCorrection:
     There are two paths to BaselineCorrection: 
     
     - implicit operation: automatically enabled, with default algo (AirPLS), when in
-      Raman Mode, but ONLY if a horizontally vignetted ROI is configured. (MZ: is this true?)
+      Raman Mode, but ONLY if a horizontally cropped ROI is configured. (MZ: is this true?)
     
     - explicit operation: if user enabled "Expert Mode", then manually clicked 
       "Enabled" in the Baseline Correction widget.
@@ -66,18 +66,18 @@ class BaselineCorrection:
             guide,
             multispec,
             page_nav,
-            vignette_roi,
+            horiz_roi,
             graph):
 
-        self.cb_enabled      = cb_enabled
-        self.cb_show_curve   = cb_show_curve
-        self.combo_algo      = combo_algo
-        self.config          = config
-        self.guide           = guide
-        self.multispec       = multispec
-        self.page_nav        = page_nav
-        self.vignette_roi    = vignette_roi
-        self.graph           = graph
+        self.cb_enabled     = cb_enabled
+        self.cb_show_curve  = cb_show_curve
+        self.combo_algo     = combo_algo
+        self.config         = config
+        self.guide          = guide
+        self.multispec      = multispec
+        self.page_nav       = page_nav
+        self.horiz_roi      = horiz_roi
+        self.graph          = graph
 
         self.current_algo_name = BaselineCorrection.DEFAULT_ALGO_NAME
         self.enabled = False
@@ -112,7 +112,7 @@ class BaselineCorrection:
         self.update_visibility()
 
         # we need to know when Vignetting is turned on/off
-        self.vignette_roi.register_observer(self.update_visibility)
+        self.horiz_roi.register_observer(self.update_visibility)
 
         self.curve = self.graph.add_curve("baseline", rehide=False, in_legend=False)
         self.curve.setVisible(False)
@@ -265,7 +265,7 @@ class BaselineCorrection:
         """
         @param pr   (In/Out) ProcessedReading
         @param spec (Input)  Spectrometer
-        @note uses vignetted spectrum if found
+        @note uses cropped spectrum if found
         """
         # log.debug("process: show_curve %s, enabled %s, algo %s, pr %s", self.show_curve, self.enabled, self.algo, pr)
 
@@ -283,7 +283,7 @@ class BaselineCorrection:
             return
 
         spectrum = pr.get_processed()
-        x_axis = self.graph.generate_x_axis(spec=spec, vignetted=pr.is_cropped())
+        x_axis = self.graph.generate_x_axis(spec=spec, cropped=pr.is_cropped())
 
         baseline = self.generate_baseline(spectrum=spectrum, x_axis=x_axis)
         if baseline is None:

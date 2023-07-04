@@ -903,7 +903,7 @@ class Controller:
             self.cursor.center()
             for feature in [ self.accessory_control,
                              self.laser_control,
-                             self.vignette_roi ]:
+                             self.horiz_roi ]:
                 feature.init_hotplug()
 
         for feature in [ self.accessory_control,
@@ -922,7 +922,7 @@ class Controller:
                          self.richardson_lucy,
                          self.status_indicators,
                          self.vcr_controls,
-                         self.vignette_roi ]:
+                         self.horiz_roi ]:
             feature.update_visibility()
 
         ########################################################################
@@ -1761,8 +1761,8 @@ class Controller:
 
         # This should be done before any processing that involves multiple
         # pixels, e.g. offset, boxcar, baseline correction, or Richardson-Lucy.
-        log.debug("process_reading: calling vignette_roi.process")
-        self.vignette_roi.process(pr, settings)
+        log.debug("process_reading: calling horiz_roi.process")
+        self.horiz_roi.process(pr, settings)
 
         ########################################################################
         # Reference
@@ -1816,7 +1816,7 @@ class Controller:
 
             # Obviously baseline correction would benefit from ROI vignetting,
             # as would boxcar, Offset, Raman ID etc, so add a
-            # "processed_vignetted" attribute for use downstream.
+            # "processed_cropped" attribute for use downstream.
             self.baseline_correction.process(pr, spec)
 
             # on 2020-05-19 Deiter asked this to be moved before vignetting
@@ -1897,13 +1897,13 @@ class Controller:
                         log.error("process_reading: error generating interpolated graph curve")
                 else:
                     cropped = pr.is_cropped()
-                    log.debug(f"process_reading: graphing non-interpolated data (vignetted = {cropped})")
-                    x_axis = self.generate_x_axis(settings=spec.settings, vignetted=cropped)
+                    log.debug(f"process_reading: graphing non-interpolated data (cropped = {cropped})")
+                    x_axis = self.generate_x_axis(settings=spec.settings, cropped=cropped)
                     if x_axis is None:
                         # this can happen for instance if we have both Raman and
                         # non-Raman spectrometers connected, and we switch to
                         # wavenumber axis
-                        log.error(f"process_reading: unable to generate x-axis of non-interpolated (vignetted = {cropped})?")
+                        log.error(f"process_reading: unable to generate x-axis of non-interpolated (cropped = {cropped})?")
                     else:
                         # this is where most spectra is graphed
                         log.debug(f"process_reading: x_axis of {len(x_axis)} points (cropped {cropped}) is {x_axis[:3]} .. {x_axis[-3:]}") 
@@ -2216,7 +2216,7 @@ class Controller:
         # @todo LaserControlFeature
         sfu.doubleSpinBox_lightSourceWidget_excitation_nm.setValue(ee.excitation_nm_float)
 
-    def generate_x_axis(self, spec=None, settings=None, unit=None, vignetted=True):
+    def generate_x_axis(self, spec=None, settings=None, unit=None, cropped=True):
         """
         Graph.current_x_axis is not per-spectrometer, therefore:
         
@@ -2231,7 +2231,7 @@ class Controller:
         SpectrometerSettings object (say from a saved/loaded Measurement), it
         uses that.  Otherwise it uses the current spectrometer.
         
-        This function ONLY vignettes the x-axis if specifically asked to (and able to).
+        This function ONLY crops the x-axis if specifically asked to (and able to).
         
         @todo need to update for DetectorRegions
         """
@@ -2249,7 +2249,7 @@ class Controller:
             log.error(f"settings was None even after getting current spec, not generating x-axis")
             return
 
-        log.debug(f"generate_x_axis: spec {spec}, settings {settings}, unit {unit}, vignetted {vignetted}")
+        log.debug(f"generate_x_axis: spec {spec}, settings {settings}, unit {unit}, cropped {cropped}")
 
         regions = settings.state.detector_regions
         # log.debug(f"generate_x_axis: regions = {regions}")
@@ -2267,8 +2267,8 @@ class Controller:
         else:
             retval = np.array(list(range(settings.pixels())), dtype=np.float32) 
 
-        if vignetted and self.vignette_roi.enabled:
-            return self.vignette_roi.crop(retval, roi=settings.eeprom.get_horizontal_roi())
+        if cropped and self.horiz_roi.enabled:
+            return self.horiz_roi.crop(retval, roi=settings.eeprom.get_horizontal_roi())
 
         if regions:
             log.debug("generate_x_axis: chopping into regions")
