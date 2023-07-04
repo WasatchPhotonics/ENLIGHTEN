@@ -88,9 +88,6 @@ class EnlightenPluginBase:
         @param title plot title, shown in legend
         @param color color of plot line
         """
-        if y is None:
-            return
-
         in_legend = True
 
         if x is None: 

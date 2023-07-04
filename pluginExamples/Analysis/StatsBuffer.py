@@ -58,7 +58,7 @@ class StatsBuffer(EnlightenPluginBase):
                     self.metrics.mode,     
                     self.metrics.sigma_lo, 
                     self.metrics.sigma_hi ]):
-                if request.fields[name]: 
+                if request.fields[name] and y_values is not None: 
                     self.plot(title=name, y=y_values)
 
             if request.fields["Export Median"]:
