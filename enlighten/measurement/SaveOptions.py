@@ -43,6 +43,7 @@ class SaveOptions():
         self.directory               = None
         self.lb_location             = None
         self.le_label_template       = None
+        self.le_filename_template    = None
         self.le_note                 = None
         self.le_prefix               = None
         self.le_suffix               = None
@@ -75,6 +76,7 @@ class SaveOptions():
              interp,
              lb_location,    
              le_label_template,
+             le_filename_template,
              le_note,
              le_prefix,
              le_suffix,
@@ -105,6 +107,7 @@ class SaveOptions():
         self.interp               = interp
         self.lb_location          = lb_location
         self.le_label_template    = le_label_template
+        self.le_filename_template = le_filename_template
         self.le_note              = le_note
         self.le_prefix            = le_prefix
         self.le_suffix            = le_suffix
@@ -152,6 +155,7 @@ class SaveOptions():
         self.cb_wavelength      .stateChanged       .connect(self.update_widgets)
         self.cb_wavenumber      .stateChanged       .connect(self.update_widgets)
         self.le_label_template  .editingFinished    .connect(self.update_widgets)
+        self.le_filename_template.editingFinished   .connect(self.update_widgets)
         self.le_note            .editingFinished    .connect(self.update_widgets)
         self.le_prefix          .editingFinished    .connect(self.update_widgets)
         self.le_suffix          .editingFinished    .connect(self.update_widgets)
@@ -188,7 +192,9 @@ class SaveOptions():
         self.init_checkbox(self.cb_reference,    "reference")
 
         if self.config.has_option(s, "label_template"):
-            self.le_label_template  .setText   (self.config.get(s, "label_template"))
+            self.le_label_template.setText(self.config.get(s, "label_template"))
+        if self.config.has_option(s, "filename_template"):
+            self.le_filename_template.setText(self.config.get(s, "filename_template"))
 
         self.le_prefix          .setText   (self.config.get(s, "prefix"))
         self.le_suffix          .setText   (self.config.get(s, "suffix"))
@@ -265,6 +271,7 @@ class SaveOptions():
         self.config.set(s, "suffix",             self.suffix())
         self.config.set(s, "note",               self.note())
         self.config.set(s, "label_template",     self.label_template())
+        self.config.set(s, "filename_template",  self.filename_template())
         self.config.set(s, "allow_rename_files", self.allow_rename_files())
         self.config.set(s, "all_spectrometers",  self.save_all_spectrometers())
             
@@ -291,6 +298,7 @@ class SaveOptions():
     def note                    (self): return re.sub(",", "", self.le_note.text()).strip()
     def prefix                  (self): return self.le_prefix.text().strip()
     def label_template          (self): return self.le_label_template.text().strip()
+    def filename_template       (self): return self.le_filename_template.text().strip()
     def load_raw                (self): return self.cb_load_raw.isChecked()
     def save_all_spectrometers  (self): return self.cb_all.isChecked()
     def save_by_col             (self): return self.rb_by_col.isChecked()
