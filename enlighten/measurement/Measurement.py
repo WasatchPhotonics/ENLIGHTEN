@@ -471,7 +471,7 @@ class Measurement(object):
                     fmt = "{0:.1f}"
                 elif 'excitation' in macro:
                     fmt = "{0:.3f}"
-                else
+                else:
                     fmt = "{0:.2f}"
                 value = fmt.format(value)
 
