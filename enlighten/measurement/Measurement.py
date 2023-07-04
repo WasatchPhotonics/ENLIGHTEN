@@ -416,10 +416,11 @@ class Measurement(object):
             self.timestamp = datetime.datetime.now()
 
         ts = self.timestamp.strftime("%Y%m%d-%H%M%S-%f")
+        self.measurement_id = f"{ts}-{sn}"
 
-        self.measurement_id = "%s-%s" % (ts, sn)
-
-        self.basename = self.measurement_id # use this as the original base filename
+        # note that this is the wrapped filename exclusive of extension 
+        # ({prefix}-{filename_template}-{suffix})
+        self.basename = self.generate_basename() 
 
         # we don't use measurement_id for on-screen display; unless a label has 
         # already been provided, generate one using the configured template
@@ -471,13 +472,15 @@ class Measurement(object):
                     fmt = "{0:.1f}"
                 elif 'excitation' in macro:
                     fmt = "{0:.3f}"
-                else
+                else:
                     fmt = "{0:.2f}"
                 value = fmt.format(value)
 
             template = template.replace("{%s}" % macro, str(value))
             log.debug(f"expand_template: {macro} -> {value} (now {template})")
 
+    # Note that this wraps the prefix and suffix around the expanded template.
+    # Prefix and Suffix are not retained in manually-renamed measurements (ctrl-E).
     def generate_basename(self):
         if self.save_options is None:
             return self.measurement_id
@@ -485,7 +488,8 @@ class Measurement(object):
             if self.renamed_manually and self.save_options.allow_rename_files():
                 return util.normalize_filename(self.label)
             else:
-                return self.save_options.wrap_name(self.measurement_id, self.prefix, self.suffix)
+                basename = self.expand_template(self.save_options.filename_template())
+                return self.save_options.wrap_name(basename, self.prefix, self.suffix)
 
     def dump(self):
         log.debug("Measurement:")
