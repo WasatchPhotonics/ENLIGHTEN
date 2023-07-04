@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <author>Wasatch Photonics</author>
  <class>MainWindow</class>
@@ -24,7 +25,7 @@
     <normaloff>:/application/images/EnlightenIcon.ico</normaloff>:/application/images/EnlightenIcon.ico</iconset>
   </property>
   <property name="toolTip">
-   <string extracomment="Enable/Disable Graph Grid" />
+   <string extracomment="Enable/Disable Graph Grid"/>
   </property>
   <property name="styleSheet">
    <string notr="true">/* START: enlighten/assets/stylesheets/default/enlighten.css 
@@ -147,14 +148,14 @@ QMainWindow::separator:horizontal {
   width: 5px;
   margin-top: 2px;
   margin-bottom: 2px;
-  image: url(":/qss_icons/images/darkstyle_icons/toolbar_separator_vertical.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/toolbar_separator_vertical.png&quot;);
 }
 
 QMainWindow::separator:vertical {
   height: 5px;
   margin-left: 2px;
   margin-right: 2px;
-  image: url(":/qss_icons/images/darkstyle_icons/toolbar_separator_horizontal.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/toolbar_separator_horizontal.png&quot;);
 }
 
 /* QToolTip ---------------------------------------------------------------
@@ -211,41 +212,41 @@ QCheckBox::indicator {
 }
 
 QCheckBox::indicator:unchecked {
-  image: url(":/qss_icons/images/darkstyle_icons/checkbox_unchecked.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/checkbox_unchecked.png&quot;);
 }
 
 QCheckBox::indicator:unchecked:hover, QCheckBox::indicator:unchecked:focus, QCheckBox::indicator:unchecked:pressed {
   border: none;
-  image: url(":/qss_icons/images/darkstyle_icons/checkbox_unchecked_focus.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/checkbox_unchecked_focus.png&quot;);
 }
 
 QCheckBox::indicator:unchecked:disabled {
-  image: url(":/qss_icons/images/darkstyle_icons/checkbox_unchecked_disabled.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/checkbox_unchecked_disabled.png&quot;);
 }
 
 QCheckBox::indicator:checked {
-  image: url(":/qss_icons/images/darkstyle_icons/checkbox_checked.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/checkbox_checked.png&quot;);
 }
 
 QCheckBox::indicator:checked:hover, QCheckBox::indicator:checked:focus, QCheckBox::indicator:checked:pressed {
   border: none;
-  image: url(":/qss_icons/images/darkstyle_icons/checkbox_checked_focus.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/checkbox_checked_focus.png&quot;);
 }
 
 QCheckBox::indicator:checked:disabled {
-  image: url(":/qss_icons/images/darkstyle_icons/checkbox_checked_disabled.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/checkbox_checked_disabled.png&quot;);
 }
 
 QCheckBox::indicator:indeterminate {
-  image: url(":/qss_icons/images/darkstyle_icons/checkbox_indeterminate.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/checkbox_indeterminate.png&quot;);
 }
 
 QCheckBox::indicator:indeterminate:disabled {
-  image: url(":/qss_icons/images/darkstyle_icons/checkbox_indeterminate_disabled.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/checkbox_indeterminate_disabled.png&quot;);
 }
 
 QCheckBox::indicator:indeterminate:focus, QCheckBox::indicator:indeterminate:hover, QCheckBox::indicator:indeterminate:pressed {
-  image: url(":/qss_icons/images/darkstyle_icons/checkbox_indeterminate_focus.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/checkbox_indeterminate_focus.png&quot;);
 }
 
 /* QGroupBox --------------------------------------------------------------
@@ -278,20 +279,20 @@ QGroupBox::indicator {
 
 QGroupBox::indicator:unchecked:hover, QGroupBox::indicator:unchecked:focus, QGroupBox::indicator:unchecked:pressed {
   border: none;
-  image: url(":/qss_icons/images/darkstyle_icons/checkbox_unchecked_focus.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/checkbox_unchecked_focus.png&quot;);
 }
 
 QGroupBox::indicator:unchecked:disabled {
-  image: url(":/qss_icons/images/darkstyle_icons/checkbox_unchecked_disabled.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/checkbox_unchecked_disabled.png&quot;);
 }
 
 QGroupBox::indicator:checked:hover, QGroupBox::indicator:checked:focus, QGroupBox::indicator:checked:pressed {
   border: none;
-  image: url(":/qss_icons/images/darkstyle_icons/checkbox_checked_focus.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/checkbox_checked_focus.png&quot;);
 }
 
 QGroupBox::indicator:checked:disabled {
-  image: url(":/qss_icons/images/darkstyle_icons/checkbox_checked_disabled.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/checkbox_checked_disabled.png&quot;);
 }
 
 /* QRadioButton -----------------------------------------------------------
@@ -332,30 +333,30 @@ QRadioButton::indicator {
 }
 
 QRadioButton::indicator:unchecked {
-  image: url(":/qss_icons/images/darkstyle_icons/radio_unchecked.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/radio_unchecked.png&quot;);
 }
 
 QRadioButton::indicator:unchecked:hover, QRadioButton::indicator:unchecked:focus, QRadioButton::indicator:unchecked:pressed {
   border: none;
-  image: url(":/qss_icons/images/darkstyle_icons/radio_unchecked_focus.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/radio_unchecked_focus.png&quot;);
 }
 
 QRadioButton::indicator:unchecked:disabled {
-  image: url(":/qss_icons/images/darkstyle_icons/radio_unchecked_disabled.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/radio_unchecked_disabled.png&quot;);
 }
 
 QRadioButton::indicator:checked {
   border: none;
-  image: url(":/qss_icons/images/darkstyle_icons/radio_checked.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/radio_checked.png&quot;);
 }
 
 QRadioButton::indicator:checked:hover, QRadioButton::indicator:checked:focus, QRadioButton::indicator:checked:pressed {
   border: none;
-  image: url(":/qss_icons/images/darkstyle_icons/radio_checked_focus.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/radio_checked_focus.png&quot;);
 }
 
 QRadioButton::indicator:checked:disabled {
-  image: url(":/qss_icons/images/darkstyle_icons/radio_checked_disabled.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/radio_checked_disabled.png&quot;);
 }
 
 /* QMenuBar ---------------------------------------------------------------
@@ -434,40 +435,40 @@ QMenu::indicator {
 }
 
 QMenu::indicator:non-exclusive:unchecked {
-  image: url(":/qss_icons/images/darkstyle_icons/checkbox_unchecked.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/checkbox_unchecked.png&quot;);
 }
 
 QMenu::indicator:non-exclusive:unchecked:selected {
-  image: url(":/qss_icons/images/darkstyle_icons/checkbox_unchecked_disabled.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/checkbox_unchecked_disabled.png&quot;);
 }
 
 QMenu::indicator:non-exclusive:checked {
-  image: url(":/qss_icons/images/darkstyle_icons/checkbox_checked.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/checkbox_checked.png&quot;);
 }
 
 QMenu::indicator:non-exclusive:checked:selected {
-  image: url(":/qss_icons/images/darkstyle_icons/checkbox_checked_disabled.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/checkbox_checked_disabled.png&quot;);
 }
 
 QMenu::indicator:exclusive:unchecked {
-  image: url(":/qss_icons/images/darkstyle_icons/radio_unchecked.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/radio_unchecked.png&quot;);
 }
 
 QMenu::indicator:exclusive:unchecked:selected {
-  image: url(":/qss_icons/images/darkstyle_icons/radio_unchecked_disabled.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/radio_unchecked_disabled.png&quot;);
 }
 
 QMenu::indicator:exclusive:checked {
-  image: url(":/qss_icons/images/darkstyle_icons/radio_checked.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/radio_checked.png&quot;);
 }
 
 QMenu::indicator:exclusive:checked:selected {
-  image: url(":/qss_icons/images/darkstyle_icons/radio_checked_disabled.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/radio_checked_disabled.png&quot;);
 }
 
 QMenu::right-arrow {
   margin: 5px;
-  image: url(":/qss_icons/images/darkstyle_icons/arrow_right.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/arrow_right.png&quot;);
   height: 12px;
   width: 12px;
 }
@@ -558,7 +559,7 @@ QScrollBar::handle:vertical:hover { }
 
 QScrollBar::add-line:horizontal {
   margin: 0px 0px 0px 0px;
-  border-image: url(":/qss_icons/images/darkstyle_icons/arrow_right_disabled.png");
+  border-image: url(&quot;:/qss_icons/images/darkstyle_icons/arrow_right_disabled.png&quot;);
   height: 12px;
   width: 12px;
   subcontrol-position: right;
@@ -566,7 +567,7 @@ QScrollBar::add-line:horizontal {
 }
 
 QScrollBar::add-line:horizontal:hover, QScrollBar::add-line:horizontal:on {
-  border-image: url(":/qss_icons/images/darkstyle_icons/arrow_right.png");
+  border-image: url(&quot;:/qss_icons/images/darkstyle_icons/arrow_right.png&quot;);
   height: 12px;
   width: 12px;
   subcontrol-position: right;
@@ -575,7 +576,7 @@ QScrollBar::add-line:horizontal:hover, QScrollBar::add-line:horizontal:on {
 
 QScrollBar::add-line:vertical {
   margin: 3px 0px 3px 0px;
-  border-image: url(":/qss_icons/images/darkstyle_icons/arrow_down_disabled.png");
+  border-image: url(&quot;:/qss_icons/images/darkstyle_icons/arrow_down_disabled.png&quot;);
   height: 12px;
   width: 12px;
   subcontrol-position: bottom;
@@ -583,7 +584,7 @@ QScrollBar::add-line:vertical {
 }
 
 QScrollBar::add-line:vertical:hover, QScrollBar::add-line:vertical:on {
-  border-image: url(":/qss_icons/images/darkstyle_icons/arrow_down.png");
+  border-image: url(&quot;:/qss_icons/images/darkstyle_icons/arrow_down.png&quot;);
   height: 12px;
   width: 12px;
   subcontrol-position: bottom;
@@ -592,7 +593,7 @@ QScrollBar::add-line:vertical:hover, QScrollBar::add-line:vertical:on {
 
 QScrollBar::sub-line:horizontal {
   margin: 0px 3px 0px 3px;
-  border-image: url(":/qss_icons/images/darkstyle_icons/arrow_left_disabled.png");
+  border-image: url(&quot;:/qss_icons/images/darkstyle_icons/arrow_left_disabled.png&quot;);
   height: 12px;
   width: 12px;
   subcontrol-position: left;
@@ -600,7 +601,7 @@ QScrollBar::sub-line:horizontal {
 }
 
 QScrollBar::sub-line:horizontal:hover, QScrollBar::sub-line:horizontal:on {
-  border-image: url(":/qss_icons/images/darkstyle_icons/arrow_left.png");
+  border-image: url(&quot;:/qss_icons/images/darkstyle_icons/arrow_left.png&quot;);
   height: 12px;
   width: 12px;
   subcontrol-position: left;
@@ -609,7 +610,7 @@ QScrollBar::sub-line:horizontal:hover, QScrollBar::sub-line:horizontal:on {
 
 QScrollBar::sub-line:vertical {
   margin: 3px 0px 3px 0px;
-  border-image: url(":/qss_icons/images/darkstyle_icons/arrow_up_disabled.png");
+  border-image: url(&quot;:/qss_icons/images/darkstyle_icons/arrow_up_disabled.png&quot;);
   height: 12px;
   width: 12px;
   subcontrol-position: top;
@@ -617,7 +618,7 @@ QScrollBar::sub-line:vertical {
 }
 
 QScrollBar::sub-line:vertical:hover, QScrollBar::sub-line:vertical:on {
-  border-image: url(":/qss_icons/images/darkstyle_icons/arrow_up.png");
+  border-image: url(&quot;:/qss_icons/images/darkstyle_icons/arrow_up.png&quot;);
   height: 12px;
   width: 12px;
   subcontrol-position: top;
@@ -688,7 +689,7 @@ QSizeGrip {
   background: transparent;
   width: 12px;
   height: 12px;
-  image: url(":/qss_icons/images/darkstyle_icons/window_grip.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/window_grip.png&quot;);
 }
 
 /* QStackedWidget ---------------------------------------------------------
@@ -731,29 +732,29 @@ QToolBar QToolButton:checked:hover {
 
 QToolBar::handle:horizontal {
   width: 16px;
-  image: url(":/qss_icons/images/darkstyle_icons/toolbar_move_horizontal.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/toolbar_move_horizontal.png&quot;);
 }
 
 QToolBar::handle:vertical {
   height: 16px;
-  image: url(":/qss_icons/images/darkstyle_icons/toolbar_move_horizontal.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/toolbar_move_horizontal.png&quot;);
 }
 
 QToolBar::separator:horizontal {
   width: 16px;
-  image: url(":/qss_icons/images/darkstyle_icons/toolbar_separator_horizontal.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/toolbar_separator_horizontal.png&quot;);
 }
 
 QToolBar::separator:vertical {
   height: 16px;
-  image: url(":/qss_icons/images/darkstyle_icons/toolbar_separator_vertical.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/toolbar_separator_vertical.png&quot;);
 }
 
 QToolButton#qt_toolbar_ext_button {
   background: #32414B;
   border: 0px;
   color: #F0F0F0;
-  image: url(":/qss_icons/images/darkstyle_icons/arrow_right.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/arrow_right.png&quot;);
 }
 
 /* QAbstractSpinBox -------------------------------------------------------
@@ -787,25 +788,25 @@ QAbstractSpinBox:down-button {
 QAbstractSpinBox::up-arrow, 
 QAbstractSpinBox::up-arrow:disabled, 
 QAbstractSpinBox::up-arrow:off {
-  image: url(":/qss_icons/images/darkstyle_icons/up_arrow_disabled.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/up_arrow_disabled.png&quot;);
   height: 12px;
   width: 12px;
 }
 
 QAbstractSpinBox::up-arrow:hover {
-  image: url(":/qss_icons/images/darkstyle_icons/up_arrow.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/up_arrow.png&quot;);
 }
 
 QAbstractSpinBox::down-arrow, 
 QAbstractSpinBox::down-arrow:disabled, 
 QAbstractSpinBox::down-arrow:off {
-  image: url(":/qss_icons/images/darkstyle_icons/down_arrow_disabled.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/down_arrow_disabled.png&quot;);
   height: 12px;
   width: 12px;
 }
 
 QAbstractSpinBox::down-arrow:hover {
-  image: url(":/qss_icons/images/darkstyle_icons/down_arrow.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/down_arrow.png&quot;);
 }
 
 QAbstractSpinBox:hover {
@@ -1083,7 +1084,7 @@ QToolButton:hover {
   border: 1px solid hsl(0, 0%, 60%);
 }
 
-QToolButton[popupMode="1"] {
+QToolButton[popupMode=&quot;1&quot;] {
   padding: 2px;
   /* Only for MenuButtonPopup */
   padding-right: 12px;
@@ -1092,7 +1093,7 @@ QToolButton[popupMode="1"] {
   border-radius: 4px;
 }
 
-QToolButton[popupMode="2"] {
+QToolButton[popupMode=&quot;2&quot;] {
   padding: 2px;
   /* Only for InstantPopup */
   padding-right: 12px;
@@ -1119,7 +1120,7 @@ QToolButton::menu-button:checked:hover {
 }
 
 QToolButton::menu-indicator {
-  image: url(":/qss_icons/images/darkstyle_icons/arrow_down.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/arrow_down.png&quot;);
   height: 12px;
   width: 12px;
   top: -8px;
@@ -1129,7 +1130,7 @@ QToolButton::menu-indicator {
 }
 
 QToolButton::menu-arrow {
-  image: url(":/qss_icons/images/darkstyle_icons/arrow_down.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/arrow_down.png&quot;);
   height: 12px;
   width: 12px;
 }
@@ -1416,22 +1417,22 @@ QTabBar::close-button {
   border: 0;
   margin: 2px;
   padding: 2px;
-  image: url(":/qss_icons/images/darkstyle_icons/window_close.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/window_close.png&quot;);
 }
 
 QTabBar::close-button:hover {
-  image: url(":/qss_icons/images/darkstyle_icons/window_close_focus.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/window_close_focus.png&quot;);
 }
 
 QTabBar::close-button:pressed {
-  image: url(":/qss_icons/images/darkstyle_icons/window_close_pressed.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/window_close_pressed.png&quot;);
 }
 
 /* QTabBar::tab - selected ------------------------------------------------
 https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qtabwidget-and-qtabbar
 --------------------------------------------------------------------------- */
 
-/* This is the "tab" atop the QTabPane */
+/* This is the &quot;tab&quot; atop the QTabPane */
 
 QTabBar::tab {
 }
@@ -1488,8 +1489,8 @@ QDockWidget {
   background-color: #383838;
   border: 1px solid #32414B;
   border-radius: 4px;
-  titlebar-close-icon: url(":/qss_icons/images/darkstyle_icons/window_close.png");
-  titlebar-normal-icon: url(":/qss_icons/images/darkstyle_icons/window_undock.png");
+  titlebar-close-icon: url(&quot;:/qss_icons/images/darkstyle_icons/window_close.png&quot;);
+  titlebar-normal-icon: url(&quot;:/qss_icons/images/darkstyle_icons/window_undock.png&quot;);
 }
 
 QDockWidget::title {
@@ -1505,11 +1506,11 @@ QDockWidget::close-button {
 }
 
 QDockWidget::close-button:hover {
-  image: url(":/qss_icons/images/darkstyle_icons/window_close_focus.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/window_close_focus.png&quot;);
 }
 
 QDockWidget::close-button:pressed {
-  image: url(":/qss_icons/images/darkstyle_icons/window_close_pressed.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/window_close_pressed.png&quot;);
 }
 
 QDockWidget::float-button {
@@ -1519,11 +1520,11 @@ QDockWidget::float-button {
 }
 
 QDockWidget::float-button:hover {
-  image: url(":/qss_icons/images/darkstyle_icons/window_undock_focus.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/window_undock_focus.png&quot;);
 }
 
 QDockWidget::float-button:pressed {
-  image: url(":/qss_icons/images/darkstyle_icons/window_undock_pressed.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/window_undock_pressed.png&quot;);
 }
 
 /* QTreeView QListView QTableView -----------------------------------------
@@ -1533,73 +1534,73 @@ https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qtableview
 --------------------------------------------------------------------------- */
 
 QTreeView:branch:selected, QTreeView:branch:hover {
-  background: url(":/qss_icons/images/darkstyle_icons/transparent.png");
+  background: url(&quot;:/qss_icons/images/darkstyle_icons/transparent.png&quot;);
 }
 
 QTreeView:branch:has-siblings:!adjoins-item {
-  border-image: url(":/qss_icons/images/darkstyle_icons/branch_line.png") 0;
+  border-image: url(&quot;:/qss_icons/images/darkstyle_icons/branch_line.png&quot;) 0;
 }
 
 QTreeView:branch:has-siblings:adjoins-item {
-  border-image: url(":/qss_icons/images/darkstyle_icons/branch_more.png") 0;
+  border-image: url(&quot;:/qss_icons/images/darkstyle_icons/branch_more.png&quot;) 0;
 }
 
 QTreeView:branch:!has-children:!has-siblings:adjoins-item {
-  border-image: url(":/qss_icons/images/darkstyle_icons/branch_end.png") 0;
+  border-image: url(&quot;:/qss_icons/images/darkstyle_icons/branch_end.png&quot;) 0;
 }
 
 QTreeView:branch:has-children:!has-siblings:closed, QTreeView:branch:closed:has-children:has-siblings {
   border-image: none;
-  image: url(":/qss_icons/images/darkstyle_icons/branch_closed.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/branch_closed.png&quot;);
 }
 
 QTreeView:branch:open:has-children:!has-siblings, QTreeView:branch:open:has-children:has-siblings {
   border-image: none;
-  image: url(":/qss_icons/images/darkstyle_icons/branch_open.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/branch_open.png&quot;);
 }
 
 QTreeView:branch:has-children:!has-siblings:closed:hover, QTreeView:branch:closed:has-children:has-siblings:hover {
-  image: url(":/qss_icons/images/darkstyle_icons/branch_closed_focus.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/branch_closed_focus.png&quot;);
 }
 
 QTreeView:branch:open:has-children:!has-siblings:hover, QTreeView:branch:open:has-children:has-siblings:hover {
-  image: url(":/qss_icons/images/darkstyle_icons/branch_open_focus.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/branch_open_focus.png&quot;);
 }
 
 QTreeView::indicator:checked,
 QListView::indicator:checked {
-  image: url(":/qss_icons/images/darkstyle_icons/checkbox_checked.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/checkbox_checked.png&quot;);
 }
 
 QTreeView::indicator:checked:hover, QTreeView::indicator:checked:focus, QTreeView::indicator:checked:pressed,
 QListView::indicator:checked:hover,
 QListView::indicator:checked:focus,
 QListView::indicator:checked:pressed {
-  image: url(":/qss_icons/images/darkstyle_icons/checkbox_checked_focus.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/checkbox_checked_focus.png&quot;);
 }
 
 QTreeView::indicator:unchecked,
 QListView::indicator:unchecked {
-  image: url(":/qss_icons/images/darkstyle_icons/checkbox_unchecked.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/checkbox_unchecked.png&quot;);
 }
 
 QTreeView::indicator:unchecked:hover, QTreeView::indicator:unchecked:focus, QTreeView::indicator:unchecked:pressed,
 QListView::indicator:unchecked:hover,
 QListView::indicator:unchecked:focus,
 QListView::indicator:unchecked:pressed {
-  image: url(":/qss_icons/images/darkstyle_icons/checkbox_unchecked_focus.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/checkbox_unchecked_focus.png&quot;);
 }
 
 QTreeView::indicator:indeterminate,
 QListView::indicator:indeterminate {
-  image: url(":/qss_icons/images/darkstyle_icons/checkbox_indeterminate.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/checkbox_indeterminate.png&quot;);
 }
 
 QTreeView::indicator:indeterminate:hover, QTreeView::indicator:indeterminate:focus, QTreeView::indicator:indeterminate:pressed,
 QListView::indicator:indeterminate:hover,
 QListView::indicator:indeterminate:focus,
 QListView::indicator:indeterminate:pressed {
-  image: url(":/qss_icons/images/darkstyle_icons/checkbox_indeterminate_focus.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/checkbox_indeterminate_focus.png&quot;);
 }
 
 QTreeView,
@@ -1738,14 +1739,14 @@ QHeaderView::down-arrow {
   background-color: #32414B;
   height: 12px;
   width: 12px;
-  image: url(":/qss_icons/images/darkstyle_icons/arrow_down.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/arrow_down.png&quot;);
 }
 
 QHeaderView::up-arrow {
   background-color: #32414B;
   height: 12px;
   width: 12px;
-  image: url(":/qss_icons/images/darkstyle_icons/arrow_up.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/arrow_up.png&quot;);
 }
 
 /* QToolBox --------------------------------------------------------------
@@ -1815,7 +1816,7 @@ https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qframe
     background-color: transparent;
 }
 
-.QFrame[height="3"], .QFrame[width="3"] {
+.QFrame[height=&quot;3&quot;], .QFrame[width=&quot;3&quot;] {
   background-color: #383838;
 }
 */
@@ -1845,12 +1846,12 @@ QSplitter::separator:hover {
 
 QSplitter::separator:horizontal {
   width: 5px;
-  image: url(":/qss_icons/images/darkstyle_icons/line_vertical.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/line_vertical.png&quot;);
 }
 
 QSplitter::separator:vertical {
   height: 5px;
-  image: url(":/qss_icons/images/darkstyle_icons/line_horizontal.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/line_horizontal.png&quot;);
 }
 
 /* QDateEdit --------------------------------------------------------------
@@ -1881,13 +1882,13 @@ QDateEdit::drop-down {
 }
 
 QDateEdit::down-arrow {
-  image: url(":/qss_icons/images/darkstyle_icons/arrow_down_disabled.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/arrow_down_disabled.png&quot;);
   height: 12px;
   width: 12px;
 }
 
 QDateEdit::down-arrow:on, QDateEdit::down-arrow:hover, QDateEdit::down-arrow:focus {
-  image: url(":/qss_icons/images/darkstyle_icons/arrow_down.png");
+  image: url(&quot;:/qss_icons/images/darkstyle_icons/arrow_down.png&quot;);
 }
 
 QDateEdit QAbstractItemView {
@@ -1914,10 +1915,10 @@ PlotWidget {
 }
 
 /* ---------------------------------------------------------------------- 
-   These are the Wasatch Photonics Qt "Custom Properties" which mimic
+   These are the Wasatch Photonics Qt &quot;Custom Properties&quot; which mimic
    the notion of standard CSS class selectors.  
    
-   It would be nice to use [property="value"] string selectors, but I 
+   It would be nice to use [property=&quot;value&quot;] string selectors, but I 
    couldn't get them to work.  These bool flags do seem to work (I don't
    even set values, just check for presence -- it defaults to 'false').
 
@@ -1945,17 +1946,17 @@ PlotWidget {
         Shadow_Mask 0xf0  
         Shape_Mask  0x0f
 
-   [frameShape="0"] { }
-   [frameShape="1"] { }
-   [frameShape="2"] { }
-   [frameShape="3"] { }
-   [frameShape="4"] { }
-   [frameShape="5"] { }
-   [frameShape="6"] { }
+   [frameShape=&quot;0&quot;] { }
+   [frameShape=&quot;1&quot;] { }
+   [frameShape=&quot;2&quot;] { }
+   [frameShape=&quot;3&quot;] { }
+   [frameShape=&quot;4&quot;] { }
+   [frameShape=&quot;5&quot;] { }
+   [frameShape=&quot;6&quot;] { }
 
-   [frameShadow="16"] { }
-   [frameShadow="32"] { }
-   [frameShadow="48"] { }
+   [frameShadow=&quot;16&quot;] { }
+   [frameShadow=&quot;32&quot;] { }
+   [frameShadow=&quot;48&quot;] { }
 
    ---------------------------------------------------------------------- */
 
@@ -2164,10 +2165,10 @@ QComboBox QListView
               </size>
              </property>
              <property name="styleSheet">
-              <string notr="true" />
+              <string notr="true"/>
              </property>
              <property name="text">
-              <string />
+              <string/>
              </property>
              <property name="pixmap">
               <pixmap resource="enlighten_icons.qrc">:/application/images/enlightenLOGO.png</pixmap>
@@ -2186,7 +2187,7 @@ QComboBox QListView
               </sizepolicy>
              </property>
              <property name="styleSheet">
-              <string notr="true" />
+              <string notr="true"/>
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_2">
               <item>
@@ -2276,7 +2277,7 @@ QComboBox QListView
                  </font>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true" />
+                 <string notr="true"/>
                 </property>
                 <property name="text">
                  <string>Raman</string>
@@ -2305,7 +2306,7 @@ QComboBox QListView
                  </font>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true" />
+                 <string notr="true"/>
                 </property>
                 <property name="text">
                  <string>Non-Raman</string>
@@ -2334,7 +2335,7 @@ QComboBox QListView
                  </font>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true" />
+                 <string notr="true"/>
                 </property>
                 <property name="text">
                  <string>Expert</string>
@@ -2381,7 +2382,7 @@ QComboBox QListView
                  <string>Seek the light!</string>
                 </property>
                 <property name="text">
-                 <string />
+                 <string/>
                 </property>
                 <property name="icon">
                  <iconset resource="grey_icons.qrc">
@@ -2413,7 +2414,7 @@ QComboBox QListView
                  <string>Got questions? (F1)</string>
                 </property>
                 <property name="text">
-                 <string />
+                 <string/>
                 </property>
                 <property name="icon">
                  <iconset resource="grey_icons.qrc">
@@ -2485,7 +2486,7 @@ QComboBox QListView
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>1169</width>
+           <width>619</width>
            <height>5248</height>
           </rect>
          </property>
@@ -2552,7 +2553,7 @@ QComboBox QListView
               <item>
                <widget class="QLabel" name="label_product_image">
                 <property name="text">
-                 <string />
+                 <string/>
                 </property>
                 <property name="pixmap">
                  <pixmap resource="devices.qrc">:/spectrometers/images/devices/stroker.png</pixmap>
@@ -2653,7 +2654,7 @@ QComboBox QListView
                        <string>Copy EEPROM and key settings to clipboard</string>
                       </property>
                       <property name="text">
-                       <string />
+                       <string/>
                       </property>
                       <property name="icon">
                        <iconset resource="grey_icons.qrc">
@@ -2802,7 +2803,7 @@ QComboBox QListView
                           <item row="3" column="0">
                            <widget class="QCheckBox" name="checkBox_ee_has_cooling">
                             <property name="text">
-                             <string />
+                             <string/>
                             </property>
                            </widget>
                           </item>
@@ -2816,7 +2817,7 @@ QComboBox QListView
                           <item row="4" column="0">
                            <widget class="QCheckBox" name="checkBox_ee_has_battery">
                             <property name="text">
-                             <string />
+                             <string/>
                             </property>
                            </widget>
                           </item>
@@ -2830,7 +2831,7 @@ QComboBox QListView
                           <item row="5" column="0">
                            <widget class="QCheckBox" name="checkBox_ee_has_laser">
                             <property name="text">
-                             <string />
+                             <string/>
                             </property>
                            </widget>
                           </item>
@@ -3139,7 +3140,7 @@ QComboBox QListView
                           <item row="6" column="0">
                            <widget class="QCheckBox" name="checkBox_ee_invert_x_axis">
                             <property name="text">
-                             <string />
+                             <string/>
                             </property>
                            </widget>
                           </item>
@@ -3153,7 +3154,7 @@ QComboBox QListView
                           <item row="7" column="0">
                            <widget class="QCheckBox" name="checkBox_ee_bin_2x2">
                             <property name="text">
-                             <string />
+                             <string/>
                             </property>
                            </widget>
                           </item>
@@ -3167,7 +3168,7 @@ QComboBox QListView
                           <item row="8" column="0">
                            <widget class="QCheckBox" name="checkBox_ee_gen15">
                             <property name="text">
-                             <string />
+                             <string/>
                             </property>
                            </widget>
                           </item>
@@ -3181,7 +3182,7 @@ QComboBox QListView
                           <item row="9" column="0">
                            <widget class="QCheckBox" name="checkBox_ee_cutoff_filter_installed">
                             <property name="text">
-                             <string />
+                             <string/>
                             </property>
                            </widget>
                           </item>
@@ -3237,7 +3238,7 @@ QComboBox QListView
                           <item row="10" column="0">
                            <widget class="QCheckBox" name="checkBox_ee_hardware_even_odd">
                             <property name="text">
-                             <string />
+                             <string/>
                             </property>
                            </widget>
                           </item>
@@ -3251,14 +3252,14 @@ QComboBox QListView
                           <item row="11" column="0">
                            <widget class="QCheckBox" name="checkBox_ee_sig_laser_tec">
                             <property name="text">
-                             <string />
+                             <string/>
                             </property>
                            </widget>
                           </item>
                           <item row="12" column="0">
                            <widget class="QCheckBox" name="checkBox_ee_has_interlock_feedback">
                             <property name="text">
-                             <string />
+                             <string/>
                             </property>
                            </widget>
                           </item>
@@ -3279,7 +3280,7 @@ QComboBox QListView
                           <item row="13" column="0">
                            <widget class="QCheckBox" name="checkBox_ee_has_shutter">
                             <property name="text">
-                             <string />
+                             <string/>
                             </property>
                            </widget>
                           </item>
@@ -5908,28 +5909,28 @@ QComboBox QListView
                              </property>
                              <layout class="QGridLayout" name="gridLayout_5">
                               <item row="13" column="0">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_wl_12" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_wl_12"/>
                               </item>
                               <item row="6" column="2">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_y2_5" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_y2_5"/>
                               </item>
                               <item row="6" column="1">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_y_5" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_y_5"/>
                               </item>
                               <item row="1" column="0">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_wl_0" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_wl_0"/>
                               </item>
                               <item row="8" column="1">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_y_7" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_y_7"/>
                               </item>
                               <item row="9" column="1">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_y_8" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_y_8"/>
                               </item>
                               <item row="4" column="0">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_wl_3" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_wl_3"/>
                               </item>
                               <item row="8" column="2">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_y2_7" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_y2_7"/>
                               </item>
                               <item row="0" column="2">
                                <widget class="QLabel" name="label_198">
@@ -5939,19 +5940,19 @@ QComboBox QListView
                                </widget>
                               </item>
                               <item row="4" column="1">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_y_3" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_y_3"/>
                               </item>
                               <item row="1" column="1">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_y_0" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_y_0"/>
                               </item>
                               <item row="4" column="2">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_y2_3" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_y2_3"/>
                               </item>
                               <item row="7" column="0">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_wl_6" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_wl_6"/>
                               </item>
                               <item row="3" column="2">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_y2_2" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_y2_2"/>
                               </item>
                               <item row="0" column="0">
                                <widget class="QLabel" name="label_191">
@@ -5961,22 +5962,22 @@ QComboBox QListView
                                </widget>
                               </item>
                               <item row="6" column="0">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_wl_5" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_wl_5"/>
                               </item>
                               <item row="11" column="0">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_wl_10" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_wl_10"/>
                               </item>
                               <item row="8" column="0">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_wl_7" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_wl_7"/>
                               </item>
                               <item row="9" column="0">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_wl_8" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_wl_8"/>
                               </item>
                               <item row="7" column="2">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_y2_6" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_y2_6"/>
                               </item>
                               <item row="1" column="2">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_y2_0" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_y2_0"/>
                               </item>
                               <item row="0" column="1">
                                <widget class="QLabel" name="label_197">
@@ -5986,73 +5987,73 @@ QComboBox QListView
                                </widget>
                               </item>
                               <item row="2" column="2">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_y2_1" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_y2_1"/>
                               </item>
                               <item row="2" column="1">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_y_1" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_y_1"/>
                               </item>
                               <item row="5" column="0">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_wl_4" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_wl_4"/>
                               </item>
                               <item row="5" column="1">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_y_4" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_y_4"/>
                               </item>
                               <item row="12" column="0">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_wl_11" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_wl_11"/>
                               </item>
                               <item row="5" column="2">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_y2_4" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_y2_4"/>
                               </item>
                               <item row="10" column="2">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_y2_9" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_y2_9"/>
                               </item>
                               <item row="3" column="0">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_wl_2" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_wl_2"/>
                               </item>
                               <item row="2" column="0">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_wl_1" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_wl_1"/>
                               </item>
                               <item row="7" column="1">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_y_6" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_y_6"/>
                               </item>
                               <item row="10" column="1">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_y_9" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_y_9"/>
                               </item>
                               <item row="9" column="2">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_y2_8" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_y2_8"/>
                               </item>
                               <item row="3" column="1">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_y_2" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_y_2"/>
                               </item>
                               <item row="10" column="0">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_wl_9" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_wl_9"/>
                               </item>
                               <item row="14" column="0">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_wl_13" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_wl_13"/>
                               </item>
                               <item row="11" column="1">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_y_10" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_y_10"/>
                               </item>
                               <item row="12" column="1">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_y_11" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_y_11"/>
                               </item>
                               <item row="13" column="1">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_y_12" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_y_12"/>
                               </item>
                               <item row="14" column="1">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_y_13" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_y_13"/>
                               </item>
                               <item row="11" column="2">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_y2_10" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_y2_10"/>
                               </item>
                               <item row="12" column="2">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_y2_11" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_y2_11"/>
                               </item>
                               <item row="13" column="2">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_y2_12" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_y2_12"/>
                               </item>
                               <item row="14" column="2">
-                               <widget class="QLineEdit" name="lineEdit_ee_spline_y2_13" />
+                               <widget class="QLineEdit" name="lineEdit_ee_spline_y2_13"/>
                               </item>
                              </layout>
                             </widget>
@@ -6810,7 +6811,7 @@ QComboBox QListView
                  <item row="8" column="0">
                   <widget class="QCheckBox" name="checkBox_sound_enable">
                    <property name="text">
-                    <string />
+                    <string/>
                    </property>
                   </widget>
                  </item>
@@ -7121,7 +7122,7 @@ QComboBox QListView
           <item>
            <widget class="QTabWidget" name="tabWidget_advanced_features">
             <property name="styleSheet">
-             <string notr="true" />
+             <string notr="true"/>
             </property>
             <property name="currentIndex">
              <number>1</number>
@@ -7440,7 +7441,7 @@ QComboBox QListView
                       </sizepolicy>
                      </property>
                      <property name="styleSheet">
-                      <string notr="true" />
+                      <string notr="true"/>
                      </property>
                      <widget class="QWidget" name="page_hardware_capture_details_spectrum">
                       <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -7501,7 +7502,7 @@ QComboBox QListView
                          </property>
                          <layout class="QHBoxLayout" name="horizontalLayout_57">
                           <item>
-                           <layout class="QHBoxLayout" name="layout_area_scan_live" />
+                           <layout class="QHBoxLayout" name="layout_area_scan_live"/>
                           </item>
                          </layout>
                         </widget>
@@ -7543,7 +7544,7 @@ QComboBox QListView
                           </sizepolicy>
                          </property>
                          <property name="styleSheet">
-                          <string notr="true" />
+                          <string notr="true"/>
                          </property>
                          <property name="frameShape">
                           <enum>QFrame::StyledPanel</enum>
@@ -7639,7 +7640,7 @@ QComboBox QListView
                              </sizepolicy>
                             </property>
                             <property name="text">
-                             <string />
+                             <string/>
                             </property>
                            </widget>
                           </item>
@@ -7822,7 +7823,7 @@ QComboBox QListView
                                        <string notr="true">padding: 5px;</string>
                                       </property>
                                       <property name="text">
-                                       <string />
+                                       <string/>
                                       </property>
                                       <property name="icon">
                                        <iconset resource="grey_icons.qrc">
@@ -7854,7 +7855,7 @@ QComboBox QListView
                                    <property name="currentIndex">
                                     <number>0</number>
                                    </property>
-                                   <widget class="QWidget" name="page_hardware_capture_battery" />
+                                   <widget class="QWidget" name="page_hardware_capture_battery"/>
                                   </widget>
                                  </item>
                                 </layout>
@@ -8008,7 +8009,7 @@ QComboBox QListView
                                        <string notr="true">padding: 5px;</string>
                                       </property>
                                       <property name="text">
-                                       <string />
+                                       <string/>
                                       </property>
                                       <property name="icon">
                                        <iconset resource="grey_icons.qrc">
@@ -8040,7 +8041,7 @@ QComboBox QListView
                                    <property name="currentIndex">
                                     <number>0</number>
                                    </property>
-                                   <widget class="QWidget" name="page_hardware_capture_laser_temperature" />
+                                   <widget class="QWidget" name="page_hardware_capture_laser_temperature"/>
                                   </widget>
                                  </item>
                                 </layout>
@@ -8194,7 +8195,7 @@ QComboBox QListView
                                        <string notr="true">padding: 5px;</string>
                                       </property>
                                       <property name="text">
-                                       <string />
+                                       <string/>
                                       </property>
                                       <property name="icon">
                                        <iconset resource="grey_icons.qrc">
@@ -8226,7 +8227,7 @@ QComboBox QListView
                                    <property name="currentIndex">
                                     <number>0</number>
                                    </property>
-                                   <widget class="QWidget" name="page_hardware_capture_details_tec_temperature_2" />
+                                   <widget class="QWidget" name="page_hardware_capture_details_tec_temperature_2"/>
                                   </widget>
                                  </item>
                                 </layout>
@@ -8289,7 +8290,7 @@ QComboBox QListView
                   <item>
                    <widget class="QFrame" name="frame_hardware_capture_details_nest_over">
                     <property name="styleSheet">
-                     <string notr="true" />
+                     <string notr="true"/>
                     </property>
                     <property name="frameShape">
                      <enum>QFrame::StyledPanel</enum>
@@ -8367,7 +8368,7 @@ QComboBox QListView
               <x>0</x>
               <y>0</y>
               <width>669</width>
-              <height>1356</height>
+              <height>1399</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -8513,13 +8514,6 @@ QComboBox QListView
                                <property name="verticalSpacing">
                                 <number>0</number>
                                </property>
-                               <item row="1" column="0">
-                                <widget class="QLabel" name="label_foo_bar">
-                                 <property name="text">
-                                  <string>Label</string>
-                                 </property>
-                                </widget>
-                               </item>
                                <item row="0" column="0">
                                 <widget class="QLabel" name="label_rssd_timestamp_73">
                                  <property name="text">
@@ -8576,7 +8570,118 @@ QComboBox QListView
                                  </item>
                                 </layout>
                                </item>
-                               <item row="1" column="1">
+                              </layout>
+                             </item>
+                             <item>
+                              <widget class="QCheckBox" name="checkBox_load_raw">
+                               <property name="toolTip">
+                                <string>Load &quot;raw&quot; rather than &quot;processed&quot; and apply current settings</string>
+                               </property>
+                               <property name="text">
+                                <string>Load raw spectra and re-process</string>
+                               </property>
+                              </widget>
+                             </item>
+                            </layout>
+                           </item>
+                          </layout>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QFrame" name="frame_settings_templates_white">
+                     <property name="wpBox" stdset="0">
+                      <bool>false</bool>
+                     </property>
+                     <layout class="QVBoxLayout" name="verticalLayout_111">
+                      <property name="spacing">
+                       <number>0</number>
+                      </property>
+                      <property name="leftMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="topMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="rightMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="bottomMargin">
+                       <number>0</number>
+                      </property>
+                      <item>
+                       <widget class="QFrame" name="frame_settings_templates_black">
+                        <property name="wpPanel" stdset="0">
+                         <bool>false</bool>
+                        </property>
+                        <layout class="QVBoxLayout" name="verticalLayout_110">
+                         <item>
+                          <widget class="QLabel" name="label_rssd_timestamp_69">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="font">
+                            <font>
+                             <pointsize>14</pointsize>
+                            </font>
+                           </property>
+                           <property name="text">
+                            <string>Measurement Templates</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_9">
+                           <property name="sizeConstraint">
+                            <enum>QLayout::SetMinimumSize</enum>
+                           </property>
+                           <item>
+                            <spacer name="horizontalSpacer_3">
+                             <property name="orientation">
+                              <enum>Qt::Horizontal</enum>
+                             </property>
+                             <property name="sizeType">
+                              <enum>QSizePolicy::Fixed</enum>
+                             </property>
+                             <property name="sizeHint" stdset="0">
+                              <size>
+                               <width>20</width>
+                               <height>28</height>
+                              </size>
+                             </property>
+                            </spacer>
+                           </item>
+                           <item>
+                            <layout class="QVBoxLayout" name="verticalLayout_125">
+                             <item>
+                              <layout class="QFormLayout" name="formLayout">
+                               <property name="sizeConstraint">
+                                <enum>QLayout::SetMinimumSize</enum>
+                               </property>
+                               <property name="fieldGrowthPolicy">
+                                <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+                               </property>
+                               <property name="horizontalSpacing">
+                                <number>0</number>
+                               </property>
+                               <property name="verticalSpacing">
+                                <number>0</number>
+                               </property>
+                               <item row="0" column="0">
+                                <widget class="QLabel" name="label_foo_bar">
+                                 <property name="text">
+                                  <string>Measurement Label</string>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item row="0" column="1">
                                 <widget class="QLineEdit" name="lineEdit_save_label_template">
                                  <property name="maximumSize">
                                   <size>
@@ -8585,21 +8690,37 @@ QComboBox QListView
                                   </size>
                                  </property>
                                  <property name="toolTip">
-                                  <string>Template for the "label" of new saved spectra</string>
+                                  <string>Template for the &quot;label&quot; of newly saved measurements</string>
                                  </property>
                                  <property name="text">
                                   <string>{time} {serial_number}</string>
                                  </property>
                                 </widget>
                                </item>
+                               <item row="1" column="0">
+                                <widget class="QLabel" name="label_foo_baz">
+                                 <property name="text">
+                                  <string>Measurement Filename</string>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item row="1" column="1">
+                                <widget class="QLineEdit" name="lineEdit_save_filename_template">
+                                 <property name="maximumSize">
+                                  <size>
+                                   <width>300</width>
+                                   <height>16777215</height>
+                                  </size>
+                                 </property>
+                                 <property name="toolTip">
+                                  <string>Template for the filename of newly saved measurements</string>
+                                 </property>
+                                 <property name="text">
+                                  <string>{measurement_id}</string>
+                                 </property>
+                                </widget>
+                               </item>
                               </layout>
-                             </item>
-                             <item>
-                              <widget class="QCheckBox" name="checkBox_load_raw">
-                               <property name="text">
-                                <string>Load raw spectra and re-process</string>
-                               </property>
-                              </widget>
                              </item>
                             </layout>
                            </item>
@@ -8761,7 +8882,7 @@ QComboBox QListView
                                <item row="6" column="0">
                                 <widget class="QCheckBox" name="checkBox_save_all">
                                  <property name="toolTip">
-                                  <string>When saving spectra, include all connected spectrometers rather than just "selected"</string>
+                                  <string>When saving spectra, include all connected spectrometers rather than just &quot;selected&quot;</string>
                                  </property>
                                  <property name="text">
                                   <string>All spectrometers</string>
@@ -8848,7 +8969,7 @@ QComboBox QListView
                                <item row="2" column="0">
                                 <widget class="QCheckBox" name="checkBox_save_excel">
                                  <property name="styleSheet">
-                                  <string notr="true" />
+                                  <string notr="true"/>
                                  </property>
                                  <property name="text">
                                   <string>Save XLS</string>
@@ -8881,7 +9002,7 @@ QComboBox QListView
                                   <string notr="true">margin: 0;</string>
                                  </property>
                                  <property name="title">
-                                  <string />
+                                  <string/>
                                  </property>
                                  <layout class="QHBoxLayout" name="horizontalLayout_33">
                                   <property name="spacing">
@@ -9218,31 +9339,31 @@ QComboBox QListView
                     <widget class="QFrame" name="frame_plugin_moved_hint">
                      <property name="frameShape">
                       <enum>QFrame::StyledPanel</enum>
-                    </property>
-                    <property name="frameShadow">
+                     </property>
+                     <property name="frameShadow">
                       <enum>QFrame::Raised</enum>
-                    </property>
-                    <property name="wpPanel" stdset="0">
+                     </property>
+                     <property name="wpPanel" stdset="0">
                       <bool>false</bool>
-                    </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_156">
+                     </property>
+                     <layout class="QVBoxLayout" name="verticalLayout_156">
                       <item>
-                      <widget class="QLabel" name="label_plugin_section">
+                       <widget class="QLabel" name="label_plugin_section">
                         <property name="sizePolicy">
-                        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                           <horstretch>0</horstretch>
                           <verstretch>0</verstretch>
-                        </sizepolicy>
+                         </sizepolicy>
                         </property>
                         <property name="font">
-                        <font>
+                         <font>
                           <pointsize>12</pointsize>
-                        </font>
+                         </font>
                         </property>
                         <property name="text">
-                        <string>Plugin settings have been moved to the right side panel.</string>
+                         <string>Plugin settings have been moved to the right side panel.</string>
                         </property>
-                      </widget>
+                       </widget>
                       </item>
                      </layout>
                     </widget>
@@ -9486,7 +9607,7 @@ QComboBox QListView
                                     </size>
                                    </property>
                                    <property name="toolTip">
-                                    <string>Enable "start batch collection" button on the Scope VCR-style buttons</string>
+                                    <string>Enable &quot;start batch collection&quot; button on the Scope VCR-style buttons</string>
                                    </property>
                                    <property name="text">
                                     <string>Batch Mode Enabled</string>
@@ -9550,7 +9671,7 @@ QComboBox QListView
                                     <bool>false</bool>
                                    </property>
                                    <property name="suffix">
-                                    <string />
+                                    <string/>
                                    </property>
                                    <property name="minimum">
                                     <number>1</number>
@@ -9692,7 +9813,7 @@ QComboBox QListView
                                     <string> sec</string>
                                    </property>
                                    <property name="prefix">
-                                    <string />
+                                    <string/>
                                    </property>
                                    <property name="maximum">
                                     <number>3600</number>
@@ -9755,7 +9876,7 @@ QComboBox QListView
                                     <string> sec</string>
                                    </property>
                                    <property name="prefix">
-                                    <string />
+                                    <string/>
                                    </property>
                                    <property name="maximum">
                                     <number>3600</number>
@@ -9829,7 +9950,7 @@ QComboBox QListView
                                <item>
                                 <widget class="QGroupBox" name="groupBox_BatchCollection_laser_mode">
                                  <property name="styleSheet">
-                                  <string notr="true" />
+                                  <string notr="true"/>
                                  </property>
                                  <property name="title">
                                   <string>Laser Mode</string>
@@ -10229,7 +10350,7 @@ QComboBox QListView
                                   <set>Qt::AlignCenter</set>
                                  </property>
                                  <property name="suffix">
-                                  <string />
+                                  <string/>
                                  </property>
                                  <property name="value">
                                   <number>90</number>
@@ -10409,7 +10530,7 @@ QComboBox QListView
                     <property name="toolTip">
                      <string>Live spectra has no scan averaging, boxcar or post-processing applied</string>
                     </property>
-                    <widget class="QWidget" name="page_scope_setup_live" />
+                    <widget class="QWidget" name="page_scope_setup_live"/>
                    </widget>
                   </item>
                   <item>
@@ -10575,7 +10696,7 @@ QComboBox QListView
                       <verstretch>0</verstretch>
                      </sizepolicy>
                     </property>
-                    <widget class="QWidget" name="page_scope_setup_recorded_dark" />
+                    <widget class="QWidget" name="page_scope_setup_recorded_dark"/>
                    </widget>
                   </item>
                   <item>
@@ -10726,7 +10847,7 @@ QComboBox QListView
                   </item>
                   <item>
                    <widget class="QStackedWidget" name="stackedWidget_scope_setup_reference_spectrum">
-                    <widget class="QWidget" name="page_rsrd_design_3" />
+                    <widget class="QWidget" name="page_rsrd_design_3"/>
                    </widget>
                   </item>
                   <item>
@@ -11092,7 +11213,7 @@ QComboBox QListView
                             <string>Clear list (does not permanently delete from hard drive)</string>
                            </property>
                            <property name="text">
-                            <string />
+                            <string/>
                            </property>
                            <property name="icon">
                             <iconset resource="grey_icons.qrc">
@@ -11130,7 +11251,7 @@ QComboBox QListView
                             <string>Expand/collapse thumbnails</string>
                            </property>
                            <property name="text">
-                            <string />
+                            <string/>
                            </property>
                            <property name="icon">
                             <iconset resource="grey_icons.qrc">
@@ -11168,7 +11289,7 @@ QComboBox QListView
                             <string>Reverse sort order</string>
                            </property>
                            <property name="text">
-                            <string />
+                            <string/>
                            </property>
                            <property name="icon">
                             <iconset resource="grey_icons.qrc">
@@ -11605,11 +11726,11 @@ QComboBox QListView
                             </item>
                             <item row="2" column="1">
                              <widget class="QLineEdit" name="lineEdit_scope_capture_save_note">
-                              <property name="text">
-                               <string>processed</string>
-                              </property>
                               <property name="toolTip">
                                <string>added to saved metadata (ctrl-N)</string>
+                              </property>
+                              <property name="text">
+                               <string>processed</string>
                               </property>
                              </widget>
                             </item>
@@ -11627,7 +11748,7 @@ QComboBox QListView
                              </widget>
                             </item>
                             <item row="1" column="1">
-                             <widget class="QLineEdit" name="lineEdit_scope_capture_save_suffix" />
+                             <widget class="QLineEdit" name="lineEdit_scope_capture_save_suffix"/>
                             </item>
                            </layout>
                           </item>
@@ -11649,7 +11770,7 @@ QComboBox QListView
                     </sizepolicy>
                    </property>
                    <property name="toolTip">
-                    <string />
+                    <string/>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_kia_outer">
                     <property name="leftMargin">
@@ -12095,7 +12216,7 @@ QComboBox QListView
                               <string>Zoom graph</string>
                              </property>
                              <property name="text">
-                              <string />
+                              <string/>
                              </property>
                              <property name="icon">
                               <iconset resource="grey_icons.qrc">
@@ -12127,7 +12248,7 @@ QComboBox QListView
                               <string>Freeze Axes</string>
                              </property>
                              <property name="text">
-                              <string />
+                              <string/>
                              </property>
                              <property name="icon">
                               <iconset resource="grey_icons.qrc">
@@ -12159,7 +12280,7 @@ QComboBox QListView
                               <string>Toggle grid display</string>
                              </property>
                              <property name="text">
-                              <string />
+                              <string/>
                              </property>
                              <property name="icon">
                               <iconset resource="grey_icons.qrc">
@@ -12191,7 +12312,7 @@ QComboBox QListView
                               <string>Invert x-axis</string>
                              </property>
                              <property name="text">
-                              <string />
+                              <string/>
                              </property>
                              <property name="icon">
                               <iconset resource="grey_icons.qrc">
@@ -12267,7 +12388,7 @@ QComboBox QListView
                               <string>Take Dark (ctrl-D)</string>
                              </property>
                              <property name="text">
-                              <string />
+                              <string/>
                              </property>
                              <property name="icon">
                               <iconset resource="grey_icons.qrc">
@@ -12299,7 +12420,7 @@ QComboBox QListView
                               <string>Take Reference</string>
                              </property>
                              <property name="text">
-                              <string />
+                              <string/>
                              </property>
                              <property name="icon">
                               <iconset resource="grey_icons.qrc">
@@ -12331,7 +12452,7 @@ QComboBox QListView
                               <string>Identify compound</string>
                              </property>
                              <property name="text">
-                              <string />
+                              <string/>
                              </property>
                              <property name="icon">
                               <iconset resource="grey_icons.qrc">
@@ -12369,7 +12490,7 @@ QComboBox QListView
                               <string>X-Axis Calibration</string>
                              </property>
                              <property name="text">
-                              <string />
+                              <string/>
                              </property>
                              <property name="icon">
                               <iconset resource="grey_icons.qrc">
@@ -12454,7 +12575,7 @@ QComboBox QListView
                               <enum>Qt::LeftToRight</enum>
                              </property>
                              <property name="text">
-                              <string />
+                              <string/>
                              </property>
                              <property name="icon">
                               <iconset resource="grey_icons.qrc">
@@ -12492,7 +12613,7 @@ QComboBox QListView
                               <string>copy to clipboard (ctrl-C)</string>
                              </property>
                              <property name="text">
-                              <string />
+                              <string/>
                              </property>
                              <property name="icon">
                               <iconset resource="grey_icons.qrc">
@@ -12581,7 +12702,7 @@ QComboBox QListView
                          </sizepolicy>
                         </property>
                         <property name="styleSheet">
-                         <string notr="true" />
+                         <string notr="true"/>
                         </property>
                         <property name="wpPanel" stdset="0">
                          <bool>false</bool>
@@ -12624,7 +12745,7 @@ QComboBox QListView
                            </property>
                            <widget class="QWidget" name="page_scope_capture_details_design">
                             <property name="styleSheet">
-                             <string notr="true" />
+                             <string notr="true"/>
                             </property>
                             <layout class="QHBoxLayout" name="horizontalLayout_47">
                              <property name="spacing">
@@ -12657,7 +12778,7 @@ QComboBox QListView
                                 </size>
                                </property>
                                <property name="styleSheet">
-                                <string notr="true" />
+                                <string notr="true"/>
                                </property>
                                <property name="verticalScrollBarPolicy">
                                 <enum>Qt::ScrollBarAlwaysOff</enum>
@@ -12879,7 +13000,7 @@ QComboBox QListView
                                     </size>
                                    </property>
                                    <property name="toolTip">
-                                    <string>Enter a simplified acronym or "short name" for a compound</string>
+                                    <string>Enter a simplified acronym or &quot;short name&quot; for a compound</string>
                                    </property>
                                    <property name="text">
                                     <string>Make Alias</string>
@@ -12901,7 +13022,7 @@ QComboBox QListView
                                     </size>
                                    </property>
                                    <property name="toolTip">
-                                    <string>Mark the selected compound as "known-good"</string>
+                                    <string>Mark the selected compound as &quot;known-good&quot;</string>
                                    </property>
                                    <property name="text">
                                     <string>Flag Benign</string>
@@ -13527,7 +13648,7 @@ QComboBox QListView
               <string>copy to clipboard (ctrl-C)</string>
              </property>
              <property name="text">
-              <string />
+              <string/>
              </property>
              <property name="icon">
               <iconset resource="grey_icons.qrc">
@@ -13621,23 +13742,23 @@ QComboBox QListView
                   <enum>Qt::ScrollBarAsNeeded</enum>
                  </property>
                  <property name="documentTitle">
-                  <string notr="true" />
+                  <string notr="true"/>
                  </property>
                  <property name="undoRedoEnabled">
                   <bool>false</bool>
                  </property>
                  <property name="html">
-                  <string notr="true">&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;style type="text/css"&gt;
+                  <string notr="true">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'DejaVu Sans Mono'; font-size:9pt; font-weight:400; font-style:normal;"&gt;
-&lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'DejaVu Sans Mono'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                  <property name="textInteractionFlags">
                   <set>Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
                  </property>
                  <property name="placeholderText">
-                  <string notr="true" />
+                  <string notr="true"/>
                  </property>
                 </widget>
                </item>
@@ -13778,7 +13899,7 @@ p, li { white-space: pre-wrap; }
                       <string>Start continuous acquisition</string>
                      </property>
                      <property name="text">
-                      <string />
+                      <string/>
                      </property>
                      <property name="icon">
                       <iconset resource="grey_icons.qrc">
@@ -13829,7 +13950,7 @@ p, li { white-space: pre-wrap; }
                       <string>Pause continuous acquisition</string>
                      </property>
                      <property name="text">
-                      <string />
+                      <string/>
                      </property>
                      <property name="icon">
                       <iconset resource="grey_icons.qrc">
@@ -13880,7 +14001,7 @@ p, li { white-space: pre-wrap; }
                       <string>Cancel current operation</string>
                      </property>
                      <property name="text">
-                      <string />
+                      <string/>
                      </property>
                      <property name="icon">
                       <iconset resource="grey_icons.qrc">
@@ -13925,7 +14046,7 @@ p, li { white-space: pre-wrap; }
                       <string>Save on-screen measurement</string>
                      </property>
                      <property name="text">
-                      <string />
+                      <string/>
                      </property>
                      <property name="icon">
                       <iconset resource="grey_icons.qrc">
@@ -13970,7 +14091,7 @@ p, li { white-space: pre-wrap; }
                       <string>Take one measurement</string>
                      </property>
                      <property name="text">
-                      <string />
+                      <string/>
                      </property>
                      <property name="icon">
                       <iconset resource="grey_icons.qrc">
@@ -14021,7 +14142,7 @@ p, li { white-space: pre-wrap; }
                       <string>Start batch collection</string>
                      </property>
                      <property name="text">
-                      <string />
+                      <string/>
                      </property>
                      <property name="icon">
                       <iconset resource="grey_icons.qrc">
@@ -14066,7 +14187,7 @@ p, li { white-space: pre-wrap; }
                       <string>Take and save one measurement</string>
                      </property>
                      <property name="text">
-                      <string />
+                      <string/>
                      </property>
                      <property name="icon">
                       <iconset resource="grey_icons.qrc">
@@ -14099,7 +14220,7 @@ p, li { white-space: pre-wrap; }
                 <x>0</x>
                 <y>0</y>
                 <width>240</width>
-                <height>2511</height>
+                <height>2626</height>
                </rect>
               </property>
               <property name="sizePolicy">
@@ -14109,7 +14230,7 @@ p, li { white-space: pre-wrap; }
                </sizepolicy>
               </property>
               <property name="styleSheet">
-               <string notr="true" />
+               <string notr="true"/>
               </property>
               <layout class="QVBoxLayout" name="controlWidget_inner_vbox">
                <property name="spacing">
@@ -14450,7 +14571,7 @@ p, li { white-space: pre-wrap; }
                              <string>Eject the current spectrometer.</string>
                             </property>
                             <property name="text">
-                             <string />
+                             <string/>
                             </property>
                             <property name="icon">
                              <iconset resource="grey_icons.qrc">
@@ -14511,7 +14632,7 @@ p, li { white-space: pre-wrap; }
                              <string>Apply changes to all spectrometers</string>
                             </property>
                             <property name="text">
-                             <string />
+                             <string/>
                             </property>
                             <property name="icon">
                              <iconset resource="grey_icons.qrc">
@@ -14927,7 +15048,7 @@ p, li { white-space: pre-wrap; }
                                  </font>
                                 </property>
                                 <property name="text">
-                                 <string />
+                                 <string/>
                                 </property>
                                 <property name="icon">
                                  <iconset resource="grey_icons.qrc">
@@ -14972,7 +15093,7 @@ p, li { white-space: pre-wrap; }
                                  </font>
                                 </property>
                                 <property name="text">
-                                 <string />
+                                 <string/>
                                 </property>
                                 <property name="icon">
                                  <iconset resource="grey_icons.qrc">
@@ -15012,7 +15133,7 @@ p, li { white-space: pre-wrap; }
                                <bool>false</bool>
                               </property>
                               <property name="prefix">
-                               <string />
+                               <string/>
                               </property>
                               <property name="suffix">
                                <string>%</string>
@@ -15693,7 +15814,7 @@ p, li { white-space: pre-wrap; }
                                  </font>
                                 </property>
                                 <property name="text">
-                                 <string />
+                                 <string/>
                                 </property>
                                 <property name="icon">
                                  <iconset resource="grey_icons.qrc">
@@ -15738,7 +15859,7 @@ p, li { white-space: pre-wrap; }
                                  </font>
                                 </property>
                                 <property name="text">
-                                 <string />
+                                 <string/>
                                 </property>
                                 <property name="icon">
                                  <iconset resource="grey_icons.qrc">
@@ -15765,9 +15886,6 @@ p, li { white-space: pre-wrap; }
                                 <verstretch>0</verstretch>
                                </sizepolicy>
                               </property>
-                              <property name="toolTip">
-                               <string>set integration time in ms (ctrl-T)</string>
-                              </property>
                               <property name="font">
                                <font>
                                 <pointsize>8</pointsize>
@@ -15775,6 +15893,9 @@ p, li { white-space: pre-wrap; }
                               </property>
                               <property name="focusPolicy">
                                <enum>Qt::StrongFocus</enum>
+                              </property>
+                              <property name="toolTip">
+                               <string>set integration time in ms (ctrl-T)</string>
                               </property>
                               <property name="wrapping">
                                <bool>false</bool>
@@ -15798,7 +15919,7 @@ p, li { white-space: pre-wrap; }
                                <string> ms</string>
                               </property>
                               <property name="prefix">
-                               <string />
+                               <string/>
                               </property>
                               <property name="minimum">
                                <number>1</number>
@@ -15964,7 +16085,7 @@ p, li { white-space: pre-wrap; }
                                  </font>
                                 </property>
                                 <property name="text">
-                                 <string />
+                                 <string/>
                                 </property>
                                 <property name="icon">
                                  <iconset resource="grey_icons.qrc">
@@ -16009,7 +16130,7 @@ p, li { white-space: pre-wrap; }
                                  </font>
                                 </property>
                                 <property name="text">
-                                 <string />
+                                 <string/>
                                 </property>
                                 <property name="icon">
                                  <iconset resource="grey_icons.qrc">
@@ -16041,11 +16162,11 @@ p, li { white-space: pre-wrap; }
                                 <pointsize>8</pointsize>
                                </font>
                               </property>
-                              <property name="toolTip">
-                               <string>change gain in dB (ctrl-G)</string>
-                              </property>
                               <property name="focusPolicy">
                                <enum>Qt::StrongFocus</enum>
+                              </property>
+                              <property name="toolTip">
+                               <string>change gain in dB (ctrl-G)</string>
                               </property>
                               <property name="wrapping">
                                <bool>false</bool>
@@ -16343,7 +16464,7 @@ p, li { white-space: pre-wrap; }
                                </font>
                               </property>
                               <property name="text">
-                               <string />
+                               <string/>
                               </property>
                               <property name="icon">
                                <iconset resource="grey_icons.qrc">
@@ -16391,7 +16512,7 @@ p, li { white-space: pre-wrap; }
                                </font>
                               </property>
                               <property name="text">
-                               <string />
+                               <string/>
                               </property>
                               <property name="icon">
                                <iconset resource="grey_icons.qrc">
@@ -16422,108 +16543,108 @@ p, li { white-space: pre-wrap; }
                 </widget>
                </item>
                <item>
-                   <widget class="QLabel" name="label_plugin_selection_widget">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <weight>75</weight>
-                      <bold>true</bold>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>Plugins</string>
-                    </property>
-                   </widget>
-                  </item>
-                <item>
+                <widget class="QLabel" name="label_plugin_selection_widget">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <weight>75</weight>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Plugins</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <widget class="QFrame" name="frame_plugin_option_white">
-                  <property name="frameShape">
+                 <property name="frameShape">
                   <enum>QFrame::StyledPanel</enum>
-                  </property>
-                  <property name="frameShadow">
+                 </property>
+                 <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
-                  </property>
-                  <property name="wpBox" stdset="0">
+                 </property>
+                 <property name="wpBox" stdset="0">
                   <bool>false</bool>
-                  </property>
-                  <layout class="QVBoxLayout" name="verticalLayout_154">
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_154">
                   <property name="leftMargin">
-                    <number>0</number>
+                   <number>0</number>
                   </property>
                   <property name="topMargin">
-                    <number>0</number>
+                   <number>0</number>
                   </property>
                   <property name="rightMargin">
-                    <number>0</number>
+                   <number>0</number>
                   </property>
                   <property name="bottomMargin">
-                    <number>0</number>
+                   <number>0</number>
                   </property>
                   <item>
-                    <widget class="QFrame" name="frame_plugin_option_black">
+                   <widget class="QFrame" name="frame_plugin_option_black">
                     <property name="frameShape">
-                      <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::StyledPanel</enum>
                     </property>
                     <property name="frameShadow">
-                      <enum>QFrame::Raised</enum>
+                     <enum>QFrame::Raised</enum>
                     </property>
                     <property name="wpPanel" stdset="0">
-                      <bool>false</bool>
+                     <bool>false</bool>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_151">
-                      <item>
-                        <widget class="QComboBox" name="comboBox_plugin_module">
-                          <property name="sizePolicy">
-                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                          </sizepolicy>
-                          </property>
-                          <property name="minimumSize">
-                          <size>
-                            <width>200</width>
-                            <height>0</height>
-                          </size>
-                          </property>
-                          <property name="maximumSize">
-                          <size>
-                            <width>300</width>
-                            <height>16777215</height>
-                          </size>
-                          </property>
-                          <property name="font">
-                          <font>
-                            <pointsize>10</pointsize>
-                            <weight>50</weight>
-                            <bold>false</bold>
-                          </font>
-                          </property>
-                          <property name="focusPolicy">
-                          <enum>Qt::StrongFocus</enum>
-                          </property>
-                        </widget>
-                        </item>
-                        <item>
-                        <widget class="QCheckBox" name="checkBox_plugin_connected">
-                          <property name="toolTip">
-                          <string>Loads and "starts" the selected plug-in</string>
-                          </property>
-                          <property name="text">
-                          <string>Connected</string>
-                          </property>
-                        </widget>
-                      </item>
+                     <item>
+                      <widget class="QComboBox" name="comboBox_plugin_module">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>200</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>300</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <pointsize>10</pointsize>
+                         <weight>50</weight>
+                         <bold>false</bold>
+                        </font>
+                       </property>
+                       <property name="focusPolicy">
+                        <enum>Qt::StrongFocus</enum>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QCheckBox" name="checkBox_plugin_connected">
+                       <property name="toolTip">
+                        <string>Loads and &quot;starts&quot; the selected plug-in</string>
+                       </property>
+                       <property name="text">
+                        <string>Connected</string>
+                       </property>
+                      </widget>
+                     </item>
                     </layout>
-                    </widget>
+                   </widget>
                   </item>
-                  </layout>
+                 </layout>
                 </widget>
-                </item>
+               </item>
                <item>
                 <widget class="QFrame" name="frame_plugin_control">
                  <property name="sizePolicy">
@@ -16667,7 +16788,7 @@ p, li { white-space: pre-wrap; }
                            <string>Activates the plugin to process readings</string>
                           </property>
                           <property name="styleSheet">
-                           <string notr="true" />
+                           <string notr="true"/>
                           </property>
                           <property name="text">
                            <string>Enabled</string>
@@ -16699,7 +16820,7 @@ p, li { white-space: pre-wrap; }
                           </property>
                           <layout class="QVBoxLayout" name="verticalLayout_148">
                            <item>
-                            <layout class="QVBoxLayout" name="verticalLayout_plugin_fields" />
+                            <layout class="QVBoxLayout" name="verticalLayout_plugin_fields"/>
                            </item>
                           </layout>
                          </widget>
@@ -16918,7 +17039,7 @@ p, li { white-space: pre-wrap; }
                              </font>
                             </property>
                             <property name="text">
-                             <string />
+                             <string/>
                             </property>
                             <property name="icon">
                              <iconset resource="grey_icons.qrc">
@@ -17006,7 +17127,7 @@ p, li { white-space: pre-wrap; }
                              </font>
                             </property>
                             <property name="text">
-                             <string />
+                             <string/>
                             </property>
                             <property name="icon">
                              <iconset resource="grey_icons.qrc">
@@ -17212,7 +17333,7 @@ p, li { white-space: pre-wrap; }
                              </font>
                             </property>
                             <property name="text">
-                             <string />
+                             <string/>
                             </property>
                             <property name="icon">
                              <iconset resource="grey_icons.qrc">
@@ -17259,7 +17380,7 @@ p, li { white-space: pre-wrap; }
                              <string> pixels</string>
                             </property>
                             <property name="prefix">
-                             <string />
+                             <string/>
                             </property>
                             <property name="minimum">
                              <number>0</number>
@@ -17303,7 +17424,7 @@ p, li { white-space: pre-wrap; }
                              </font>
                             </property>
                             <property name="text">
-                             <string />
+                             <string/>
                             </property>
                             <property name="icon">
                              <iconset resource="grey_icons.qrc">
@@ -17814,7 +17935,7 @@ p, li { white-space: pre-wrap; }
                                </font>
                               </property>
                               <property name="text">
-                               <string />
+                               <string/>
                               </property>
                               <property name="icon">
                                <iconset resource="grey_icons.qrc">
@@ -17859,7 +17980,7 @@ p, li { white-space: pre-wrap; }
                                </font>
                               </property>
                               <property name="text">
-                               <string />
+                               <string/>
                               </property>
                               <property name="icon">
                                <iconset resource="grey_icons.qrc">
@@ -17924,7 +18045,7 @@ p, li { white-space: pre-wrap; }
                              <string>Control the detector's Thermo-Electric Cooler (TEC)</string>
                             </property>
                             <property name="styleSheet">
-                             <string notr="true" />
+                             <string notr="true"/>
                             </property>
                             <property name="text">
                              <string>Enabled</string>
@@ -18083,7 +18204,7 @@ p, li { white-space: pre-wrap; }
                              </sizepolicy>
                             </property>
                             <property name="text">
-                             <string />
+                             <string/>
                             </property>
                            </widget>
                           </item>
@@ -18109,7 +18230,7 @@ p, li { white-space: pre-wrap; }
                              </sizepolicy>
                             </property>
                             <property name="text">
-                             <string />
+                             <string/>
                             </property>
                            </widget>
                           </item>
@@ -19038,7 +19159,7 @@ p, li { white-space: pre-wrap; }
              </size>
             </property>
             <property name="text">
-             <string />
+             <string/>
             </property>
             <property name="icon">
              <iconset resource="grey_icons.qrc">
@@ -19187,13 +19308,13 @@ p, li { white-space: pre-wrap; }
   <tabstop>systemStatusWidget_pushButton_temperature</tabstop>
  </tabstops>
  <resources>
-  <include location="grey_icons.qrc" />
-  <include location="throbbers.qrc" />
-  <include location="spectrums.qrc" />
-  <include location="devices.qrc" />
-  <include location="darkstyle_icons.qrc" />
-  <include location="enlighten_icons.qrc" />
-  <include location="enlighten_icons.qrc" />
+  <include location="grey_icons.qrc"/>
+  <include location="throbbers.qrc"/>
+  <include location="spectrums.qrc"/>
+  <include location="devices.qrc"/>
+  <include location="darkstyle_icons.qrc"/>
+  <include location="enlighten_icons.qrc"/>
+  <include location="enlighten_icons.qrc"/>
  </resources>
- <connections />
+ <connections/>
 </ui>
