@@ -159,3 +159,6 @@ class IntegrationTimeFeature(object):
             elif refresh_dark:
                 self.marquee.info("Recommend re-taking dark with new integration time")
 
+    def set_focus(self):
+        self.spinbox.setFocus()
+        self.spinbox.selectAll()

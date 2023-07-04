@@ -141,6 +141,9 @@ class GainDBFeature(object):
         widget.setValue(value)
         widget.blockSignals(False)
 
+    def set_focus(self):
+        self.spinbox.setFocus()
+        self.spinbox.selectAll()
 
     def set_db(self, db):
         

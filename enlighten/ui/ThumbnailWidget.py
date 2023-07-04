@@ -145,8 +145,8 @@ class ThumbnailWidget(QtWidgets.QFrame):
         add_id = self.should_add_id_button() 
         width = 31 if add_id else 35
 
-        self.button_edit    = self.create_button(callback=self.rename_callback,     icon_name="pencil",        icon_size=(28, 28), size=(width, 30), tooltip="Rename the measurement")
-        self.button_display = self.create_button(callback=self.display_callback,    icon_name="chart",         icon_size=(28, 28), size=(width, 30), tooltip="Toggle the graph trace")
+        self.button_edit    = self.create_button(callback=self.rename_callback,     icon_name="pencil",        icon_size=(28, 28), size=(width, 30), tooltip="Rename measurement (ctrl-E for latest)")
+        self.button_display = self.create_button(callback=self.display_callback,    icon_name="chart",         icon_size=(28, 28), size=(width, 30), tooltip="Toggle graph trace")
         self.button_color   = self.create_button(                                                              icon_size=(28, 28), size=(width, 30), tooltip="Set color", is_color=True)
         if add_id:
             self.button_id  = self.create_button(callback=self.id_callback,         icon_name="fingerprint",   icon_size=(28, 28), size=(width, 30), tooltip=KnowItAll.tooltip)
@@ -483,9 +483,9 @@ class ThumbnailWidget(QtWidgets.QFrame):
         spectrum = self.measurement.processed_reading.processed
         if self.measurement.processed_reading.is_cropped():
             roi = self.measurement.settings.eeprom.get_horizontal_roi()
-            if roi is not None and self.graph is not None and self.graph.vignette_roi is not None:
-                spectrum = self.measurement.processed_reading.processed_vignetted
-                x_axis = self.graph.vignette_roi.crop(x_axis, roi=roi)
+            if roi is not None and self.graph is not None and self.graph.horiz_roi is not None:
+                spectrum = self.measurement.processed_reading.processed_cropd
+                x_axis = self.graph.horiz_roi.crop(x_axis, roi=roi)
 
         # use named color if found in label
         color = self.selected_color

@@ -174,7 +174,7 @@ class Configuration(object):
 
     def parse(self):
         """ Load as ConfigParser object. """
-        self.config = configparser.ConfigParser()
+        self.config = configparser.ConfigParser(interpolation=None)
         self.config.optionxform = str
         try:
             self.config.read(self.pathname)
@@ -394,6 +394,8 @@ class Configuration(object):
             "format_txt":   False,
             "format_excel": False,
             "format_json":  False,
+
+            "label_template": "{time} {serial_number}",
 
             "prefix":       "enlighten",
             "suffix":       "",
