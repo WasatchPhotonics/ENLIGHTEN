@@ -149,7 +149,7 @@ class StatusBarFeature:
                 self.value("Max").setText("%.2f" % np.max(spectrum))
                 self.value("Mean").setText("%.2f" % np.average(spectrum))
 
-                x_axis = self.generate_x_axis(spec=spec, vignetted=pr.is_cropped())
+                x_axis = self.generate_x_axis(spec=spec, cropped=pr.is_cropped())
                 if len(spectrum) != len(x_axis):
                     # can happen when EEPROM is in bad state, or we've set a DetectorROI etc
                     log.error("can't update: spectrum %d != x_axis %d", len(spectrum), len(x_axis))

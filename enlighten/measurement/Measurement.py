@@ -223,7 +223,7 @@ class Measurement(object):
                            'ROI Pixel End',
                            'CCD C4',
                            'Slit Width',
-                           'Vignetted',
+                           'Cropped',
                            'Interpolated',
                            'Wavenumber Correction',
                            'Raman Intensity Corrected',
@@ -388,7 +388,7 @@ class Measurement(object):
 
         # how/where to do this properly?
         if len(self.processed_reading.processed) < len(self.settings.wavelengths):
-            self.processed_reading.processed_vignetted = self.processed_reading.processed
+            self.processed_reading.processed_cropped = self.processed_reading.processed
 
     ##
     # We presumably loaded a measurement from disk, reprocessed it, and are now
@@ -501,7 +501,7 @@ class Measurement(object):
         pr = self.processed_reading
         if pr is not None:
             log.debug("  processed_reading:")
-            log.debug("    processed_vignetted: %s", pr.processed_vignetted[:5] if pr.processed_vignetted is not None else None)
+            log.debug("    processed_cropped:   %s", pr.processed_cropped[:5] if pr.processed_cropped is not None else None)
             log.debug("    processed:           %s", pr.processed[:5] if pr.processed is not None else None)
             log.debug("    raw:                 %s", pr.raw      [:5] if pr.raw       is not None else None)
             log.debug("    dark:                %s", pr.dark     [:5] if pr.dark      is not None else None)
@@ -772,7 +772,7 @@ class Measurement(object):
         if field == "declared score":            return self.declared_match.score if self.declared_match is not None else 0
         if field == "roi pixel start":           return self.settings.eeprom.roi_horizontal_start
         if field == "roi pixel end":             return self.settings.eeprom.roi_horizontal_end
-        if field == "vignetted":                 return self.processed_reading.is_cropped()
+        if field == "cropped":                   return self.processed_reading.is_cropped()
         if field == "interpolated":              return self.save_options.interp.enabled if self.save_options is not None else False
         if field == "raman intensity corrected": return self.processed_reading.raman_intensity_corrected
         if field == "deconvolved":               return self.processed_reading.deconvolved
@@ -923,9 +923,9 @@ class Measurement(object):
             if not cropped:
                 sheet_spectrum.write    (row, 3, float(pr.processed [pixel]), style)
             elif interp.enabled:
-                sheet_spectrum.write    (row, 3, float(pr.processed_vignetted[pixel]), style)
+                sheet_spectrum.write    (row, 3, float(pr.processed_cropped[pixel]), style)
             elif roi.contains(pixel):
-                sheet_spectrum.write    (row, 3, float(pr.processed_vignetted[pixel - roi.start]), style)
+                sheet_spectrum.write    (row, 3, float(pr.processed_cropped[pixel - roi.start]), style)
 
             row_count += 1
 
@@ -1119,7 +1119,7 @@ class Measurement(object):
 
         # vignetting
         roi = None
-        if self.settings is not None and self.measurements is not None and self.measurements.vignette_roi.enabled:
+        if self.settings is not None and self.measurements is not None and self.measurements.horiz_roi.enabled:
             self.roi_active = True
             roi = self.settings.eeprom.get_horizontal_roi()
         cropped = roi is not None and pr.is_cropped()
@@ -1199,9 +1199,9 @@ class Measurement(object):
                         if not cropped:
                             values.append(formatted(precision, pr.processed, pixel))
                         elif interp.enabled:
-                            values.append(formatted(precision, pr.processed_vignetted, pixel))
+                            values.append(formatted(precision, pr.processed_cropped, pixel))
                         elif roi.contains(pixel):
-                            values.append(formatted(precision, pr.processed_vignetted, pixel - roi.start))
+                            values.append(formatted(precision, pr.processed_cropped, pixel - roi.start))
                         else:
                             # this is a cropped pixel, so arguably it could be None (,,), @na, -1
                             # or 0, or various other things, but consensus converged on "NA"
@@ -1272,7 +1272,7 @@ class Measurement(object):
     # Note that Measurements saved while "appending" are NOT considered renamable
     # at the file level, while Measurements saved to individual files are.
     #
-    # @todo support processed_vignetted
+    # @todo support processed_cropped
     def save_csv_file_by_row(self):
         sn = self.settings.eeprom.serial_number
 

@@ -8,13 +8,13 @@ log = logging.getLogger(__name__)
 # It is very important to understand what it means for this feature to be 
 # "enabled," and how that is visualized.
 #
-# BY DEFAULT, spectrometers with "vignetted" spectra (spectrometers with valid 
+# BY DEFAULT, spectrometers with "cropped" spectra (spectrometers with valid 
 # horizontal_roi_start/stop fields populated in the EEPROM) DO NOT show the 
 # cropped "wings" of the spectra in ENLIGHTEN.  The whole purpose of configuring
 # a horizontal ROI is to NOT SHOW those noisy, filtered, useless fringes.
 #
-# Therefore, the DEFAULT mode is to crop the ROI.  This means the VignetteROI 
-# feature is ENABLED, and the button is visualized in a non-scary "gray" style.
+# Therefore, the DEFAULT mode is to crop the ROI.  This means the CropROIFeature 
+# is ENABLED, and the button is visualized in a non-scary "gray" style.
 #
 # The RARE case is for a user to wish to see those low-signal fringes, and 
 # therefore we visualize that mode (with "curtains" on the ends) with the RED,
@@ -22,9 +22,9 @@ log = logging.getLogger(__name__)
 #           
 #     enabled:       True        False
 #     button CSS:    gray        red
-#     vignette:      yes         no
+#     crop:          yes         no
 #
-class VignetteROIFeature(object):
+class HorizROIFeature(object):
     
     def __init__(self,
             graph,
@@ -43,7 +43,7 @@ class VignetteROIFeature(object):
         self.observers = set()
 
         # self-register with Graph
-        self.graph.vignette_roi = self
+        self.graph.horiz_roi = self
 
         self.button.clicked.connect(self.toggle)
 
@@ -82,10 +82,10 @@ class VignetteROIFeature(object):
 
             if self.enabled:
                 self.stylesheets.apply(self.button, "gray_gradient_button") 
-                self.button.setToolTip("spectra vignetted per EEPROM horizontal ROI")
+                self.button.setToolTip("spectra cropped per EEPROM horizontal ROI")
             else:
                 self.stylesheets.apply(self.button, "red_gradient_button")
-                self.button.setToolTip("unvignetted spectra shown (curtains indicate ROI limits)")
+                self.button.setToolTip("uncropped spectra shown (curtains indicate ROI limits)")
 
         else:
             self.button.setVisible(False)
@@ -109,8 +109,8 @@ class VignetteROIFeature(object):
     #                      "processed" array literally has fewer values than the 
     #                      x-axes, and the Measurement metadata clearly shows
     #                      an ROI, then we can assume that the Measurement was
-    #                      vignetted when it was saved / generated, and we really
-    #                      have no choice to un-vignette it now (other than by
+    #                      cropped when it was saved / generated, and we really
+    #                      have no choice to un-crop it now (other than by
     #                      prefixing/suffixing zeros or something).  
     # @returns cropped spectrum
     # @note does not currently check .enabled
@@ -141,7 +141,7 @@ class VignetteROIFeature(object):
     # @param pr (In/Out) ProcessedReading
     # @param settings (Input) SpectrometerSettings
     #
-    # @returns Nothing (side-effect: populates pr.processed_vignetted)
+    # @returns Nothing (side-effect: populates pr.processed_cropped)
     def process(self, pr, settings=None):
         if not self.enabled:
             return
@@ -160,4 +160,4 @@ class VignetteROIFeature(object):
         if roi is None:
             return 
             
-        pr.processed_vignetted = self.crop(pr.processed, roi=roi)
+        pr.processed_cropped = self.crop(pr.processed, roi=roi)
