@@ -16,7 +16,6 @@
     - added min/avg/max to thumbnail tooltips
     - plugins
         - updated Savitzky-Golay
->>>>>>> main
 - 2023-06-14 4.0.12
     - persistence
         - fixed Configuration defaults
