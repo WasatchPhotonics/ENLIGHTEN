@@ -11,6 +11,10 @@
         - work in export filenames
         - support Reading attributes
         - improved floating-point precision
+    - renamed VignetteROIFeature to HorizROIFeature
+    - persist gain_db by serial number
+    - plugins
+        - updated Savitzky-Golay
 - 2023-06-14 4.0.12
     - persistence
         - fixed Configuration defaults
