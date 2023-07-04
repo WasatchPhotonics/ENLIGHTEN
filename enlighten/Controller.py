@@ -1059,7 +1059,7 @@ class Controller:
             shortcut.activated.connect(callback)
             self.shortcuts[kseq] = shortcut
 
-        # views
+        # views (tooltips set in PageNav)
         make_shortcut("Ctrl+1", self.page_nav.set_view_scope)
         make_shortcut("Ctrl+2", self.page_nav.set_view_settings)
         make_shortcut("Ctrl+3", self.page_nav.set_view_hardware)
@@ -1067,18 +1067,24 @@ class Controller:
 
         # Convenience
         make_shortcut("Ctrl+A", self.authentication.login) # authenticate, advanced
-        make_shortcut("Ctrl+E", self.measurements.rename_last_measurement)
         make_shortcut("Ctrl+C", self.graph.copy_to_clipboard_callback)
         make_shortcut("Ctrl+D", self.dark_feature.toggle)
+        make_shortcut("Ctrl+E", self.measurements.rename_last_measurement)
+        make_shortcut("Ctrl+G", self.gain_db_feature.set_focus)
         make_shortcut("Ctrl+H", self.page_nav.toggle_hardware_and_scope)
         make_shortcut("Ctrl+L", self.laser_control.toggle_laser)
+        make_shortcut("Ctrl+N", self.save_options.focus_note) # note this gives easy access to prefix/suffix as well via shift-tab
         make_shortcut("Ctrl+P", self.vcr_controls.toggle) # pause/play
         make_shortcut("Ctrl+R", self.reference_feature.toggle)
         make_shortcut("Ctrl+S", self.vcr_controls.save)
+        make_shortcut("Ctrl+T", self.integration_time_feature.set_focus)
 
         # Cursor
         make_shortcut(QtGui.QKeySequence.MoveToPreviousWord, self.cursor.dn_callback) # ctrl-left
         make_shortcut(QtGui.QKeySequence.MoveToNextWord,     self.cursor.up_callback) # ctrl-right
+
+        # Help - this seems a pretty standard convention
+        make_shortcut("F1", self.help_callback)
 
     # ##########################################################################
     # GUI utility methods
