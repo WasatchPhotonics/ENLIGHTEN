@@ -377,6 +377,7 @@ class BusinessObjects:
             interp                      = ctl.interp,
             lb_location                 = sfu.label_scope_setup_save_location,
             le_label_template           = sfu.lineEdit_save_label_template,
+            le_filename_template        = sfu.lineEdit_save_filename_template,
             le_note                     = sfu.lineEdit_scope_capture_save_note,
             le_prefix                   = sfu.lineEdit_scope_capture_save_prefix,
             le_suffix                   = sfu.lineEdit_scope_capture_save_suffix,
