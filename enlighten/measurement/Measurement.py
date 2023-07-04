@@ -316,9 +316,9 @@ class Measurement(object):
             self.baseline_correction_algo = spec.app_state.baseline_correction_algo
 
             # do these AFTER we have a processed_reading
-            self.note = self.generate_format_field("note")
-            self.prefix = self.generate_format_field("prefix")
-            self.suffix = self.generate_format_field("suffix")
+            self.note   = self.expand_template(self.save_options.note())
+            self.prefix = self.expand_template(self.save_options.prefix())
+            self.suffix = self.expand_template(self.save_options.suffix())
 
         elif source_pathname:
             log.debug("instantiating from source pathname %s", source_pathname)
@@ -421,63 +421,62 @@ class Measurement(object):
 
         self.basename = self.measurement_id # use this as the original base filename
 
-        # the ID is too long for on-screen display, so shorten it
+        # we don't use measurement_id for on-screen display; unless a label has 
+        # already been provided, generate one using the configured template
         if self.label is None:
-            self.label = "%s %s" % (self.timestamp.strftime("%H:%M:%S"), self.settings.eeprom.serial_number)
-
-            self.label = self.generate_format_field("label")
+            self.label = self.expand_template(self.save_options.label_template())
 
             # append optional suffix
-            # log.debug("checking for label_suffix")
             if self.measurements is not None and \
                     self.measurements.factory is not None and \
                     self.measurements.factory.label_suffix is not None:
-                self.label += " %s" % self.measurements.factory.label_suffix
-                # log.debug("applying label_suffix (%s): %s", self.measurements.factory.label_suffix, self.label)
+                self.label += f" {self.measurements.factory.label_suffix}"
 
                 # this complicates saving from multiple spectrometers
                 # during batch collection
                 self.measurements.factory.label_suffix = None
 
-    def generate_format_field(self, field = None):
-        if field == None:
-            return ''
-        try:
-            fields = {
-                "label": self.save_options.label_template,
-                "prefix": self.save_options.prefix,
-                "suffix": self.save_options.suffix,
-                "note": self.save_options.note,
-                }
-            label = fields[field]()
-        except:
-            if field == "label":
-                label = "{time}"
-            else:
-                label == ""
-        log.debug(f"generate_format_field: starting with template {label}")
+    def expand_template(self, template):
+        """
+        Some GUI text fields allow the user to enter strings containining "macro 
+        templates" which are dynamically expanded and evaluated at runtime.
 
+        Macros look like "{field_name}", where field_name can be any object 
+        attribute in wasatch.EEPROM, wasatch.SpectrometerState, or Measurement
+        metadata (any field supported by Measurement.get_metadata). As a 
+        convenience some hardcoded macros are also supported, such as {time}.
+        """
+        log.debug(f"expand_template: starting with template {template}")
         while True:
-            m = re.search(r"{([a-z0-9_]+)}", label, re.IGNORECASE)
+            m = re.search(r"{([a-z0-9_]+)}", template, re.IGNORECASE)
             if m is None:
-                return label
+                return template
 
-            code = m.group(1)
+            macro = m.group(1)
             value = None
-            if code == "time":
+
+            if macro == "time":
                 value = self.timestamp.strftime("%H:%M:%S")
-            elif hasattr(self.settings.eeprom, code):
-                value = getattr(self.settings.eeprom, code)
-            elif hasattr(self.settings.state, code):
-                value = getattr(self.settings.state, code)
+            elif self.processed_reading and self.processed_reading.reading and hasattr(self.processed_reading.reading, macro):
+                value = getattr(self.processed_reading.reading, macro)
+            elif hasattr(self.settings.eeprom, macro):
+                value = getattr(self.settings.eeprom, macro)
+            elif hasattr(self.settings.state, macro):
+                value = getattr(self.settings.state, macro)
             else:
-                value = self.get_metadata(code)
+                value = self.get_metadata(macro)
 
             if isinstance(value, float):
-                value = f"{value:.3f}"
+                if macro in ['gain_db']:
+                    fmt = "{0:.1f}"
+                elif 'excitation' in macro:
+                    fmt = "{0:.3f}"
+                else
+                    fmt = "{0:.2f}"
+                value = fmt.format(value)
 
-            label = label.replace("{%s}" % code, str(value))
-            log.debug(f"generate_format_field: {code} -> {value} ({field} now {label})")
+            template = template.replace("{%s}" % macro, str(value))
+            log.debug(f"expand_template: {macro} -> {value} (now {template})")
 
     def generate_basename(self):
         if self.save_options is None:

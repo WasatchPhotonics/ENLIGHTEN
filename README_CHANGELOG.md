@@ -2,6 +2,12 @@
 
 # 4.0 GUI Refactoring
 
+- 2023-??-?? 4.0.13
+    - enlighten.ini allows % 
+    - template macro fixes
+        - work in export filenames
+        - support Reading attributes
+        - improved floating-point precision
 - 2023-06-14 4.0.12
     - persistence
         - fixed Configuration defaults

@@ -365,6 +365,8 @@ class Measurements(object):
             default_filename += now.strftime("%Y%m%d-%H%M%S")
             default_filename += f"-{self.save_options.suffix()}" if self.save_options.has_suffix() else ""
 
+            default_filename = self.measurements[-1].expand_template(default_filename)
+
             # prompt the user to override the default filename
             # @todo give Controller.form to GUI, add gui.promptString()
             (filename, ok) = QtWidgets.QInputDialog().getText(
