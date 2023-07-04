@@ -455,9 +455,18 @@ class Measurement(object):
 
             macro = m.group(1)
             value = None
+            fmt = None
 
-            if macro == "time":
+            # macro-only fields (don't map to existing data)
+            if macro == "time" or macro == "HH:MM:SS":
                 value = self.timestamp.strftime("%H:%M:%S")
+            elif macro == "date" or macro == "YYYY-MM-DD":
+                value = self.timestamp.strftime("%Y-%m-%d")
+            elif macro == "integration_time_sec":
+                value = self.settings.state.integration_time_ms / 1000.0
+                fmt = "{0:.3f}"
+
+            # pull from measurement data
             elif self.processed_reading and self.processed_reading.reading and hasattr(self.processed_reading.reading, macro):
                 value = getattr(self.processed_reading.reading, macro)
             elif hasattr(self.settings.eeprom, macro):
@@ -468,12 +477,13 @@ class Measurement(object):
                 value = self.get_metadata(macro)
 
             if isinstance(value, float):
-                if macro in ['gain_db']:
-                    fmt = "{0:.1f}"
-                elif 'excitation' in macro:
-                    fmt = "{0:.3f}"
-                else:
-                    fmt = "{0:.2f}"
+                if fmt is None:
+                    if macro in ['gain_db']:
+                        fmt = "{0:.1f}"
+                    elif 'excitation' in macro:
+                        fmt = "{0:.3f}"
+                    else:
+                        fmt = "{0:.2f}"
                 value = fmt.format(value)
 
             template = template.replace("{%s}" % macro, str(value))
