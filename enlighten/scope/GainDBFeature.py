@@ -65,9 +65,6 @@ class GainDBFeature:
     # Only show these controls when an IMX-based spectrometer is selected
     def update_visibility(self):
 
-        # DEBUG
-        return True
-
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             self.visible = False
