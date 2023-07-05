@@ -122,7 +122,7 @@ class MeasurementFactory(object):
             colors          = self.colors,
             stylesheets     = self.stylesheets,
             is_collapsed    = is_collapsed,
-            view            = measurement.technique,
+            technique       = measurement.technique,
             focus_listener  = self.focus_listener,
             kia             = self.kia)
         try:

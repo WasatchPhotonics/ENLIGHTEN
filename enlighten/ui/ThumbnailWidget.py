@@ -45,7 +45,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
             is_collapsed,
             measurement,
             stylesheets,
-            view,
+            technique,
             focus_listener,
             kia = None):
 
@@ -58,7 +58,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
         self.kia            = kia
         self.measurement    = measurement
         self.stylesheets    = stylesheets
-        self.view           = view
+        self.technique      = technique
         self.focus_listener = focus_listener
                            
         self.is_displayed  = False
@@ -206,12 +206,8 @@ class ThumbnailWidget(QtWidgets.QFrame):
             log.debug("kia not installed")
             return False
 
-        # things get weird for loaded Measurements
-        ok = self.view is None or \
-             (isinstance(self.view, common.Views) and self.view == common.Views.RAMAN) or \
-             "raman" in str(self.view).lower()
-        log.debug("should_add_id = %s (self.view %s)", ok, self.view)
-        return ok
+        # only add "identify" button to Raman measurements
+        return self.technique and "raman" == self.technique.lower()
 
     ##
     # Called by MeasurementFactory to set the rendered thumbnail image
