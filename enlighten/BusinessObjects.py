@@ -429,7 +429,6 @@ class BusinessObjects:
             button_load                 = sfu.pushButton_scope_capture_load,
             button_resize               = sfu.pushButton_resize_captures,
             button_resort               = sfu.pushButton_resort_captures,
-            button_whats_this           = sfu.pushButton_whats_this,
             factory                     = ctl.measurement_factory,
             file_manager                = ctl.file_manager,
             form                        = ctl.form,
