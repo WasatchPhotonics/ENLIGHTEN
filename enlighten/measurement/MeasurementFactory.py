@@ -38,7 +38,6 @@ class MeasurementFactory(object):
         self.save_options = None
         self.stylesheets  = None
         self.measurements = None
-        self.label_suffix = None    # currently set/cleared by BatchCollection, could be others
         self.observers    = set()
 
     def __init__(self,

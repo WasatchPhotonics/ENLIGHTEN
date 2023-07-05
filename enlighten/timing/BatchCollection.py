@@ -517,7 +517,7 @@ class BatchCollection(object):
             self.timer_batch.start(sleep_ms)
             
     def vcr_stop(self):
-        self.factory.label_suffix = None
+        self.save_options.multipart_suffix = None
         self.stop()
 
     def stop(self):
@@ -549,7 +549,7 @@ class BatchCollection(object):
             self.stop()
             return
 
-        self.factory.label_suffix = "B%d %d-of-%d" % (self.current_batch_count + 1, self.current_measurement_count + 1, self.measurement_count)
+        self.save_options.multipart_suffix = "B%d %d-of-%d" % (self.current_batch_count + 1, self.current_measurement_count + 1, self.measurement_count)
 
         # compute (but don't yet schedule) next start-time now, so that the
         # measurement period can be "start-to-start"
@@ -560,6 +560,9 @@ class BatchCollection(object):
 
     def save_complete(self):
         """ A VCRControls "step_save" event has completed. """
+
+        self.save_options.multipart_suffix = None
+
         if not self.running:
             return
 

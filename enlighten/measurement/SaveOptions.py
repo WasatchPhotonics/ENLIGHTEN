@@ -32,6 +32,7 @@ class SaveOptions():
         self.cb_spc                  = None
         self.cb_dark                 = None
         self.cb_excel                = None
+        self.cb_filename_as_label    = None
         self.cb_json                 = None
         self.cb_pixel                = None
         self.cb_raw                  = None
@@ -49,6 +50,7 @@ class SaveOptions():
         self.le_suffix               = None
         self.line_number             = 0
         self.multispec               = None
+        self.multipart_suffix        = None # currently set/cleared by BatchCollection, used by Measurement
         self.rb_by_col               = None
         self.rb_by_row               = None
 
@@ -63,6 +65,7 @@ class SaveOptions():
              cb_spc,
              cb_dark,
              cb_excel,
+             cb_filename_as_label,
              cb_json, 
              cb_load_raw,
              cb_pixel,
@@ -85,6 +88,8 @@ class SaveOptions():
              rb_by_row
         ):
 
+        self.clear()
+
         self.bt_location          = bt_location    
         self.cb_all               = cb_all
         self.cb_allow_rename      = cb_allow_rename
@@ -94,6 +99,7 @@ class SaveOptions():
         self.cb_spc               = cb_spc
         self.cb_dark              = cb_dark
         self.cb_excel             = cb_excel
+        self.cb_filename_as_label = cb_filename_as_label
         self.cb_json              = cb_json
         self.cb_load_raw          = cb_load_raw
         self.cb_pixel             = cb_pixel
@@ -147,6 +153,7 @@ class SaveOptions():
         self.cb_spc             .stateChanged       .connect(self.update_widgets)
         self.cb_dark            .stateChanged       .connect(self.update_widgets)
         self.cb_excel           .stateChanged       .connect(self.update_widgets)
+        self.cb_filename_as_label.stateChanged      .connect(self.update_widgets)
         self.cb_json            .stateChanged       .connect(self.update_widgets)
         self.cb_pixel           .stateChanged       .connect(self.update_widgets)
         self.cb_raw             .stateChanged       .connect(self.update_widgets)
@@ -180,6 +187,7 @@ class SaveOptions():
         self.init_checkbox(self.cb_spc,          "format_spc")
         self.init_checkbox(self.cb_text,         "format_txt")
         self.init_checkbox(self.cb_excel,        "format_excel")
+        self.init_checkbox(self.cb_filename_as_label, "filename_as_label")
         self.init_checkbox(self.cb_json,         "format_json")
         self.init_checkbox(self.cb_append,       "append")
         self.init_checkbox(self.cb_pixel,        "pixel")
@@ -227,10 +235,11 @@ class SaveOptions():
         self.cb_dark.setEnabled(True)
         self.cb_reference.setEnabled(True)
 
-        # MZ: always enable wavenumbers, as we might want to load/export Raman 
-        #     data even when not connected to a Raman spectrometer
-        # self.cb_wavenumber.setEnabled(spec.has_excitation() if spec else False)
+        # always enable wavenumbers, as we might want to load/export Raman 
+        # data even when not connected to a Raman spectrometer
         self.cb_wavenumber.setEnabled(True)
+
+        self.le_label_template.setEnabled(not self.filename_as_label())
 
         ########################################################################
         # Reset append_pathname when disabled or prefix/suffix changes
@@ -274,6 +283,7 @@ class SaveOptions():
         self.config.set(s, "filename_template",  self.filename_template())
         self.config.set(s, "allow_rename_files", self.allow_rename_files())
         self.config.set(s, "all_spectrometers",  self.save_all_spectrometers())
+        self.config.set(s, "filename_as_label",  self.filename_as_label())
             
     # ##########################################################################
     # Accessors
@@ -299,6 +309,7 @@ class SaveOptions():
     def prefix                  (self): return self.le_prefix.text().strip()
     def label_template          (self): return self.le_label_template.text().strip()
     def filename_template       (self): return self.le_filename_template.text().strip()
+    def filename_as_label       (self): return self.cb_filename_as_label.isChecked()
     def load_raw                (self): return self.cb_load_raw.isChecked()
     def save_all_spectrometers  (self): return self.cb_all.isChecked()
     def save_by_col             (self): return self.rb_by_col.isChecked()

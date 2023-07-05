@@ -396,7 +396,7 @@ class Configuration(object):
             "format_json":  False,
 
             "label_template": "{time} {serial_number}",
-            "filename_template": "{measurement_id}",
+            "filename_template": "{measurement id}",
 
             "prefix":       "enlighten",
             "suffix":       "",
