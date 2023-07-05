@@ -156,7 +156,8 @@ class Measurements(object):
 
     def whats_this_callback(self):
         wt = QtWidgets.QWhatsThis
-        if wt.inWhatsThisMode():
+        enabled = wt.inWhatsThisMode()
+        if enabled:
             log.debug("leaving whats this mode")
             wt.leaveWhatsThisMode()
         else:
@@ -339,7 +340,8 @@ class Measurements(object):
         for b in [ self.button_erase,
                    self.button_export,
                    self.button_resize,
-                   self.button_resort ]:
+                   self.button_resort,
+                   self.button_whats_this ]:
             b.setEnabled(enabled)
 
     # Think this is internal-only
