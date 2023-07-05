@@ -125,6 +125,7 @@ class EnlightenApplication(object):
             stylesheet_path   = self.args.stylesheet_path,
             set_all_dfu       = self.args.set_all_dfu,
             form              = self.form,
+            splash            = self.splash,
             headless          = self.args.headless)
         # This requires explanation.  This is obviously a Qt "connect" binding,
         # but Controller is not a Qt widget, and does not inherit from/extend 
