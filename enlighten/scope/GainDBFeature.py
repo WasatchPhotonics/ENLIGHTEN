@@ -64,6 +64,10 @@ class GainDBFeature:
     ##
     # Only show these controls when an IMX-based spectrometer is selected
     def update_visibility(self):
+
+        # DEBUG
+        return True
+
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             self.visible = False
@@ -96,7 +100,7 @@ class GainDBFeature:
         if not self.update_visibility():
             return
 
-        # TEMPORARILY set a value within limits (this is the SLIDER)
+        # TEMPORARILY set a value within limits 
         self.ctl.form.ui.slider_gain.blockSignals(True)
         self.ctl.form.ui.slider_gain.setMinimum(self.MIN_GAIN_DB)
         self.ctl.form.ui.slider_gain.setMaximum(self.MAX_GAIN_DB)
@@ -137,10 +141,10 @@ class GainDBFeature:
     def set_db(self, db):
         
         # save gain_db to application state
-        self.multispec.set_state("gain_db", db)
+        self.ctl.multispec.set_state("gain_db", db)
 
         # send gain update message to device
-        self.multispec.change_device_setting("detector_gain", db)
+        self.ctl.multispec.change_device_setting("detector_gain", db)
 
         # ensure both gain widgets are correct, without generating additional events
         self._quiet_set(self.ctl.form.ui.doubleSpinBox_gain, db)
