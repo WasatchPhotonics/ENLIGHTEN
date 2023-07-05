@@ -19,6 +19,8 @@ log = logging.getLogger(__name__)
 class LaserControlFeature:
 
     def __init__(self, ctl):
+        self.ctl = ctl
+
         self.ctl.battery_feature.register_observer(self.battery_callback)
 
         self.slider_stop_usb    = False
@@ -29,9 +31,9 @@ class LaserControlFeature:
         sfu.pushButton_laser_power_dn.clicked.connect(self.dn_callback)
         sfu.pushButton_laser_power_up.clicked.connect(self.up_callback)
         sfu.pushButton_laser_toggle.clicked.connect(self.toggle_callback)
-        sfu.verticalSlider_laser_power.sliderPressed.connect(self.ctl.form.ui.verticalSlider_laser_power_press_callback)
+        sfu.verticalSlider_laser_power.sliderPressed.connect(self.slider_power_press_callback)
         sfu.verticalSlider_laser_power.sliderMoved.connect(sfu.doubleSpinBox_laser_power.setValue)
-        sfu.verticalSlider_laser_power.sliderReleased.connect(sfu.verticalSlider_laser_power_callback)
+        sfu.verticalSlider_laser_power.sliderReleased.connect(self.slider_power_callback)
         sfu.verticalSlider_laser_power.installEventFilter(MouseWheelFilter(sfu.verticalSlider_laser_power))
         sfu.doubleSpinBox_lightSourceWidget_excitation_nm.valueChanged.connect(self.excitation_callback)
         sfu.doubleSpinBox_laser_power.valueChanged.connect(self.ctl.form.ui.verticalSlider_laser_power.setValue)
@@ -69,7 +71,6 @@ class LaserControlFeature:
         state.laser_power_mW = settings.eeprom.max_laser_power_mW
         state.use_mW = settings.eeprom.has_laser_power_calibration() and settings.is_mml()
 
-
         self.set_laser_enable(False)
         self.configure_watchdog(init=True)
         
@@ -88,7 +89,7 @@ class LaserControlFeature:
         settings = spec.settings
         has_laser = settings.eeprom.has_laser
         doing_expert = self.ctl.page_nav.doing_expert()
-        is_ilc = any([component in settings.full_model().upper() for component in "-ILC", "-IL-IC"])
+        is_ilc = any([component in settings.full_model().upper() for component in ["-ILC", "-IL-IC"]])
 
         self.ctl.form.ui.frame_lightSourceControl.setVisible(has_laser)
         if not has_laser:
@@ -248,7 +249,7 @@ class LaserControlFeature:
         if spec is None:
             return
 
-        spinbox  = self.form.ui.doubleSpinBox_laser_power
+        spinbox  = self.ctl.form.ui.doubleSpinBox_laser_power
         slider   = self.ctl.form.ui.verticalSlider_laser_power
         settings = spec.settings
 
@@ -275,7 +276,7 @@ class LaserControlFeature:
         if spec is None:
             return
 
-        spinbox  = self.form.ui.doubleSpinBox_laser_power
+        spinbox  = self.ctl.form.ui.doubleSpinBox_laser_power
         slider   = self.ctl.form.ui.verticalSlider_laser_power
         settings = spec.settings
 
