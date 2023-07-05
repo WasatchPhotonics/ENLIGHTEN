@@ -5,6 +5,9 @@ enlighten_errlog
 enlighten.egg-info
 .cache
 
+*.swp
+*.swo
+
 *.pyc
 *.exe
 *.out
