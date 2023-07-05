@@ -43,3 +43,4 @@ keys.py
 
 .DS_Store
 .vscode/launch.json
+.idea/
