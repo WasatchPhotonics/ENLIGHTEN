@@ -18,11 +18,13 @@ log = logging.getLogger(__name__)
 # miniature raster of the spectra), as well as the Qt Widget which displays the
 # Thumbnail and all the buttons and labels and CSS styling around it.
 #
-# It contains a reference to the main graph both so that can add and remove 
+# It contains a reference to the main graph both so it can add and remove 
 # itself to the graph as a visible trace, and also so it can determine the
 # current x-axis unit.
 #
 # These objects are created by MeasurementFactory.
+#
+# Bizarrely, creation of the all-important thumbnail is still in MeasurementFactory?
 class ThumbnailWidget(QtWidgets.QFrame):
 
     BUTTON_PADDING = 5
@@ -518,7 +520,11 @@ class ThumbnailWidget(QtWidgets.QFrame):
         self.button_trash.setVisible(False)
 
     def generate_tooltip(self):
-        tt = ""
+        # quick stats in first line
+        proc = self.measurement.processed_reading.get_processed()
+        tt = f"Max {int(max(proc))}, Avg {int(sum(proc)/len(proc))}, Min {int(min(proc))}\n\n" if proc else ""
+
+        # followed by Measurement metadata
         metadata = self.measurement.get_all_metadata()
         for k in sorted(metadata):
             v = metadata[k]
@@ -526,5 +532,6 @@ class ThumbnailWidget(QtWidgets.QFrame):
                 s = str(v)
                 if len(s) > 0:
                     tt += f"{k}: {s}\n"
-        self.body.setToolTip(tt.strip())
+        # self.body.setToolTip(tt.strip())
+        self.body.setWhatsThis(tt.strip())
         self.stylesheets.apply(self.body, "tooltip")
