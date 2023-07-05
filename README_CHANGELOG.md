@@ -14,6 +14,7 @@
     - renamed VignetteROIFeature to HorizROIFeature
     - persist gain_db by serial number
     - added min/avg/max to thumbnail tooltips
+    - changed Measurement ToolTip to WhatsThis
     - plugins
         - updated Savitzky-Golay
 - 2023-06-14 4.0.12
