@@ -370,3 +370,7 @@ class SaveOptions():
     # current file.
     def have_appended_serial(self, serial_number):
         return serial_number in self.appended_serial_numbers
+
+    def focus_note(self): 
+        self.le_note.setFocus()
+        self.le_note.selectAll()

@@ -34,7 +34,7 @@ spectrometers, reading and graphing spectra, and performing basic analytic and
 utility tasks.
 
 It is _not_ an advanced production or manufacturing platform for assembly,
-alignment, focus, QC etc -- see RamanSpecCal for those functions.
+alignment, focus, QC etc -- see WPSpecCal for those functions.
 
 It is also not an end-all / be-all "perform everything you might ever want to
 do with a spectrometer" tool -- if we were to invest in creating that, we 

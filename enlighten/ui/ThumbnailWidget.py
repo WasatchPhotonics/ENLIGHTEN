@@ -18,11 +18,13 @@ log = logging.getLogger(__name__)
 # miniature raster of the spectra), as well as the Qt Widget which displays the
 # Thumbnail and all the buttons and labels and CSS styling around it.
 #
-# It contains a reference to the main graph both so that can add and remove 
+# It contains a reference to the main graph both so it can add and remove 
 # itself to the graph as a visible trace, and also so it can determine the
 # current x-axis unit.
 #
 # These objects are created by MeasurementFactory.
+#
+# Bizarrely, creation of the all-important thumbnail is still in MeasurementFactory?
 class ThumbnailWidget(QtWidgets.QFrame):
 
     BUTTON_PADDING = 5
@@ -145,8 +147,8 @@ class ThumbnailWidget(QtWidgets.QFrame):
         add_id = self.should_add_id_button() 
         width = 31 if add_id else 35
 
-        self.button_edit    = self.create_button(callback=self.rename_callback,     icon_name="pencil",        icon_size=(28, 28), size=(width, 30), tooltip="Rename the measurement")
-        self.button_display = self.create_button(callback=self.display_callback,    icon_name="chart",         icon_size=(28, 28), size=(width, 30), tooltip="Toggle the graph trace")
+        self.button_edit    = self.create_button(callback=self.rename_callback,     icon_name="pencil",        icon_size=(28, 28), size=(width, 30), tooltip="Rename measurement (ctrl-E for latest)")
+        self.button_display = self.create_button(callback=self.display_callback,    icon_name="chart",         icon_size=(28, 28), size=(width, 30), tooltip="Toggle graph trace")
         self.button_color   = self.create_button(                                                              icon_size=(28, 28), size=(width, 30), tooltip="Set color", is_color=True)
         if add_id:
             self.button_id  = self.create_button(callback=self.id_callback,         icon_name="fingerprint",   icon_size=(28, 28), size=(width, 30), tooltip=KnowItAll.tooltip)
@@ -483,9 +485,9 @@ class ThumbnailWidget(QtWidgets.QFrame):
         spectrum = self.measurement.processed_reading.processed
         if self.measurement.processed_reading.is_cropped():
             roi = self.measurement.settings.eeprom.get_horizontal_roi()
-            if roi is not None and self.graph is not None and self.graph.vignette_roi is not None:
-                spectrum = self.measurement.processed_reading.processed_vignetted
-                x_axis = self.graph.vignette_roi.crop(x_axis, roi=roi)
+            if roi is not None and self.graph is not None and self.graph.horiz_roi is not None:
+                spectrum = self.measurement.processed_reading.processed_cropd
+                x_axis = self.graph.horiz_roi.crop(x_axis, roi=roi)
 
         # use named color if found in label
         color = self.selected_color
@@ -518,7 +520,11 @@ class ThumbnailWidget(QtWidgets.QFrame):
         self.button_trash.setVisible(False)
 
     def generate_tooltip(self):
-        tt = ""
+        # quick stats in first line
+        proc = self.measurement.processed_reading.get_processed()
+        tt = f"Max {int(max(proc))}, Avg {int(sum(proc)/len(proc))}, Min {int(min(proc))}\n\n" if proc else ""
+
+        # followed by Measurement metadata
         metadata = self.measurement.get_all_metadata()
         for k in sorted(metadata):
             v = metadata[k]
@@ -526,5 +532,6 @@ class ThumbnailWidget(QtWidgets.QFrame):
                 s = str(v)
                 if len(s) > 0:
                     tt += f"{k}: {s}\n"
-        self.body.setToolTip(tt.strip())
+        # self.body.setToolTip(tt.strip())
+        self.body.setWhatsThis(tt.strip())
         self.stylesheets.apply(self.body, "tooltip")

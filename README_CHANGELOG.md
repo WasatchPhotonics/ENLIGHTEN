@@ -2,6 +2,20 @@
 
 # 4.0 GUI Refactoring
 
+- 2023-??-?? 4.0.13
+    - keyboard shortcuts
+        - added ctrl-G/N/T per https://www.goodreads.com/quotes/9934315-it-is-a-curious-fact-and-one-to-which-no
+        - added F1 for help
+    - enlighten.ini allows % 
+    - template macro fixes
+        - work in export filenames
+        - support Reading attributes
+        - improved floating-point precision
+    - renamed VignetteROIFeature to HorizROIFeature
+    - persist gain_db by serial number
+    - added min/avg/max to thumbnail tooltips
+    - plugins
+        - updated Savitzky-Golay
 - 2023-06-14 4.0.12
     - persistence
         - fixed Configuration defaults

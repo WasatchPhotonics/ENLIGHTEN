@@ -37,6 +37,7 @@ class Measurements(object):
             button_load,
             button_resize,
             button_resort,
+            button_whats_this,
             factory,
             file_manager,
             form,
@@ -45,13 +46,14 @@ class Measurements(object):
             layout,
             marquee,
             reprocess_callback,
-            vignette_roi):
+            horiz_roi):
 
         self.button_erase       = button_erase
         self.button_export      = button_export
         self.button_load        = button_load
         self.button_resize      = button_resize
         self.button_resort      = button_resort
+        self.button_whats_this  = button_whats_this
         self.factory            = factory
         self.file_manager       = file_manager
         self.form               = form
@@ -60,7 +62,7 @@ class Measurements(object):
         self.layout             = layout
         self.marquee            = marquee
         self.reprocess_callback = reprocess_callback
-        self.vignette_roi       = vignette_roi
+        self.horiz_roi          = horiz_roi
 
         self.measurements = []
 
@@ -83,6 +85,7 @@ class Measurements(object):
         self.button_load    .clicked    .connect(self.load_callback)
         self.button_resize  .clicked    .connect(self.resize_callback)
         self.button_resort  .clicked    .connect(self.resort_callback)
+        self.button_whats_this.clicked  .connect(self.whats_this_callback)
 
         # Drop an expanding spacer into the layout, which will force all 
         # ThumbnailWidgets to hold a fixed size and align at one end.  (Could 
@@ -150,6 +153,16 @@ class Measurements(object):
 
     def erase_all_callback(self):
         self.erase_all()
+
+    def whats_this_callback(self):
+        wt = QtWidgets.QWhatsThis
+        enabled = wt.inWhatsThisMode()
+        if enabled:
+            log.debug("leaving whats this mode")
+            wt.leaveWhatsThisMode()
+        else:
+            log.debug("entering whats this mode")
+            wt.enterWhatsThisMode()
 
     # ##########################################################################
     #                                                                          #
@@ -327,7 +340,8 @@ class Measurements(object):
         for b in [ self.button_erase,
                    self.button_export,
                    self.button_resize,
-                   self.button_resort ]:
+                   self.button_resort,
+                   self.button_whats_this ]:
             b.setEnabled(enabled)
 
     # Think this is internal-only
@@ -364,6 +378,8 @@ class Measurements(object):
             default_filename = f"{self.save_options.prefix()}-" if self.save_options.has_prefix() else "Session-"
             default_filename += now.strftime("%Y%m%d-%H%M%S")
             default_filename += f"-{self.save_options.suffix()}" if self.save_options.has_suffix() else ""
+
+            default_filename = self.measurements[-1].expand_template(default_filename)
 
             # prompt the user to override the default filename
             # @todo give Controller.form to GUI, add gui.promptString()
@@ -751,7 +767,7 @@ class Measurements(object):
                         if roi is not None and m.roi_active:
                             if roi.contains(pixel):
                                 pixel -= roi.start
-                                a = pr.processed_vignetted
+                                a = pr.processed_cropped
             elif header == "reference":
                 a = pr.reference
             elif header == "dark":
@@ -830,7 +846,7 @@ class Measurements(object):
                 # MZ: always export all rows
                 # if spectrometer_count == 1:
                 #     roi = settingss[0].eeprom.get_horizontal_roi()
-                #     if roi is not None and not roi.contains(pixel) and self.vignette_roi.enabled:
+                #     if roi is not None and not roi.contains(pixel) and self.horiz_roi.enabled:
                 #         continue
 
                 row = []

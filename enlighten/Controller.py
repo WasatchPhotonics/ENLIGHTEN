@@ -903,7 +903,7 @@ class Controller:
             self.cursor.center()
             for feature in [ self.accessory_control,
                              self.laser_control,
-                             self.vignette_roi ]:
+                             self.horiz_roi ]:
                 feature.init_hotplug()
 
         for feature in [ self.accessory_control,
@@ -922,7 +922,7 @@ class Controller:
                          self.richardson_lucy,
                          self.status_indicators,
                          self.vcr_controls,
-                         self.vignette_roi ]:
+                         self.horiz_roi ]:
             feature.update_visibility()
 
         ########################################################################
@@ -1059,7 +1059,7 @@ class Controller:
             shortcut.activated.connect(callback)
             self.shortcuts[kseq] = shortcut
 
-        # views
+        # views (tooltips set in PageNav)
         make_shortcut("Ctrl+1", self.page_nav.set_view_scope)
         make_shortcut("Ctrl+2", self.page_nav.set_view_settings)
         make_shortcut("Ctrl+3", self.page_nav.set_view_hardware)
@@ -1067,18 +1067,24 @@ class Controller:
 
         # Convenience
         make_shortcut("Ctrl+A", self.authentication.login) # authenticate, advanced
-        make_shortcut("Ctrl+E", self.measurements.rename_last_measurement)
         make_shortcut("Ctrl+C", self.graph.copy_to_clipboard_callback)
         make_shortcut("Ctrl+D", self.dark_feature.toggle)
+        make_shortcut("Ctrl+E", self.measurements.rename_last_measurement)
+        make_shortcut("Ctrl+G", self.gain_db_feature.set_focus)
         make_shortcut("Ctrl+H", self.page_nav.toggle_hardware_and_scope)
         make_shortcut("Ctrl+L", self.laser_control.toggle_laser)
+        make_shortcut("Ctrl+N", self.save_options.focus_note) # note this gives easy access to prefix/suffix as well via shift-tab
         make_shortcut("Ctrl+P", self.vcr_controls.toggle) # pause/play
         make_shortcut("Ctrl+R", self.reference_feature.toggle)
         make_shortcut("Ctrl+S", self.vcr_controls.save)
+        make_shortcut("Ctrl+T", self.integration_time_feature.set_focus)
 
         # Cursor
         make_shortcut(QtGui.QKeySequence.MoveToPreviousWord, self.cursor.dn_callback) # ctrl-left
         make_shortcut(QtGui.QKeySequence.MoveToNextWord,     self.cursor.up_callback) # ctrl-right
+
+        # Help - this seems a pretty standard convention
+        make_shortcut("F1", self.help_callback)
 
     # ##########################################################################
     # GUI utility methods
@@ -1755,8 +1761,8 @@ class Controller:
 
         # This should be done before any processing that involves multiple
         # pixels, e.g. offset, boxcar, baseline correction, or Richardson-Lucy.
-        log.debug("process_reading: calling vignette_roi.process")
-        self.vignette_roi.process(pr, settings)
+        log.debug("process_reading: calling horiz_roi.process")
+        self.horiz_roi.process(pr, settings)
 
         ########################################################################
         # Reference
@@ -1810,7 +1816,7 @@ class Controller:
 
             # Obviously baseline correction would benefit from ROI vignetting,
             # as would boxcar, Offset, Raman ID etc, so add a
-            # "processed_vignetted" attribute for use downstream.
+            # "processed_cropped" attribute for use downstream.
             self.baseline_correction.process(pr, spec)
 
             # on 2020-05-19 Deiter asked this to be moved before vignetting
@@ -1891,13 +1897,13 @@ class Controller:
                         log.error("process_reading: error generating interpolated graph curve")
                 else:
                     cropped = pr.is_cropped()
-                    log.debug(f"process_reading: graphing non-interpolated data (vignetted = {cropped})")
-                    x_axis = self.generate_x_axis(settings=spec.settings, vignetted=cropped)
+                    log.debug(f"process_reading: graphing non-interpolated data (cropped = {cropped})")
+                    x_axis = self.generate_x_axis(settings=spec.settings, cropped=cropped)
                     if x_axis is None:
                         # this can happen for instance if we have both Raman and
                         # non-Raman spectrometers connected, and we switch to
                         # wavenumber axis
-                        log.error(f"process_reading: unable to generate x-axis of non-interpolated (vignetted = {cropped})?")
+                        log.error(f"process_reading: unable to generate x-axis of non-interpolated (cropped = {cropped})?")
                     else:
                         # this is where most spectra is graphed
                         log.debug(f"process_reading: x_axis of {len(x_axis)} points (cropped {cropped}) is {x_axis[:3]} .. {x_axis[-3:]}") 
@@ -2210,7 +2216,7 @@ class Controller:
         # @todo LaserControlFeature
         sfu.doubleSpinBox_lightSourceWidget_excitation_nm.setValue(ee.excitation_nm_float)
 
-    def generate_x_axis(self, spec=None, settings=None, unit=None, vignetted=True):
+    def generate_x_axis(self, spec=None, settings=None, unit=None, cropped=True):
         """
         Graph.current_x_axis is not per-spectrometer, therefore:
         
@@ -2225,7 +2231,7 @@ class Controller:
         SpectrometerSettings object (say from a saved/loaded Measurement), it
         uses that.  Otherwise it uses the current spectrometer.
         
-        This function ONLY vignettes the x-axis if specifically asked to (and able to).
+        This function ONLY crops the x-axis if specifically asked to (and able to).
         
         @todo need to update for DetectorRegions
         """
@@ -2243,7 +2249,7 @@ class Controller:
             log.error(f"settings was None even after getting current spec, not generating x-axis")
             return
 
-        log.debug(f"generate_x_axis: spec {spec}, settings {settings}, unit {unit}, vignetted {vignetted}")
+        log.debug(f"generate_x_axis: spec {spec}, settings {settings}, unit {unit}, cropped {cropped}")
 
         regions = settings.state.detector_regions
         # log.debug(f"generate_x_axis: regions = {regions}")
@@ -2261,8 +2267,8 @@ class Controller:
         else:
             retval = np.array(list(range(settings.pixels())), dtype=np.float32) 
 
-        if vignetted and self.vignette_roi.enabled:
-            return self.vignette_roi.crop(retval, roi=settings.eeprom.get_horizontal_roi())
+        if cropped and self.horiz_roi.enabled:
+            return self.horiz_roi.crop(retval, roi=settings.eeprom.get_horizontal_roi())
 
         if regions:
             log.debug("generate_x_axis: chopping into regions")

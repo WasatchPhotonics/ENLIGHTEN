@@ -223,7 +223,7 @@ class Measurement(object):
                            'ROI Pixel End',
                            'CCD C4',
                            'Slit Width',
-                           'Vignetted',
+                           'Cropped',
                            'Interpolated',
                            'Wavenumber Correction',
                            'Raman Intensity Corrected',
@@ -316,9 +316,9 @@ class Measurement(object):
             self.baseline_correction_algo = spec.app_state.baseline_correction_algo
 
             # do these AFTER we have a processed_reading
-            self.note = self.generate_format_field("note")
-            self.prefix = self.generate_format_field("prefix")
-            self.suffix = self.generate_format_field("suffix")
+            self.note   = self.expand_template(self.save_options.note())
+            self.prefix = self.expand_template(self.save_options.prefix())
+            self.suffix = self.expand_template(self.save_options.suffix())
 
         elif source_pathname:
             log.debug("instantiating from source pathname %s", source_pathname)
@@ -388,7 +388,7 @@ class Measurement(object):
 
         # how/where to do this properly?
         if len(self.processed_reading.processed) < len(self.settings.wavelengths):
-            self.processed_reading.processed_vignetted = self.processed_reading.processed
+            self.processed_reading.processed_cropped = self.processed_reading.processed
 
     ##
     # We presumably loaded a measurement from disk, reprocessed it, and are now
@@ -421,63 +421,62 @@ class Measurement(object):
 
         self.basename = self.measurement_id # use this as the original base filename
 
-        # the ID is too long for on-screen display, so shorten it
+        # we don't use measurement_id for on-screen display; unless a label has 
+        # already been provided, generate one using the configured template
         if self.label is None:
-            self.label = "%s %s" % (self.timestamp.strftime("%H:%M:%S"), self.settings.eeprom.serial_number)
-
-            self.label = self.generate_format_field("label")
+            self.label = self.expand_template(self.save_options.label_template())
 
             # append optional suffix
-            # log.debug("checking for label_suffix")
             if self.measurements is not None and \
                     self.measurements.factory is not None and \
                     self.measurements.factory.label_suffix is not None:
-                self.label += " %s" % self.measurements.factory.label_suffix
-                # log.debug("applying label_suffix (%s): %s", self.measurements.factory.label_suffix, self.label)
+                self.label += f" {self.measurements.factory.label_suffix}"
 
                 # this complicates saving from multiple spectrometers
                 # during batch collection
                 self.measurements.factory.label_suffix = None
 
-    def generate_format_field(self, field = None):
-        if field == None:
-            return ''
-        try:
-            fields = {
-                "label": self.save_options.label_template,
-                "prefix": self.save_options.prefix,
-                "suffix": self.save_options.suffix,
-                "note": self.save_options.note,
-                }
-            label = fields[field]()
-        except:
-            if field == "label":
-                label = "{time}"
-            else:
-                label == ""
-        log.debug(f"generate_format_field: starting with template {label}")
+    def expand_template(self, template):
+        """
+        Some GUI text fields allow the user to enter strings containining "macro 
+        templates" which are dynamically expanded and evaluated at runtime.
 
+        Macros look like "{field_name}", where field_name can be any object 
+        attribute in wasatch.EEPROM, wasatch.SpectrometerState, or Measurement
+        metadata (any field supported by Measurement.get_metadata). As a 
+        convenience some hardcoded macros are also supported, such as {time}.
+        """
+        log.debug(f"expand_template: starting with template {template}")
         while True:
-            m = re.search(r"{([a-z0-9_]+)}", label, re.IGNORECASE)
+            m = re.search(r"{([a-z0-9_]+)}", template, re.IGNORECASE)
             if m is None:
-                return label
+                return template
 
-            code = m.group(1)
+            macro = m.group(1)
             value = None
-            if code == "time":
+
+            if macro == "time":
                 value = self.timestamp.strftime("%H:%M:%S")
-            elif hasattr(self.settings.eeprom, code):
-                value = getattr(self.settings.eeprom, code)
-            elif hasattr(self.settings.state, code):
-                value = getattr(self.settings.state, code)
+            elif self.processed_reading and self.processed_reading.reading and hasattr(self.processed_reading.reading, macro):
+                value = getattr(self.processed_reading.reading, macro)
+            elif hasattr(self.settings.eeprom, macro):
+                value = getattr(self.settings.eeprom, macro)
+            elif hasattr(self.settings.state, macro):
+                value = getattr(self.settings.state, macro)
             else:
-                value = self.get_metadata(code)
+                value = self.get_metadata(macro)
 
             if isinstance(value, float):
-                value = f"{value:.3f}"
+                if macro in ['gain_db']:
+                    fmt = "{0:.1f}"
+                elif 'excitation' in macro:
+                    fmt = "{0:.3f}"
+                else:
+                    fmt = "{0:.2f}"
+                value = fmt.format(value)
 
-            label = label.replace("{%s}" % code, str(value))
-            log.debug(f"generate_format_field: {code} -> {value} ({field} now {label})")
+            template = template.replace("{%s}" % macro, str(value))
+            log.debug(f"expand_template: {macro} -> {value} (now {template})")
 
     def generate_basename(self):
         if self.save_options is None:
@@ -501,7 +500,7 @@ class Measurement(object):
         pr = self.processed_reading
         if pr is not None:
             log.debug("  processed_reading:")
-            log.debug("    processed_vignetted: %s", pr.processed_vignetted[:5] if pr.processed_vignetted is not None else None)
+            log.debug("    processed_cropped:   %s", pr.processed_cropped[:5] if pr.processed_cropped is not None else None)
             log.debug("    processed:           %s", pr.processed[:5] if pr.processed is not None else None)
             log.debug("    raw:                 %s", pr.raw      [:5] if pr.raw       is not None else None)
             log.debug("    dark:                %s", pr.dark     [:5] if pr.dark      is not None else None)
@@ -772,7 +771,7 @@ class Measurement(object):
         if field == "declared score":            return self.declared_match.score if self.declared_match is not None else 0
         if field == "roi pixel start":           return self.settings.eeprom.roi_horizontal_start
         if field == "roi pixel end":             return self.settings.eeprom.roi_horizontal_end
-        if field == "vignetted":                 return self.processed_reading.is_cropped()
+        if field == "cropped":                   return self.processed_reading.is_cropped()
         if field == "interpolated":              return self.save_options.interp.enabled if self.save_options is not None else False
         if field == "raman intensity corrected": return self.processed_reading.raman_intensity_corrected
         if field == "deconvolved":               return self.processed_reading.deconvolved
@@ -923,9 +922,9 @@ class Measurement(object):
             if not cropped:
                 sheet_spectrum.write    (row, 3, float(pr.processed [pixel]), style)
             elif interp.enabled:
-                sheet_spectrum.write    (row, 3, float(pr.processed_vignetted[pixel]), style)
+                sheet_spectrum.write    (row, 3, float(pr.processed_cropped[pixel]), style)
             elif roi.contains(pixel):
-                sheet_spectrum.write    (row, 3, float(pr.processed_vignetted[pixel - roi.start]), style)
+                sheet_spectrum.write    (row, 3, float(pr.processed_cropped[pixel - roi.start]), style)
 
             row_count += 1
 
@@ -1119,7 +1118,7 @@ class Measurement(object):
 
         # vignetting
         roi = None
-        if self.settings is not None and self.measurements is not None and self.measurements.vignette_roi.enabled:
+        if self.settings is not None and self.measurements is not None and self.measurements.horiz_roi.enabled:
             self.roi_active = True
             roi = self.settings.eeprom.get_horizontal_roi()
         cropped = roi is not None and pr.is_cropped()
@@ -1199,9 +1198,9 @@ class Measurement(object):
                         if not cropped:
                             values.append(formatted(precision, pr.processed, pixel))
                         elif interp.enabled:
-                            values.append(formatted(precision, pr.processed_vignetted, pixel))
+                            values.append(formatted(precision, pr.processed_cropped, pixel))
                         elif roi.contains(pixel):
-                            values.append(formatted(precision, pr.processed_vignetted, pixel - roi.start))
+                            values.append(formatted(precision, pr.processed_cropped, pixel - roi.start))
                         else:
                             # this is a cropped pixel, so arguably it could be None (,,), @na, -1
                             # or 0, or various other things, but consensus converged on "NA"
@@ -1272,7 +1271,7 @@ class Measurement(object):
     # Note that Measurements saved while "appending" are NOT considered renamable
     # at the file level, while Measurements saved to individual files are.
     #
-    # @todo support processed_vignetted
+    # @todo support processed_cropped
     def save_csv_file_by_row(self):
         sn = self.settings.eeprom.serial_number
 

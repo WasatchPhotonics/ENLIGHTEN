@@ -2410,7 +2410,7 @@ QComboBox QListView
                  </size>
                 </property>
                 <property name="toolTip">
-                 <string>Got questions?</string>
+                 <string>Got questions? (F1)</string>
                 </property>
                 <property name="text">
                  <string />
@@ -2459,7 +2459,7 @@ QComboBox QListView
         </sizepolicy>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>3</number>
        </property>
        <widget class="QScrollArea" name="scrollArea_hardware">
         <property name="sizePolicy">
@@ -2485,7 +2485,7 @@ QComboBox QListView
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>1169</width>
+           <width>619</width>
            <height>5248</height>
           </rect>
          </property>
@@ -8366,8 +8366,8 @@ QComboBox QListView
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>669</width>
-              <height>1356</height>
+              <width>562</width>
+              <height>1308</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -9218,31 +9218,31 @@ QComboBox QListView
                     <widget class="QFrame" name="frame_plugin_moved_hint">
                      <property name="frameShape">
                       <enum>QFrame::StyledPanel</enum>
-                    </property>
-                    <property name="frameShadow">
+                     </property>
+                     <property name="frameShadow">
                       <enum>QFrame::Raised</enum>
-                    </property>
-                    <property name="wpPanel" stdset="0">
+                     </property>
+                     <property name="wpPanel" stdset="0">
                       <bool>false</bool>
-                    </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_156">
+                     </property>
+                     <layout class="QVBoxLayout" name="verticalLayout_156">
                       <item>
-                      <widget class="QLabel" name="label_plugin_section">
+                       <widget class="QLabel" name="label_plugin_section">
                         <property name="sizePolicy">
-                        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                           <horstretch>0</horstretch>
                           <verstretch>0</verstretch>
-                        </sizepolicy>
+                         </sizepolicy>
                         </property>
                         <property name="font">
-                        <font>
+                         <font>
                           <pointsize>12</pointsize>
-                        </font>
+                         </font>
                         </property>
                         <property name="text">
-                        <string>Plugin settings have been moved to the right side panel.</string>
+                         <string>Plugin settings have been moved to the right side panel.</string>
                         </property>
-                      </widget>
+                       </widget>
                       </item>
                      </layout>
                     </widget>
@@ -10936,8 +10936,8 @@ QComboBox QListView
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>183</width>
-                  <height>631</height>
+                  <width>256</width>
+                  <height>790</height>
                  </rect>
                 </property>
                 <property name="sizePolicy">
@@ -11182,6 +11182,38 @@ QComboBox QListView
                            </property>
                           </widget>
                          </item>
+                         <item>
+                          <widget class="QPushButton" name="pushButton_whats_this">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="maximumSize">
+                            <size>
+                             <width>30</width>
+                             <height>26</height>
+                            </size>
+                           </property>
+                           <property name="toolTip">
+                            <string>Enable viewing thumbnail details</string>
+                           </property>
+                           <property name="text">
+                            <string />
+                           </property>
+                           <property name="icon">
+                            <iconset resource="grey_icons.qrc">
+                             <normaloff>:/greys/images/grey_icons/arrow-question.svg</normaloff>:/greys/images/grey_icons/arrow-question.svg</iconset>
+                           </property>
+                           <property name="iconSize">
+                            <size>
+                             <width>16</width>
+                             <height>14</height>
+                            </size>
+                           </property>
+                          </widget>
+                         </item>
                         </layout>
                        </item>
                        <item>
@@ -11255,8 +11287,8 @@ QComboBox QListView
                                   <rect>
                                    <x>0</x>
                                    <y>0</y>
-                                   <width>190</width>
-                                   <height>210</height>
+                                   <width>222</width>
+                                   <height>385</height>
                                   </rect>
                                  </property>
                                  <property name="sizePolicy">
@@ -11605,6 +11637,9 @@ QComboBox QListView
                             </item>
                             <item row="2" column="1">
                              <widget class="QLineEdit" name="lineEdit_scope_capture_save_note">
+                              <property name="toolTip">
+                               <string>added to saved metadata (ctrl-N)</string>
+                              </property>
                               <property name="text">
                                <string>processed</string>
                               </property>
@@ -12673,8 +12708,8 @@ QComboBox QListView
                                  <rect>
                                   <x>0</x>
                                   <y>0</y>
-                                  <width>186</width>
-                                  <height>36</height>
+                                  <width>886</width>
+                                  <height>300</height>
                                  </rect>
                                 </property>
                                 <property name="wpClear" stdset="0">
@@ -14096,7 +14131,7 @@ p, li { white-space: pre-wrap; }
                 <x>0</x>
                 <y>0</y>
                 <width>240</width>
-                <height>2511</height>
+                <height>2626</height>
                </rect>
               </property>
               <property name="sizePolicy">
@@ -15770,6 +15805,9 @@ p, li { white-space: pre-wrap; }
                               <property name="focusPolicy">
                                <enum>Qt::StrongFocus</enum>
                               </property>
+                              <property name="toolTip">
+                               <string>set integration time in ms (ctrl-T)</string>
+                              </property>
                               <property name="wrapping">
                                <bool>false</bool>
                               </property>
@@ -16037,6 +16075,9 @@ p, li { white-space: pre-wrap; }
                               </property>
                               <property name="focusPolicy">
                                <enum>Qt::StrongFocus</enum>
+                              </property>
+                              <property name="toolTip">
+                               <string>change gain in dB (ctrl-G)</string>
                               </property>
                               <property name="wrapping">
                                <bool>false</bool>
@@ -16413,108 +16454,108 @@ p, li { white-space: pre-wrap; }
                 </widget>
                </item>
                <item>
-                   <widget class="QLabel" name="label_plugin_selection_widget">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <weight>75</weight>
-                      <bold>true</bold>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>Plugins</string>
-                    </property>
-                   </widget>
-                  </item>
-                <item>
+                <widget class="QLabel" name="label_plugin_selection_widget">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <weight>75</weight>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Plugins</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <widget class="QFrame" name="frame_plugin_option_white">
-                  <property name="frameShape">
+                 <property name="frameShape">
                   <enum>QFrame::StyledPanel</enum>
-                  </property>
-                  <property name="frameShadow">
+                 </property>
+                 <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
-                  </property>
-                  <property name="wpBox" stdset="0">
+                 </property>
+                 <property name="wpBox" stdset="0">
                   <bool>false</bool>
-                  </property>
-                  <layout class="QVBoxLayout" name="verticalLayout_154">
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_154">
                   <property name="leftMargin">
-                    <number>0</number>
+                   <number>0</number>
                   </property>
                   <property name="topMargin">
-                    <number>0</number>
+                   <number>0</number>
                   </property>
                   <property name="rightMargin">
-                    <number>0</number>
+                   <number>0</number>
                   </property>
                   <property name="bottomMargin">
-                    <number>0</number>
+                   <number>0</number>
                   </property>
                   <item>
-                    <widget class="QFrame" name="frame_plugin_option_black">
+                   <widget class="QFrame" name="frame_plugin_option_black">
                     <property name="frameShape">
-                      <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::StyledPanel</enum>
                     </property>
                     <property name="frameShadow">
-                      <enum>QFrame::Raised</enum>
+                     <enum>QFrame::Raised</enum>
                     </property>
                     <property name="wpPanel" stdset="0">
-                      <bool>false</bool>
+                     <bool>false</bool>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_151">
-                      <item>
-                        <widget class="QComboBox" name="comboBox_plugin_module">
-                          <property name="sizePolicy">
-                          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                          </sizepolicy>
-                          </property>
-                          <property name="minimumSize">
-                          <size>
-                            <width>200</width>
-                            <height>0</height>
-                          </size>
-                          </property>
-                          <property name="maximumSize">
-                          <size>
-                            <width>300</width>
-                            <height>16777215</height>
-                          </size>
-                          </property>
-                          <property name="font">
-                          <font>
-                            <pointsize>10</pointsize>
-                            <weight>50</weight>
-                            <bold>false</bold>
-                          </font>
-                          </property>
-                          <property name="focusPolicy">
-                          <enum>Qt::StrongFocus</enum>
-                          </property>
-                        </widget>
-                        </item>
-                        <item>
-                        <widget class="QCheckBox" name="checkBox_plugin_connected">
-                          <property name="toolTip">
-                          <string>Loads and "starts" the selected plug-in</string>
-                          </property>
-                          <property name="text">
-                          <string>Connected</string>
-                          </property>
-                        </widget>
-                      </item>
+                     <item>
+                      <widget class="QComboBox" name="comboBox_plugin_module">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>200</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>300</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="font">
+                        <font>
+                         <pointsize>10</pointsize>
+                         <weight>50</weight>
+                         <bold>false</bold>
+                        </font>
+                       </property>
+                       <property name="focusPolicy">
+                        <enum>Qt::StrongFocus</enum>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QCheckBox" name="checkBox_plugin_connected">
+                       <property name="toolTip">
+                        <string>Loads and "starts" the selected plug-in</string>
+                       </property>
+                       <property name="text">
+                        <string>Connected</string>
+                       </property>
+                      </widget>
+                     </item>
                     </layout>
-                    </widget>
+                   </widget>
                   </item>
-                  </layout>
+                 </layout>
                 </widget>
-                </item>
+               </item>
                <item>
                 <widget class="QFrame" name="frame_plugin_control">
                  <property name="sizePolicy">

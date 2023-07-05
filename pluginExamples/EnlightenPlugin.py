@@ -90,7 +90,14 @@ class EnlightenPluginBase:
         """
         in_legend = True
 
-        if x is None: x = np.arange(len(y))
+        if x is None: 
+            unit = self.enlighten_info.get_x_axis_unit()
+            if unit == "nm" and len(y) == len(self.settings.wavelengths):
+                x = self.settings.wavelengths
+            elif unit == "cm" and len(y) == len(self.settings.wavenumbers):
+                x = self.settings.wavenumbers
+            else:
+                x = np.arange(len(y))
 
         if title is None: 
             title = "untitled"

@@ -57,17 +57,17 @@ class InterpolationFeature(object):
             multispec,
             rb_wavelength,
             rb_wavenumber,
-            vignette_roi):
+            horiz_roi ):
 
-        self.config           = config
-        self.cb_enabled       = cb_enabled
-        self.dsb_end          = dsb_end
-        self.dsb_incr         = dsb_incr
-        self.dsb_start        = dsb_start
-        self.multispec        = multispec
-        self.rb_wavelength    = rb_wavelength
-        self.rb_wavenumber    = rb_wavenumber
-        self.vignette_roi     = vignette_roi
+        self.config         = config
+        self.cb_enabled     = cb_enabled
+        self.dsb_end        = dsb_end
+        self.dsb_incr       = dsb_incr
+        self.dsb_start      = dsb_start
+        self.multispec      = multispec
+        self.rb_wavelength  = rb_wavelength
+        self.rb_wavenumber  = rb_wavenumber
+        self.horiz_roi      = horiz_roi
 
         self.mutex = QtCore.QMutex()
         self.new_axis = None
@@ -213,22 +213,22 @@ class InterpolationFeature(object):
         if pr.reference is not None:
             ipr.processed_reading.reference = np.interp(self.new_axis, old_axis, pr.reference)
 
-        # The weird case of interpolating a vignetted ROI.  Consider that we had
-        # an original spectrum "abcdefghijklmnopqrstuvwxyz".  We then vignetted
+        # The weird case of interpolating a cropped ROI.  Consider that we had
+        # an original spectrum "abcdefghijklmnopqrstuvwxyz".  We then cropped
         # it to "ghijklmnopqrstu".  We are now interpolating it out to
-        # "ggggggggggggGHIJKLMNOPQRSTUuuuuuuuuuuu".  Even if we've vignetted it
+        # "ggggggggggggGHIJKLMNOPQRSTUuuuuuuuuuuu".  Even if we've cropped it
         # down, we're still obliged to interpolate out to the newly defined range,
         # and the only pixels we have "qualified" as being valid to interpolate
         # are those within the ROI.
         roi = settings.eeprom.get_horizontal_roi()
-        log.debug("processed_vignetted is %s and settings is %s and roi is %s",
-            pr.processed_vignetted is not None,
+        log.debug("processed_cropped is %s and settings is %s and roi is %s",
+            pr.processed_cropped is not None,
             settings is not None,
             roi is not None)
-        if pr.processed_vignetted is not None and settings is not None and roi is not None:
+        if pr.processed_cropped is not None and settings is not None and roi is not None:
             log.debug("interpolating cropped spectrum to new axis of %d pixels", len(self.new_axis))
-            old_axis_cropped = self.vignette_roi.crop(old_axis, roi=roi)
-            ipr.processed_reading.processed_vignetted = np.interp(self.new_axis, old_axis_cropped, pr.processed_vignetted)
+            old_axis_cropped = self.horiz_roi.crop(old_axis, roi=roi)
+            ipr.processed_reading.processed_cropped = np.interp(self.new_axis, old_axis_cropped, pr.processed_cropped)
 
         return ipr
 

@@ -21,7 +21,7 @@ from enlighten.scope.HighGainModeFeature import HighGainModeFeature
 from enlighten.spectra_processes.TransmissionFeature import TransmissionFeature
 from enlighten.measurement.MeasurementFactory import MeasurementFactory
 from enlighten.spectra_processes.BaselineCorrection import BaselineCorrection
-from enlighten.spectra_processes.VignetteROIFeature import VignetteROIFeature
+from enlighten.spectra_processes.HorizROIFeature import HorizROIFeature
 from enlighten.spectra_processes.AbsorbanceFeature import AbsorbanceFeature
 from enlighten.ui.StatusBarFeature import StatusBarFeature
 from enlighten.scope.RamanModeFeature import RamanModeFeature
@@ -294,8 +294,8 @@ class BusinessObjects:
             clipboard                   = ctl.clipboard,
             hardware_file_manager       = ctl.hardware_file_manager)
 
-        self.header("instantiating VignetteROIFeature")
-        ctl.vignette_roi = VignetteROIFeature(
+        self.header("instantiating HorizROIFeature")
+        ctl.horiz_roi = HorizROIFeature(
             graph                       = ctl.graph,
             multispec                   = ctl.multispec,
             stylesheets                 = ctl.stylesheets,
@@ -306,7 +306,7 @@ class BusinessObjects:
         self.header("instantiating TransmissionFeature")
         ctl.transmission = TransmissionFeature(
             marquee                     = ctl.marquee,
-            vignette_roi                = ctl.vignette_roi,
+            horiz_roi                   = ctl.horiz_roi,
                                        
             cb_max_enable               = sfu.checkBox_enable_max_transmission,
             sb_max_perc                 = sfu.spinBox_max_transmission_perc)
@@ -345,7 +345,7 @@ class BusinessObjects:
             multispec                   = ctl.multispec,
             rb_wavelength               = sfu.radioButton_save_interpolation_wavelength,
             rb_wavenumber               = sfu.radioButton_save_interpolation_wavenumber,
-            vignette_roi                = ctl.vignette_roi)
+            horiz_roi                   = ctl.horiz_roi)
 
         self.header("instantiating ExternalTriggerFeature")
         ctl.external_trigger = ExternalTriggerFeature(
@@ -429,6 +429,7 @@ class BusinessObjects:
             button_load                 = sfu.pushButton_scope_capture_load,
             button_resize               = sfu.pushButton_resize_captures,
             button_resort               = sfu.pushButton_resort_captures,
+            button_whats_this           = sfu.pushButton_whats_this,
             factory                     = ctl.measurement_factory,
             file_manager                = ctl.file_manager,
             form                        = ctl.form,
@@ -437,7 +438,7 @@ class BusinessObjects:
             layout                      = sfu.verticalLayout_scope_capture_save,
             marquee                     = ctl.marquee,
             reprocess_callback          = ctl.reprocess,
-            vignette_roi                = ctl.vignette_roi)
+            horiz_roi                   = ctl.horiz_roi)
         ctl.graph.measurements = ctl.measurements
 
         self.header("instantiating Authentication")
@@ -475,7 +476,7 @@ class BusinessObjects:
             stylesheets                 = ctl.stylesheets,
             update_gain_and_offset_callback = ctl.update_gain_and_offset,
             update_wavecal_callback     = ctl.update_wavecal,
-            vignette_roi                = ctl.vignette_roi,
+            horiz_roi                   = ctl.horiz_roi,
             current_spectrometer        = ctl.current_spectrometer)
 
         self.header("instantiating RamanIntensityCorrection")
@@ -484,7 +485,7 @@ class BusinessObjects:
             guide                       = ctl.guide,
             multispec                   = ctl.multispec,
             page_nav                    = ctl.page_nav,
-            vignette_roi                = ctl.vignette_roi)
+            horiz_roi                   = ctl.horiz_roi)
 
         self.header("instantiating LaserControlFeature")
         ctl.laser_control = LaserControlFeature(
@@ -573,7 +574,7 @@ class BusinessObjects:
             guide                       = ctl.guide,
             multispec                   = ctl.multispec,
             page_nav                    = ctl.page_nav,
-            vignette_roi                = ctl.vignette_roi,
+            horiz_roi                   = ctl.horiz_roi,
             graph                       = ctl.graph)
 
         self.header("instantiating DarkFeature")
@@ -720,7 +721,7 @@ class BusinessObjects:
             table_recent                = sfu.tableWidget_id_match_recent,
             table_results               = sfu.tableWidget_id_match_results,
             vcr_controls                = ctl.vcr_controls,
-            vignette_roi                = ctl.vignette_roi)
+            horiz_roi                   = ctl.horiz_roi)
         ctl.measurement_factory.kia = ctl.kia_feature
 
         self.header("instantiating RichardsonLucy")
@@ -729,7 +730,7 @@ class BusinessObjects:
             config                      = ctl.config,
             graph                       = ctl.graph,
             multispec                   = ctl.multispec,
-            vignette_roi                = ctl.vignette_roi)
+            horiz_roi                   = ctl.horiz_roi)
 
         self.header("instantiating ManufacturingFeature")
         ctl.mfg = ManufacturingFeature(
@@ -760,7 +761,7 @@ class BusinessObjects:
             save_options                = ctl.save_options,
             kia_feature                 = ctl.kia_feature,
             measurements_clipboard      = ctl.measurements,
-            vignette_feature            = ctl.vignette_roi,
+            horiz_roi                   = ctl.horiz_roi,
 
             button_process              = sfu.pushButton_plugin_process,
             cb_connected                = sfu.checkBox_plugin_connected,
