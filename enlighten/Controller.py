@@ -2214,7 +2214,7 @@ class Controller:
 
         # sync scope excitation widget from EEPROMEditor's
         # @todo LaserControlFeature
-        sfu.doubleSpinBox_lightSourceWidget_excitation_nm.setValue(ee.excitation_nm_float)
+        sfu.doubleSpinBox_excitation_nm.setValue(ee.excitation_nm_float)
 
     def generate_x_axis(self, spec=None, settings=None, unit=None, cropped=True):
         """
