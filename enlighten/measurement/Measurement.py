@@ -434,10 +434,8 @@ class Measurement(object):
             self.label = self.basename 
         else:
             self.label = self.expand_template(self.save_options.label_template())
-
-        # append optional multipart suffix (typically generated from BatchCollection)
-        if self.save_options.multipart_suffix is not None:
-            self.label += f" {self.save_options.multipart_suffix}"
+            if self.save_options.multipart_suffix:
+                self.label += f" {self.save_options.multipart_suffix}"
 
     def expand_template(self, template):
         """
@@ -471,8 +469,8 @@ class Measurement(object):
             fmt = None
 
             # macro-only fields (don't map to existing data)
-            if macro == "time" or macro == "HH:MM:SS":
-                value = self.timestamp.strftime("%H:%M:%S")
+            if macro == "time" or macro == "HH_MM_SS":
+                value = self.timestamp.strftime("%H_%M_%S")
             elif macro == "date" or macro == "YYYY-MM-DD":
                 value = self.timestamp.strftime("%Y-%m-%d")
             elif macro == "integration_time_sec":
