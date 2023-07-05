@@ -532,5 +532,6 @@ class ThumbnailWidget(QtWidgets.QFrame):
                 s = str(v)
                 if len(s) > 0:
                     tt += f"{k}: {s}\n"
-        self.body.setToolTip(tt.strip())
+        # self.body.setToolTip(tt.strip())
+        self.body.setWhatsThis(tt.strip())
         self.stylesheets.apply(self.body, "tooltip")
