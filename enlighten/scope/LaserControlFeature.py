@@ -102,7 +102,7 @@ class LaserControlFeature:
         has_calibration = settings.eeprom.has_laser_power_calibration()
         log.debug("update_visibility: laser power calibration %s", has_calibration)
 
-        combo_unit.setVisible(True)
+        combo_unit.setVisible(False)
 
         if not has_calibration:
             self.configure_laser_power_controls_percent()
