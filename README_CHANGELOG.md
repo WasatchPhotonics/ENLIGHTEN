@@ -3,20 +3,40 @@
 # 4.0 GUI Refactoring
 
 - 2023-??-?? 4.0.13
-    - keyboard shortcuts
-        - added ctrl-G/N/T per https://www.goodreads.com/quotes/9934315-it-is-a-curious-fact-and-one-to-which-no
-        - added F1 for help
-    - enlighten.ini allows % 
-    - template macro fixes
-        - work in export filenames
-        - support Reading attributes
-        - improved floating-point precision
-    - renamed VignetteROIFeature to HorizROIFeature
-    - persist gain_db by serial number
-    - added min/avg/max to thumbnail tooltips
-    - changed Measurement ToolTip to WhatsThis
-    - plugins
+    - spectrometer control
+        - support selectable mW/PWM for ILC and Expert Mode
+    - data management
+        - added "use filename as label" checkbox
+        - template improvements
+            - added filename template
+            - macros now work in export filename components
+            - support Reading attributes
+            - improved floating-point precision
+            - added date/time components ({YYYY}, {hh} etc)
+            - added file_timestamp, integration_time_sec macros
+    - persistence
+        - enlighten.ini allows % 
+        - persist gain_db by serial number
+    - GUI updates
+        - added WhatsThis button next to Help
+        - changed Measurement ToolTip to WhatsThis
+        - added min/avg/max to thumbnail WhatsThis
+        - thumbnail label improvements (smaller font, easier editing)
+        - keyboard shortcuts
+            - added ctrl-G/N/T per https://www.goodreads.com/quotes/9934315-it-is-a-curious-fact-and-one-to-which-no
+            - added F1 for help
+    - plugin improvements
         - updated Savitzky-Golay
+        - updated StatsBuffer
+        - updated Stats
+        - updated docs
+        - fixed plugin_name in metadata
+    - refactoring
+        - renamed VignetteROIFeature to HorizROIFeature
+        - updated LaserControlFeature to ctl
+        - technique-vs-view fixes
+        - vignette-vs-crop fixes
+        - static analysis support
 - 2023-06-14 4.0.12
     - persistence
         - fixed Configuration defaults

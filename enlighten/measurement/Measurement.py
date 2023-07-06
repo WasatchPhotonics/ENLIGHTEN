@@ -343,6 +343,7 @@ class Measurement(object):
             raise Exception("Measurement requires exactly one of (spec, source_pathname, measurement, dict)")
 
         self.generate_id()
+        self.generate_label()
 
     ##
     # Called by PluginWidget
@@ -393,12 +394,13 @@ class Measurement(object):
     ##
     # We presumably loaded a measurement from disk, reprocessed it, and are now
     # replacing the contents of the Measurement object with the reprocessed
-    # spectra, preparatory to re-saving (with a new timestamp and measurement_id.
+    # spectra, preparatory to re-saving (with a new timestamp and measurement_id).
     def replace_processed_reading(self, pr):
         self.processed_reading = pr
         self.timestamp = datetime.datetime.now()
         self.renamable_files = set()
         self.generate_id()
+        self.generate_label()
 
     def add_renamable(self, pathname):
         self.renamable_files.add(pathname)
@@ -416,25 +418,24 @@ class Measurement(object):
             self.timestamp = datetime.datetime.now()
 
         ts = self.timestamp.strftime("%Y%m%d-%H%M%S-%f")
+        self.measurement_id = f"{ts}-{sn}"
 
-        self.measurement_id = "%s-%s" % (ts, sn)
+        # note that this is the wrapped filename exclusive of extension 
+        # ({prefix}-{filename_template}-{suffix})
+        self.basename = self.generate_basename() 
 
-        self.basename = self.measurement_id # use this as the original base filename
+    def generate_label(self):
+        if self.label is not None:
+            log.debug(f"generate_label: retaining existing label {self.label}")
+            return
 
-        # we don't use measurement_id for on-screen display; unless a label has 
-        # already been provided, generate one using the configured template
-        if self.label is None:
+        if self.save_options.filename_as_label():
+            # note this will be wrapped with prefix and suffix
+            self.label = self.basename 
+        else:
             self.label = self.expand_template(self.save_options.label_template())
-
-            # append optional suffix
-            if self.measurements is not None and \
-                    self.measurements.factory is not None and \
-                    self.measurements.factory.label_suffix is not None:
-                self.label += f" {self.measurements.factory.label_suffix}"
-
-                # this complicates saving from multiple spectrometers
-                # during batch collection
-                self.measurements.factory.label_suffix = None
+            if self.save_options.multipart_suffix:
+                self.label += f" {self.save_options.multipart_suffix}"
 
     def expand_template(self, template):
         """
@@ -445,18 +446,55 @@ class Measurement(object):
         attribute in wasatch.EEPROM, wasatch.SpectrometerState, or Measurement
         metadata (any field supported by Measurement.get_metadata). As a 
         convenience some hardcoded macros are also supported, such as {time}.
+
+        @todo We can't easily expand the set of objects whose attributes can
+              be used (like BatchCollection) without running into potential
+              namespace collisions (different objects can have identically-
+              named attributes, leading to ambiguity).  Templates should
+              move toward a prefixed notation like "m.measurement_id",
+              "b.current_batch_count" etc.  This could then be implemented
+              within a call to string.format(), giving users access to
+              full precision controls etc.
+
+              Also I'd pull this out into a TemplateFeature.
         """
         log.debug(f"expand_template: starting with template {template}")
         while True:
-            m = re.search(r"{([a-z0-9_]+)}", template, re.IGNORECASE)
+            m = re.search(r"{([a-z0-9_ ]+)}", template, re.IGNORECASE)
             if m is None:
                 return template
 
             macro = m.group(1)
             value = None
+            fmt = None
 
-            if macro == "time":
-                value = self.timestamp.strftime("%H:%M:%S")
+            ####################################################################
+            # macro-only fields (don't map to existing data)
+            ####################################################################
+
+            if   macro == "time": value = self.timestamp.strftime("%H_%M_%S")
+            elif macro == "date": value = self.timestamp.strftime("%Y-%m-%d")
+            elif macro == "file_timestamp": value = self.timestamp.strftime("%Y-%m-%d_%H_%M_%S%f")
+
+            # note all date components are upper-case and times are lower-case 
+            # for consistency (may confuse C programmers, should make sense to 
+            # spectroscopists)
+            elif macro == "YYYY": value = self.timestamp.strftime("%Y")
+            elif macro == "MM": value = self.timestamp.strftime("%m")
+            elif macro == "DD": value = self.timestamp.strftime("%d")
+            elif macro == "hh": value = self.timestamp.strftime("%H")
+            elif macro == "mm": value = self.timestamp.strftime("%M")
+            elif macro == "ss": value = self.timestamp.strftime("%S")
+            elif macro == "ffffff": value = self.timestamp.strftime("%f")
+
+            elif macro == "integration_time_sec":
+                value = self.settings.state.integration_time_ms / 1000.0
+                fmt = "{0:.3f}"
+
+            ####################################################################
+            # pull from measurement data
+            ####################################################################
+
             elif self.processed_reading and self.processed_reading.reading and hasattr(self.processed_reading.reading, macro):
                 value = getattr(self.processed_reading.reading, macro)
             elif hasattr(self.settings.eeprom, macro):
@@ -467,17 +505,20 @@ class Measurement(object):
                 value = self.get_metadata(macro)
 
             if isinstance(value, float):
-                if macro in ['gain_db']:
-                    fmt = "{0:.1f}"
-                elif 'excitation' in macro:
-                    fmt = "{0:.3f}"
-                else:
-                    fmt = "{0:.2f}"
+                if fmt is None:
+                    if macro in ['gain_db']:
+                        fmt = "{0:.1f}"
+                    elif 'excitation' in macro:
+                        fmt = "{0:.3f}"
+                    else:
+                        fmt = "{0:.2f}"
                 value = fmt.format(value)
 
             template = template.replace("{%s}" % macro, str(value))
             log.debug(f"expand_template: {macro} -> {value} (now {template})")
 
+    # Note that this wraps the prefix and suffix around the expanded template.
+    # Prefix and Suffix are not retained in manually-renamed measurements (ctrl-E).
     def generate_basename(self):
         if self.save_options is None:
             return self.measurement_id
@@ -485,7 +526,8 @@ class Measurement(object):
             if self.renamed_manually and self.save_options.allow_rename_files():
                 return util.normalize_filename(self.label)
             else:
-                return self.save_options.wrap_name(self.measurement_id, self.prefix, self.suffix)
+                basename = self.expand_template(self.save_options.filename_template())
+                return self.save_options.wrap_name(basename, self.prefix, self.suffix)
 
     def dump(self):
         log.debug("Measurement:")
@@ -584,7 +626,7 @@ class Measurement(object):
         self.label = label
 
         # rename the underlying file(s)
-        if self.save_options.allow_rename_files():
+        if self.save_options.allow_rename_files() or self.save_options.filename_as_label():
             self.rename_files()
 
         # re-apply trace with new legend

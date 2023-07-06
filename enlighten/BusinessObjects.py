@@ -353,6 +353,7 @@ class BusinessObjects:
             cb_spc                      = sfu.checkBox_save_spc,
             cb_dark                     = sfu.checkBox_save_dark,
             cb_excel                    = sfu.checkBox_save_excel,
+            cb_filename_as_label        = sfu.checkBox_save_filename_as_label,
             cb_json                     = sfu.checkBox_save_json,
             cb_load_raw                 = sfu.checkBox_load_raw,
             cb_pixel                    = sfu.checkBox_save_pixel,
@@ -366,6 +367,7 @@ class BusinessObjects:
             interp                      = ctl.interp,
             lb_location                 = sfu.label_scope_setup_save_location,
             le_label_template           = sfu.lineEdit_save_label_template,
+            le_filename_template        = sfu.lineEdit_save_filename_template,
             le_note                     = sfu.lineEdit_scope_capture_save_note,
             le_prefix                   = sfu.lineEdit_scope_capture_save_prefix,
             le_suffix                   = sfu.lineEdit_scope_capture_save_suffix,
@@ -418,7 +420,6 @@ class BusinessObjects:
             button_load                 = sfu.pushButton_scope_capture_load,
             button_resize               = sfu.pushButton_resize_captures,
             button_resort               = sfu.pushButton_resort_captures,
-            button_whats_this           = sfu.pushButton_whats_this,
             factory                     = ctl.measurement_factory,
             file_manager                = ctl.file_manager,
             form                        = ctl.form,
@@ -477,28 +478,7 @@ class BusinessObjects:
             horiz_roi                   = ctl.horiz_roi)
 
         self.header("instantiating LaserControlFeature")
-        ctl.laser_control = LaserControlFeature(
-            battery_feature             = ctl.battery_feature,
-            eeprom_editor               = ctl.eeprom_editor,
-            gui                         = ctl.gui,
-            marquee                     = ctl.marquee,
-            multispec                   = ctl.multispec,
-            page_nav                    = ctl.page_nav,
-            status_indicators           = ctl.status_indicators,
-            raman_intensity_correction  = ctl.raman_intensity_correction,
-
-            button_dn                   = sfu.pushButton_laser_power_dn,
-            button_up                   = sfu.pushButton_laser_power_up,
-            button_toggle               = sfu.pushButton_laser_toggle,
-            frame                       = sfu.frame_lightSourceControl,
-            lb_watchdog                 = sfu.label_laser_watchdog_sec,
-            lb_excitation               = sfu.label_lightSourceWidget_excitation_nm,
-            spinbox_excitation          = sfu.doubleSpinBox_lightSourceWidget_excitation_nm, # not EEPROMEditor
-            spinbox_power               = sfu.doubleSpinBox_laser_power,
-            slider_power                = sfu.verticalSlider_laser_power,
-            checkbox_watchdog           = sfu.checkBox_laser_watchdog,
-            spinbox_watchdog            = sfu.spinBox_laser_watchdog_sec,
-            guide                       = ctl.guide)
+        ctl.laser_control = LaserControlFeature(ctl)
 
         self.header("instantiating LaserTemperatureFeature")
         ctl.laser_temperature = LaserTemperatureFeature(
@@ -652,13 +632,7 @@ class BusinessObjects:
             spinbox                     = sfu.spinBox_integration_time_ms)
 
         self.header("instantiating GainDBFeature")
-        ctl.gain_db_feature = GainDBFeature(ctl = ctl,
-            bt_dn                       = sfu.pushButton_gain_dn,
-            bt_up                       = sfu.pushButton_gain_up,
-            label                       = sfu.label_gainWidget_title,
-            multispec                   = ctl.multispec,
-            slider                      = sfu.slider_gain,
-            spinbox                     = sfu.doubleSpinBox_gain)
+        ctl.gain_db_feature = GainDBFeature(ctl = ctl)
 
         self.header("instantiating BLEManager")
         ctl.ble_manager = BLEManager(

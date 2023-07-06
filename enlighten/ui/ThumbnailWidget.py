@@ -1,7 +1,7 @@
 from PySide2 import QtGui, QtCore, QtWidgets
 import pyqtgraph
 
-import datetime
+from datetime import datetime
 import logging
 
 from enlighten.ui.ConfirmWidget import ConfirmWidget
@@ -33,7 +33,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
     OUTER_WIDTH = 190
     INNER_WIDTH = 188
 
-    MIN_WIDTH = 100
+    MIN_WIDTH = 160
     MAX_WIDTH = 170
 
     ## allows deep-copying of Measurements
@@ -47,7 +47,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
             is_collapsed,
             measurement,
             stylesheets,
-            view,
+            technique,
             focus_listener,
             kia = None):
 
@@ -60,12 +60,14 @@ class ThumbnailWidget(QtWidgets.QFrame):
         self.kia            = kia
         self.measurement    = measurement
         self.stylesheets    = stylesheets
-        self.view           = view
+        self.technique      = technique
         self.focus_listener = focus_listener
                            
         self.is_displayed  = False
         self.selected_color = None
         self.curve = None
+        self.old_name = None
+        self.last_editted = None
 
         ########################################################################
         # Widget styling
@@ -159,7 +161,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
 
         self.button_color   .sigColorChanged    .connect(self.color_changed_callback)
 
-        self.button_edit.setAutoDefault(True)
+        # self.button_edit.setAutoDefault(True) 
 
         ########################################################################
         # Delete confirmation pop-up
@@ -206,12 +208,8 @@ class ThumbnailWidget(QtWidgets.QFrame):
             log.debug("kia not installed")
             return False
 
-        # things get weird for loaded Measurements
-        ok = self.view is None or \
-             (isinstance(self.view, common.Views) and self.view == common.Views.RAMAN) or \
-             "raman" in str(self.view).lower()
-        log.debug("should_add_id = %s (self.view %s)", ok, self.view)
-        return ok
+        # only add "identify" button to Raman measurements
+        return self.technique and "raman" == self.technique.lower()
 
     ##
     # Called by MeasurementFactory to set the rendered thumbnail image
@@ -220,12 +218,17 @@ class ThumbnailWidget(QtWidgets.QFrame):
 
     def create_label_widget(self):
         font = QtGui.QFont()
-        font.setPointSize(10)
-        font.setWeight(50)
+        font.setPointSize(8)
+        font.setWeight(QtGui.QFont.Weight.Thin)
+        font.setStyleHint(QtGui.QFont.StyleHint.SansSerif)
         font.setBold(False)
+
+        policy = QtWidgets.QSizePolicy()
+        policy.setHorizontalPolicy(QtWidgets.QSizePolicy.MinimumExpanding)
 
         le_name = QtWidgets.QLineEdit(self.measurement.label)
         self.stylesheets.apply(le_name, "clear_border")
+        le_name.setSizePolicy(policy)
         le_name.setMinimumWidth(ThumbnailWidget.MIN_WIDTH)
         le_name.setMaximumWidth(ThumbnailWidget.MAX_WIDTH)
         le_name.move(10, 10)
@@ -233,6 +236,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
         le_name.setParent(self)
         le_name.setReadOnly(True) 
         le_name.returnPressed.connect(self.rename_complete_callback) # consider using editingFinished() instead (supports loss-of-focus)
+
         return le_name
 
     # ##########################################################################
@@ -376,6 +380,15 @@ class ThumbnailWidget(QtWidgets.QFrame):
 
     ## the user clicked the "pencil" icon to edit the Thumbnail's label
     def rename_callback(self):
+
+        if self.last_editted and (datetime.now() - self.last_editted).total_seconds() < 1:
+            log.debug("rename: debouncing re-click intended to end edit")
+            return
+        
+        # save old contents for comparison
+        self.old_name = self.le_name.text()
+        log.debug("rename: now editing")
+
         self.le_name.setReadOnly(False)
         self.stylesheets.apply(self.le_name, "edit_text")
         self.le_name.setFocus()
@@ -387,11 +400,14 @@ class ThumbnailWidget(QtWidgets.QFrame):
     def rename_complete_callback(self):
         """
         The user hit "return" after editting the Thumbnail's name, or otherwise
-        moved focus to a different widget, so pass the new label up to the 
-        Measurement object.
+        moved focus to a different widget (or re-clicked the edit button), so 
+        pass the new label up to the Measurement object.
         """
-        if not self.focus_listener.registered(self.le_name):
-            return
+        log.debug("rename_complete: completing")
+        self.last_editted = datetime.now()
+
+        # if not self.focus_listener.registered(self.le_name):
+        #     return
 
         self.focus_listener.unregister(self.le_name)
 
@@ -399,7 +415,9 @@ class ThumbnailWidget(QtWidgets.QFrame):
         self.button_edit.setFocus()
         self.le_name.setReadOnly(True)
         self.gui.colorize_button(self.button_edit, False)
-        self.measurement.update_label(self.le_name.text(), manual=True)
+
+        if self.le_name.text() != self.old_name:
+            self.measurement.update_label(self.le_name.text(), manual=True)
 
     def expand_callback(self):
         if self.is_collapsed:
@@ -486,7 +504,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
         if self.measurement.processed_reading.is_cropped():
             roi = self.measurement.settings.eeprom.get_horizontal_roi()
             if roi is not None and self.graph is not None and self.graph.horiz_roi is not None:
-                spectrum = self.measurement.processed_reading.processed_cropd
+                spectrum = self.measurement.processed_reading.processed_cropped
                 x_axis = self.graph.horiz_roi.crop(x_axis, roi=roi)
 
         # use named color if found in label
@@ -522,7 +540,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
     def generate_tooltip(self):
         # quick stats in first line
         proc = self.measurement.processed_reading.get_processed()
-        tt = f"Max {int(max(proc))}, Avg {int(sum(proc)/len(proc))}, Min {int(min(proc))}\n\n" if proc else ""
+        tt = f"Max {int(max(proc))}, Avg {int(sum(proc)/len(proc))}, Min {int(min(proc))}\n\n" if proc is not None else ""
 
         # followed by Measurement metadata
         metadata = self.measurement.get_all_metadata()
