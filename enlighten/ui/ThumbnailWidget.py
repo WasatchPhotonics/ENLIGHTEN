@@ -486,7 +486,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
         if self.measurement.processed_reading.is_cropped():
             roi = self.measurement.settings.eeprom.get_horizontal_roi()
             if roi is not None and self.graph is not None and self.graph.horiz_roi is not None:
-                spectrum = self.measurement.processed_reading.processed_cropd
+                spectrum = self.measurement.processed_reading.processed_cropped
                 x_axis = self.graph.horiz_roi.crop(x_axis, roi=roi)
 
         # use named color if found in label
