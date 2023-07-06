@@ -207,12 +207,7 @@ class BusinessObjects:
             spin_timeout=sfu.spinBox_hardware_capture_timeout)
 
         self.header("instantiating Cursor")
-        ctl.cursor = Cursor(
-            button_dn                   = sfu.pushButton_cursor_dn,
-            button_up                   = sfu.pushButton_cursor_up,
-            cb_enable                   = sfu.checkBox_cursor_scope_enabled,
-            ds_value                    = sfu.doubleSpinBox_cursor_scope,
-            graph                       = ctl.graph)
+        ctl.cursor = Cursor(ctl)
 
         self.header("instantiating ImageResources")
         ctl.image_resources = ImageResources()
@@ -295,13 +290,7 @@ class BusinessObjects:
             hardware_file_manager       = ctl.hardware_file_manager)
 
         self.header("instantiating HorizROIFeature")
-        ctl.horiz_roi = HorizROIFeature(
-            graph                       = ctl.graph,
-            multispec                   = ctl.multispec,
-            stylesheets                 = ctl.stylesheets,
-
-            button                      = sfu.pushButton_roi_toggle,
-            )
+        ctl.horiz_roi = HorizROIFeature(ctl)
 
         self.header("instantiating TransmissionFeature")
         ctl.transmission = TransmissionFeature(
