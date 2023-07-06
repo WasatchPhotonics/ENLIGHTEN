@@ -2396,6 +2396,38 @@ QComboBox QListView
                </widget>
               </item>
               <item>
+               <widget class="QPushButton" name="pushButton_whats_this">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>30</width>
+                  <height>26</height>
+                 </size>
+                </property>
+                <property name="toolTip">
+                 <string>Enable "What's This?" help mode</string>
+                </property>
+                <property name="text">
+                 <string />
+                </property>
+                <property name="icon">
+                 <iconset resource="grey_icons.qrc">
+                  <normaloff>:/greys/images/grey_icons/arrow-question.svg</normaloff>:/greys/images/grey_icons/arrow-question.svg</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>16</width>
+                  <height>14</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QPushButton" name="pushButton_help">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -11194,38 +11226,6 @@ QComboBox QListView
                            </property>
                           </widget>
                          </item>
-                         <item>
-                          <widget class="QPushButton" name="pushButton_whats_this">
-                           <property name="sizePolicy">
-                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                             <horstretch>0</horstretch>
-                             <verstretch>0</verstretch>
-                            </sizepolicy>
-                           </property>
-                           <property name="maximumSize">
-                            <size>
-                             <width>30</width>
-                             <height>26</height>
-                            </size>
-                           </property>
-                           <property name="toolTip">
-                            <string>Enable viewing thumbnail details</string>
-                           </property>
-                           <property name="text">
-                            <string />
-                           </property>
-                           <property name="icon">
-                            <iconset resource="grey_icons.qrc">
-                             <normaloff>:/greys/images/grey_icons/arrow-question.svg</normaloff>:/greys/images/grey_icons/arrow-question.svg</iconset>
-                           </property>
-                           <property name="iconSize">
-                            <size>
-                             <width>16</width>
-                             <height>14</height>
-                            </size>
-                           </property>
-                          </widget>
-                         </item>
                         </layout>
                        </item>
                        <item>
@@ -14143,7 +14143,7 @@ p, li { white-space: pre-wrap; }
                 <x>0</x>
                 <y>0</y>
                 <width>240</width>
-                <height>2626</height>
+                <height>2662</height>
                </rect>
               </property>
               <property name="sizePolicy">
@@ -15072,6 +15072,26 @@ p, li { white-space: pre-wrap; }
                               </property>
                              </widget>
                             </item>
+                            <item>
+                             <widget class="QComboBox" name="comboBox_laser_power_unit">
+                              <property name="toolTip">
+                               <string>whether laser power should be controlled through mW or percentage</string>
+                              </property>
+                              <property name="whatsThis">
+                               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;In general, all spectrometers with multi-mode lasers (&lt;b&gt;MML&lt;/b&gt;) receive laser power calibrations, and are therefore recommended for control through mW. Spectrometers with single-mode lasers (&lt;b&gt;SML&lt;/b&gt;) typically do not receive laser power calibrations, and are therefore recommended for control through pulse-modulation width (&lt;b&gt;PWM&lt;/b&gt;) duty-cycle, i.e. a rough percentage of full power.&lt;/p&gt;&lt;p&gt;Therefore, most MML and SML spectrometers will not see this option, and will not be given the option to configure how laser power is controlled.&lt;/p&gt;&lt;p&gt;The special case is for Integrated Laser with Interchangeable Coupling (&lt;b&gt;ILC&lt;/b&gt;) models, which have an MML exposed through a fiber and probe.  Although these units will receive a laser power calibration in the factory, and therefore are able to set power in mW, the user may elect to use a different fiber and probe than was used to generate the calibration.&lt;/p&gt;&lt;p&gt;In such cases the calibration, although present, is invalid, and we need to give the user the ability to control the laser through percentage as well.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                              </property>
+                              <item>
+                               <property name="text">
+                                <string>milliWatts (mW)</string>
+                               </property>
+                              </item>
+                              <item>
+                               <property name="text">
+                                <string>percentage (%)</string>
+                               </property>
+                              </item>
+                             </widget>
+                            </item>
                            </layout>
                           </item>
                          </layout>
@@ -15082,7 +15102,7 @@ p, li { white-space: pre-wrap; }
                            <number>0</number>
                           </property>
                           <item>
-                           <widget class="QDoubleSpinBox" name="doubleSpinBox_lightSourceWidget_excitation_nm">
+                           <widget class="QDoubleSpinBox" name="doubleSpinBox_excitation_nm">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                               <horstretch>0</horstretch>
@@ -19210,7 +19230,7 @@ p, li { white-space: pre-wrap; }
   <tabstop>pushButton_laser_power_dn</tabstop>
   <tabstop>pushButton_laser_power_up</tabstop>
   <tabstop>doubleSpinBox_laser_power</tabstop>
-  <tabstop>doubleSpinBox_lightSourceWidget_excitation_nm</tabstop>
+  <tabstop>doubleSpinBox_excitation_nm</tabstop>
   <tabstop>slider_integration_time_ms</tabstop>
   <tabstop>pushButton_integration_time_ms_dn</tabstop>
   <tabstop>pushButton_integration_time_ms_up</tabstop>

@@ -6,17 +6,22 @@
     - keyboard shortcuts
         - added ctrl-G/N/T per https://www.goodreads.com/quotes/9934315-it-is-a-curious-fact-and-one-to-which-no
         - added F1 for help
-    - enlighten.ini allows % 
     - template macro fixes
         - work in export filenames
         - support Reading attributes
         - improved floating-point precision
-    - renamed VignetteROIFeature to HorizROIFeature
-    - persist gain_db by serial number
-    - added min/avg/max to thumbnail tooltips
-    - changed Measurement ToolTip to WhatsThis
+    - refactoring
+        - renamed VignetteROIFeature to HorizROIFeature
+        - moved LaserControlFeature to ctl
+    - persistence
+        - enlighten.ini allows % 
+        - persist gain_db by serial number
+    - GUI
+        - added min/avg/max to thumbnail tooltips
+        - changed Measurement ToolTip to WhatsThis
     - plugins
         - updated Savitzky-Golay
+    - support selectable mW/PWM for ILC and Expert Mode
 - 2023-06-14 4.0.12
     - persistence
         - fixed Configuration defaults
