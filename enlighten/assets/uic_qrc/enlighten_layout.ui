@@ -8398,8 +8398,8 @@ QComboBox QListView
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>562</width>
-              <height>1308</height>
+              <width>669</width>
+              <height>1303</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -8504,7 +8504,7 @@ QComboBox QListView
                             </font>
                            </property>
                            <property name="text">
-                            <string>Saved Data Location</string>
+                            <string>Measurement Naming</string>
                            </property>
                           </widget>
                          </item>
@@ -8531,6 +8531,9 @@ QComboBox QListView
                            </item>
                            <item>
                             <layout class="QVBoxLayout" name="verticalLayout_125">
+                             <property name="spacing">
+                              <number>3</number>
+                             </property>
                              <item>
                               <layout class="QFormLayout" name="formLayout">
                                <property name="sizeConstraint">
@@ -8545,17 +8548,10 @@ QComboBox QListView
                                <property name="verticalSpacing">
                                 <number>0</number>
                                </property>
-                               <item row="1" column="0">
-                                <widget class="QLabel" name="label_foo_bar">
-                                 <property name="text">
-                                  <string>Label</string>
-                                 </property>
-                                </widget>
-                               </item>
                                <item row="0" column="0">
                                 <widget class="QLabel" name="label_rssd_timestamp_73">
                                  <property name="text">
-                                  <string>Directory</string>
+                                  <string>Save Directory</string>
                                  </property>
                                 </widget>
                                </item>
@@ -8563,6 +8559,9 @@ QComboBox QListView
                                 <layout class="QHBoxLayout" name="horizontalLayout_20">
                                  <item>
                                   <widget class="QLabel" name="label_scope_setup_save_location">
+                                   <property name="toolTip">
+                                    <string>Where new measurements will be saved</string>
+                                   </property>
                                    <property name="text">
                                     <string>C:\path\to\foo</string>
                                    </property>
@@ -8595,6 +8594,9 @@ QComboBox QListView
                                      <bold>true</bold>
                                     </font>
                                    </property>
+                                   <property name="toolTip">
+                                    <string>Where to save spectra (settings, plugins, log etc remain in EnlightenSpectra)</string>
+                                   </property>
                                    <property name="text">
                                     <string>Change</string>
                                    </property>
@@ -8609,6 +8611,22 @@ QComboBox QListView
                                 </layout>
                                </item>
                                <item row="1" column="1">
+                                <widget class="QLineEdit" name="lineEdit_save_filename_template">
+                                 <property name="maximumSize">
+                                  <size>
+                                   <width>300</width>
+                                   <height>16777215</height>
+                                  </size>
+                                 </property>
+                                 <property name="toolTip">
+                                  <string>Template for the filename of newly saved measurements</string>
+                                 </property>
+                                 <property name="text">
+                                  <string>{measurement_id}</string>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item row="2" column="1">
                                 <widget class="QLineEdit" name="lineEdit_save_label_template">
                                  <property name="maximumSize">
                                   <size>
@@ -8617,17 +8635,44 @@ QComboBox QListView
                                   </size>
                                  </property>
                                  <property name="toolTip">
-                                  <string>Template for the "label" of new saved spectra</string>
+                                  <string>Template for the "label" of newly saved measurements</string>
                                  </property>
                                  <property name="text">
                                   <string>{time} {serial_number}</string>
                                  </property>
                                 </widget>
                                </item>
+                               <item row="1" column="0">
+                                <widget class="QLabel" name="label_foo_baz">
+                                 <property name="text">
+                                  <string>New Filename Template</string>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item row="2" column="0">
+                                <widget class="QLabel" name="label_foo_baz2">
+                                 <property name="text">
+                                  <string>New Label Template</string>
+                                 </property>
+                                </widget>
+                               </item>
                               </layout>
                              </item>
                              <item>
+                              <widget class="QCheckBox" name="checkBox_save_filename_as_label">
+                               <property name="toolTip">
+                                <string>If checked, the measurement filename will be used for on-screen label</string>
+                               </property>
+                               <property name="text">
+                                <string>Use filename as label</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item>
                               <widget class="QCheckBox" name="checkBox_load_raw">
+                               <property name="toolTip">
+                                <string>Load "raw" rather than "processed" and apply current settings</string>
+                               </property>
                                <property name="text">
                                 <string>Load raw spectra and re-process</string>
                                </property>
@@ -9241,39 +9286,6 @@ QComboBox QListView
                           </layout>
                          </item>
                         </layout>
-                       </widget>
-                      </item>
-                     </layout>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QFrame" name="frame_plugin_moved_hint">
-                     <property name="frameShape">
-                      <enum>QFrame::StyledPanel</enum>
-                     </property>
-                     <property name="frameShadow">
-                      <enum>QFrame::Raised</enum>
-                     </property>
-                     <property name="wpPanel" stdset="0">
-                      <bool>false</bool>
-                     </property>
-                     <layout class="QVBoxLayout" name="verticalLayout_156">
-                      <item>
-                       <widget class="QLabel" name="label_plugin_section">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
-                        <property name="font">
-                         <font>
-                          <pointsize>12</pointsize>
-                         </font>
-                        </property>
-                        <property name="text">
-                         <string>Plugin settings have been moved to the right side panel.</string>
-                        </property>
                        </widget>
                       </item>
                      </layout>

@@ -38,7 +38,6 @@ class MeasurementFactory(object):
         self.save_options = None
         self.stylesheets  = None
         self.measurements = None
-        self.label_suffix = None    # currently set/cleared by BatchCollection, could be others
         self.observers    = set()
 
     def __init__(self,
@@ -123,7 +122,7 @@ class MeasurementFactory(object):
             colors          = self.colors,
             stylesheets     = self.stylesheets,
             is_collapsed    = is_collapsed,
-            view            = measurement.technique,
+            technique       = measurement.technique,
             focus_listener  = self.focus_listener,
             kia             = self.kia)
         try:
