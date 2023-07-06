@@ -1,4 +1,7 @@
+import pyqtgraph
 import logging
+
+from enlighten.scope.Cursor import AxisConverter
 
 log = logging.getLogger(__name__)
 
@@ -26,26 +29,35 @@ log = logging.getLogger(__name__)
 #
 class HorizROIFeature(object):
     
-    def __init__(self,
-            graph,
-            multispec,
-            stylesheets,
-            button):
-        self.graph = graph
-        self.multispec = multispec
-        self.stylesheets = stylesheets
+    def __init__(self, ctl):
+        self.ctl = ctl
 
-        self.button = button
+        self.button = self.ctl.form.ui.pushButton_roi_toggle # compromise
 
         self.enabled = True
         self.user_requested_enabled = True
 
         self.observers = set()
+        self.ctl.graph.register_observer("change_axis", self.change_axis_callback)
 
-        # self-register with Graph
-        self.graph.horiz_roi = self
+        self.converter = AxisConverter(ctl)
 
-        self.button.clicked.connect(self.toggle)
+        # create lines to manipulate the ROI (could try to make these 
+        # actual Cursor objects later, not sure it's worth it now)
+        self.start = pyqtgraph.InfiniteLine(movable=True, pen=self.ctl.gui.make_pen(color="lightsalmon"))
+        self.end   = pyqtgraph.InfiniteLine(movable=True, pen=self.ctl.gui.make_pen(color="lightsalmon"))
+        self.lines = [self.start, self.end]
+        for line in self.lines:
+            line.setVisible(False)
+            self.ctl.graph.add_item(line)
+
+        # self-register with scope.Graph (remove when refactoring Graph)
+        self.ctl.graph.horiz_roi = self
+
+        # bindings
+        self.button .clicked            .connect(self.toggle)
+        self.start  .sigPositionChanged .connect(self.start_moved_callback)
+        self.end    .sigPositionChanged .connect(self.end_moved_callback)
 
         self.update_visibility()
 
@@ -56,9 +68,9 @@ class HorizROIFeature(object):
         log.debug(f"toggle: user_requested_enabled = {self.user_requested_enabled}, enabled = {self.enabled}")
         
         # re-center cursor if disabling ROI made current position fall off the graph
-        self.graph.cursor.set_range(self.graph.generate_x_axis())
-        if self.graph.cursor.is_outside_range():
-            self.graph.cursor.center()
+        self.ctl.cursor.set_range(self.ctl.graph.generate_x_axis())
+        if self.ctl.cursor.is_outside_range():
+            self.ctl.cursor.center()
 
         self.update_visibility()
 
@@ -68,12 +80,12 @@ class HorizROIFeature(object):
 
     def init_hotplug(self):
         """ auto-enable for spectrometers with ROI """
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         self.enabled = spec is not None and spec.settings.eeprom.has_horizontal_roi() and self.user_requested_enabled
         log.debug(f"init_hotplug: enabled = {self.enabled}")
 
     def update_visibility(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
 
         self.enabled = self.user_requested_enabled
 
@@ -81,10 +93,10 @@ class HorizROIFeature(object):
             self.button.setVisible(True)
 
             if self.enabled:
-                self.stylesheets.apply(self.button, "gray_gradient_button") 
-                self.button.setToolTip("spectra cropped per EEPROM horizontal ROI")
+                self.ctl.stylesheets.apply(self.button, "gray_gradient_button") 
+                self.button.setToolTip("spectra cropped per horizontal ROI")
             else:
-                self.stylesheets.apply(self.button, "red_gradient_button")
+                self.ctl.stylesheets.apply(self.button, "red_gradient_button")
                 self.button.setToolTip("uncropped spectra shown (curtains indicate ROI limits)")
 
         else:
@@ -93,11 +105,66 @@ class HorizROIFeature(object):
 
         log.debug(f"update_visibility: user_requested_enabled = {self.user_requested_enabled}, enabled = {self.enabled}")
 
-        for spec in self.multispec.get_spectrometers():
-            self.graph.update_roi_regions(spec)
+        if self.enabled:
+            for line in self.lines:
+                line.setVisible(True)
+                old_x = line.getXPos()
+                new_x = self.converter.convert(
+                    spec     = spec, 
+                    old_axis = common.Axes.PIXELS,
+                    new_axis = self.ctl.graph.current_x_axis,
+                    x        = old_x)
+                if new_x is not None:
+                    log.debug(f"update_visibility: updating line from old_x {old_x} to new_x {new_x}")
+                    line.setValue(new_x)
+        else:
+            for line in self.lines:
+                line.setVisible(False)
+
+        for spec in self.ctl.multispec.get_spectrometers():
+            self.ctl.graph.update_roi_regions(spec)
 
         for callback in self.observers:
             callback()
+
+    def change_axis_callback(self, old_axis, new_axis):
+        self.update_visibility()
+
+    def start_moved_callback(self, pos):
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+
+        pixel = self.line_moved(self.start)
+        if pixel is None:
+            return
+
+        spec.settings.eeprom.roi_horizontal_start = pixel
+        self.ctl.graph.update_roi_regions(spec)
+
+    def end_moved_callback(self, pos):
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+
+        pixel = self.line_moved(self.start)
+        if pixel is None:
+            return
+
+        spec.settings.eeprom.roi_horizontal_end = pixel
+        self.ctl.graph.update_roi_regions(spec)
+
+    def line_moved(self, line):
+        x_axis = self.ctl.graph.generate_x_axis() # assume selected spectrometer
+        if x_axis is None:
+            return
+
+        if x_axis[-1] - x_axis[0] == 0:
+            return
+
+        old_x = line.getXPos()
+        pixel = self.converter.convert(spec=spec, old_axis=self.ctl.graph.current_x_axis, new_axis=common.Axes.PIXELS, x=old_x)
+        return math.round(pixel)
 
     ##
     # Called by LOTS of classes :-(
@@ -120,7 +187,7 @@ class HorizROIFeature(object):
 
         if roi is None:
             if spec is None:
-                spec = self.multispec.current_spectrometer()
+                spec = self.ctl.multispec.current_spectrometer()
             if spec is not None:
                 roi = spec.settings.eeprom.get_horizontal_roi()
 
@@ -150,7 +217,7 @@ class HorizROIFeature(object):
             return
 
         if settings is None:
-            spec = self.multispec.current_spectrometer()
+            spec = self.ctl.multispec.current_spectrometer()
             if spec is not None:
                 settings = spec.settings
         if settings is None:
