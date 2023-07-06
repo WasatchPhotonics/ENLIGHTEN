@@ -66,6 +66,9 @@ class LocalBaseline(EnlightenPluginBase):
         header = []
         values = []
 
+        # firstonly(i, "some string") will only have a value if i==0
+        firstonly = lambda i, v: v if not i else None
+
         for i in range(self.count):
             x = self.get_widget_from_name("x_"+str(i)).value()
             left = self.get_widget_from_name("Left_"+str(i)).value()
@@ -75,14 +78,15 @@ class LocalBaseline(EnlightenPluginBase):
             end = x+right
 
             self.plot(
-                title="x",
+                # here it is used so we only add one legend entry per multiplexed variable
+                title=firstonly(i, "x"),
                 color="red",
                 x=[x, x],
                 y=[min(spectrum), max(spectrum)],
             )
 
             self.plot(
-                title="Range",
+                title=firstonly(i, "Range"),
                 color="blue",
                 x=[start, start],
                 y=[min(spectrum), max(spectrum)],
@@ -103,7 +107,7 @@ class LocalBaseline(EnlightenPluginBase):
                 interpolated_baseline = sub_spectrum[0]*(1-j) + sub_spectrum[-1]*j
 
                 self.plot(
-                    title="Baseline",
+                    title=firstonly(i, "Baseline"),
                     color="orange",
                     x=[start, end],
                     y=[sub_spectrum[0], sub_spectrum[-1]],
