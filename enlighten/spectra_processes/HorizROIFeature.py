@@ -2,6 +2,7 @@ import pyqtgraph
 import logging
 
 from enlighten.scope.Cursor import AxisConverter
+from enlighten import common
 
 log = logging.getLogger(__name__)
 
@@ -46,8 +47,8 @@ class HorizROIFeature(object):
         # actual Cursor objects later, not sure it's worth it now)
         self.start = pyqtgraph.InfiniteLine(movable=True, pen=self.ctl.gui.make_pen(color="lightsalmon"))
         self.end   = pyqtgraph.InfiniteLine(movable=True, pen=self.ctl.gui.make_pen(color="lightsalmon"))
-        self.lines = [self.start, self.end]
-        for line in self.lines:
+        self.lines = { "start": self.start, "end": self.end }
+        for label, line in self.lines.items():
             line.setVisible(False)
             self.ctl.graph.add_item(line)
 
@@ -86,6 +87,10 @@ class HorizROIFeature(object):
 
     def update_visibility(self):
         spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            for label, line in self.lines.items():
+                line.setVisible(False)
+            return
 
         self.enabled = self.user_requested_enabled
 
@@ -105,27 +110,35 @@ class HorizROIFeature(object):
 
         log.debug(f"update_visibility: user_requested_enabled = {self.user_requested_enabled}, enabled = {self.enabled}")
 
-        if self.enabled:
-            for line in self.lines:
-                line.setVisible(True)
-                old_x = line.getXPos()
-                new_x = self.converter.convert(
-                    spec     = spec, 
-                    old_axis = common.Axes.PIXELS,
-                    new_axis = self.ctl.graph.current_x_axis,
-                    x        = old_x)
-                if new_x is not None:
-                    log.debug(f"update_visibility: updating line from old_x {old_x} to new_x {new_x}")
-                    line.setValue(new_x)
-        else:
-            for line in self.lines:
-                line.setVisible(False)
+        self.update_line(spec, "start", spec.settings.eeprom.roi_horizontal_start)
+        self.update_line(spec, "end",   spec.settings.eeprom.roi_horizontal_end)
 
         for spec in self.ctl.multispec.get_spectrometers():
             self.ctl.graph.update_roi_regions(spec)
 
         for callback in self.observers:
             callback()
+
+    def update_line(self, spec, label, pixel):
+        """ 
+        We're doing update_visibility and we want to make sure each line is set
+        to the pixel specified in the ROI.
+        """
+        axis = self.ctl.graph.current_x_axis
+        x_axis = self.ctl.graph.generate_x_axis()
+        line = self.lines[label]
+
+        if not self.enabled or x_axis is None or x_axis[-1] - x_axis[0] <= 0:
+            line.setVisible(False)
+            return
+
+        x = self.converter.convert(spec=spec, old_axis=common.Axes.PIXELS, new_axis=axis, x=pixel)
+        if x is None:
+            return
+
+        log.debug(f"update_line: updating {label} from pixel {pixel} to x {x} on axis {axis}")
+        line.setValue(x)
+        line.setVisible(True)
 
     def change_axis_callback(self, old_axis, new_axis):
         self.update_visibility()
@@ -141,7 +154,7 @@ class HorizROIFeature(object):
             self.start.setValue(thresh)
             return
 
-        pixel = self.line_moved(self.start)
+        pixel = self.line_moved(spec, self.start)
         if pixel is None:
             return
 
@@ -159,24 +172,32 @@ class HorizROIFeature(object):
             self.end.setValue(thresh)
             return
 
-        pixel = self.line_moved(self.start)
+        pixel = self.line_moved(spec, self.start)
         if pixel is None:
             return
 
         spec.settings.eeprom.roi_horizontal_end = pixel
         self.ctl.graph.update_roi_regions(spec)
 
-    def line_moved(self, line):
+    def line_moved(self, spec, line):
+        """ 
+        The user dragged the line, so lookup the x-coordinate in the Graph 
+        axis (wl, wn etc) and convert back to pixels so we can update the 
+        EEPROM's ROI 
+        """
         x_axis = self.ctl.graph.generate_x_axis() # assume selected spectrometer
         if x_axis is None:
             return
 
-        if x_axis[-1] - x_axis[0] == 0:
+        if x_axis[-1] - x_axis[0] <= 0:
             return
 
         old_x = line.getXPos()
         pixel = self.converter.convert(spec=spec, old_axis=self.ctl.graph.current_x_axis, new_axis=common.Axes.PIXELS, x=old_x)
-        return math.round(pixel)
+        if pixel is None:
+            return None
+
+        return round(pixel)
 
     ##
     # Called by LOTS of classes :-(
