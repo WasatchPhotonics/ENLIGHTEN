@@ -50,7 +50,7 @@ class RichardsonLucy(object):
         # Whether we are graphing in wavelengths or wavenumbers, we should be able
         # to perform the deconvolution in whatever axis matches the configured 
         # ideal resolution.  Not sure what I was thinking here.
-        self.graph.register_axis_observer(self.update_visibility)
+        self.graph.register_observer("change_axis", self.change_axis_callback)
 
         # If the user dis/enables or changes vignetting, re-generate guassian.  
         # (Alternative design would be to include ROI tuple in the cache key.)
@@ -65,6 +65,10 @@ class RichardsonLucy(object):
 
     def update_from_gui(self):
         self.enabled = self.cb_enable.isChecked()
+
+    def change_axis_callback(self, old_axis, new_axis):
+        """ The user changed the current x-axis on the Graph """
+        self.update_visibility()
 
     def update_visibility(self, spec=None):
         if spec is None:
