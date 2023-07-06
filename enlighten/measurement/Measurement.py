@@ -469,12 +469,16 @@ class Measurement(object):
             fmt = None
 
             # macro-only fields (don't map to existing data)
-            if macro == "time" or macro == "HH_MM_SS":
-                value = self.timestamp.strftime("%H_%M_%S")
-            elif macro == "date" or macro == "YYYY-MM-DD":
-                value = self.timestamp.strftime("%Y-%m-%d")
-            elif macro == "file_timestamp":
-                value = self.timestamp.strftime("%Y-%m-%d_%H_%M_%S%f")
+            if   macro == "time": value = self.timestamp.strftime("%H_%M_%S")
+            elif macro == "date": value = self.timestamp.strftime("%Y-%m-%d")
+            elif macro == "file_timestamp": value = self.timestamp.strftime("%Y-%m-%d_%H_%M_%S%f")
+            elif macro == "YYYY": value = self.timestamp.strftime("%Y")
+            elif macro == "mm": value = self.timestamp.strftime("%m")
+            elif macro == "dd": value = self.timestamp.strftime("%d")
+            elif macro == "HH": value = self.timestamp.strftime("%H")
+            elif macro == "MM": value = self.timestamp.strftime("%M")
+            elif macro == "SS": value = self.timestamp.strftime("%S")
+            elif macro == "ffffff": value = self.timestamp.strftime("%f")
             elif macro == "integration_time_sec":
                 value = self.settings.state.integration_time_ms / 1000.0
                 fmt = "{0:.3f}"
