@@ -13,6 +13,9 @@ class SaveOptions():
     Encapsulates the many options regarding how spectra are to be saved.
     """
 
+    DEFAULT_LABEL_TEMPLATE = "{time} {serial_number}"
+    DEFAULT_FILENAME_TEMPLATE = "{measurement id}"
+
     # ##########################################################################
     # Lifecycle
     # ##########################################################################
@@ -20,7 +23,7 @@ class SaveOptions():
     ## allows deep-copying of Measurement
     def __deepcopy__(self, memo):
         log.debug("blocking deepcopy")
-        
+
     def clear(self):
         self.append_pathname         = None
         self.appended_serial_numbers = None
@@ -56,7 +59,7 @@ class SaveOptions():
 
     def __init__(
              self,
-             bt_location,    
+             bt_location,
              cb_all,
              cb_allow_rename,
              cb_append,
@@ -66,7 +69,7 @@ class SaveOptions():
              cb_dark,
              cb_excel,
              cb_filename_as_label,
-             cb_json, 
+             cb_json,
              cb_load_raw,
              cb_pixel,
              cb_raw,
@@ -77,20 +80,20 @@ class SaveOptions():
              config,
              file_manager,
              interp,
-             lb_location,    
+             lb_location,
              le_label_template,
              le_filename_template,
              le_note,
              le_prefix,
              le_suffix,
-             multispec,    
+             multispec,
              rb_by_col,
              rb_by_row
         ):
 
         self.clear()
 
-        self.bt_location          = bt_location    
+        self.bt_location          = bt_location
         self.cb_all               = cb_all
         self.cb_allow_rename      = cb_allow_rename
         self.cb_append            = cb_append
@@ -126,7 +129,7 @@ class SaveOptions():
         self.save_with_pixel = False
         self.save_with_wavelength = False
         self.save_with_wavenumber = False
-        
+
         # not passed in
         self.append_pathname = None
         self.appended_serial_numbers = set()
@@ -235,7 +238,7 @@ class SaveOptions():
         self.cb_dark.setEnabled(True)
         self.cb_reference.setEnabled(True)
 
-        # always enable wavenumbers, as we might want to load/export Raman 
+        # always enable wavenumbers, as we might want to load/export Raman
         # data even when not connected to a Raman spectrometer
         self.cb_wavenumber.setEnabled(True)
 
@@ -253,9 +256,18 @@ class SaveOptions():
             self.reset_appendage()
             self.last_prefix = self.prefix()
 
-        if self.suffix() != self.last_suffix: 
+        if self.suffix() != self.last_suffix:
             self.reset_appendage()
             self.last_suffix = self.suffix()
+
+        ########################################################################
+        # these may not be blank
+        ########################################################################
+
+        if not self.label_template():
+            self.le_label_template.setText(self.DEFAULT_LABEL_TEMPLATE)
+        if not self.filename_template():
+            self.le_filename_template.setText(self.DEFAULT_FILENAME_TEMPLATE)
 
         ########################################################################
         # update config
@@ -284,14 +296,14 @@ class SaveOptions():
         self.config.set(s, "allow_rename_files", self.allow_rename_files())
         self.config.set(s, "all_spectrometers",  self.save_all_spectrometers())
         self.config.set(s, "filename_as_label",  self.filename_as_label())
-            
+
     # ##########################################################################
     # Accessors
     # ##########################################################################
 
     def wrap_name(self, name, pre, post):
         def clean(foo):
-            return re.sub(r"[:/\\]", "-", foo) 
+            return re.sub(r"[:/\\]", "-", foo)
 
         s = name
         pre = clean(pre)
@@ -343,7 +355,7 @@ class SaveOptions():
         self.cb_wavenumber.setChecked(True)
 
     ## Show the directory dialog selection, set the default save location
-    #  to the selected directory. 
+    #  to the selected directory.
     def update_location(self):
         directory = self.file_manager.get_directory()
         if directory is None:
@@ -390,6 +402,37 @@ class SaveOptions():
     def have_appended_serial(self, serial_number):
         return serial_number in self.appended_serial_numbers
 
-    def focus_note(self): 
+    def focus_note(self):
         self.le_note.setFocus()
         self.le_note.selectAll()
+
+    # static
+    def get_default_configuration():
+        return {
+            "order": "col",
+            "append": False,
+
+            "pixel": True,
+            "wavelength": True,
+            "wavenumber": True,
+
+            "raw": False,
+            "dark": False,
+            "reference": False,
+
+            "all_spectrometers": True,
+            "allow_rename_files": True,
+
+            "format_csv": True,
+            "format_txt": False,
+            "format_excel": False,
+            "format_json": False,
+
+            "label_template": SaveOptions.DEFAULT_LABEL_TEMPLATE,
+            "filename_template": SaveOptions.DEFAULT_FILENAME_TEMPLATE,
+
+            "prefix": "enlighten",
+            "suffix": "",
+            "note": "",
+        }
+

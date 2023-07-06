@@ -9,6 +9,7 @@ import threading
 import configparser
 
 from enlighten.data.ColorNames import ColorNames
+from enlighten.measurement.SaveOptions import SaveOptions
 
 from enlighten import common
 
@@ -377,33 +378,7 @@ class Configuration:
     def load_defaults(self):
         self.defaults = {}
 
-        self.defaults["save"] = {
-            "order":        "col",
-            "append":       False,
-
-            "pixel":        True,
-            "wavelength":   True,
-            "wavenumber":   True,
-
-            "raw":          False,
-            "dark":         False,
-            "reference":    False,
-
-            "all_spectrometers": True,
-            "allow_rename_files": True,
-
-            "format_csv":   True,
-            "format_txt":   False,
-            "format_excel": False,
-            "format_json":  False,
-
-            "label_template": "{time} {serial_number}",
-            "filename_template": "{measurement id}",
-
-            "prefix":       "enlighten",
-            "suffix":       "",
-            "note":         "",
-        }
+        self.defaults["save"] = SaveOptions.get_default_configuration()
 
         self.defaults["batch"] = {
             "enabled": False,
