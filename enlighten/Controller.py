@@ -1038,6 +1038,7 @@ class Controller:
         self.form.exit_signal                       .exit               .connect(self.close)
 
         sfu.pushButton_help                         .clicked            .connect(self.help_callback)
+        sfu.pushButton_whats_this                   .clicked            .connect(self.whats_this_callback)
 
         ## move to StripChartFeature
         sfu.spinBox_strip_window                    .valueChanged       .connect(self.update_hardware_window)
@@ -1094,6 +1095,16 @@ class Controller:
         url = Controller.URL_HELP
         log.debug(f"opening {url}")
         webbrowser.open(url)
+
+    def whats_this_callback(self):
+        wt = QtWidgets.QWhatsThis
+        enabled = wt.inWhatsThisMode()
+        if enabled:
+            log.debug("leaving whats this mode")
+            wt.leaveWhatsThisMode()
+        else:
+            log.debug("entering whats this mode")
+            wt.enterWhatsThisMode()
 
     # ##########################################################################
     # save spectra
@@ -2214,7 +2225,7 @@ class Controller:
 
         # sync scope excitation widget from EEPROMEditor's
         # @todo LaserControlFeature
-        sfu.doubleSpinBox_lightSourceWidget_excitation_nm.setValue(ee.excitation_nm_float)
+        sfu.doubleSpinBox_excitation_nm.setValue(ee.excitation_nm_float)
 
     def generate_x_axis(self, spec=None, settings=None, unit=None, cropped=True):
         """
