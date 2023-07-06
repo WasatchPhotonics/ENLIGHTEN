@@ -135,6 +135,12 @@ class HorizROIFeature(object):
         if spec is None:
             return
 
+        thresh = self.end.getXPos() - 10 # don't really care which unit
+        if self.start.getXPos() < thresh:
+            log.debug(f"bumping start back down to {thresh}")
+            self.start.setValue(thresh)
+            return
+
         pixel = self.line_moved(self.start)
         if pixel is None:
             return
@@ -145,6 +151,12 @@ class HorizROIFeature(object):
     def end_moved_callback(self, pos):
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
+            return
+
+        thresh = self.start.getXPos() + 10 # don't really care which unit
+        if self.end.getXPos() < thresh:
+            log.debug(f"bumping end back up to {thresh}")
+            self.end.setValue(thresh)
             return
 
         pixel = self.line_moved(self.start)
