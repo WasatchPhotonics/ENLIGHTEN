@@ -133,6 +133,8 @@ class MeasurementFactory(object):
 
     ## Render a Measurement's .processed array into a raster bitmap of the
     # spectrum in a small image suitable for display via a ThumbnailWidget.
+    #
+    # @todo seems like this should be in ThumbnailWidget?
     def render_thumbnail_to_qpixmap(self, measurement):
 
         spectrum = measurement.processed_reading.get_processed()

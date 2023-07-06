@@ -2459,7 +2459,7 @@ QComboBox QListView
         </sizepolicy>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>3</number>
        </property>
        <widget class="QScrollArea" name="scrollArea_hardware">
         <property name="sizePolicy">
@@ -10948,8 +10948,8 @@ QComboBox QListView
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>183</width>
-                  <height>631</height>
+                  <width>256</width>
+                  <height>790</height>
                  </rect>
                 </property>
                 <property name="sizePolicy">
@@ -11194,6 +11194,38 @@ QComboBox QListView
                            </property>
                           </widget>
                          </item>
+                         <item>
+                          <widget class="QPushButton" name="pushButton_whats_this">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="maximumSize">
+                            <size>
+                             <width>30</width>
+                             <height>26</height>
+                            </size>
+                           </property>
+                           <property name="toolTip">
+                            <string>Enable viewing thumbnail details</string>
+                           </property>
+                           <property name="text">
+                            <string />
+                           </property>
+                           <property name="icon">
+                            <iconset resource="grey_icons.qrc">
+                             <normaloff>:/greys/images/grey_icons/arrow-question.svg</normaloff>:/greys/images/grey_icons/arrow-question.svg</iconset>
+                           </property>
+                           <property name="iconSize">
+                            <size>
+                             <width>16</width>
+                             <height>14</height>
+                            </size>
+                           </property>
+                          </widget>
+                         </item>
                         </layout>
                        </item>
                        <item>
@@ -11267,8 +11299,8 @@ QComboBox QListView
                                   <rect>
                                    <x>0</x>
                                    <y>0</y>
-                                   <width>190</width>
-                                   <height>210</height>
+                                   <width>222</width>
+                                   <height>385</height>
                                   </rect>
                                  </property>
                                  <property name="sizePolicy">
@@ -12688,8 +12720,8 @@ QComboBox QListView
                                  <rect>
                                   <x>0</x>
                                   <y>0</y>
-                                  <width>186</width>
-                                  <height>36</height>
+                                  <width>886</width>
+                                  <height>300</height>
                                  </rect>
                                 </property>
                                 <property name="wpClear" stdset="0">
@@ -19209,3 +19241,4 @@ p, li { white-space: pre-wrap; }
  </resources>
  <connections />
 </ui>
+
