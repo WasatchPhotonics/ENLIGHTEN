@@ -61,6 +61,10 @@ class LocalBaseline(EnlightenPluginBase):
         pr = request.processed_reading
         spectrum = pr.get_processed()
 
+        interpolated_baseline = []
+        peak = []
+        area = []
+
         for i in range(self.count):
             x = self.get_widget_from_name("x_"+str(i)).value()
             left = self.get_widget_from_name("Left_"+str(i)).value()
@@ -94,8 +98,8 @@ class LocalBaseline(EnlightenPluginBase):
             sub_spectrum = list(spectrum[start_pixel:end_pixel+1])
             if sub_spectrum:
 
-                i = (x-start)/(end-start)
-                interpolated_baseline = sub_spectrum[0]*(1-i) + sub_spectrum[-1]*i
+                j = (x-start)/(end-start)
+                interpolated_baseline.append(sub_spectrum[0]*(1-j) + sub_spectrum[-1]*j)
 
                 self.plot(
                     title="Baseline",
@@ -104,18 +108,39 @@ class LocalBaseline(EnlightenPluginBase):
                     y=[sub_spectrum[0], sub_spectrum[-1]],
                 )
 
-            peak = spectrum[self.to_pixel(x)]
+                peak.append(spectrum[self.to_pixel(x)])
 
-        ##peak_region = spectrum[left_end_pixel:right_start_pixel]
-        ##peak_region_subtracted = [x-interpolated_baseline for x in peak_region]
-        ##area = np.trapz(peak_region_subtracted, self.get_axis()[left_end_pixel:right_start_pixel])
-        #
-        #format_int = lambda i: f"{int(i):,}"
+                peak_region = spectrum[start_pixel:end_pixel]
 
-        #self.table = pd.DataFrame(
-        #    [ format_int(interpolated_baseline), format_int(peak), format_int(peak - interpolated_baseline), "--" ],
-        #    index = ["Baseline", "Original Peak", "Peak (baseline subtracted)", "Peak Area (baseline subtracted)"]
-        #).T
+                # similar but different from the above calculation for interpolated_baseline
+                # this time we are generating and rasterize the entire slanted local baseline 
+                # the 'x' in this section is strictly in pixel space
+                j = lambda x: x/(end_pixel-start_pixel) # given offset from start_pixel, produce unitless interpolation factor [0, 1]
+                LB = lambda j: (sub_spectrum[0]*(1-j) + sub_spectrum[-1]*j) # given unitless interpolation factor, produce height of local baseline
+                peak_region_subtracted = [peak_region[x]-LB(j(x)) for x in range(len(peak_region))]
+
+                area.append(np.trapz(peak_region_subtracted, self.get_axis()[start_pixel:end_pixel]))
+            else:
+                interpolated_baseline.append("--")
+                area.append("--")
+        
+        format_int = lambda i: f"{int(i):,}"
+
+        header = []
+        for i in range(self.count):
+            header += [
+                "%i: Baseline" % i,
+                "%i: Original Peak" % i, 
+                "%i: Peak (baseline subtracted)" % i, 
+                "%i: Peak Area (baseline subtracted)" % i
+            ]
+        values = []
+        for i in range(self.count):
+            values += [ format_int(interpolated_baseline[i]), format_int(peak[i]), format_int(peak[i] - interpolated_baseline[i]), format_int(area[i]) ]
+        self.table = pd.DataFrame(
+            values,
+            index = header
+        ).T
 
         #self.metadata["Baseline"] = interpolated_baseline
         #self.metadata["OriginalPeak"] = peak
