@@ -429,7 +429,6 @@ class BusinessObjects:
             button_load                 = sfu.pushButton_scope_capture_load,
             button_resize               = sfu.pushButton_resize_captures,
             button_resort               = sfu.pushButton_resort_captures,
-            button_whats_this           = sfu.pushButton_whats_this,
             factory                     = ctl.measurement_factory,
             file_manager                = ctl.file_manager,
             form                        = ctl.form,
@@ -488,28 +487,7 @@ class BusinessObjects:
             horiz_roi                   = ctl.horiz_roi)
 
         self.header("instantiating LaserControlFeature")
-        ctl.laser_control = LaserControlFeature(
-            battery_feature             = ctl.battery_feature,
-            eeprom_editor               = ctl.eeprom_editor,
-            gui                         = ctl.gui,
-            marquee                     = ctl.marquee,
-            multispec                   = ctl.multispec,
-            page_nav                    = ctl.page_nav,
-            status_indicators           = ctl.status_indicators,
-            raman_intensity_correction  = ctl.raman_intensity_correction,
-
-            button_dn                   = sfu.pushButton_laser_power_dn,
-            button_up                   = sfu.pushButton_laser_power_up,
-            button_toggle               = sfu.pushButton_laser_toggle,
-            frame                       = sfu.frame_lightSourceControl,
-            lb_watchdog                 = sfu.label_laser_watchdog_sec,
-            lb_excitation               = sfu.label_lightSourceWidget_excitation_nm,
-            spinbox_excitation          = sfu.doubleSpinBox_lightSourceWidget_excitation_nm, # not EEPROMEditor
-            spinbox_power               = sfu.doubleSpinBox_laser_power,
-            slider_power                = sfu.verticalSlider_laser_power,
-            checkbox_watchdog           = sfu.checkBox_laser_watchdog,
-            spinbox_watchdog            = sfu.spinBox_laser_watchdog_sec,
-            guide                       = ctl.guide)
+        ctl.laser_control = LaserControlFeature(ctl)
 
         self.header("instantiating LaserTemperatureFeature")
         ctl.laser_temperature = LaserTemperatureFeature(
