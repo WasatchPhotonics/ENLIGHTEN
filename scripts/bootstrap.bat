@@ -15,10 +15,16 @@ set "pyinstaller=0"
 set "innosetup=0"
 set "runtests=0"
 
+set "virtspec=0"
+
 REM Convoluted but safe way to generate an audible bell from a .bat
 REM without inserting control characters which confuse unix2dos etc.
 REM https://stackoverflow.com/a/64515648
 set "RING_BELL=echo x|choice /n 2>nul"
+
+if "%2" == "virtspec" (
+    set "virtspec=1"
+)
 
 if "%1" == "activate" (
     goto args_parsed
@@ -82,6 +88,9 @@ if "%1" == "custom" (
 echo === USAGE ===
 echo $ scripts\bootstrap activate
 echo Do not perform any major actions. Prepare environment variables and conda for using Enlighten.
+echo.
+echo $ scripts\bootstrap activate virtspec
+echo Prepare environment variables and conda for using Enlighten with a virtual spectrometer. (use bootstrap activate to revert to normal)
 echo.
 echo $ scripts\bootstrap pyinstaller
 echo regenerate Qt views and run pyinstaller (to create standalone exe)
@@ -300,6 +309,19 @@ if "%install_python_deps%" == "1" (
     echo.
     pip install pyinstaller==4.5.1
     if %errorlevel% neq 0 goto script_failure
+)
+
+if "%virtspec%" == "1" (
+    echo.
+    echo %date% %time% ======================================================
+    echo %date% %time% * Appending PyUSB Virtual Spectrometer to PATH *
+    echo %date% %time% ======================================================
+    echo.
+    set PYTHONPATH=..\pyusb-virtSpec;%PYTHONPATH%
+    pip uninstall pyusb
+)
+if "%virtspec%" == "0" (
+    pip install pyusb==1.2.1
 )
 
 if "%log_conf_pkg%" == "1" (
