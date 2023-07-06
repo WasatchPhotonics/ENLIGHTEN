@@ -127,6 +127,7 @@ class LocalBaseline(EnlightenPluginBase):
         format_int = lambda i: f"{int(i):,}"
 
         header = []
+        values = []
         for i in range(self.count):
             header += [
                 "%i: Baseline" % i,
@@ -134,20 +135,19 @@ class LocalBaseline(EnlightenPluginBase):
                 "%i: Peak (baseline subtracted)" % i, 
                 "%i: Peak Area (baseline subtracted)" % i
             ]
-        values = []
-        for i in range(self.count):
             values += [ format_int(interpolated_baseline[i]), format_int(peak[i]), format_int(peak[i] - interpolated_baseline[i]), format_int(area[i]) ]
+            self.metadata["Baseline_"+str(i)] = interpolated_baseline[i]
+            self.metadata["OriginalPeak_"+str(i)] = peak[i]
+            self.metadata["PeakBaselineSubtracted_"+str(i)] = peak[i] - interpolated_baseline[i]
+            self.metadata["Area_"+str(i)] = area[i]
+
+            # keep input parameters in metadata
+            self.metadata["Left_"+str(i)] = self.get_widget_from_name("Left_"+str(i)).value()
+            self.metadata["Right_"+str(i)] = self.get_widget_from_name("Right_"+str(i)).value()
+            self.metadata["x_"+str(i)] = self.get_widget_from_name("x_"+str(i)).value()
+
         self.table = pd.DataFrame(
             values,
             index = header
         ).T
 
-        #self.metadata["Baseline"] = interpolated_baseline
-        #self.metadata["OriginalPeak"] = peak
-        #self.metadata["PeakBaselineSubtracted"] = peak - interpolated_baseline
-        #self.metadata["Area"] = "--"
-
-        ## keep input parameters in metadata
-        #self.metadata["Left"] = self.get_widget_from_name("Left").value()
-        #self.metadata["Right"] = self.get_widget_from_name("Right").value()
-        #self.metadata["x"] = self.get_widget_from_name("x").value()
