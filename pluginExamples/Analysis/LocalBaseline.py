@@ -135,16 +135,24 @@ class LocalBaseline(EnlightenPluginBase):
                 "%i: Peak (baseline subtracted)" % i, 
                 "%i: Peak Area (baseline subtracted)" % i
             ]
-            values += [ format_int(interpolated_baseline), format_int(peak), format_int(peak - interpolated_baseline), format_int(area) ]
-            self.metadata["Baseline_"+str(i)] = interpolated_baseline
-            self.metadata["OriginalPeak_"+str(i)] = peak
-            self.metadata["PeakBaselineSubtracted_"+str(i)] = peak - interpolated_baseline
-            self.metadata["Area_"+str(i)] = area
+            try:
+                values += [ format_int(interpolated_baseline), format_int(peak), format_int(peak - interpolated_baseline), format_int(area) ]
+            except ValueError:
+                log.error("caught exception", exc_info=1)
+                values += [ 0, 0, 0, 0 ]
+
+            def set_meta(key, value):
+                self.metadata[f"{self.name}.{key}.{i}"] = value
+
+            set_meta("Baseline", interpolated_baseline)
+            set_meta("OriginalPeak", peak)
+            set_meta("PeakBaselineSubtracted", peak - interpolated_baseline)
+            set_meta("Area", area)
 
             # keep input parameters in metadata
-            self.metadata["Left_"+str(i)] = self.get_widget_from_name("Left_"+str(i)).value()
-            self.metadata["Right_"+str(i)] = self.get_widget_from_name("Right_"+str(i)).value()
-            self.metadata["x_"+str(i)] = self.get_widget_from_name("x_"+str(i)).value()
+            set_meta("Left", self.get_widget_from_name("Left_"+str(i)).value())
+            set_meta("Right", self.get_widget_from_name("Right_"+str(i)).value())
+            set_meta("x", self.get_widget_from_name("x_"+str(i)).value())
 
         self.table = pd.DataFrame(
             values,
