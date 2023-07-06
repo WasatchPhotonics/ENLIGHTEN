@@ -61,9 +61,10 @@ class LocalBaseline(EnlightenPluginBase):
         pr = request.processed_reading
         spectrum = pr.get_processed()
 
-        interpolated_baseline = []
-        peak = []
-        area = []
+        format_int = lambda i: f"{int(i):,}"
+
+        header = []
+        values = []
 
         for i in range(self.count):
             x = self.get_widget_from_name("x_"+str(i)).value()
@@ -99,7 +100,7 @@ class LocalBaseline(EnlightenPluginBase):
             if sub_spectrum:
 
                 j = (x-start)/(end-start)
-                interpolated_baseline.append(sub_spectrum[0]*(1-j) + sub_spectrum[-1]*j)
+                interpolated_baseline = sub_spectrum[0]*(1-j) + sub_spectrum[-1]*j
 
                 self.plot(
                     title="Baseline",
@@ -108,7 +109,7 @@ class LocalBaseline(EnlightenPluginBase):
                     y=[sub_spectrum[0], sub_spectrum[-1]],
                 )
 
-                peak.append(spectrum[self.to_pixel(x)])
+                peak = spectrum[self.to_pixel(x)]
 
                 peak_region = spectrum[start_pixel:end_pixel]
 
@@ -119,27 +120,22 @@ class LocalBaseline(EnlightenPluginBase):
                 LB = lambda j: (sub_spectrum[0]*(1-j) + sub_spectrum[-1]*j) # given unitless interpolation factor, produce height of local baseline
                 peak_region_subtracted = [peak_region[x]-LB(j(x)) for x in range(len(peak_region))]
 
-                area.append(np.trapz(peak_region_subtracted, self.get_axis()[start_pixel:end_pixel]))
+                area = np.trapz(peak_region_subtracted, self.get_axis()[start_pixel:end_pixel])
             else:
-                interpolated_baseline.append("--")
-                area.append("--")
+                interpolated_baseline = "--"
+                area = "--"
         
-        format_int = lambda i: f"{int(i):,}"
-
-        header = []
-        values = []
-        for i in range(self.count):
             header += [
                 "%i: Baseline" % i,
                 "%i: Original Peak" % i, 
                 "%i: Peak (baseline subtracted)" % i, 
                 "%i: Peak Area (baseline subtracted)" % i
             ]
-            values += [ format_int(interpolated_baseline[i]), format_int(peak[i]), format_int(peak[i] - interpolated_baseline[i]), format_int(area[i]) ]
-            self.metadata["Baseline_"+str(i)] = interpolated_baseline[i]
-            self.metadata["OriginalPeak_"+str(i)] = peak[i]
-            self.metadata["PeakBaselineSubtracted_"+str(i)] = peak[i] - interpolated_baseline[i]
-            self.metadata["Area_"+str(i)] = area[i]
+            values += [ format_int(interpolated_baseline), format_int(peak), format_int(peak - interpolated_baseline), format_int(area) ]
+            self.metadata["Baseline_"+str(i)] = interpolated_baseline
+            self.metadata["OriginalPeak_"+str(i)] = peak
+            self.metadata["PeakBaselineSubtracted_"+str(i)] = peak - interpolated_baseline
+            self.metadata["Area_"+str(i)] = area
 
             # keep input parameters in metadata
             self.metadata["Left_"+str(i)] = self.get_widget_from_name("Left_"+str(i)).value()
