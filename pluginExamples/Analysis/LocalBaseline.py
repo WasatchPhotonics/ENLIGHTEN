@@ -129,20 +129,17 @@ class LocalBaseline(EnlightenPluginBase):
                 interpolated_baseline = "--"
                 area = "--"
         
+            def set_meta(key, value):
+                self.metadata[f"{self.name}.{key}.{i}"] = value
+
             header += [
                 "%i: Baseline" % i,
                 "%i: Original Peak" % i, 
                 "%i: Peak (baseline subtracted)" % i, 
                 "%i: Peak Area (baseline subtracted)" % i
             ]
-
             subtracted = peak - interpolated_baseline if str(interpolated_baseline) != "--" else -1
-
             values += [ format_int(interpolated_baseline), format_int(peak), format_int(subtracted), format_int(area) ]
-
-            def set_meta(key, value):
-                self.metadata[f"{self.name}.{key}.{i}"] = value
-
             set_meta("Baseline", interpolated_baseline)
             set_meta("OriginalPeak", peak)
             set_meta("PeakBaselineSubtracted", subtracted)
