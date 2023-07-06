@@ -5,6 +5,9 @@ enlighten_errlog
 enlighten.egg-info
 .cache
 
+*.swp
+*.swo
+
 *.pyc
 *.exe
 *.out
@@ -43,3 +46,5 @@ keys.py
 
 .DS_Store
 .vscode/launch.json
+.idea/
+Thumbs.db

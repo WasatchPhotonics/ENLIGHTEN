@@ -37,7 +37,6 @@ class Measurements(object):
             button_load,
             button_resize,
             button_resort,
-            button_whats_this,
             factory,
             file_manager,
             form,
@@ -53,7 +52,6 @@ class Measurements(object):
         self.button_load        = button_load
         self.button_resize      = button_resize
         self.button_resort      = button_resort
-        self.button_whats_this  = button_whats_this
         self.factory            = factory
         self.file_manager       = file_manager
         self.form               = form
@@ -85,7 +83,6 @@ class Measurements(object):
         self.button_load    .clicked    .connect(self.load_callback)
         self.button_resize  .clicked    .connect(self.resize_callback)
         self.button_resort  .clicked    .connect(self.resort_callback)
-        self.button_whats_this.clicked  .connect(self.whats_this_callback)
 
         # Drop an expanding spacer into the layout, which will force all 
         # ThumbnailWidgets to hold a fixed size and align at one end.  (Could 
@@ -153,16 +150,6 @@ class Measurements(object):
 
     def erase_all_callback(self):
         self.erase_all()
-
-    def whats_this_callback(self):
-        wt = QtWidgets.QWhatsThis
-        enabled = wt.inWhatsThisMode()
-        if enabled:
-            log.debug("leaving whats this mode")
-            wt.leaveWhatsThisMode()
-        else:
-            log.debug("entering whats this mode")
-            wt.enterWhatsThisMode()
 
     # ##########################################################################
     #                                                                          #
@@ -340,8 +327,7 @@ class Measurements(object):
         for b in [ self.button_erase,
                    self.button_export,
                    self.button_resize,
-                   self.button_resort,
-                   self.button_whats_this ]:
+                   self.button_resort ]:
             b.setEnabled(enabled)
 
     # Think this is internal-only

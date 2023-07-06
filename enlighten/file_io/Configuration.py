@@ -14,7 +14,7 @@ from enlighten import common
 
 log = logging.getLogger(__name__)
 
-class Configuration(object):
+class Configuration:
     """
     This is a wrapper over ConfigParser.  It adds the following features:
     
@@ -87,6 +87,8 @@ class Configuration(object):
         self.load_defaults()
         self.stub_missing()
         self.stub_test() # MZ: I don't think this belongs in Configuration
+
+        self.lb_save_result.setText("calibration will be saved to %s" % self.pathname)
 
         try:
             self.reload()
@@ -396,6 +398,7 @@ class Configuration(object):
             "format_json":  False,
 
             "label_template": "{time} {serial_number}",
+            "filename_template": "{measurement id}",
 
             "prefix":       "enlighten",
             "suffix":       "",
