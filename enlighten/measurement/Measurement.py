@@ -468,22 +468,33 @@ class Measurement(object):
             value = None
             fmt = None
 
+            ####################################################################
             # macro-only fields (don't map to existing data)
+            ####################################################################
+
             if   macro == "time": value = self.timestamp.strftime("%H_%M_%S")
             elif macro == "date": value = self.timestamp.strftime("%Y-%m-%d")
             elif macro == "file_timestamp": value = self.timestamp.strftime("%Y-%m-%d_%H_%M_%S%f")
+
+            # note all date components are upper-case and times are lower-case 
+            # for consistency (may confuse C programmers, should make sense to 
+            # spectroscopists)
             elif macro == "YYYY": value = self.timestamp.strftime("%Y")
-            elif macro == "mm": value = self.timestamp.strftime("%m")
-            elif macro == "dd": value = self.timestamp.strftime("%d")
-            elif macro == "HH": value = self.timestamp.strftime("%H")
-            elif macro == "MM": value = self.timestamp.strftime("%M")
-            elif macro == "SS": value = self.timestamp.strftime("%S")
+            elif macro == "MM": value = self.timestamp.strftime("%m")
+            elif macro == "DD": value = self.timestamp.strftime("%d")
+            elif macro == "hh": value = self.timestamp.strftime("%H")
+            elif macro == "mm": value = self.timestamp.strftime("%M")
+            elif macro == "ss": value = self.timestamp.strftime("%S")
             elif macro == "ffffff": value = self.timestamp.strftime("%f")
+
             elif macro == "integration_time_sec":
                 value = self.settings.state.integration_time_ms / 1000.0
                 fmt = "{0:.3f}"
 
+            ####################################################################
             # pull from measurement data
+            ####################################################################
+
             elif self.processed_reading and self.processed_reading.reading and hasattr(self.processed_reading.reading, macro):
                 value = getattr(self.processed_reading.reading, macro)
             elif hasattr(self.settings.eeprom, macro):
