@@ -81,7 +81,6 @@ class Graph(object):
         self.stacked_widget             = stacked_widget
 
         # these are passed post-construction, or not at all (could add to ctor parameters anyway)
-        self.cursor       = None
         self.multispec    = None 
         self.horiz_roi    = None 
         self.measurements = None
@@ -99,7 +98,7 @@ class Graph(object):
         self.show_marker    = False
         self.inverted       = False
 
-        self.axis_observers = set()
+        self.observers = {}
 
         self.combo_axis.setCurrentIndex(self.current_x_axis)
 
@@ -194,10 +193,10 @@ class Graph(object):
         self.show_marker = self.cb_marker.isChecked()
         self.rescale_curves()
 
-    ##
-    # About time we started an actual observer pattern...
-    def register_axis_observer(self, callback):
-        self.axis_observers.add(callback)
+    def register_observer(self, event, callback):
+        if event not in self.observers:
+            self.observers[event] = set()
+        self.observers[event].add(callback)
 
     ## extra <BR> provides margin from the frame bottom...probably would be better with CSS
     def set_x_axis_label(self, text, locked=False):
@@ -212,22 +211,6 @@ class Graph(object):
         self.set_x_axis_label(common.AxesHelper.get_pretty_name(enum))
 
         try:
-            # re-initialize cursor position (BUG: re-centers, doesn't stay on previous peak)
-            if self.cursor is not None:
-                self.cursor.convert_location(old_axis, enum)
-            # Controller.generate_x_axis() actually uses Graph.current_x_axis to 
-            # determine the current axis enum, so we can be confident this will 
-            # return the appropriate array...IF a spectrometer is connected
-            x_axis = self.generate_x_axis()
-
-            if self.cursor is not None:
-                suffix = " %s" % common.AxesHelper.get_suffix(enum) # note space
-                log.debug(f"setting Cursor suffix to {suffix} (enum {enum})")
-                self.cursor.set_suffix(suffix)
-
-                if x_axis is not None:
-                    # update the Cursor's range (not value)
-                    self.cursor.set_range(array=x_axis)
 
             # update the widget
             self.combo_axis.setCurrentIndex(enum)
@@ -239,8 +222,9 @@ class Graph(object):
             # traces or paused acquisition)
             self.rescale_curves()
 
-            for callback in self.axis_observers:
-                callback()
+            if "change_axis" in self.observers:
+                for callback in self.observers["change_axis"]:
+                    callback(old_axis, enum)
         except:
             log.error("Error setting suffix", exc_info=1)
             pass
