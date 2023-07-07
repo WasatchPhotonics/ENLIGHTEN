@@ -127,10 +127,13 @@ class LocalBaseline(EnlightenPluginBase):
                 peak_region_subtracted = [peak_region[x]-LB(j(x)) for x in range(len(peak_region))]
 
                 area = np.trapz(peak_region_subtracted, self.get_axis()[start_pixel:end_pixel])
+
+                peak_baseline_subtracted = peak - interpolated_baseline
             else:
                 peak = "--"
                 interpolated_baseline = "--"
                 area = "--"
+                peak_baseline_subtracted = "--"
         
             header += [
                 "%i: Baseline" % i,
@@ -138,10 +141,10 @@ class LocalBaseline(EnlightenPluginBase):
                 "%i: Peak (baseline subtracted)" % i, 
                 "%i: Peak Area (baseline subtracted)" % i
             ]
-            values += [ format_int(interpolated_baseline), format_int(peak), format_int(peak - interpolated_baseline), format_int(area) ]
+            values += [ format_int(interpolated_baseline), format_int(peak), format_int(peak_baseline_subtracted), format_int(area) ]
             self.metadata["Baseline_"+str(i)] = interpolated_baseline
             self.metadata["OriginalPeak_"+str(i)] = peak
-            self.metadata["PeakBaselineSubtracted_"+str(i)] = peak - interpolated_baseline
+            self.metadata["PeakBaselineSubtracted_"+str(i)] = peak_baseline_subtracted
             self.metadata["Area_"+str(i)] = area
 
             # keep input parameters in metadata
