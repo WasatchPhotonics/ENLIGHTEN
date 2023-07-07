@@ -460,13 +460,14 @@ class Measurement(object):
         """
         log.debug(f"expand_template: starting with template {template}")
         while True:
-            m = re.search(r"{([a-z0-9_ ]+)}", template, re.IGNORECASE)
+            # macros look like {integration_time_ms} or {gain_db:0.1f}
+            m = re.search(r"{([a-z0-9_ ]+)(:\d*\.\d*f)?}", template, re.IGNORECASE)
             if m is None:
                 return template
 
             macro = m.group(1)
+            fmt = m.group(1)[1:] if m.group(1) else None
             value = None
-            fmt = None
 
             ####################################################################
             # macro-only fields (don't map to existing data)
@@ -486,10 +487,7 @@ class Measurement(object):
             elif macro == "mm": value = self.timestamp.strftime("%M")
             elif macro == "ss": value = self.timestamp.strftime("%S")
             elif macro == "ffffff": value = self.timestamp.strftime("%f")
-
-            elif macro == "integration_time_sec":
-                value = self.settings.state.integration_time_ms / 1000.0
-                fmt = "{0:.3f}"
+            elif macro == "integration_time_sec": value = self.settings.state.integration_time_ms / 1000.0
 
             ####################################################################
             # pull from measurement data
@@ -508,7 +506,7 @@ class Measurement(object):
                 if fmt is None:
                     if macro in ['gain_db']:
                         fmt = "{0:.1f}"
-                    elif 'excitation' in macro:
+                    elif 'excitation' in macro or macro in ["integration_time_sec"]:
                         fmt = "{0:.3f}"
                     else:
                         fmt = "{0:.2f}"
