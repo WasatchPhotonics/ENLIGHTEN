@@ -11,7 +11,7 @@
             - added filename template
             - macros now work in export filename components
             - support Reading attributes
-            - improved floating-point precision
+            - user-configurable floating-point precision
             - added date/time components ({YYYY}, {hh} etc)
             - added file_timestamp, integration_time_sec macros
     - persistence

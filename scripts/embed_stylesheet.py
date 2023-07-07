@@ -45,6 +45,8 @@ element.text = css
 # save updated .ui
 try:
     tree.write(ui_path, encoding="UTF-8")
+    with open(ui_path, "a", encoding="UTF-8") as f:
+        f.write("\n")
 except:
     error("Unable to write %s" % ui_path)
 
