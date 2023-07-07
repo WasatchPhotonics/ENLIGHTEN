@@ -510,7 +510,11 @@ class Measurement(object):
                         fmt = "{0:.3f}"
                     else:
                         fmt = "{0:.2f}"
-                value = fmt.format(value)
+                try:
+                    value = fmt.format(value)
+                except ValueError:
+                    log.error(f"unable to format value {value} as {fmt}", exc_info=1)
+                    value = macro
 
             template = template.replace("{%s}" % macro, str(value))
             log.debug(f"expand_template: {macro} -> {value} (now {template})")
