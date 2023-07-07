@@ -111,8 +111,8 @@ fi
 
 if ! $QUICK
 then
-	python scripts/embed_stylesheet.py
-	echo
+    python scripts/embed_stylesheet.py
+    echo
 
     if [ $OS = "Linux" ]
     then
@@ -126,30 +126,30 @@ fi
 
 if ! $QUICK
 then
-	# Process all of the QT Resource Files
-	for FILE in */assets/uic_qrc/*.qrc
-	do 
-		ROOT=$(echo $FILE | cut -d '.' -f 1)
-		DEST=${ROOT}_rc.py
+    # Process all of the QT Resource Files
+    for FILE in */assets/uic_qrc/*.qrc
+    do 
+        ROOT=$(echo $FILE | cut -d '.' -f 1)
+        DEST=${ROOT}_rc.py
 
-		echo -n "converting $FILE"
-		$RCC $FILE -o $DEST
-		echo "...done"
-	done
-	echo
+        echo -n "converting $FILE"
+        $RCC $FILE -o $DEST
+        echo "...done"
+    done
+    echo
 fi
 
 for FILE in */assets/uic_qrc/*.ui
 do 
-BASENAME=$(echo $FILE | awk -F/ '{print $NF}')
-ROOT=$(echo $FILE | cut -d '.' -f 1)
-DEST=${ROOT}.py
+    BASENAME=$(echo $FILE | awk -F/ '{print $NF}')
+    ROOT=$(echo $FILE | cut -d '.' -f 1)
+    DEST=${ROOT}.py
 
-	if $QUICK && [ $BASENAME != "enlighten_layout.ui" ]
-	then
-    echo "skipping $FILE"
-    continue
-	fi
+    if $QUICK && [ $BASENAME != "enlighten_layout.ui" ]
+    then
+        echo "skipping $FILE"
+        continue
+    fi
 
 echo -n "converting $FILE"
 $UIC_PRE $UIC $FILE -o $DEST && convertToPy3 $DEST
