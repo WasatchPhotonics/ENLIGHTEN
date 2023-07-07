@@ -61,6 +61,8 @@ class LocalBaseline(EnlightenPluginBase):
         pr = request.processed_reading
         spectrum = pr.get_processed()
 
+        # if given a number: produce formated number (ex: 1,000,000)
+        # if given a string: it's a placeholder, just return it
         format_int = lambda i: f"{int(i):,}" if type(i) != str else i
 
         header = []
@@ -101,7 +103,7 @@ class LocalBaseline(EnlightenPluginBase):
             end_pixel = self.to_pixel(end)
 
             sub_spectrum = list(spectrum[start_pixel:end_pixel+1])
-            if sub_spectrum:
+            if end_pixel > start_pixel and sub_spectrum:
 
                 j = (x-start)/(end-start)
                 interpolated_baseline = sub_spectrum[0]*(1-j) + sub_spectrum[-1]*j
