@@ -103,7 +103,7 @@ class LocalBaseline(EnlightenPluginBase):
             end_pixel = self.to_pixel(end)
 
             sub_spectrum = list(spectrum[start_pixel:end_pixel+1])
-            if end_pixel > start_pixel and sub_spectrum:
+            if end_pixel > start_pixel and end > start and sub_spectrum:
 
                 j = (x-start)/(end-start)
                 interpolated_baseline = sub_spectrum[0]*(1-j) + sub_spectrum[-1]*j
@@ -128,6 +128,7 @@ class LocalBaseline(EnlightenPluginBase):
 
                 area = np.trapz(peak_region_subtracted, self.get_axis()[start_pixel:end_pixel])
             else:
+                peak = "--"
                 interpolated_baseline = "--"
                 area = "--"
         
