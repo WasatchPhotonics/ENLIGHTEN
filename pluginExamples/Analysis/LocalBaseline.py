@@ -138,8 +138,9 @@ class LocalBaseline(EnlightenPluginBase):
                 "%i: Peak (baseline subtracted)" % i, 
                 "%i: Peak Area (baseline subtracted)" % i
             ]
-            subtracted = peak - interpolated_baseline if str(interpolated_baseline) != "--" else -1
-            values += [ format_int(interpolated_baseline), format_int(peak), format_int(subtracted), format_int(area) ]
+
+            subtracted = format_int(peak - interpolated_baseline) if str(interpolated_baseline) != "--" else "--"
+            values += [ format_int(interpolated_baseline), format_int(peak), subtracted, format_int(area) ]
             set_meta("Baseline", interpolated_baseline)
             set_meta("OriginalPeak", peak)
             set_meta("PeakBaselineSubtracted", subtracted)
