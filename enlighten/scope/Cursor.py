@@ -42,30 +42,28 @@ class AxisConverter:
         return new_x
 
     def wavenum_to_pixels(self, x, spec):
-        log.debug(f"wave num to pixels called")
+        log.debug(f"wn2px: called for value {x}")
         specs = self.ctl.multispec.get_spectrometers()
         for spec in specs:
             wavenums = spec.settings.wavenumbers
-            log.debug(f"checking spec with wavenums {wavenums[0]} and {wavenums[-1]}")
+            log.debug(f"wn2px: checking spec with wavenums {wavenums[0]} and {wavenums[-1]}")
             if x > wavenums[0] and x <= wavenums[-1]:
-                x = np.searchsorted(wavenums, x, side="right")
-                log.debug(f"new x value is {x}")
+                x = np.searchsorted(wavenums, x)
+                log.debug(f"wn2px: new x value is {x}")
                 return x
 
     def wavelen_to_pixels(self, x, spec):
-        log.debug(f"wave len to pixels called for value {x}")
+        log.debug(f"wl2px: called for value {x}")
         specs = self.ctl.multispec.get_spectrometers()
         for spec in specs:
             wavelengths = spec.settings.wavelengths
-            log.debug(f"checking spec with wavelengths {wavelengths[0]} and {wavelengths[-1]}")
+            log.debug(f"wl2px: checking spec with wavelengths {wavelengths[0]} and {wavelengths[-1]}")
             if x > wavelengths[0] and x <= wavelengths[-1]:
-                x = np.searchsorted(wavelengths, x, side="right")
-                log.debug(f"new x value is {x}")
+                x = np.searchsorted(wavelengths, x)
+                log.debug(f"wl2px: new x value is {x}")
                 return x
 
-
 class Cursor:
-
     """
     Encapsulates the main Graph x-axis cursor (vertical red line).
     Note that StatusBar will register as an observer.

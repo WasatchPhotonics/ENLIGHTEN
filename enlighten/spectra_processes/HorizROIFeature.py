@@ -35,6 +35,7 @@ class HorizROIFeature(object):
 
         self.button = self.ctl.form.ui.pushButton_roi_toggle # compromise
 
+        log.debug("init: defaulting to enabled and user_requested_enabled (i.e. grey)")
         self.enabled = True
         self.user_requested_enabled = True
 
@@ -49,6 +50,7 @@ class HorizROIFeature(object):
         self.end   = pyqtgraph.InfiniteLine(movable=True, pen=self.ctl.gui.make_pen(color="lightsalmon"))
         self.lines = { "start": self.start, "end": self.end }
         for label, line in self.lines.items():
+            log.debug(f"instantiated {label}")
             line.setVisible(False)
             self.ctl.graph.add_item(line)
 
@@ -68,11 +70,6 @@ class HorizROIFeature(object):
 
         log.debug(f"toggle: user_requested_enabled = {self.user_requested_enabled}, enabled = {self.enabled}")
         
-        # re-center cursor if disabling ROI made current position fall off the graph
-        self.ctl.cursor.set_range(self.ctl.graph.generate_x_axis())
-        if self.ctl.cursor.is_outside_range():
-            self.ctl.cursor.center()
-
         self.update_visibility()
 
     ## provided for RichardsonLucy to flush its Gaussian cache
@@ -92,9 +89,11 @@ class HorizROIFeature(object):
                 line.setVisible(False)
             return
 
+        log.debug(f"update_visibility: setting enabled to user_requested_enabled {self.user_requested_enabled}")
         self.enabled = self.user_requested_enabled
 
         if spec is not None and spec.settings.eeprom.has_horizontal_roi():
+            log.debug(f"update_visibility: showing because spec and ROI")
             self.button.setVisible(True)
 
             if self.enabled:
@@ -105,13 +104,16 @@ class HorizROIFeature(object):
                 self.button.setToolTip("uncropped spectra shown (curtains indicate ROI limits)")
 
         else:
+            log.debug(f"update_visibility: hiding because no spec or no ROI")
+            if spec:
+                log.debug(f"update_visibility: roi = {spec.settings.eeprom.get_horizontal_roi()}")
             self.button.setVisible(False)
             self.enabled = False
 
         log.debug(f"update_visibility: user_requested_enabled = {self.user_requested_enabled}, enabled = {self.enabled}")
 
-        self.update_line(spec, "start", spec.settings.eeprom.roi_horizontal_start)
         self.update_line(spec, "end",   spec.settings.eeprom.roi_horizontal_end)
+        self.update_line(spec, "start", spec.settings.eeprom.roi_horizontal_start)
 
         for spec in self.ctl.multispec.get_spectrometers():
             self.ctl.graph.update_roi_regions(spec)
@@ -129,11 +131,13 @@ class HorizROIFeature(object):
         line = self.lines[label]
 
         if not self.enabled or x_axis is None or x_axis[-1] - x_axis[0] <= 0:
+            log.debug(f"update_line: hiding {label} because enabled {self.enabled} or bad x_axis")
             line.setVisible(False)
             return
 
         x = self.converter.convert(spec=spec, old_axis=common.Axes.PIXELS, new_axis=axis, x=pixel)
         if x is None:
+            log.debug(f"update_line: failed to convert {label} to axis {axis}, pixel {pixel}")
             return
 
         log.debug(f"update_line: updating {label} from pixel {pixel} to x {x} on axis {axis}")
@@ -148,16 +152,18 @@ class HorizROIFeature(object):
         if spec is None:
             return
 
-        thresh = self.end.getXPos() - 10 # don't really care which unit
-        if self.start.getXPos() < thresh:
-            log.debug(f"bumping start back down to {thresh}")
-            self.start.setValue(thresh)
+        x = self.start.getXPos()
+        limit = self.end.getXPos() - 10 # don't really care which unit
+        if x > limit:
+            log.debug(f"bumping start {x} back down to {limit}")
+            self.start.setValue(limit)
             return
 
         pixel = self.line_moved(spec, self.start)
         if pixel is None:
             return
 
+        log.debug(f"start_moved: setting roi_start to pixel {pixel} based on x {x}")
         spec.settings.eeprom.roi_horizontal_start = pixel
         self.ctl.graph.update_roi_regions(spec)
 
@@ -166,16 +172,18 @@ class HorizROIFeature(object):
         if spec is None:
             return
 
-        thresh = self.start.getXPos() + 10 # don't really care which unit
-        if self.end.getXPos() < thresh:
-            log.debug(f"bumping end back up to {thresh}")
-            self.end.setValue(thresh)
+        x = self.end.getXPos()
+        limit = self.start.getXPos() + 10 # don't really care which unit
+        if x < limit:
+            log.debug(f"bumping end back up to {limit} from {x}")
+            self.end.setValue(limit)
             return
 
-        pixel = self.line_moved(spec, self.start)
+        pixel = self.line_moved(spec, self.end)
         if pixel is None:
             return
 
+        log.debug(f"end_moved: setting roi_end to pixel {pixel} based on x {x}")
         spec.settings.eeprom.roi_horizontal_end = pixel
         self.ctl.graph.update_roi_regions(spec)
 
