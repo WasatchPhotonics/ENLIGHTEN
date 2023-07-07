@@ -131,16 +131,16 @@ class HorizROIFeature:
         line = self.lines[label]
 
         if not self.enabled or x_axis is None or x_axis[-1] - x_axis[0] <= 0:
-            log.debug(f"update_line: hiding {label} because enabled {self.enabled} or bad x_axis")
+            log.debug(f"update_line: MZ: hiding {label} because enabled {self.enabled} or bad x_axis")
             line.setVisible(False)
             return
 
         x = self.converter.convert(spec=spec, old_axis=common.Axes.PIXELS, new_axis=axis, x=pixel)
         if x is None:
-            log.debug(f"update_line: failed to convert {label} to axis {axis}, pixel {pixel}")
+            log.debug(f"update_line: MZ: failed to convert {label} to axis {axis}, pixel {pixel}")
             return
 
-        log.debug(f"update_line: updating {label} from pixel {pixel} to x {x} on axis {axis}")
+        log.debug(f"update_line: MZ: updating {label} from pixel {pixel} to x {x} on axis {axis}")
         line.setValue(x)
         line.setVisible(True)
 
@@ -153,17 +153,21 @@ class HorizROIFeature:
             return
 
         x = self.start.getXPos()
+        log.debug(f"start_moved_callback: MZ: x {x}")
+
         limit = self.end.getXPos() - 10 # don't really care which unit
         if x > limit:
-            log.debug(f"bumping start {x} back down to {limit}")
+            log.debug(f"start_moved_callback: MZ: bumping start {x} back down to {limit}")
             self.start.setValue(limit)
             return
 
-        pixel = self.line_moved(spec, self.start)
+        pixel = self.get_new_pixel(spec, self.start)
         if pixel is None:
+            log.error(f"start_moved_callback: MZ: get_new_pixel None (forcing to 0)")
+            self.start.setValue(self.ctl.graph.generate_x_axis()[0])
             return
 
-        log.debug(f"start_moved: setting roi_start to pixel {pixel} based on x {x}")
+        log.debug(f"start_moved_callback: MZ: setting roi_start to pixel {pixel} based on x {x}")
         spec.settings.eeprom.roi_horizontal_start = pixel
         self.ctl.graph.update_roi_regions(spec)
 
@@ -173,21 +177,26 @@ class HorizROIFeature:
             return
 
         x = self.end.getXPos()
+        log.debug(f"end_moved_callback: MZ: x {x}")
+
         limit = self.start.getXPos() + 10 # don't really care which unit
         if x < limit:
-            log.debug(f"bumping end back up to {limit} from {x}")
+            log.debug(f"end_moved_callback: MZ: bumping end back up to {limit} from {x}")
             self.end.setValue(limit)
             return
 
-        pixel = self.line_moved(spec, self.end)
+        pixel = self.get_new_pixel(spec, self.end)
         if pixel is None:
+            hi = spec.settings.pixels()
+            log.error(f"end_moved_callback: MZ: get_new_pixel None (forcing to {hi})")
+            self.end.setValue(self.ctl.graph.generate_x_axis()[-1])
             return
 
         log.debug(f"end_moved: setting roi_end to pixel {pixel} based on x {x}")
         spec.settings.eeprom.roi_horizontal_end = pixel
         self.ctl.graph.update_roi_regions(spec)
 
-    def line_moved(self, spec, line):
+    def get_new_pixel(self, spec, line):
         """ 
         The user dragged the line, so lookup the x-coordinate in the Graph 
         axis (wl, wn etc) and convert back to pixels so we can update the 
@@ -198,14 +207,21 @@ class HorizROIFeature:
             return
 
         if x_axis[-1] - x_axis[0] <= 0:
+            log.error(f"get_new_pixel: MZ: bad axis")
             return
 
         old_x = line.getXPos()
         pixel = self.converter.convert(spec=spec, old_axis=self.ctl.graph.current_x_axis, new_axis=common.Axes.PIXELS, x=old_x)
         if pixel is None:
+            log.error(f"get_new_pixel: MZ: failed to convert x {old_x}")
             return None
 
-        return round(pixel)
+        log.debug(f"get_new_pixel: MZ: converted x {old_x} to pixel {pixel}")
+        pixel = round(pixel)
+        pixel = max(pixel, 0)
+        pixel = min(pixel, spec.settings.pixels())
+        log.debug(f"get_new_pixel: MZ: cropped pixel to {pixel}")
+        return pixel
 
     ##
     # Called by LOTS of classes :-(

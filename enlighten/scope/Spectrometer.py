@@ -3,8 +3,10 @@ import logging
 import copy
 
 from PySide2 import QtGui
+import pyqtgraph
 
 from enlighten.SpectrometerApplicationState import SpectrometerApplicationState
+from enlighten.ui.Colors import Colors
 
 from wasatch.SpectrometerState     import SpectrometerState
 from wasatch.AbstractUSBDevice     import AbstractUSBDevice
@@ -262,16 +264,19 @@ class Spectrometer:
         except:
             log.error(f"Spectrometer {self} doesn't seem to have an accessible device_type")
 
-    ## @todo replace HorizROIFeature.lines and make LinearRegionItems movable
+    ## 
+    # @todo replace HorizROIFeature.lines and make LinearRegionItems movable
     def init_curtains(self):
 
         # copy the pen color so we can lighten it without changing original
-        region_color = QtGui.QColor(self.color.rgb())
+        region_color = Colors.QColor(self.color)
         region_color.setAlpha(20)
 
-        if self.settings.eeprom.has_horizontal_roi():
-            # initialize in pixel space (whether graphed in wavelengths or 
-            # wavenumbers, regions will have the SAME NUMBER of datapoints)
+        if not self.settings.eeprom.has_horizontal_roi():
+            self.roi_region_left = None
+            self.roi_region_right = None
+        else:
+            # horizontal ROI is always in pixel space 
             roi = self.settings.eeprom.get_horizontal_roi()
             self.roi_region_left = pyqtgraph.LinearRegionItem((0, roi.start), 
                                                               pen = region_color,

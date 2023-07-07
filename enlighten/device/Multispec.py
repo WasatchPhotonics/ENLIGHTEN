@@ -514,8 +514,13 @@ class Multispec(object):
         # initialize horizontal ROI "curtains"
         ########################################################################
 
+        log.debug("add: calling init_curtains")
         spec.init_curtains()
+
+        log.debug("add: calling update_roi_regions")
         self.graph.update_roi_regions(spec)
+
+        log.debug("add: back from scary changed stuff")
 
         # done
         self.update_widget()

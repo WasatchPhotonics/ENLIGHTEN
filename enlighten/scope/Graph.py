@@ -490,41 +490,53 @@ class Graph(object):
         if spec is None:
             return
 
-        # by default, hide the curtains
-        self.remove_roi_region(spec.roi_region_left)
-        self.remove_roi_region(spec.roi_region_right)
+        def clear(msg):
+            log.debug("update_roi_regions: MZ: " + msg)
+            self.remove_roi_region(spec.roi_region_left)
+            self.remove_roi_region(spec.roi_region_right)
 
         if not spec.settings.eeprom.has_horizontal_roi():
-            # log.debug("hiding curtains (no ROI to show)")
+            clear("hiding curtains (no ROI to show)")
             return
 
         if not self.horiz_roi:
-            # log.debug("hiding curtains (no HorizROIFeature object)")
+            clear("hiding curtains (no HorizROIFeature object)")
             return
 
         if self.horiz_roi.enabled:
-            # log.debug("hiding curtains (HorizROIFeature.enabled True), meaning fringes should be hidden")
+            clear("hiding curtains (HorizROIFeature.enabled True), meaning fringes should be hidden")
             return
 
-        # log.debug("showing curtains, because HorizROIFeature.enabled False")
+        log.debug("showing curtains, because HorizROIFeature.enabled False")
 
         roi = spec.settings.eeprom.get_horizontal_roi()
         axis = self.generate_x_axis(cropped=False)
 
-        log.debug(f"update_roi_regions: roi {roi}, axis {len(axis)} elements")
+        log.debug(f"update_roi_regions: MZ: roi {roi}, axis {len(axis)} elements, start {roi.start}, end {roi.end}")
 
         spec.roi_region_left .setRegion((axis[0],       axis[roi.start]))
         spec.roi_region_right.setRegion((axis[roi.end], axis[-1]       ))
 
-        if roi.start == 0:
+        # automatically make regions invisible if they actually extend to/past 
+        # the detector edge
+        #
+        # QUESTION: MZ: how is setOpacity(0) different from remote_roi_region()?
+        #               why are we ADDING an opaque region, if I'm reading this
+        #               right?
+        if roi.start <= 0:
+            log.debug(f"update_roi_regions: MZ: opaquing left")
             spec.roi_region_left.setOpacity(0)
         else:
+            log.debug(f"update_roi_regions: MZ: showing left")
             spec.roi_region_left.setOpacity(1)
 
         if roi.end >= len(axis):
+            log.debug(f"update_roi_regions: MZ: opaquing right")
             spec.roi_region_right.setOpacity(0)
         else:
+            log.debug(f"update_roi_regions: MZ: showing right")
             spec.roi_region_right.setOpacity(1)
 
+        log.debug(f"update_roi_regions: MZ: re-adding updated regions")
         self.add_roi_region(spec.roi_region_left)
         self.add_roi_region(spec.roi_region_right)

@@ -1,5 +1,6 @@
 import logging
 import colorsys
+from PySide2 import QtGui
 
 from enlighten.data.ColorNames import ColorNames
 
@@ -85,3 +86,13 @@ class Colors(object):
         @returns None if not configured (most have defaults tho)
         """
         return self.config.get("graphs", "%s_pen_color" % name)
+
+    ## 
+    # Generate a QColor from the passed QColor or hex string
+    # @static
+    def QColor(rhs):
+        if type(rhs) is str:
+            return QtGui.QColor(rhs)
+        elif type(rhs) is QtGui.QColor:
+            return QtGui.QColor(rhs.rgb())
+        log.error(f"unknown color type: {type(rhs)}")
