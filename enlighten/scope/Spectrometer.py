@@ -2,6 +2,8 @@ import datetime
 import logging
 import copy
 
+from PySide2 import QtGui
+
 from enlighten.SpectrometerApplicationState import SpectrometerApplicationState
 
 from wasatch.SpectrometerState     import SpectrometerState
@@ -63,18 +65,21 @@ log = logging.getLogger(__name__)
 #
 # @note fair bit of Controller can probably be moved into here
 # @note seems save to deepcopy and pass to plugins
-class Spectrometer(object):
+# @todo consider moving to enlighten.device
+class Spectrometer:
     
     def clear(self):
         self.device = None
         self.device_id = None
         self.label = None
-        self.assigned_color = None
         self.curve = None
+        self.color = None
         self.app_state = None
         self.wp_model_info = None
         self.settings = None
         self.next_expected_acquisition_timestamp = None
+        self.roi_region_left = None
+        self.roi_region_right = None
 
     ##
     # @param device  a wasatch.WasatchDeviceWrapper.WasatchDeviceWrapper
@@ -256,3 +261,23 @@ class Spectrometer(object):
             return self.device.wrapper_worker.connected_device.hardware.device_type
         except:
             log.error(f"Spectrometer {self} doesn't seem to have an accessible device_type")
+
+    ## @todo replace HorizROIFeature.lines and make LinearRegionItems movable
+    def init_curtains(self):
+
+        # copy the pen color so we can lighten it without changing original
+        region_color = QtGui.QColor(self.color.rgb())
+        region_color.setAlpha(20)
+
+        if self.settings.eeprom.has_horizontal_roi():
+            # initialize in pixel space (whether graphed in wavelengths or 
+            # wavenumbers, regions will have the SAME NUMBER of datapoints)
+            roi = self.settings.eeprom.get_horizontal_roi()
+            self.roi_region_left = pyqtgraph.LinearRegionItem((0, roi.start), 
+                                                              pen = region_color,
+                                                              brush = region_color,
+                                                              movable = False)
+            self.roi_region_right = pyqtgraph.LinearRegionItem((roi.end, self.settings.eeprom.active_pixels_horizontal),
+                                                              pen = region_color,
+                                                              brush = region_color,
+                                                              movable = False)

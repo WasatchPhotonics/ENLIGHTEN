@@ -28,7 +28,7 @@ log = logging.getLogger(__name__)
 #     button CSS:    gray        red
 #     crop:          yes         no
 #
-class HorizROIFeature(object):
+class HorizROIFeature:
     
     def __init__(self, ctl):
         self.ctl = ctl
