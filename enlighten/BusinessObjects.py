@@ -1,4 +1,6 @@
 import logging
+from PySide2.QtGui import QColor
+from PySide2.QtCore import *
 
 log = logging.getLogger(__name__)
 
@@ -87,6 +89,9 @@ class BusinessObjects:
         log.debug(s)
         log.debug("=" * len(s))
         log.debug("")
+
+        self.controller.splash.showMessage(s, alignment=Qt.AlignHCenter | Qt.AlignBottom, color=QColor("white"))
+        self.controller.app.processEvents()
 
     def create_first(self):
         """

@@ -460,13 +460,15 @@ class Measurement(object):
         """
         log.debug(f"expand_template: starting with template {template}")
         while True:
-            m = re.search(r"{([a-z0-9_ ]+)}", template, re.IGNORECASE)
+            # macros look like {integration_time_ms} or {gain_db:0.1f}
+            m = re.search(r"{([a-z0-9_ ]+)(:\d*\.\d*f)?}", template, re.IGNORECASE)
             if m is None:
                 return template
 
+            orig = m.group(0)
             macro = m.group(1)
+            fmt = "{0:%s}" % m.group(2)[1:] if m.group(2) else None
             value = None
-            fmt = None
 
             ####################################################################
             # macro-only fields (don't map to existing data)
@@ -486,10 +488,7 @@ class Measurement(object):
             elif macro == "mm": value = self.timestamp.strftime("%M")
             elif macro == "ss": value = self.timestamp.strftime("%S")
             elif macro == "ffffff": value = self.timestamp.strftime("%f")
-
-            elif macro == "integration_time_sec":
-                value = self.settings.state.integration_time_ms / 1000.0
-                fmt = "{0:.3f}"
+            elif macro == "integration_time_sec": value = self.settings.state.integration_time_ms / 1000.0
 
             ####################################################################
             # pull from measurement data
@@ -508,14 +507,18 @@ class Measurement(object):
                 if fmt is None:
                     if macro in ['gain_db']:
                         fmt = "{0:.1f}"
-                    elif 'excitation' in macro:
+                    elif 'excitation' in macro or macro in ["integration_time_sec"]:
                         fmt = "{0:.3f}"
                     else:
                         fmt = "{0:.2f}"
-                value = fmt.format(value)
+                try:
+                    value = fmt.format(value)
+                except ValueError:
+                    log.error(f"unable to format value {value} as {fmt}", exc_info=1)
+                    value = macro
 
-            template = template.replace("{%s}" % macro, str(value))
-            log.debug(f"expand_template: {macro} -> {value} (now {template})")
+            template = template.replace(orig, str(value))
+            log.debug(f"expand_template: {orig} -> {value} (now {template})")
 
     # Note that this wraps the prefix and suffix around the expanded template.
     # Prefix and Suffix are not retained in manually-renamed measurements (ctrl-E).

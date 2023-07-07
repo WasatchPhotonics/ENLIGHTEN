@@ -897,12 +897,9 @@ class PluginController:
         self.table_view = QtWidgets.QTableView()
         self.table_view.setAccessibleName("Pandas Output")
 
-        # set stretch factor of scope to 1
-        # tableview stretch defaults to 0, so it does not stretch
-        self.layout_graphs.setRowStretch(1, 1)       
-
         self.layout_graphs.addWidget(self.table_view, 3, 0, 1, 3)
         self.layout_graphs.setRowMinimumHeight(3, 100)
+        self.layout_graphs.setRowStretch(3, 0)
 
     def create_graph_curves(self, name, graph):
         if name in self.plugin_curves.keys():

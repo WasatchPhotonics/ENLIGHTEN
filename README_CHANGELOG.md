@@ -11,7 +11,7 @@
             - added filename template
             - macros now work in export filename components
             - support Reading attributes
-            - improved floating-point precision
+            - user-configurable floating-point precision
             - added date/time components ({YYYY}, {hh} etc)
             - added file_timestamp, integration_time_sec macros
     - persistence
@@ -25,6 +25,7 @@
         - keyboard shortcuts
             - added ctrl-G/N/T per https://www.goodreads.com/quotes/9934315-it-is-a-curious-fact-and-one-to-which-no
             - added F1 for help
+        - splash screen messages
     - plugin improvements
         - updated Savitzky-Golay
         - updated StatsBuffer
@@ -37,6 +38,8 @@
         - technique-vs-view fixes
         - vignette-vs-crop fixes
         - static analysis support
+    - devtools
+        - pyusb-virtSpec support
 - 2023-06-14 4.0.12
     - persistence
         - fixed Configuration defaults
