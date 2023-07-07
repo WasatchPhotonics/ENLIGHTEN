@@ -61,7 +61,7 @@ class LocalBaseline(EnlightenPluginBase):
         pr = request.processed_reading
         spectrum = pr.get_processed()
 
-        format_int = lambda i: f"{int(i):,}"
+        format_int = lambda i: f"{int(i):,}" if type(i) != str else i
 
         header = []
         values = []
