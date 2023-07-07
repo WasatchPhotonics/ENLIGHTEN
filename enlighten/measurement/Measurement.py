@@ -465,8 +465,9 @@ class Measurement(object):
             if m is None:
                 return template
 
+            orig = m.group(0)
             macro = m.group(1)
-            fmt = m.group(1)[1:] if m.group(1) else None
+            fmt = "{0:%s}" % m.group(2)[1:] if m.group(2) else None
             value = None
 
             ####################################################################
@@ -516,8 +517,8 @@ class Measurement(object):
                     log.error(f"unable to format value {value} as {fmt}", exc_info=1)
                     value = macro
 
-            template = template.replace("{%s}" % macro, str(value))
-            log.debug(f"expand_template: {macro} -> {value} (now {template})")
+            template = template.replace(orig, str(value))
+            log.debug(f"expand_template: {orig} -> {value} (now {template})")
 
     # Note that this wraps the prefix and suffix around the expanded template.
     # Prefix and Suffix are not retained in manually-renamed measurements (ctrl-E).
