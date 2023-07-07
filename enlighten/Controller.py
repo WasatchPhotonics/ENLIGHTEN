@@ -96,6 +96,7 @@ class Controller:
                 stylesheet_path   = None,
                 set_all_dfu       = False,
                 form              = None,
+                splash            = None,
                 headless          = False,
             ):
         """
@@ -126,6 +127,7 @@ class Controller:
         self.set_all_dfu            = set_all_dfu
         self.headless               = headless
         self.spec_timeout           = 30
+        self.splash                 = splash
         self.form                   = form
 
         if form is None:
