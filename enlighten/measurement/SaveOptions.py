@@ -407,8 +407,8 @@ class SaveOptions():
         self.le_note.selectAll()
 
     # static
-    def get_default_configuration(d):
-        d["save"] = {
+    def get_default_configuration():
+        return {
             "order": "col",
             "append": False,
 

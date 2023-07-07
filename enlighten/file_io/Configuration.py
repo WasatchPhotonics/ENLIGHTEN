@@ -378,7 +378,7 @@ class Configuration:
     def load_defaults(self):
         self.defaults = {}
 
-        SaveOptions.get_default_configuration(self.defaults)
+        self.defaults["save"] = SaveOptions.get_default_configuration()
 
         self.defaults["batch"] = {
             "enabled": False,
