@@ -1,5 +1,7 @@
 # Add to Documentation
 
+SB: This should be a guide explaning how to contribute to our documentation. Instead, this appears to be something that should be added to the docs as in "note to self, add this to the documentation later". Leaving as is for now.
+
 ## Stylesheets
 
 ENLIGHTEN allows users to customize the GUI look-and-feel to a degree.
