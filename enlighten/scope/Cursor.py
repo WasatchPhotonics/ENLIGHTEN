@@ -34,6 +34,7 @@ class Cursor(object):
         self.observers = []
 
         # place a movable vertical line on the scope graph
+        # Hint for #156: make this field into a list of InfiniteLines
         self.cursor = pyqtgraph.InfiniteLine(movable=True, pen=self.graph.gui.make_pen(widget="scope_cursor"))
         self.cursor.setVisible(False)
         self.graph.add_item(self.cursor)
