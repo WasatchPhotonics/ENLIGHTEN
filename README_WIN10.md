@@ -1,5 +1,7 @@
 # Windows 10 Development Environment
 
+[This has been moved to the wiki](https://github.com/WasatchPhotonics/ENLIGHTEN/wiki/Build-from-source#windows-10).
+
 ## Dependencies
 
 The following installation sequence is recommended:
