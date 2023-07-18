@@ -47,11 +47,10 @@ class Multispec(object):
             graph,
             gui,
             layout_colors,
-            model_info,
             reinit_callback,
             stylesheets,
             eject_button,
-            controller_disconnect,
+            ctl,
 
             lockable_widgets):
 
@@ -66,10 +65,9 @@ class Multispec(object):
         self.gui                   = gui
         self.reinit_callback       = reinit_callback      # Controller.initialize_new_device()
         self.layout_colors         = layout_colors
-        self.model_info            = model_info
         self.stylesheets           = stylesheets
         self.eject_button          = eject_button
-        self.controller_disconnect = controller_disconnect
+        self.ctl                   = ctl
         self.lockable_widgets      = lockable_widgets
 
         self.device_id = None
@@ -298,7 +296,7 @@ class Multispec(object):
         if spec is None:
             return
         log.critical(f"user clicked eject on {spec}")
-        self.controller_disconnect(spec)
+        self.ctl.disconnect_device(spec)
         self.ejected.add(spec.device.device_id)
 
     def update_hide_others(self):
@@ -468,7 +466,7 @@ class Multispec(object):
         device_id = device.device_id
 
         log.debug("Multispec.add: instantiating Spectrometer for device_id %s", device_id)
-        spec = Spectrometer(device, self.model_info)
+        spec = Spectrometer(device, self.ctl)
 
         log.debug("Multispec.add: adding to self.spectrometers: %s", device_id)
         self.spectrometers[device_id] = spec

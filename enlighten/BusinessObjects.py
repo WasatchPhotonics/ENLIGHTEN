@@ -229,11 +229,10 @@ class BusinessObjects:
             graph                       = ctl.graph,
             gui                         = ctl.gui,
             layout_colors               = sfu.horizontalLayout_multiSpec_colors,
-            model_info                  = ctl.model_info,
             reinit_callback             = ctl.initialize_new_device,
             stylesheets                 = ctl.stylesheets,
             eject_button                = sfu.pushButton_eject,
-            controller_disconnect       = ctl.disconnect_device,
+            ctl                         = ctl,
 
 			# Essentially, these are widgets corresponding to SpectrometerState fields,
             # SpectrometerApplicationState fields, or change_device_setting() keys
