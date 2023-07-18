@@ -81,7 +81,11 @@ class ScanAveragingFeature(object):
 
         # update label
         count = max(1, min(count, spec.settings.state.scans_to_average))
-        self.label.setVisible(True)
+
+        # patch #179
+        if count == 1:
+            self.label.setVisible(True)
+
         self.label.setText("Collected %d of %d" % (count, spec.settings.state.scans_to_average))
 
     def up(self):

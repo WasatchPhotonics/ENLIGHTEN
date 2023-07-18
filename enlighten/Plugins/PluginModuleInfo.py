@@ -57,9 +57,6 @@ class PluginModuleInfo:
     # @throws all kinds of exceptions, which we let PluginController catch so it
     #         can display them to the user / plugin author
     def load(self):
-        if self.is_loaded():
-            log.error("declining to re-load %s", self.full_module_name)
-            return True
         
         # log.debug("loading %s", self.full_module_name)
         self.module_specification = importlib.util.spec_from_file_location(self.full_module_name, self.pathname)
