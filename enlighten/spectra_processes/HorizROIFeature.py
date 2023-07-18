@@ -1,9 +1,6 @@
 import pyqtgraph
 import logging
 
-from enlighten.scope.Cursor import AxisConverter
-from enlighten import common
-
 log = logging.getLogger(__name__)
 
 ##
@@ -42,25 +39,10 @@ class HorizROIFeature:
         self.observers = set()
         self.ctl.graph.register_observer("change_axis", self.change_axis_callback)
 
-        self.converter = AxisConverter(ctl)
-
-        # create lines to manipulate the ROI (could try to make these 
-        # actual Cursor objects later, not sure it's worth it now)
-        self.start = pyqtgraph.InfiniteLine(movable=True, pen=self.ctl.gui.make_pen(color="lightsalmon"))
-        self.end   = pyqtgraph.InfiniteLine(movable=True, pen=self.ctl.gui.make_pen(color="lightsalmon"))
-        self.lines = { "start": self.start, "end": self.end }
-        for label, line in self.lines.items():
-            log.debug(f"instantiated {label}")
-            line.setVisible(False)
-            self.ctl.graph.add_item(line)
-
         # self-register with scope.Graph (remove when refactoring Graph)
         self.ctl.graph.horiz_roi = self
 
-        # bindings
-        self.button .clicked            .connect(self.toggle)
-        self.start  .sigPositionChanged .connect(self.start_moved_callback)
-        self.end    .sigPositionChanged .connect(self.end_moved_callback)
+        self.button.clicked.connect(self.toggle)
 
         self.update_visibility()
 
@@ -85,8 +67,6 @@ class HorizROIFeature:
     def update_visibility(self):
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
-            for label, line in self.lines.items():
-                line.setVisible(False)
             return
 
         log.debug(f"update_visibility: setting enabled to user_requested_enabled {self.user_requested_enabled}")
@@ -112,116 +92,11 @@ class HorizROIFeature:
 
         log.debug(f"update_visibility: user_requested_enabled = {self.user_requested_enabled}, enabled = {self.enabled}")
 
-        self.update_line(spec, "end",   spec.settings.eeprom.roi_horizontal_end)
-        self.update_line(spec, "start", spec.settings.eeprom.roi_horizontal_start)
-
         for spec in self.ctl.multispec.get_spectrometers():
             self.ctl.graph.update_roi_regions(spec)
 
         for callback in self.observers:
             callback()
-
-    def update_line(self, spec, label, pixel):
-        """ 
-        We're doing update_visibility and we want to make sure each line is set
-        to the pixel specified in the ROI.
-        """
-        axis = self.ctl.graph.current_x_axis
-        x_axis = self.ctl.graph.generate_x_axis()
-        line = self.lines[label]
-
-        if not self.enabled or x_axis is None or x_axis[-1] - x_axis[0] <= 0:
-            log.debug(f"update_line: MZ: hiding {label} because enabled {self.enabled} or bad x_axis")
-            line.setVisible(False)
-            return
-
-        x = self.converter.convert(spec=spec, old_axis=common.Axes.PIXELS, new_axis=axis, x=pixel)
-        if x is None:
-            log.debug(f"update_line: MZ: failed to convert {label} to axis {axis}, pixel {pixel}")
-            return
-
-        log.debug(f"update_line: MZ: updating {label} from pixel {pixel} to x {x} on axis {axis}")
-        line.setValue(x)
-        line.setVisible(True)
-
-    def change_axis_callback(self, old_axis, new_axis):
-        self.update_visibility()
-
-    def start_moved_callback(self, pos):
-        spec = self.ctl.multispec.current_spectrometer()
-        if spec is None:
-            return
-
-        x = self.start.getXPos()
-        log.debug(f"start_moved_callback: MZ: x {x}")
-
-        limit = self.end.getXPos() - 10 # don't really care which unit
-        if x > limit:
-            log.debug(f"start_moved_callback: MZ: bumping start {x} back down to {limit}")
-            self.start.setValue(limit)
-            return
-
-        pixel = self.get_new_pixel(spec, self.start)
-        if pixel is None:
-            log.error(f"start_moved_callback: MZ: get_new_pixel None (forcing to 0)")
-            self.start.setValue(self.ctl.graph.generate_x_axis()[0])
-            return
-
-        log.debug(f"start_moved_callback: MZ: setting roi_start to pixel {pixel} based on x {x}")
-        spec.settings.eeprom.roi_horizontal_start = pixel
-        self.ctl.graph.update_roi_regions(spec)
-
-    def end_moved_callback(self, pos):
-        spec = self.ctl.multispec.current_spectrometer()
-        if spec is None:
-            return
-
-        x = self.end.getXPos()
-        log.debug(f"end_moved_callback: MZ: x {x}")
-
-        limit = self.start.getXPos() + 10 # don't really care which unit
-        if x < limit:
-            log.debug(f"end_moved_callback: MZ: bumping end back up to {limit} from {x}")
-            self.end.setValue(limit)
-            return
-
-        pixel = self.get_new_pixel(spec, self.end)
-        if pixel is None:
-            hi = spec.settings.pixels()
-            log.error(f"end_moved_callback: MZ: get_new_pixel None (forcing to {hi})")
-            self.end.setValue(self.ctl.graph.generate_x_axis()[-1])
-            return
-
-        log.debug(f"end_moved: setting roi_end to pixel {pixel} based on x {x}")
-        spec.settings.eeprom.roi_horizontal_end = pixel
-        self.ctl.graph.update_roi_regions(spec)
-
-    def get_new_pixel(self, spec, line):
-        """ 
-        The user dragged the line, so lookup the x-coordinate in the Graph 
-        axis (wl, wn etc) and convert back to pixels so we can update the 
-        EEPROM's ROI 
-        """
-        x_axis = self.ctl.graph.generate_x_axis() # assume selected spectrometer
-        if x_axis is None:
-            return
-
-        if x_axis[-1] - x_axis[0] <= 0:
-            log.error(f"get_new_pixel: MZ: bad axis")
-            return
-
-        old_x = line.getXPos()
-        pixel = self.converter.convert(spec=spec, old_axis=self.ctl.graph.current_x_axis, new_axis=common.Axes.PIXELS, x=old_x)
-        if pixel is None:
-            log.error(f"get_new_pixel: MZ: failed to convert x {old_x}")
-            return None
-
-        log.debug(f"get_new_pixel: MZ: converted x {old_x} to pixel {pixel}")
-        pixel = round(pixel)
-        pixel = max(pixel, 0)
-        pixel = min(pixel, spec.settings.pixels())
-        log.debug(f"get_new_pixel: MZ: cropped pixel to {pixel}")
-        return pixel
 
     ##
     # Called by LOTS of classes :-(

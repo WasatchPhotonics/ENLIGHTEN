@@ -7,6 +7,8 @@ import pyqtgraph
 
 from enlighten.SpectrometerApplicationState import SpectrometerApplicationState
 from enlighten.ui.Colors import Colors
+from enlighten.scope.Cursor import AxisConverter
+from enlighten import common
 
 from wasatch.SpectrometerState     import SpectrometerState
 from wasatch.AbstractUSBDevice     import AbstractUSBDevice
@@ -86,10 +88,11 @@ class Spectrometer:
     ##
     # @param device  a wasatch.WasatchDeviceWrapper.WasatchDeviceWrapper
     # @see wasatch.DeviceID.DeviceID
-    def __init__(self, device, model_info):
+    def __init__(self, device, ctl):
         self.clear()
 
         self.device = device # a WasatchDeviceWrapper
+        self.ctl = ctl
 
         self.device_id = self.device.device_id 
         self.settings = self.device.settings
@@ -97,7 +100,7 @@ class Spectrometer:
         self.roi_region_right = None
         self.app_state = SpectrometerApplicationState(self.device_id)
 
-        self.wp_model_info = model_info.get_by_model(self.settings.full_model())
+        self.wp_model_info = ctl.model_info.get_by_model(self.settings.full_model())
         log.debug(f"best-guess ModelInfo: {self.wp_model_info}")
 
         # prefer EEPROM for FWHM, or lookup from model
@@ -105,12 +108,13 @@ class Spectrometer:
             self.fwhm = self.settings.eeprom.avg_resolution
             log.debug("using FWHM from EEPROM: %f", self.fwhm)
         else:
-            self.fwhm = model_info.model_fwhm.get_by_model(self.settings.full_model())
+            self.fwhm = ctl.model_info.model_fwhm.get_by_model(self.settings.full_model())
             log.debug("using FWHM from lookup table: %s", self.fwhm)
 
         self.settings.eeprom_backup = copy.deepcopy(self.settings.eeprom)
 
         self.label = "%s (%s)" % (self.settings.eeprom.serial_number, self.settings.full_model())
+        self.converter = AxisConverter(ctl)
 
         self.closing = False
 
@@ -264,8 +268,6 @@ class Spectrometer:
         except:
             log.error(f"Spectrometer {self} doesn't seem to have an accessible device_type")
 
-    ## 
-    # @todo replace HorizROIFeature.lines and make LinearRegionItems movable
     def init_curtains(self):
 
         # copy the pen color so we can lighten it without changing original
@@ -281,8 +283,84 @@ class Spectrometer:
             self.roi_region_left = pyqtgraph.LinearRegionItem((0, roi.start), 
                                                               pen = region_color,
                                                               brush = region_color,
-                                                              movable = False)
+                                                              movable = True,
+                                                              swapMode = "block")
             self.roi_region_right = pyqtgraph.LinearRegionItem((roi.end, self.settings.eeprom.active_pixels_horizontal),
                                                               pen = region_color,
                                                               brush = region_color,
-                                                              movable = False)
+                                                              movable = True,
+                                                              swapMode = "block")
+
+            self.roi_region_left.sigRegionChangeFinished.connect(self.left_region_changed_callback)
+            self.roi_region_right.sigRegionChangeFinished.connect(self.right_region_changed_callback)
+
+            ####################################################################
+            # this reaches into pyqtgraph.LinearRegionItem and does some stuff
+            # we're probably not supposed to
+            ####################################################################
+
+            # lock the left-edge of the left region (always 0) 
+            # and the right-edge of the right region (always 'pixels')
+            self.roi_region_left.lines[0].setMovable(False)
+            self.roi_region_right.lines[1].setMovable(False)
+
+            # also, don't allow the "regions" (the curtain objects themselves) 
+            # to be dragged left or right (just the inner edge of each)
+            self.roi_region_left.movable = False
+            self.roi_region_right.movable = False
+    
+    def left_region_changed_callback(self):
+        log.debug("left region changed")
+        (start, end) = self.roi_region_left.getRegion()
+        log.debug(f"new left bounds: {start}, {end}")
+
+        pixel = self.get_new_pixel(end)
+        if pixel is None:
+            return
+    
+        log.debug(f"left_region_changed_callback: MZ: setting roi_horizontal_start to pixel {pixel} based on region end {end}")
+        self.settings.eeprom.roi_horizontal_start = pixel
+        self.ctl.graph.update_roi_regions(self)
+
+    def right_region_changed_callback(self):
+        log.debug("right region changed")
+        (start, end) = self.roi_region_right.getRegion()
+        log.debug(f"new right bounds: {start}, {end}")
+
+        pixel = self.get_new_pixel(start)
+        if pixel is None:
+            return
+    
+        log.debug(f"right_region_changed_callback: MZ: setting roi_horizontal_end to pixel {pixel} based on region start {start}")
+        self.settings.eeprom.roi_horizontal_end = pixel
+        self.ctl.graph.update_roi_regions(self)
+
+    def get_x_from_pixel(self, px):
+        x_axis = self.ctl.generate_x_axis(spec=self) 
+        if x_axis is None:
+            log.error(f"get_x_from_pixel: no x_axis from px {px}")
+            return 0
+        else:
+            return x_axis[px]
+
+    def get_new_pixel(self, x):
+        """ 
+        The user dragged the line, so lookup the x-coordinate in the Graph 
+        axis (wl, wn etc) and convert back to pixels so we can update the 
+        EEPROM's ROI 
+        """
+        x_axis = self.ctl.generate_x_axis(spec=self)
+        if x_axis is None:
+            return
+    
+        pixel = self.converter.convert(spec=self, old_axis=self.ctl.graph.current_x_axis, new_axis=common.Axes.PIXELS, x=x)
+        if pixel is None:
+            log.error(f"get_new_pixel: MZ: failed to convert x {x}")
+            return None
+    
+        log.debug(f"get_new_pixel: MZ: converted x {x} to pixel {pixel}")
+        pixel = round(pixel)
+        pixel = max(pixel, 0)
+        pixel = min(pixel, self.settings.pixels())
+        log.debug(f"get_new_pixel: MZ: cropped pixel to {pixel}")
+        return pixel
