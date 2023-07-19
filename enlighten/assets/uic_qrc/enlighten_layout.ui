@@ -8398,7 +8398,7 @@ QComboBox QListView
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>669</width>
+              <width>562</width>
               <height>1303</height>
              </rect>
             </property>
@@ -14141,9 +14141,9 @@ p, li { white-space: pre-wrap; }
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>0</y>
+                <y>-950</y>
                 <width>240</width>
-                <height>2662</height>
+                <height>2692</height>
                </rect>
               </property>
               <property name="sizePolicy">
@@ -16294,38 +16294,6 @@ p, li { white-space: pre-wrap; }
                         </item>
                         <item>
                          <layout class="QGridLayout" name="gridLayout_7">
-                          <item row="1" column="0">
-                           <widget class="QCheckBox" name="checkBox_cursor_scope_enabled">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
-                            <property name="toolTip">
-                             <string>Dis/enable a horizontal sliding cursor on the x-axis</string>
-                            </property>
-                            <property name="text">
-                             <string>Cursor</string>
-                            </property>
-                            <property name="checked">
-                             <bool>false</bool>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="0" column="0">
-                           <widget class="QCheckBox" name="checkBox_graph_marker">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
-                            <property name="text">
-                             <string>Marker</string>
-                            </property>
-                           </widget>
-                          </item>
                           <item row="1" column="1">
                            <widget class="QDoubleSpinBox" name="doubleSpinBox_cursor_scope">
                             <property name="enabled">
@@ -16371,6 +16339,19 @@ p, li { white-space: pre-wrap; }
                             </property>
                             <property name="value">
                              <double>500.000000000000000</double>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="0" column="0">
+                           <widget class="QCheckBox" name="checkBox_graph_marker">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="text">
+                             <string>Marker</string>
                             </property>
                            </widget>
                           </item>
@@ -16473,6 +16454,35 @@ p, li { white-space: pre-wrap; }
                              </widget>
                             </item>
                            </layout>
+                          </item>
+                          <item row="1" column="0">
+                           <widget class="QCheckBox" name="checkBox_cursor_scope_enabled">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="toolTip">
+                             <string>Dis/enable a horizontal sliding cursor on the x-axis</string>
+                            </property>
+                            <property name="text">
+                             <string>Cursor</string>
+                            </property>
+                            <property name="checked">
+                             <bool>false</bool>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="2" column="0" colspan="2">
+                           <widget class="QCheckBox" name="checkBox_edit_horiz_roi">
+                            <property name="whatsThis">
+                             <string>In Expert Mode, allows you to configure the horizontal Region-of-Interest (ROI) used to crop the ends of the spectrum.</string>
+                            </property>
+                            <property name="text">
+                             <string>Edit Horiz ROI</string>
+                            </property>
+                           </widget>
                           </item>
                          </layout>
                         </item>
