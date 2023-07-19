@@ -216,7 +216,7 @@ class Controller:
 
         # instantiate major business objects (require access to populated placeholders)
         self.business_objects.create_rest()
-        self.graph.rehide_curves()
+        self.rehide_curves()
 
         # configure acquisition loop
         self.setup_main_event_loops() # MZ: move to end?

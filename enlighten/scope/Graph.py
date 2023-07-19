@@ -37,58 +37,40 @@ log = logging.getLogger(__name__)
 class Graph(object):
 
     ##
-    # This can be constructed in two ways.  The Controller passes in the
-    # StackedWidget and expects the Graph to populate its own chart and legend.
-    # In contrast, PluginController creates the chart and legend itself, and
-    # passes them in.  Perhaps we need a GraphFactory?
+    # This can be constructed in two ways. By default, the Graph populates its
+    # own chart and legend (the one used by most of ENLIGHTEN). However, it
+    # also allows an external caller (like PluginController) to pass-in an
+    # already-constructed chart and legend. Perhaps we need a GraphFactory?
     def __init__(self,
-            clipboard                   = None,
-            gui                         = None,
-                                        
-            button_copy                 = None,
-            button_invert               = None,
-            button_lock_axes            = None,
-            button_zoom                 = None,
-            cb_marker                   = None,
-            combo_axis                  = None,
-            generate_x_axis             = None, # Graph makes this available to many other classes
-            hide_when_zoomed            = None,
-            init_graph_axis             = True,   
-            layout                      = None, # passed by Controller/BusinessObjects
-            legend                      = None, # passed by PluginController
-            lock_marker                 = False,# passed by PluginController (for 'xy' graphs)
-            plot                        = None, # passed by PluginController (pyqtgraph.PlotWidget)
-            rehide_curves               = None,     
-            stacked_widget              = None, # by Controller/BusinessObjects
+            ctl,
+
+            legend                      = None,
+            lock_marker                 = False, # for 'xy' graphs
+            plot                        = None,  # pyqtgraph.PlotWidget
             ):               
 
-        self.clipboard                  = clipboard
-        self.gui                        = gui
-
-        self.button_copy                = button_copy
-        self.button_invert              = button_invert
-        self.button_lock_axes           = button_lock_axes
-        self.button_zoom                = button_zoom
-        self.cb_marker                  = cb_marker
-        self.combo_axis                 = combo_axis
-        self.generate_x_axis            = generate_x_axis
-        self.hide_when_zoomed           = hide_when_zoomed
-        self.layout                     = layout
+        self.ctl                        = ctl
         self.legend                     = legend
         self.lock_marker                = lock_marker
         self.plot                       = plot
-        self.rehide_curves              = rehide_curves
-        self.stacked_widget             = stacked_widget
 
-        # these are passed post-construction, or not at all (could add to ctor parameters anyway)
-        self.multispec    = None 
-        self.horiz_roi    = None 
-        self.measurements = None
+        # for now, retain legacy widget aliases
+        sfu = ctl.form.ui
+        self.button_copy                = sfu.pushButton_copy_to_clipboard
+        self.button_invert              = sfu.pushButton_invert_x_axis
+        self.button_lock_axes           = sfu.pushButton_lock_axes
+        self.button_zoom                = sfu.pushButton_zoom_graph
+        self.cb_marker                  = sfu.checkBox_graph_marker
+        self.combo_axis                 = sfu.displayAxis_comboBox_axis
 
-        if init_graph_axis:
-            self.current_x_axis = common.Axes.WAVELENGTHS
-        else:
-            self.current_x_axis = self.combo_axis.currentIndex()
+        # these are the "main graph" widgets we will populate IFF no ready-made 
+        # plot was provided (e.g. by PluginController)
+        self.layout                     = sfu.layout_scope_capture_graphs
+        self.stacked_widget             = sfu.stackedWidget_scope_setup_live_spectrum
+
+        self.hide_when_zoomed           = [ sfu.frame_new_save_col_holder, sfu.controlWidget ]
+
+        self.current_x_axis = self.combo_axis.currentIndex()
         self.current_y_axis = common.Axes.COUNTS
         self.intended_y_axis= common.Axes.COUNTS
 
@@ -102,10 +84,9 @@ class Graph(object):
 
         self.combo_axis.setCurrentIndex(self.current_x_axis)
 
-        # populate placeholders if requested
-        if stacked_widget:
+        # if we weren't passed a pre-populated plot, then create one
+        if not self.plot:
             self.populate_scope_setup()
-        if layout:
             self.populate_scope_capture()
 
         # bindings
@@ -134,7 +115,7 @@ class Graph(object):
 
         self.live_plot = pyqtgraph.PlotWidget(name="Live Scope")
         self.live_plot .setSizePolicy(policy)
-        self.live_curve = self.live_plot.plot([], pen=self.gui.make_pen(widget="live"))
+        self.live_curve = self.live_plot.plot([], pen=self.ctl.gui.make_pen(widget="live"))
 
         self.stacked_widget.addWidget(self.live_plot)
         self.stacked_widget.setCurrentIndex(1)
@@ -185,9 +166,9 @@ class Graph(object):
         if self.x_axis_locked:
             return
         self.set_x_axis(self.combo_axis.currentIndex())
-        if not (self.multispec is None):
-            for spec in self.multispec.get_spectrometers():
-                self.update_roi_regions(spec)
+        if self.ctl.multispec and self.ctl.horiz_roi:
+            for spec in self.ctl.multispec.get_spectrometers():
+                self.ctl.horiz_roi.update_regions(spec)
 
     def update_marker(self):
         self.show_marker = self.cb_marker.isChecked()
@@ -243,11 +224,11 @@ class Graph(object):
             box.disableAutoRange()
 
         self.y_axis_locked = not self.y_axis_locked
-        self.gui.colorize_button(self.button_lock_axes, self.y_axis_locked)
+        self.ctl.gui.colorize_button(self.button_lock_axes, self.y_axis_locked)
 
     def toggle_zoom(self):
         self.zoomed = not self.zoomed
-        self.gui.colorize_button(self.button_zoom, self.zoomed)
+        self.ctl.gui.colorize_button(self.button_zoom, self.zoomed)
 
         for widget in self.hide_when_zoomed:
             widget.setVisible(not self.zoomed)
@@ -274,18 +255,12 @@ class Graph(object):
 
     def update_visibility(self):
         self.current_y_axis = common.Axes.COUNTS
-        if self.multispec is not None and self.intended_y_axis in [common.Axes.PERCENT, common.Axes.AU]:
-            spec = self.multispec.current_spectrometer()
+        if self.ctl.multispec and self.intended_y_axis in [common.Axes.PERCENT, common.Axes.AU]:
+            spec = self.ctl.multispec.current_spectrometer()
             if spec and spec.app_state.reference is not None:
                 self.current_y_axis = self.intended_y_axis
 
         self.plot.setLabel(axis="left", text=common.AxesHelper.get_pretty_name(self.current_y_axis))
-
-    def add_roi_region(self, region):
-        self.plot.addItem(region)
-
-    def remove_roi_region(self, region):
-        self.plot.removeItem(region)
 
     ## 
     # This was originally used used by ThumbnailWidget, when clicking the "show 
@@ -302,13 +277,13 @@ class Graph(object):
 
         if x is not None:
             if len(y) < len(x):
-                if self.horiz_roi and measurement:
+                if self.ctl.horiz_roi and measurement:
                     roi = measurement.settings.eeprom.get_horizontal_roi()
                     if roi:
                         # force vignetting, as clearly y is cropped (likely loaded 
                         # from external file), and we really have no choice but to 
                         # use what was in effect when the Measurement was taken
-                        x = self.horiz_roi.crop(x, roi=roi, force=True)
+                        x = self.ctl.horiz_roi.crop(x, roi=roi, force=True)
 
             if len(y) != len(x):
                 log.error("unable to correct thumbnail widget by vignetting (len(x) %d != len(y) %d)", len(x), len(y))
@@ -316,7 +291,7 @@ class Graph(object):
 
         if pen is None:
             log.debug(f"making pen for {name}")
-            pen = self.gui.make_pen(widget=name)
+            pen = self.ctl.gui.make_pen(widget=name)
 
         if in_legend:
             curve = self.plot.plot(
@@ -349,8 +324,8 @@ class Graph(object):
         if spec is None and measurement is None:
             log.debug("added raw curve '%s'", name)
 
-        if rehide and self.rehide_curves is not None:
-            self.rehide_curves()
+        if rehide:
+            self.ctl.rehide_curves()
 
         return curve
 
@@ -379,7 +354,7 @@ class Graph(object):
         if self.show_marker:
             if curve.opts['symbol'] is None:
                 curve.setSymbol('o')
-                curve.setSymbolBrush(self.gui.colors.color_names.get("enlighten_name_n1"))
+                curve.setSymbolBrush(self.ctl.gui.colors.color_names.get("enlighten_name_n1"))
         else:
             curve.setSymbol(None)
 
@@ -397,30 +372,30 @@ class Graph(object):
     def invert_x_axis(self):
         self.inverted = not self.inverted
         self.plot.getPlotItem().invertX(self.inverted)
-        self.gui.colorize_button(self.button_invert, self.inverted)
+        self.ctl.gui.colorize_button(self.button_invert, self.inverted)
 
     ##
     # Iterates through all the curves currently shown on the graph and updates
     # them to the correct x-axis.
     def rescale_curves(self):
-        if self.measurements is None:
+        if not self.ctl.measurements:
             return
 
         axis = self.current_x_axis
 
         # handle live spectrometers
-        if self.multispec is not None:
-            for spec in self.multispec.get_spectrometers():
+        if self.ctl.multispec is not None:
+            for spec in self.ctl.multispec.get_spectrometers():
                 curve = spec.curve
                 if curve is None:
                     continue
                 (xData, yData) = curve.getData()
-                xData = self.generate_x_axis(spec=spec)
+                xData = self.ctl.generate_x_axis(spec=spec)
                 if xData is not None and yData is not None:
-                    if len(yData) < len(xData) and self.horiz_roi is not None:
+                    if len(yData) < len(xData) and self.ctl.horiz_roi:
                         roi = spec.settings.eeprom.get_horizontal_roi()
                         if roi is not None:
-                            xData = self.horiz_roi.crop(xData, roi=roi)
+                            xData = self.ctl.horiz_roi.crop(xData, roi=roi)
                     if len(xData) == len(yData):
                         self.set_data(curve=curve, y=yData, x=xData)
 
@@ -441,7 +416,7 @@ class Graph(object):
                 if yData is None:
                     continue
 
-                m = self.measurements.get(measurement_id)
+                m = self.ctl.measurements.get(measurement_id)
                 if m is None:
                     log.error("graph is displaying trace of measurement %s which is missing from Measurements", measurement_id)
                     continue
@@ -454,21 +429,21 @@ class Graph(object):
                     xData = list(range(len(yData)))
 
                 if xData is not None:
-                    if len(yData) < len(xData) and self.horiz_roi is not None:
+                    if len(yData) < len(xData) and self.ctl.horiz_roi:
                         roi = m.settings.eeprom.get_horizontal_roi()
                         if roi is not None:
-                            xData = self.horiz_roi.crop(xData, roi=roi)
+                            xData = self.ctl.horiz_roi.crop(xData, roi=roi)
 
                     if len(yData) == len(xData):
                         self.set_data(curve=curve, y=yData, x=xData)
 
     def copy_to_clipboard_callback(self):
-        if self.multispec is None:
+        if not self.ctl.multispec:
             return
 
-        if self.multispec.count() < 2:
+        if self.ctl.multispec.count() < 2:
             # one spectrometer
-            x_axis = self.generate_x_axis() # whichever spec is selected I guess
+            x_axis = self.ctl.generate_x_axis() # whichever spec is selected I guess
             spectra = [ x_axis ]
 
             # iterate over every curve on the graph
@@ -483,60 +458,17 @@ class Graph(object):
                 spectra.append(curve.getData()[0])
                 spectra.append(curve.getData()[-1])
 
-        self.clipboard.copy_spectra(spectra)
+        self.ctl.clipboard.copy_spectra(spectra)
 
-    def update_roi_regions(self, spec):
-        # Here there shouldn't be a default, spec should be explicit
-        if spec is None:
-            return
+    ############################################################################
+    # 
+    #                             Horizontal ROI
+    # 
+    ############################################################################
 
-        def clear(msg):
-            log.debug("update_roi_regions: MZ: " + msg)
-            self.remove_roi_region(spec.roi_region_left)
-            self.remove_roi_region(spec.roi_region_right)
+    def add_roi_region(self, region):
+        self.plot.addItem(region)
 
-        if not spec.settings.eeprom.has_horizontal_roi():
-            clear("hiding curtains (no ROI to show)")
-            return
+    def remove_roi_region(self, region):
+        self.plot.removeItem(region)
 
-        if not self.horiz_roi:
-            clear("hiding curtains (no HorizROIFeature object)")
-            return
-
-        if self.horiz_roi.enabled:
-            clear("hiding curtains (HorizROIFeature.enabled True), meaning fringes should be hidden")
-            return
-
-        log.debug("showing curtains, because HorizROIFeature.enabled False")
-
-        roi = spec.settings.eeprom.get_horizontal_roi()
-        axis = self.generate_x_axis(cropped=False)
-
-        log.debug(f"update_roi_regions: MZ: roi {roi}, axis {len(axis)} elements, start {roi.start}, end {roi.end}")
-
-        spec.roi_region_left .setRegion((axis[0],       axis[roi.start]))
-        spec.roi_region_right.setRegion((axis[roi.end], axis[-1]       ))
-
-        # automatically make regions invisible if they actually extend to/past 
-        # the detector edge
-        #
-        # QUESTION: MZ: how is setOpacity(0) different from remote_roi_region()?
-        #               why are we ADDING an opaque region, if I'm reading this
-        #               right?
-        if roi.start <= 0:
-            log.debug(f"update_roi_regions: MZ: opaquing left")
-            spec.roi_region_left.setOpacity(0)
-        else:
-            log.debug(f"update_roi_regions: MZ: showing left")
-            spec.roi_region_left.setOpacity(1)
-
-        if roi.end >= len(axis):
-            log.debug(f"update_roi_regions: MZ: opaquing right")
-            spec.roi_region_right.setOpacity(0)
-        else:
-            log.debug(f"update_roi_regions: MZ: showing right")
-            spec.roi_region_right.setOpacity(1)
-
-        log.debug(f"update_roi_regions: MZ: re-adding updated regions")
-        self.add_roi_region(spec.roi_region_left)
-        self.add_roi_region(spec.roi_region_right)

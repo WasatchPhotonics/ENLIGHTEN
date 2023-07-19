@@ -268,6 +268,24 @@ class Spectrometer:
         except:
             log.error(f"Spectrometer {self} doesn't seem to have an accessible device_type")
 
+    ############################################################################
+    # 
+    #                             Horizontal ROI
+    # 
+    ############################################################################
+
+    # It is debateable whether the "curtain" regions should "belong" to the
+    # Graph, the Spectrometer or the HorizROIFeature. The ROI is very much per-
+    # Spectrometer, and is "mastered" by that Spectrometer's SpectrometerSettings'
+    # EEPROM. However, as a "visual" indicator, it is technically part of the
+    # plot (Graph). However, we're encapsulating visualization / control / 
+    # application / editing of the ROI to the HorizROIFeature.
+    #
+    # Part of the question is: will we ever want to show the ROI curtains for 
+    # two spectrometers at the same time? If so, it makes sense to have those
+    # regions "owned" by the Spectrometer. That's my current default approach,
+    # as it seems to provide the most flexibility for the future.
+
     def init_curtains(self):
 
         # copy the pen color so we can lighten it without changing original
@@ -308,11 +326,12 @@ class Spectrometer:
             # to be dragged left or right (just the inner edge of each)
             self.roi_region_left.movable = False
             self.roi_region_right.movable = False
+
+    def update_curtains_editable(self):
+        pass
     
     def left_region_changed_callback(self):
-        log.debug("left region changed")
         (start, end) = self.roi_region_left.getRegion()
-        log.debug(f"new left bounds: {start}, {end}")
 
         pixel = self.get_new_pixel(end)
         if pixel is None:
@@ -320,20 +339,18 @@ class Spectrometer:
     
         log.debug(f"left_region_changed_callback: MZ: setting roi_horizontal_start to pixel {pixel} based on region end {end}")
         self.settings.eeprom.roi_horizontal_start = pixel
-        self.ctl.graph.update_roi_regions(self)
+        self.ctl.horiz_roi.update_regions(self)
 
     def right_region_changed_callback(self):
-        log.debug("right region changed")
         (start, end) = self.roi_region_right.getRegion()
-        log.debug(f"new right bounds: {start}, {end}")
 
         pixel = self.get_new_pixel(start)
         if pixel is None:
             return
     
-        log.debug(f"right_region_changed_callback: MZ: setting roi_horizontal_end to pixel {pixel} based on region start {start}")
+        log.debug(f"right_region_changed_callback: setting roi_horizontal_end to pixel {pixel} based on region start {start}")
         self.settings.eeprom.roi_horizontal_end = pixel
-        self.ctl.graph.update_roi_regions(self)
+        self.ctl.horiz_roi.update_regions(self)
 
     def get_x_from_pixel(self, px):
         x_axis = self.ctl.generate_x_axis(spec=self) 
@@ -355,12 +372,7 @@ class Spectrometer:
     
         pixel = self.converter.convert(spec=self, old_axis=self.ctl.graph.current_x_axis, new_axis=common.Axes.PIXELS, x=x)
         if pixel is None:
-            log.error(f"get_new_pixel: MZ: failed to convert x {x}")
+            log.error(f"get_new_pixel: failed to convert x {x}")
             return None
     
-        log.debug(f"get_new_pixel: MZ: converted x {x} to pixel {pixel}")
-        pixel = round(pixel)
-        pixel = max(pixel, 0)
-        pixel = min(pixel, self.settings.pixels())
-        log.debug(f"get_new_pixel: MZ: cropped pixel to {pixel}")
-        return pixel
+        return min(max(round(pixel), 0), self.settings.pixels())

@@ -3,34 +3,43 @@ import logging
 
 log = logging.getLogger(__name__)
 
-##
-# Encapsulate the horizontal ROI feature.
-#
-# It is very important to understand what it means for this feature to be 
-# "enabled," and how that is visualized.
-#
-# BY DEFAULT, spectrometers with "cropped" spectra (spectrometers with valid 
-# horizontal_roi_start/stop fields populated in the EEPROM) DO NOT show the 
-# cropped "wings" of the spectra in ENLIGHTEN.  The whole purpose of configuring
-# a horizontal ROI is to NOT SHOW those noisy, filtered, useless fringes.
-#
-# Therefore, the DEFAULT mode is to crop the ROI.  This means the CropROIFeature 
-# is ENABLED, and the button is visualized in a non-scary "gray" style.
-#
-# The RARE case is for a user to wish to see those low-signal fringes, and 
-# therefore we visualize that mode (with "curtains" on the ends) with the RED,
-# SCARY style.
-#           
-#     enabled:       True        False
-#     button CSS:    gray        red
-#     crop:          yes         no
-#
 class HorizROIFeature:
+    """
+    Encapsulate the Horizontal ROI feature.
+    
+    It is very important to understand what it means for this feature to be 
+    "enabled," and how that is visualized.
+    
+    By default, Wasatch software should show all data. Given the choice, we should
+    default to exposing the raw, grainy, noisy truth, while giving users access to
+    convenient tools to smooth, crop, normalize etc.
+    
+    Therefore, by default the Horizontal ROI feature is OFF (the full spectrum is
+    shown), even if a horizontal ROI is configured in the spectrometer's EEPROM.
+    
+    If a horizontal ROI is configured, the button is ENABLED (clickable); if no
+    ROI is configured, the button is DISABLED (unclickable). In either case, a
+    ToolTip should explain the current status.
+
+    If the user clicks the button and enables the Horiz ROI, what will happen 
+    depends on whether the user is in Expert Mode or not.
+
+
+                    ROI in EEPROM           No ROI in EEPROM
+    At launch:      - button enabled        - button disabled
+                    - button off (grey)     - button off (grey)
+                    - ToolTip "click to     - ToolTip "no horiz ROI"
+                      crop to horiz ROI"
+
+    
+
+    """
     
     def __init__(self, ctl):
         self.ctl = ctl
 
-        self.button = self.ctl.form.ui.pushButton_roi_toggle # compromise
+        self.button = self.ctl.form.ui.pushButton_roi_toggle 
+        self.checkbox = self.ctl.form.ui.checkBox_edit_horiz_roi
 
         log.debug("init: defaulting to enabled and user_requested_enabled (i.e. grey)")
         self.enabled = True
@@ -39,14 +48,14 @@ class HorizROIFeature:
         self.observers = set()
         self.ctl.graph.register_observer("change_axis", self.change_axis_callback)
 
-        # self-register with scope.Graph (remove when refactoring Graph)
-        self.ctl.graph.horiz_roi = self
-
-        self.button.clicked.connect(self.toggle)
+        self.button.clicked.connect(self.button_callback)
 
         self.update_visibility()
 
-    def toggle(self):
+    def change_axis_callback(self, old_axis_enum, new_axis_enum):
+        self.update_regions()
+
+    def button_callback(self):
         self.enabled = not self.enabled
         self.user_requested_enabled = self.enabled
 
@@ -68,6 +77,8 @@ class HorizROIFeature:
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
+
+        self.checkbox.setVisible(self.ctl.page_nav.doing_expert())
 
         log.debug(f"update_visibility: setting enabled to user_requested_enabled {self.user_requested_enabled}")
         self.enabled = self.user_requested_enabled
@@ -93,10 +104,13 @@ class HorizROIFeature:
         log.debug(f"update_visibility: user_requested_enabled = {self.user_requested_enabled}, enabled = {self.enabled}")
 
         for spec in self.ctl.multispec.get_spectrometers():
-            self.ctl.graph.update_roi_regions(spec)
+            self.update_regions(spec)
 
         for callback in self.observers:
             callback()
+
+    def is_editing(self):
+        return self.checkbox.isChecked()
 
     ##
     # Called by LOTS of classes :-(
@@ -160,3 +174,52 @@ class HorizROIFeature:
             return 
             
         pr.processed_cropped = self.crop(pr.processed, roi=roi)
+
+    def update_regions(self, spec=None):
+        if spec is None:
+            spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+
+        # only show the curtains if we're editing the ROI
+        if not self.is_editing():
+            self.ctl.graph.remove_roi_region(spec.roi_region_left)
+            self.ctl.graph.remove_roi_region(spec.roi_region_right)
+            return
+
+        roi = spec.settings.eeprom.get_horizontal_roi()
+        if roi:
+            start = roi.start
+            end = roi.end
+        else:
+            start = 0
+            end = spec.settings.pixels()
+
+        axis = self.generate_x_axis(cropped=False)
+
+        log.debug(f"update_regions: roi {roi}, axis {len(axis)} elements, start {start}, end {end}")
+
+        spec.roi_region_left.setRegion((axis[0], axis[start]))
+        spec.roi_region_right.setRegion((axis[end], axis[-1]))
+
+        # automatically make regions invisible if they actually extend to/past 
+        # the detector edge
+        #
+        # MZ: how is setOpacity(0) different from remote_roi_region()?
+        #     why are we ADDING an opaque region, if I'm reading this
+        #     right?
+        #
+        # MZ: disabling this for now until I understand what it was for.
+        #
+        # if roi.start <= 0:
+        #     spec.roi_region_left.setOpacity(0)
+        # else:
+        #     spec.roi_region_left.setOpacity(1)
+        # 
+        # if roi.end >= len(axis):
+        #     spec.roi_region_right.setOpacity(0)
+        # else:
+        #     spec.roi_region_right.setOpacity(1)
+
+        self.ctl.graph.add_roi_region(spec.roi_region_left)
+        self.ctl.graph.add_roi_region(spec.roi_region_right)

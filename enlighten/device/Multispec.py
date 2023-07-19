@@ -61,7 +61,6 @@ class Multispec(object):
         self.combo_spectrometer    = combo_spectrometer
         self.desired_serial        = desired_serial
         self.frame_widget          = frame_widget
-        self.graph                 = graph
         self.gui                   = gui
         self.reinit_callback       = reinit_callback      # Controller.initialize_new_device()
         self.layout_colors         = layout_colors
@@ -101,8 +100,6 @@ class Multispec(object):
         self.locked = False     
 
         self.hide_others = False
-
-        self.graph.multispec = self # cross-register
 
         self.reset_seen()
         self.combo_spectrometer.clear()
@@ -326,7 +323,7 @@ class Multispec(object):
         spec.app_state.hidden = True
 
         # now that we're adding device_id backreferences, could alternately delete by device_id
-        self.graph.remove_curve(spec.label)
+        self.ctl.graph.remove_curve(spec.label)
 
     def unhide(self, spec):
         if not spec.app_state.hidden:
@@ -334,7 +331,7 @@ class Multispec(object):
 
         log.debug("unhiding %s", spec.device_id)
         spec.app_state.hidden = False
-        spec.curve = self.graph.add_curve(
+        spec.curve = self.ctl.graph.add_curve(
             pen=self.make_pen(spec),
             name=spec.label,
             spec=spec)
@@ -503,7 +500,7 @@ class Multispec(object):
         # now add to the curve, noting that autocolor may be in effect
         log.debug("Multispec.add: adding curve %s", spec.label)
         pen = self.make_pen(spec)
-        spec.curve = self.graph.add_curve(
+        spec.curve = self.ctl.graph.add_curve(
             pen=pen,
             name=spec.label,
             spec=spec)
@@ -515,8 +512,8 @@ class Multispec(object):
         log.debug("add: calling init_curtains")
         spec.init_curtains()
 
-        log.debug("add: calling update_roi_regions")
-        self.graph.update_roi_regions(spec)
+        log.debug("add: calling update_regions")
+        self.ctl.horiz_roi.update_regions(spec)
 
         log.debug("add: back from scary changed stuff")
 
@@ -564,9 +561,9 @@ class Multispec(object):
         device_id = spec.device_id 
         label = spec.label
 
-        self.graph.remove_curve(label)
-        self.graph.remove_roi_region(spec.roi_region_right)
-        self.graph.remove_roi_region(spec.roi_region_left)
+        self.ctl.graph.remove_curve(label)
+        self.ctl.graph.remove_roi_region(spec.roi_region_right)
+        self.ctl.graph.remove_roi_region(spec.roi_region_left)
 
         # this should cause combo_callback to trigger, calling 
         # Controller.initialize_new_device and thus updating Multispec.device_id to 

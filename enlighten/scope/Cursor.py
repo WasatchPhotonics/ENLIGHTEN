@@ -214,7 +214,7 @@ class Cursor:
             self.center()
 
     def moved_callback(self, pos):
-        x_axis = self.ctl.graph.generate_x_axis() # assume selected spectrometer
+        x_axis = self.ctl.generate_x_axis() # assume selected spectrometer
         log.debug(f"cursor moved callback x_axis len is {len(x_axis)}")
         if x_axis is None:
             log.error("moved_callback: no x_axis?!")
@@ -240,7 +240,7 @@ class Cursor:
         self.update()
 
     def move_perc(self, perc):
-        x_axis = self.ctl.graph.generate_x_axis() # assume selected
+        x_axis = self.ctl.generate_x_axis() # assume selected
         if x_axis is None:
             return
 
@@ -250,7 +250,7 @@ class Cursor:
         log.debug("move_perc: x = %.2f (%.2f%%)", x_value, perc)
 
     def is_outside_range(self):
-        x_axis = self.ctl.graph.generate_x_axis() # assume selected
+        x_axis = self.ctl.generate_x_axis() # assume selected
         if x_axis is None:
             return
 
@@ -258,7 +258,7 @@ class Cursor:
         return value < x_axis[0] or value > x_axis[-1]
 
     def center(self):
-        x_axis = self.ctl.graph.generate_x_axis() # assume selected
+        x_axis = self.ctl.generate_x_axis() # assume selected
         if x_axis is None:
             return
 
