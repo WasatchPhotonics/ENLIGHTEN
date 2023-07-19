@@ -80,8 +80,7 @@ class BusinessObjects:
 
     def __init__(self, controller):
         self.controller = controller
-
-        self.obj = {}
+        self.clear()
 
     def header(self, s):
         log.debug("")
@@ -93,6 +92,72 @@ class BusinessObjects:
         self.controller.splash.showMessage(s, alignment=Qt.AlignHCenter | Qt.AlignBottom, color=QColor("white"))
         self.controller.app.processEvents()
 
+    def clear(self):
+        """ Ensures objects can check for other's instantiation during start-up """
+        ctl = self.controller
+
+        ctl.absorbance = None
+        ctl.accessory_control = None
+        ctl.area_scan = None
+        ctl.authentication = None
+        ctl.baseline_correction = None
+        ctl.batch_collection = None
+        ctl.battery_feature = None
+        ctl.ble_manager = None
+        ctl.boxcar = None
+        ctl.clipboard = None
+        ctl.cloud_manager = None
+        ctl.colors = None
+        ctl.config = None
+        ctl.cursor = None
+        ctl.dark_feature = None
+        ctl.detector_temperature = None
+        ctl.eeprom_editor = None
+        ctl.eeprom_writer = None
+        ctl.external_trigger = None
+        ctl.file_manager = None
+        ctl.focus_listener = None
+        ctl.gain_db_feature = None
+        ctl.graph = None
+        ctl.grid = None
+        ctl.gui = None
+        ctl.guide = None
+        ctl.hardware_control_feature = None
+        ctl.hardware_file_manager = None
+        ctl.high_gain_mode = None
+        ctl.horiz_roi = None
+        ctl.image_resources = None
+        ctl.integration_time_feature = None
+        ctl.interp = None
+        ctl.kia_feature = None
+        ctl.laser_control = None
+        ctl.laser_temperature = None
+        ctl.logging_feature = None
+        ctl.marquee = None
+        ctl.measurement_factory = None
+        ctl.measurements = None
+        ctl.mfg = None
+        ctl.model_info = None
+        ctl.multispec = None
+        ctl.page_nav = None
+        ctl.plugin_controller = None
+        ctl.raman_intensity_correction = None
+        ctl.raman_mode_feature = None
+        ctl.raman_shift_correction = None
+        ctl.reference_feature = None
+        ctl.region_control = None
+        ctl.resource_monitor = None
+        ctl.richardson_lucy = None
+        ctl.save_options = None
+        ctl.scan_averaging = None
+        ctl.sounds = None
+        ctl.status_bar = None
+        ctl.status_indicators = None
+        ctl.stylesheets = None
+        ctl.take_one = None
+        ctl.transmission = None
+        ctl.vcr_controls = None
+
     def create_first(self):
         """
         These are things needed early in the Controller's constructor 
@@ -100,8 +165,6 @@ class BusinessObjects:
         """
         ctl = self.controller
         sfu = ctl.form.ui
-
-        ctl.multispec = None 
 
         self.header("instantiating Configuration")
         ctl.config = Configuration(
@@ -189,22 +252,7 @@ class BusinessObjects:
             marquee                     = ctl.marquee)
 
         self.header("instantiating Graph")
-        ctl.graph = Graph(
-            clipboard                   = ctl.clipboard,
-            gui                         = ctl.gui,
-
-            button_copy                 = sfu.pushButton_copy_to_clipboard,
-            button_invert               = sfu.pushButton_invert_x_axis,
-            button_lock_axes            = sfu.pushButton_lock_axes,
-            button_zoom                 = sfu.pushButton_zoom_graph,
-            cb_marker                   = sfu.checkBox_graph_marker,
-            combo_axis                  = sfu.displayAxis_comboBox_axis,
-            generate_x_axis             = ctl.generate_x_axis,
-            hide_when_zoomed            = [ sfu.frame_new_save_col_holder, sfu.controlWidget ],
-            layout                      = sfu.layout_scope_capture_graphs,
-            rehide_curves               = ctl.rehide_curves,
-            stacked_widget              = sfu.stackedWidget_scope_setup_live_spectrum,
-            )
+        ctl.graph = Graph(ctl)
 
         self.header("instantiating HardwareFileOutputManager")
         ctl.hardware_file_manager = HardwareFileOutputManager(
