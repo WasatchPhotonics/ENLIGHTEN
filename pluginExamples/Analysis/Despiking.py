@@ -84,16 +84,16 @@ class Despiking(EnlightenPluginBase):
             "Despiked": {
                 "x": series_x,
                 "y": spiky_spectra,
-                },
-             "Detrended Diff": {
-                 'x': trend_x,
-                 'y': nabla_counts,
-                 },
-              "Mod Z Scores": {
-                 'x': trend_x,
-                 'y': mod_z_scores,
-                  }
+            },
+            "Detrended Diff": {
+                'x': trend_x,
+                'y': nabla_counts,
+            },
+            "Mod Z Scores": {
+                'x': trend_x,
+                'y': mod_z_scores,
             }
+        }
         return EnlightenPluginResponse(request, series=series)
 
 

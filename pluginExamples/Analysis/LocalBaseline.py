@@ -1,17 +1,23 @@
 import pandas as pd
 import numpy as np
-import logging
 
 import time
 
 from EnlightenPlugin import *
 
-log = logging.getLogger(__name__)
-
 class LocalBaseline(EnlightenPluginBase):
+
+    prev_count = 1
 
     def get_configuration(self):
         self.name = "Baseline"
+
+        # warning: changing the count will not work without a spectrometer (since process_reading does not get called)
+        self.field(
+            name = "count",
+            initial = self.prev_count, minimum = 0, maximum = 8, step = 1,
+            datatype = "int", direction = "input"
+        )
 
         self.field(
             name = "x",
@@ -38,7 +44,7 @@ class LocalBaseline(EnlightenPluginBase):
         )
 
         self.has_other_graph = False
-        self.block_enlighten = True # for metadata
+        self.block_enlighten = False # for metadata
 
     def center(self):
 
@@ -54,6 +60,7 @@ class LocalBaseline(EnlightenPluginBase):
         x_widget.setValue(self.to_graph(x_pix))
 
     def process_request(self, request):
+
         pr = request.processed_reading
         spectrum = pr.get_processed()
 
@@ -121,3 +128,11 @@ class LocalBaseline(EnlightenPluginBase):
         self.metadata["Left"] = self.get_widget_from_name("Left").value()
         self.metadata["Right"] = self.get_widget_from_name("Right").value()
         self.metadata["x"] = self.get_widget_from_name("x").value()
+        self.metadata["x unit"] = self.get_axis_name()
+
+        # on get_widget_from_name("count") change...
+        if self.get_widget_from_name("count").value() != self.prev_count:
+            self.prev_count = self.get_widget_from_name("count").value()
+            self.reset_configuration()
+
+        self.prev_count = self.get_widget_from_name("count").value()

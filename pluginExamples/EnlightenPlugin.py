@@ -16,6 +16,7 @@ from wasatch.ProcessedReading import ProcessedReading
 from wasatch.SpectrometerSettings import SpectrometerSettings
 
 import numpy as np
+import os
 
 ##
 # Abstract Base Class (ABC) for all ENLIGHTEN-compatible plug-ins.
@@ -61,8 +62,29 @@ class EnlightenPluginBase:
             return self.settings.wavenumbers
         if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.PIXELS:
             return range(len(self.spectrum))
+        
+    def get_axis_name(self):
+        """
+        Printable axis name
+        """
+        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVELENGTHS:
+            return "Wavelengths (cm⁻¹)"
+        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVENUMBERS:
+            return "Wavenumbers (nm)"
+        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.PIXELS:
+            return "Pixels (px)"
 
     ### Begin functional-plugins backend ###
+
+    def log(self, *msgs):
+        # initially made this because the regular logger wasn't working
+        # but it actually makes sense for plugins to have their own log separate from enlighten
+        with open(common.get_default_data_dir()+os.sep+'plugin_log.txt', 'at') as pl:
+            pl.write(' '.join([str(msg) for msg in msgs]) + "\n")
+
+    def reset_configuration(self):
+        plugin_name = self.ctl.form.ui.comboBox_plugin_module.currentText()
+        self.ctl.plugin_controller.configure_gui_for_module(plugin_name)
 
     def field(self, **kwargs):
         self._fields.append(EnlightenPluginField(**kwargs))
@@ -165,6 +187,10 @@ class EnlightenPluginBase:
 
     ### Begin backwards compatible object-returning wrappers ###
     def get_configuration_obj(self):
+
+        # reset fields in-case plugin has been connected before
+        self._fields = []
+
         config = self.get_configuration()
         if config: return config
 
