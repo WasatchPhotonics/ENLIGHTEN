@@ -39,7 +39,7 @@ class HorizROIFeature:
         self.ctl = ctl
 
         self.button = self.ctl.form.ui.pushButton_roi_toggle 
-        self.checkbox = self.ctl.form.ui.checkBox_edit_horiz_roi
+        self.cb_editing = self.ctl.form.ui.checkBox_edit_horiz_roi
 
         log.debug("init: defaulting to enabled and user_requested_enabled (i.e. grey)")
         self.enabled = True
@@ -49,6 +49,7 @@ class HorizROIFeature:
         self.ctl.graph.register_observer("change_axis", self.change_axis_callback)
 
         self.button.clicked.connect(self.button_callback)
+        self.cb_editing.stateChanged.connect(self.cb_editing_callback)
 
         self.update_visibility()
 
@@ -62,6 +63,10 @@ class HorizROIFeature:
         log.debug(f"toggle: user_requested_enabled = {self.user_requested_enabled}, enabled = {self.enabled}")
         
         self.update_visibility()
+
+    def cb_editing_callback(self):
+        for spec in self.ctl.multispec.get_spectrometers():
+            self.update_regions(spec)
 
     ## provided for RichardsonLucy to flush its Gaussian cache
     def register_observer(self, callback):
@@ -78,7 +83,7 @@ class HorizROIFeature:
         if spec is None:
             return
 
-        self.checkbox.setVisible(self.ctl.page_nav.doing_expert())
+        self.cb_editing.setVisible(self.ctl.page_nav.doing_expert())
 
         log.debug(f"update_visibility: setting enabled to user_requested_enabled {self.user_requested_enabled}")
         self.enabled = self.user_requested_enabled
@@ -110,7 +115,7 @@ class HorizROIFeature:
             callback()
 
     def is_editing(self):
-        return self.checkbox.isChecked()
+        return self.cb_editing.isChecked()
 
     ##
     # Called by LOTS of classes :-(
@@ -195,7 +200,7 @@ class HorizROIFeature:
             start = 0
             end = spec.settings.pixels()
 
-        axis = self.generate_x_axis(cropped=False)
+        axis = self.ctl.generate_x_axis(cropped=False)
 
         log.debug(f"update_regions: roi {roi}, axis {len(axis)} elements, start {start}, end {end}")
 

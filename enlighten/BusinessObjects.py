@@ -197,6 +197,10 @@ class BusinessObjects:
 
             bt_dark_mode                = sfu.pushButton_dark_mode)
 
+        # instantiating this early will simplify letting others register as observers
+        self.header("instantiating PageNavigation")
+        ctl.page_nav = PageNavigation(ctl)
+
     def create_rest(self):
         """
         Create the remaining business objects which allow us to encapsulate
@@ -426,31 +430,6 @@ class BusinessObjects:
             multispec                   = ctl.multispec,
             rb_by_col                   = sfu.radioButton_save_by_column,
             rb_by_row                   = sfu.radioButton_save_by_row)
-
-        self.header("instantiating PageNavigation")
-        ctl.page_nav = PageNavigation(
-            graph                       = ctl.graph,
-            logging_feature             = ctl.logging_feature,
-            marquee                     = ctl.marquee,
-            multispec                   = ctl.multispec,
-            save_options                = ctl.save_options,
-            stylesheets                 = ctl.stylesheets,
-
-            button_raman                = sfu.pushButton_raman,
-            button_non_raman            = sfu.pushButton_non_raman,
-            button_expert               = sfu.pushButton_expert,
-            combo_view                  = sfu.comboBox_view,
-            stack_main                  = sfu.stackedWidget_low,
-
-            fr_transmission_options     = sfu.frame_transmission_options,        # todo move to TransmissionFeature
-            fr_area_scan                = sfu.frame_area_scan_widget,
-            fr_baseline                 = sfu.frame_baseline_correction,
-            fr_post                     = sfu.frame_post_processing,
-            fr_tec                      = sfu.frame_tec_control,
-            fr_region                   = sfu.frame_region_control,
-
-            update_feature_visibility   = ctl.update_feature_visibility,
-            sfu                         = sfu)
 
         self.header("instantiating MeasurementFactory")
         ctl.measurement_factory = MeasurementFactory(

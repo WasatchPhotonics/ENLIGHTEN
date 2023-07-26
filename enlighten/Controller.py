@@ -619,11 +619,26 @@ class Controller:
                 self.multispec.set_gave_up(device_id)
                 self.multispec.remove_in_process(device_id)
 
-    # also called by PageNavigation.set_view_common
     def update_feature_visibility(self):
-        # disable anything that shouldn't be on without a spectrometer
-        # (could grow this considerably)
+        """
+        Something has occurred which prompts us to update any Business Object 
+        whose visibility / exposed features depends on global application state
+        (including whether we're in Expert mode or not).
+
+        This is called by PageNavigation.set_view_common, for instance when
+        changing Operation Mode (Ranam, Non-Raman, Expert) or View (Scope, 
+        Settings, Hardware, Logging, Factory) or Technique (Raman, Emission,
+        Absorbance, Transmission/Reflectance), etc.
+
+        This is also called when connecting / disconnecting spectrometers.
+
+        IMHO we should give self.bus_obj an iterable list of all business
+        objects, all of which should extend EnlightenBusinessObject or whatever,
+        with overridable methods update_visibility, post_init (to be fired after
+        all Business Objects are instantiated, etc.
+        """
         for feature in [ self.accessory_control,
+                         self.horiz_roi,
                          self.laser_control,
                          self.raman_mode_feature,
                          self.raman_intensity_correction,

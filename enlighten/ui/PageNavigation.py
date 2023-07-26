@@ -20,63 +20,25 @@ class PageNavigation:
         common.Techniques.RELATIVE_IRRADIANCE: lambda self, tech: self.set_technique_common(common.Techniques.RELATIVE_IRRADIANCE)
         }
 
-    def __init__(self,
-            graph,
-            logging_feature,
-            marquee,
-            multispec,
-            save_options,
-            stylesheets,
+    def __init__(self, ctl):
+        self.ctl = ctl
+        sfu = ctl.form.ui
 
-            combo_view,
-            button_raman,
-            button_non_raman,
-            button_expert,
-            stack_main,
-
-            update_feature_visibility,
-
-            fr_transmission_options,
-            fr_area_scan,
-            fr_baseline,
-            fr_post,
-            fr_tec,
-            fr_region,
-
-            sfu,
-            ):
-
-        self.graph              = graph
-        self.logging_feature    = logging_feature
-        self.marquee            = marquee
-        self.multispec          = multispec
-        self.save_options       = save_options
-        self.stylesheets        = stylesheets
-        self.sfu                = sfu
                                 
-        self.button_raman       = button_raman
-        self.button_non_raman   = button_non_raman
-        self.button_expert      = button_expert
-        self.combo_view         = combo_view
-        self.stack_main         = stack_main 
-        self.combo_technique    = self.sfu.technique_comboBox
-
-        self.fr_transmission_options = fr_transmission_options
-        self.fr_area_scan       = fr_area_scan
-        self.fr_baseline        = fr_baseline
-        self.fr_post            = fr_post
-        self.fr_tec             = fr_tec
-        self.fr_region          = fr_region
-        
-        self.update_feature_visibility = update_feature_visibility
+        self.button_raman       = sfu.pushButton_raman
+        self.button_non_raman   = sfu.pushButton_non_raman
+        self.button_expert      = sfu.pushButton_expert
+        self.combo_view         = sfu.comboBox_view
+        self.stack_main         = sfu.stackedWidget_low
+        self.combo_technique    = sfu.technique_comboBox
 
         # self-register
-        self.logging_feature.page_nav = self
+        self.ctl.logging_feature.page_nav = self
 
         self.operation_mode = common.OperationModes.RAMAN
-        self.current_view = -1
+        self.current_view = -1 
         self.has_used_raman = False
-        self.current_technique = self.sfu.technique_comboBox.currentIndex()
+        self.current_technique = self.combo_technique.currentIndex()
 
         self.combo_technique.installEventFilter(ScrollStealFilter(self.combo_technique))
 
@@ -87,15 +49,15 @@ class PageNavigation:
         self.combo_technique        .currentIndexChanged.connect(self.update_technique_callback)
 
     def post_init(self):
-        self.graph.set_y_axis(common.Axes.COUNTS)
+        self.ctl.graph.set_y_axis(common.Axes.COUNTS)
 
         # always start in scope view
         self.set_main_page(common.Pages.SCOPE)
         self.set_view(common.Views.SCOPE)
 
-        self.sfu.frame_FactoryMode_Options.hide()
+        self.ctl.form.ui.frame_FactoryMode_Options.hide()
+        self.ctl.form.ui.frame_transmission_options.hide()        # todo move to TransmissionFeature
         self.set_operation_mode_non_raman()
-        self.fr_transmission_options.hide()
 
     # ##########################################################################
     # activity introspection
@@ -137,7 +99,7 @@ class PageNavigation:
         self.current_view = self.determine_current_view()
         log.debug("update_view_callback: current_view now %d", self.current_view)
 
-        self.sfu.frame_FactoryMode_Options.setVisible(self.doing_factory())
+        self.ctl.form.ui.frame_FactoryMode_Options.setVisible(self.doing_factory())
 
         if self.doing_hardware()        : return self.set_view_hardware()
         if self.doing_factory()         : return self.set_view_factory()
@@ -200,13 +162,13 @@ class PageNavigation:
         self.set_main_page(common.Pages.FACTORY)
 
     def set_technique_transmission(self):
-        self.graph.set_x_axis(common.Axes.WAVELENGTHS)
-        self.graph.set_y_axis(common.Axes.PERCENT)
+        self.ctl.graph.set_x_axis(common.Axes.WAVELENGTHS)
+        self.ctl.graph.set_y_axis(common.Axes.PERCENT)
         self.set_technique_common(common.Techniques.REFLECTANCE_TRANSMISSION)
 
     def set_technique_absorbance(self):
-        self.graph.set_x_axis(common.Axes.WAVELENGTHS)
-        self.graph.set_y_axis(common.Axes.AU)
+        self.ctl.graph.set_x_axis(common.Axes.WAVELENGTHS)
+        self.ctl.graph.set_y_axis(common.Axes.AU)
         self.set_technique_common(common.Techniques.ABSORBANCE)
 
     def update_view_shortcut(self):
@@ -219,8 +181,8 @@ class PageNavigation:
 
     def set_view_common(self):
         self.update_view_shortcut()
-        self.graph.reset_axes()
-        self.update_feature_visibility()
+        self.ctl.graph.reset_axes()
+        self.ctl.update_feature_visibility()
 
     # ##########################################################################
     # Page Navigation: Operation Mode
@@ -247,19 +209,19 @@ class PageNavigation:
 
     def set_technique_absorbance(self):
         self.set_technique_common(common.Techniques.ABSORBANCE)
-        self.graph.set_x_axis(common.Axes.WAVELENGTHS)
-        self.graph.set_y_axis(common.Axes.AU)
+        self.ctl.graph.set_x_axis(common.Axes.WAVELENGTHS)
+        self.ctl.graph.set_y_axis(common.Axes.AU)
 
     def set_technique_transmission(self):
         self.set_technique_common(common.Techniques.TRANSMISSION)
-        self.graph.set_x_axis(common.Axes.WAVELENGTHS)
-        self.graph.set_y_axis(common.Axes.PERCENT)
+        self.ctl.graph.set_x_axis(common.Axes.WAVELENGTHS)
+        self.ctl.graph.set_y_axis(common.Axes.PERCENT)
 
     def set_technique_common(self, technique):
         log.debug("set_technique_common: technique %d", technique)
-        self.fr_transmission_options.setVisible(self.using_transmission())
+        self.ctl.form.ui.frame_transmission_options.setVisible(self.using_transmission())
 
-        self.graph.reset_axes()
+        self.ctl.graph.reset_axes()
 
         self.current_technique = technique
         technique_name = common.TechniquesHelper.get_pretty_name(self.current_technique)
@@ -267,58 +229,56 @@ class PageNavigation:
         # valid question if view should then be stored in app_state, since
         # it's not really a per-spectrometer attribute, but adding for
         # consistency and convenience.
-        self.multispec.set_app_state("technique_name", technique_name, all=True)
+        if self.ctl.multispec:
+            self.ctl.multispec.set_app_state("technique_name", technique_name, all=True)
 
         # Business Objects
-        self.update_feature_visibility()
+        self.ctl.update_feature_visibility()
     
     def set_operation_mode_raman(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer() if self.ctl.multispec else None
         if spec is None or not spec.settings.has_excitation():
-            self.marquee.error("Raman mode requires an excitation wavelength")
+            if self.ctl.marquee:
+                self.ctl.marquee.error("Raman mode requires an excitation wavelength")
             return self.set_operation_mode_non_raman()
 
         log.debug(f"raman mode operation set")
 
-        self.graph.set_x_axis(common.Axes.WAVENUMBERS)
-        self.graph.set_y_axis(common.Axes.COUNTS)
+        self.ctl.graph.set_x_axis(common.Axes.WAVENUMBERS)
+        self.ctl.graph.set_y_axis(common.Axes.COUNTS)
         self.operation_mode = common.OperationModes.RAMAN
         self.set_technique_common(common.Techniques.RAMAN)
 
-        self.stylesheets.apply(self.button_raman, "left_rounded_active")
-        self.stylesheets.apply(self.button_non_raman, "center_rounded_inactive")
-        self.stylesheets.apply(self.button_expert, "right_rounded_inactive")
+        self.ctl.stylesheets.apply(self.button_raman, "left_rounded_active")
+        self.ctl.stylesheets.apply(self.button_non_raman, "center_rounded_inactive")
+        self.ctl.stylesheets.apply(self.button_expert, "right_rounded_inactive")
         self.hide_non_raman_technique()
         self.update_expert_widgets()
 
-        # Per Dieter, Raman mode should default to APLS. Note that we don't
-        # currently track settings (baseline correction, integration time, laser
-        # enable etc) by view, so baseline correction will REMAIN selected
-        # if you change to Scope or Absorbance/etc...
-        if not self.has_used_raman:
+        if not self.has_used_raman and self.ctl.save_options:
             self.has_used_raman = True
-            self.save_options.force_wavenumber()
+            self.ctl.save_options.force_wavenumber()
 
     def set_operation_mode_non_raman(self):
-        self.graph.set_x_axis(common.Axes.WAVELENGTHS)
+        self.ctl.graph.set_x_axis(common.Axes.WAVELENGTHS)
 
-        self.stylesheets.apply(self.button_raman, "left_rounded_inactive")
-        self.stylesheets.apply(self.button_non_raman, "center_rounded_active")
-        self.stylesheets.apply(self.button_expert, "right_rounded_inactive")
+        self.ctl.stylesheets.apply(self.button_raman, "left_rounded_inactive")
+        self.ctl.stylesheets.apply(self.button_non_raman, "center_rounded_active")
+        self.ctl.stylesheets.apply(self.button_expert, "right_rounded_inactive")
 
         self.operation_mode = common.OperationModes.NON_RAMAN
 
-        self.update_feature_visibility()
+        self.ctl.update_feature_visibility()
         self.display_non_raman_technique()
         self.update_expert_widgets()
 
     def set_operation_mode_expert(self):
         log.debug("set_operation_mode_expert: start")
-        self.stylesheets.apply(self.button_raman, "left_rounded_inactive")
-        self.stylesheets.apply(self.button_non_raman, "center_rounded_inactive")
-        self.stylesheets.apply(self.button_expert, "right_rounded_active")
+        self.ctl.stylesheets.apply(self.button_raman, "left_rounded_inactive")
+        self.ctl.stylesheets.apply(self.button_non_raman, "center_rounded_inactive")
+        self.ctl.stylesheets.apply(self.button_expert, "right_rounded_active")
         self.operation_mode = common.OperationModes.EXPERT
-        self.update_feature_visibility()
+        self.ctl.update_feature_visibility()
         self.display_non_raman_technique()
         self.update_expert_widgets()
 
@@ -326,19 +286,22 @@ class PageNavigation:
         is_ingaas = False
         has_cooling = False
         flag = self.doing_expert()
+        sfu = self.ctl.form.ui
 
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer() if self.ctl.multispec else None
         if spec is None:
             flag = False
         else:
             is_ingaas = spec.settings.is_ingaas()
             has_cooling = spec.settings.eeprom.has_cooling
 
-        self.fr_post        .setVisible(flag)
-        self.fr_baseline    .setVisible(flag)
-        self.fr_tec         .setVisible(flag and has_cooling)
-        self.fr_area_scan   .setVisible(flag and not is_ingaas)
-        self.fr_region      .setVisible(False) # spec.settings.is_imx()
+        # todo: migrate all of these to register_observer("doing_expert") in 
+        # their respective owning Business Objects
+        sfu.frame_post_processing.setVisible(flag)
+        sfu.frame_baseline_correction.setVisible(flag)
+        sfu.frame_tec_control.setVisible(flag and has_cooling)
+        sfu.frame_area_scan_widget.setVisible(flag and not is_ingaas)
+        sfu.frame_region_control.setVisible(False) # spec.settings.is_imx()
 
     def set_operation_mode_common(self, mode):
         # cache the newly-set operation mode for the current view, so the
@@ -351,10 +314,10 @@ class PageNavigation:
         self.operation_mode = mode
 
     def display_non_raman_technique(self):
-        self.sfu.frame_TechniqueWidget.show()
+        self.ctl.form.ui.frame_TechniqueWidget.show()
 
     def hide_non_raman_technique(self):
-        self.sfu.frame_TechniqueWidget.hide()
+        self.ctl.form.ui.frame_TechniqueWidget.hide()
 
     def determine_current_technique(self):
         label = self.combo_technique.currentText().lower()
