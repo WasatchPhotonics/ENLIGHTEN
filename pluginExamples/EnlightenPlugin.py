@@ -62,6 +62,22 @@ class EnlightenPluginBase:
         if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.PIXELS:
             return range(len(self.spectrum))
 
+    def get_axis_short_name(self):
+        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVELENGTHS:
+            return "wl"
+        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVENUMBERS:
+            return "wn"
+        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.PIXELS:
+            return "px"
+
+    def get_axis_name(self):
+        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVELENGTHS:
+            return "wavelengths"
+        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVENUMBERS:
+            return "wavenumbers"
+        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.PIXELS:
+            return "pixels"
+
     ### Begin functional-plugins backend ###
 
     def field(self, **kwargs):
