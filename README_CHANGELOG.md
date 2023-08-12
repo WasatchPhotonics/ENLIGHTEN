@@ -3,6 +3,7 @@
 # 4.0 GUI Refactoring
 
 - 2023-??-?? 4.0.15
+    - enforce eeprom.max_integration_time_ms on XS
     - plugins
         - added --plugin command-line option
 - 2023-07-19 4.0.14
