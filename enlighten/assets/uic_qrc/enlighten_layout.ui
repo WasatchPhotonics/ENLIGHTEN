@@ -2597,6 +2597,9 @@ QComboBox QListView
              </layout>
             </item>
             <item>
+             <layout class="QVBoxLayout" name="verticalLayout_16" />
+            </item>
+            <item>
              <widget class="QFrame" name="frame_eeprom_contents_white">
               <property name="maximumSize">
                <size>
@@ -14141,7 +14144,7 @@ p, li { white-space: pre-wrap; }
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>0</y>
+                <y>-1077</y>
                 <width>240</width>
                 <height>2662</height>
                </rect>
@@ -16537,6 +16540,9 @@ p, li { white-space: pre-wrap; }
                      <enum>QFrame::Raised</enum>
                     </property>
                     <property name="wpPanel" stdset="0">
+                     <bool>false</bool>
+                    </property>
+                    <property name="wpGrad" stdset="0">
                      <bool>false</bool>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_151">
