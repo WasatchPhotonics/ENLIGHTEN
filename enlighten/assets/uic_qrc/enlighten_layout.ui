@@ -2491,7 +2491,7 @@ QComboBox QListView
         </sizepolicy>
        </property>
        <property name="currentIndex">
-        <number>3</number>
+        <number>0</number>
        </property>
        <widget class="QScrollArea" name="scrollArea_hardware">
         <property name="sizePolicy">
@@ -2517,7 +2517,7 @@ QComboBox QListView
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>619</width>
+           <width>1169</width>
            <height>5248</height>
           </rect>
          </property>
@@ -2996,7 +2996,7 @@ QComboBox QListView
                              <number>-120</number>
                             </property>
                             <property name="maximum">
-                             <number>30</number>
+                             <number>4095</number>
                             </property>
                             <property name="value">
                              <number>10</number>
@@ -3005,8 +3005,11 @@ QComboBox QListView
                           </item>
                           <item row="17" column="1">
                            <widget class="QLabel" name="label_21">
+                            <property name="toolTip">
+                             <string>°C for detectors (X/XM/XL), or raw DAC for lasers (XS)</string>
+                            </property>
                             <property name="text">
-                             <string>Startup Detector Temp (°C)</string>
+                             <string>Startup TEC Setpoint</string>
                             </property>
                            </widget>
                           </item>
@@ -8398,7 +8401,7 @@ QComboBox QListView
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>669</width>
+              <width>562</width>
               <height>1303</height>
              </rect>
             </property>
@@ -10980,8 +10983,8 @@ QComboBox QListView
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>256</width>
-                  <height>790</height>
+                  <width>183</width>
+                  <height>631</height>
                  </rect>
                 </property>
                 <property name="sizePolicy">
@@ -11299,8 +11302,8 @@ QComboBox QListView
                                   <rect>
                                    <x>0</x>
                                    <y>0</y>
-                                   <width>222</width>
-                                   <height>385</height>
+                                   <width>190</width>
+                                   <height>210</height>
                                   </rect>
                                  </property>
                                  <property name="sizePolicy">
@@ -12720,8 +12723,8 @@ QComboBox QListView
                                  <rect>
                                   <x>0</x>
                                   <y>0</y>
-                                  <width>886</width>
-                                  <height>300</height>
+                                  <width>186</width>
+                                  <height>36</height>
                                  </rect>
                                 </property>
                                 <property name="wpClear" stdset="0">

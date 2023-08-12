@@ -2,6 +2,8 @@
 
 # 4.0 GUI Refactoring
 
+- 2023-??-?? 4.0.15
+    - fixed DetectorTemperatureFeature on ambient detectors
 - 2023-07-19 4.0.14
     - extend boxcar to left and right edges of spectra
     - clear scan average count upon reset
