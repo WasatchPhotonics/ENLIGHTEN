@@ -3,13 +3,10 @@
 # @brief    Contains all the classes exchanged with ENLIGHTEN plug-ins, including
 #           the EnlightenPluginBase which all plug-ins should extend.
 
-import logging
 import datetime
 from dataclasses import dataclass, field
 
 from enlighten import common
-
-log = logging.getLogger(__name__)
 
 from enlighten.scope.Spectrometer import Spectrometer
 from wasatch.ProcessedReading import ProcessedReading
@@ -79,6 +76,12 @@ class EnlightenPluginBase:
             return "pixels"
 
     ### Begin functional-plugins backend ###
+
+    def log(self, *msgs):
+        # initially made this because the regular logger wasn't working
+        # but it makes sense for plugins to have their own log separate from enlighten
+        with open(common.get_default_data_dir()+os.sep+'plugin_log.txt', 'at') as pl:
+            pl.write(' '.join([str(msg) for msg in msgs]) + "\n")
 
     def field(self, **kwargs):
         self._fields.append(EnlightenPluginField(**kwargs))
