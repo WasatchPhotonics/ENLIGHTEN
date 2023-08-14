@@ -244,8 +244,8 @@ class PluginController:
 
         # bindings
         self.button_process.clicked.connect(self.button_process_callback)
-        self.cb_connected.stateChanged.connect(self.connected_callback)
-        self.cb_enabled.stateChanged.connect(self.enabled_callback)
+        self.cb_connected.toggled.connect(self.connected_callback)
+        self.cb_enabled.toggled.connect(self.enabled_callback)
         self.combo_module.currentIndexChanged.connect(self.combo_module_callback)
         self.combo_graph_pos.currentIndexChanged.connect(self.graph_pos_callback)
 

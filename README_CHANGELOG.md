@@ -6,6 +6,7 @@
     - enforce eeprom.max_integration_time_ms on XS
     - plugins
         - added --plugin command-line option
+        - added Demo.LockSettings
 - 2023-07-19 4.0.14
     - extend boxcar to left and right edges of spectra
     - clear scan average count upon reset
