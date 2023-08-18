@@ -244,8 +244,8 @@ class PluginController:
 
         # bindings
         self.button_process.clicked.connect(self.button_process_callback)
-        self.cb_connected.toggled.connect(self.connected_callback)
-        self.cb_enabled.toggled.connect(self.enabled_callback)
+        self.cb_connected.clicked.connect(self.connected_callback)
+        self.cb_enabled.clicked.connect(self.enabled_callback)
         self.combo_module.currentIndexChanged.connect(self.combo_module_callback)
         self.combo_graph_pos.currentIndexChanged.connect(self.graph_pos_callback)
 
@@ -373,6 +373,7 @@ class PluginController:
         log.debug(f"autoloading {module_name}")
         self.combo_module.setCurrentText(module_name)
         self.cb_connected.setChecked(True)
+        self.connected_callback() # .clicked doesn't respond to programmatic changes
 
         # autoloaded plugins can't be disabled
         self.combo_module.setEnabled(False)
