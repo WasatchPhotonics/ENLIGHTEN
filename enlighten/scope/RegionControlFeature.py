@@ -49,6 +49,7 @@ class RegionControlFeature:
         log.debug(f"setting region to {n}")
 
         # update locally, to cause wavelengths / wavenumbers to be updated
+        # SB: needed? isn't this call generated using process_f in the next line ?
         spec.settings.set_single_region(n)
 
         # send downstream

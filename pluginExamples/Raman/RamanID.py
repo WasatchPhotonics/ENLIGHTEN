@@ -1,3 +1,9 @@
+
+# last run 2023-08-08
+# - no log messages
+# - no indication of RamanID.exe subproc
+
+
 import re
 import os
 import json
@@ -440,7 +446,5 @@ class RamanID(EnlightenPluginBase):
         return response["MatchResult"]
 
     def report_error(self, msg):
-        self.error_message = msg
-        log.error(f"report_error: {msg}")
-        return False
+        self.log("error: " + str(msg))
 
