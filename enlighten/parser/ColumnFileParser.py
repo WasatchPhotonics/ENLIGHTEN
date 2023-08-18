@@ -45,7 +45,7 @@ class ColumnFileParser(object):
 
     def parse(self) -> Measurement:
         # read through the input file by line, loading data locally
-        self.csv_loader.load_data(scalar_metadata=True)
+        self.csv_loader.load_data()
 
         # put loaded data into where it goes in ENLIGHTEN datatypes
         self.post_process_metadata()
