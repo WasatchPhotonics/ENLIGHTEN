@@ -86,6 +86,7 @@ class EnlightenApplication(object):
         parser.add_argument("--set-all-dfu",        action="store_true",            help="set spectrometers to DFU mode as soon as they connect")
         parser.add_argument("--stylesheet-path",    type=str,                       help="Path to CSS directory")
         parser.add_argument("--headless",           action="store_true",            help="Run Enlighten without GUI")
+        parser.add_argument("--plugin",             type=str,                       help="Plugin name")
         return parser
 
     ##
@@ -126,7 +127,8 @@ class EnlightenApplication(object):
             set_all_dfu       = self.args.set_all_dfu,
             form              = self.form,
             splash            = self.splash,
-            headless          = self.args.headless)
+            headless          = self.args.headless,
+            autoload_plugin   = self.args.plugin)
         # This requires explanation.  This is obviously a Qt "connect" binding,
         # but Controller is not a Qt widget, and does not inherit from/extend 
         # anything.  What gives?  See Controller.create_signals, which actually
