@@ -23,8 +23,9 @@ class LaserControlFeature:
 
         self.ctl.battery_feature.register_observer(self.battery_callback)
 
-        self.slider_stop_usb    = False
-        self.displayed_srm_tip  = False
+        self.slider_stop_usb = False
+        self.displayed_srm_tip = False
+        self.locked = False
 
         sfu = self.ctl.form.ui
 
@@ -49,6 +50,10 @@ class LaserControlFeature:
     # ##########################################################################
     # Public Methods
     # ##########################################################################
+
+    def set_locked(self, flag):
+        self.locked = flag
+        self.update_visibility()
 
     ##
     # Called by initialize_new_device when a new device has been connected:
@@ -125,6 +130,19 @@ class LaserControlFeature:
         sfu.label_lightSourceWidget_excitation_nm.setVisible(doing_expert)
 
         self.configure_watchdog()
+
+        if self.locked:
+            # let them turn the laser on/off, nothing else
+            for w in [ sfu.doubleSpinBox_excitation_nm,
+                       sfu.pushButton_laser_power_dn,
+                       sfu.pushButton_laser_power_up,
+                       sfu.verticalSlider_laser_power,
+                       sfu.doubleSpinBox_excitation_nm,
+                       sfu.doubleSpinBox_laser_power,
+                       sfu.spinBox_laser_watchdog_sec,
+                       sfu.checkBox_laser_watchdog,
+                       sfu.comboBox_laser_power_unit ]:
+                w.setEnabled(False)
 
         self.refresh_laser_button()
 
