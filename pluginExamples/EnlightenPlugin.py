@@ -13,6 +13,7 @@ from wasatch.ProcessedReading import ProcessedReading
 from wasatch.SpectrometerSettings import SpectrometerSettings
 
 import numpy as np
+import os
 
 ##
 # Abstract Base Class (ABC) for all ENLIGHTEN-compatible plug-ins.
@@ -224,7 +225,6 @@ class EnlightenPluginBase:
                 "Table": self.table,
             }
 
-        log.debug(f"returning metadata = {self.metadata}")
         return EnlightenPluginResponse(
             request,
             series = self.series,
@@ -253,7 +253,6 @@ class EnlightenPluginBase:
     # @param enlighten_info: EnlightenApplicationInfo
     # @return True if initialization is successful, False otherwise
     def connect(self, enlighten_info):
-        log.debug("EnlightenPluginBase.connect")
         self.enlighten_info = enlighten_info
         return True
 
