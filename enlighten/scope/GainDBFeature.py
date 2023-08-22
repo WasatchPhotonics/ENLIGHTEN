@@ -50,6 +50,7 @@ class GainDBFeature:
           self.ctl.form.ui.doubleSpinBox_gain
         ]
         self.visible = False
+        self.locked = False
 
         # bindings
         self.ctl.form.ui.slider_gain.valueChanged.connect(self.sync_slider_to_spinbox_callback)
@@ -61,15 +62,22 @@ class GainDBFeature:
 
         self.update_visibility()
 
+    def set_locked(self, flag):
+        self.locked = flag
+        self.update_visibility()
+
     ##
     # Only show these controls when an IMX-based spectrometer is selected
     def update_visibility(self):
 
-        spec = self.ctl.multispec.current_spectrometer()
-        if spec is None:
+        if self.locked:
             self.visible = False
         else:
-            self.visible = spec.settings.is_micro()
+            spec = self.ctl.multispec.current_spectrometer()
+            if spec is None:
+                self.visible = False
+            else:
+                self.visible = spec.settings.is_micro()
 
         # normally we'd do this at the enclosing frame, but gain is currently 
         # nested within the detectorControlWidget, and a sub-frame breaks the
