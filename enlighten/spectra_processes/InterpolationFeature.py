@@ -97,6 +97,11 @@ class InterpolationFeature(object):
         pass
 
     def _update_widgets(self):
+        """
+        Called once at init to set internal state (and apply NOOP to config).
+        Called again on widget interaction to update state and config.
+        """
+        
         self.mutex.lock()
 
         self.enabled         = self.cb_enabled.isChecked()

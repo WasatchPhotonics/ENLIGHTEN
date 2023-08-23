@@ -3,13 +3,10 @@
 # @brief    Contains all the classes exchanged with ENLIGHTEN plug-ins, including
 #           the EnlightenPluginBase which all plug-ins should extend.
 
-import logging
 import datetime
 from dataclasses import dataclass, field
 
 from enlighten import common
-
-log = logging.getLogger(__name__)
 
 from enlighten.scope.Spectrometer import Spectrometer
 from wasatch.ProcessedReading import ProcessedReading
@@ -62,7 +59,29 @@ class EnlightenPluginBase:
         if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.PIXELS:
             return range(len(self.spectrum))
 
+    def get_axis_short_name(self):
+        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVELENGTHS:
+            return "wl"
+        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVENUMBERS:
+            return "wn"
+        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.PIXELS:
+            return "px"
+
+    def get_axis_name(self):
+        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVELENGTHS:
+            return "wavelengths"
+        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVENUMBERS:
+            return "wavenumbers"
+        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.PIXELS:
+            return "pixels"
+
     ### Begin functional-plugins backend ###
+
+    def log(self, *msgs):
+        # initially made this because the regular logger wasn't working
+        # but it makes sense for plugins to have their own log separate from enlighten
+        with open(common.get_default_data_dir()+os.sep+'plugin_log.txt', 'at') as pl:
+            pl.write(' '.join([str(msg) for msg in msgs]) + "\n")
 
     def field(self, **kwargs):
         self._fields.append(EnlightenPluginField(**kwargs))

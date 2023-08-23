@@ -2,7 +2,15 @@
 
 # 4.0 GUI Refactoring
 
-- 2023-??-?? 4.0.13
+- 2023-??-?? 4.0.15
+    - enforce eeprom.max_integration_time_ms on XS
+    - plugins
+        - added --plugin command-line option
+        - added Demo.LockSettings
+- 2023-07-19 4.0.14
+    - extend boxcar to left and right edges of spectra
+    - clear scan average count upon reset
+- 2023-07-07 4.0.13
     - spectrometer control
         - support selectable mW/PWM for ILC and Expert Mode
     - data management

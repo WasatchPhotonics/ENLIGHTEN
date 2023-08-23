@@ -52,7 +52,7 @@ class IntegrationTimeFeature(object):
             return
 
         min_ms = spec.settings.eeprom.min_integration_time_ms
-        max_ms = 2**24
+        max_ms = spec.settings.eeprom.max_integration_time_ms if spec.settings.is_xs() else 2**24
 
         # set slider limits FIRST, with signals disabled, because when we later
         # set the spinner, it will correctly set the final value within the limits.

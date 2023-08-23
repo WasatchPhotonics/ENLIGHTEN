@@ -83,7 +83,8 @@ class Cursor:
         self.converter = AxisConverter(ctl)
 
         # place a movable vertical line on the scope graph
-        self.cursor = pyqtgraph.InfiniteLine(movable=True, pen=self.ctl.gui.make_pen(widget="scope_cursor"))
+        # Hint for #156: make this field into a list of InfiniteLines
+        self.cursor = pyqtgraph.InfiniteLine(movable=True, pen=self.graph.gui.make_pen(widget="scope_cursor"))
         self.cursor.setVisible(False)
         self.ctl.graph.add_item(self.cursor)
 
