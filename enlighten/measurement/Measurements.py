@@ -67,6 +67,7 @@ class Measurements(object):
         self.save_options = self.factory.save_options
 
         # give Factory a handle to self, both for back-references and for count()
+        # SB: this is bad
         self.factory.measurements = self
 
         self.is_collapsed = False

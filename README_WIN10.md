@@ -11,7 +11,7 @@ The following installation sequence is recommended:
 - [Wasatch.PY](https://github.com/WasatchPhotonics/Wasatch.PY) (clone parallel to Enlighten)
 - [Enlighten](https://github.com/WasatchPhotonics/ENLIGHTEN) (clone parallel to Wasatch.PY)
 
-Windows environments have additional dependencies for KnowItAll support:
+Windows environments have additional dependencies if you need KnowItAll support:
 
 - [KnowItAllWrapper](https://github.com/WasatchPhotonics/KnowItAllWrapper)
     - a compiled copy of KIAConsole is in dist/

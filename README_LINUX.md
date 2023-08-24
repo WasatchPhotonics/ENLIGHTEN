@@ -1,4 +1,34 @@
+# Linux Runtime
+
+These are the latest steps for installing Enlighten on Linux.
+
+The following process was tested from a fresh Ubuntu 22.04 LTS VM running under Parallels 18.3.2 on MacOS 13.4.1.
+
+1. Open a terminal. (Ctrl+Alt+T)
+
+2. Download the install script.
+
+```bash
+wget wasatchphotonics.com/enlighten_ubuntu_launcher
+```
+
+3. Mark it for execution
+
+```bash
+chmod +x enlighten_ubuntu_launcher
+```
+
+4. Run it
+
+```bash
+./enlighten_ubuntu_launcher
+```
+
+5. Follow on-screen prompts. The system password may be required to install apt packages.
+
 # Linux Development Environment
+
+These are the latest steps for preparing a Linux development environment.
 
 The following process was tested from a fresh Ubuntu 16.04 LTS VM running under
 Parallels 13.3.2 on MacOS 10.14.2.
