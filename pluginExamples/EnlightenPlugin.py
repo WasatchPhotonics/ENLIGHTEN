@@ -14,6 +14,9 @@ from wasatch.SpectrometerSettings import SpectrometerSettings
 
 import numpy as np
 
+import logging
+log = logging.getLogger(__name__)
+
 ##
 # Abstract Base Class (ABC) for all ENLIGHTEN-compatible plug-ins.
 #
