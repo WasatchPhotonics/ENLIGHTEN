@@ -1,12 +1,9 @@
 import pandas as pd
 import numpy as np
-import logging
 
 import time
 
 from EnlightenPlugin import *
-
-log = logging.getLogger(__name__)
 
 class LocalBaseline(EnlightenPluginBase):
 
@@ -106,6 +103,12 @@ class LocalBaseline(EnlightenPluginBase):
                 /        "`\
         ____-```            \____
         """
+
+        # Some fun facts about FWHM:
+        # - Emission peaks will likely be narrower than Raman peaks.
+        # - Not all Raman peaks within the same compound will have the same width (due to atomic bond type).
+        # - FWHM varies across the detector, generally going from "wide to narrow" as you move from "blue to red," due to the grating.
+        # - Different detector models will yield different FWHM when mounted to the same optical bench, due to pixel count, size and spacing.
 
         # to make use of one-line search operations, it is helpful to keep indexes with values [ O(n) ]
         region = [(i, spectrum_region[i]) for i in range(len(spectrum_region))]
