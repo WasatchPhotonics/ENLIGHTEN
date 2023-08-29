@@ -24,8 +24,8 @@ class BatteryFeature:
 
         self.observers = set()
 
-        ctl.form.ui.battery_pushButton.clicked.connect(self.clear_data)
-        ctl.form.ui.pushButton_battery_copy.clicked.connect(self.copy_data) # todo rename in form
+        ctl.form.ui.pushButton_battery_clear_history.clicked.connect(self.clear_data)
+        ctl.form.ui.pushButton_battery_copy_history.clicked.connect(self.copy_data) 
 
     def register_observer(self, callback):
         self.observers.add(callback)
@@ -51,33 +51,33 @@ class BatteryFeature:
 
         raw = reading.battery_raw
         perc = reading.battery_percentage
-        charging = reading.battery_charging
+        is_charging = reading.battery_charging
+        charging_label = 'charging' if is_charging else 'discharging'
 
+        log.debug(f"adding {perc} to RDS")
         rds.add(perc)
         current_time = datetime.datetime.now()
         if self.output_to_file:
-            self.ctl.hardware_file_manager.write_line(self.name,f"{self.name},{spec.label},{current_time}, {perc}, charging: {charging}")
+            self.ctl.hardware_file_manager.write_line(self.name,f"{self.name},{spec.label},{current_time}, {perc}, {charging_label}")
 
         self.ctl.form.ui.label_battery_raw.setText("0x%06x" % reading.battery_raw)
-        self.ctl.form.ui.label_battery_parsed.setText(f"Battery ({perc:.2f}%, {'charging' if charging else 'discharging'})")
-            
-        for cb in self.observers:
-            cb(perc, charging)
-
-        active_curve = self.ctl.multispec.get_hardware_feature_curve(self.name, spec.device_id)
-        if active_curve == None:
-            return
-
-        x_time = [(current_time-x).total_seconds() for x,y in rds.data]
-        y = rds.get_values()
-
-        try:
-            self.ctl.graph.set_data(curve=active_curve, y=y, x=x_time)
-        except:
-            log.error("error plotting battery data", exc_info=1)
-
+        self.ctl.form.ui.label_battery_parsed.setText(f"Battery ({perc:.2f}%, {charging_label})")
         if spec == current_spec:
             self.lb_perc.setText(f"{perc:.2f} %")
+            
+        for cb in self.observers:
+            cb(perc, is_charging)
+
+        # update graph on Factory View
+        active_curve = self.ctl.multispec.get_hardware_feature_curve(self.name, spec.device_id)
+        if active_curve is None:
+            return
+        try:
+            x, y = rds.get_relative_to_now()
+            log.debug(f"updating battery curve ({len(y)} values)")
+            self.ctl.graph.set_data(curve=active_curve, y=y, x=x)
+        except:
+            log.error("error plotting battery data", exc_info=1)
 
     def populate_placeholder(self):
         log.debug(f"adding battery graph")
@@ -107,10 +107,10 @@ class BatteryFeature:
 
     def clear_data(self):
         for spec in self.ctl.multispec.get_spectrometers():
+            log.debug(f"clearing battery history for {spec}")
             if spec is None:
                 continue
             app_state = spec.app_state
-
             rds = app_state.battery_data
             rds.clear()
 
@@ -124,6 +124,7 @@ class BatteryFeature:
         spec = self.ctl.multispec.current_spectrometer()
         copy_str = []
         for spec in self.ctl.multispec.get_spectrometers():
+            log.debug(f"copying battery history for {spec}")
             if not self.ctl.multispec.check_hardware_curve_present(self.name, spec.device_id):
                 continue
 
