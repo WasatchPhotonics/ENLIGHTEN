@@ -2491,7 +2491,7 @@ QComboBox QListView
         </sizepolicy>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <widget class="QScrollArea" name="scrollArea_hardware">
         <property name="sizePolicy">
@@ -2518,7 +2518,7 @@ QComboBox QListView
            <x>0</x>
            <y>0</y>
            <width>1169</width>
-           <height>5248</height>
+           <height>5262</height>
           </rect>
          </property>
          <property name="sizePolicy">
@@ -7464,7 +7464,7 @@ QComboBox QListView
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>597</width>
+                    <width>1151</width>
                     <height>1194</height>
                    </rect>
                   </property>
@@ -7849,7 +7849,7 @@ QComboBox QListView
                                      </widget>
                                     </item>
                                     <item>
-                                     <widget class="QPushButton" name="pushButton_battery_copy">
+                                     <widget class="QPushButton" name="pushButton_battery_copy_history">
                                       <property name="sizePolicy">
                                        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                                         <horstretch>0</horstretch>
@@ -7869,7 +7869,7 @@ QComboBox QListView
                                      </widget>
                                     </item>
                                     <item>
-                                     <widget class="QPushButton" name="battery_pushButton">
+                                     <widget class="QPushButton" name="pushButton_battery_clear_history">
                                       <property name="sizePolicy">
                                        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                                         <horstretch>0</horstretch>
@@ -14147,7 +14147,7 @@ p, li { white-space: pre-wrap; }
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-1077</y>
+                <y>0</y>
                 <width>240</width>
                 <height>2662</height>
                </rect>
