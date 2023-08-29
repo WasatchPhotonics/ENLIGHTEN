@@ -260,26 +260,10 @@ class BusinessObjects:
             feature.multispec = ctl.multispec
 
         self.header("instantiating BatteryFeature")
-        ctl.battery_feature = BatteryFeature(
-            sfu                         = sfu,
-            graph                       = ctl.graph,
-            multispec                   = ctl.multispec,
-            clear_btn                   = sfu.battery_pushButton,
-            make_pen                    = ctl.gui.make_pen,
-            clipboard                   = ctl.clipboard,
-            hardware_file_manager       = ctl.hardware_file_manager,
-            lb_raw                      = sfu.label_battery_raw,
-            lb_parsed                   = sfu.label_battery_parsed)
+        ctl.battery_feature = BatteryFeature(ctl)
 
         self.header("instantiating StatusIndicators")
-        ctl.status_indicators = StatusIndicators(
-            logging_feature             = ctl.logging_feature,
-            multispec                   = ctl.multispec,
-            stylesheets                 = ctl.stylesheets,
-
-            button_hardware             = sfu.systemStatusWidget_pushButton_hardware,
-            button_lamp                 = sfu.systemStatusWidget_pushButton_light,
-            button_temperature          = sfu.systemStatusWidget_pushButton_temperature)
+        ctl.status_indicators = StatusIndicators(ctl)
 
         self.header("instantiating DetectorTemperatureFeature")
         ctl.detector_temperature = DetectorTemperatureFeature(

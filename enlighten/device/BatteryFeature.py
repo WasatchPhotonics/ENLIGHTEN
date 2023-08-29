@@ -9,44 +9,23 @@ class BatteryFeature:
     """ 
     @todo track battery state in SpectrometerApplicationState to support multiple connected spectrometers
     """
-    def __init__(self,
-                 sfu,
-                 graph,
-                 multispec,
-                 clear_btn,
-                 make_pen,
-                 clipboard,
-                 hardware_file_manager,
-                 lb_raw,
-                 lb_parsed):
+    def __init__(self, ctl):
+        self.ctl = ctl
 
-        self.sfu                   = sfu
         self.curve                 = None
         self.name                  = "Battery"
-        self.graph                 = graph
-        self.multispec             = multispec
-        self.clear_btn             = clear_btn
-        self.make_pen              = make_pen
-        self.clipboard             = clipboard
         self.output_to_file        = False
-        self.hardware_file_manager = hardware_file_manager
 
-        self.lb_raw    = lb_raw 
-        self.lb_parsed = lb_parsed
-        self.lb_perc = self.sfu.label_hardware_capture_details_battery
+        self.lb_perc = ctl.form.ui.label_hardware_capture_details_battery
 
         self.populate_placeholder()
-        self.multispec.register_strip_feature(self)
-        self.hardware_file_manager.register_feature(self)
-
-        self.raw = None
-        self.perc = 100
-        self.charging = False
+        ctl.multispec.register_strip_feature(self)
+        ctl.hardware_file_manager.register_feature(self)
 
         self.observers = set()
 
-        self.clear_btn                   .clicked            .connect(self.clear_data)
-        self.sfu.pushButton_battery_copy .clicked            .connect(self.copy_data)
+        ctl.form.ui.battery_pushButton.clicked.connect(self.clear_data)
+        ctl.form.ui.pushButton_battery_copy.clicked.connect(self.copy_data) # todo rename in form
 
     def register_observer(self, callback):
         self.observers.add(callback)
@@ -58,7 +37,7 @@ class BatteryFeature:
             pass
 
     def process_reading(self, spec, reading):
-        current_spec = self.multispec.current_spectrometer()
+        current_spec = self.ctl.multispec.current_spectrometer()
         if reading.battery_raw is None:
             return
 
@@ -69,19 +48,23 @@ class BatteryFeature:
 
         app_state = spec.app_state
         rds = app_state.battery_data
-        self.raw = reading.battery_raw
-        self.perc = reading.battery_percentage
-        self.charging = reading.battery_charging
-        rds.add(self.perc)
+
+        raw = reading.battery_raw
+        perc = reading.battery_percentage
+        charging = reading.battery_charging
+
+        rds.add(perc)
         current_time = datetime.datetime.now()
         if self.output_to_file:
-            self.hardware_file_manager.write_line(self.name,f"{self.name},{spec.label},{current_time}, {self.perc}, charging: {self.charging}")
+            self.ctl.hardware_file_manager.write_line(self.name,f"{self.name},{spec.label},{current_time}, {perc}, charging: {charging}")
 
-        self._update_labels(reading)
+        self.ctl.form.ui.label_battery_raw.setText("0x%06x" % reading.battery_raw)
+        self.ctl.form.ui.label_battery_parsed.setText(f"Battery ({perc:.2f}%, {'charging' if charging else 'discharging'})")
+            
         for cb in self.observers:
-            cb(self.perc, self.charging)
+            cb(perc, charging)
 
-        active_curve = self.multispec.get_hardware_feature_curve(self.name, spec.device_id)
+        active_curve = self.ctl.multispec.get_hardware_feature_curve(self.name, spec.device_id)
         if active_curve == None:
             return
 
@@ -89,45 +72,41 @@ class BatteryFeature:
         y = rds.get_values()
 
         try:
-            self.graph.set_data(curve=active_curve, y=y, x=x_time)
+            self.ctl.graph.set_data(curve=active_curve, y=y, x=x_time)
         except:
             log.error("error plotting battery data", exc_info=1)
 
         if spec == current_spec:
-            self.lb_perc.setText(f"{self.perc:.2f} %")
-
-    def _update_labels(self, reading):
-        self.lb_raw.setText("0x%06x" % reading.battery_raw)
-        self.lb_parsed.setText("Battery (%.2f%%, %s)" % (
-            self.perc, "charging" if self.charging else "discharging"))
+            self.lb_perc.setText(f"{perc:.2f} %")
 
     def populate_placeholder(self):
         log.debug(f"adding battery graph")
-        self.sfu.battery_graph = pyqtgraph.PlotWidget(name="Battery Data")
-        self.sfu.battery_graph.invertX(True)
-        self.sfu.stackedWidget_battery.addWidget(self.sfu.battery_graph)
-        self.sfu.stackedWidget_battery.setCurrentIndex(1)
+        sfu = self.ctl.form.ui
+        sfu.battery_graph = pyqtgraph.PlotWidget(name="Battery Data")
+        sfu.battery_graph.invertX(True)
+        sfu.stackedWidget_battery.addWidget(sfu.battery_graph)
+        sfu.stackedWidget_battery.setCurrentIndex(1)
 
     def add_spec_curve(self, spec):
-        if self.multispec.check_hardware_curve_present(self.name, spec.device_id):
+        if self.ctl.multispec.check_hardware_curve_present(self.name, spec.device_id):
             return
-        curve = self.sfu.battery_graph.plot([], pen=spec.curve.opts['pen'],name=str(spec.label))
-        self.multispec.register_hardware_feature_curve(self.name, spec.device_id, curve) 
+        curve = self.ctl.form.ui.battery_graph.plot([], pen=spec.curve.opts['pen'],name=str(spec.label))
+        self.ctl.multispec.register_hardware_feature_curve(self.name, spec.device_id, curve) 
     
     def remove_spec_curve(self, spec):
-        cur_curve = self.multispec.get_hardware_feature_curve(self.name, spec.device_id)
+        cur_curve = self.ctl.multispec.get_hardware_feature_curve(self.name, spec.device_id)
         if cur_curve is None:
             return
         # remove current curve from graph
-        for curve in self.sfu.battery_graph.listDataItems():
+        for curve in self.ctl.form.ui.battery_graph.listDataItems():
             if curve.name() == cur_curve.name():
-                self.sfu.battery_graph.removeItem(curve)
-        self.multispec.remove_hardware_curve(self.name, spec.device_id)
-        if self.multispec.get_spectrometers() == []:
+                self.ctl.form.ui.battery_graph.removeItem(curve)
+        self.ctl.multispec.remove_hardware_curve(self.name, spec.device_id)
+        if self.ctl.multispec.get_spectrometers() == []:
             self.lb_perc.setText("99.99 %")
 
     def clear_data(self):
-        for spec in self.multispec.get_spectrometers():
+        for spec in self.ctl.multispec.get_spectrometers():
             if spec is None:
                 continue
             app_state = spec.app_state
@@ -136,16 +115,16 @@ class BatteryFeature:
             rds.clear()
 
     def update_curve_color(self, spec):
-        curve = self.multispec.get_hardware_feature_curve(self.name, spec.device_id)
+        curve = self.ctl.multispec.get_hardware_feature_curve(self.name, spec.device_id)
         if curve == None:
             return
         curve.opts["pen"] = spec.assigned_color
 
     def copy_data(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         copy_str = []
-        for spec in self.multispec.get_spectrometers():
-            if not self.multispec.check_hardware_curve_present(self.name, spec.device_id):
+        for spec in self.ctl.multispec.get_spectrometers():
+            if not self.ctl.multispec.check_hardware_curve_present(self.name, spec.device_id):
                 continue
 
             app_state = spec.app_state
@@ -153,10 +132,10 @@ class BatteryFeature:
                 continue
             rds = app_state.battery_data
             copy_str.append(rds.get_csv_data("Battery Data",spec.label))
-        self.clipboard.raw_set_text('\n'.join(copy_str))
+        self.ctl.clipboard.raw_set_text('\n'.join(copy_str))
 
     def update_visibility(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             visible = False
         else:
@@ -165,8 +144,19 @@ class BatteryFeature:
             else:
                 visible = False
 
-        self.sfu.frame_hardware_capture_battery.setVisible(visible)
+        self.ctl.form.ui.frame_hardware_capture_battery.setVisible(visible)
 
+    def get_perc(self, spec=None):
+        if spec is None:
+            spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return None
 
+        if not spec.settings.eeprom.has_battery:
+            return None
 
+        if spec.app_state.battery_data.empty():
+            return None
 
+        (time, perc) = spec.app_state.battery_data.latest()
+        return perc
