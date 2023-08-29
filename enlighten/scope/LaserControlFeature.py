@@ -18,6 +18,8 @@ log = logging.getLogger(__name__)
 # Encapsulate laser control from the application side.
 class LaserControlFeature:
 
+    MIN_BATTERY_PERC = 5
+
     def __init__(self, ctl):
         self.ctl = ctl
 
@@ -236,6 +238,18 @@ class LaserControlFeature:
     def toggle_laser(self):
         log.debug("toggle_laser called")
         self.toggle_callback()
+
+    def cant_fire_because_battery(self, spec=None):
+        if spec is None:
+            spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return False
+        
+        perc = self.ctl.battery_feature.get_perc(spec)
+        if perc is None:
+            return False
+
+        return perc < self.MIN_BATTERY_PERC
 
     def disconnect(self):
         spec = self.ctl.multispec.current_spectrometer()
@@ -547,12 +561,12 @@ class LaserControlFeature:
 
     # gets called by BatteryFeature when a new battery reading is received
     def battery_callback(self, perc, charging):
-        enough_for_laser = perc >= 5.0
+        enough_for_laser = perc >= self.MIN_BATTERY_PERC
         log.debug("enough_for_laser = %s (%.2f%%)" % (enough_for_laser, perc))
 
         b = self.ctl.form.ui.pushButton_laser_toggle
         b.setEnabled(enough_for_laser)
-        b.setToolTip("Toggle laser (ctrl-L)" if enough_for_laser else "battery low")
+        b.setToolTip("Toggle laser (ctrl-L)" if enough_for_laser else "battery low ({perc:.2f}%)")
 
     def slider_power_callback(self):
         self.slider_stop_usb = False

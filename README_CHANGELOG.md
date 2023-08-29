@@ -4,10 +4,14 @@
 
 - 2023-??-?? 4.0.15
     - fixed DetectorTemperatureFeature on ambient detectors
-    - enforce eeprom.max_integration_time_ms on XS
     - plugins
         - added --plugin command-line option
         - added Demo.LockSettings
+    - XS-Series
+        - enforce eeprom.max_integration_time_ms
+        - StatusIndicators show laser unavailable when battery low
+    - refactoring
+        - moved BatteryFeature, StatusIndicators to ctl
 - 2023-07-19 4.0.14
     - extend boxcar to left and right edges of spectra
     - clear scan average count upon reset
