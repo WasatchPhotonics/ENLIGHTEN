@@ -5,6 +5,11 @@ import time
 
 from EnlightenPlugin import *
 
+# firstonly(i, "some string") will only have a value if i==0
+# this is a workaround to prevent duplicate legend entries
+firstonly = lambda i, v: v if not i else None
+
+
 class LocalBaseline(EnlightenPluginBase):
 
     def get_configuration(self):
@@ -89,12 +94,17 @@ class LocalBaseline(EnlightenPluginBase):
                 # interpolate the domain using (i, f)
                 return xp[i]*(1-f) + xp[i+1]*f
 
-    def get_fwhm(self, spectrum_region, start_pixel):
+    def get_fwhm(self, i, spectrum_region, start_pixel):
         r"""
         Compute Full-Width Half-Max.
 
+        @param i used to workaround duplicate legend entries 
         @param spectrum_region an array containing a single peak
         @param start_pixel an index that specifies the start of spectrum_region in the context of the overall spectrum
+
+        parameters additional notes:
+        i: can be removed if used without annotations, or if deduping is moved to self.plot
+        start_pixel: used to define x_region (variable `x_vals`). This could be reparametrized in terms of x_region.
 
                     ^
                    / \
@@ -172,7 +182,7 @@ class LocalBaseline(EnlightenPluginBase):
         fwhm_right = self.interp_inverse(half_max, x_vals_right, [T[VALUE] for T in right])
 
         self.plot(
-            title="FWHM",
+            title=firstonly(i, "FWHM"),
             color="purple",
             x=[fwhm_left, fwhm_right],
             y=[half_max, half_max]
@@ -192,9 +202,6 @@ class LocalBaseline(EnlightenPluginBase):
 
         header = []
         values = []
-
-        # firstonly(i, "some string") will only have a value if i==0
-        firstonly = lambda i, v: v if not i else None
 
         for i in range(self.count):
             x = self.get_widget_from_name("x_"+str(i)).value()
@@ -261,7 +268,7 @@ class LocalBaseline(EnlightenPluginBase):
                 peak_baseline_subtracted = peak - interpolated_baseline
 
                 # compute and plot fwhm (full width half max)
-                fwhm_target = self.get_fwhm(peak_region_subtracted, start_pixel)
+                fwhm_target = self.get_fwhm(i, peak_region_subtracted, start_pixel)
                 if fwhm_target is None:
                     fwhm_target = "--"
             else:
