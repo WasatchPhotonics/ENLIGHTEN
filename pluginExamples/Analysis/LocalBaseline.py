@@ -172,6 +172,7 @@ class LocalBaseline(EnlightenPluginBase):
         fwhm_right = self.interp_inverse(half_max, x_vals_right, [T[VALUE] for T in right])
 
         self.plot(
+            title="FWHM",
             color="purple",
             x=[fwhm_left, fwhm_right],
             y=[half_max, half_max]
@@ -258,12 +259,6 @@ class LocalBaseline(EnlightenPluginBase):
                 fwhm_target = self.get_fwhm(peak_region_subtracted, start_pixel)
                 if fwhm_target is None:
                     fwhm_target = "--"
-                else:
-                    self.plot(
-                        title=firstonly(i, "FWHM"),
-                        color="purple",
-                        y = [0,0],
-                    )
             else:
                 peak = "--"
                 interpolated_baseline = "--"
