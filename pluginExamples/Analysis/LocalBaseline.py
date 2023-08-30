@@ -15,7 +15,7 @@ class LocalBaseline(EnlightenPluginBase):
         for i in range(self.count):
             self.field(
                 name = "x_"+str(i),
-                initial = 1014, minimum = -10000, maximum = 10000, step = .2,
+                initial = 0, minimum = -10000, maximum = 10000, step = .2,
                 datatype = "float", direction = "input"
             )
 
@@ -198,6 +198,11 @@ class LocalBaseline(EnlightenPluginBase):
 
         for i in range(self.count):
             x = self.get_widget_from_name("x_"+str(i)).value()
+
+            # turn off annotations for placeholder values 0, -1
+            if x <= 0:
+                continue
+
             left = self.get_widget_from_name("Left_"+str(i)).value()
             right = self.get_widget_from_name("Right_"+str(i)).value()
 
