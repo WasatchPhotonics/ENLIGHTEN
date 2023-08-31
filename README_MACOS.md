@@ -88,9 +88,13 @@ It runs fine from source and connects to spectrometers:
     2023-08-30 20:11:29,156 [0x7ff85b352640] enlighten.Controller DEBUG    
 
 However, when I run the .app built by pyinstaller and platypus, I currently get 
-this.  Note that the FIRST scan works, but the SECOND does not. I think right now
-DeviceFinderUSB tries to switch to event-based notifications after the first 
-scan...we might just need to remove that.
+this.  Note that the FIRST scan works, but the SECOND does not. 
+
+Further testing shows that the calls to usb.core.find(find_all=True, 
+backend=libusb0.get_backend()) still work, it's the subsequent attempt to ITERATE
+over the result set that throw the exception?!
+
+To be clear, usb_find_busses is part of libusb-0.1, and we are explicitly using the libusb0 backend...
 
     2023-08-30 20:08:45,715 [0x7ff85b352640] wasatch.WasatchBus DEBUG    USBBus.update: instantiating DeviceFinderUSB
     2023-08-30 20:08:45,715 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceFinderUSB.find_usb_devices: starting
