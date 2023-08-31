@@ -16,19 +16,46 @@ See appendices below for notes.
 
 # Installer Build Process
 
-Install dependencies, if not already done:
+## Install dependencies, if not already done:
 
     $ pip install pyinstaller
     $ brew install platypus
 
-Run pyinstaller:
+## Run pyinstaller
 
     $ make mac-installer
 
 (Note this will automatically run Platypus to convert the Mac Python .dylibs to 
 a MacOS .app "application".)
 
-Post to website:
+## Create a .dmg
+
+This part is not currently scripted, and is being tested manually.  Basically:
+
+- use Disk Utility to create a blank .dmg (not from Folder) of the needed size (.app filesize + 20%)
+- name the new .dmg file ENLIGHTEN-x.y.z.dmg
+- mount the dmg (double-click .dmg)
+- label the volume "ENLIGHTEN x.y.z"
+- open the dmg (dbl-click Finder icon)
+- drag the .app into the window
+- opt-cmd-drag an alias of your Applications folder into the window
+- set view to icon
+- create a new folder inside the window called 'background'
+- in Terminal
+    - cd /Volumes/ENLIGHTEN*
+    - mv background .background
+    - open .background
+    - copy scripts/mac_installer/folder_background.png to .background
+- right-click on folder and choose "View Options"
+- set background to Picture
+- drag folder_background.png from (currently open) .background folder into View Options
+- arrange icons sensibly
+- close window
+- unmount .dmg
+    
+## Post to website
+
+Old method: (needs updated for .dmg)
 
     $ scripts/deploy --mac
 
