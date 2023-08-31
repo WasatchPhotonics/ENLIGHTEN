@@ -52,6 +52,9 @@ This part is not currently scripted, and is being tested manually.  Basically:
 - arrange icons sensibly
 - close window
 - unmount .dmg
+- haven't tried this yet but:
+    - make read-only: https://superuser.com/a/390924
+    - guessing use `-format UFBI` to create and add checksum?
     
 ## Post to website
 
