@@ -1,30 +1,19 @@
 # MacOS Development Environment
 
-The normal setup process seems to work, with just a few tweaks:
+We used to be able to get MacOS running with Miniconda, but I think that no 
+longer works with PySide2; it may with PySide6, but we haven't attempted that 
+conversion yet.
 
-- Use miniconda3 and the conda-win10.yml environment file to create a conda_enlighten3 environment:
+I was able to get it running from source on an Intel Mac (Ventura 13.4.1(c))
+using Homebrew.  Basically (I'm not sure everything I typed) this:
 
-    $ cp environments/conda-win10.yml environment.yml
-    $ conda env create -n conda_enlighten3
-    $ python -m pip install -r requirements.txt
-    $ pip install PySide2 pygtail pyusb pywavelets superman pyqtgraph matplotlib
-    $ scripts/rebuild_resources.sh
+    $ brew install pyside2
+    $ brew install python-tk@3.10
+    $ export PATH=/usr/local/Cellar/python@3.10/3.10.13/bin
+    $ python3.10 scripts/Enlighten.py --log-level debug 1>enlighten.out 2>enlighten.err
 
-Notes:
+See appendices below for notes.
 
-- note that Python 3.10+ is required
-- designer.sh has a tweak to support MacOS.
-- wasatch.applog has a tweak to support both old "Darwin" and new "macOS" Python platforms.
-- scripts/enlighten.py has a tweak for Big Sur from here:
-    - https://forum.qt.io/topic/120846/big-sur-pyside2-not-showing-a-widgets
-
-# Running from Source (example)
-
-    $ cd ~/work/code/enlighten
-    $ conda activate conda_enlighten3
-    $ export PYTHONPATH="../Wasatch.PY:pluginExamples:.:enlighten/assets/uic_qrc"
-    $ python scripts/Enlighten.py --log-level debug 1>enlighten.out 2>enlighten.err
-    
 # Installer Build Process
 
 Install dependencies, if not already done:
@@ -43,7 +32,98 @@ Post to website:
 
     $ scripts/deploy --mac
 
+# Current Issues
+
+(AKA, "you are here")
+
+## libusb usb_find_busses
+
+It runs fine from source and connects to spectrometers:
+
+    2023-08-30 20:11:28,610 [0x7ff85b352640] wasatch.WasatchBus DEBUG    USBBus.update: instantiating DeviceFinderUSB
+    2023-08-30 20:11:28,610 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceFinderUSB.find_usb_devices: starting
+    2023-08-30 20:11:28,610 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceFinderUSB.find_usb_devices: just doing a bus poll for startup_scan 0
+    2023-08-30 20:11:28,612 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceListFID: discovered vid 0x24aa, pid 0x4000 (count 1), address 15
+    2023-08-30 20:11:28,614 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceListFID: discovered vid 0x0bda, pid 0x2171 (count 2), address 3
+    2023-08-30 20:11:28,614 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceListFID: discovered vid 0x1a40, pid 0x0801 (count 3), address 2
+    2023-08-30 20:11:28,614 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceListFID: discovered vid 0x0bda, pid 0x8153 (count 4), address 2
+    2023-08-30 20:11:28,614 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceListFID: discovered vid 0x05e3, pid 0x0610 (count 5), address 1
+    2023-08-30 20:11:28,614 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceListFID: discovered vid 0x05e3, pid 0x0626 (count 6), address 1
+    2023-08-30 20:11:28,614 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceListFID: discovered vid 0x05ac, pid 0x8104 (count 7), address 4
+    2023-08-30 20:11:28,614 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceFinderUSB.find_usb_devices: returning 1 devices
+    2023-08-30 20:11:28,614 [0x7ff85b352640] wasatch.WasatchBus DEBUG    USBBus.update: found 1
+    2023-08-30 20:11:28,614 [0x7ff85b352640] wasatch.WasatchBus DEBUG    USBBus.update: instantiating DeviceFinderUSB
+    2023-08-30 20:11:28,614 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceFinderUSB.find_usb_devices: starting
+    2023-08-30 20:11:28,614 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceFinderUSB.find_usb_devices: just doing a bus poll for startup_scan 1
+    2023-08-30 20:11:28,616 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceListFID: discovered vid 0x24aa, pid 0x4000 (count 1), address 15
+    2023-08-30 20:11:28,616 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceListFID: discovered vid 0x0bda, pid 0x2171 (count 2), address 3
+    2023-08-30 20:11:28,617 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceListFID: discovered vid 0x1a40, pid 0x0801 (count 3), address 2
+    2023-08-30 20:11:28,617 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceListFID: discovered vid 0x0bda, pid 0x8153 (count 4), address 2
+    2023-08-30 20:11:28,617 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceListFID: discovered vid 0x05e3, pid 0x0610 (count 5), address 1
+    2023-08-30 20:11:28,617 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceListFID: discovered vid 0x05e3, pid 0x0626 (count 6), address 1
+    2023-08-30 20:11:28,617 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceListFID: discovered vid 0x05ac, pid 0x8104 (count 7), address 4
+    2023-08-30 20:11:28,617 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceFinderUSB.find_usb_devices: returning 1 devices
+    2023-08-30 20:11:28,617 [0x7ff85b352640] wasatch.WasatchBus DEBUG    USBBus.update: found 1
+        ...
+    2023-08-30 20:11:29,143 [0x7ff85b352640] wasatch.WasatchBus DEBUG    USBBus.update: instantiating DeviceFinderUSB
+    2023-08-30 20:11:29,144 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceFinderUSB.find_usb_devices: starting
+    2023-08-30 20:11:29,144 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceFinderUSB.find_usb_devices: just doing a bus poll for startup_scan 2
+    2023-08-30 20:11:29,147 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceListFID: discovered vid 0x24aa, pid 0x4000 (count 1), address 15
+    2023-08-30 20:11:29,148 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceListFID: discovered vid 0x0bda, pid 0x2171 (count 2), address 3
+    2023-08-30 20:11:29,148 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceListFID: discovered vid 0x1a40, pid 0x0801 (count 3), address 2
+    2023-08-30 20:11:29,149 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceListFID: discovered vid 0x0bda, pid 0x8153 (count 4), address 2
+    2023-08-30 20:11:29,149 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceListFID: discovered vid 0x05e3, pid 0x0610 (count 5), address 1
+    2023-08-30 20:11:29,149 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceListFID: discovered vid 0x05e3, pid 0x0626 (count 6), address 1
+    2023-08-30 20:11:29,149 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceListFID: discovered vid 0x05ac, pid 0x8104 (count 7), address 4
+    2023-08-30 20:11:29,149 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceFinderUSB.find_usb_devices: returning 1 devices
+    2023-08-30 20:11:29,149 [0x7ff85b352640] wasatch.WasatchBus DEBUG    USBBus.update: found 1
+    2023-08-30 20:11:29,150 [0x7ff85b352640] enlighten.network.BLEManager DEBUG    checking for scans and queue is empty True
+    2023-08-30 20:11:29,150 [0x7ff85b352640] enlighten.ui.Marquee INFO     connecting to <DeviceID USB USB:0x24aa:0x4000:20:15>
+    2023-08-30 20:11:29,150 [0x7ff85b352640] enlighten.ui.Stylesheets DEBUG    applying stylesheet dark[panel] to widget frame_drawer_black
+    2023-08-30 20:11:29,155 [0x7ff85b352640] enlighten.Controller DEBUG    connect_new: instantiating WasatchDeviceWrapper with <DeviceID USB USB:0x24aa:0x4000:20:15>
+    2023-08-30 20:11:29,156 [0x7ff85b352640] enlighten.Controller DEBUG    
+    2023-08-30 20:11:29,156 [0x7ff85b352640] enlighten.Controller DEBUG    =======================================================================
+    2023-08-30 20:11:29,156 [0x7ff85b352640] enlighten.Controller DEBUG    connect_new: setting in-process: <DeviceID USB USB:0x24aa:0x4000:20:15>
+    2023-08-30 20:11:29,156 [0x7ff85b352640] enlighten.Controller DEBUG    =======================================================================
+    2023-08-30 20:11:29,156 [0x7ff85b352640] enlighten.Controller DEBUG    
+
+However, when I run the .app built by pyinstaller and platypus, I currently get 
+this.  Note that the FIRST scan works, but the SECOND does not. I think right now
+DeviceFinderUSB tries to switch to event-based notifications after the first 
+scan...we might just need to remove that.
+
+    2023-08-30 20:08:45,715 [0x7ff85b352640] wasatch.WasatchBus DEBUG    USBBus.update: instantiating DeviceFinderUSB
+    2023-08-30 20:08:45,715 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceFinderUSB.find_usb_devices: starting
+    2023-08-30 20:08:45,715 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceFinderUSB.find_usb_devices: just doing a bus poll for startup_scan 0
+    2023-08-30 20:08:45,717 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceListFID: discovered vid 0x24aa, pid 0x4000 (count 1), address 15
+    2023-08-30 20:08:45,719 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceListFID: discovered vid 0x0bda, pid 0x2171 (count 2), address 3
+    2023-08-30 20:08:45,719 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceListFID: discovered vid 0x1a40, pid 0x0801 (count 3), address 2
+    2023-08-30 20:08:45,719 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceListFID: discovered vid 0x0bda, pid 0x8153 (count 4), address 2
+    2023-08-30 20:08:45,719 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceListFID: discovered vid 0x05e3, pid 0x0610 (count 5), address 1
+    2023-08-30 20:08:45,720 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceListFID: discovered vid 0x05e3, pid 0x0626 (count 6), address 1
+    2023-08-30 20:08:45,720 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceListFID: discovered vid 0x05ac, pid 0x8104 (count 7), address 4
+    2023-08-30 20:08:45,720 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceFinderUSB.find_usb_devices: returning 1 devices
+    2023-08-30 20:08:45,720 [0x7ff85b352640] wasatch.WasatchBus DEBUG    USBBus.update: found 1
+    2023-08-30 20:08:45,720 [0x7ff85b352640] wasatch.WasatchBus DEBUG    USBBus.update: instantiating DeviceFinderUSB
+    2023-08-30 20:08:45,720 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceFinderUSB.find_usb_devices: starting
+    2023-08-30 20:08:45,720 [0x7ff85b352640] wasatch.DeviceFinderUSB DEBUG    DeviceFinderUSB.find_usb_devices: just doing a bus poll for startup_scan 1
+    2023-08-30 20:08:45,720 [0x7ff85b352640] wasatch.WasatchBus CRITICAL LIBUSB error
+    Traceback (most recent call last):
+      File "wasatch/WasatchBus.py", line 52, in update
+      File "wasatch/DeviceFinderUSB.py", line 166, in find_usb_devices
+      File "wasatch/DeviceFinderUSB.py", line 85, in bus_polling
+      File "usb/core.py", line 1292, in device_iter
+      File "usb/backend/libusb0.py", line 456, in enumerate_devices
+      File "ctypes/__init__.py", line 387, in __getattr__
+      File "ctypes/__init__.py", line 392, in __getitem__
+    AttributeError: dlsym(0x7ff907286470, usb_find_busses): symbol not found
+    2023-08-30 20:08:45,721 [0x7ff85b352640] wasatch.WasatchBus DEBUG    USBBus.update: found 0
+
 # FAQ
+
+## Installer capitalization
+
+Note PyInstaller capitalization in Makefile target mac-installer.
 
 ## Known differences from Windows/Linux versions
 
@@ -81,3 +161,167 @@ Below are some example threads:
 - https://github.com/pyinstaller/pyinstaller/issues/3753
 - https://stackoverflow.com/questions/63611190/python-macos-builds-run-from-terminal-but-crash-on-finder-launch
 - https://github.com/pyinstaller/pyinstaller/issues/5109
+
+# Appendix: Homebrew
+
+I don't remember everything I installed, when or why, but this is what I had 
+installed when it worked...
+
+    $ brew ls
+    ==> Formulae
+    aom             gdk-pixbuf  libffi           libxft      openssl@1.1    sdl2
+    apr             gdrive      libheif          libxmp      openssl@3      sdl2_mixer
+    apr-util        gettext     libice           libxmu      opus           shared-mime-info
+    astyle          ghostscript libidn           libxp       opusfile       six
+    awscli          giflib      libidn2          libxrender  p7zip          sloccount
+    bdw-gc          glib        liblqr           libxt       pandoc         sphinx-doc
+    berkeley-db     glm         libmodplug       libyaml     pango          sqlite
+    brotli          gmp         libnghttp2       little-cms2 pcre           stlink
+    c-ares          gnu-getopt  libogg           llvm        pcre2          subversion
+    ca-certificates graphite2   libomp           llvm@15     pdfcrack       swig
+    cairo           graphviz    libpng           lsusb       perl           tcl-tk
+    cffi            gts         libpthread-stubs lua         pixman         telnet
+    cloc            harfbuzz    libraw           lynx        pkg-config     tree
+    cmake           hidapi      librsvg          lz4         platypus       udunits
+    cocoapods       highway     libsamplerate    lzo         portaudio      unrar
+    coreutils       icu4c       libsm            m4          portmidi       utf8proc
+    docbook         ilmbase     libsndfile       mame        pugixml        vim
+    docbook-xsl     imagemagick libsodium        markdown    pycparser      w3m
+    docutils        imath       libtiff          md5sha1sum  pygments       webp
+    dos2unix        jasper      libtool          mpdecimal   pyside@2       wget
+    doxygen         jbig2dec    libunistring     mpg123      python-certifi x265
+    flac            jpeg        libusb           mysql@5.6   python-tk@3.10 xbitmaps
+    fluid-synth     jpeg-turbo  libuv            ncurses     python-tk@3.11 xmlto
+    fontconfig      jpeg-xl     libvmaf          netpbm      python@3.10    xorgproto
+    freetype        jq          libvorbis        node        python@3.11    xpdf
+    fribidi         jsonlint    libx11           oniguruma   qt@5           xz
+    frotz           lame        libxau           openexr     rapidjson      z3
+    gd              libao       libxcb           openjdk     rclone         zstd
+    gdb             libavif     libxdmcp         openjpeg    readline
+    gdbm            libde265    libxext          openmotif   ruby
+
+    ==> Casks
+    xquartz
+
+    mzieg-macbook.local [~/work/code/enlighten] mzieg  8:16PM $ echo $PATH
+    /usr/local/Cellar/python@3.10/3.10.13/bin:/Users/mzieg/bin:/Users/mzieg/work/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/opt/mysql@5.6/bin:/usr/local/share/dotnet
+
+    mzieg-macbook.local [~/work/code/enlighten] mzieg  8:16PM $ echo $PYTHONPATH
+    ../spyc_writer/src:../Wasatch.PY:pluginExamples:.:enlighten/assets/uic_qrc
+
+    mzieg-macbook.local [~/work/code/enlighten] mzieg  8:16PM $ which python3.10
+    /usr/local/Cellar/python@3.10/3.10.13/bin/python3.10
+
+    macbook.local [~/work/code/enlighten] mzieg  8:15PM $ python3.10 -m pip list
+    Package                          Version
+    -------------------------------- ---------
+    absl-py                          1.4.0
+    Adafruit-Blinka                  8.20.1
+    adafruit-circuitpython-busdevice 5.2.6
+    adafruit-circuitpython-requests  2.0.1
+    adafruit-circuitpython-typing    1.9.4
+    Adafruit-PlatformDetect          3.49.0
+    Adafruit-PureIO                  1.1.11
+    altgraph                         0.17.3
+    astunparse                       1.6.3
+    async-timeout                    4.0.3
+    bleak                            0.20.2
+    boto3                            1.28.38
+    botocore                         1.31.38
+    cachetools                       5.3.1
+    certifi                          2023.7.22
+    charset-normalizer               3.2.0
+    construct                        2.8.22
+    contourpy                        1.1.0
+    crcmod                           1.7
+    cycler                           0.11.0
+    Cython                           3.0.2
+    exceptiongroup                   1.1.3
+    flatbuffers                      23.5.26
+    fonttools                        4.42.1
+    gast                             0.4.0
+    google-auth                      2.22.0
+    google-auth-oauthlib             1.0.0
+    google-pasta                     0.2.0
+    grpcio                           1.57.0
+    h5py                             3.9.0
+    idna                             3.4
+    importlib-metadata               6.8.0
+    importlib-resources              6.0.1
+    iniconfig                        2.0.0
+    jmespath                         1.0.1
+    joblib                           1.3.2
+    keras                            2.13.1
+    kiwisolver                       1.4.5
+    libclang                         16.0.6
+    libusb                           1.0.26b5
+    macholib                         1.16.2
+    Markdown                         3.4.4
+    MarkupSafe                       2.1.3
+    matplotlib                       3.7.2
+    numpy                            1.24.3
+    oauthlib                         3.2.2
+    opt-einsum                       3.3.0
+    packaging                        23.1
+    pandas                           2.1.0
+    pefile                           2023.2.7
+    pexpect                          4.8.0
+    Pillow                           10.0.0
+    pip                              23.2.1
+    pkg-about                        1.0.8
+    pluggy                           1.3.0
+    protobuf                         4.24.2
+    psutil                           5.9.5
+    ptyprocess                       0.7.0
+    pyasn1                           0.5.0
+    pyasn1-modules                   0.3.0
+    pyftdi                           0.55.0
+    Pygments                         2.16.1
+    pygtail                          0.14.0
+    pyinstaller                      5.13.2
+    pyinstaller-hooks-contrib        2023.8
+    pyobjc-core                      9.2
+    pyobjc-framework-Cocoa           9.2
+    pyobjc-framework-CoreBluetooth   9.2
+    pyobjc-framework-libdispatch     9.2
+    pyparsing                        3.0.9
+    pyqtgraph                        0.13.3
+    pyserial                         3.5
+    PySide2                          5.15.2.1
+    pytest                           7.4.0
+    python-dateutil                  2.8.2
+    pytz                             2023.3
+    pyudev                           0.24.1
+    pyusb                            1.2.1
+    PyWavelets                       1.4.1
+    qimage2ndarray                   1.10.0
+    requests                         2.31.0
+    requests-oauthlib                1.3.1
+    rsa                              4.9
+    s3transfer                       0.6.2
+    scikit-learn                     1.3.0
+    scipy                            1.11.2
+    seabreeze                        2.4.0
+    setuptools                       68.1.2
+    shiboken2                        5.15.2.1
+    six                              1.16.0
+    spc-spectra                      0.4.0
+    SPyC_Writer                      0.2.0
+    superman                         0.1.2
+    tensorboard                      2.13.0
+    tensorboard-data-server          0.7.1
+    tensorflow                       2.13.0
+    tensorflow-estimator             2.13.0
+    tensorflow-io-gcs-filesystem     0.33.0
+    termcolor                        2.3.0
+    threadpoolctl                    3.2.0
+    tk                               0.1.0
+    tomli                            2.0.1
+    typing_extensions                4.5.0
+    tzdata                           2023.3
+    urllib3                          1.26.16
+    Werkzeug                         2.3.7
+    wheel                            0.41.2
+    wrapt                            1.15.0
+    xlwt                             1.3.0
+    zipp                             3.16.2
