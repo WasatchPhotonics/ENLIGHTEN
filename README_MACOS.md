@@ -32,29 +32,30 @@ a MacOS .app "application".)
 
 This part is not currently scripted, and is being tested manually.  Basically:
 
-- use Disk Utility to create a blank .dmg (not from Folder) of the needed size (.app filesize + 20%)
-- name the new .dmg file ENLIGHTEN-x.y.z.dmg
-- mount the dmg (double-click .dmg)
-- label the volume "ENLIGHTEN x.y.z"
-- open the dmg (dbl-click Finder icon)
-- drag the .app into the window
-- opt-cmd-drag an alias of your Applications folder into the window
-- set view to icon
-- create a new folder inside the window called 'background'
-- in Terminal
-    - cd /Volumes/ENLIGHTEN*
-    - mv background .background
-    - open .background
-    - copy scripts/mac_installer/folder_background.png to .background
-- right-click on folder and choose "View Options"
-- set background to Picture
-- drag folder_background.png from (currently open) .background folder into View Options
-- arrange icons sensibly
-- close window
-- unmount .dmg
-- haven't tried this yet but:
-    - make read-only: https://superuser.com/a/390924
-    - guessing use `-format UFBI` to create and add checksum?
+- use Disk Utility to create a blank read-write .dmg (not from Folder) of the needed size (.app filesize + 20%)
+    - name the new .dmg file ENLIGHTEN-x.y.z-rw.dmg
+    - mount the dmg (double-click .dmg)
+    - label the volume "ENLIGHTEN™ x.y.z"
+- populate and decorate read-write image
+    - open the dmg (dbl-click Finder icon)
+    - drag the .app into the window
+    - opt-cmd-drag an alias of your Applications folder into the window
+    - set view to icon
+    - create a new folder inside the window called 'background'
+    - in Terminal
+        - cd /Volumes/ENLIGHTEN*
+        - mv background .background
+        - open .background
+        - copy scripts/mac_installer/folder_background.png to .background
+    - right-click on folder and choose "View Options"
+    - set background to Picture
+    - drag folder_background.png from (currently open) .background folder into View Options
+    - arrange icons sensibly
+    - close window
+    - unmount .dmg (drag to Trash)
+- make read-only with checksum:
+    - `hdiutil convert ENLIGHTEN-x.y.z-rw.dmg -format UFBI -o ENLIGHTEN-x.y.z.dmg`
+    - rm ENLIGHTEN-x.y.z-rw.dmg
     
 ## Post to website
 
