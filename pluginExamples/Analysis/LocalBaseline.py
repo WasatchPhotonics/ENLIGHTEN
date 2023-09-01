@@ -1,12 +1,14 @@
 import pandas as pd
 import numpy as np
-import logging
 
 import time
 
 from EnlightenPlugin import *
 
-log = logging.getLogger(__name__)
+# firstonly(i, "some string") will only have a value if i==0
+# this is a workaround to prevent duplicate legend entries
+firstonly = lambda i, v: v if not i else None
+
 
 class LocalBaseline(EnlightenPluginBase):
 
@@ -18,7 +20,7 @@ class LocalBaseline(EnlightenPluginBase):
         for i in range(self.count):
             self.field(
                 name = "x_"+str(i),
-                initial = 1014, minimum = -10000, maximum = 10000, step = .2,
+                initial = 0, minimum = -10000, maximum = 10000, step = .2,
                 datatype = "float", direction = "input"
             )
 
@@ -92,12 +94,17 @@ class LocalBaseline(EnlightenPluginBase):
                 # interpolate the domain using (i, f)
                 return xp[i]*(1-f) + xp[i+1]*f
 
-    def get_fwhm(self, spectrum_region, start_pixel):
+    def get_fwhm(self, i, spectrum_region, start_pixel):
         r"""
         Compute Full-Width Half-Max.
 
+        @param i used to workaround duplicate legend entries 
         @param spectrum_region an array containing a single peak
         @param start_pixel an index that specifies the start of spectrum_region in the context of the overall spectrum
+
+        parameters additional notes:
+        i: can be removed if used without annotations, or if deduping is moved to self.plot
+        start_pixel: used to define x_region (variable `x_vals`). This could be reparametrized in terms of x_region.
 
                     ^
                    / \
@@ -106,6 +113,12 @@ class LocalBaseline(EnlightenPluginBase):
                 /        "`\
         ____-```            \____
         """
+
+        # Some fun facts about FWHM:
+        # - Emission peaks will likely be narrower than Raman peaks.
+        # - Not all Raman peaks within the same compound will have the same width (due to atomic bond type).
+        # - FWHM varies across the detector, generally going from "wide to narrow" as you move from "blue to red," due to the grating.
+        # - Different detector models will yield different FWHM when mounted to the same optical bench, due to pixel count, size and spacing.
 
         # to make use of one-line search operations, it is helpful to keep indexes with values [ O(n) ]
         region = [(i, spectrum_region[i]) for i in range(len(spectrum_region))]
@@ -169,6 +182,7 @@ class LocalBaseline(EnlightenPluginBase):
         fwhm_right = self.interp_inverse(half_max, x_vals_right, [T[VALUE] for T in right])
 
         self.plot(
+            title=firstonly(i, "FWHM"),
             color="purple",
             x=[fwhm_left, fwhm_right],
             y=[half_max, half_max]
@@ -189,11 +203,13 @@ class LocalBaseline(EnlightenPluginBase):
         header = []
         values = []
 
-        # firstonly(i, "some string") will only have a value if i==0
-        firstonly = lambda i, v: v if not i else None
-
         for i in range(self.count):
             x = self.get_widget_from_name("x_"+str(i)).value()
+
+            # turn off annotations for placeholder values 0, -1
+            if x <= 0:
+                continue
+
             left = self.get_widget_from_name("Left_"+str(i)).value()
             right = self.get_widget_from_name("Right_"+str(i)).value()
 
@@ -252,15 +268,9 @@ class LocalBaseline(EnlightenPluginBase):
                 peak_baseline_subtracted = peak - interpolated_baseline
 
                 # compute and plot fwhm (full width half max)
-                fwhm_target = self.get_fwhm(peak_region_subtracted, start_pixel)
+                fwhm_target = self.get_fwhm(i, peak_region_subtracted, start_pixel)
                 if fwhm_target is None:
                     fwhm_target = "--"
-                else:
-                    self.plot(
-                        title=firstonly(i, "FWHM"),
-                        color="purple",
-                        y = [0,0],
-                    )
             else:
                 peak = "--"
                 interpolated_baseline = "--"
