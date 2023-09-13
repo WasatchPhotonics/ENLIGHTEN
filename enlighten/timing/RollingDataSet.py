@@ -54,6 +54,16 @@ class RollingDataSet(object):
     def get_values(self):
         return [y for x,y in self.data]
 
+    def get_relative_to_now(self):
+        """ Return graphable x, y arrays by elapsed sec """
+        now = dt.now()
+        x = []
+        y = []
+        for k, v in self.data:
+            x.append((now-k).total_seconds())
+            y.append(v)
+        return x, y
+
     def all_within(self, value, delta, window_sec=None) -> bool:
         now = dt.now()
         for k, v in self.data:
