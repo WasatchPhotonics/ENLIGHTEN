@@ -2,7 +2,9 @@
 
 # 4.0 GUI Refactoring
 
-- 2023-??-?? 4.0.15
+- 2023-??-?? 4.0.16
+    - RamanIntensityCorrection works in Expert Mode
+- 2023-09-01 4.0.15
     - enforce eeprom.max_integration_time_ms on XS
     - plugins
         - added --plugin command-line option

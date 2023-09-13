@@ -1824,7 +1824,7 @@ class Controller:
             # Raman intensity correction
             ####################################################################
 
-            if self.page_nav.doing_raman():
+            if self.page_nav.doing_raman() or self.page_nav.doing_expert():
                 self.raman_intensity_correction.process(pr, spec)
 
             # Dieter goes back and forth on the order of these next two:
