@@ -10,6 +10,7 @@ using Homebrew.  Basically (I'm not sure everything I typed) this:
     $ brew install pyside2
     $ brew install python-tk@3.10
     $ export PATH=/usr/local/Cellar/python@3.10/3.10.13/bin
+    $ export PYTHONPATH=.:pluginExamples:enlighten/assets/uic_qrc:../Wasatch.PY:../spyc_writer/src
     $ python3.10 scripts/Enlighten.py --log-level debug 1>enlighten.out 2>enlighten.err
 
 See appendices below for notes.
