@@ -15,6 +15,8 @@ from enlighten.ui.ThumbnailWidget import ThumbnailWidget
 from enlighten.parser.DashFileParser import DashFileParser
 from enlighten.measurement.Measurement import Measurement
 
+from enlighten.common import msgbox
+
 from wasatch.ProcessedReading import ProcessedReading
 from wasatch.SpectrometerSettings import SpectrometerSettings
 from wasatch import utils as wasatch_utils
@@ -88,21 +90,31 @@ class MeasurementFactory(object):
         log.debug("creating Measurement from spec %s", spec.label)
 
         # instantiate the Measurement
-        measurement = Measurement(
-            save_options = self.save_options,
-            spec         = spec,
-            measurements = self.measurements)
+        try:
+            measurement = Measurement(
+                save_options = self.save_options,
+                spec         = spec,
+                measurements = self.measurements)
+        except:
+            msgbox("Failed to create measurement", "Error")
+
         log.debug("created Measurement %s from reading %d", measurement.measurement_id, measurement.processed_reading.reading.session_count)
 
         if generate_thumbnail:
-            self.create_thumbnail(measurement, is_collapsed)
+            try:
+                self.create_thumbnail(measurement, is_collapsed)
+            except:
+                msgbox("Failed to create thumbnail.", "Error")
 
         if save:
-            for observer in self.observers:
-                observer(measurement=measurement, event="pre-save")
-            measurement.save()
-            for observer in self.observers:
-                observer(measurement=measurement, event="save")
+            try:
+                for observer in self.observers:
+                    observer(measurement=measurement, event="pre-save")
+                measurement.save()
+                for observer in self.observers:
+                    observer(measurement=measurement, event="save")
+            except:
+                msgbox("Failed to dispatch save file.", "Error")
         
         return measurement
     

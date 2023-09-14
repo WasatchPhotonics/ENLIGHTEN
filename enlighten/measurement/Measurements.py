@@ -13,6 +13,7 @@ from SPyC_Writer import SPCFileWriter
 from SPyC_Writer.SPCEnums import SPCFileType, SPCXType, SPCYType, SPCTechType
 
 from enlighten import common
+from enlighten.common import msgbox
 from enlighten import util
 
 log = logging.getLogger(__name__)
@@ -233,6 +234,7 @@ class Measurements(object):
     # ThumbnailWidget, from the given spectrometer's latest ProcessedReading.
     def create_from_spectrometer(self, spec):
         if spec is None or spec.app_state.processed_reading is None:
+            msgbox("No spectra to save.", "Error")
             return
 
         log.debug("creating Measurement from spec %s", spec.label)
