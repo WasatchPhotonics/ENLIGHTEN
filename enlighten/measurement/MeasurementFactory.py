@@ -15,6 +15,8 @@ from enlighten.ui.ThumbnailWidget import ThumbnailWidget
 from enlighten.parser.DashFileParser import DashFileParser
 from enlighten.measurement.Measurement import Measurement
 
+import traceback
+
 from enlighten.common import msgbox
 
 from wasatch.ProcessedReading import ProcessedReading
@@ -96,7 +98,7 @@ class MeasurementFactory(object):
                 spec         = spec,
                 measurements = self.measurements)
         except:
-            msgbox("Failed to create measurement", "Error")
+            msgbox("Failed to create measurement\n\n"+traceback.format_exc(), "Error")
 
         log.debug("created Measurement %s from reading %d", measurement.measurement_id, measurement.processed_reading.reading.session_count)
 
@@ -104,7 +106,7 @@ class MeasurementFactory(object):
             try:
                 self.create_thumbnail(measurement, is_collapsed)
             except:
-                msgbox("Failed to create thumbnail.", "Error")
+                msgbox("Failed to create thumbnail.\n\n"+traceback.format_exc(), "Error")
 
         if save:
             try:
@@ -114,7 +116,7 @@ class MeasurementFactory(object):
                 for observer in self.observers:
                     observer(measurement=measurement, event="save")
             except:
-                msgbox("Failed to dispatch save file.", "Error")
+                msgbox("Failed to dispatch save file.\n\n"+traceback.format_exc(), "Error")
         
         return measurement
     
