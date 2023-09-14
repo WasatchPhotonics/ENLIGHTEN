@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 #
 # Run supporting pyrcc files to generate resource files and future
 # designer conversions into python code. Run this from the home project
