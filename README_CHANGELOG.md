@@ -2,6 +2,9 @@
 
 # 4.0 GUI Refactoring
 
+- 2023-??-?? 4.0.16
+    - splash tweak
+    - fixed rebuild_resources.sh for MacOS
 - 2023-09-01 4.0.15
     - fixed DetectorTemperatureFeature on ambient detectors
     - plugins
