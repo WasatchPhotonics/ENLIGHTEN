@@ -1824,6 +1824,10 @@ class Controller:
             # Raman intensity correction
             ####################################################################
 
+            # Raman, Non-Raman, and Expert appear mutually exclusive in UI. They 
+            # aren't, really. Expert mode is a union of Raman, NonRaman and other 
+            # features (see PageNavigation docs). When the user clicks Expert, 
+            # doing_raman() is no longer true, hence the need for doing_expert().
             if self.page_nav.doing_raman() or self.page_nav.doing_expert():
                 self.raman_intensity_correction.process(pr, spec)
 
