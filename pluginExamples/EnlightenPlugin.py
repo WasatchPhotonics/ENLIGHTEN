@@ -363,7 +363,7 @@ class EnlightenPluginBase:
 # @par Streaming
 #
 # By default, all plug-ins support "streaming" spectra, which is what happens
-# when click the "[x] Enable" checkbox in ENLIGHTEN's Plugin Control widget.
+# when you click the "[x] Enable" checkbox in ENLIGHTEN's Plugin Control widget.
 # However, some plug-ins may not be designed or intended for that data rate
 # and prefer to be individually triggered by the "Process" button or other 
 # events.
@@ -384,6 +384,7 @@ class EnlightenPluginConfiguration:
     #        (must match series names in EnlightenPluginReponse.data)
     # @param graph_type: "line" or "xy" (scatter)
     # @param streaming: if True (default), display the "[x] Enable" checkbox
+    # @param auto_enable: automatically check Enabled and hide checkbox
     # @param is_blocking: ENLIGHTEN should not send any further requests to the
     #        plug-in until the Response to the previous Request is received
     # @param block_enlighten: this is much more severe than is_blocking (which 
@@ -404,6 +405,7 @@ class EnlightenPluginConfiguration:
             is_blocking     = True,
             block_enlighten = False,
             streaming       = True,
+            auto_enable     = True,
             events          = None,
             series_names    = None,
             multi_devices   = False,
@@ -418,6 +420,7 @@ class EnlightenPluginConfiguration:
         self.is_blocking     = is_blocking
         self.block_enlighten = block_enlighten
         self.streaming       = streaming
+        self.auto_enable     = auto_enable
         self.events          = events
         self.multi_devices   = multi_devices
         self.series_names    = series_names
