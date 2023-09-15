@@ -198,10 +198,6 @@ class DetectorTemperatureFeature:
         for callback in self.observers:
             callback(reading.detector_temperature_degC)
 
-    # ##########################################################################
-    # private methods
-    # ##########################################################################
-
     def apply_setpoint(self):
         """ Send GUI value downstream (and turns on if it was off). """
         # shouldn't matter if we take from spinbox or slider
@@ -215,6 +211,10 @@ class DetectorTemperatureFeature:
         else:
             log.debug("auto-enabling TEC")
             self.cb_enabled.setChecked(True)
+
+    # ##########################################################################
+    # private methods
+    # ##########################################################################
 
     def populate_placeholder(self):
         self.sfu.tec_temperature_graph = pyqtgraph.PlotWidget(name="TEC Temperature")
