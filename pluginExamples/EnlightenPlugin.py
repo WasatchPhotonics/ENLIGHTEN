@@ -13,6 +13,7 @@ from wasatch.ProcessedReading import ProcessedReading
 from wasatch.SpectrometerSettings import SpectrometerSettings
 
 import numpy as np
+import datetime
 import os
 
 import logging
@@ -84,8 +85,9 @@ class EnlightenPluginBase:
     def log(self, *msgs):
         # initially made this because the regular logger wasn't working
         # but it makes sense for plugins to have their own log separate from enlighten
-        with open(common.get_default_data_dir()+os.sep+'plugin_log.txt', 'at') as pl:
-            pl.write(' '.join([str(msg) for msg in msgs]) + "\n")
+        now = datetime.now()
+        with open(os.path.join(common.get_default_data_dir(), 'plugin_log.txt'), 'at') as pl:
+            pl.write(f"{now} " + ' '.join([str(msg) for msg in msgs]) + "\n")
 
     def field(self, **kwargs):
         self._fields.append(EnlightenPluginField(**kwargs))
