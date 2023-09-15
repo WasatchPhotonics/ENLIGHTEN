@@ -349,7 +349,8 @@ class Measurements(object):
     # of BatchCollection batch, or perhaps from a future plugin.)
     #
     # @param filename: BatchCollection generates one so we needn't prompt user
-    def export_session(self, filename=None):
+    # @param prompt: prompt for verification (False for unattended operation)
+    def export_session(self, filename=None, prompt=True):
 
         if not self.count():
             log.warn("no measurements to export")
@@ -368,17 +369,18 @@ class Measurements(object):
 
             default_filename = self.measurements[-1].expand_template(default_filename)
 
-            # prompt the user to override the default filename
-            # @todo give Controller.form to GUI, add gui.promptString()
-            (filename, ok) = QtWidgets.QInputDialog().getText(
-                self.form,                          # parent
-                "Filename",                         # title
-                "Export filename:",                 # label
-                QtWidgets.QLineEdit.Normal, 
-                default_filename)
-            if not ok or filename is None:
-                log.info("cancelling export")
-                return 
+            if prompt:
+                # prompt the user to override the default filename
+                # @todo give Controller.form to GUI, add gui.promptString()
+                (filename, ok) = QtWidgets.QInputDialog().getText(
+                    self.form,                          # parent
+                    "Filename",                         # title
+                    "Export filename:",                 # label
+                    QtWidgets.QLineEdit.Normal, 
+                    default_filename)
+                if not ok or filename is None:
+                    log.info("cancelling export")
+                    return 
 
         # currently, all Sessions are stored in ~/EnlightenSpectra
         directory = common.get_default_data_dir()
