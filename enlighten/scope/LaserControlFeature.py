@@ -150,7 +150,7 @@ class LaserControlFeature:
 
         self.refresh_laser_button()
 
-    # expose this setter for BatchCollection
+    # expose this setter for BatchCollection and plugins
     def set_laser_enable(self, flag, spec=None, all=False):
 
         # BatchCollection doesn't use multispec.lock (it's not enforcing
@@ -261,6 +261,16 @@ class LaserControlFeature:
 
         if spec.settings.state.laser_enabled:
             spec.change_device_setting("laser_enable", False)
+
+    def set_mW(self, mW):
+        if not settings.state.use_mW:
+            self.configure_laser_power_controls_mW()
+        self.ctl.form.ui.doubleSpinBox_laser_power.setValue(mW)
+
+    def set_perc(self, perc):
+        if settings.state.use_mW:
+            self.configure_laser_power_controls_percent()
+        self.ctl.form.ui.doubleSpinBox_laser_power.setValue(perc)
 
     # ##########################################################################
     # Private Methods
