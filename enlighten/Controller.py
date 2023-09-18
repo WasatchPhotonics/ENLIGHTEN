@@ -324,7 +324,7 @@ class Controller:
         return True
 
     def close(self, event_arg_str):
-        log.critical("closing")
+        log.critical(f"closing ({event_arg_str})")
 
         self.shutting_down = True
 
