@@ -369,7 +369,9 @@ class Measurements(object):
 
             default_filename = self.measurements[-1].expand_template(default_filename)
 
-            if prompt:
+            if not prompt:
+                filename = default_filename
+            else:
                 # prompt the user to override the default filename
                 # @todo give Controller.form to GUI, add gui.promptString()
                 (filename, ok) = QtWidgets.QInputDialog().getText(
