@@ -3,7 +3,6 @@
 # @brief    Contains all the classes exchanged with ENLIGHTEN plug-ins, including
 #           the EnlightenPluginBase which all plug-ins should extend.
 
-import datetime
 from dataclasses import dataclass, field
 
 from enlighten import common
@@ -89,7 +88,7 @@ class EnlightenPluginBase:
     def log(self, *msgs):
         # initially made this because the regular logger wasn't working
         # but it makes sense for plugins to have their own log separate from enlighten
-        now = datetime.now()
+        now = datetime.datetime.now()
         with open(self.logfile, 'at') as pl:
             pl.write(f"{now} " + ' '.join([str(msg) for msg in msgs]) + "\n")
 
@@ -221,6 +220,7 @@ class EnlightenPluginBase:
         # clear series each frame
         self.series = {}
         self.metadata = {}
+        self.outputs = {}
 
         response = self.process_request(request)
         if response: return response
@@ -228,17 +228,14 @@ class EnlightenPluginBase:
         # if not yet returned, we are running a functional plugin,
         # and so we want Enlighten to construct the EnlightenPluginResponse for us
 
-        outputs = {}
         if self.table is not None:
-            outputs = {
-                # table (looks like a spreadsheet under the graph)
-                "Table": self.table,
-            }
+            # table (looks like a spreadsheet under the graph)
+            outputs["Table"] = self.table
 
         return EnlightenPluginResponse(
             request,
             series = self.series,
-            outputs = outputs,
+            outputs = self.outputs,
             metadata = self.metadata
         )
     #### End backwards compatible object-returning wrappers #####
