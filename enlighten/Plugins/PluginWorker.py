@@ -62,6 +62,13 @@ class PluginWorker(threading.Thread):
             time.sleep(0.01)
 
             if self.has_event_responses:
+                # MZ: event responses seem to be self-generated EnlightenPluginResponse 
+                # objects created and queued within a plugin which do not directly 
+                # correspond to an input EnlightenPluginRequest, yet which can contain
+                # "output" information from the plugin which should be displayed
+                # / relayed to the GUI. For an example, see Demo/EventResponse.py, which
+                # internally queues multiple EnlightenPluginResponse objects when the
+                # plugin's own button/callback is clicked.
                 try:
                     event_responses = plugin.get_event_responses()
                     if len(event_responses) > 0:
