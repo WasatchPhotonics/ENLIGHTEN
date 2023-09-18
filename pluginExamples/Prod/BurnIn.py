@@ -26,6 +26,7 @@ class BurnIn(EnlightenPluginBase):
             "TEC Setpoint": False,
             "Use Laser": False,
             "Laser Power": False,
+            "Laser Duty Cycle": 20,
             "Take Dark": False,
             "Save Each": False,
             "Export Every": 0,
@@ -72,37 +73,41 @@ class BurnIn(EnlightenPluginBase):
         # @todo would be kind of nice if we could visually "group" these on the 
         # GUI, similar to how they're spaced in code
 
-        self.field(name="Integ Time",    datatype=bool, direction="input",  initial=self.defaults["Integ Time"],   tooltip="randomize integration time between min and 1sec")
-        self.field(name="Gain dB",       datatype=bool, direction="input",  initial=self.defaults["Gain dB"],      tooltip="randomize gain between 0-24dB")
-        self.field(name="TEC Setpoint",  datatype=bool, direction="input",  initial=self.defaults["TEC Setpoint"], tooltip="randomize detector TEC setpoint")
-
-        self.field(name="Use Laser",     datatype=bool, direction="input",  initial=self.defaults["Use Laser"],    tooltip="fire laser (DANGEROUS)")
-        self.field(name="Laser Power",   datatype=bool, direction="input",  initial=self.defaults["Laser Power"],  tooltip="randomize laser power")
-        self.field(name="Take Dark",     datatype=bool, direction="input",  initial=self.defaults["Take Dark"],    tooltip="take fresh dark for each int/gain change")
-
-        self.field(name="Measurements",  datatype=int,  direction="output",                                        tooltip="measurement count")
-        self.field(name="Save Each",     datatype=bool, direction="input",  initial=self.defaults["Save Each"],    tooltip="save each measurement")
-        self.field(name="Export Every",  datatype=int,  direction="input",  initial=self.defaults["Export Every"], tooltip="export and clear clipboard every x measurements (0 for never)", maximum=500)
-
-        self.field(name="Change Min",    datatype=int,  direction="input",  initial=self.defaults["Change Min"],   tooltip="randomize parameters every x min", minimum=1, maximum=30)
-        self.field(name="Shutdown Min",  datatype=int,  direction="input",  initial=self.defaults["Shutdown Min"], tooltip="shutdown ENLIGHTEN after x minutes (0 for never)", maximum=60)
-
-        self.field(name="Next Change",   datatype=str,  direction="output", tooltip="scheduled randomization")
-        self.field(name="Next Shutdown", datatype=str,  direction="output", tooltip="scheduled shutdown")
+        self.field(name="Integ Time",      datatype=bool, direction="input",  initial=self.defaults["Integ Time"],      tooltip="randomize integration time between min and 1sec")
+        self.field(name="Gain dB",         datatype=bool, direction="input",  initial=self.defaults["Gain dB"],         tooltip="randomize gain between 0-24dB")
+        self.field(name="TEC Setpoint",    datatype=bool, direction="input",  initial=self.defaults["TEC Setpoint"],    tooltip="randomize detector TEC setpoint")
+                                                                                                                        
+        self.field(name="Use Laser",       datatype=bool, direction="input",  initial=self.defaults["Use Laser"],       tooltip="fire laser (DANGEROUS)")
+        self.field(name="Laser Power",     datatype=bool, direction="input",  initial=self.defaults["Laser Power"],     tooltip="randomize laser power")
+        self.field(name="Laser Duty Cycle",datatype=int,  direction="input",  initial=self.defaults["Laser Duty Cycle"],tooltip="% of each session laser should fire", minimum=1, maximum=100)
+        self.field(name="Take Dark",       datatype=bool, direction="input",  initial=self.defaults["Take Dark"],       tooltip="take fresh dark for each int/gain change")
+                                                                                                                        
+        self.field(name="Measurements",    datatype=int,  direction="output",                                           tooltip="measurement count")
+        self.field(name="Save Each",       datatype=bool, direction="input",  initial=self.defaults["Save Each"],       tooltip="save each measurement")
+        self.field(name="Export Every",    datatype=int,  direction="input",  initial=self.defaults["Export Every"],    tooltip="export and clear clipboard every x measurements (0 for never)", maximum=500)
+                                                                                                                        
+        self.field(name="Change Min",      datatype=int,  direction="input",  initial=self.defaults["Change Min"],      tooltip="randomize parameters every x min", minimum=1, maximum=30)
+        self.field(name="Shutdown Min",    datatype=int,  direction="input",  initial=self.defaults["Shutdown Min"],    tooltip="shutdown ENLIGHTEN after x minutes (0 for never)", maximum=60)
+                                           
+        self.field(name="Next Change",     datatype=str,  direction="output", tooltip="scheduled randomization")
+        self.field(name="Laser Expiry",    datatype=str,  direction="output", tooltip="scheduled laser deactivation")
+        self.field(name="Next Shutdown",   datatype=str,  direction="output", tooltip="scheduled shutdown")
 
         ########################################################################
         # Internal State
         ########################################################################
 
         self.last_shutdown_min = None
-        self.params_expiry = None
-        self.shutdown_expiry = None
+        self.laser_expiry = None        # when to turn off laser
+        self.params_expiry = None       # when to randomize acquisition parameters
+        self.shutdown_expiry = None     # when to restart ENLIGHTEN
+        self.darks_remaining = 0        # measurements before enabling laser
         self.measurement_count = 0
-        self.darks_remaining = 0
         self.header_logged = False
 
     def process_request(self, request):
 
+        now = datetime.datetime.now()
         self.log_header(request)
         self.cache_config(request)
 
@@ -142,19 +147,48 @@ class BurnIn(EnlightenPluginBase):
         self.outputs["Measurements"] = self.measurement_count
 
         ########################################################################
-        # generate params for the next measurements
+        # monitor shutdown expiry
         ########################################################################
 
-        now = datetime.datetime.now()
         self.shutdown_check(request)
-        self.outputs["Next Shutdown"] = str(self.shutdown_expiry - now).split(".")[0] if self.shutdown_expiry else None
+
+        ########################################################################
+        # monitor laser expiry
+        ########################################################################
+
+        self.laser_check(request)
+
+        ########################################################################
+        # generate params for the next measurements
+        ########################################################################
 
         if self.params_expiry is None or self.params_expiry <= now:
             self.randomize_params(request)
             self.params_expiry = now + datetime.timedelta(minutes=request.fields["Change Min"])
             self.log(f"next randomization scheduled for {self.params_expiry}")
 
-        self.outputs["Next Change"] = str(self.params_expiry - now).split(".")[0] if self.params_expiry else None
+        self.outputs["Next Change"] = str(self.params_expiry-now).split(".")[0] if self.params_expiry else None
+
+    def laser_check(self, request):
+        if not request.fields["Use Laser"]:
+            self.outputs["Laser Expiry"] = None
+            return
+
+        now = datetime.datetime.now()
+        shutdown_min = request.fields["Shutdown Min"]
+        duty_cycle = request.fields["Laser Duty Cycle"] / 100.0
+
+        if self.laser_expiry is None:
+            self.laser_expiry = now + datetime.timedelta(minutes=shutdown_min * duty_cycle)
+            self.log(f"scheduled laser shutdown for {self.laser_expiry}")
+        elif self.laser_expiry <= now:
+            self.log(f"time to disable laser")
+            self.signals.append("self.ctl.laser_control.set_laser_enable(False)")
+
+        if now < self.laser_expiry:
+            self.outputs["Laser Expiry"] = str(self.laser_expiry-now).split(".")[0] 
+        else:
+            self.outputs["Laser Expiry"] = None
 
     def shutdown_check(self, request):
         now = datetime.datetime.now()
@@ -180,13 +214,20 @@ class BurnIn(EnlightenPluginBase):
                     # so recompute
                     self.shutdown_expiry = now + datetime.timedelta(minutes=shutdown_min)
                     self.last_shutdown_min = shutdown_min
+                    self.laser_expiry = None
                     self.log(f"changed shutdown to {self.shutdown_expiry}")
                 else:
                     # is it time to shutdown?
                     if self.shutdown_expiry <= now:
                         self.log("Shutting down")
-                        self.ctl.close("initiated by BurnIn")
+                        self.signals.append("self.ctl.laser_control.set_laser_enable(False)")
+                        self.signals.append("self.ctl.close('initiated by BurnIn')")
                         # enlighten.ini will persist some but not all settings
+
+        if self.shutdown_expiry and now < self.shutdown_expiry:
+            self.outputs["Next Shutdown"] = str(self.shutdown_expiry-now).split(".")[0]
+        else:
+            self.outputs["Next Shutdown"] = None
 
     def randomize_params(self, request):
         self.log("randomizing acquisition parameters")
