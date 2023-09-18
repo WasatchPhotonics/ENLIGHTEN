@@ -471,10 +471,19 @@ class PluginController:
                 self.do_post_disconnect()
                 return
 
-            # allow the user to enable the plugin
-            self.cb_enabled.setEnabled(True)
-            self.cb_enabled.setChecked(False)
-            self.button_process.setEnabled(True)
+            module_config = self.get_current_configuration()
+            if module_config.autoenable:
+                # this plugin has requested to auto-enable on connect
+                log.debug("auto-enabling")
+                self.cb_enabled.setEnabled(False)
+                self.cb_enabled.setChecked(True)
+                self.button_process.setEnabled(False)
+                self.enabled = True
+            else:
+                # allow the user to enable the plugin
+                self.cb_enabled.setEnabled(True)
+                self.cb_enabled.setChecked(False)
+                self.button_process.setEnabled(True)
 
             # for some reason, this doesn't work from within configure_gui_for_module
             self.graph_pos_callback()
@@ -499,7 +508,7 @@ class PluginController:
     # plus set the "process" button to the opposite state
     def enabled_callback(self):
         self.enabled = self.cb_enabled.isChecked()
-        if self.button_process is not None:
+        if self.button_process is not None:     # MZ: when would that be none?
             self.button_process.setEnabled(not self.enabled)
 
     ## The user changed the combobox indicating where the "second graph" should appear

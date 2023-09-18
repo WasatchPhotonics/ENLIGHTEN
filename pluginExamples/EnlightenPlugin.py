@@ -46,6 +46,7 @@ class EnlightenPluginBase:
         self._fields = []
         self.is_blocking = False
         self.block_enlighten = False
+        self.autoenable = False
         self.has_other_graph = False
         self.table = None
         self.x_axis_label = None
@@ -55,6 +56,9 @@ class EnlightenPluginBase:
 
         # plugins can do everything
         self.ctl = ctl
+
+        # allow plugins to override their logfile name/location
+        self.logfile = os.path.join(common.get_default_data_dir(), 'plugin_log.txt')
 
     def get_axis(self):
         if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVELENGTHS:
@@ -86,7 +90,7 @@ class EnlightenPluginBase:
         # initially made this because the regular logger wasn't working
         # but it makes sense for plugins to have their own log separate from enlighten
         now = datetime.now()
-        with open(os.path.join(common.get_default_data_dir(), 'plugin_log.txt'), 'at') as pl:
+        with open(self.logfile, 'at') as pl:
             pl.write(f"{now} " + ' '.join([str(msg) for msg in msgs]) + "\n")
 
     def field(self, **kwargs):
@@ -206,6 +210,7 @@ class EnlightenPluginBase:
             is_blocking = self.is_blocking,
             block_enlighten = self.block_enlighten,
             has_other_graph = self.has_other_graph,
+            autoenable = self.autoenable,
             series_names = [], # functional plugins define this on a frame-by-frame basis
             x_axis_label = self.x_axis_label,
             y_axis_label = self.y_axis_label
@@ -406,6 +411,7 @@ class EnlightenPluginConfiguration:
             is_blocking     = True,
             block_enlighten = False,
             streaming       = True,
+            autoenable      = False,
             events          = None,
             series_names    = None,
             multi_devices   = False,
@@ -420,6 +426,7 @@ class EnlightenPluginConfiguration:
         self.is_blocking     = is_blocking
         self.block_enlighten = block_enlighten
         self.streaming       = streaming
+        self.autoenable      = autoenable
         self.events          = events
         self.multi_devices   = multi_devices
         self.series_names    = series_names
