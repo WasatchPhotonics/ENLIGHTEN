@@ -10,15 +10,15 @@ class BurnIn(EnlightenPluginBase):
     A plug-in to help support "burn-in" of a new spectrometer, AKA "load-test"
     or "robustness validation".
 
-    To be clear, ENLIGHTEN is not envisioned as a manufacturing tool (Wasatch has
-    WPSC, QCSV etc for that), and that is not expected to change. However, the 
-    plug-in architecture provides a convenient way to add "manufacturing 
-    capabilities" to ENLIGHTEN without fundamentally complicating ENLIGHTEN's 
-    core customer UI.
+    Note that the acquisition parameters in effect when the plugin is enabled 
+    will remain in effect until the first scheduled randomization.
     """
 
     def get_configuration(self):
         self.name = "Burn-In"
+        self.autoenable = True
+
+        self.configure_from_ini()
 
         ########################################################################
         # UI Fields
@@ -50,18 +50,22 @@ class BurnIn(EnlightenPluginBase):
         # Internal State
         ########################################################################
 
-        self.params = None
         self.last_change = None
         self.params_expiry = None
+        self.last_shutdown_min = None
         self.next_shutdown = None
         self.measurement_count = 0
         self.next_is_dark = False
+        self.header_logged = False
 
     def process_request(self, request):
+
+        self.log_header(request)
 
         ########################################################################
         # process this measurement
         ########################################################################
+
         self.log("processing measurement")
 
         if self.next_is_dark:
@@ -85,20 +89,50 @@ class BurnIn(EnlightenPluginBase):
 
         self.measurement_count += 1
         self.outputs["Measurements"] = self.measurement_count
-            
+
         ########################################################################
         # generate params for the next measurements
         ########################################################################
 
-        now = datetime.now()
-        if self.params_expiry and self.params_expiry < now:
-            self.log("keeping old params")
-        else:
-            self.randomize_params(request)
+        self.shutdown_check(request)
 
-            # schedule the next randomization
+        now = datetime.now()
+        if self.params_expiry is None or self.params_expiry <= now:
+            self.randomize_params(request)
             self.params_expiry = now + datetime.timedelta(minutes=request.fields["Change Min"])
             self.log(f"next randomization scheduled for {self.params_expiry}")
+
+    def shutdown_check(self, request):
+        now = datetime.now()
+        shutdown_min = self.fields["Shutdown Min"]
+
+        # has the user configured a shutdown period?
+        if shutdown_min <= 0:
+            # a shutdown is not requested via the GUI 
+            # (may have been cancelled if previously requested)
+            self.shutdown_expiry = None
+            self.last_shutdown_min = shutdown_min
+        else:
+            # is this the FIRST time we've been assigned a shutdown expiry?
+            if self.shutdown_expiry is None:
+                # schedule future shutdown
+                self.shutdown_expiry = now + datetime.timedelta(minutes=shutdown_min)
+                self.last_shutdown_min = shutdown_min
+                self.log("scheduled shutdown for {self.shutdown_expiry}")
+            else:
+                # is this a CHANGE from the previous configuration?
+                if shutdown_min != self.last_shutdown_min:
+                    # the user has changed the previous shutdown expiry,
+                    # so recompute
+                    self.shutdown_expiry = now + datetime.timedelta(minutes=shutdown_min)
+                    self.last_shutdown_min = shutdown_min
+                    self.log("changed shutdown to {self.shutdown_expiry}")
+                else:
+                    # is it time to shutdown?
+                    if self.shutdown_expiry <= now:
+                        self.log("Shutting down")
+                        self.ctl.close("initiated by BurnIn")
+                        # enlighten.ini will persist some but not all settings
 
     def randomize_params(self, request):
         """
@@ -106,11 +140,7 @@ class BurnIn(EnlightenPluginBase):
         """
         self.log("randomizing acquisition parameters")
 
-        params = AcquisitionParameters()
-        spec = self.ctl.multispec.current_spectrometer()
-        if spec is None:
-            return
-        eeprom = spec.settings.eeprom
+        eeprom = request.settings.eeprom
 
         if request.fields["Integ Time"]:
             ms = random.randint(eeprom.min_integration_time_ms, 1000)
@@ -142,3 +172,13 @@ class BurnIn(EnlightenPluginBase):
             self.ctl.laser_control.set_laser_enable(True)
 
         self.next_is_dark = request.fields["Take Dark"]
+
+    def log_header(self, request):
+        if self.header_logged:
+            return
+
+        eeprom = request.settings.eeprom
+        self.log("-"x80)
+        self.log(f"{self.name} started with {eeprom.serial_number}")
+        self.log("-"x80)
+        self.header_logged = True
