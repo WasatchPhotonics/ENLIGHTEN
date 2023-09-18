@@ -13,6 +13,9 @@ class BurnIn(EnlightenPluginBase):
 
     Note that the acquisition parameters in effect when the plugin is enabled 
     will remain in effect until the first scheduled randomization.
+
+    Signals cruft relates to saving spectra (thumbnail widget creation) and 
+    anything that emits to the Marquee (which affects QTimers).
     """
 
     def init_defaults(self):
@@ -34,12 +37,15 @@ class BurnIn(EnlightenPluginBase):
         """ Load settings from previous session """
         s = "Plugin.BurnIn"
         config = self.ctl.config # wasatch.Configuration
+        self.log("configure_from_ini")
         for k, v in self.defaults.items():
             if config.has_option(s, k):
-                if isinstance(k, bool):
+                self.log(f"found option {s}.{k}")
+                if isinstance(v, bool):
                     self.defaults[k] = config.get_bool(s, k)
-                elif isinstance(k, int):
+                elif isinstance(v, int):
                     self.defaults[k] = config.get_int(s, k)
+                self.log(f"loaded option {k} = {self.defaults[k]}")
 
     def cache_config(self, request):
         """ Persist user options so they'll be saved to enlighten.ini at shutdown """
@@ -51,7 +57,7 @@ class BurnIn(EnlightenPluginBase):
 
     def get_configuration(self):
         self.name = "Burn-In"
-        self.autoenable = True
+        self.auto_enable = True
 
         self.init_defaults()
 
@@ -74,25 +80,25 @@ class BurnIn(EnlightenPluginBase):
         self.field(name="Laser Power",   datatype=bool, direction="input",  initial=self.defaults["Laser Power"],  tooltip="randomize laser power")
         self.field(name="Take Dark",     datatype=bool, direction="input",  initial=self.defaults["Take Dark"],    tooltip="take fresh dark for each int/gain change")
 
+        self.field(name="Measurements",  datatype=int,  direction="output",                                        tooltip="measurement count")
         self.field(name="Save Each",     datatype=bool, direction="input",  initial=self.defaults["Save Each"],    tooltip="save each measurement")
         self.field(name="Export Every",  datatype=int,  direction="input",  initial=self.defaults["Export Every"], tooltip="export and clear clipboard every x measurements (0 for never)", maximum=500)
 
-        self.field(name="Measurements",  datatype=int,  direction="output",                                        tooltip="measurement count")
         self.field(name="Change Min",    datatype=int,  direction="input",  initial=self.defaults["Change Min"],   tooltip="randomize parameters every x min", minimum=1, maximum=30)
-
         self.field(name="Shutdown Min",  datatype=int,  direction="input",  initial=self.defaults["Shutdown Min"], tooltip="shutdown ENLIGHTEN after x minutes (0 for never)", maximum=60)
-        self.field(name="Next Shutdown", datatype=str,  direction="output",                                        tooltip="scheduled shutdown")
+
+        self.field(name="Next Change",   datatype=str,  direction="output", tooltip="scheduled randomization")
+        self.field(name="Next Shutdown", datatype=str,  direction="output", tooltip="scheduled shutdown")
 
         ########################################################################
         # Internal State
         ########################################################################
 
-        self.last_change = None
-        self.params_expiry = None
         self.last_shutdown_min = None
-        self.next_shutdown = None
+        self.params_expiry = None
+        self.shutdown_expiry = None
         self.measurement_count = 0
-        self.next_is_dark = False
+        self.darks_remaining = 0
         self.header_logged = False
 
     def process_request(self, request):
@@ -106,24 +112,31 @@ class BurnIn(EnlightenPluginBase):
 
         self.log("processing measurement")
 
-        if self.next_is_dark:
+        if self.darks_remaining > 0:
             self.log("storing dark")
-            self.ctl.dark_feature.store(request.processed_reading.processed)
-            self.next_is_dark = False
+            # self.ctl.dark_feature.store(request.processed_reading.processed)
+            self.signals.append("self.ctl.dark_feature.store()")
+            self.darks_remaining -= 1
 
-            if request.fields["Use Laser"]:
+            if self.darks_remaining == 0 and request.fields["Use Laser"]:
                 self.log("firing laser")
-                self.ctl.laser_control.set_laser_enable(True)
+                # self.ctl.laser_control.set_laser_enable(True)
+                self.signals.append("self.ctl.laser_control.set_laser_enable(True)")
         
         if request.fields["Save Each"]:
-            self.ctl.vcr_controls.save()
+            # I dislike using eval(), but I haven't found the "proper" way to get 
+            # this event to occur on the GUI thread (required to create a new
+            # thumbnail)
+            self.signals.append("self.ctl.vcr_controls.save()")
 
-        if request.fields["Export Every"] > 0 and self.measurement_count >= request.fields["Export Every"]:
+        if request.fields["Export Every"] > 0 and self.ctl.measurements.count() >= request.fields["Export Every"]:
             self.log("exporting session")
-            self.ctl.measurements.export_session(prompt=False)
+            # self.ctl.measurements.export_session(prompt=False)
+            self.signals.append("self.ctl.measurements.export_session(prompt=False)")
 
             self.log("clearing clipboard")
-            self.ctl.measurements.erase_all()
+            # self.ctl.measurements.erase_all()
+            self.signals.append("self.ctl.measurements.erase_all()")
 
         self.measurement_count += 1
         self.outputs["Measurements"] = self.measurement_count
@@ -132,14 +145,16 @@ class BurnIn(EnlightenPluginBase):
         # generate params for the next measurements
         ########################################################################
 
-        self.shutdown_check(request)
-        self.outputs["Next Shutdown"] = self.shutdown_expiry
-
         now = datetime.datetime.now()
+        self.shutdown_check(request)
+        self.outputs["Next Shutdown"] = str(self.shutdown_expiry - now).split(".")[0] if self.shutdown_expiry else None
+
         if self.params_expiry is None or self.params_expiry <= now:
             self.randomize_params(request)
             self.params_expiry = now + datetime.timedelta(minutes=request.fields["Change Min"])
             self.log(f"next randomization scheduled for {self.params_expiry}")
+
+        self.outputs["Next Change"] = str(self.params_expiry - now).split(".")[0] if self.params_expiry else None
 
     def shutdown_check(self, request):
         now = datetime.datetime.now()
@@ -157,7 +172,7 @@ class BurnIn(EnlightenPluginBase):
                 # schedule future shutdown
                 self.shutdown_expiry = now + datetime.timedelta(minutes=shutdown_min)
                 self.last_shutdown_min = shutdown_min
-                self.log("scheduled shutdown for {self.shutdown_expiry}")
+                self.log(f"scheduled shutdown for {self.shutdown_expiry}")
             else:
                 # is this a CHANGE from the previous configuration?
                 if shutdown_min != self.last_shutdown_min:
@@ -165,7 +180,7 @@ class BurnIn(EnlightenPluginBase):
                     # so recompute
                     self.shutdown_expiry = now + datetime.timedelta(minutes=shutdown_min)
                     self.last_shutdown_min = shutdown_min
-                    self.log("changed shutdown to {self.shutdown_expiry}")
+                    self.log(f"changed shutdown to {self.shutdown_expiry}")
                 else:
                     # is it time to shutdown?
                     if self.shutdown_expiry <= now:
@@ -181,41 +196,47 @@ class BurnIn(EnlightenPluginBase):
         if request.fields["Integ Time"]:
             ms = random.randint(eeprom.min_integration_time_ms, 1000)
             self.log(f"randomized integration time to {ms}ms")
-            self.ctl.integration_time_feature.set_ms(ms)
+            self.signals.append(f"self.ctl.integration_time_feature.set_ms({ms})")
 
-        if request.fields["Gain dB"]:
+        if request.fields["Gain dB"] and request.settings.is_xs():
             dB = random.randint(0, 240) / 10.0
             self.log(f"randomized gain to {dB}dB")
-            self.ctl.gain_db_feature.set_db(dB)
+            self.signals.append(f"self.ctl.gain_db_feature.set_db({dB})")
 
-        if request.fields["TEC Setpoint"]:
+        if request.fields["TEC Setpoint"] and eeprom.has_cooling:
             # note, we would probably never want to randomize laser setpoint
             degC = random.randint(eeprom.min_temp_degC, eeprom.max_temp_degC)
             self.log(f"randomized detector setpoint to {degC}C")
-            self.ctl.detector_temperature_feature.apply_setpoint(degC)
+            self.signals.append(f"self.ctl.detector_temperature_feature.apply_setpoint({degC})")
 
         if request.fields["Laser Power"]:
-            if settings.has_laser_power_calibration():
+            if eeprom.has_laser_power_calibration():
                 mW = random.randint(eeprom.min_laser_power_mW, eeprom.max_laser_power_mW)
                 self.log(f"randomized laser power to {mW}mW")
-                self.ctl.laser_control.set_mW(mW)
+                self.signals.append(f"self.ctl.laser_control.set_mW({mW})")
             else:
                 perc = random.randint(1, 100)
                 self.log(f"randomized laser power to {perc}%")
-                self.ctl.laser_control.set_perc(perc)
+                self.signals.append(f"self.ctl.laser_control.set_perc({perc})")
 
-        if request.fields["Use Laser"] and not request.fields["Take Dark"]:
-            self.ctl.laser_control.set_laser_enable(True)
+        if request.fields["Use Laser"]:
+            if request.fields["Take Dark"]:
+                # self.ctl.laser_control.set_laser_enable(False)
+                self.signals.append("self.ctl.dark_feature.clear()")
+                self.signals.append("self.ctl.laser_control.set_laser_enable(False)")
+            else:
+                # self.ctl.laser_control.set_laser_enable(True)
+                self.signals.append("self.ctl.laser_control.set_laser_enable(True)")
 
-        self.next_is_dark = request.fields["Take Dark"]
+        if request.fields["Take Dark"]:
+            self.darks_remaining = 5
 
     def log_header(self, request):
         """ Make it easy to see ENLIGHTEN restarts in plugin logfile """
         if self.header_logged:
             return
 
-        eeprom = request.settings.eeprom
         self.log("-"*80)
-        self.log(f"{self.name} started with {eeprom.serial_number}")
+        self.log(f"{self.name} started with {request.settings.eeprom.serial_number}")
         self.log("-"*80)
         self.header_logged = True

@@ -45,7 +45,8 @@ class EnlightenPluginBase:
         self._fields = []
         self.is_blocking = False
         self.block_enlighten = False
-        self.autoenable = False
+        self.auto_enable = False
+        self.lock_enable = False
         self.has_other_graph = False
         self.table = None
         self.x_axis_label = None
@@ -209,7 +210,8 @@ class EnlightenPluginBase:
             is_blocking = self.is_blocking,
             block_enlighten = self.block_enlighten,
             has_other_graph = self.has_other_graph,
-            autoenable = self.autoenable,
+            auto_enable = self.auto_enable,
+            lock_enable = self.lock_enable,
             series_names = [], # functional plugins define this on a frame-by-frame basis
             x_axis_label = self.x_axis_label,
             y_axis_label = self.y_axis_label
@@ -221,6 +223,7 @@ class EnlightenPluginBase:
         self.series = {}
         self.metadata = {}
         self.outputs = {}
+        self.signals = []
 
         response = self.process_request(request)
         if response: return response
@@ -236,6 +239,7 @@ class EnlightenPluginBase:
             request,
             series = self.series,
             outputs = self.outputs,
+            signals = self.signals,
             metadata = self.metadata
         )
     #### End backwards compatible object-returning wrappers #####
@@ -408,7 +412,8 @@ class EnlightenPluginConfiguration:
             is_blocking     = True,
             block_enlighten = False,
             streaming       = True,
-            autoenable      = False,
+            auto_enable     = False,
+            lock_enable     = False,
             events          = None,
             series_names    = None,
             multi_devices   = False,
@@ -423,7 +428,8 @@ class EnlightenPluginConfiguration:
         self.is_blocking     = is_blocking
         self.block_enlighten = block_enlighten
         self.streaming       = streaming
-        self.autoenable      = autoenable
+        self.auto_enable     = auto_enable
+        self.lock_enable     = lock_enable
         self.events          = events
         self.multi_devices   = multi_devices
         self.series_names    = series_names
@@ -634,6 +640,7 @@ class EnlightenPluginResponse:
             metadata    = None,
             outputs     = None,
             overrides   = None,
+            signals     = None,
             series      = None):   
 
         self.request    = request
@@ -642,4 +649,5 @@ class EnlightenPluginResponse:
         self.metadata   = metadata
         self.outputs    = outputs
         self.overrides  = overrides
+        self.signals    = signals
         self.series     = series
