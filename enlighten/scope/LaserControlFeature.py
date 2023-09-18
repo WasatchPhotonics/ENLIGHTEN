@@ -263,12 +263,18 @@ class LaserControlFeature:
             spec.change_device_setting("laser_enable", False)
 
     def set_mW(self, mW):
-        if not settings.state.use_mW:
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+        if not spec.settings.state.use_mW:
             self.configure_laser_power_controls_mW()
         self.ctl.form.ui.doubleSpinBox_laser_power.setValue(mW)
 
     def set_perc(self, perc):
-        if settings.state.use_mW:
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+        if spec.settings.state.use_mW:
             self.configure_laser_power_controls_percent()
         self.ctl.form.ui.doubleSpinBox_laser_power.setValue(perc)
 
