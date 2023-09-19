@@ -150,7 +150,8 @@ class BurnIn(EnlightenPluginBase):
         # monitor shutdown expiry
         ########################################################################
 
-        self.shutdown_check(request)
+        if self.shutdown_check(request):
+            return
 
         ########################################################################
         # monitor laser expiry
@@ -181,7 +182,7 @@ class BurnIn(EnlightenPluginBase):
         if self.laser_expiry is None:
             self.laser_expiry = now + datetime.timedelta(minutes=shutdown_min * duty_cycle)
             self.log(f"scheduled laser shutdown for {self.laser_expiry}")
-        elif self.laser_expiry <= now:
+        elif self.laser_expiry <= now and request.settings.state.laser_enabled:
             self.log(f"time to disable laser")
             self.signals.append("self.ctl.laser_control.set_laser_enable(False)")
 
@@ -223,6 +224,7 @@ class BurnIn(EnlightenPluginBase):
                         self.signals.append("self.ctl.laser_control.set_laser_enable(False)")
                         self.signals.append("self.ctl.close('initiated by BurnIn')")
                         # enlighten.ini will persist some but not all settings
+                        return True
 
         if self.shutdown_expiry and now < self.shutdown_expiry:
             self.outputs["Next Shutdown"] = str(self.shutdown_expiry-now).split(".")[0]
@@ -277,7 +279,10 @@ class BurnIn(EnlightenPluginBase):
         if self.header_logged:
             return
 
+        sn = request.settings.eeprom.serial_number
+        self.logfile = os.path.join(common.get_default_data_dir(), f"BurnIn-{sn}.log")
+
         self.log("-"*80)
-        self.log(f"{self.name} started with {request.settings.eeprom.serial_number}")
+        self.log(f"{self.name} started with {sn}")
         self.log("-"*80)
         self.header_logged = True
