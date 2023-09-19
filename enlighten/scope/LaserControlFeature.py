@@ -377,14 +377,17 @@ class LaserControlFeature:
         is_xs = spec.settings.is_xs()
         lb_watchdog = self.ctl.form.ui.label_laser_watchdog_sec
         sb_watchdog = self.ctl.form.ui.spinBox_laser_watchdog_sec
+        cb_watchdog = self.ctl.form.ui.checkBox_laser_watchdog
 
         if not (is_xs and has_laser):
             sb_watchdog.setVisible(False)
             lb_watchdog.setVisible(False)
+            cb_watchdog.setVisible(False)
             return
 
         sb_watchdog.setVisible(True)
         lb_watchdog.setVisible(True)
+        cb_watchdog.setVisible(True)
         
         sec = spec.settings.eeprom.laser_watchdog_sec
 
@@ -459,6 +462,7 @@ class LaserControlFeature:
     def set_watchdog_enable_callback(self, state):
         lb_watchdog = self.ctl.form.ui.label_laser_watchdog_sec
         sb_watchdog = self.ctl.form.ui.spinBox_laser_watchdog_sec
+        cb_watchdog = self.ctl.form.ui.checkBox_laser_watchdog
         if not state:
 
             log.debug("User initiated watchdog disable")
@@ -476,7 +480,7 @@ class LaserControlFeature:
                 log.debug("User cancelled watchdog disable")
 
                 # undo unchecking
-                self.ctl.form.ui.checkBox_laser_watchdog.setChecked(True)
+                cb_watchdog.setChecked(True)
         else:
 
             log.debug("User enabled watchdog")
