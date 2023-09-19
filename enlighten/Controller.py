@@ -258,7 +258,8 @@ class Controller:
         instantiated and displayed with all event loops running.
         """
         log.debug("performing post-construction initialization")
-        self.plugin_controller.autoload(self.autoload_plugin)
+        if self.autoload_plugin:
+            self.plugin_controller.autoload(self.autoload_plugin)
 
     def disconnect_device(self, spec=None, closing=False):
         if spec in self.other_devices:
@@ -294,8 +295,8 @@ class Controller:
 
         # The background thread only applies changes BETWEEN spectra, so give it
         # time to collect at least one more acquisition so the changes can take 
-        # effect.
-        final_delay_sec = float(2 * spec.settings.state.integration_time_ms / 1000.0 + 0.200)
+        # effect (cap at 5sec).
+        final_delay_sec = max(5, float(2 * spec.settings.state.integration_time_ms / 1000.0 + 0.200))
         log.debug("disconnect_device[%s]: final delay of %.2fsec", device_id, final_delay_sec)
         time.sleep(final_delay_sec)
 
@@ -1512,7 +1513,7 @@ class Controller:
                 error_count = self.seen_errors[spec][spectrometer_response.error_msg]
                 if error_count <= self.SPEC_ERROR_MAX_RETRY and not spectrometer_response.poison_pill:
                     # retry reading a few times before calling a reset
-                    log.debug(f"temporarily ignoring brief glitch (seen_errors {error_count} <= {self.SPEC_ERROR_MAX_RETRY}")
+                    log.debug(f"temporarily ignoring brief glitch (seen_errors {error_count} <= {self.SPEC_ERROR_MAX_RETRY})")
                     return
 
                 stay_connected = self.display_response_error(spec, spectrometer_response.error_msg)
