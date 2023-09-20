@@ -2,6 +2,8 @@ import logging
 
 from enlighten import util
 
+from enlighten.common import msgbox
+
 log = logging.getLogger(__name__)
 
 ##
@@ -184,8 +186,15 @@ class VCRControls(object):
     ## send a "save" event to anyone registered for that
     def save(self): 
         log.debug("save")
+
+        if len(self.callbacks["save"]) == 0:
+            # this is one scenario where the save button does nothing
+            # if this happens, it means the main save callback was unregistered
+            msgbox("Fatal Error: Save button has no callback.", "Error")
+
         for callback in list(self.callbacks["save"]):
             callback()
+
         self.update_visibility()
 
     ## collect one measurement, then go back to paused
