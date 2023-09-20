@@ -285,4 +285,5 @@ class BurnIn(EnlightenPluginBase):
         self.log("-"*80)
         self.log(f"{self.name} started with {sn}")
         self.log("-"*80)
+        self.log(f"fields: {request.fields}")
         self.header_logged = True
