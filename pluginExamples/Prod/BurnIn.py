@@ -285,5 +285,10 @@ class BurnIn(EnlightenPluginBase):
         self.log("-"*80)
         self.log(f"{self.name} started with {sn}")
         self.log("-"*80)
-        self.log(f"fields: {request.fields}")
+
+        for k, v in request.fields.items():
+            self.log(f"{k} = {v}")
+        for i, s in enumerate(request.settings.eeprom.hexbuf):
+            self.log(f"EEPROM Page {i}: {s}")
+
         self.header_logged = True
