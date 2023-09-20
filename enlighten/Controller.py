@@ -296,7 +296,7 @@ class Controller:
         # The background thread only applies changes BETWEEN spectra, so give it
         # time to collect at least one more acquisition so the changes can take 
         # effect (cap at 5sec).
-        final_delay_sec = max(5, float(2 * spec.settings.state.integration_time_ms / 1000.0 + 0.200))
+        final_delay_sec = min(5, float(2 * spec.settings.state.integration_time_ms / 1000.0 + 0.200))
         log.debug("disconnect_device[%s]: final delay of %.2fsec", device_id, final_delay_sec)
         time.sleep(final_delay_sec)
 
