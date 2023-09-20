@@ -2004,11 +2004,11 @@ class Controller:
         # @returns True if graph was updated
         """
         if curve is None:
-            log.error("set_curve_data[%s]: no curve")
+            log.error("set_curve_data[%s]: no curve", label)
             return False
 
         if y is None:
-            log.error("set_curve_data[%s]: no y")
+            log.error("set_curve_data[%s]: no y", label)
             return False
 
         if x is None:
