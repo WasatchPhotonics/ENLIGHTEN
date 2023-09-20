@@ -2,11 +2,18 @@
 
 # 4.0 GUI Refactoring
 
-- 2023-??-?? 4.0.16
-    - RamanIntensityCorrection works in Expert Mode
-    - splash tweak
-    - fixed rebuild_resources.sh for MacOS
-    - added BurnIn plugin
+- 2023-09-20 4.0.16
+    - bugfixes
+        - RamanIntensityCorrection works in Expert Mode
+        - use EEPROM FWHM for RamanShiftCorrection
+    - UI
+        - splash tweak
+        - msgbox for improved error reporting (e.g. 0 max integration time)
+    - portability
+        - fixed rebuild_resources.sh for MacOS
+        - updated Mac .dmg installer process
+    - production
+        - added BurnIn plugin
 - 2023-09-01 4.0.15
     - enforce eeprom.max_integration_time_ms on XS
     - fixed DetectorTemperatureFeature on ambient detectors
