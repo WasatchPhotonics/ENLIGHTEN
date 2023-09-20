@@ -6,6 +6,7 @@
     - RamanIntensityCorrection works in Expert Mode
     - splash tweak
     - fixed rebuild_resources.sh for MacOS
+    - added BurnIn plugin
 - 2023-09-01 4.0.15
     - enforce eeprom.max_integration_time_ms on XS
     - fixed DetectorTemperatureFeature on ambient detectors

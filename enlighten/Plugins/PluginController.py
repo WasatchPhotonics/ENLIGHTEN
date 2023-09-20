@@ -471,10 +471,19 @@ class PluginController:
                 self.do_post_disconnect()
                 return
 
-            # allow the user to enable the plugin
-            self.cb_enabled.setEnabled(True)
-            self.cb_enabled.setChecked(False)
-            self.button_process.setEnabled(True)
+            module_config = self.get_current_configuration()
+            if module_config.auto_enable:
+                # this plugin has requested to auto-enable on connect
+                log.debug("auto-enabling")
+                self.cb_enabled.setEnabled(not module_config.lock_enable)
+                self.cb_enabled.setChecked(True)
+                self.button_process.setEnabled(False)
+                self.enabled = True
+            else:
+                # allow the user to enable the plugin
+                self.cb_enabled.setEnabled(True)
+                self.cb_enabled.setChecked(False)
+                self.button_process.setEnabled(True)
 
             # for some reason, this doesn't work from within configure_gui_for_module
             self.graph_pos_callback()
@@ -499,7 +508,7 @@ class PluginController:
     # plus set the "process" button to the opposite state
     def enabled_callback(self):
         self.enabled = self.cb_enabled.isChecked()
-        if self.button_process is not None:
+        if self.button_process is not None:     # MZ: when would that be none?
             self.button_process.setEnabled(not self.enabled)
 
     ## The user changed the combobox indicating where the "second graph" should appear
@@ -1262,6 +1271,15 @@ class PluginController:
 
             self.apply_commands(response)
 
+            ####################################################################
+            # handle signals                                                   #
+            ####################################################################
+
+            # MZ: I am 100% confident there is a better way to do this. I'm
+            # starting by seeing if this does what I want.
+
+            self.apply_signals(response) 
+
         except:
             log.error(f"error handling response", exc_info=1)
 
@@ -1288,6 +1306,14 @@ class PluginController:
         for setting, value in response.commands:
             log.debug(f"applying {setting}")
             self.multispec.change_device_setting(setting, value)
+
+    def apply_signals(self, response):
+        if response.signals is None:
+            return
+
+        for signal in response.signals:
+            log.debug(f"applying signal: {signal}")
+            eval(signal)
 
     ############################################################################
     # events                                                                   #
