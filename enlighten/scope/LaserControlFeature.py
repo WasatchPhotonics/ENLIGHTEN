@@ -150,7 +150,7 @@ class LaserControlFeature:
 
         self.refresh_laser_button()
 
-    # expose this setter for BatchCollection
+    # expose this setter for BatchCollection and plugins
     def set_laser_enable(self, flag, spec=None, all=False):
 
         # BatchCollection doesn't use multispec.lock (it's not enforcing
@@ -262,6 +262,22 @@ class LaserControlFeature:
         if spec.settings.state.laser_enabled:
             spec.change_device_setting("laser_enable", False)
 
+    def set_mW(self, mW):
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+        if not spec.settings.state.use_mW:
+            self.configure_laser_power_controls_mW()
+        self.ctl.form.ui.doubleSpinBox_laser_power.setValue(mW)
+
+    def set_perc(self, perc):
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+        if spec.settings.state.use_mW:
+            self.configure_laser_power_controls_percent()
+        self.ctl.form.ui.doubleSpinBox_laser_power.setValue(perc)
+
     # ##########################################################################
     # Private Methods
     # ##########################################################################
@@ -361,14 +377,17 @@ class LaserControlFeature:
         is_xs = spec.settings.is_xs()
         lb_watchdog = self.ctl.form.ui.label_laser_watchdog_sec
         sb_watchdog = self.ctl.form.ui.spinBox_laser_watchdog_sec
+        cb_watchdog = self.ctl.form.ui.checkBox_laser_watchdog
 
         if not (is_xs and has_laser):
             sb_watchdog.setVisible(False)
             lb_watchdog.setVisible(False)
+            cb_watchdog.setVisible(False)
             return
 
         sb_watchdog.setVisible(True)
         lb_watchdog.setVisible(True)
+        cb_watchdog.setVisible(True)
         
         sec = spec.settings.eeprom.laser_watchdog_sec
 
@@ -443,6 +462,7 @@ class LaserControlFeature:
     def set_watchdog_enable_callback(self, state):
         lb_watchdog = self.ctl.form.ui.label_laser_watchdog_sec
         sb_watchdog = self.ctl.form.ui.spinBox_laser_watchdog_sec
+        cb_watchdog = self.ctl.form.ui.checkBox_laser_watchdog
         if not state:
 
             log.debug("User initiated watchdog disable")
@@ -460,7 +480,7 @@ class LaserControlFeature:
                 log.debug("User cancelled watchdog disable")
 
                 # undo unchecking
-                self.ctl.form.ui.checkBox_laser_watchdog.setChecked(True)
+                cb_watchdog.setChecked(True)
         else:
 
             log.debug("User enabled watchdog")
