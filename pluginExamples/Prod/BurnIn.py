@@ -21,17 +21,17 @@ class BurnIn(EnlightenPluginBase):
     def init_defaults(self):
         """ Initial GUI values, unless overwritten by enlighten.ini """
         self.defaults = {
-            "Integ Time": False,
+            "Integ Time": True,
             "Gain dB": False,
             "TEC Setpoint": False,
             "Use Laser": False,
             "Laser Power": False,
             "Laser Duty Cycle": 20,
             "Take Dark": False,
-            "Save Each": False,
-            "Export Every": 0,
-            "Change Min": 5,
-            "Shutdown Min": 0
+            "Save Each": True,
+            "Export Every": 100,
+            "Change Min": 1,
+            "Shutdown Min": 3 
         }
 
     def configure_from_ini(self):
