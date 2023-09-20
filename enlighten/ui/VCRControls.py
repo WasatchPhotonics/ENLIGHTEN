@@ -118,7 +118,13 @@ class VCRControls(object):
             self.callbacks[event].remove(callback)
             self.update_visibility() # stop-button state depends on registration
         else:
-            log.error("VCRControls didn't have a registration from event %s to %s", event, str(callback))
+            # Some potential observers only register callbacks when they need to
+            # (i.e. BatchCollection), but unregister everything on shutdown for
+            # safety.
+            #
+            # log.debug("VCRControls didn't have a registration from event %s to %s", event, str(callback))
+            pass
+
 
     def _stop_enabled(self):
         return len(self.callbacks["stop"]) > 0
