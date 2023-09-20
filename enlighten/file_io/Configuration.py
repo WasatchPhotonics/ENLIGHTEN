@@ -256,7 +256,7 @@ class Configuration:
                             continue
 
                         # was it a key-value line?
-                        m = re.match(r"^([A-Za-z0-9_]+) *=", line)
+                        m = re.match(r"^([A-Za-z0-9_ ]+) *=", line)
                         if m and section is not None:
                             # it was a key-value line, so update the line with the current value
                             key = m.group(1)
