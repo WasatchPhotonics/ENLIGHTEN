@@ -13,7 +13,7 @@ application.
       can be modules (files) within it
 """
 
-VERSION = "4.0.13"
+VERSION = "4.0.17"
 
 """ ENLIGHTEN's application version number (checked by scripts/deploy and bootstrap.bat) """
 class Techniques(IntEnum):
@@ -134,3 +134,44 @@ def get_default_data_dir():
     if os.name == "nt":
         return os.path.join(os.path.expanduser("~"), "Documents", "EnlightenSpectra")
     return os.path.join(os.environ["HOME"], "EnlightenSpectra")
+
+
+"""
+Looking for a method to display Marquee messages? 
+(Those non-intrusive messages at the top of Enlighten)
+
+One way is to use self.ctl.marquee.info("Message")
+This assumes your FeatureObject class has an instance of Controller.
+"""
+
+def msgbox(prompt, title="Alert", buttons=0):
+    """
+    Display an interupting message to the user.
+
+    Inspired by VB msgbox: 
+    https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/msgbox-function
+    """
+
+    # doing this import within this method to avoid breaking all dependents of common.py
+    # not sure that this would break anything, just to be safe -- move up when confident
+    from PySide2.QtWidgets import QMessageBox
+
+    # TODO: see enlighten/ui/BasicWindow.py for an example how to implement this using
+    # Enlighten's style. This should always be callable as a single function call without
+    # the caller needing to create her own class instance
+
+    warn_msg = QMessageBox()
+
+    warn_msg.setWindowTitle(title)
+    warn_msg.setText(prompt)
+
+    if buttons == 0:
+        warn_msg.setStandardButtons(QMessageBox.Ok)
+    elif buttons == 1:
+        warn_msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+    elif buttons == 4:
+        warn_msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+
+    warn_msg.setIcon(QMessageBox.Warning)
+
+    return warn_msg.exec_() in [QMessageBox.Ok, QMessageBox.Yes]

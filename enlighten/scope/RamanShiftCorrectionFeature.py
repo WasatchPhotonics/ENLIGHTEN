@@ -433,13 +433,20 @@ class RamanShiftCorrectionFeature(object):
         gap_px = round(0.5 * min_gap_cm / cm_per_px)
         log.debug("min_gap_cm %.2f at %.2f cm/px implies gap_px of %d px", min_gap_cm, cm_per_px, gap_px)
 
+        spec = self.multispec.current_spectrometer()
+
+        # if doesn't have field or field == 0 or field == None
+        if not hasattr(spec, "fwhm") or not spec.fwhm:
+            msgbox("ERROR unspecified fwhm")
+            spec.fwhm = 3
+            
         found_peak_indices, peak_properties = signal.find_peaks(
             x            = pr.processed,    # technically "y" :-)
             height       = None, 
             threshold    = None, 
             distance     = None, # gap_px, 
             prominence   = 200,             # https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.peak_prominences.html#scipy.signal.peak_prominences
-            width        = 3,               # we could derive this from EEPROM's FWHM, but seems a good start
+            width        = spec.fwhm,
             wlen         = None, 
             rel_height   = 0.5, 
             plateau_size = None)

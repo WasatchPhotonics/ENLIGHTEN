@@ -18,6 +18,10 @@ log = logging.getLogger(__name__)
 # Encapsulate laser control from the application side.
 class LaserControlFeature:
 
+    MIN_BATTERY_PERC = 5
+    BTN_OFF_TEXT = "Turn Laser Off"
+    BTN_ON_TEXT = "Turn Laser On"
+
     def __init__(self, ctl):
         self.ctl = ctl
 
@@ -146,7 +150,7 @@ class LaserControlFeature:
 
         self.refresh_laser_button()
 
-    # expose this setter for BatchCollection
+    # expose this setter for BatchCollection and plugins
     def set_laser_enable(self, flag, spec=None, all=False):
 
         # BatchCollection doesn't use multispec.lock (it's not enforcing
@@ -190,6 +194,7 @@ class LaserControlFeature:
             spec.change_device_setting("laser_enable", flag)
 
         spec.app_state.laser_state = LaserStates.REQUESTED if flag else LaserStates.DISABLED
+        log.debug(f"set_laser_enable: spec.settings.state.laser_enabled = {spec.settings.state.laser_enabled}, spec.app_state.laser_state = {spec.app_state.laser_state}")
 
         if self.ctl.multispec.is_current_spectrometer(spec):
             self.refresh_laser_button()
@@ -237,6 +242,18 @@ class LaserControlFeature:
         log.debug("toggle_laser called")
         self.toggle_callback()
 
+    def cant_fire_because_battery(self, spec=None):
+        if spec is None:
+            spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return False
+        
+        perc = self.ctl.battery_feature.get_perc(spec)
+        if perc is None:
+            return False
+
+        return perc < self.MIN_BATTERY_PERC
+
     def disconnect(self):
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
@@ -244,6 +261,22 @@ class LaserControlFeature:
 
         if spec.settings.state.laser_enabled:
             spec.change_device_setting("laser_enable", False)
+
+    def set_mW(self, mW):
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+        if not spec.settings.state.use_mW:
+            self.configure_laser_power_controls_mW()
+        self.ctl.form.ui.doubleSpinBox_laser_power.setValue(mW)
+
+    def set_perc(self, perc):
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+        if spec.settings.state.use_mW:
+            self.configure_laser_power_controls_percent()
+        self.ctl.form.ui.doubleSpinBox_laser_power.setValue(perc)
 
     # ##########################################################################
     # Private Methods
@@ -254,9 +287,9 @@ class LaserControlFeature:
         enabled = spec.settings.state.laser_enabled if spec else False
         b = self.ctl.form.ui.pushButton_laser_toggle
         if enabled:
-            b.setText("Turn Laser Off")
+            b.setText(self.BTN_OFF_TEXT)
         else:
-            b.setText("Turn Laser On")
+            b.setText(self.BTN_ON_TEXT)
         self.ctl.gui.colorize_button(b, enabled)
 
         self.refresh_watchdog_tooltip()
@@ -344,14 +377,17 @@ class LaserControlFeature:
         is_xs = spec.settings.is_xs()
         lb_watchdog = self.ctl.form.ui.label_laser_watchdog_sec
         sb_watchdog = self.ctl.form.ui.spinBox_laser_watchdog_sec
+        cb_watchdog = self.ctl.form.ui.checkBox_laser_watchdog
 
         if not (is_xs and has_laser):
             sb_watchdog.setVisible(False)
             lb_watchdog.setVisible(False)
+            cb_watchdog.setVisible(False)
             return
 
         sb_watchdog.setVisible(True)
         lb_watchdog.setVisible(True)
+        cb_watchdog.setVisible(True)
         
         sec = spec.settings.eeprom.laser_watchdog_sec
 
@@ -426,6 +462,7 @@ class LaserControlFeature:
     def set_watchdog_enable_callback(self, state):
         lb_watchdog = self.ctl.form.ui.label_laser_watchdog_sec
         sb_watchdog = self.ctl.form.ui.spinBox_laser_watchdog_sec
+        cb_watchdog = self.ctl.form.ui.checkBox_laser_watchdog
         if not state:
 
             log.debug("User initiated watchdog disable")
@@ -443,7 +480,7 @@ class LaserControlFeature:
                 log.debug("User cancelled watchdog disable")
 
                 # undo unchecking
-                self.ctl.form.ui.checkBox_laser_watchdog.setChecked(True)
+                cb_watchdog.setChecked(True)
         else:
 
             log.debug("User enabled watchdog")
@@ -521,8 +558,26 @@ class LaserControlFeature:
         # invert the previous state
         flag = not spec.settings.state.laser_enabled
         log.debug(f"toggle_callback: laser_enabled was {spec.settings.state.laser_enabled}, so setting {flag}")
-        self.set_laser_enable(flag)
 
+        # safety check for developmental firmware: if the user was trying to turn
+        # the laser off, turn it off regardless of previous "believed" state. The
+        # problem is there is no Checked() method on a button to determine 
+        # "previous state" (they're stateless), and it's possible that 
+        # state.laser_enabled could be wrong if wasatch.get_laser_enabled() isn't
+        # working right due to FW bugs, so go by our internal tracking of the
+        # user's "last request".
+        if flag:
+            # by default, we would be turning the laser ON at this point, since
+            # laser_enabled is apparently False
+
+            if spec.app_state.laser_state != LaserStates.DISABLED:
+                # however, laser_state implies that ENLIGHTEN thought the laser
+                # was either firing, or had been requested to fire
+
+                flag = False
+                log.critical(f"toggle_callback: turning laser OFF even though previous spec.settings.state.laser_enabled was {spec.settings.state.laser_enabled}, as spec.app_state.laser_state is {spec.app_state.laser_state}")
+
+        self.set_laser_enable(flag)
         token = "laser_init"
 
         if flag:
@@ -547,12 +602,12 @@ class LaserControlFeature:
 
     # gets called by BatteryFeature when a new battery reading is received
     def battery_callback(self, perc, charging):
-        enough_for_laser = perc >= 5.0
+        enough_for_laser = perc >= self.MIN_BATTERY_PERC
         log.debug("enough_for_laser = %s (%.2f%%)" % (enough_for_laser, perc))
 
         b = self.ctl.form.ui.pushButton_laser_toggle
         b.setEnabled(enough_for_laser)
-        b.setToolTip("Toggle laser (ctrl-L)" if enough_for_laser else "battery low")
+        b.setToolTip("Toggle laser (ctrl-L)" if enough_for_laser else "battery low ({perc:.2f}%)")
 
     def slider_power_callback(self):
         self.slider_stop_usb = False
