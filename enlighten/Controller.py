@@ -98,6 +98,7 @@ class Controller:
                 form              = None,
                 splash            = None,
                 headless          = False,
+                script_path       = None,
                 autoload_plugin   = None,
             ):
         """
@@ -116,6 +117,7 @@ class Controller:
         @param stylesheet_path directory containing enlighten.css and associated styles
         @param set_all_dfu set each ARM spectrometer to DFU mode as they connect
         @param autoload_plugin auto-connect the named plugin
+        @param script_path argv[0] at invocation
         """
 
         self.app                    = app
@@ -143,6 +145,18 @@ class Controller:
         # level after the first spectrometer has successfully connected.)
         logging.getLogger().setLevel(logging.DEBUG)
 
+        # generate a reliable relative path to the "root dir" we normally run from
+        # (parent directory of enlighten/assets, essentially git project root OR
+        # parent of enlighten.exe)
+        if script_path.endswith(".py"):
+            # presumably being run from source, so we want the parent of scripts/Enlighten.py
+            self.root_dir = os.path.join(os.path.dirname(script_path), "..") # e.g. "scripts/.."
+        else:
+            # presumably being run from compiled executable (anything from "enlighten" 
+            # to "C:\Program Files\Wasatch Photonics\ENLIGHTEN\Enlighten\enlighten.exe")
+            # so we want the parent of enlighten.exe
+            self.root_dir = os.path.dirname(script_path)
+
         log.info("ENLIGHTEN version %s",     common.VERSION)
         log.info("Wasatch.PY version %s",    wasatch.version)
         log.info("applog at %s",             applog.get_location())
@@ -152,6 +166,7 @@ class Controller:
         log.info("PySide version %s",        PySide2.__version__)
         log.info("PySide QtCore version %s", QtCore.__version__)
         log.info("QtCore version %s",        QtCore.qVersion())
+        log.info("Script path %s",           script_path)
 
         ########################################################################
         # GUI Configuration

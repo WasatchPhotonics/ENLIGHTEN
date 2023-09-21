@@ -7,6 +7,7 @@ log = logging.getLogger(__name__)
 # Encapsulates application of CSS stylesheets to Qt widgets.
 class Stylesheets:
 
+    # MZ: this will need to be prefixed by ctl.root_dir
     DEFAULT_PATH = "enlighten/assets/stylesheets"
 
     def clear(self):

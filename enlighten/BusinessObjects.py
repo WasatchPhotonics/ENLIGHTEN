@@ -495,7 +495,7 @@ class BusinessObjects:
         ctl.sounds = Sounds(
             checkbox                    = sfu.checkBox_sound_enable,
             config                      = ctl.config,
-            path                        = "enlighten/assets/example_data/sounds")
+            path                        = "enlighten/assets/example_data/sounds") # MZ: will need ctl.root_dir
 
         self.header("instantiating ScanAveragingFeature")
         ctl.scan_averaging = ScanAveragingFeature(

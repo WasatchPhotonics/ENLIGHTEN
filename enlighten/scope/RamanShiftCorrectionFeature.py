@@ -81,7 +81,7 @@ class RamanShiftCorrectionFeature(object):
 
     ## This file is installed as part of the ENLIGHTEN distribution and contains
     #  our supported compounds and their peaks
-    ASTM_PATHNAME = "enlighten/assets/example_data/ASTM-E1840-96.json"
+    ASTM_PATHNAME = "enlighten/assets/example_data/ASTM-E1840-96.json" # MZ: will need ctl.root_dir
 
     ## if calibration is off by more than this, display error message
     MAX_WAVENUMBER_SHIFT = 20 

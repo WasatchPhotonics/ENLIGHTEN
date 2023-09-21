@@ -129,7 +129,9 @@ class EnlightenApplication(object):
             form              = self.form,
             splash            = self.splash,
             headless          = self.args.headless,
+            script_path       = self.script_path,
             autoload_plugin   = self.args.plugin)
+
         # This requires explanation.  This is obviously a Qt "connect" binding,
         # but Controller is not a Qt widget, and does not inherit from/extend 
         # anything.  What gives?  See Controller.create_signals, which actually
@@ -181,6 +183,7 @@ class EnlightenApplication(object):
 
 def main(argv):
     enlighten = EnlightenApplication()
+    enlighten.script_path = argv[0]
     enlighten.parse_args(argv[1:])
     try:
         ec = enlighten.run()
