@@ -233,7 +233,7 @@ class EnlightenPluginBase:
 
         if self.table is not None:
             # table (looks like a spreadsheet under the graph)
-            outputs["Table"] = self.table
+            self.outputs["Table"] = self.table
 
         return EnlightenPluginResponse(
             request,
