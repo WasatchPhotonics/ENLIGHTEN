@@ -87,7 +87,7 @@ class EnlightenApplication(object):
         # TODO: everything should have a default -- do not rely on empty args
         #                  | parameter name       | type    | default             | action             | choices                                                  | help |
         parser.add_argument("--log-level",         type=str, default="info",                            choices=['debug', 'info', 'warning', 'error', 'critical'], help="logging level")
-        parser.add_argument("--log-append",        type=str, default="LIMIT_20MB",                      choices=["False", "True", "LIMIT_20MB"],                   help="append to existing logfile")
+        parser.add_argument("--log-append",        type=str, default="LIMIT",                      choices=["False", "True", "LIMIT"],                   help="append to existing logfile")
         parser.add_argument("--logfile",           type=str,                                                                                                       help="Explicit path for the logfile")
         parser.add_argument("--max-memory-growth", type=int, default=0,                                                                                            help="Automatically exit after this percent memory growth (0 for never, 100 = doubling)")
         parser.add_argument("--run-sec",           type=int, default=0,                                                                                            help="Automatically exit after this many seconds (0 for never)")
