@@ -134,7 +134,7 @@ class BurnIn(EnlightenPluginBase):
             # thumbnail)
             self.signals.append("self.ctl.vcr_controls.save()")
 
-        if request.fields["Export Every"] > 0 and self.ctl.measurements.count() >= request.fields["Export Every"]:
+        if request.fields["Export Every"] > 0 and self.ctl.measurements.count() + 1 >= request.fields["Export Every"]:
             self.log("exporting session")
             # self.ctl.measurements.export_session(prompt=False)
             self.signals.append("self.ctl.measurements.export_session(prompt=False)")
@@ -142,6 +142,10 @@ class BurnIn(EnlightenPluginBase):
             self.log("clearing clipboard")
             # self.ctl.measurements.erase_all()
             self.signals.append("self.ctl.measurements.erase_all()")
+            # Note that since the "erase_all" is essentially queued for execution
+            # by the PluginController, we can still receive a new request before it
+            # gets executed, leading to a new export being requested, which may
+            # end up only holding a single spectrum.
 
         self.measurement_count += 1
         self.outputs["Measurements"] = self.measurement_count
