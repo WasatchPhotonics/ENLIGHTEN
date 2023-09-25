@@ -52,7 +52,10 @@ class EnlightenApplication(object):
 
     ## Parse command-line arguments
     def parse_args(self, argv):
+
+        # SB: this doesn't show up anywhere bc logging is not yet configured
         log.debug("Process args: %s", argv)
+
         self.args = self.parser.parse_args(argv)
         if self.args is None:
             return
@@ -78,16 +81,21 @@ class EnlightenApplication(object):
     #
     def create_parser(self):
         parser = argparse.ArgumentParser(description="acquire from specified device, display line graph")
-        parser.add_argument("--log-level",          type=str, default="info",       help="logging level",    choices=['debug', 'info', 'warning', 'error', 'critical'])
-        parser.add_argument("--log-append",         action="store_true",            help="append to existing logfile")
-        parser.add_argument("--logfile",            type=str,                       help="Explicit path for the logfile")
-        parser.add_argument("--max-memory-growth",  type=int, default=0,            help="Automatically exit after this percent memory growth (0 for never, 100 = doubling)")
-        parser.add_argument("--run-sec",            type=int, default=0,            help="Automatically exit after this many seconds (0 for never)")
-        parser.add_argument("--serial-number",      type=str,                       help="only connect to specified serial number")
-        parser.add_argument("--set-all-dfu",        action="store_true",            help="set spectrometers to DFU mode as soon as they connect")
-        parser.add_argument("--stylesheet-path",    type=str,                       help="Path to CSS directory")
-        parser.add_argument("--headless",           action="store_true",            help="Run Enlighten without GUI")
-        parser.add_argument("--plugin",             type=str,                       help="Plugin name")
+
+        # This code was like a spreadsheet when I found it, leaning into that
+        # use :set nowrap in vim
+        # TODO: everything should have a default -- do not rely on empty args
+        #                  | parameter name       | type    | default             | action             | choices                                                  | help |
+        parser.add_argument("--log-level",         type=str, default="info",                            choices=['debug', 'info', 'warning', 'error', 'critical'], help="logging level")
+        parser.add_argument("--log-append",                  default="LIMIT_20MB", action="store_true", choices=["False", "True", "LIMIT_20MB"],                   help="append to existing logfile")
+        parser.add_argument("--logfile",           type=str,                                                                                                       help="Explicit path for the logfile")
+        parser.add_argument("--max-memory-growth", type=int, default=0,                                                                                            help="Automatically exit after this percent memory growth (0 for never, 100 = doubling)")
+        parser.add_argument("--run-sec",           type=int, default=0,                                                                                            help="Automatically exit after this many seconds (0 for never)")
+        parser.add_argument("--serial-number",     type=str,                                                                                                       help="only connect to specified serial number")
+        parser.add_argument("--set-all-dfu",                                       action="store_true",                                                            help="set spectrometers to DFU mode as soon as they connect")
+        parser.add_argument("--stylesheet-path",   type=str,                                                                                                       help="Path to CSS directory")
+        parser.add_argument("--headless",                                          action="store_true",                                                            help="Run Enlighten without GUI")
+        parser.add_argument("--plugin",            type=str,                                                                                                       help="Plugin name")
         return parser
 
     ##
