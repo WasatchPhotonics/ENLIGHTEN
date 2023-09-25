@@ -177,14 +177,14 @@ class Configuration:
 
     def parse(self):
         """ Load as ConfigParser object. """
-        self.config = configparser.ConfigParser(interpolation=None)
+        self.config = configparser.ConfigParser(interpolation=None, strict=False)
         self.config.optionxform = str
         try:
             self.config.read(self.pathname)
             log.info("loaded %s", self.pathname)
             return
         except:
-            log.error("Failed to parse %s", self.pathname)
+            log.error(f"Failed to parse {self.pathname}", exc_info=1)
 
         # re-generate blank ConfigParser object, which we can use when saving
         self.config = configparser.ConfigParser()
@@ -256,12 +256,13 @@ class Configuration:
                             continue
 
                         # was it a key-value line?
-                        m = re.match(r"^([A-Za-z0-9_]+) *=", line)
+                        m = re.match(r"^([A-Za-z0-9_ ]+) *=", line)
                         if m and section is not None:
                             # it was a key-value line, so update the line with the current value
-                            key = m.group(1)
-                            self.write(outfile, "%s = %s" % (key, self.get(section, key, raw=True)))
-                            seen[section].add(key)
+                            key = m.group(1).strip()
+                            if key not in seen[section]:
+                                self.write(outfile, "%s = %s" % (key, self.get(section, key, raw=True)))
+                                seen[section].add(key)
                             continue
 
                         log.error("unexpected line in source .ini file: %s", line)

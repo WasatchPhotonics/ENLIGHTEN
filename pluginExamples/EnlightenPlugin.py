@@ -3,7 +3,6 @@
 # @brief    Contains all the classes exchanged with ENLIGHTEN plug-ins, including
 #           the EnlightenPluginBase which all plug-ins should extend.
 
-import datetime
 from dataclasses import dataclass, field
 
 from enlighten import common
@@ -13,6 +12,7 @@ from wasatch.ProcessedReading import ProcessedReading
 from wasatch.SpectrometerSettings import SpectrometerSettings
 
 import numpy as np
+import datetime
 import os
 
 import logging
@@ -45,6 +45,8 @@ class EnlightenPluginBase:
         self._fields = []
         self.is_blocking = False
         self.block_enlighten = False
+        self.auto_enable = False
+        self.lock_enable = False
         self.has_other_graph = False
         self.table = None
         self.x_axis_label = None
@@ -54,6 +56,9 @@ class EnlightenPluginBase:
 
         # plugins can do everything
         self.ctl = ctl
+
+        # allow plugins to override their logfile name/location
+        self.logfile = os.path.join(common.get_default_data_dir(), 'plugin_log.txt')
 
     def get_axis(self):
         if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVELENGTHS:
@@ -84,8 +89,9 @@ class EnlightenPluginBase:
     def log(self, *msgs):
         # initially made this because the regular logger wasn't working
         # but it makes sense for plugins to have their own log separate from enlighten
-        with open(common.get_default_data_dir()+os.sep+'plugin_log.txt', 'at') as pl:
-            pl.write(' '.join([str(msg) for msg in msgs]) + "\n")
+        now = datetime.datetime.now()
+        with open(self.logfile, 'at') as pl:
+            pl.write(f"{now} " + ' '.join([str(msg) for msg in msgs]) + "\n")
 
     def field(self, **kwargs):
         self._fields.append(EnlightenPluginField(**kwargs))
@@ -204,6 +210,8 @@ class EnlightenPluginBase:
             is_blocking = self.is_blocking,
             block_enlighten = self.block_enlighten,
             has_other_graph = self.has_other_graph,
+            auto_enable = self.auto_enable,
+            lock_enable = self.lock_enable,
             series_names = [], # functional plugins define this on a frame-by-frame basis
             x_axis_label = self.x_axis_label,
             y_axis_label = self.y_axis_label
@@ -214,6 +222,8 @@ class EnlightenPluginBase:
         # clear series each frame
         self.series = {}
         self.metadata = {}
+        self.outputs = {}
+        self.signals = []
 
         response = self.process_request(request)
         if response: return response
@@ -221,17 +231,15 @@ class EnlightenPluginBase:
         # if not yet returned, we are running a functional plugin,
         # and so we want Enlighten to construct the EnlightenPluginResponse for us
 
-        outputs = {}
         if self.table is not None:
-            outputs = {
-                # table (looks like a spreadsheet under the graph)
-                "Table": self.table,
-            }
+            # table (looks like a spreadsheet under the graph)
+            outputs["Table"] = self.table
 
         return EnlightenPluginResponse(
             request,
             series = self.series,
-            outputs = outputs,
+            outputs = self.outputs,
+            signals = self.signals,
             metadata = self.metadata
         )
     #### End backwards compatible object-returning wrappers #####
@@ -406,6 +414,7 @@ class EnlightenPluginConfiguration:
             block_enlighten = False,
             streaming       = True,
             auto_enable     = True,
+            lock_enable     = False,
             events          = None,
             series_names    = None,
             multi_devices   = False,
@@ -421,6 +430,7 @@ class EnlightenPluginConfiguration:
         self.block_enlighten = block_enlighten
         self.streaming       = streaming
         self.auto_enable     = auto_enable
+        self.lock_enable     = lock_enable
         self.events          = events
         self.multi_devices   = multi_devices
         self.series_names    = series_names
@@ -631,6 +641,7 @@ class EnlightenPluginResponse:
             metadata    = None,
             outputs     = None,
             overrides   = None,
+            signals     = None,
             series      = None):   
 
         self.request    = request
@@ -639,4 +650,5 @@ class EnlightenPluginResponse:
         self.metadata   = metadata
         self.outputs    = outputs
         self.overrides  = overrides
+        self.signals    = signals
         self.series     = series

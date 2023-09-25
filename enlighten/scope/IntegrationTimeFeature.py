@@ -4,6 +4,8 @@ from enlighten import util
 from enlighten.ScrollStealFilter import ScrollStealFilter
 from enlighten.MouseWheelFilter import MouseWheelFilter
 
+from enlighten.common import msgbox
+
 log = logging.getLogger(__name__)
 
 class IntegrationTimeFeature(object):
@@ -53,6 +55,11 @@ class IntegrationTimeFeature(object):
 
         min_ms = spec.settings.eeprom.min_integration_time_ms
         max_ms = spec.settings.eeprom.max_integration_time_ms if spec.settings.is_xs() else 2**24
+
+        if max_ms == 0:
+            # do not silently replace a zero value, let the user know
+            msgbox("Warning: Max integration time is set to zero. Using 1000ms instead.")
+            max_ms = 1000
 
         # set slider limits FIRST, with signals disabled, because when we later
         # set the spinner, it will correctly set the final value within the limits.

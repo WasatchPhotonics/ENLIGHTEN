@@ -79,6 +79,7 @@ class EnlightenApplication(object):
     def create_parser(self):
         parser = argparse.ArgumentParser(description="acquire from specified device, display line graph")
         parser.add_argument("--log-level",          type=str, default="info",       help="logging level",    choices=['debug', 'info', 'warning', 'error', 'critical'])
+        parser.add_argument("--log-append",         action="store_true",            help="append to existing logfile")
         parser.add_argument("--logfile",            type=str,                       help="Explicit path for the logfile")
         parser.add_argument("--max-memory-growth",  type=int, default=0,            help="Automatically exit after this percent memory growth (0 for never, 100 = doubling)")
         parser.add_argument("--run-sec",            type=int, default=0,            help="Automatically exit after this many seconds (0 for never)")
@@ -106,7 +107,7 @@ class EnlightenApplication(object):
         self.splash.setPixmap(pixmap)
         self.splash.show()
 
-        self.main_logger = applog.MainLogger(self.args.log_level, logfile=self.args.logfile, timeout_sec=5, enable_stdout=not self.testing)
+        self.main_logger = applog.MainLogger(self.args.log_level, logfile=self.args.logfile, timeout_sec=5, enable_stdout=not self.testing, append=self.args.log_append)
 
         # This violates convention but Controller has so many imports that it takes a while to import
         # This needs to occur here because the Qt app needs to be made before the splash screen
