@@ -413,7 +413,7 @@ class EnlightenPluginConfiguration:
             is_blocking     = True,
             block_enlighten = False,
             streaming       = True,
-            auto_enable     = True,
+            auto_enable     = False,
             lock_enable     = False,
             events          = None,
             series_names    = None,

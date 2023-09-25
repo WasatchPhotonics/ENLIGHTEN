@@ -349,9 +349,6 @@ class SaveOptions():
     # Methods
     # ##########################################################################
 
-    def force_csv(self):
-        self.cb_csv.setChecked(True)
-
     ##
     # Called by Controller on first visit to Raman Mode
     def force_wavenumber(self):
