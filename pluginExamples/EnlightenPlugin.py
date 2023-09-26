@@ -392,7 +392,8 @@ class EnlightenPluginConfiguration:
     #        (must match series names in EnlightenPluginReponse.data)
     # @param graph_type: "line" or "xy" (scatter)
     # @param streaming: if True (default), display the "[x] Enable" checkbox
-    # @param auto_enable: automatically check Enabled and hide checkbox
+    # @param auto_enable: automatically check Enabled 
+    # @param lock_enable: prevent disabling the plugin (provides "kiosk mode")
     # @param is_blocking: ENLIGHTEN should not send any further requests to the
     #        plug-in until the Response to the previous Request is received
     # @param block_enlighten: this is much more severe than is_blocking (which 
