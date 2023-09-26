@@ -2,6 +2,9 @@
 
 # 4.0 GUI Refactoring
 
+- 2023-??-?? 4.0.18
+    - fixed plugin outputs/table bug
+    - added ScanAveragingFeature.set_locked
 - 2023-09-20 4.0.17
     - support --log-append
     - moved run-burning.bat to plugins/Prod
