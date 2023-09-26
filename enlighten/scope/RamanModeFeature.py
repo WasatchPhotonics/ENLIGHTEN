@@ -78,5 +78,8 @@ class RamanModeFeature(object):
         self.multispec.change_device_setting("acquisition_laser_trigger_enable", self.enabled)
 
         # is there anything else in ENLIGHTEN which might dis/enable the laser button?
+        # SB: yes, LaserControlFeature did when the battery is low (removed in this commit)
+        # this question is the reason we should use expanded names for UI code
+        # self.ctl.form.ui.pushButton_laser_toggle.setEnable is a searchable string
         self.bt_laser.setEnabled(not self.enabled)
         self.bt_laser.setToolTip("disabled in Raman Mode" if self.enabled else "fire laser (ctrl-L)")

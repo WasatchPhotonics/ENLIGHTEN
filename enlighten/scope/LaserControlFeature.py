@@ -605,10 +605,6 @@ class LaserControlFeature:
         enough_for_laser = perc >= self.MIN_BATTERY_PERC
         log.debug("enough_for_laser = %s (%.2f%%)" % (enough_for_laser, perc))
 
-        b = self.ctl.form.ui.pushButton_laser_toggle
-        b.setEnabled(enough_for_laser)
-        b.setToolTip("Toggle laser (ctrl-L)" if enough_for_laser else "battery low ({perc:.2f}%)")
-
     def slider_power_callback(self):
         self.slider_stop_usb = False
         position = self.ctl.form.ui.verticalSlider_laser_power.sliderPosition()
