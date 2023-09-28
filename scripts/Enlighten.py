@@ -87,7 +87,7 @@ class EnlightenApplication(object):
         parser.add_argument("--serial-number",      type=str,                       help="only connect to specified serial number")
         parser.add_argument("--set-all-dfu",        action="store_true",            help="set spectrometers to DFU mode as soon as they connect")
         parser.add_argument("--stylesheet-path",    type=str,                       help="path to CSS directory")
-        parser.add_argument("--window-state",       type=str, default="floating",   help="window initial state", choices=["floating", "maximized", "fullscreen", "headless"])
+        parser.add_argument("--window-state",       type=str, default="floating",   help="window initial state", choices=["floating", "maximized", "fullscreen", "minimized"])
         parser.add_argument("--plugin",             type=str,                       help="plugin name")
         return parser
 
