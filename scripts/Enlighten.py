@@ -77,17 +77,18 @@ class EnlightenApplication(object):
     ## Defines the command-line arguments and their defaults
     #
     def create_parser(self):
-        parser = argparse.ArgumentParser(description="acquire from specified device, display line graph")
-        parser.add_argument("--log-level",          type=str, default="info",       help="logging level",    choices=['debug', 'info', 'warning', 'error', 'critical'])
+        parser = argparse.ArgumentParser(description="acquire from specified device, display line graph",
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+        parser.add_argument("--log-level",          type=str, default="info",       help="logging level", choices=['debug', 'info', 'warning', 'error', 'critical'])
         parser.add_argument("--log-append",         action="store_true",            help="append to existing logfile")
-        parser.add_argument("--logfile",            type=str,                       help="Explicit path for the logfile")
-        parser.add_argument("--max-memory-growth",  type=int, default=0,            help="Automatically exit after this percent memory growth (0 for never, 100 = doubling)")
-        parser.add_argument("--run-sec",            type=int, default=0,            help="Automatically exit after this many seconds (0 for never)")
+        parser.add_argument("--logfile",            type=str,                       help="explicit path for the logfile")
+        parser.add_argument("--max-memory-growth",  type=int, default=0,            help="automatically exit after this percent memory growth (0 for never, 100 = doubling)")
+        parser.add_argument("--run-sec",            type=int, default=0,            help="automatically exit after this many seconds (0 for never)")
         parser.add_argument("--serial-number",      type=str,                       help="only connect to specified serial number")
         parser.add_argument("--set-all-dfu",        action="store_true",            help="set spectrometers to DFU mode as soon as they connect")
-        parser.add_argument("--stylesheet-path",    type=str,                       help="Path to CSS directory")
-        parser.add_argument("--headless",           action="store_true",            help="Run Enlighten without GUI")
-        parser.add_argument("--plugin",             type=str,                       help="Plugin name")
+        parser.add_argument("--stylesheet-path",    type=str,                       help="path to CSS directory")
+        parser.add_argument("--window-state",       type=str, default="floating",   help="window initial state", choices=["floating", "maximized", "fullscreen", "headless"])
+        parser.add_argument("--plugin",             type=str,                       help="plugin name")
         return parser
 
     ##
@@ -99,7 +100,7 @@ class EnlightenApplication(object):
 
         # instantiate form (a QMainWindow with named "MainWindow")
         # UI needs to be imported here in order to access qresources for the splash screen
-        self.form = BasicWindow(title="ENLIGHTEN %s" % common.VERSION, headless=self.args.headless)
+        self.form = BasicWindow(title="ENLIGHTEN %s" % common.VERSION)
 
         pixmap = QPixmap(":/application/images/splash.png")
         pixmap = pixmap.scaled(pixmap.width()/2, pixmap.height()/2) # eyeballed, default seemed to take whole screen
@@ -128,7 +129,7 @@ class EnlightenApplication(object):
             set_all_dfu       = self.args.set_all_dfu,
             form              = self.form,
             splash            = self.splash,
-            headless          = self.args.headless,
+            window_state      = self.args.window_state,
             autoload_plugin   = self.args.plugin)
         # This requires explanation.  This is obviously a Qt "connect" binding,
         # but Controller is not a Qt widget, and does not inherit from/extend 
