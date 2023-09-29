@@ -108,7 +108,12 @@ class EnlightenApplication(object):
         self.splash.setPixmap(pixmap)
         self.splash.show()
 
-        self.main_logger = applog.MainLogger(self.args.log_level, logfile=self.args.logfile, timeout_sec=5, enable_stdout=not self.testing, append=self.args.log_append)
+        self.main_logger = applog.MainLogger(
+            self.args.log_level, 
+            logfile=self.args.logfile, 
+            timeout_sec=5, 
+            enable_stdout=not self.testing, 
+            append_arg=str(self.args.log_append))
 
         # This violates convention but Controller has so many imports that it takes a while to import
         # This needs to occur here because the Qt app needs to be made before the splash screen
