@@ -17,7 +17,7 @@ class BasicWindow(QtWidgets.QMainWindow):
 
     # see https://stackoverflow.com/questions/43126721/detect-resizing-in-widget-window-resized-signal
     # reduces some layout parts with smaller windows
-    def __init__(self, title, headless=False):
+    def __init__(self, title):
         super(BasicWindow, self).__init__()
 
         self.prompt_on_exit = True
