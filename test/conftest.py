@@ -27,7 +27,7 @@ log = logging.getLogger(__name__)
 def fixture():
     enlighten_app = enlighten.EnlightenApplication(testing=True)
     enlighten_app.create_parser()
-    enlighten_app.parse_args(["--log-level","debug","--headless"])#"--headless"
+    enlighten_app.parse_args(["--log-level","debug","--window-state","minimized"])
     enlighten_app.run()
     yield enlighten_app
 
