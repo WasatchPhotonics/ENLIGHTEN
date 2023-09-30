@@ -14,7 +14,6 @@ set "regenerate_qt=0"
 set "pyinstaller=0"
 set "innosetup=0"
 set "runtests=0"
-
 set "virtspec=0"
 
 REM Convoluted but safe way to generate an audible bell from a .bat
@@ -130,7 +129,7 @@ echo %date% %time% ======================================================
 REM capture start time
 set TIME_START=%time%
 set PYTHONUTF8=1
-set PYTHONPATH=.;..\Wasatch.PY;pluginExamples;%CONDA_PREFIX%\lib\site-packages;enlighten\assets\uic_qrc
+set PYTHONPATH=.;..\Wasatch.PY;..\SPyC_Writer\src;pluginExamples;%CONDA_PREFIX%\lib\site-packages;enlighten\assets\uic_qrc
 echo PYTHONPATH = %PYTHONPATH%
 
 if exist "C:\Program Files (x86)" (
@@ -425,7 +424,16 @@ if "%innosetup%" == "1" (
     echo %date% %time% Running Inno Setup
     echo %date% %time% ======================================================
     echo.
-    "%PROGRAM_FILES_X86%\Inno Setup 6\iscc.exe" /DENLIGHTEN_VERSION=%ENLIGHTEN_VERSION% scripts\Application_InnoSetup.iss
+
+    if "%COMPRESSION%" == "" (
+        rem caller may set it to lzma/fast for speed
+        set "COMPRESSION=lzma/max"
+    )
+
+    "%PROGRAM_FILES_X86%\Inno Setup 6\iscc.exe" ^
+        /DENLIGHTEN_VERSION=%ENLIGHTEN_VERSION% ^
+        /DCOMPRESSION=%COMPRESSION% ^
+        scripts\Application_InnoSetup.iss
     if %errorlevel% neq 0 goto script_failure
 
     echo.
