@@ -387,6 +387,16 @@ if "%pyinstaller%" == "1" (
     REM --windowed ^
 
     REM pyinstaller --distpath="scripts/built-dist" --workpath="scripts/work-path" --noconfirm --clean scripts/enlighten.spec
+    REM --hidden-import="numpy.array_api._dtypes" ^
+    REM --hidden-import="tensorboard.compat.tensorflow_stub.dtypes" ^
+    REM --hidden-import="ml_dtypes" ^
+    REM --hidden-import="tensorflow.include.external.ml_dtypes" ^
+    REM --hidden-import="tensorflow.python.framework.dtypes" ^
+    REM --hidden-import="tensorflow.python.framework.flexible_dtypes" ^
+    REM --hidden-import="tensorflow.python.ml_dtype" ^
+    REM --hidden-import="tensorflow.python.ops.numpy_ops.np_dtype" ^
+    REM --hidden-import="tensorflow.tsl.python.lib.core.ml_dtype" ^
+    REM --hidden-import="tensorflow.tsl.python.lib.core.pywrap_ml_dtypes" ^
 
     pyinstaller ^
         --distpath="scripts/built-dist" ^

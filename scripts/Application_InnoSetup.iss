@@ -26,7 +26,8 @@ DefaultDirName={commonpf}\Wasatch Photonics\{#MyAppName}
 DisableDirPage=yes
 DefaultGroupName=Wasatch Photonics
 OutputDir=windows_installer
-Compression=lzma
+; change to lzma/max for major releases
+Compression=lzma/fast
 SolidCompression=yes
 ArchitecturesAllowed=x64
 ArchitecturesInstallIn64BitMode=x64

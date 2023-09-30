@@ -28,6 +28,10 @@ from wasatch   import applog
 
 log = logging.getLogger(__name__)
 
+# if "PRELOAD_TENSORFLOW" in os.environ:
+# import tensorflow
+# import tensorflow.python.framework.dtypes
+# import tensorflow.python.framework._dtypes
 
 def signal_handler(signal, frame):
     log.critical('Interrupted by Ctrl-C')
