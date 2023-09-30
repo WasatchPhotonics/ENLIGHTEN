@@ -2,7 +2,7 @@ import os
 import hashlib
 import logging
 
-from PySide2 import QtGui, QtWidgets
+from PySide6 import QtGui, QtWidgets
 
 from enlighten import common
 

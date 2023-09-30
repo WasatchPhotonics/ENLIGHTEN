@@ -1,8 +1,8 @@
 import logging
 
-import PySide2
+import PySide6
 import pyqtgraph
-from PySide2 import QtCore, QtWidgets, QtGui
+from PySide6 import QtCore, QtWidgets, QtGui
 
 from enlighten import common
 from enlighten.ScrollStealFilter import ScrollStealFilter

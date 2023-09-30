@@ -1,7 +1,7 @@
 import pyqtgraph
 
 from collections import defaultdict
-from PySide2 import QtGui
+from PySide6 import QtGui
 import logging
 import re
 

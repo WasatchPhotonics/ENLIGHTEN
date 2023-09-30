@@ -17,9 +17,9 @@ if "macOS" in platform.platform():
 os.environ["BLINKA_FT232H"]="1" # used to allow SPI with FT232H
 
 # Required runtime imports for compiled .exe (see qsvg4.dll in InnoSetup)
-from PySide2 import QtGui, QtCore, QtWidgets, QtSvg, QtXml
-from PySide2.QtWidgets import QSplashScreen
-from PySide2.QtGui import QPixmap, QImageReader
+from PySide6 import QtGui, QtCore, QtWidgets, QtSvg, QtXml
+from PySide6.QtWidgets import QSplashScreen
+from PySide6.QtGui import QPixmap, QImageReader
 
 from enlighten.ui.BasicWindow import BasicWindow
 from enlighten import common

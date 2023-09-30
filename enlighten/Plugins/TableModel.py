@@ -1,8 +1,8 @@
 import logging
 import pandas as pd
 
-from PySide2 import QtGui, QtWidgets, QtCore
-from PySide2.QtCore import Qt
+from PySide6 import QtGui, QtWidgets, QtCore
+from PySide6.QtCore import Qt
 
 log = logging.getLogger(__name__)
 

@@ -307,7 +307,8 @@ if "%install_python_deps%" == "1" (
     echo %date% %time% Installing pyinstaller from pip
     echo %date% %time% ======================================================
     echo.
-    pip install pyinstaller==4.5.1
+    rem pip install pyinstaller==4.5.1
+    pip install pyinstaller
     if %errorlevel% neq 0 goto script_failure
 )
 

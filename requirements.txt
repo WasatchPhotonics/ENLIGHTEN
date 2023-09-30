@@ -1,5 +1,5 @@
 # Requirements without specifiers. Grab latest of each package
-PySide2 
+PySide6
 pygtail 
 pyusb 
 pefile 

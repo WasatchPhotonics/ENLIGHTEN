@@ -1,5 +1,5 @@
-from PySide2 import QtCore, QtWidgets, QtGui
-from PySide2.QtWidgets import QMenu
+from PySide6 import QtCore, QtWidgets, QtGui
+from PySide6.QtWidgets import QMenu
 
 import numpy as np
 import logging
