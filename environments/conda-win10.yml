@@ -5,7 +5,7 @@ channels:
     - conda-forge
 
 dependencies:
-    - numpy
+    - numpy==1.26
     - pandas
     - pexpect
     - pip
