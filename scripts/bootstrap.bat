@@ -375,15 +375,11 @@ if "%pyinstaller%" == "1" (
     echo %date% %time% Running PyInstaller OPTIONAL
     echo %date% %time% ======================================================
     echo.
-    REM remove --windowed to debug the compiled .exe and see Python invocation 
-    REM error messages
-    REM
-    REM --windowed ^
     pyinstaller ^
         --distpath="scripts/built-dist" ^
         --workpath="scripts/work-path" ^
         --noconfirm ^
-        --noconsole ^
+	--hide-console hide-early ^
         --clean ^
         --paths="../Wasatch.PY" ^
         --hidden-import="scipy._lib.messagestream" ^

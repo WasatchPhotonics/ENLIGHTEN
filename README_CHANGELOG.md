@@ -7,9 +7,10 @@
         - Python 3.10 -> 3.11
         - PySide 2 -> 6
         - pyinstaller 4 -> 5
-        - numpy -> 1.26
+        - numpy -> 1.26 (1.24.3?)
         - tensorflow <- 2.13
     - let bootstrap pass compression to InnoSetup (default lzma/max)
+    - change pyinstaller --noconsole to --hide-console to fix pexpect issue
 - 2023-09-29 4.0.19-RC
     - applog tweak
 - 2023-09-29 4.0.18-RC

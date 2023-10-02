@@ -92,7 +92,7 @@ class EnlightenApplication(object):
 
     ##
     # Spawn a QApplication, instantiate a Controller (which will instantiate
-    # the Form within the QApplication), then call the QApplication's exec_()
+    # the Form within the QApplication), then call the QApplication's exec()
     # method (which will tick QWidgets defined by the form in an event loop until 
     # something generates an exit signal).
     def run(self):
@@ -154,10 +154,10 @@ class EnlightenApplication(object):
         # pass off control to Qt to manage its objects until application shutdown
         self.splash.finish(self.controller.form)
         if not self.testing:
-            self.app.exec_()
+            self.app.exec()
 
         if not self.testing:
-            print("back from app.exec_")
+            print("back from app.exec")
             print("returning from EnlightenApplication.run with exit_code %d" % self.exit_code)
             return self.controller.exit_code
 
@@ -184,6 +184,30 @@ class EnlightenApplication(object):
         print("EnlightenApplication.closeEvent: exiting with exit_code %d" % self.exit_code)
         sys.exit(self.exit_code)
 
+    def hide_console(self):
+        """ 
+        This works, so I'm leaving the function in case we need it again, but currently 
+        testing the new pyinstaller --hide-console instead.
+
+        @see https://github.com/pyinstaller/pyinstaller/issues/7729#issuecomment-1605503018 
+        @swee https://github.com/pyinstaller/pyinstaller/pull/7735
+        """
+        if sys.platform == 'win32':
+            import ctypes
+            import ctypes.wintypes
+            
+            # Get console window
+            console_window = ctypes.windll.kernel32.GetConsoleWindow()
+            if console_window:
+                # Check if console is owned by this process...
+                process_id = ctypes.windll.kernel32.GetCurrentProcessId()
+                console_process_id = ctypes.wintypes.DWORD()
+                ctypes.windll.user32.GetWindowThreadProcessId(console_window, ctypes.byref(console_process_id))
+                console_process_id = console_process_id.value
+                if process_id == console_process_id:
+                    # ... and if it is, minimize it
+                    ctypes.windll.user32.ShowWindow(console_window, 2)  # SW_SHOWMINIMIZED
+
 def main(argv):
     enlighten = EnlightenApplication()
     enlighten.parse_args(argv[1:])
@@ -199,7 +223,8 @@ if __name__ == "__main__":
     os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1" 
     multiprocessing.freeze_support() # needed on Win32
 
-    QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+    # deprecated:
+    # QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 
     ec = main(sys.argv)
     print("Exiting main exit_code %d" % ec)
