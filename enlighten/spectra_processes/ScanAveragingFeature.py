@@ -53,6 +53,12 @@ class ScanAveragingFeature(object):
 
         self.update_from_gui()
 
+    def set_locked(self, flag):
+        for w in [ self.bt_dn,
+                   self.bt_up,
+                   self.spinbox ]:
+            w.setEnabled(not flag)
+
     def update_from_gui(self):
         value = int(self.spinbox.value())
         self.multispec.set_state("scans_to_average", value)

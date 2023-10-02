@@ -177,6 +177,8 @@ class Configuration:
 
     def parse(self):
         """ Load as ConfigParser object. """
+
+        # strict=False allows allows duplicate keys to be loaded
         self.config = configparser.ConfigParser(interpolation=None, strict=False)
         self.config.optionxform = str
         try:
@@ -260,6 +262,8 @@ class Configuration:
                         if m and section is not None:
                             # it was a key-value line, so update the line with the current value
                             key = m.group(1).strip()
+
+                            # ensure we don't output duplicate keys
                             if key not in seen[section]:
                                 self.write(outfile, "%s = %s" % (key, self.get(section, key, raw=True)))
                                 seen[section].add(key)
