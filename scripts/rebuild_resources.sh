@@ -48,8 +48,8 @@ then
 
     TWO_TO_THREE="$CONDA_PREFIX/Scripts/2to3.exe"
 
-    RCC="$CONDA_PREFIX/Scripts/pyside2-rcc.exe"
-    UIC="$CONDA_PREFIX/Scripts/pyside2-uic.exe"
+    RCC="$CONDA_PREFIX/Scripts/pyside6-rcc.exe"
+    UIC="$CONDA_PREFIX/Scripts/pyside6-uic.exe"
 
     # added because recent(?) versions of Git Cmd / Git Bash seem to 
     # automatically launch new shells (run .sh scripts like this one)
@@ -90,6 +90,7 @@ else
     fi
 fi
 
+echo "CONDA_PREFIX= $CONDA_PREFIX"
 echo "QUICK = $QUICK"
 echo "PAUSE = $PAUSE"
 echo "PYTHON= $PYTHON"

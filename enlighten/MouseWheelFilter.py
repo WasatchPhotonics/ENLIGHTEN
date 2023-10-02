@@ -1,7 +1,7 @@
 import logging
 
-import PySide2
-from PySide2.QtCore import QObject, QEvent
+import PySide6
+from PySide6.QtCore import QObject, QEvent
 
 log = logging.getLogger(__name__)
 

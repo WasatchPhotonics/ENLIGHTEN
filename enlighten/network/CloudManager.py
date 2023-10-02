@@ -10,8 +10,8 @@ from decimal import Decimal
 import boto3
 from botocore.config import Config
 
-from PySide2 import QtCore, QtWidgets, QtGui
-from PySide2.QtWidgets import QInputDialog, QLineEdit, QMessageBox, QPushButton, QCheckBox
+from PySide6 import QtCore, QtWidgets, QtGui
+from PySide6.QtWidgets import QInputDialog, QLineEdit, QMessageBox, QPushButton, QCheckBox
 
 from enlighten.common import get_default_data_dir
 from enlighten.device.EEPROMEditor import EEPROMEditor

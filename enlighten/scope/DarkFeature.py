@@ -1,9 +1,9 @@
 import datetime
 import logging
 
-import PySide2
+import PySide6
 import pyqtgraph
-from PySide2 import QtCore, QtWidgets, QtGui
+from PySide6 import QtCore, QtWidgets, QtGui
 
 log = logging.getLogger(__name__)
 

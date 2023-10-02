@@ -2,7 +2,7 @@ import time
 from datetime import datetime, timedelta
 import logging
 
-from PySide2 import QtWidgets 
+from PySide6 import QtWidgets 
 
 from enlighten import util
 from enlighten.common import LaserStates

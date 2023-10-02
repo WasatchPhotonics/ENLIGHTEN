@@ -6,7 +6,7 @@ from enlighten.ScrollStealFilter import ScrollStealFilter
 
 log = logging.getLogger(__name__)
 
-from PySide2 import QtGui, QtCore 
+from PySide6 import QtGui, QtCore 
 
 class DetectorTemperatureFeature:
     """
