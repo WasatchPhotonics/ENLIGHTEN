@@ -2,9 +2,13 @@
 
 # 4.0 GUI Refactoring
 
-- 2023-??-?? 4.0.18
+- 2023-09-29 4.0.19-RC
+    - applog tweak
+- 2023-09-29 4.0.18-RC
     - fixed plugin outputs/table bug
     - added ScanAveragingFeature.set_locked
+    - changed --headless to --window-state
+    - BurnIn tweak
 - 2023-09-20 4.0.17
     - support --log-append
     - moved run-burning.bat to plugins/Prod

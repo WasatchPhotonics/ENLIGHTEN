@@ -80,22 +80,26 @@ class EnlightenApplication(object):
     ## Defines the command-line arguments and their defaults
     #
     def create_parser(self):
-        parser = argparse.ArgumentParser(description="acquire from specified device, display line graph")
+<<<<<<< HEAD
+        parser = argparse.ArgumentParser(description="acquire from specified device, display line graph",
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
         # This code was like a spreadsheet when I found it, leaning into that
         # use :set nowrap in vim
         # TODO: everything should have a default -- do not rely on empty args
-        #                  | parameter name       | type    | default             | action             | choices                                                  | help |
-        parser.add_argument("--log-level",         type=str, default="info",                            choices=['debug', 'info', 'warning', 'error', 'critical'], help="logging level")
-        parser.add_argument("--log-append",        type=str, default="LIMIT",                      choices=["False", "True", "LIMIT"],                   help="append to existing logfile")
-        parser.add_argument("--logfile",           type=str,                                                                                                       help="Explicit path for the logfile")
-        parser.add_argument("--max-memory-growth", type=int, default=0,                                                                                            help="Automatically exit after this percent memory growth (0 for never, 100 = doubling)")
-        parser.add_argument("--run-sec",           type=int, default=0,                                                                                            help="Automatically exit after this many seconds (0 for never)")
-        parser.add_argument("--serial-number",     type=str,                                                                                                       help="only connect to specified serial number")
-        parser.add_argument("--set-all-dfu",                                       action="store_true",                                                            help="set spectrometers to DFU mode as soon as they connect")
-        parser.add_argument("--stylesheet-path",   type=str,                                                                                                       help="Path to CSS directory")
-        parser.add_argument("--headless",                                          action="store_true",                                                            help="Run Enlighten without GUI")
-        parser.add_argument("--plugin",            type=str,                                                                                                       help="Plugin name")
+        #                  | parameter name       | type    | default             | action             | choices                                                           | help                                                                                    |
+        parser.add_argument("--log-level",         type=str, default="info",                            choices=['debug', 'info', 'warning', 'error', 'critical'],          help="logging level")
+        parser.add_argument("--log-append",        type=str, default="LIMIT",                           choices=["False", "True", "LIMIT"],                                 help="append to existing logfile")
+        parser.add_argument("--logfile",           type=str,                                                                                                                help="explicit path for the logfile")
+        parser.add_argument("--max-memory-growth", type=int, default=0,                                                                                                     help="automatically exit after this percent memory growth (0 for never, 100 = doubling)")
+        parser.add_argument("--run-sec",           type=int, default=0,                                                                                                     help="automatically exit after this many seconds (0 for never)")
+        parser.add_argument("--serial-number",     type=str,                                                                                                                help="only connect to specified serial number")
+        parser.add_argument("--set-all-dfu",                                       action="store_true",                                                                     help="set spectrometers to DFU mode as soon as they connect")
+        parser.add_argument("--stylesheet-path",   type=str,                                                                                                                help="path to CSS directory")
+        parser.add_argument("--headless",                                          action="store_true",                                                                     help="Run Enlighten without GUI")
+        parser.add_argument("--window-state",      type=str, default="floating",                        choices=["floating", "maximized", "fullscreen", "minimized"],       help="window initial state", )
+        parser.add_argument("--plugin",            type=str,                                                                                                                help="plugin name to start enabled")
+
         return parser
 
     ##
@@ -107,7 +111,7 @@ class EnlightenApplication(object):
 
         # instantiate form (a QMainWindow with named "MainWindow")
         # UI needs to be imported here in order to access qresources for the splash screen
-        self.form = BasicWindow(title="ENLIGHTEN %s" % common.VERSION, headless=self.args.headless)
+        self.form = BasicWindow(title="ENLIGHTEN %s" % common.VERSION)
 
         pixmap = QPixmap(":/application/images/splash.png")
         pixmap = pixmap.scaled(pixmap.width()/2, pixmap.height()/2) # eyeballed, default seemed to take whole screen
@@ -115,7 +119,13 @@ class EnlightenApplication(object):
         self.splash.setPixmap(pixmap)
         self.splash.show()
 
-        self.main_logger = applog.MainLogger(self.args.log_level, logfile=self.args.logfile, timeout_sec=5, enable_stdout=not self.testing, append_arg=self.args.log_append)
+        self.main_logger = applog.MainLogger(
+            self.args.log_level, 
+            logfile=self.args.logfile, 
+            timeout_sec=5, 
+            enable_stdout=not self.testing, 
+            append_arg=str(self.args.log_append)
+        )
 
         # This violates convention but Controller has so many imports that it takes a while to import
         # This needs to occur here because the Qt app needs to be made before the splash screen
@@ -136,7 +146,7 @@ class EnlightenApplication(object):
             set_all_dfu       = self.args.set_all_dfu,
             form              = self.form,
             splash            = self.splash,
-            headless          = self.args.headless,
+            window_state      = self.args.window_state,
             autoload_plugin   = self.args.plugin)
         # This requires explanation.  This is obviously a Qt "connect" binding,
         # but Controller is not a Qt widget, and does not inherit from/extend 

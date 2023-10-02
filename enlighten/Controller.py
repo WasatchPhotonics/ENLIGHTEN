@@ -97,7 +97,7 @@ class Controller:
                 set_all_dfu       = False,
                 form              = None,
                 splash            = None,
-                headless          = False,
+                window_state      = None,
                 autoload_plugin   = None,
             ):
         """
@@ -127,7 +127,7 @@ class Controller:
         self.serial_number_desired  = serial_number
         self.stylesheet_path        = stylesheet_path
         self.set_all_dfu            = set_all_dfu
-        self.headless               = headless
+        self.window_state           = window_state
         self.autoload_plugin        = autoload_plugin
         self.spec_timeout           = 30
         self.splash                 = splash
@@ -239,12 +239,17 @@ class Controller:
         self.other_devices = []
 
         # init is done so display the GUI and destory the splash screen
-        self.form.show()
-
-        if headless:
+        if self.window_state == "minimized":
             # self.hide() messes with gui tests since the components are also hidden
             # So I replaced with minimizing, which I recognize is not a true headless
             self.form.showMinimized()
+        elif self.window_state == "maximized":
+            self.form.showMaximized()
+        elif self.window_state == "fullscreen":
+            self.form.showFullScreen()
+        else:
+            # default to "floating"
+            self.form.show()
 
     def schedule_post_init(self):
         self.post_init_timer = QtCore.QTimer()
