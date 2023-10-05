@@ -2,6 +2,8 @@
 
 # 4.0 GUI Refactoring
 
+- 2023-10-05 4.0.21
+    - Prod.BurnIn temperature fix
 - 2023-09-30 4.0.20
     - updated dependency versions to resolve tensorflow import issue
         - Python 3.10 -> 3.11
