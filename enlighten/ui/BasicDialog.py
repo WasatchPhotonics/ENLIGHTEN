@@ -1,7 +1,7 @@
 import logging
 import datetime
 
-from PySide2 import QtGui, QtCore, QtWidgets
+from PySide6 import QtGui, QtCore, QtWidgets
 
 log = logging.getLogger(__name__)
 

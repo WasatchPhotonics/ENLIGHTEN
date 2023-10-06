@@ -6,7 +6,7 @@ import csv
 import os
 
 import numpy as np
-from PySide2 import QtGui, QtWidgets
+from PySide6 import QtGui, QtWidgets
 
 from enlighten.measurement.Measurement import Measurement
 from SPyC_Writer import SPCFileWriter

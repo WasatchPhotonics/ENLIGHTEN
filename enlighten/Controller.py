@@ -12,10 +12,10 @@ import sys
 import os
 import re
 
-import PySide2
-from PySide2 import QtCore, QtWidgets, QtGui
-from PySide2.QtCore import QObject, QEvent
-from PySide2.QtWidgets import QMessageBox, QVBoxLayout, QWidget, QLabel
+import PySide6
+from PySide6 import QtCore, QtWidgets, QtGui
+from PySide6.QtCore import QObject, QEvent
+from PySide6.QtWidgets import QMessageBox, QVBoxLayout, QWidget, QLabel
 
 from collections import defaultdict
 from threading import Thread
@@ -149,7 +149,7 @@ class Controller:
         log.info("Stylesheet path %s",       self.stylesheet_path)
         log.info("Python version %s",        util.python_version())
         log.info(f"Operating system {sys.platform} {struct.calcsize('P')*8 } bit")
-        log.info("PySide version %s",        PySide2.__version__)
+        log.info("PySide version %s",        PySide6.__version__)
         log.info("PySide QtCore version %s", QtCore.__version__)
         log.info("QtCore version %s",        QtCore.qVersion())
 
@@ -1082,7 +1082,7 @@ class Controller:
 
         def make_shortcut(kseq, callback):
             log.debug(f"setting shortcut from {kseq} to {callback}")
-            shortcut = QtWidgets.QShortcut(QtGui.QKeySequence(kseq), self.form)
+            shortcut = QtGui.QShortcut(QtGui.QKeySequence(kseq), self.form)
             shortcut.activated.connect(callback)
             self.shortcuts[kseq] = shortcut
 

@@ -4,7 +4,7 @@ import logging
 
 from html import escape
 from pygtail import Pygtail 
-from PySide2 import QtCore, QtGui
+from PySide6 import QtCore, QtGui
 
 from wasatch import applog
 

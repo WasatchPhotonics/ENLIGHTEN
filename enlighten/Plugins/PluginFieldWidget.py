@@ -1,7 +1,7 @@
 import logging
 
-from PySide2 import QtGui, QtWidgets, QtCore
-from PySide2.QtCore import Qt
+from PySide6 import QtGui, QtWidgets, QtCore
+from PySide6.QtCore import Qt
 
 from wasatch import utils as wasatch_utils
 

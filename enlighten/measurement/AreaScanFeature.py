@@ -5,7 +5,7 @@ import pyqtgraph
 import numpy as np
 import qimage2ndarray
 
-from PySide2 import QtCore, QtWidgets, QtGui
+from PySide6 import QtCore, QtWidgets, QtGui
 
 from enlighten import util
 from enlighten.ScrollStealFilter import ScrollStealFilter

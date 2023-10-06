@@ -7,8 +7,8 @@ from queue import Queue
 from bleak import discover, BleakClient, BleakScanner
 from bleak.exc import BleakError
 from threading import Thread
-from PySide2 import QtCore, QtWidgets, QtGui
-from PySide2.QtWidgets import QApplication, QDialog, QMainWindow, QPushButton, QVBoxLayout, QLabel
+from PySide6 import QtCore, QtWidgets, QtGui
+from PySide6.QtWidgets import QApplication, QDialog, QMainWindow, QPushButton, QVBoxLayout, QLabel
 
 from wasatch.DeviceID import DeviceID
 

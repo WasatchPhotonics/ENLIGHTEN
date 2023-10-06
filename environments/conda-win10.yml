@@ -5,16 +5,14 @@ channels:
     - conda-forge
 
 dependencies:
-    - numpy
+    - numpy==1.26
     - pandas
     - pexpect
     - pip
     - psutil
-    - python==3.10.*
+    - python
     - pytest
     - scipy
     - xlwt
     - qimage2ndarray
     - pywin32
-
-# installed from pip: PySide2 pygtail pyusb pywavelets superman pyqtgraph

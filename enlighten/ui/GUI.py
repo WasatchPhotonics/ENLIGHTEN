@@ -1,6 +1,6 @@
 import logging
 import pyqtgraph
-from PySide2 import QtGui
+from PySide6 import QtGui
 
 from enlighten.ui.TimeoutDialog import TimeoutDialog
 from enlighten import common

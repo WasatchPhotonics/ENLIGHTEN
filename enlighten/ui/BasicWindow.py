@@ -1,7 +1,7 @@
 import logging
 import datetime
 
-from PySide2 import QtGui, QtCore, QtWidgets
+from PySide6 import QtGui, QtCore, QtWidgets
 
 # This line imports the "enlighten_layout.py" module which is generated from 
 # enlighten_layout.ui when you run scripts/rebuild_resources.sh.  

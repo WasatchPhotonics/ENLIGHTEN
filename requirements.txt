@@ -1,5 +1,5 @@
 # Requirements without specifiers. Grab latest of each package
-PySide2 
+PySide6
 pygtail 
 pyusb 
 pefile 
@@ -11,7 +11,7 @@ spc_spectra
 libusb 
 seabreeze 
 boto3 
-tensorflow 
+tensorflow==2.13
 bleak 
 pyftdi 
 adafruit-blinka

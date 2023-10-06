@@ -13,7 +13,7 @@ application.
       can be modules (files) within it
 """
 
-VERSION = "4.0.19"
+VERSION = "4.0.20"
 
 """ ENLIGHTEN's application version number (checked by scripts/deploy and bootstrap.bat) """
 class Techniques(IntEnum):
@@ -154,7 +154,7 @@ def msgbox(prompt, title="Alert", buttons=0):
 
     # doing this import within this method to avoid breaking all dependents of common.py
     # not sure that this would break anything, just to be safe -- move up when confident
-    from PySide2.QtWidgets import QMessageBox
+    from PySide6.QtWidgets import QMessageBox
 
     # TODO: see enlighten/ui/BasicWindow.py for an example how to implement this using
     # Enlighten's style. This should always be callable as a single function call without
