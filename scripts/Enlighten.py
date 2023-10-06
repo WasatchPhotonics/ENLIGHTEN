@@ -79,7 +79,6 @@ class EnlightenApplication(object):
     ## Defines the command-line arguments and their defaults
     #
     def create_parser(self):
-<<<<<<< HEAD
         parser = argparse.ArgumentParser(description="acquire from specified device, display line graph",
             formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
@@ -95,7 +94,6 @@ class EnlightenApplication(object):
         parser.add_argument("--serial-number",     type=str,                                                                                                                help="only connect to specified serial number")
         parser.add_argument("--set-all-dfu",                                       action="store_true",                                                                     help="set spectrometers to DFU mode as soon as they connect")
         parser.add_argument("--stylesheet-path",   type=str,                                                                                                                help="path to CSS directory")
-        parser.add_argument("--headless",                                          action="store_true",                                                                     help="Run Enlighten without GUI")
         parser.add_argument("--window-state",      type=str, default="floating",                        choices=["floating", "maximized", "fullscreen", "minimized"],       help="window initial state", )
         parser.add_argument("--plugin",            type=str,                                                                                                                help="plugin name to start enabled")
 
