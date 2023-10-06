@@ -379,12 +379,13 @@ if "%pyinstaller%" == "1" (
         --distpath="scripts/built-dist" ^
         --workpath="scripts/work-path" ^
         --noconfirm ^
-	--hide-console hide-early ^
+        --hide-console hide-early ^
         --clean ^
         --paths="../Wasatch.PY" ^
         --hidden-import="scipy._lib.messagestream" ^
         --hidden-import="scipy.special.cython_special" ^
         --hidden-import="tensorflow" ^
+        --add-data="support_files/libusb_drivers/amd64/libusb0.dll:." ^
         --icon "../enlighten/assets/uic_qrc/images/EnlightenIcon.ico" ^
         --specpath="%cd%/scripts" ^
         --exclude-module _bootlocale ^
