@@ -1,7 +1,9 @@
 # Version History
 
-# 4.0 GUI Refactoring
+# 4.0 GUI and Plugin Refactoring
 
+- 2023-10-06 4.0.21
+    - automatically retain previous 2MB of existing enlighten.log to aid in fault analysis
 - 2023-09-30 4.0.20
     - updated dependency versions to resolve tensorflow import issue
         - Python 3.10 -> 3.11
@@ -11,9 +13,9 @@
         - tensorflow <- 2.13
     - let bootstrap pass compression to InnoSetup (default lzma/max)
     - change pyinstaller --noconsole to --hide-console to fix pexpect issue
-- 2023-09-29 4.0.19-RC
+- 2023-09-29 4.0.19
     - applog tweak
-- 2023-09-29 4.0.18-RC
+- 2023-09-29 4.0.18
     - fixed plugin outputs/table bug
     - added ScanAveragingFeature.set_locked
     - changed --headless to --window-state
