@@ -2,6 +2,8 @@
 
 # 4.0 GUI and Plugin Refactoring
 
+## 4.1.0-Dev
+
 - 2023-10-06 4.0.23
     - move Controller.post_init to after initial spectrometer connection
 - 2023-10-06 4.0.22
