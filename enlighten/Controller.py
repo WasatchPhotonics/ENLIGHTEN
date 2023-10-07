@@ -233,7 +233,6 @@ class Controller:
         self.bind_shortcuts()
 
         self.page_nav.post_init()
-        self.schedule_post_init()
 
         self.header("Controller ctor done")
         self.other_devices = []
@@ -260,7 +259,8 @@ class Controller:
     def post_init(self):
         """
         Things that should happen outside the constructor, after the GUI is fully
-        instantiated and displayed with all event loops running.
+        instantiated and displayed with all event loops running. Experimentally
+        moving this to after the first spectrometer has connected.
         """
         log.debug("performing post-construction initialization")
         if self.autoload_plugin:
@@ -959,6 +959,7 @@ class Controller:
             self.has_connected = True
             if spec.settings.has_excitation():
                 self.page_nav.set_operation_mode_raman()
+            self.schedule_post_init()
 
         ########################################################################
         # Batch Collection should kick-off on the FIRST connected spectrometer

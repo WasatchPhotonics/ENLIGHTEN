@@ -2,6 +2,8 @@
 
 # 4.0 GUI and Plugin Refactoring
 
+- 2023-10-06 4.0.23
+    - move Controller.post_init to after initial spectrometer connection
 - 2023-10-06 4.0.22
     - bundle libusb0.dll to Windows install folder :-(
 - 2023-10-06 4.0.21

@@ -79,7 +79,7 @@ class EnlightenApplication(object):
     ## Defines the command-line arguments and their defaults
     #
     def create_parser(self):
-        parser = argparse.ArgumentParser(description="acquire from specified device, display line graph",
+        parser = argparse.ArgumentParser(description=f"ENLIGHTEN {common.VERSION}",
             formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
         # This code was like a spreadsheet when I found it, leaning into that
