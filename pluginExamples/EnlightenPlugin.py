@@ -43,6 +43,8 @@ class EnlightenPluginBase:
         # these can be set by functional-plugins to autogenerate EPC
         self.name = None
         self._fields = []
+        self._dependencies = []
+        self._events = []
         self.is_blocking = False
         self.block_enlighten = False
         self.auto_enable = False
@@ -95,6 +97,9 @@ class EnlightenPluginBase:
 
     def field(self, **kwargs):
         self._fields.append(EnlightenPluginField(**kwargs))
+
+    def dependency(self, **kwargs):
+        self._dependencies.append(EnlightenPluginDependency(**kwargs))
 
     def get_widget_from_name(self, name):
         widget = None
@@ -207,6 +212,8 @@ class EnlightenPluginBase:
         return EnlightenPluginConfiguration(
             name = self.name, 
             fields = self._fields,
+            events = self._events,
+            dependencies = self._dependencies,
             is_blocking = self.is_blocking,
             block_enlighten = self.block_enlighten,
             has_other_graph = self.has_other_graph,
@@ -439,11 +446,15 @@ class EnlightenPluginConfiguration:
         self.graph_type      = graph_type
 
 class EnlightenPluginDependency:
-    ##
-    # @param name: identifying string
-    # @param dep_type: currently supported values are: "existing_directory"
-    # @param persist: save and use previous values as defaults across sessions
-    # @param prompt: if user interaction is involved, use this as prompt / tooltip
+    """
+    This should be deprecated...we should be able to provide these now from within the plugin.
+    I'm curious if "persist" actually works, and how that was done?
+
+    @param name: identifying string
+    @param dep_type: currently supported values are: "existing_directory"
+    @param persist: save and use previous values as defaults across sessions
+    @param prompt: if user interaction is involved, use this as prompt / tooltip
+    """
     def __init__(self,
             name,
             dep_type    = None,
