@@ -2,6 +2,8 @@
 
 # 4.0 GUI and Plugin Refactoring
 
+- 2023-10-06 4.0.22
+    - bundle libusb0.dll to Windows install folder :-(
 - 2023-10-06 4.0.21
     - automatically retain previous 2MB of existing enlighten.log to aid in fault analysis
 - 2023-09-30 4.0.20
