@@ -2,6 +2,8 @@
 
 # 4.0 GUI and Plugin Refactoring
 
+## 4.1.0-Dev
+
 - 2023-10-06 4.0.22
     - bundle libusb0.dll to Windows install folder :-(
 - 2023-10-06 4.0.21
