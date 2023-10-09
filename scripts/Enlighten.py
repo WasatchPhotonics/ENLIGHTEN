@@ -195,8 +195,11 @@ class EnlightenApplication(object):
 
     def hide_console(self):
         """ 
-        This works, so I'm leaving the function in case we need it again, but currently 
-        testing the new pyinstaller --hide-console instead.
+        This isn't needed on Win10 (where pyinstaller's --hide-console hide-early works,
+        though not hide-late), but apparently is on Win11 (where hide-early doesn't work;
+        not sure about hide-late).
+
+        Calling for coverage on Win11.
 
         @see https://github.com/pyinstaller/pyinstaller/issues/7729#issuecomment-1605503018 
         @swee https://github.com/pyinstaller/pyinstaller/pull/7735
@@ -240,6 +243,7 @@ def main(argv):
     enlighten = EnlightenApplication()
     enlighten.parse_args(argv[1:])
     enlighten.run_from_root(argv[0])
+    enlighten.hide_console()
     try:
         ec = enlighten.run()
     except SystemExit as exc:
