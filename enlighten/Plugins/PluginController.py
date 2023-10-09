@@ -714,6 +714,7 @@ class PluginController:
             added_group = []
             if type(config.fields) == dict:
                 self.plugin_field_widgets = []
+                # MZ: I don't like using the 'type' of config.fields as a logical state...
                 log.debug("trying to add stack widget because dict for the fields")
                 self.select_vbox = QtWidgets.QVBoxLayout()
                 self.stacked_widget = QtWidgets.QStackedWidget()
@@ -998,10 +999,16 @@ class PluginController:
             return False
 
     def get_current_settings(self):
+        """
+        It looks like this is rendering the current 'fields' as a static name-value dictionary
+        """
         config = self.get_current_configuration()
         plugin_fields = { pfw.field_name: pfw.field_value for pfw in self.plugin_field_widgets }
+
+        # MZ: when would this NOT be a dict? Is this checking to see if the plugin has connected?
         if type(config.fields) == dict:
             plugin_fields["active_page"] = self.widget_selector.currentText()
+
         return plugin_fields
 
     ##
