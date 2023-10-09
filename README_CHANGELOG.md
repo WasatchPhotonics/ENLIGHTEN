@@ -4,6 +4,8 @@
 
 ## 4.1.0-Dev
 
+- 2023-10-09 4.0.24
+    - Prod.BurnIn temperature fix
 - 2023-10-06 4.0.22
     - bundle libusb0.dll to Windows install folder :-(
 - 2023-10-06 4.0.21
