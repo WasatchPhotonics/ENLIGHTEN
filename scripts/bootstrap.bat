@@ -375,11 +375,12 @@ if "%pyinstaller%" == "1" (
     echo %date% %time% Running PyInstaller OPTIONAL
     echo %date% %time% ======================================================
     echo.
+    REM hide-early worked on Win10 but not Win11
     pyinstaller ^
         --distpath="scripts/built-dist" ^
         --workpath="scripts/work-path" ^
         --noconfirm ^
-        --hide-console hide-early ^
+        --hide-console hide-late ^
         --clean ^
         --paths="../Wasatch.PY" ^
         --hidden-import="scipy._lib.messagestream" ^
