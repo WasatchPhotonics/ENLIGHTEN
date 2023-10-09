@@ -5,6 +5,7 @@
 ## 4.1.0-Dev
 
 - 2023-10-09 4.0.24
+    - Prod.BurnIn temperature fix
     - added run_from_root
     - restored hide_from_console (hide-early doesn't work on W11, hide-late doesn't on W10)
 - 2023-10-06 4.0.23
