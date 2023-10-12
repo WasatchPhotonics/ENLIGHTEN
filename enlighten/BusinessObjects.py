@@ -125,14 +125,7 @@ class BusinessObjects:
         ctl.stylesheets = Stylesheets(ctl)
 
         self.header("instantiating GUI")
-        ctl.gui = GUI(
-            colors                      = ctl.colors,
-            config                      = ctl.config,
-            form                        = ctl.form,
-            stylesheet_path             = ctl.stylesheet_path,
-            stylesheets                 = ctl.stylesheets,
-
-            bt_dark_mode                = sfu.pushButton_dark_mode)
+        ctl.gui = GUI(ctl)
 
     def create_rest(self):
         """

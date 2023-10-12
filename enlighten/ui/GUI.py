@@ -24,62 +24,66 @@ class GUI(object):
 
     SECTION = "graphs"
 
-    def __init__(self, 
-            colors,
-            config,
-            form,
-            stylesheet_path,
-            stylesheets,
-
-            bt_dark_mode):
-
-        self.colors       = colors
-        self.config       = config
-        self.form         = form
-        self.stylesheets  = stylesheets
-
-        self.bt_dark_mode = bt_dark_mode
+    def __init__(self, ctl):
+        
+        self.ctl = ctl
 
         self.multispec = None
-        self.theme = self.config.get("theme", "theme")
-
-        self.marquee = None # post-construction
+        self.theme = self.ctl.config.get("theme", "theme")
 
         # apply ENLIGHTEN application stylesheet found in configured directory
-        self.stylesheets.apply(self.form, "enlighten") 
+        self.ctl.stylesheets.apply(self.ctl.form, "enlighten") 
 
-        self.bt_dark_mode.clicked.connect(self.dark_mode_callback)
+        self.ctl.form.ui.pushButton_dark_mode.clicked.connect(self.dark_mode_callback)
 
         self.init_graph_color()
         self.update_theme()
 
-    def init_graph_color(self):
-        dark_mode = self.theme.startswith("dark")
-        
-        colors = ('w', 'k') if dark_mode else ('k', 'w')
+    def init_graph_color(self, init=True):
+        """
+        call with init=True if this is being done before the graph widget was added to the scene
+        otherwise call with init=False to repopulate the graph widget, forcing background color update
+        """
+
+        colors = ('w', 'k') if self.theme.startswith("dark") else ('k', 'w')
         pyqtgraph.setConfigOption('foreground', colors[0])
         pyqtgraph.setConfigOption('background', colors[1])
+
+        if not init:
+            # reset widgets so background color changes immediately
+            self.ctl.graph.populate_scope_setup()
+            self.ctl.graph.populate_scope_capture()
+
+            # this is only a partial fix of #108, to finish it out
+            # reinstantiate all instances of pyqtgraph.PlotWidget
+
+            # that includes 
+            # - Measurement Thumbnail Renderer
+            # - AreaScanFeature
+            # - DarkFeature (not to be confused with dark/light theme, this is dark as in Dark Measurement)
+            # - DetectorTemperatureFeature
+            # - LaserTemperatureFeature
+            # - ReferenceFeature
+
+            # it should be fairly easy to reference these using self.ctl...
 
     def dark_mode_callback(self):
 
         # toggle darkness
         self.theme = 'dark' if not (self.theme.startswith("dark")) else 'light'
 
-        if self.marquee:
-            self.marquee.info(f"Graphs will use {self.theme} backgrounds when ENLIGHTEN restarts.")
-
-        self.init_graph_color()
+        self.init_graph_color(False)
         self.update_theme()
 
     def update_theme(self):
-        sfu = self.form.ui
+        sfu = self.ctl.form.ui
 
-        self.stylesheets.set_theme(self.theme)
+        self.ctl.stylesheets.set_theme(self.theme)
 
         if self.theme.startswith("dark"):
-            self.bt_dark_mode.setToolTip("Seek the light!")
+            self.ctl.form.ui.pushButton_dark_mode.setToolTip("Seek the light!")
         else:
-            self.bt_dark_mode.setToolTip("Embrace the dark!")
+            self.ctl.form.ui.pushButton_dark_mode.setToolTip("Embrace the dark!")
 
         path = ":/application/images/enlightenLOGO"
         if not self.theme.startswith("dark"):
@@ -94,27 +98,27 @@ class GUI(object):
             return
 
         if wasatch_utils.truthy(flag):
-            self.stylesheets.apply(button, "red_gradient_button")
+            self.ctl.stylesheets.apply(button, "red_gradient_button")
         else:
-            self.stylesheets.apply(button, "gray_gradient_button")
+            self.ctl.stylesheets.apply(button, "gray_gradient_button")
 
     ##
     # @param widget: allows enlighten.ini to override color/style for named widgets
     def make_pen(self, widget=None, color=None, selected=False):
         if color is None and widget is not None:
-            color = self.colors.get_by_widget(widget)
+            color = self.ctl.colors.get_by_widget(widget)
         
         # passed color may be a name
         if color is not None:
-            named_color = self.colors.get_by_name(color)
+            named_color = self.ctl.colors.get_by_name(color)
             if named_color is not None:
                 color = named_color
 
         if color is None:
-            color = self.colors.get_next_random()
+            color = self.ctl.colors.get_next_random()
 
-        style = self.config.get(self.SECTION, f"{widget}_pen_style")
-        width = int(self.config.get(self.SECTION, f"{widget}_pen_width"))
+        style = self.ctl.config.get(self.SECTION, f"{widget}_pen_style")
+        width = int(self.ctl.config.get(self.SECTION, f"{widget}_pen_width"))
         if selected and self.multispec is not None and self.multispec.count() > 1 and not self.multispec.hide_others:
             width = int(width * 2)
 
@@ -131,4 +135,4 @@ class GUI(object):
         if cnt > 1:
             title += " (+%d)" % (cnt - 1)
 
-        self.form.setWindowTitle(title)
+        self.ctl.form.setWindowTitle(title)
