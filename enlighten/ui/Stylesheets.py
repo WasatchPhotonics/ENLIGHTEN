@@ -10,17 +10,23 @@ class Stylesheets:
     DEFAULT_PATH = "enlighten/assets/stylesheets"
 
     def get_theme_list(self):
-        return os.listdir(DEFAULT_PATH)
+        return os.listdir(self.DEFAULT_PATH)
 
     def clear(self):
         self.css = {}
         for theme in self.get_theme_list():
             self.css.update({theme: {}})
 
+            # populate settings dropdown with themes
+            self.ctl.form.ui.comboBox_Theme.addItem(theme)
+
         self.widget_last_style = {}
 
-    def __init__(self, path=None):
+    def __init__(self, ctl):
+        self.ctl = ctl
+
         self.clear()
+        path = self.ctl.stylesheet_path
 
         self.path = path if path else self.DEFAULT_PATH
         self.set_dark_mode(True)
@@ -28,15 +34,32 @@ class Stylesheets:
         for theme in self.get_theme_list():
             self.load(theme)
 
-    def set_theme(self, theme):
-        self.mode = theme
+        self.ctl.form.ui.comboBox_Theme.currentIndexChanged.connect(self.set_theme_combobox)
+
+    def set_theme_combobox(self, index):
+        """
+        Event handler for when theme combobox is changed (do NOT update the combobox again)
+        """
+        
+        self.mode = self.get_theme_list()[index]
         log.debug(f"mode now {self.mode}")
         self.update_widgets()
 
-    def set_dark_mode(self, flag):
-        self.mode = "dark" if flag else "light"
+    def set_theme(self, theme):
+        """
+        Programmatically set the theme (and make sure the settings combobox is updated)
+        """
+
+        self.mode = theme
         log.debug(f"mode now {self.mode}")
+
+        # make sure comboxbox matches set theme
+        self.ctl.form.ui.comboBox_Theme.setCurrentIndex(self.get_theme_list().index(theme))
+
         self.update_widgets()
+
+    def set_dark_mode(self, flag):
+        self.set_theme("dark" if flag else "light")
 
     def update_widgets(self):
         for widget, name in self.widget_last_style.items():

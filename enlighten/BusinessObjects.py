@@ -122,7 +122,7 @@ class BusinessObjects:
         ctl.colors = Colors(ctl.config)
 
         self.header("instantiating Stylesheets")
-        ctl.stylesheets = Stylesheets(ctl.stylesheet_path)
+        ctl.stylesheets = Stylesheets(ctl)
 
         self.header("instantiating GUI")
         ctl.gui = GUI(
