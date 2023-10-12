@@ -1,5 +1,7 @@
 # Windows 10 Development Environment
 
+Consider using the wiki page instead: https://github.com/WasatchPhotonics/ENLIGHTEN/wiki/Build-Win10
+
 ## Dependencies
 
 The following installation sequence is recommended:
