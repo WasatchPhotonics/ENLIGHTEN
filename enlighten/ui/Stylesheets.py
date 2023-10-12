@@ -9,8 +9,14 @@ class Stylesheets:
 
     DEFAULT_PATH = "enlighten/assets/stylesheets"
 
+    def get_theme_list(self):
+        return os.listdir(DEFAULT_PATH)
+
     def clear(self):
-        self.css = { "dark": {}, "light": {} }
+        self.css = {}
+        for theme in self.get_theme_list():
+            self.css.update({theme: {}})
+
         self.widget_last_style = {}
 
     def __init__(self, path=None):
@@ -19,8 +25,13 @@ class Stylesheets:
         self.path = path if path else self.DEFAULT_PATH
         self.set_dark_mode(True)
 
-        self.load("dark")
-        self.load("light")
+        for theme in self.get_theme_list():
+            self.load(theme)
+
+    def set_theme(self, theme):
+        self.mode = theme
+        log.debug(f"mode now {self.mode}")
+        self.update_widgets()
 
     def set_dark_mode(self, flag):
         self.mode = "dark" if flag else "light"
