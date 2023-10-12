@@ -4,6 +4,7 @@ from PySide6 import QtGui
 
 from enlighten.ui.TimeoutDialog import TimeoutDialog
 from enlighten import common
+from enlighten.common import msgbox
 
 from wasatch import utils as wasatch_utils
 
@@ -40,7 +41,8 @@ class GUI(object):
         self.bt_dark_mode = bt_dark_mode
 
         self.multispec = None
-        self.dark_mode = True 
+        self.theme = self.config.get("theme", "theme")
+
         self.marquee = None # post-construction
 
         # apply ENLIGHTEN application stylesheet found in configured directory
@@ -49,36 +51,38 @@ class GUI(object):
         self.bt_dark_mode.clicked.connect(self.dark_mode_callback)
 
         self.init_graph_color()
-
-    def init_graph_color(self):
-        self.dark_mode = self.config.get_bool(self.SECTION, "dark_mode", default=True)
-
-        colors = ('w', 'k') if self.dark_mode else ('k', 'w')
-        pyqtgraph.setConfigOption('foreground', colors[0])
-        pyqtgraph.setConfigOption('background', colors[1])
         self.update_theme()
 
+    def init_graph_color(self):
+        dark_mode = self.theme.startswith("dark")
+        
+        colors = ('w', 'k') if dark_mode else ('k', 'w')
+        pyqtgraph.setConfigOption('foreground', colors[0])
+        pyqtgraph.setConfigOption('background', colors[1])
+
     def dark_mode_callback(self):
-        self.dark_mode = not self.dark_mode
-        self.config.set(self.SECTION, "dark_mode", self.dark_mode)
+
+        # toggle darkness
+        self.theme = 'dark' if not (self.theme.startswith("dark")) else 'light'
 
         if self.marquee:
-            self.marquee.info(f"Graphs will use {'dark' if self.dark_mode else 'light'} backgrounds when ENLIGHTEN restarts.")
+            self.marquee.info(f"Graphs will use {self.theme} backgrounds when ENLIGHTEN restarts.")
 
+        self.init_graph_color()
         self.update_theme()
 
     def update_theme(self):
         sfu = self.form.ui
 
-        self.stylesheets.set_dark_mode(self.dark_mode)
+        self.stylesheets.set_theme(self.theme)
 
-        if self.dark_mode:
+        if self.theme.startswith("dark"):
             self.bt_dark_mode.setToolTip("Seek the light!")
         else:
             self.bt_dark_mode.setToolTip("Embrace the dark!")
 
         path = ":/application/images/enlightenLOGO"
-        if not self.dark_mode:
+        if not self.theme.startswith("dark"):
             path += "-light"
         path += ".png"
 
