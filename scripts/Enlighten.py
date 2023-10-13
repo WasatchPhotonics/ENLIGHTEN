@@ -105,7 +105,6 @@ class EnlightenApplication(object):
     # method (which will tick QWidgets defined by the form in an event loop until 
     # something generates an exit signal).
     def run(self):
-
         # instantiate form (a QMainWindow with named "MainWindow")
         # UI needs to be imported here in order to access qresources for the splash screen
         self.form = BasicWindow(title="ENLIGHTEN %s" % common.VERSION)
@@ -196,8 +195,11 @@ class EnlightenApplication(object):
 
     def hide_console(self):
         """ 
-        This works, so I'm leaving the function in case we need it again, but currently 
-        testing the new pyinstaller --hide-console instead.
+        This isn't needed on Win10 (where pyinstaller's --hide-console hide-early works,
+        though not hide-late), but apparently is on Win11 (where hide-early doesn't work;
+        not sure about hide-late).
+
+        Calling for coverage on Win11.
 
         @see https://github.com/pyinstaller/pyinstaller/issues/7729#issuecomment-1605503018 
         @swee https://github.com/pyinstaller/pyinstaller/pull/7735
@@ -217,10 +219,31 @@ class EnlightenApplication(object):
                 if process_id == console_process_id:
                     # ... and if it is, minimize it
                     ctypes.windll.user32.ShowWindow(console_window, 2)  # SW_SHOWMINIMIZED
+    
+    def run_from_root(self, pathname):
+        """
+        ENLIGHTEN loads various settings from its own enlighten/assets/
+        example_code distribution, which it accesses through relative
+        paths, and it can't find those if run from another directory.
+        """
+        if pathname.endswith(".py"):
+            # run as "python path/to/scripts/enlighten.py", so want "path/to"
+            root_dir = os.path.join(os.path.dirname(pathname), "..")
+        else:
+            # presumably some kind of compiled executable
+            root_dir = os.path.dirname(pathname)
+
+        log.debug(f"trying to run from {root_dir}")
+        try:
+            os.chdir(root_dir)
+        except:
+            log.error(f"error changing to {root_dir}")
 
 def main(argv):
     enlighten = EnlightenApplication()
     enlighten.parse_args(argv[1:])
+    enlighten.run_from_root(argv[0])
+    enlighten.hide_console()
     try:
         ec = enlighten.run()
     except SystemExit as exc:
