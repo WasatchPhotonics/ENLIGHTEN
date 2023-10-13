@@ -35,7 +35,12 @@ class Stylesheets:
         for theme in self.get_theme_list():
             self.load(theme)
 
-        self.set_theme(self.ctl.config.get("theme", "theme"))
+        saved_theme = self.ctl.config.get("theme", "theme")
+        if saved_theme in self.get_theme_list():
+            self.set_theme(saved_theme)
+        else:
+            # default to dark if theme not on disk
+            self.set_theme("dark")
 
         self.ctl.form.ui.comboBox_Theme.currentIndexChanged.connect(self.set_theme_combobox)
 
