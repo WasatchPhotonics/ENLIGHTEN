@@ -1,0 +1,11 @@
+QLabel 
+{
+    color: #b1b1b1;
+}
+
+QTextEdit
+{
+    color: #b1b1b1;
+    background: transparent;
+    border: transparent;
+}
