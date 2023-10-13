@@ -5,7 +5,9 @@
 names = ["orange", "purple", "darkblue", "teal", "yellow", "pink", "blue"]
 
 # this list corresponds to the names, it specifies the colors
-colors = ["#e38914", "#9f1fd1", "#100a73", "#03c2fc", "#fcba03", "#eb17bd", "#114ad1"]
+colors = ["#e38914", "#9f1fd1", "#0a4ff0", "#03c2fc", "#fcba03", "#eb17bd", "#114ad1"]
+
+# no need to use a dark tone when creating a dark theme it will be darkened
 
 ### BEGIN SOURCE ###
 
@@ -182,7 +184,11 @@ def process_color(line, target_hsl):
 
         if col:
             # col is given as an hsl integer tuple
-            out += f"hsl({target_hsl[0]}, {target_hsl[1]}%, {col[2]}%)"
+            if col[2] > 90:
+                # avoid darkening text for darkmodes
+                out += f"hsl({target_hsl[0]}, {target_hsl[1]}%, {col[2]}%)"
+            else:
+                out += f"hsl({target_hsl[0]}, {target_hsl[1]}%, {(target_hsl[2]/100)*col[2]}%)"
         out += line[i]
         i += 1
 
@@ -191,8 +197,12 @@ def process_color(line, target_hsl):
 def make_theme(name, color):
     target_hsl = get_hex(color)[0]
 
-    # we use the light theme as a reference, shades of gray will be converted to shades of the target color
-    sourcedir = "../enlighten/assets/stylesheets/light"
+    # we use sourcedir as a reference, shades of gray will be converted to 
+    # shades of the target color
+    if name.startswith("dark"):
+        sourcedir = "../enlighten/assets/stylesheets/dark"
+    else:
+        sourcedir = "../enlighten/assets/stylesheets/light"
 
     # first thing to do is create the folder for the new theme
     themesdir = "../enlighten/assets/stylesheets"

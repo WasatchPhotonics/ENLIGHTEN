@@ -1,12 +1,12 @@
 QPushButton:hover {
-    border: 1px solid darkgray;
+    border: 1px solid silver;
     color: #eee;
 }
 
 QPushButton 
 {
-    color: #111;
-    border: 1px solid #ccc;
+    color: #eee;
+    border: 1px solid #333;
     background-color: qlineargradient(spread:pad, 
         x1:0.5, y1:1, 
         x2:0.5, y2:0, 
