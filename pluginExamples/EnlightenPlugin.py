@@ -53,6 +53,7 @@ class EnlightenPluginBase:
         self.y_axis_label = None
 
         self.series = {}
+        self.events = {}
 
         # plugins can do everything
         self.ctl = ctl
