@@ -1,11 +1,11 @@
 
 ### CONFIGURABLE ###
 
-# this is the name of the folder that's generated
-name = "pink"
+# this is a list of themes to generate
+names = ["orange", "purple", "darkblue", "teal", "yellow", "pink", "blue"]
 
-# target color to drive all theme colors, this is the color of a panel background
-target = "#eb17bd"
+# this list corresponds to the names, it specifies the colors
+colors = ["#e38914", "#9f1fd1", "#100a73", "#03c2fc", "#fcba03", "#eb17bd", "#114ad1"]
 
 ### BEGIN SOURCE ###
 
@@ -33,6 +33,7 @@ def hsv_to_hsl(hsv):
     else:
         s = (v-l)/min(l, 1-l)
 
+    h *= 360
     s *= 100
     l *= 100
 
@@ -153,9 +154,7 @@ def get_rgba(line):
 
     return hsv_to_hsl(colorsys.rgb_to_hsv(p1, p2, p3)), line[i:]
 
-target_hsl = get_hex(target)[0]
-
-def process_color(line):
+def process_color(line, target_hsl):
     """
     given the string line which may contain a color literal, such as #FFFFFF,
     replace the first occurence with the color transformed towards the target hue
@@ -189,7 +188,8 @@ def process_color(line):
 
     return out
 
-if __name__ == "__main__":
+def make_theme(name, color):
+    target_hsl = get_hex(color)[0]
 
     # we use the light theme as a reference, shades of gray will be converted to shades of the target color
     sourcedir = "../enlighten/assets/stylesheets/light"
@@ -200,8 +200,8 @@ if __name__ == "__main__":
     if not os.path.exists(newthemedir):
         shutil.copytree(sourcedir, newthemedir)
     else:
-        print("That theme is already generated.")
-        exit(1)
+        print("Skipping already generated theme %s." % name)
+        return
 
     # process enlighten.css line-by-line
     enlighten_css = newthemedir + os.sep + "enlighten.css"
@@ -209,10 +209,16 @@ if __name__ == "__main__":
         with open(enlighten_css+".tmp", "wt") as e2:
             line = e1.readline()
             while line:
-                line = process_color(line)
+                line = process_color(line, target_hsl)
                 e2.write(line + "\n")
                 line = e1.readline()
 
     # move enlighten.css.tmp into place
     shutil.move(enlighten_css+".tmp", enlighten_css)
 
+if __name__ == "__main__":
+    
+    assert len(names) == len(colors)
+
+    for i in range(len(names)):
+        make_theme(names[i], colors[i])
