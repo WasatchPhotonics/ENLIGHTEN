@@ -502,19 +502,14 @@ class Configuration:
             for spec in self.multispec.get_spectrometers():
                 if spec.device:
                     settings = spec.settings
-                    eeprom = settings.eeprom
-                    state = settings.state
-                    sn = eeprom.serial_number
+                    eeprom = spec.settings.eeprom
+                    state = spec.settings.state
+                    sn = spec.settings.eeprom.serial_number
                     if sn is None or len(sn) == 0:
                         log.error("declining to save settings for unit without serial number")
                         continue
 
                     log.info("saving config for %s", sn)
-
-                    # these application-session settings can always be saved
-                    self.set(sn, "integration_time_ms", state.integration_time_ms)
-                    self.set(sn, "boxcar_half_width", state.boxcar_half_width)
-                    self.set(sn, "gain_db", state.gain_db)
 
                     # only save EEPROM overrides if explicitly instructed
                     if full:

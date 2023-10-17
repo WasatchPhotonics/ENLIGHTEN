@@ -607,6 +607,7 @@ class BusinessObjects:
 
         self.header("instantiating BoxcarFeature")
         ctl.boxcar = BoxcarFeature(
+            ctl,
             bt_dn                       = sfu.pushButton_boxcar_half_width_dn,
             bt_up                       = sfu.pushButton_boxcar_half_width_up,
             spinbox                     = sfu.spinBox_boxcar_half_width,
@@ -617,6 +618,7 @@ class BusinessObjects:
 
         self.header("instantiating IntegrationTimeFeature")
         ctl.integration_time_feature = IntegrationTimeFeature(
+            ctl,
             bt_dn                       = sfu.pushButton_integration_time_ms_dn,
             bt_up                       = sfu.pushButton_integration_time_ms_up,
             marquee                     = ctl.marquee,
@@ -625,7 +627,7 @@ class BusinessObjects:
             spinbox                     = sfu.spinBox_integration_time_ms)
 
         self.header("instantiating GainDBFeature")
-        ctl.gain_db_feature = GainDBFeature(ctl = ctl)
+        ctl.gain_db_feature = GainDBFeature(ctl)
 
         self.header("instantiating BLEManager")
         ctl.ble_manager = BLEManager(
