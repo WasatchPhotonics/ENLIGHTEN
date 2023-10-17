@@ -97,9 +97,6 @@ class GainDBFeature:
         spec = self.ctl.multispec.current_spectrometer()
         spec.settings.state.gain_db = spec.settings.eeprom.detector_gain
 
-        self.ctl.form.ui.doubleSpinBox_gain.setValue(spec.settings.state.gain_db)
-        log.debug("GainDBFeature.init_hotplug: initialized to %.2f", spec.settings.state.gain_db)
-
     # called by initialize_new_device a little after the other function
     def reset(self, hotplug=False):
         if not self.update_visibility():
@@ -154,7 +151,7 @@ class GainDBFeature:
         self.ctl.multispec.set_state("gain_db", db)
 
         # persist gain_db in .ini
-        self.ctl.config.set(self.ctl.multispec.current_spectrometer().settings.eeprom.serial_number, "gain_db", ms)
+        self.ctl.config.set(self.ctl.multispec.current_spectrometer().settings.eeprom.serial_number, "gain_db", db)
 
         # send gain update message to device
         self.ctl.multispec.change_device_setting("detector_gain", db)
@@ -165,20 +162,14 @@ class GainDBFeature:
 
     def up_callback(self):
         util.incr_spinbox(self.ctl.form.ui.doubleSpinBox_gain)
+        self.set_db(self.ctl.form.ui.doubleSpinBox_gain.value())
 
     def dn_callback(self):
         util.decr_spinbox(self.ctl.form.ui.doubleSpinBox_gain)
+        self.set_db(self.ctl.form.ui.doubleSpinBox_gain.value())
 
     def sync_slider_to_spinbox_callback(self):
-        self.ctl.form.ui.doubleSpinBox_gain.setValue(self.ctl.form.ui.slider_gain.value()) 
+        self.set_db(self.ctl.form.ui.slider_gain.value()) 
 
     def sync_spinbox_to_slider_callback(self):
-        db = self.ctl.form.ui.doubleSpinBox_gain.value()
-
-        self.ctl.form.ui.slider_gain.blockSignals(True)
-        self.ctl.form.ui.slider_gain.setValue(db)
-        self.ctl.form.ui.slider_gain.blockSignals(False)
-
-        self.ctl.multispec.set_state("gain_db", db)
-        self.ctl.multispec.change_device_setting("detector_gain", db)
-
+        self.set_db(self.ctl.form.ui.doubleSpinBox_gain.value())
