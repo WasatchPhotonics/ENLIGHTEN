@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 class BoxcarFeature(object):
     """ Encapsulate the high-frequency noise smoothing "boxcar" filter run at the end of post-processing. """
     
-    def __init__(self,
+    def __init__(self, ctl
             bt_dn,
             bt_up,
             spinbox,
@@ -18,6 +18,8 @@ class BoxcarFeature(object):
             multispec,
             page_nav,
             ):
+        
+        self.ctl = ctl
 
         self.bt_dn      = bt_dn
         self.bt_up      = bt_up
@@ -36,7 +38,9 @@ class BoxcarFeature(object):
 
     def update_from_gui(self):
         value = self.spinbox.value()
-        self.multispec.set_state("boxcar_half_width", value)
+
+        # persist boxcar in .ini
+        self.ctl.config.set(self.ctl.multispec.current_spectrometer().settings.eeprom.serial_number, "boxcar_half_width", ms)
 
         if value > 0:
             self.spinbox.setToolTip("boxcar half-width of %d pixels (%d-pixel moving average)" % (value, value * 2 + 1))

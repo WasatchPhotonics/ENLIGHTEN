@@ -15,7 +15,7 @@ class IntegrationTimeFeature(object):
     TENTHS_TO_SEC = 0.1
     MAX_SLIDER_SEC = 5
 
-    def __init__(self,
+    def __init__(self, ctl,
             bt_dn,
             bt_up,
             marquee,
@@ -23,6 +23,8 @@ class IntegrationTimeFeature(object):
             slider,
             spinbox
         ):
+
+        self.ctl = ctl
 
         self.bt_dn      = bt_dn
         self.bt_up      = bt_up
@@ -99,8 +101,13 @@ class IntegrationTimeFeature(object):
 
         if hotplug:
             log.debug("forcing integration time downstream on hotplug")
-            self.multispec.set_state("integration_time_ms", now_ms)
+            
+            # persist integration time in .ini
+            self.ctl.config.set(self.ctl.multispec.current_spectrometer().settings.eeprom.serial_number, "integration_time_ms", ms)
+
+            # send integration time change to hardware
             spec.change_device_setting("integration_time_ms", now_ms)
+
             spec.reset_acquisition_timeout()
 
     ## If you're not sure which function to call, call this one.
@@ -139,8 +146,10 @@ class IntegrationTimeFeature(object):
         self.slider.setValue(tenths)
         self.slider.blockSignals(False)
 
-        # actually send the change downstream
-        self.multispec.set_state("integration_time_ms", ms)
+        # persist integration time in .ini
+        self.ctl.config.set(self.ctl.multispec.current_spectrometer().settings.eeprom.serial_number, "integration_time_ms", ms)
+
+        # send changed integration time to hardware
         self.multispec.change_device_setting("integration_time_ms", ms)
 
         # reset timeouts
