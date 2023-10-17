@@ -105,34 +105,36 @@ class GainDBFeature:
         if not self.update_visibility():
             return
 
-        # TEMPORARILY set a value within limits 
-        self.ctl.form.ui.slider_gain.blockSignals(True)
-        self.ctl.form.ui.slider_gain.setMinimum(self.MIN_GAIN_DB)
-        self.ctl.form.ui.slider_gain.setMaximum(self.MAX_GAIN_DB)
-        self.ctl.form.ui.slider_gain.setValue(self.MIN_GAIN_DB)
-        self.ctl.form.ui.slider_gain.blockSignals(False)
-
-        log.debug("slider limits (%d, %d) (temporary value %d)",
-            self.ctl.form.ui.slider_gain.minimum(), self.ctl.form.ui.slider_gain.maximum(), self.ctl.form.ui.slider_gain.value())
-
         spec = self.ctl.multispec.current_spectrometer()
-        now_db = spec.settings.state.gain_db
-
-        # apply limits to SPINBOX
-        self.ctl.form.ui.doubleSpinBox_gain.blockSignals(True)
-        self.ctl.form.ui.doubleSpinBox_gain.setMinimum(self.MIN_GAIN_DB)
-        self.ctl.form.ui.doubleSpinBox_gain.setMaximum(self.MAX_GAIN_DB)
-        self.ctl.form.ui.doubleSpinBox_gain.blockSignals(False)
 
         # load gain_db from .ini, falling back to spec.settings.state (copied from EEPROM)
         if spec:
             serial_number = spec.settings.eeprom.serial_number
-            ini_gain_db = self.ctl.config.get_float(serial_number, "gain_db", now_db)
-            log.debug("Get gain from INI: %s", ini_gain_db)
-            self.set_db(ini_gain_db)
 
-        log.info("spinbox limits (%d, %d) (current %d)",
-            self.ctl.form.ui.doubleSpinBox_gain.minimum(), self.ctl.form.ui.doubleSpinBox_gain.maximum(), self.ctl.form.ui.doubleSpinBox_gain.value())
+            if self.ctl.config.has_option(serial_number, "gain_db"):
+                ini_gain_db = self.ctl.config.get_float(serial_number, "gain_db")
+                log.debug("Get gain from INI: %s", ini_gain_db)
+                self.set_db(ini_gain_db)
+            elif spec.settings.state.gain_db != None:
+                log.debug("Get gain from SpectrometerSettings: %s", spec.settings.state.gain_db)
+                self.set_db(spec.settings.state.gain_db)
+            elif spec.settings.eeprom.detector_gain != None:
+                gain_eeprom = spec.settings.eeprom.detector_gain
+                log.debug("Get gain from EEPROM: %s", gain_eeprom)
+                self.set_db(gain_eeprom)
+            else:
+                gain_default = 8
+                log.debug("Get gain from hardcoded default: %s", gain_default)
+                self.set_db(gain_default)
+
+            # apply limits to SPINBOX
+            self.ctl.form.ui.doubleSpinBox_gain.blockSignals(True)
+            self.ctl.form.ui.doubleSpinBox_gain.setMinimum(self.MIN_GAIN_DB)
+            self.ctl.form.ui.doubleSpinBox_gain.setMaximum(self.MAX_GAIN_DB)
+            self.ctl.form.ui.doubleSpinBox_gain.blockSignals(False)
+
+            log.info("spinbox limits (%d, %d) (current %d)",
+                self.ctl.form.ui.doubleSpinBox_gain.minimum(), self.ctl.form.ui.doubleSpinBox_gain.maximum(), self.ctl.form.ui.doubleSpinBox_gain.value())
 
     def _quiet_set(self, widget, value):
         """
@@ -148,8 +150,8 @@ class GainDBFeature:
 
     def set_db(self, db):
         
-        # save gain_db to application state
-        self.ctl.multispec.set_state("gain_db", db)
+        # persist gain_db in .ini
+        self.ctl.config.set(self.ctl.multispec.current_spectrometer().settings.eeprom.serial_number, "gain_db", ms)
 
         # send gain update message to device
         self.ctl.multispec.change_device_setting("detector_gain", db)
