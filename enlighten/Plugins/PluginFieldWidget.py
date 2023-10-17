@@ -82,6 +82,7 @@ class PluginFieldWidget(QtWidgets.QWidget):
         if self.field_config.datatype != "button":
             label = QtWidgets.QLabel(self)
             label.setText(self.field_name)
+            label.setWordWrap(True)
             hbox.addWidget(label)
 
         if self.field_config.direction == "output":
