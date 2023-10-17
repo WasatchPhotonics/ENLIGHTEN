@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 class BoxcarFeature(object):
     """ Encapsulate the high-frequency noise smoothing "boxcar" filter run at the end of post-processing. """
     
-    def __init__(self, ctl
+    def __init__(self, ctl,
             bt_dn,
             bt_up,
             spinbox,
