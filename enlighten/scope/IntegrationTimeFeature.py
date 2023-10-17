@@ -102,6 +102,9 @@ class IntegrationTimeFeature(object):
         if hotplug:
             log.debug("forcing integration time downstream on hotplug")
             
+            # save integration time to application state
+            self.multispec.set_state("integration_time_ms", now_ms)
+
             # persist integration time in .ini
             self.ctl.config.set(self.ctl.multispec.current_spectrometer().settings.eeprom.serial_number, "integration_time_ms", ms)
 
@@ -145,6 +148,9 @@ class IntegrationTimeFeature(object):
         self.slider.blockSignals(True)
         self.slider.setValue(tenths)
         self.slider.blockSignals(False)
+
+        # save integration time to application state
+        self.multispec.set_state("integration_time_ms", now_ms)
 
         # persist integration time in .ini
         self.ctl.config.set(self.ctl.multispec.current_spectrometer().settings.eeprom.serial_number, "integration_time_ms", ms)

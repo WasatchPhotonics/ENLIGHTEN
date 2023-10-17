@@ -150,6 +150,9 @@ class GainDBFeature:
 
     def set_db(self, db):
         
+        # save gain_db to application state
+        self.ctl.multispec.set_state("gain_db", db)
+
         # persist gain_db in .ini
         self.ctl.config.set(self.ctl.multispec.current_spectrometer().settings.eeprom.serial_number, "gain_db", ms)
 

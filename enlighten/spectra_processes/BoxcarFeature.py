@@ -39,6 +39,9 @@ class BoxcarFeature(object):
     def update_from_gui(self):
         value = self.spinbox.value()
 
+        # save boxcar to application state
+        self.multispec.set_state("boxcar_half_width", value)
+
         # persist boxcar in .ini
         self.ctl.config.set(self.ctl.multispec.current_spectrometer().settings.eeprom.serial_number, "boxcar_half_width", ms)
 
