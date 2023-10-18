@@ -122,17 +122,10 @@ class BusinessObjects:
         ctl.colors = Colors(ctl.config)
 
         self.header("instantiating Stylesheets")
-        ctl.stylesheets = Stylesheets(ctl.stylesheet_path)
+        ctl.stylesheets = Stylesheets(ctl)
 
         self.header("instantiating GUI")
-        ctl.gui = GUI(
-            colors                      = ctl.colors,
-            config                      = ctl.config,
-            form                        = ctl.form,
-            stylesheet_path             = ctl.stylesheet_path,
-            stylesheets                 = ctl.stylesheets,
-
-            bt_dark_mode                = sfu.pushButton_dark_mode)
+        ctl.gui = GUI(ctl)
 
     def create_rest(self):
         """
@@ -614,6 +607,7 @@ class BusinessObjects:
 
         self.header("instantiating BoxcarFeature")
         ctl.boxcar = BoxcarFeature(
+            ctl,
             bt_dn                       = sfu.pushButton_boxcar_half_width_dn,
             bt_up                       = sfu.pushButton_boxcar_half_width_up,
             spinbox                     = sfu.spinBox_boxcar_half_width,
@@ -624,6 +618,7 @@ class BusinessObjects:
 
         self.header("instantiating IntegrationTimeFeature")
         ctl.integration_time_feature = IntegrationTimeFeature(
+            ctl,
             bt_dn                       = sfu.pushButton_integration_time_ms_dn,
             bt_up                       = sfu.pushButton_integration_time_ms_up,
             marquee                     = ctl.marquee,
@@ -632,7 +627,7 @@ class BusinessObjects:
             spinbox                     = sfu.spinBox_integration_time_ms)
 
         self.header("instantiating GainDBFeature")
-        ctl.gain_db_feature = GainDBFeature(ctl = ctl)
+        ctl.gain_db_feature = GainDBFeature(ctl)
 
         self.header("instantiating BLEManager")
         ctl.ble_manager = BLEManager(

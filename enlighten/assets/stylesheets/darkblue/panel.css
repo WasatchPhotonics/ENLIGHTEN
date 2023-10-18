@@ -1,0 +1,13 @@
+QFrame
+{
+    color: #eee;
+    background: hsl(0, 0%, 21%);
+    border: 2px solid #000000;
+    border-radius: 6px;
+}
+
+QFrame QLabel
+{
+    border: none;
+    background: transparent;
+}
