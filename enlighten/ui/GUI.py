@@ -6,8 +6,6 @@ from enlighten.ui.TimeoutDialog import TimeoutDialog
 from enlighten import common
 from enlighten.common import msgbox
 
-from wasatch import utils as wasatch_utils
-
 log = logging.getLogger(__name__)
 
 ##
@@ -97,7 +95,7 @@ class GUI(object):
         if button is None:
             return
 
-        if wasatch_utils.truthy(flag):
+        if flag:
             self.ctl.stylesheets.apply(button, "red_gradient_button")
         else:
             self.ctl.stylesheets.apply(button, "gray_gradient_button")
