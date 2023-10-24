@@ -469,12 +469,8 @@ class MeasurementFactory(object):
         m.interpolate(settings)
         return m
 
-    # ##########################################################################
-    # External API
-    # ##########################################################################
-
     ##
-    # Used by External.Feature, also loading .json measurements and exports.
+    # Used when loading .json measurements and exports.
     #
     # @param d (Input) a dict containing either a single "Measurement" or a
     #                  "Measurements" list
@@ -485,10 +481,12 @@ class MeasurementFactory(object):
         try:
             if "Measurements" in d:
                 for m_data in d["Measurements"]:
+                    log.debug("instantiating Measurement(s) from dict(s)")
                     m = Measurement(d=m_data, measurements=self.measurements, save_options=self.save_options)
                     if m is not None:
                         measurments.append(m)
             elif "Measurement" in d:
+                log.debug("instantiating Measurement from dict")
                 m = Measurement(d=d["Measurement"], measurements=self.measurements, save_options=self.save_options)
                 if m is not None:
                     measurements.append(m)
@@ -497,3 +495,5 @@ class MeasurementFactory(object):
 
         if len(measurements) > 0:
             return measurements
+        else:
+            log.debug("create_from_dict: no measurements created")

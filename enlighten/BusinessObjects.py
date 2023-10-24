@@ -348,6 +348,7 @@ class BusinessObjects:
             cb_excel                    = sfu.checkBox_save_excel,
             cb_filename_as_label        = sfu.checkBox_save_filename_as_label,
             cb_json                     = sfu.checkBox_save_json,
+            cb_dx                       = sfu.checkBox_save_dx,
             cb_load_raw                 = sfu.checkBox_load_raw,
             cb_pixel                    = sfu.checkBox_save_pixel,
             cb_raw                      = sfu.checkBox_save_raw,

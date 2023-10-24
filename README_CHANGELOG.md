@@ -4,6 +4,8 @@
 
 ## 4.1.0-Dev
 
+- 2023-10-?? 4.0.25
+    - add ability to save JCAMP-DX
 - 2023-10-09 4.0.24
     - Prod.BurnIn temperature fix
     - added run_from_root
