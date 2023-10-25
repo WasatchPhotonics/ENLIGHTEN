@@ -83,7 +83,9 @@ class HorizROIFeature:
         if spec is None:
             return
 
-        self.cb_editing.setVisible(self.ctl.page_nav.doing_expert())
+        # disable for now -- still testing
+        # self.cb_editing.setVisible(self.ctl.page_nav.doing_expert())
+        self.cb_editing.setVisible(False)
 
         log.debug(f"update_visibility: setting enabled to user_requested_enabled {self.user_requested_enabled}")
         self.enabled = self.user_requested_enabled

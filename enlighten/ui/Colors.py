@@ -1,6 +1,6 @@
 import logging
 import colorsys
-from PySide2 import QtGui
+from PySide6 import QtGui
 
 from enlighten.data.ColorNames import ColorNames
 

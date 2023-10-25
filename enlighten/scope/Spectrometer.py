@@ -2,7 +2,7 @@ import datetime
 import logging
 import copy
 
-from PySide2 import QtGui
+from PySide6 import QtGui
 import pyqtgraph
 
 from enlighten.SpectrometerApplicationState import SpectrometerApplicationState
