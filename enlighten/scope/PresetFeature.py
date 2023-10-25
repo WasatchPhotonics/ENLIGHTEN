@@ -1,6 +1,7 @@
 import logging
 
 from PySide6 import QtWidgets
+from PySide6.QtWidgets import QMessageBox
 
 from enlighten.ScrollStealFilter import ScrollStealFilter
 
@@ -11,33 +12,26 @@ class PresetFeature:
     This feature allows the user to save named presets (referring to a snapshot 
     of key acquisition parameters), irrespective of spectrometer serial number.
 
-    @par Plugins
+    The proposed design is to let any Feature (or Plugin) register itself to 
+    PresetFeature and add one or more attributes.
 
-    At this time, I have not considered how / whether plugins might tie into this
-    service (such that if a given plugin is connected, and that plugin contains 
-    internal state which it wishes to be included in presets, then 
-    PluginController and PresetFeature will communicate to make that silently 
-    transpire), but I am confident this will prove no great hurdle if requested.
+    Calling API would be something like:
 
-    @par Alternate Design
-
-    I am considering an alternate design where any Feature can register itself to
-    PresetFeature and add one or more attributes to an ever-growing list. 
-    Something like:
-
-        IntegrationTimeFeature
+        class IntegrationTimeFeature:
             def __init__:
                 ctl.presets.register(self, ["integration_time_ms"])
-            def preset_get(self):
-                return { "integration_time_ms": self.ms }
-            def preset_set(self, values):
-                self.apply(values["integration_time_ms"])
 
-    This would make it trivial to support plugins, so long as the get/set 
-    methods were called within try/except blocks in the event that a plugin
-    had disconnected / unloaded without unregistering itself.
+            def get_preset_value(self, attr):
+                if attr == "integration_time_ms":
+                    return self.current_ms
 
-    Saving current state in a snapshot commit if I regret this :-)
+            def set_preset_value(self, attr, value):
+                if attr == "integration_time_ms":
+                    self.set_ms(int(value))
+
+    Note that all values will be written and read as strings; it will be 
+    on the receiving set_preset_value to cast any persisted values back to the
+    expected type.
     """
 
     SECTION = "Presets"
@@ -46,8 +40,11 @@ class PresetFeature:
         self.ctl = ctl
 
         self.combo = ctl.form.ui.comboBox_presets
+        self.selected_preset = None
 
-        self.presets = {}
+        self.presets = {} # { "Winchester bottles": { "IntegrationTimeFeature": { "integration_time_ms": "2000" } } }
+        self.observers = {} # { <IntegrationTimeFeature>: [ "integration_time_ms"' ] }
+
 
         self.load_from_ini():
 
@@ -58,146 +55,131 @@ class PresetFeature:
         config = self.ctl.config
         if not config.has_option(self.SECTION, "presets"):
             return
-            
-        names = [s.strip() in config.get_string(self.SECTION, "presets").split("|")]
-        for s in names:
-            self.presets[s] = Preset(self.ctl, f"Preset.{s}")
-            log.debug("loaded {s} -> {self.presets[s]}")
+
+        # parse Winchester.IntegrationTimeFeature.integration_time_ms keys into dict tree
+        keys = config.get_keys(self.SECTION)
+        for k in keys:
+            tok = k.split(".")
+            if len(tok) != 3:
+                log.error(f"unable to parse preset: {k}")
+                continue
+            preset, feature, attr = tok
+            self.store(preset, feature, attr, config.get(self.SECTION, k))
+
+    def store(self, preset, feature, attr, value):
+        if preset not in self.presets:
+            self.presets[preset] = {}
+        if feature not in self.presets[preset]:
+            self.presets[preset][feature] = {}
+        self.presets[preset][feature][attr] = value
+        log.debug(f"stored {preset}.{feature}.{attr} = {value}")
+
+    def register(self, feature, attrs):
+        feature_name = feature.__class__.__name__
+        log.debug(f"registered {feature_name}: {attrs}")
+        self.observers[feature] = attrs
+
+    def unregister(self, feature):
+        feature_name = feature.__class__.__name__
+        if feature in self.observers:
+            del self.observers[feature]
+        log.debug(f"unregistered {feature_name}")
 
     def combo_callback(self):
-        name = str(self.combo.currentText())
+        preset = str(self.combo.currentText())
 
-        if value.lower() == "create new...":
+        if preset.lower() == "create new...":
             self.create_new()
-        elif value.lower() == "remove":
-            self.remove()
+        elif preset.lower() == "remove":
+            self.remove(self.selected_preset)
         else:
-            self.apply(value)
+            self.apply(preset)
     
     def create_new(self):
         # prompt the user for a name
-        (name, ok) = QtWidgets.QInputDialog().getText(
+        (preset, ok) = QtWidgets.QInputDialog().getText(
             self.ctl.form,          # parent
             "Create New Preset",    # title
             "New Preset Name:",     # label
             QtWidgets.QLineEdit.Normal, 
             "")
-        if not (ok and name):
+        if not (ok and preset):
             log.info("cancelling preset creation")
             return 
-        
-        log.debug("creating preset {name}")
 
-        preset = Preset(self.ctl)
-        preset.save(f"Preset.{name}")
+        # only allow certain characters (no period)
+        preset = re.sub(r'[^a-z0-9()\[\]\' _-]', '_', preset, re.IGNORECASE)
 
-        self.presets[name] = preset
+        log.debug("creating preset {preset}")
+        config = self.ctl.config
+        for obs in self.observers:
+            feature = obs.__class__.__name__
+            for attr in self.observers[obs]:
+                try:
+                    value = obs.get_preset_value(attr)
+                except:
+                    log.error("unable to read {attr} from {feature}", exc_info=1)
+                    continue
 
-        self.reset()
+                # persist to Configuration
+                key = f"{preset}.{feature}.{attr}"
+                config.set(self.SECTION, key, value)
 
-    def reset(self):
-        names = sorted(self.presets.keys())
-        self.ctl.config.set(self.SECTION, "presets", "|".join(names))
+                # store locally
+                self.store(preset, feature, attr, value)
 
+        self.reset(preset)
+
+    def reset(self, selected=None):
+        # clear previous Configuration
+        self.config.remove_section(self.SECTION)
+
+        # re-populate comboBox
         self.combo.clear()
         self.combo.addItem("Create new...")
         selectedIndex = 0
-        for idx, s in enumerate(names):
-            self.combo.addItem(s)
-            if s == name:
+        for preset in sorted(self.presets):
+            self.combo.addItem(preset)
+            if preset == selected:
                 selectedIndex = idx + 1
         self.combo.addItem("(Remove)")
 
         if selectedIndex > 0:
             self.combo.setCurrentIndex(selectedIndex)
+            self.selected_preset = selected
 
     def apply(self):
-        name = str(self.combo.currentText())
-        if name not in self.presets:
-            log.error(f"apply: impossible? {name} not in presets")
+        preset = str(self.combo.currentText())
+        if preset not in self.presets:
             return
-        self.presets[name].apply()
 
-        self.reset()
+        # send any stored attribute values to registered observers
+        for obs in self.observers:
+            feature = obs.__class__.__name__
+            if feature in self.presets[preset]:
+                for attr in self.observers[obs]:
+                    if attr in self.presets[preset][feature]:
+                        value = self.presets[preset][feature][attr]
+                        try:
+                            obs.set_preset_value(attr, value)
+                        except:
+                            log.error("failed to apply preset {preset} to feature {feature} with {attr} = {value}", exc_info=1)
+        self.reset(preset)
 
-    def remove(self):
-        name = str(self.combo.currentText())
-        if name not in self.presets:
-            log.error(f"remove: impossible? {name} not in presets")
+    def remove(self, preset):
+        if preset not in self.presets:
+            log.error(f"remove: {preset} not in presets")
+            return
+
+        dlg = QMessageBox(self.ctl.form)
+        dlg.setWindowTitle("Remove Preset")
+        dlg.setText(f"Permanently delete preset {preset}?")
+        dlg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        dlg.setIcon(QMessageBox.Question)
+        result = dlg.exec_()
+        if result == QMessageBox.No:
             return
         
-        del self.presets[name]
+        del self.presets[preset]
+        self.selected_preset = None
         self.reset()
-
-class Preset:
-    def __init__(self, ctl, section=None):
-        self.ctl = ctl
-        self.section = section
-
-        self.integration_time_ms = None
-        self.gain_db = None
-        self.scans_to_average = None
-        self.boxcar_half_width = None
-        self.baseline_correction_algo = None
-        self.raman_intensity_correction = None
-
-        if section:
-            self.init_from_config()
-        else:
-            self.init_from_live()
-
-    def __repr__(self):
-        return f"Preset<section {self.section}, " +
-               f"integ {self.integration_time_ms}, " +
-               f"gain {self.gain_db}, " +
-               f"scans {self.scans_to_average}, " +
-               f"boxcar {self.boxcar_half_width}, " +
-               f"algo {self.baseline_correction_algo}, " +
-               f"SRM {self.raman_intensity_correction}>"
-
-    def init_from_config(self):
-        config = self.ctl.config
-        if config.has_option(self.section, "integration_time_ms"):
-            self.integration_time_ms = config.get_int(section, "integration_time_ms")
-        if config.has_option(self.section, "gain_db"):
-            self.gain_db = config.get_float(section, "gain_db")
-        if config.has_option(self.section, "scans_to_average"):
-            self.scans_to_average = config.get_int(section, "scans_to_average")
-        if config.has_option(self.section, "boxcar_half_width"):
-            self.boxcar_half_width = config.get_int(section, "boxcar_half_width")
-        if config.has_option(self.section, "raman_intensity_correction"):
-            self.raman_intensity_correction = config.get_bool(section, "raman_intensity_correction")
-
-    def init_from_live(self):
-        spec = self.ctl.multispec.current_spectrometer()
-        if spec is None:
-            return
-
-        self.integration_time_ms = spec.settings.state.integration_time_ms
-        self.gain_db = spec.settings.state.gain_db
-        self.scans_to_average = spec.settings.state.scans_to_average
-        self.boxcar_half_width = spec.settings.state.boxcar_half_width
-        self.raman_intensity_correction = self.ctl.raman_intensity_correction.enable_when_allowed
-        if ctl.baseline_correction.enabled:
-            self.baseline_correction_algo = self.ctl.baseline_correction.current_algo_name
-
-    def save(self, section=None):
-        if section is None:
-            section = self.section
-        if section is None:
-            log.error("unable to save preset w/o name")
-            return
-
-        config = self.ctl.config
-        config.set(section, "integration_time_ms", self.integration_time_ms)
-        config.set(section, "gain_db", self.gain_db)
-        config.set(section, "scans_to_average", self.scans_to_average)
-        config.set(section, "boxcar_half_width", self.boxcar_half_width)
-        config.set(section, "baseline_correction_algo", self.baseline_correction_algo)
-        config.set(section, "raman_intensity_correction", self.raman_intensity_correction)
-
-    def apply(self):
-        pass
-
-        # YOU ARE HERE
-

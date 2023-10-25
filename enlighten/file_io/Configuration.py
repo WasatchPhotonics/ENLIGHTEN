@@ -61,6 +61,13 @@ class Configuration:
     structured data.  For now, the compromise will be that "complex" objects
     requiring JSON configuration can use their own configuration files,
     pointed to by this one.
+
+    @par Stale code notice
+
+    We are using what current configparser docs call the "legacy API" -- my
+    recollection is that it was the only API when this class was written 
+    under Python 2.7. At some point we may want to update to the newer dict-
+    style interface.
     """
 
     def clear(self):
@@ -317,6 +324,12 @@ class Configuration:
 
         return value
 
+    def get_keys(self, section):
+        keys = []
+        for k, v in self.config.items():
+            keys.append(k)
+        return keys
+
     def get_bool(self, section, key, default=False):
         """ Not using ConfigParser.getboolean() because we want to support defaults. """
         if self.has_option(section, key):
@@ -347,6 +360,11 @@ class Configuration:
             return True
         else:
             return section in self.defaults
+
+    def remove_section(self, section):
+        if not self.config:
+            return
+        self.config.remove_section(section)
 
     def has_option(self, section, option):
         # any option which is defaulted will always indicate "has_option -> true";

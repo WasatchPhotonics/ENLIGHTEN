@@ -42,6 +42,8 @@ class IntegrationTimeFeature(object):
         self.slider.installEventFilter(MouseWheelFilter(self.slider))
         self.spinbox.installEventFilter(ScrollStealFilter(self.spinbox))
 
+        self.ctl.presets.register(self, ["integration_time_ms"])
+
     # called by initialize_new_device on hotplug, BEFORE reading / applying .ini
     def init_hotplug(self):
         spec = self.multispec.current_spectrometer()
@@ -182,3 +184,9 @@ class IntegrationTimeFeature(object):
     def set_focus(self):
         self.spinbox.setFocus()
         self.spinbox.selectAll()
+
+    def get_prefix_attr(self, attr):
+
+    def set_prefix_attr(self, attr, value):
+        if attr == "integration_time_ms":
+            self.set_ms(int(value))
