@@ -98,6 +98,7 @@ class Controller:
                 form              = None,
                 splash            = None,
                 headless          = False,
+                autoload_plugin   = None,
             ):
         """
         All of the parameters are normally parsed from via command-line arguments
@@ -114,6 +115,7 @@ class Controller:
         @param serial_number only connect to this unit if found.
         @param stylesheet_path directory containing enlighten.css and associated styles
         @param set_all_dfu set each ARM spectrometer to DFU mode as they connect
+        @param autoload_plugin auto-connect the named plugin
         """
 
         self.app                    = app
@@ -126,6 +128,7 @@ class Controller:
         self.stylesheet_path        = stylesheet_path
         self.set_all_dfu            = set_all_dfu
         self.headless               = headless
+        self.autoload_plugin        = autoload_plugin
         self.spec_timeout           = 30
         self.splash                 = splash
         self.form                   = form
@@ -230,6 +233,7 @@ class Controller:
         self.bind_shortcuts()
 
         self.page_nav.post_init()
+        self.schedule_post_init()
 
         self.header("Controller ctor done")
         self.other_devices = []
@@ -241,6 +245,21 @@ class Controller:
             # self.hide() messes with gui tests since the components are also hidden
             # So I replaced with minimizing, which I recognize is not a true headless
             self.form.showMinimized()
+
+    def schedule_post_init(self):
+        self.post_init_timer = QtCore.QTimer()
+        self.post_init_timer.timeout.connect(self.post_init)
+        self.post_init_timer.setSingleShot(True)
+        self.post_init_timer.start(1000)
+
+    def post_init(self):
+        """
+        Things that should happen outside the constructor, after the GUI is fully
+        instantiated and displayed with all event loops running.
+        """
+        log.debug("performing post-construction initialization")
+        if self.autoload_plugin:
+            self.plugin_controller.autoload(self.autoload_plugin)
 
     def disconnect_device(self, spec=None, closing=False):
         if spec in self.other_devices:
@@ -276,8 +295,8 @@ class Controller:
 
         # The background thread only applies changes BETWEEN spectra, so give it
         # time to collect at least one more acquisition so the changes can take 
-        # effect.
-        final_delay_sec = float(2 * spec.settings.state.integration_time_ms / 1000.0 + 0.200)
+        # effect (cap at 5sec).
+        final_delay_sec = min(5, float(2 * spec.settings.state.integration_time_ms / 1000.0 + 0.200))
         log.debug("disconnect_device[%s]: final delay of %.2fsec", device_id, final_delay_sec)
         time.sleep(final_delay_sec)
 
@@ -306,7 +325,7 @@ class Controller:
         return True
 
     def close(self, event_arg_str):
-        log.critical("closing")
+        log.critical(f"closing ({event_arg_str})")
 
         self.shutting_down = True
 
@@ -1509,7 +1528,7 @@ class Controller:
                 error_count = self.seen_errors[spec][spectrometer_response.error_msg]
                 if error_count <= self.SPEC_ERROR_MAX_RETRY and not spectrometer_response.poison_pill:
                     # retry reading a few times before calling a reset
-                    log.debug(f"temporarily ignoring brief glitch (seen_errors {error_count} <= {self.SPEC_ERROR_MAX_RETRY}")
+                    log.debug(f"temporarily ignoring brief glitch (seen_errors {error_count} <= {self.SPEC_ERROR_MAX_RETRY})")
                     return
 
                 stay_connected = self.display_response_error(spec, spectrometer_response.error_msg)
@@ -1821,7 +1840,11 @@ class Controller:
             # Raman intensity correction
             ####################################################################
 
-            if self.page_nav.doing_raman():
+            # Raman, Non-Raman, and Expert appear mutually exclusive in UI. They 
+            # aren't, really. Expert mode is a union of Raman, NonRaman and other 
+            # features (see PageNavigation docs). When the user clicks Expert, 
+            # doing_raman() is no longer true, hence the need for doing_expert().
+            if self.page_nav.doing_raman() or self.page_nav.doing_expert():
                 self.raman_intensity_correction.process(pr, spec)
 
             # Dieter goes back and forth on the order of these next two:
@@ -2000,11 +2023,11 @@ class Controller:
         # @returns True if graph was updated
         """
         if curve is None:
-            log.error("set_curve_data[%s]: no curve")
+            log.error("set_curve_data[%s]: no curve", label)
             return False
 
         if y is None:
-            log.error("set_curve_data[%s]: no y")
+            log.error("set_curve_data[%s]: no y", label)
             return False
 
         if x is None:

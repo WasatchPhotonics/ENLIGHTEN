@@ -245,7 +245,7 @@ class PluginController:
         # bindings
         self.button_process.clicked.connect(self.button_process_callback)
         self.cb_connected.clicked.connect(self.connected_callback)
-        self.cb_enabled.stateChanged.connect(self.enabled_callback)
+        self.cb_enabled.clicked.connect(self.enabled_callback)
         self.combo_module.currentIndexChanged.connect(self.combo_module_callback)
         self.combo_graph_pos.currentIndexChanged.connect(self.graph_pos_callback)
 
@@ -365,6 +365,20 @@ class PluginController:
         self.cancel_worker()
         self.reset_enlighten_info()
 
+    def autoload(self, module_name):
+        if module_name not in self.module_infos:
+            log.error(f"unable to autoload unknown plugin: {module_name}")
+            return
+        
+        log.debug(f"autoloading {module_name}")
+        self.combo_module.setCurrentText(module_name)
+        self.cb_connected.setChecked(True)
+        self.connected_callback() # .clicked doesn't respond to programmatic changes
+
+        # autoloaded plugins can't be disabled
+        self.combo_module.setEnabled(False)
+        self.cb_connected.setEnabled(False)
+
     # ##########################################################################
     # callbacks
     # ##########################################################################
@@ -375,6 +389,7 @@ class PluginController:
     def combo_module_callback(self):
         module_name = self.combo_module.currentText()
         if module_name not in self.module_infos:
+            log.error(f"user selected unknown plugin {module_name}")
             self.cb_connected.setEnabled(False)
             return
 
@@ -456,10 +471,19 @@ class PluginController:
                 self.do_post_disconnect()
                 return
 
-            # allow the user to enable the plugin
-            self.cb_enabled.setEnabled(True)
-            self.cb_enabled.setChecked(False)
-            self.button_process.setEnabled(True)
+            module_config = self.get_current_configuration()
+            if module_config.auto_enable:
+                # this plugin has requested to auto-enable on connect
+                log.debug("auto-enabling")
+                self.cb_enabled.setEnabled(not module_config.lock_enable)
+                self.cb_enabled.setChecked(True)
+                self.button_process.setEnabled(False)
+                self.enabled = True
+            else:
+                # allow the user to enable the plugin
+                self.cb_enabled.setEnabled(True)
+                self.cb_enabled.setChecked(False)
+                self.button_process.setEnabled(True)
 
             # for some reason, this doesn't work from within configure_gui_for_module
             self.graph_pos_callback()
@@ -484,7 +508,7 @@ class PluginController:
     # plus set the "process" button to the opposite state
     def enabled_callback(self):
         self.enabled = self.cb_enabled.isChecked()
-        if self.button_process is not None:
+        if self.button_process is not None:     # MZ: when would that be none?
             self.button_process.setEnabled(not self.enabled)
 
     ## The user changed the combobox indicating where the "second graph" should appear
@@ -1239,6 +1263,15 @@ class PluginController:
 
             self.apply_commands(response)
 
+            ####################################################################
+            # handle signals                                                   #
+            ####################################################################
+
+            # MZ: I am 100% confident there is a better way to do this. I'm
+            # starting by seeing if this does what I want.
+
+            self.apply_signals(response) 
+
         except:
             log.error(f"error handling response", exc_info=1)
 
@@ -1265,6 +1298,14 @@ class PluginController:
         for setting, value in response.commands:
             log.debug(f"applying {setting}")
             self.multispec.change_device_setting(setting, value)
+
+    def apply_signals(self, response):
+        if response.signals is None:
+            return
+
+        for signal in response.signals:
+            log.debug(f"applying signal: {signal}")
+            eval(signal)
 
     ############################################################################
     # events                                                                   #

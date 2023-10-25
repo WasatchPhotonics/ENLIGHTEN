@@ -5,9 +5,117 @@ from enlighten.ScrollStealFilter import ScrollStealFilter
 
 log = logging.getLogger(__name__)
 
-##
-# This class is not yet fully refactored.
 class PageNavigation:
+    """
+    This class encapsulates moving around different "screens" of ENLIGHTEN's GUI.
+    In many cases, this is achieved by moving different QWidgets (QFrames) to the
+    top of QStackedWidgets.
+
+    This class also therefore maintains aspects of application state, as "what
+    screen you're on" often affects ENLIGHTEN's understanding of "what you're 
+    doing" and therefore what options and features should be enabled or disabled
+    across the program.
+
+    Starting with ENLIGHTEN 4.x, we tweaked / refined our nomenclature of how to 
+    describe and visually select between different sets of features and operations.
+
+    The current structure is that ENLIGHTEN has Views, Modes and Techniques.
+
+    NB: Capturing in code because I'm thinking about it, but honestly this belongs
+    in the ENLIGHTEN Manual if not already there.
+
+    ----------------------------------------------------------------------------
+    Views 
+    ----------------------------------------------------------------------------
+
+    A VIEW is essentially visual screen you're looking at providing information
+    relevant to one conceptual aspect of the measurement system and process:
+
+    - Scope: a large realtime spectral graph, with a "Clipboard" of saved
+          Measurements to the left and a StatusBar at the bottom.
+    - Settings: ENLIGHTEN application settings on how / where to save files,
+          configure interpolation, perform BatchCollections etc.
+    - Hardware: information about the currently selected spectrometer, 
+          especially its EEPROM pages, but also firmware versions, battery, 
+          temperature etc.
+    - Log: a scrolling view of recent application log messages (basically a
+          'tail' on EnlightenSpectra/enlighten.log)
+    - Factory: a "hidden view" only available through a password where 
+          Production and Manufacturing features are accessed.
+
+    Views are mutually self-exclusive; you can only be looking at one at a time.
+    They are selected via drop-down at the top of the screen.
+    
+    ----------------------------------------------------------------------------
+    Modes
+    ----------------------------------------------------------------------------
+
+    Operation Modes are basically "sets of spectrometer features" and 
+    "spectroscopic processing options" which logically go together, and are
+    essentially based on the type of spectrometer connected and the types of
+    spectroscopy usually performed with that model.
+
+    It makes little sense to offer Absorbance or Color-processing features if
+    a 785X-ILP spectrometer is connected, because most users would never use
+    those features with that model.  It would similarly make little sense to
+    offer Raman-related features (like Fire Laser or Raman Intensity Correction)
+    if a VISNIRX was connected, because you would rarely use such features with
+    that model.
+
+    So Modes are essentially ways to logically group and guide users to "typical,
+    reasonable, recommended" behaviors and options based on different types of
+    spectrometer and spectroscopy.
+
+    These are the modes currently offered:
+
+    - Raman: all the things a Raman user would normally want to do, and nothing
+          distracting / confusing that would get them into trouble.
+    - Non-Raman: all the things typically done with non-Raman spectrometers
+          (UVVIS, VIS, VISNIR, NIR1 etc).
+    - Expert: ...okay, this is where it gets a litle weird.
+
+    "Expert Mode" is provided for people who Know What They Are Doing and want
+    All The Features.  Some of those features may or may not typically combined
+    or used with a particular model, but these instruments are often used for
+    Wild And Crazy R&D so Stop Coddling Me and Give Me the Buttons.
+
+    So kind of in Expert Mode, we take the governors off and expose all the
+    features...Raman, non-Raman, even some experimental stuff that even we're
+    not completely sure how well it works or where it fits.
+
+    Conceptually, Expert Mode is basically the union of Raman Mode and Non-Raman
+    Mode and whatever else we've got going on that isn't hidden in the Factory
+    View or in a plug-in.
+
+    Operational Modes are selected via large buttons at the top of the screen
+    that look like Tylenol capsules.
+
+    ----------------------------------------------------------------------------
+    Techniques
+    ----------------------------------------------------------------------------
+
+    There are many different spectroscopy techniques, most offering different 
+    post-processing math options, different measurement sequences (e.g. whether
+    they require a reference), different hardware features (laser, LED/broadband,
+    etc).
+
+    So like Modes, Techniques help inform ENLIGHTEN of what you're trying to do,
+    and therefore what features to expose or recommend (or hide, to reduce
+    training mistakes, unless the operator explicitly selects Expert Mode and
+    the Wild Wild West).
+
+    There is a definite point of equivocation here, in that "Raman" is arguably
+    a Technique as well as a Mode. Or you may counter that "Raman" is more a
+    family of techniques, including SERS, SERDS, SORS, SSE etc.
+
+    At the moment, we're exposing a "Technique" selection box in the non-Raman
+    Mode, but hiding it in the Raman Mode.
+
+    @todo WE NEED to decide how to handle that more elegantly when in Expert
+    Mode with a Raman spectrometer (probably by including Raman as a selectable
+    Technique, and automatically setting that if transitioning to Expert "from"
+    Raman Mode).
+    """
 
     technique_callbacks = {
         common.Techniques.NONE: lambda self, tech: self.set_technique_common(common.Techniques.NONE),

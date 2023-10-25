@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 #
 # Run supporting pyrcc files to generate resource files and future
 # designer conversions into python code. Run this from the home project
@@ -32,6 +32,9 @@ function convertToPy3()
 ################################################################################
 
 UIC_PRE=""
+UIC_OPTS=""
+RCC_OPTS=""
+PYTHON="python"
 
 # Change to Windows tool filenames if not on Linux
 if (uname -s | grep -q '^MINGW') || (uname -s | grep -q '^MSYS_NT')
@@ -63,21 +66,36 @@ else
         RCC=`which pyside2-rcc`
         UIC=`which pyside2-uic`
         TWO_TO_THREE=`which 2to3`  # probably in ${CONDA_ENV_PATH}/bin/2to3
+        PYTHON="python3"
 
-        UIC_PRE="/usr/bin/python3"
+        UIC_PRE=$PYTHON
     else
-        OS="Linux"
-        RCC="$CONDA_PREFIX/bin/pyside2-rcc"
-        UIC="$CONDA_PREFIX/bin/pyside2-uic"
-        TWO_TO_THREE="$CONDA_PREFIX/bin/2to3"
+        if uname -a | grep -qi darwin
+        then
+            OS="MacOS"
+            # PATH should include /usr/local/lib/python3.10/site-packages/PySide2 or equivalent
+            RCC=`which rcc`
+            UIC=`which uic`
+            TWO_TO_THREE=`which 2to3-3.10`
+
+            PYTHON="python3.10"
+            UIC_OPTS="--generator python"
+            RCC_OPTS="--generator python"
+        else
+            OS="Linux"
+            RCC="$CONDA_PREFIX/bin/pyside2-rcc"
+            UIC="$CONDA_PREFIX/bin/pyside2-uic"
+            TWO_TO_THREE="$CONDA_PREFIX/bin/2to3"
+        fi
     fi
 fi
 
 echo "QUICK = $QUICK"
 echo "PAUSE = $PAUSE"
+echo "PYTHON= $PYTHON"
 echo "OS    = $OS"
-echo "RCC   = $RCC"
-echo "UIC   = $UIC"
+echo "RCC   = $RCC (opts $RCC_OPTS)"
+echo "UIC   = $UIC (pre $UIC_PRE opts $UIC_OPTS)"
 echo "2to3  = $TWO_TO_THREE"
 echo
 
@@ -111,7 +129,7 @@ fi
 
 if ! $QUICK
 then
-    python scripts/embed_stylesheet.py
+    $PYTHON scripts/embed_stylesheet.py
     echo
 
     if [ $OS = "Linux" ]
@@ -133,7 +151,7 @@ then
         DEST=${ROOT}_rc.py
 
         echo -n "converting $FILE"
-        $RCC $FILE -o $DEST
+        $RCC $FILE -o $DEST $RCC_OPTS
         echo "...done"
     done
     echo
@@ -152,7 +170,7 @@ do
     fi
 
 echo -n "converting $FILE"
-$UIC_PRE $UIC $FILE -o $DEST && convertToPy3 $DEST
+$UIC_PRE $UIC $FILE -o $DEST $UIC_OPTS && convertToPy3 $DEST
 echo "...done"
 done
 

@@ -1,5 +1,7 @@
 # Backlog
 
+See [#256](https://github.com/WasatchPhotonics/ENLIGHTEN/issues/256). This page is to be moved to Github Issues.
+
 ## Hotplugs
 
 - Better detection of "duplicate" spectrometers (same serial and same model, 

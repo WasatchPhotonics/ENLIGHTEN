@@ -76,11 +76,26 @@ class DetectorTemperatureFeature:
     def unregister_observer(self, callback):
         self.observers.pop(callback, None)
 
+    def enable_widgets(self, flag):
+        for w in [ self.cb_enabled,
+                   self.spinbox,
+                   self.slider,
+                   self.button_up,
+                   self.button_dn,
+                   self.clear_btn,
+                   self.sfu.pushButton_detector_tec_copy ]:
+            w.setEnabled(flag)
+
     def init_hotplug(self):
         spec = self.multispec.current_spectrometer()
         if spec is None:
             return
 
+        if not spec.settings.eeprom.has_cooling:
+            self.enable_widgets(False)
+            return
+
+        self.enable_widgets(True)
         self.update_limits()
 
         value = self.get_default_temp(spec)
@@ -101,6 +116,11 @@ class DetectorTemperatureFeature:
         if spec is None:
             return
 
+        if not spec.settings.eeprom.has_cooling:
+            self.enable_widgets(False)
+            return
+
+        self.enable_widgets(True)
         self.update_limits()
 
         # restore whatever had been previously in place for this spectrometer
@@ -178,10 +198,6 @@ class DetectorTemperatureFeature:
         for callback in self.observers:
             callback(reading.detector_temperature_degC)
 
-    # ##########################################################################
-    # private methods
-    # ##########################################################################
-
     def apply_setpoint(self):
         """ Send GUI value downstream (and turns on if it was off). """
         # shouldn't matter if we take from spinbox or slider
@@ -195,6 +211,10 @@ class DetectorTemperatureFeature:
         else:
             log.debug("auto-enabling TEC")
             self.cb_enabled.setChecked(True)
+
+    # ##########################################################################
+    # private methods
+    # ##########################################################################
 
     def populate_placeholder(self):
         self.sfu.tec_temperature_graph = pyqtgraph.PlotWidget(name="TEC Temperature")

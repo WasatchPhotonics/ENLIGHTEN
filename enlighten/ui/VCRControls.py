@@ -2,6 +2,8 @@ import logging
 
 from enlighten import util
 
+from enlighten.common import msgbox
+
 log = logging.getLogger(__name__)
 
 ##
@@ -118,7 +120,13 @@ class VCRControls(object):
             self.callbacks[event].remove(callback)
             self.update_visibility() # stop-button state depends on registration
         else:
-            log.error("VCRControls didn't have a registration from event %s to %s", event, str(callback))
+            # Some potential observers only register callbacks when they need to
+            # (i.e. BatchCollection), but unregister everything on shutdown for
+            # safety.
+            #
+            # log.debug("VCRControls didn't have a registration from event %s to %s", event, str(callback))
+            pass
+
 
     def _stop_enabled(self):
         return len(self.callbacks["stop"]) > 0
@@ -178,8 +186,15 @@ class VCRControls(object):
     ## send a "save" event to anyone registered for that
     def save(self): 
         log.debug("save")
+
+        if len(self.callbacks["save"]) == 0:
+            # this is one scenario where the save button does nothing
+            # if this happens, it means the main save callback was unregistered
+            msgbox("Fatal Error: Save button has no callback.", "Error")
+
         for callback in list(self.callbacks["save"]):
             callback()
+
         self.update_visibility()
 
     ## collect one measurement, then go back to paused

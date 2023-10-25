@@ -6,9 +6,6 @@
 
 .PHONY: docs doc
 
-# by default, run indefinitely
-RUN_SEC := 0
-
 VERSION := $(shell grep 'VERSION =' enlighten/common.py | awk '{print $$3}' | tr -d '"')
 RPI_ID := $(shell test -f /etc/os-release && grep '^ID=' /etc/os-release | awk -F= '{print $$2}' | tr -d '"')
 RPI_CODENAME := $(shell test -f /etc/os-release && grep '^VERSION_CODENAME=' /etc/os-release | awk -F= '{print $$2}' | tr -d '"')
@@ -55,6 +52,7 @@ clean:
 	@find . -name \*.pyc -exec rm -v {} \;
 
 deps:
+	@dos2unix scripts/rebuild_resources.sh
 	@scripts/rebuild_resources.sh
 
 designer:
@@ -108,7 +106,7 @@ linux-installer-base:
 	mkdir -p                             build-linux/EnlightenGUI/enlighten/assets
 	cp -rv enlighten/assets/stylesheets  build-linux/EnlightenGUI/enlighten/assets
 	cp -rv enlighten/assets/example_data build-linux/EnlightenGUI/enlighten/assets
-	cp -rv udev                          build-linux/EnlightenGUI/
+	cp -rv ../Wasatch.PY/udev            build-linux/EnlightenGUI/
 	mv build-linux/EnlightenGUI build-linux/ENLIGHTEN-$(VERSION)
 	( cd build-linux && tar zcvf ../ENLIGHTEN-linux-$(VERSION).tgz ENLIGHTEN-$(VERSION) | sed 's/^/compressing: /' )
 
@@ -125,8 +123,8 @@ rpi-installer: linux-installer-base
 mac-installer:
 	@rm -rf build-mac build-mac-work
 	@mkdir -p build-mac
-	@echo "Running Pyinstaller..."
-	@pyinstaller \
+	@echo "Running PyInstaller..." # note capitalization
+	@python3.10 -m PyInstaller \
         --distpath="build-mac" \
         --workpath="build-mac-work" \
         --noconfirm \
@@ -171,14 +169,6 @@ mac-platypus:
 	@echo 
 	@echo "ENLIGHTEN-$(VERSION).app for MacOS packaged in ENLIGHTEN-MacOS-$(VERSION).zip"
 
-# Run ENLIGHTEN with debug logging (obey time constraint if given)
+# Run ENLIGHTEN with debug logging 
 run:
-	@(python -u scripts/Enlighten.py --log-level debug --run-sec $(RUN_SEC) 1>enlighten.out 2>enlighten.err && cat enlighten.err) || cat enlighten.err
-
-# Run ENLIGHTEN with logging disabled (standard release conditions)
-run-release:
-	@(python -u scripts/Enlighten.py --run-sec $(RUN_SEC) 1>enlighten.out 2>enlighten.err && cat enlighten.err) || cat enlighten.err
-
-# Run ENLIGHTEN until memory growth exceeds 20% of start
-run-20-perc:
-	@(python -u scripts/Enlighten.py --max-memory-growth 20 --log-level debug 1>enlighten.out 2>enlighten.err && cat enlighten.err) || cat enlighten.err
+	@python scripts/Enlighten.py --log-level debug 1>enlighten.out 2>enlighten.err

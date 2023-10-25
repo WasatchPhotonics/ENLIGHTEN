@@ -29,7 +29,7 @@ log = logging.getLogger(__name__)
 # @par Lamp / Laser
 #
 # - orange/warning if laser / lamp on selected spectrometer illuminated, else
-# - grey/disconnected if laser is found but interlock open, else
+# - grey/disconnected if laser is found but interlock open (or battery too low), else
 # - green/connected (no laser/lamp found, or interlock closed but not illuminated)
 #
 # @par Temperature
@@ -44,24 +44,15 @@ class StatusIndicators:
     HARDWARE_WARNING_WINDOW_SEC = 3
     TEMPERATURE_WINDOW_SEC = 10
 
-    def __init__(self,
-            logging_feature,
-            multispec,
-            stylesheets,
+    def __init__(self, ctl):
+        self.ctl = ctl
 
-            button_hardware,
-            button_lamp,
-            button_temperature):
-
-        self.logging_feature    = logging_feature
-        self.multispec          = multispec
-        self.stylesheets        = stylesheets
-        self.button_hardware    = button_hardware
-        self.button_lamp        = button_lamp
-        self.button_temperature = button_temperature
+        self.button_hardware             = ctl.form.ui.systemStatusWidget_pushButton_hardware
+        self.button_lamp                 = ctl.form.ui.systemStatusWidget_pushButton_light
+        self.button_temperature          = ctl.form.ui.systemStatusWidget_pushButton_temperature
 
         # self-register
-        self.logging_feature.status_indicators = self
+        self.ctl.logging_feature.status_indicators = self
                 
         self.last_hardware_error_time = None
 
@@ -92,7 +83,7 @@ class StatusIndicators:
     # at the lower-right of the GUI (below control widget column). Also
     # disable indicators if no spectrometer is connected.
     def update_visibility(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
 
         # the existing stylesheets are named "foo_connected" and "foo_disconnected"
         hw   = "disconnected"
@@ -130,7 +121,7 @@ class StatusIndicators:
             # Light Source (Lamp, Laser etc)
             ####################################################################
 
-            all_specs = self.multispec.get_spectrometers()
+            all_specs = self.ctl.multispec.get_spectrometers()
             if settings.eeprom.has_laser and len(all_specs) <= 1:
                 
                 if reading is None:
@@ -145,6 +136,10 @@ class StatusIndicators:
                     if reading.laser_is_firing:
                         lamp = "warning"
                         lamp_tt = "laser is firing"
+                    elif self.ctl.laser_control.cant_fire_because_battery(spec):
+                        perc = self.ctl.battery_feature.get_perc(spec)
+                        lamp = "disconnected"
+                        lamp_tt = f"low battery ({perc:.2f}%)"
                     elif reading.laser_can_fire:
                         lamp = "connected"
                         lamp_tt = "laser armed (can fire)"
@@ -192,9 +187,9 @@ class StatusIndicators:
                 temp = "connected" # if there is no TEC, leave green
                 temp_tt = "ambient detector"
 
-        self.stylesheets.apply(self.button_hardware,    "hardware_%s"    % hw)
-        self.stylesheets.apply(self.button_lamp,        "light_%s"       % lamp)
-        self.stylesheets.apply(self.button_temperature, "temperature_%s" % temp)
+        self.ctl.stylesheets.apply(self.button_hardware,    "hardware_%s"    % hw)
+        self.ctl.stylesheets.apply(self.button_lamp,        "light_%s"       % lamp)
+        self.ctl.stylesheets.apply(self.button_temperature, "temperature_%s" % temp)
 
         self.button_hardware    .setToolTip(hw_tt)
         self.button_lamp        .setToolTip(lamp_tt)
