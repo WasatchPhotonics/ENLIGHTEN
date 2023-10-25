@@ -186,6 +186,8 @@ class IntegrationTimeFeature(object):
         self.spinbox.selectAll()
 
     def get_prefix_attr(self, attr):
+        if attr == "integration_time_ms":
+            return self.spinbox.value()
 
     def set_prefix_attr(self, attr, value):
         if attr == "integration_time_ms":

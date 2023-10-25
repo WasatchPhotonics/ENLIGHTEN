@@ -33,6 +33,8 @@ class BoxcarFeature(object):
         self.spinbox    .valueChanged   .connect(self.update_from_gui)
         self.spinbox                    .installEventFilter(ScrollStealFilter(self.spinbox))
 
+        self.ctl.presets.register(self, ["boxcar_half_width"])
+
     def update_visibility(self):
         self.update_from_gui()
 
@@ -82,3 +84,11 @@ class BoxcarFeature(object):
             
             if pr.recordable_reference is not None:
                 pr.recordable_reference = wasatch_utils.apply_boxcar(pr.recordable_reference, half_width)
+
+    def get_preset_attr(self, attr):
+        if attr == "boxcar_half_width":
+            return self.spinner.value()
+
+    def set_preset_attr(self, attr, value):
+        if attr == "boxcar_half_width":
+            self.spinner.setValue(float(value))

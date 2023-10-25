@@ -13,9 +13,10 @@ class PresetFeature:
     of key acquisition parameters), irrespective of spectrometer serial number.
 
     The proposed design is to let any Feature (or Plugin) register itself to 
-    PresetFeature and add one or more attributes.
+    PresetFeature and add one or more attributes for automatic inclusion when
+    creating and applying presets.
 
-    Calling API would be something like:
+    External API would be something like:
 
         class IntegrationTimeFeature:
             def __init__:
@@ -32,6 +33,26 @@ class PresetFeature:
     Note that all values will be written and read as strings; it will be 
     on the receiving set_preset_value to cast any persisted values back to the
     expected type.
+
+    Things we haven't fully thought-through:
+
+    - Some spectrometers may support a preset's range or even the feature itself;
+      consider if we have a preset for gain_db but only have an X-Series plugged
+      in, or a preset for 3ms integration time but are connected to a 785X-C.
+      I am basically assuming that the individual features will be able to 
+      recognize if a given value is impossible / inapplicable to the currently 
+      connected device (or devices under Multispec.locked) and react graciously 
+      (ignore, closest approx, etc).
+
+    @todo This class should probably register as an observer on Multispec, and 
+          re-fire apply(self.selected_preset) when Multispec changes the active 
+          spectrometer.
+
+    @todo Add PresetFeature to:
+            - RamanIntensityCorrection
+            - BaselineCorrection
+            - BoxcarFeature
+            - ScanAveragingFeature
     """
 
     SECTION = "Presets"
@@ -45,13 +66,13 @@ class PresetFeature:
         self.presets = {} # { "Winchester bottles": { "IntegrationTimeFeature": { "integration_time_ms": "2000" } } }
         self.observers = {} # { <IntegrationTimeFeature>: [ "integration_time_ms"' ] }
 
-
-        self.load_from_ini():
+        self.load_config()
 
         self.combo.currentIndexChanged.connect(self.combo_callback)
         self.combo.installEventFilter(ScrollStealFilter(self.combo))
 
-    def load_from_ini(self):
+    def load_config(self):
+        """ Load all previously created presets from enlighten.ini / Configuration """
         config = self.ctl.config
         if not config.has_option(self.SECTION, "presets"):
             return
@@ -67,6 +88,7 @@ class PresetFeature:
             self.store(preset, feature, attr, config.get(self.SECTION, k))
 
     def store(self, preset, feature, attr, value):
+        """ Store the given value in a local dict tree (NOT Configuration) """
         if preset not in self.presets:
             self.presets[preset] = {}
         if feature not in self.presets[preset]:
@@ -75,6 +97,10 @@ class PresetFeature:
         log.debug(f"stored {preset}.{feature}.{attr} = {value}")
 
     def register(self, feature, attrs):
+        """ 
+        Another BusinessObject or Plugin has requested to store one or more 
+        of their attributes under our Presets.
+        """
         feature_name = feature.__class__.__name__
         log.debug(f"registered {feature_name}: {attrs}")
         self.observers[feature] = attrs
@@ -86,8 +112,8 @@ class PresetFeature:
         log.debug(f"unregistered {feature_name}")
 
     def combo_callback(self):
+        """ The user has changed the comboBox selection """
         preset = str(self.combo.currentText())
-
         if preset.lower() == "create new...":
             self.create_new()
         elif preset.lower() == "remove":
@@ -96,6 +122,7 @@ class PresetFeature:
             self.apply(preset)
     
     def create_new(self):
+        """ The user has selected "Create New..." on the comboBox """
         # prompt the user for a name
         (preset, ok) = QtWidgets.QInputDialog().getText(
             self.ctl.form,          # parent
@@ -131,6 +158,8 @@ class PresetFeature:
         self.reset(preset)
 
     def reset(self, selected=None):
+        """ We have added or removed a preset, so rebuild the comboBox and Configuration section """
+
         # clear previous Configuration
         self.config.remove_section(self.SECTION)
 
@@ -139,17 +168,26 @@ class PresetFeature:
         self.combo.addItem("Create new...")
         selectedIndex = 0
         for preset in sorted(self.presets):
+
+            # add this preset to the comboBox
             self.combo.addItem(preset)
             if preset == selected:
                 selectedIndex = idx + 1
+
+            # add this preset to Configuration
+            for feature in self.presets[preset]:
+                for attr, value in self.presets[preset][feature].items():
+                    key = f"{preset}.{feature}.{attr}"
+                    self.config.set(self.SECTION, key, value)
+
         self.combo.addItem("(Remove)")
 
         if selectedIndex > 0:
             self.combo.setCurrentIndex(selectedIndex)
             self.selected_preset = selected
 
-    def apply(self):
-        preset = str(self.combo.currentText())
+    def apply(self, preset):
+        """ The user has selected a preset from the comboBox, so apply it """
         if preset not in self.presets:
             return
 
@@ -167,19 +205,20 @@ class PresetFeature:
         self.reset(preset)
 
     def remove(self, preset):
-        if preset not in self.presets:
-            log.error(f"remove: {preset} not in presets")
-            return
+        """ The user selected (Remove) from the comboBox, so prompt to delete the currently selected preset """
 
-        dlg = QMessageBox(self.ctl.form)
-        dlg.setWindowTitle("Remove Preset")
-        dlg.setText(f"Permanently delete preset {preset}?")
-        dlg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        dlg.setIcon(QMessageBox.Question)
-        result = dlg.exec_()
-        if result == QMessageBox.No:
-            return
-        
-        del self.presets[preset]
+        if preset in self.presets:
+            # prompt to confirm deletion
+            dlg = QMessageBox(self.ctl.form)
+            dlg.setWindowTitle("Remove Preset")
+            dlg.setText(f"Permanently delete preset {preset}?")
+            dlg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+            dlg.setIcon(QMessageBox.Question)
+            result = dlg.exec_()
+            if result == QMessageBox.No:
+                return
+            
+            del self.presets[preset]
+
         self.selected_preset = None
-        self.reset()
+        self.reset() 
