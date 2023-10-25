@@ -219,7 +219,7 @@ class Controller:
 
         # instantiate major business objects (require access to populated placeholders)
         self.business_objects.create_rest()
-        self.rehide_curves()
+        self.update_feature_visibility()
 
         # configure acquisition loop
         self.setup_main_event_loops() # MZ: move to end?
@@ -901,7 +901,7 @@ class Controller:
         ########################################################################
 
         # re-hide hidden curves
-        self.rehide_curves()
+        self.update_feature_visibility()
 
         # weight new curve
         self.multispec.check_callback()
@@ -998,19 +998,6 @@ class Controller:
         # updates from initialization to match time window in spinbox
         # call StripChartFeature getter
         spec.app_state.reset_rolling_data(time_window=sfu.spinBox_strip_window.value(), hotplug=hotplug)
-
-    def rehide_curves(self):
-        """
-        Adding/removing a trace to a graph apparently makes all curves visible,
-        so call this method to allow business objects to re-hide any curves
-        (or other widgets) based on internal business object state.
-        
-        @todo move to Graph and allow other business objects to register as observers
-        @todo Probably need to integrate PluginController into this too.
-        """
-        for feature in [ self.baseline_correction,
-                         self.raman_shift_correction ]:
-            feature.update_visibility()
 
     # ##########################################################################
     # Setup (populate widget placeholders)
