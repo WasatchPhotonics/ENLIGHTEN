@@ -6,7 +6,7 @@ from enlighten.ScrollStealFilter import ScrollStealFilter
 
 log = logging.getLogger(__name__)
 
-from PySide2 import QtGui, QtCore 
+from PySide6 import QtGui, QtCore 
 
 class DetectorTemperatureFeature:
     """
@@ -198,10 +198,16 @@ class DetectorTemperatureFeature:
         for callback in self.observers:
             callback(reading.detector_temperature_degC)
 
-    def apply_setpoint(self):
+    def apply_setpoint(self, value=None):
         """ Send GUI value downstream (and turns on if it was off). """
+        if value is not None:
+            log.debug(f"apply_setpoint: updating GUI to {value}, trusting events to pass downstream")
+            self.spinbox.setValue(value)
+            return
+
         # shouldn't matter if we take from spinbox or slider
         value = self.spinbox.value() 
+        log.debug(f"apply_setpoint: triggered by change to {value}")
 
         self.multispec.set_state("tec_setpoint_degC", value)
         self.multispec.change_device_setting("detector_tec_setpoint_degC", value)

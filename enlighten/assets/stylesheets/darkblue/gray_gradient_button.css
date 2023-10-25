@@ -1,0 +1,25 @@
+QPushButton:hover {
+    border: 1px solid silver;
+
+}
+
+QPushButton 
+{
+
+    border: 1px solid #333;
+    background-color: qlineargradient(spread:pad, 
+        x1:0.5, y1:1, 
+        x2:0.5, y2:0, 
+        stop:0 hsl(0, 0%, 26%),
+        stop:1 hsl(0, 0%, 37%));
+    border-radius: 5px;
+}
+
+QToolTip
+{
+  background-color: #ffc;
+  border: 1px solid #828200;
+  color: #828200;
+  padding: 5px;
+  opacity: 1;
+}

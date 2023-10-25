@@ -10,8 +10,8 @@ from decimal import Decimal
 import boto3
 from botocore.config import Config
 
-from PySide2 import QtCore, QtWidgets, QtGui
-from PySide2.QtWidgets import QInputDialog, QLineEdit, QMessageBox, QPushButton, QCheckBox
+from PySide6 import QtCore, QtWidgets, QtGui
+from PySide6.QtWidgets import QInputDialog, QLineEdit, QMessageBox, QPushButton, QCheckBox
 
 from enlighten.common import get_default_data_dir
 from enlighten.device.EEPROMEditor import EEPROMEditor
@@ -94,6 +94,13 @@ class CloudManager:
         self.save_config()
 
     def get_andor_eeprom(self, detector_serial: str) -> dict:
+        """
+        If you have the proper credentials enabled, this does the equivalent of 
+        the following command-line:
+
+        $ aws dynamodb get-item --table-name andor_EEPROM --key '{ "detector_serial_number": { "S": "CCD-29849" } }'
+        """
+
         if not self.enabled():
             return {}
         if self.session is None or self.dynamo_resource is None:

@@ -1,4 +1,4 @@
-from PySide2 import QtCore
+from PySide6 import QtCore
 
 import os
 import re
@@ -177,6 +177,8 @@ class Configuration:
 
     def parse(self):
         """ Load as ConfigParser object. """
+
+        # strict=False allows allows duplicate keys to be loaded
         self.config = configparser.ConfigParser(interpolation=None, strict=False)
         self.config.optionxform = str
         try:
@@ -260,6 +262,8 @@ class Configuration:
                         if m and section is not None:
                             # it was a key-value line, so update the line with the current value
                             key = m.group(1).strip()
+
+                            # ensure we don't output duplicate keys
                             if key not in seen[section]:
                                 self.write(outfile, "%s = %s" % (key, self.get(section, key, raw=True)))
                                 seen[section].add(key)
@@ -498,19 +502,14 @@ class Configuration:
             for spec in self.multispec.get_spectrometers():
                 if spec.device:
                     settings = spec.settings
-                    eeprom = settings.eeprom
-                    state = settings.state
-                    sn = eeprom.serial_number
+                    eeprom = spec.settings.eeprom
+                    state = spec.settings.state
+                    sn = spec.settings.eeprom.serial_number
                     if sn is None or len(sn) == 0:
                         log.error("declining to save settings for unit without serial number")
                         continue
 
                     log.info("saving config for %s", sn)
-
-                    # these application-session settings can always be saved
-                    self.set(sn, "integration_time_ms", state.integration_time_ms)
-                    self.set(sn, "boxcar_half_width", state.boxcar_half_width)
-                    self.set(sn, "gain_db", state.gain_db)
 
                     # only save EEPROM overrides if explicitly instructed
                     if full:

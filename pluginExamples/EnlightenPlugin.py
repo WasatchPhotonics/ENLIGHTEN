@@ -233,7 +233,7 @@ class EnlightenPluginBase:
 
         if self.table is not None:
             # table (looks like a spreadsheet under the graph)
-            outputs["Table"] = self.table
+            self.outputs["Table"] = self.table
 
         return EnlightenPluginResponse(
             request,
@@ -371,7 +371,7 @@ class EnlightenPluginBase:
 # @par Streaming
 #
 # By default, all plug-ins support "streaming" spectra, which is what happens
-# when click the "[x] Enable" checkbox in ENLIGHTEN's Plugin Control widget.
+# when you click the "[x] Enable" checkbox in ENLIGHTEN's Plugin Control widget.
 # However, some plug-ins may not be designed or intended for that data rate
 # and prefer to be individually triggered by the "Process" button or other 
 # events.
@@ -392,6 +392,8 @@ class EnlightenPluginConfiguration:
     #        (must match series names in EnlightenPluginReponse.data)
     # @param graph_type: "line" or "xy" (scatter)
     # @param streaming: if True (default), display the "[x] Enable" checkbox
+    # @param auto_enable: automatically check Enabled 
+    # @param lock_enable: prevent disabling the plugin (provides "kiosk mode")
     # @param is_blocking: ENLIGHTEN should not send any further requests to the
     #        plug-in until the Response to the previous Request is received
     # @param block_enlighten: this is much more severe than is_blocking (which 

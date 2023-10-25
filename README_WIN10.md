@@ -43,9 +43,16 @@ _do not_ quote them (e.g., do *not* type: set PYTHONPATH="..\Wasatch.PY")
 
 ## Activating the environment
 
-When interacting with Enlighten, be sure to activate your shell. This provides access to the dependencies, such as numpy and matplotlib, and it is required for running Enlighten or creating installers.
+When interacting with Enlighten, be sure to activate your shell. This provides 
+access to the dependencies, such as numpy and matplotlib, and it is required for
+running Enlighten or creating installers.
 
     $ scripts\bootstrap.bat activate
+
+Note that conda will "solve" (create) environments much more quickly if you
+use the new libmamba solver described here:
+
+- https://www.anaconda.com/blog/a-faster-conda-for-a-growing-community
 
 ## Running Enlighten
 

@@ -16,9 +16,9 @@ import importlib.util
 
 from time import sleep
 from queue import Queue
-from PySide2 import QtGui, QtWidgets, QtCore
-from PySide2.QtWidgets import QMessageBox, QCheckBox
-from PySide2.QtCore import Qt
+from PySide6 import QtGui, QtWidgets, QtCore
+from PySide6.QtWidgets import QMessageBox, QCheckBox
+from PySide6.QtCore import Qt
 
 from .EnlightenApplicationInfoReal import EnlightenApplicationInfoReal
 from .PluginFieldWidget import PluginFieldWidget

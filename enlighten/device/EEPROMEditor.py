@@ -3,7 +3,7 @@ import re
 import logging
 import json
 
-from PySide2 import QtGui, QtWidgets # for product image
+from PySide6 import QtGui, QtWidgets # for product image
 from decimal import *
 from wasatch import utils as wasatch_utils
 

@@ -1,4 +1,4 @@
-from PySide2 import QtGui
+from PySide6 import QtGui
 
 import pyqtgraph.exporters
 import pyqtgraph
@@ -280,6 +280,7 @@ class MeasurementFactory(object):
             elif pathname.lower().endswith(".spc"):
                 measurements = self.create_from_spc_file(pathname)
         except:
+            msgbox("failed to parse file %s" % pathname)
             log.error("failed to parse file %s", pathname, exc_info=1)
 
         if measurements is None:

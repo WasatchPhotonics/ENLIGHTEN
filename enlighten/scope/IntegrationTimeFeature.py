@@ -15,7 +15,7 @@ class IntegrationTimeFeature(object):
     TENTHS_TO_SEC = 0.1
     MAX_SLIDER_SEC = 5
 
-    def __init__(self,
+    def __init__(self, ctl,
             bt_dn,
             bt_up,
             marquee,
@@ -24,28 +24,29 @@ class IntegrationTimeFeature(object):
             spinbox
         ):
 
-        self.bt_dn      = bt_dn
-        self.bt_up      = bt_up
-        self.marquee    = marquee
-        self.multispec  = multispec
-        self.slider     = slider
-        self.spinbox    = spinbox
+        self.ctl = ctl
+
+        self.bt_dn = bt_dn
+        self.bt_up = bt_up
+        self.marquee = marquee
+        self.multispec = multispec
+        self.slider = slider
+        self.spinbox = spinbox
 
         # bindings
-        self.slider     .valueChanged       .connect(self.sync_slider_to_spinbox_callback)
-        self.spinbox    .valueChanged       .connect(self.sync_spinbox_to_slider_callback)
-        self.slider                         .installEventFilter(MouseWheelFilter(self.slider))
-        self.spinbox                        .installEventFilter(ScrollStealFilter(self.spinbox))
-        self.bt_up      .clicked            .connect(self.up_callback)
-        self.bt_dn      .clicked            .connect(self.dn_callback)
+        self.slider.valueChanged.connect(self.slider_callback)
+        self.spinbox.valueChanged.connect(self.spinbox_callback)
+        self.bt_up.clicked.connect(self.up_callback)
+        self.bt_dn.clicked.connect(self.dn_callback)
+
+        self.slider.installEventFilter(MouseWheelFilter(self.slider))
+        self.spinbox.installEventFilter(ScrollStealFilter(self.spinbox))
 
     # called by initialize_new_device on hotplug, BEFORE reading / applying .ini
     def init_hotplug(self):
         spec = self.multispec.current_spectrometer()
         if spec is None:
             return
-
-        self.spinbox.setValue(spec.settings.eeprom.startup_integration_time_ms)
 
     # called by initialize_new_device a little after the other function
     def reset(self, hotplug=False):
@@ -68,6 +69,9 @@ class IntegrationTimeFeature(object):
         if (max_tenths * self.TENTHS_TO_SEC > self.MAX_SLIDER_SEC):
             max_tenths = self.MAX_SLIDER_SEC / self.TENTHS_TO_SEC
 
+        now_ms = self.ctl.config.get_float(self.ctl.multispec.current_spectrometer().settings.eeprom.serial_number, "integration_time_ms")
+        log.info("integration time from config: %d" % now_ms)
+        
         self.slider.blockSignals(True)
         self.slider.setMinimum(min_tenths)
         self.slider.setMaximum(max_tenths)
@@ -83,24 +87,25 @@ class IntegrationTimeFeature(object):
         # case for some hotplug events).
         if hotplug:
             # cap at 1sec, else application seems dead
-            now_ms = min(max_ms, max(min_ms, min(1000, self.spinbox.value())))
-        else:
-            now_ms = spec.settings.state.integration_time_ms
+            now_ms = min(max_ms, max(min_ms, min(1000, now_ms)))
+            
         self.spinbox.blockSignals(True)
         self.spinbox.setMinimum(min_ms)
         self.spinbox.setMaximum(max_ms)
         self.spinbox.blockSignals(False)
 
-        # signals enabled, so will propogate everywhere
-        self.spinbox.setValue  (now_ms)
+        self.set_ms(now_ms)
 
         log.info("spinbox integration limits updated to (%.2f, %.2fms) (current %.2fms)",
             self.spinbox.minimum(), self.spinbox.maximum(), self.spinbox.value())
 
         if hotplug:
-            log.debug("forcing integration time downstream on hotplug")
+            # save integration time to application state
             self.multispec.set_state("integration_time_ms", now_ms)
+
+            # send integration time change to hardware
             spec.change_device_setting("integration_time_ms", now_ms)
+
             spec.reset_acquisition_timeout()
 
     ## If you're not sure which function to call, call this one.
@@ -109,38 +114,24 @@ class IntegrationTimeFeature(object):
     # the new value downstream (to one if unlocked, all if locked), plus updates states
     # appropriately.
     def set_ms(self, ms):
-        self.spinbox.setValue(ms)
 
-    def up_callback(self):
-        util.incr_spinbox(self.spinbox)
-
-    def dn_callback(self):
-        util.decr_spinbox(self.spinbox)
-
-    def sync_slider_to_spinbox_callback(self):
-        tenths = self.slider.value()
-        ms = tenths / self.MILLISEC_TO_TENTHS
-
-        if ms < self.spinbox.minimum():
-            ms = self.spinbox.minimum()
-        elif ms > self.spinbox.maximum():
-            ms = self.spinbox.maximum()
-
-        log.debug("sync_to_spinbox_callback: slider %.2f tenths to %.2f ms", tenths, ms)
-        self.spinbox.setValue(ms) 
-
-    def sync_spinbox_to_slider_callback(self):
-        ms = self.spinbox.value()
-
-        # update other GUI widget WITHOUT triggering its callback (but apparently abiding its limits)
-        tenths = int(round(ms * self.MILLISEC_TO_TENTHS, 0))
-        log.debug("sync_spinbox_to_slider: spinbox %.2f ms to %d tenths", ms, tenths)
         self.slider.blockSignals(True)
+        tenths = int(round(ms * self.MILLISEC_TO_TENTHS, 0))
         self.slider.setValue(tenths)
         self.slider.blockSignals(False)
 
-        # actually send the change downstream
+        self.spinbox.blockSignals(True)
+        self.spinbox.setValue(ms) 
+        self.spinbox.blockSignals(False)
+
+        # save integration time to application state
         self.multispec.set_state("integration_time_ms", ms)
+
+        # persist integration time in .ini
+        log.debug("integration time to config: %d", ms)
+        self.ctl.config.set(self.ctl.multispec.current_spectrometer().settings.eeprom.serial_number, "integration_time_ms", ms)
+
+        # send changed integration time to hardware
         self.multispec.change_device_setting("integration_time_ms", ms)
 
         # reset timeouts
@@ -165,6 +156,28 @@ class IntegrationTimeFeature(object):
                 self.marquee.info("Recommend re-taking reference with new integration time")
             elif refresh_dark:
                 self.marquee.info("Recommend re-taking dark with new integration time")
+
+    def up_callback(self):
+        util.incr_spinbox(self.spinbox)
+        self.set_ms(ms) 
+
+    def dn_callback(self):
+        util.decr_spinbox(self.spinbox)
+        self.set_ms(ms) 
+
+    def slider_callback(self):
+        tenths = self.slider.value()
+        ms = tenths / self.MILLISEC_TO_TENTHS
+
+        if ms < self.spinbox.minimum():
+            ms = self.spinbox.minimum()
+        elif ms > self.spinbox.maximum():
+            ms = self.spinbox.maximum()
+        self.set_ms(ms) 
+
+    def spinbox_callback(self):
+        ms = self.spinbox.value()
+        self.set_ms(ms)
 
     def set_focus(self):
         self.spinbox.setFocus()

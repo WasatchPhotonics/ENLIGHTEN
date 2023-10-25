@@ -14,7 +14,6 @@ set "regenerate_qt=0"
 set "pyinstaller=0"
 set "innosetup=0"
 set "runtests=0"
-
 set "virtspec=0"
 
 REM Convoluted but safe way to generate an audible bell from a .bat
@@ -130,7 +129,7 @@ echo %date% %time% ======================================================
 REM capture start time
 set TIME_START=%time%
 set PYTHONUTF8=1
-set PYTHONPATH=.;..\Wasatch.PY;pluginExamples;%CONDA_PREFIX%\lib\site-packages;enlighten\assets\uic_qrc
+set PYTHONPATH=.;..\Wasatch.PY;..\SPyC_Writer\src;pluginExamples;%CONDA_PREFIX%\lib\site-packages;enlighten\assets\uic_qrc
 echo PYTHONPATH = %PYTHONPATH%
 
 if exist "C:\Program Files (x86)" (
@@ -307,7 +306,7 @@ if "%install_python_deps%" == "1" (
     echo %date% %time% Installing pyinstaller from pip
     echo %date% %time% ======================================================
     echo.
-    pip install pyinstaller==4.5.1
+    pip install pyinstaller
     if %errorlevel% neq 0 goto script_failure
 )
 
@@ -376,28 +375,19 @@ if "%pyinstaller%" == "1" (
     echo %date% %time% Running PyInstaller OPTIONAL
     echo %date% %time% ======================================================
     echo.
-
-    rem address bug in current pyinstaller?
-    rem copy enlighten\assets\uic_qrc\images\EnlightenIcon.ico .
-    rem set SPECPATH=%cd%/scripts
-
-    REM remove --windowed to debug the compiled .exe and see Python invocation 
-    REM error messages
-    REM
-    REM --windowed ^
-
-    REM pyinstaller --distpath="scripts/built-dist" --workpath="scripts/work-path" --noconfirm --clean scripts/enlighten.spec
-
+    REM hide-early worked on Win10 but not Win11
+    REM hide-late doesn't work on Win10
     pyinstaller ^
         --distpath="scripts/built-dist" ^
         --workpath="scripts/work-path" ^
         --noconfirm ^
-        --noconsole ^
+        --hide-console hide-early ^
         --clean ^
         --paths="../Wasatch.PY" ^
         --hidden-import="scipy._lib.messagestream" ^
         --hidden-import="scipy.special.cython_special" ^
         --hidden-import="tensorflow" ^
+        --add-data="support_files/libusb_drivers/amd64/libusb0.dll:." ^
         --icon "../enlighten/assets/uic_qrc/images/EnlightenIcon.ico" ^
         --specpath="%cd%/scripts" ^
         --exclude-module _bootlocale ^
@@ -414,7 +404,16 @@ if "%innosetup%" == "1" (
     echo %date% %time% Running Inno Setup
     echo %date% %time% ======================================================
     echo.
-    "%PROGRAM_FILES_X86%\Inno Setup 6\iscc.exe" /DENLIGHTEN_VERSION=%ENLIGHTEN_VERSION% scripts\Application_InnoSetup.iss
+
+    if "%COMPRESSION%" == "" (
+        rem caller may set it to lzma/fast for speed
+        set "COMPRESSION=lzma/max"
+    )
+
+    "%PROGRAM_FILES_X86%\Inno Setup 6\iscc.exe" ^
+        /DENLIGHTEN_VERSION=%ENLIGHTEN_VERSION% ^
+        /DCOMPRESSION=%COMPRESSION% ^
+        scripts\Application_InnoSetup.iss
     if %errorlevel% neq 0 goto script_failure
 
     echo.
