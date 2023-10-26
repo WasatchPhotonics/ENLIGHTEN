@@ -455,9 +455,6 @@ class PluginController:
             #
             ####################################################################
 
-            # This is AFTER configure_gui_for_module() is called, meaning 
-            # enlighten_info.dependencies should be populated
-
             connected_ok = False
             try:
                 connected_ok = self.run_worker()
@@ -675,11 +672,6 @@ class PluginController:
             # we're successfully initialized, so proceed
             self.module_name = module_name
 
-            # satisfy dependencies
-            if not self.satisfy_dependencies():
-                log.error("failed to satisfy dependencies")
-                return False
-
             # should we check config.has_other_graph?
             log.debug("configuring graph_pos")
             if config.has_other_graph:
@@ -714,7 +706,6 @@ class PluginController:
             added_group = []
             if type(config.fields) == dict:
                 self.plugin_field_widgets = []
-                # MZ: I don't like using the 'type' of config.fields as a logical state...
                 log.debug("trying to add stack widget because dict for the fields")
                 self.select_vbox = QtWidgets.QVBoxLayout()
                 self.stacked_widget = QtWidgets.QStackedWidget()
@@ -807,52 +798,6 @@ class PluginController:
             flags = Qt.Widget)
         mb.setInformativeText(detail) # setDetailText has sizing issues
         mb.exec()
-
-    def satisfy_dependencies(self):
-        log.debug("satisfy_dependencies: start")
-
-        # this is EnlightenPluginConfiguration
-        config = self.get_current_configuration()
-        if config is None or config.dependencies is None:
-            return True
-
-        # for enlighten.Configuration
-        persist_section = f"Plugin_{config.name}"
-
-        for dep in config.dependencies:
-            log.debug(f"satisfying dependency {dep.name} of type {dep.dep_type}")
-
-            if dep.dep_type == "existing_directory":
-                prompt = dep.prompt if dep.prompt else "Please select an existing directory"
-                self.marquee.info(prompt, persist=True, token="existing_directory")
-
-                # create the dialog
-                dialog = QtWidgets.QFileDialog(parent=self.parent, caption=prompt)
-                dialog.setFileMode(QtWidgets.QFileDialog.Directory)
-                dialog.setOption(QtWidgets.QFileDialog.ShowDirsOnly)
-
-                # default to last selection 
-                dialog.setDirectory(common.get_default_data_dir())
-                if dep.persist:
-                    last_dir = self.config.get(persist_section, dep.name)
-                    if last_dir is not None and os.path.exists(last_dir):
-                        dialog.setDirectory(last_dir)
-
-                # get the user's choice
-                value = dialog.getExistingDirectory()
-                if value is None or len(value) == 0:
-                    return False
-                self.enlighten_info.dependencies[dep.name] = value
-
-                # persist for next time
-                if dep.persist:
-                    self.config.set(persist_section, dep.name, value)
-                self.marquee.clear(token="existing_directory")
-            else:
-                log.error(f"dependency {dep.name} has unsupported type {dep.dep_type}")
-                return False
-
-        return True
 
     # need to clear all depending the layout recursively
     # see https://stackoverflow.com/questions/4528347/clear-all-widgets-in-a-layout-in-pyqt
@@ -999,16 +944,10 @@ class PluginController:
             return False
 
     def get_current_settings(self):
-        """
-        It looks like this is rendering the current 'fields' as a static name-value dictionary
-        """
         config = self.get_current_configuration()
         plugin_fields = { pfw.field_name: pfw.field_value for pfw in self.plugin_field_widgets }
-
-        # MZ: when would this NOT be a dict? Is this checking to see if the plugin has connected?
         if type(config.fields) == dict:
             plugin_fields["active_page"] = self.widget_selector.currentText()
-
         return plugin_fields
 
     ##

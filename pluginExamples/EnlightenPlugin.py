@@ -43,7 +43,6 @@ class EnlightenPluginBase:
         # these can be set by functional-plugins to autogenerate EPC
         self.name = None
         self._fields = []
-        self._dependencies = []
         self._events = []
         self.is_blocking = False
         self.block_enlighten = False
@@ -97,9 +96,6 @@ class EnlightenPluginBase:
 
     def field(self, **kwargs):
         self._fields.append(EnlightenPluginField(**kwargs))
-
-    def dependency(self, **kwargs):
-        self._dependencies.append(EnlightenPluginDependency(**kwargs))
 
     def get_widget_from_name(self, name):
         widget = None
@@ -213,7 +209,6 @@ class EnlightenPluginBase:
             name = self.name, 
             fields = self._fields,
             events = self._events,
-            dependencies = self._dependencies,
             is_blocking = self.is_blocking,
             block_enlighten = self.block_enlighten,
             has_other_graph = self.has_other_graph,
@@ -410,7 +405,6 @@ class EnlightenPluginConfiguration:
     #        plugins.
     # @param multi_devices: True if the plug-in is designed to handle spectra 
     #        from multiple spectrometers (tracks requests by serial_number etc)
-    # @param dependencies: optional array of EnlightenPluginDependency
     # @param events: a hash of supported event names to callbacks
     def __init__(self, 
             name, 
@@ -426,7 +420,6 @@ class EnlightenPluginConfiguration:
             events          = None,
             series_names    = None,
             multi_devices   = False,
-            dependencies    = None,
             graph_type      = "line"):  # "line" or "xy"
 
         self.name            = name
@@ -442,7 +435,6 @@ class EnlightenPluginConfiguration:
         self.events          = events
         self.multi_devices   = multi_devices
         self.series_names    = series_names
-        self.dependencies    = dependencies
         self.graph_type      = graph_type
 
 class EnlightenPluginDependency:
