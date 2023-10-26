@@ -17830,7 +17830,7 @@ p, li { white-space: pre-wrap; }
                      </font>
                     </property>
                     <property name="text">
-                     <string>Acquisition Parameters</string>
+                     <string>Settings Presets</string>
                     </property>
                    </widget>
                   </item>
@@ -17894,7 +17894,7 @@ p, li { white-space: pre-wrap; }
                            <widget class="QComboBox" name="comboBox_presets">
                             <item>
                              <property name="text">
-                              <string>Select one</string>
+                              <string>Select One</string>
                              </property>
                             </item>
                             <item>
@@ -17904,7 +17904,7 @@ p, li { white-space: pre-wrap; }
                             </item>
                             <item>
                              <property name="text">
-                              <string>(Remove)</string>
+                              <string>Remove...</string>
                              </property>
                             </item>
                             <property name="toolTip">

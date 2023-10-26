@@ -1,4 +1,5 @@
 import logging
+import re
 
 from PySide6 import QtWidgets
 from PySide6.QtWidgets import QMessageBox
@@ -22,16 +23,16 @@ class PresetFeature:
             def __init__:
                 ctl.presets.register(self, ["integration_time_ms"])
 
-            def get_preset_value(self, attr):
+            def get_preset(self, attr):
                 if attr == "integration_time_ms":
                     return self.current_ms
 
-            def set_preset_value(self, attr, value):
+            def set_preset(self, attr, value):
                 if attr == "integration_time_ms":
                     self.set_ms(int(value))
 
     Note that all values will be written and read as strings; it will be 
-    on the receiving set_preset_value to cast any persisted values back to the
+    on the receiving set_preset to cast any persisted values back to the
     expected type.
 
     Things we haven't fully thought-through:
@@ -47,12 +48,6 @@ class PresetFeature:
     @todo This class should probably register as an observer on Multispec, and 
           re-fire apply(self.selected_preset) when Multispec changes the active 
           spectrometer.
-
-    @todo Add PresetFeature to:
-            - RamanIntensityCorrection
-            - BaselineCorrection
-            - BoxcarFeature
-            - ScanAveragingFeature
     """
 
     SECTION = "Presets"
@@ -67,6 +62,7 @@ class PresetFeature:
         self.observers = {} # { <IntegrationTimeFeature>: [ "integration_time_ms"' ] }
 
         self.load_config()
+        self.reset()
 
         self.combo.currentIndexChanged.connect(self.combo_callback)
         self.combo.installEventFilter(ScrollStealFilter(self.combo))
@@ -114,9 +110,9 @@ class PresetFeature:
     def combo_callback(self):
         """ The user has changed the comboBox selection """
         preset = str(self.combo.currentText())
-        if preset.lower() == "create new...":
+        if preset == "Create New...":
             self.create_new()
-        elif preset.lower() == "remove":
+        elif preset == "Remove...":
             self.remove(self.selected_preset)
         else:
             self.apply(preset)
@@ -135,17 +131,17 @@ class PresetFeature:
             return 
 
         # only allow certain characters (no period)
-        preset = re.sub(r'[^a-z0-9()\[\]\' _-]', '_', preset, re.IGNORECASE)
+        preset = re.sub(r'[^A-Za-z0-9()\[\]\' _-]', '_', preset)
 
-        log.debug("creating preset {preset}")
+        log.debug(f"creating preset {preset}")
         config = self.ctl.config
         for obs in self.observers:
             feature = obs.__class__.__name__
             for attr in self.observers[obs]:
                 try:
-                    value = obs.get_preset_value(attr)
+                    value = obs.get_preset(attr)
                 except:
-                    log.error("unable to read {attr} from {feature}", exc_info=1)
+                    log.error(f"unable to read {attr} from {feature}", exc_info=1)
                     continue
 
                 # persist to Configuration
@@ -161,13 +157,13 @@ class PresetFeature:
         """ We have added or removed a preset, so rebuild the comboBox and Configuration section """
 
         # clear previous Configuration
-        self.config.remove_section(self.SECTION)
+        self.ctl.config.remove_section(self.SECTION)
 
         # re-populate comboBox
         self.combo.clear()
-        self.combo.addItem("Create new...")
         selectedIndex = 0
-        for preset in sorted(self.presets):
+        self.combo.addItem("Select One")
+        for idx, preset in enumerate(sorted(self.presets.keys())):
 
             # add this preset to the comboBox
             self.combo.addItem(preset)
@@ -178,13 +174,19 @@ class PresetFeature:
             for feature in self.presets[preset]:
                 for attr, value in self.presets[preset][feature].items():
                     key = f"{preset}.{feature}.{attr}"
-                    self.config.set(self.SECTION, key, value)
+                    self.ctl.config.set(self.SECTION, key, value)
 
-        self.combo.addItem("(Remove)")
+        # note that since we don't allow presets to have periods, these names are
+        # guaranteed unique
+        self.combo.addItem("Create New...")
+        self.combo.addItem("Remove...")
 
         if selectedIndex > 0:
             self.combo.setCurrentIndex(selectedIndex)
             self.selected_preset = selected
+        else:
+            self.combo.setCurrentIndex(0)
+            self.selected_preset = None
 
     def apply(self, preset):
         """ The user has selected a preset from the comboBox, so apply it """
@@ -199,9 +201,9 @@ class PresetFeature:
                     if attr in self.presets[preset][feature]:
                         value = self.presets[preset][feature][attr]
                         try:
-                            obs.set_preset_value(attr, value)
+                            obs.set_preset(attr, value)
                         except:
-                            log.error("failed to apply preset {preset} to feature {feature} with {attr} = {value}", exc_info=1)
+                            log.error(f"failed to apply preset {preset} to feature {feature} with {attr} = {value}", exc_info=1)
         self.reset(preset)
 
     def remove(self, preset):
@@ -215,10 +217,7 @@ class PresetFeature:
             dlg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
             dlg.setIcon(QMessageBox.Question)
             result = dlg.exec_()
-            if result == QMessageBox.No:
-                return
-            
-            del self.presets[preset]
+            if result == QMessageBox.Yes:
+                del self.presets[preset]
 
-        self.selected_preset = None
         self.reset() 

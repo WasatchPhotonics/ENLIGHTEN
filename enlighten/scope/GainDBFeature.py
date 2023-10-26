@@ -176,14 +176,14 @@ class GainDBFeature:
     def sync_spinbox_to_slider_callback(self):
         self.set_db(self.ctl.form.ui.doubleSpinBox_gain.value())
 
-    def get_preset_attr(self, attr):
+    def get_preset(self, attr):
         if not self.visible:
             return
 
         if attr == "gain_db":
             return self.ctl.form.ui.doubleSpinBox_gain.value()
 
-    def set_preset_attr(self, attr, value):
+    def set_preset(self, attr, value):
         if not self.visible:
             return
 

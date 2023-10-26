@@ -185,10 +185,10 @@ class IntegrationTimeFeature(object):
         self.spinbox.setFocus()
         self.spinbox.selectAll()
 
-    def get_prefix_attr(self, attr):
+    def get_preset(self, attr):
         if attr == "integration_time_ms":
             return self.spinbox.value()
 
-    def set_prefix_attr(self, attr, value):
+    def set_preset(self, attr, value):
         if attr == "integration_time_ms":
             self.set_ms(int(value))

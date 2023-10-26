@@ -469,12 +469,7 @@ class BusinessObjects:
             current_spectrometer        = ctl.current_spectrometer)
 
         self.header("instantiating RamanIntensityCorrection")
-        ctl.raman_intensity_correction = RamanIntensityCorrection(
-            cb_enable                   = sfu.checkBox_raman_intensity_correction,
-            guide                       = ctl.guide,
-            multispec                   = ctl.multispec,
-            page_nav                    = ctl.page_nav,
-            horiz_roi                   = ctl.horiz_roi)
+        ctl.raman_intensity_correction = RamanIntensityCorrection(ctl)
 
         self.header("instantiating LaserControlFeature")
         ctl.laser_control = LaserControlFeature(ctl)
@@ -497,12 +492,7 @@ class BusinessObjects:
             path                        = "enlighten/assets/example_data/sounds")
 
         self.header("instantiating ScanAveragingFeature")
-        ctl.scan_averaging = ScanAveragingFeature(
-            bt_dn                       = sfu.pushButton_scan_averaging_dn,
-            bt_up                       = sfu.pushButton_scan_averaging_up,
-            multispec                   = ctl.multispec,
-            spinbox                     = sfu.spinBox_scan_averaging,
-            label                       = sfu.label_scan_averaging)
+        ctl.scan_averaging = ScanAveragingFeature(ctl)
 
         self.header("instantiating TakeOneFeature")
         ctl.take_one = TakeOneFeature(
@@ -531,19 +521,10 @@ class BusinessObjects:
             scan_averaging              = ctl.scan_averaging,
             take_one                    = ctl.take_one)
         ctl.vcr_controls.register_observer("save", ctl.save_current_spectra)
-        ctl.scan_averaging.set_vcr_controls(ctl.vcr_controls)
+        ctl.scan_averaging.complete_registrations()
 
         self.header("instantiating BaselineCorrection")
-        ctl.baseline_correction = BaselineCorrection(
-            cb_enabled                  = sfu.checkBox_baselineCorrection_enable,
-            cb_show_curve               = sfu.checkBox_baselineCorrection_show,
-            combo_algo                  = sfu.comboBox_baselineCorrection_algo,
-            config                      = ctl.config,
-            guide                       = ctl.guide,
-            multispec                   = ctl.multispec,
-            page_nav                    = ctl.page_nav,
-            horiz_roi                   = ctl.horiz_roi,
-            graph                       = ctl.graph)
+        ctl.baseline_correction = BaselineCorrection(ctl)
 
         self.header("instantiating DarkFeature")
         ctl.dark_feature = DarkFeature(
@@ -612,15 +593,7 @@ class BusinessObjects:
             )
 
         self.header("instantiating BoxcarFeature")
-        ctl.boxcar = BoxcarFeature(
-            ctl,
-            bt_dn                       = sfu.pushButton_boxcar_half_width_dn,
-            bt_up                       = sfu.pushButton_boxcar_half_width_up,
-            spinbox                     = sfu.spinBox_boxcar_half_width,
-            
-            multispec                   = ctl.multispec,
-            page_nav                    = ctl.page_nav,
-            )
+        ctl.boxcar = BoxcarFeature(ctl)
 
         self.header("instantiating IntegrationTimeFeature")
         ctl.integration_time_feature = IntegrationTimeFeature(
