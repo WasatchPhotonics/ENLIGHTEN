@@ -16,10 +16,10 @@ import traceback
 
 from pexpect.popen_spawn import PopenSpawn 
 
+from enlighten.common import get_default_data_dir
 from EnlightenPlugin import EnlightenPluginBase,    \
                             EnlightenPluginField,    \
                             EnlightenPluginResponse,  \
-                            EnlightenPluginDependency, \
                             EnlightenPluginConfiguration
 
 log = logging.getLogger(__name__)
@@ -93,22 +93,6 @@ log = logging.getLogger(__name__)
 # In initial testing, this plugin (and the RamanID.exe it was designed against)
 # were regularly processing spectra in less than 0.1sec, so it should be okay
 # (as a prototype).
-#
-# @par Dependencies
-#
-# We want the user to be able to graphically select a folder containing library
-# spectra at runtime.  However, there's no easy way for a plugin to create or
-# display a widget within the PluginWorker thread, as it isn't on the GUI thread
-# (also, it's awkward to pass widgets through the Queue).  
-#
-# (One way to do this would be for the plugin to specify a QTimer callback 
-# function, which would allow a method in the plugin object to run outside
-# the PluginWorker thread, and on the Qt GUI thread directly.  We may permit that
-# at some point.)
-#
-# For now, we gave EnlightenPluginConfiguration a EnlightenPluginDependency array,
-# such that PluginController can satisfy any predicate requirements during 
-# connection (meaning users must disconnect the plugin to select a new directory).
 #
 # @par Executable Design
 #
@@ -202,18 +186,10 @@ class RamanID(EnlightenPluginBase):
             name = "Results",
             datatype = "pandas"))
 
-        # ask ENLIGHTEN to prompt the user to select the library directory at connect
-        dependencies = [ EnlightenPluginDependency(
-            name = "Library Directory",
-            dep_type = "existing_directory",
-            persist = True,
-            prompt = "Please select the directory containing your library spectra") ]
-
         return EnlightenPluginConfiguration(
             name            = "RamanID", 
             block_enlighten = True,
-            fields          = fields,
-            dependencies    = dependencies)
+            fields          = fields)
 
     ##
     # 1. prompt for library (can "default" from persistence but they still have 
@@ -228,8 +204,8 @@ class RamanID(EnlightenPluginBase):
         # init from configuration
         log.debug("todo: initalize from persisted settings")
 
-        # make sure we have a library
-        self.library_dir = self.enlighten_info.get_dependency("Library Directory")
+        # TODO: add "Select Library" button (see OEM plugin for example)
+        self.library_dir = os.path.join(common.get_default_data_dir(), "Raman Library")
         self.creation_time = datetime.datetime.now()
         if self.library_dir is None:
             return self.report_error("missing dependency: Library Directory")
