@@ -210,19 +210,30 @@ class InterpolationFeature(object):
 
         if pr.processed is not None:
             ipr.processed_reading.processed = np.interp(self.new_axis, old_axis, pr.processed)
+
         if pr.raw is not None:
-            ipr.processed_reading.raw = np.interp(self.new_axis, old_axis, pr.raw)
+            if len(pr.raw) == len(old_axis):
+                ipr.processed_reading.raw = np.interp(self.new_axis, old_axis, pr.raw)
+            else:
+                log.error(f"ipr: len(old_axis) {len(old_axis)} != len(pr.raw) ({len(pr.raw)})")
+                ipr.processed_reading.raw = None
+
         if pr.dark is not None:
-            ipr.processed_reading.dark = np.interp(self.new_axis, old_axis, pr.dark)
+            if len(pr.dark) == len(old_axis):
+                ipr.processed_reading.dark = np.interp(self.new_axis, old_axis, pr.dark)
+            else:
+                log.error(f"ipr: len(old_axis) {len(old_axis)} != len(pr.dark) ({len(pr.dark)})")
+                ipr.processed_reading.dark = None
+
         if pr.reference is not None:
             ipr.processed_reading.reference = np.interp(self.new_axis, old_axis, pr.reference)
 
-        # The weird case of interpolating a cropped ROI.  Consider that we had
+        # The weird case of extrapolating a cropped ROI.  Consider that we had
         # an original spectrum "abcdefghijklmnopqrstuvwxyz".  We then cropped
-        # it to "ghijklmnopqrstu".  We are now interpolating it out to
+        # it to "ghijklmnopqrstu".  We are now extrapolating it out to
         # "ggggggggggggGHIJKLMNOPQRSTUuuuuuuuuuuu".  Even if we've cropped it
-        # down, we're still obliged to interpolate out to the newly defined range,
-        # and the only pixels we have "qualified" as being valid to interpolate
+        # down, we're still obliged to extrapolate out to the newly defined range,
+        # and the only pixels we have "qualified" as being valid to extrapolate
         # are those within the ROI.
         roi = settings.eeprom.get_horizontal_roi()
         log.debug("processed_cropped is %s and settings is %s and roi is %s",
