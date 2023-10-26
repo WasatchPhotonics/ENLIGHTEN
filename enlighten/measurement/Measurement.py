@@ -1139,7 +1139,6 @@ class Measurement(object):
         self.add_renamable(pathname)
 
     def save_dx_file(self, use_basename=False):
-        log.debug("save_dx_file: start")
         if use_basename:
             pathname = self.basename + ".dx"
         else:
@@ -1190,7 +1189,6 @@ class Measurement(object):
         log.info("saved JCAMP-DX %s", pathname)
         self.add_renamable(pathname)
 
-        log.debug("save_dx_file: done")
         return pathname
 
     # ##########################################################################
