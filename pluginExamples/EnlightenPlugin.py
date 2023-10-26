@@ -437,26 +437,6 @@ class EnlightenPluginConfiguration:
         self.series_names    = series_names
         self.graph_type      = graph_type
 
-class EnlightenPluginDependency:
-    """
-    This should be deprecated...we should be able to provide these now from within the plugin.
-    I'm curious if "persist" actually works, and how that was done?
-
-    @param name: identifying string
-    @param dep_type: currently supported values are: "existing_directory"
-    @param persist: save and use previous values as defaults across sessions
-    @param prompt: if user interaction is involved, use this as prompt / tooltip
-    """
-    def __init__(self,
-            name,
-            dep_type    = None,
-            persist     = False,
-            prompt      = None):
-        self.name       = name
-        self.dep_type   = dep_type
-        self.persist    = persist
-        self.prompt     = prompt
-
 ##
 # Each ENLIGHTEN plug-in will be visualized in the ENLIGHTEN GUI via a dynamically
 # generated widget in the right-hand scrolling control list.  That widget will 
