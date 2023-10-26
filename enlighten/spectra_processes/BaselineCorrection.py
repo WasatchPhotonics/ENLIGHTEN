@@ -315,7 +315,8 @@ class BaselineCorrection:
 
     def set_preset(self, attr, value):
         if attr == "enabled":
-            self.cb_enabled.setChecked(value.lower() == "true")
+            value = value if isinstance(value, bool) else value.lower() == "true"
+            self.cb_enabled.setChecked(value)
             self.update_visibility()
         elif attr == "algo":
             self.combo_algo.setCurrentText(value)

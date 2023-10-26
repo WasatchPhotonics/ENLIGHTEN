@@ -324,9 +324,18 @@ class Configuration:
 
         return value
 
-    def get_keys(self, section):
+    def get_sections(self):
         keys = []
         for k, v in self.config.items():
+            keys.append(k)
+        return keys
+
+    def get_options(self, section):
+        if not (self.config and self.config.has_section(section)):
+            return
+
+        keys = []
+        for k, v in self.config[section].items():
             keys.append(k)
         return keys
 

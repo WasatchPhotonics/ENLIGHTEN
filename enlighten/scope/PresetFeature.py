@@ -70,11 +70,12 @@ class PresetFeature:
     def load_config(self):
         """ Load all previously created presets from enlighten.ini / Configuration """
         config = self.ctl.config
-        if not config.has_option(self.SECTION, "presets"):
+
+        keys = config.get_options(self.SECTION)
+        if not keys:
             return
 
         # parse Winchester.IntegrationTimeFeature.integration_time_ms keys into dict tree
-        keys = config.get_keys(self.SECTION)
         for k in keys:
             tok = k.split(".")
             if len(tok) != 3:
@@ -110,11 +111,17 @@ class PresetFeature:
     def combo_callback(self):
         """ The user has changed the comboBox selection """
         preset = str(self.combo.currentText())
-        if preset == "Create New...":
+        if len(preset.strip()) == 0:
+            return
+
+        if preset == "Select One":
+            pass
+        elif preset == "Create New...":
             self.create_new()
         elif preset == "Remove...":
             self.remove(self.selected_preset)
         else:
+            log.debug(f"combo_callback: applying {preset}")
             self.apply(preset)
     
     def create_new(self):
@@ -168,7 +175,7 @@ class PresetFeature:
             # add this preset to the comboBox
             self.combo.addItem(preset)
             if preset == selected:
-                selectedIndex = idx + 1
+                selectedIndex = idx + 1 # add 1 for "Select One"
 
             # add this preset to Configuration
             for feature in self.presets[preset]:
@@ -182,7 +189,11 @@ class PresetFeature:
         self.combo.addItem("Remove...")
 
         if selectedIndex > 0:
-            self.combo.setCurrentIndex(selectedIndex)
+            if self.combo.currentText() != selected:
+                log.debug(f"reset: changing combo to {selected} (index {selectedIndex})")
+                self.combo.blockSignals(True)
+                self.combo.setCurrentIndex(selectedIndex)
+                self.combo.blockSignals(False)
             self.selected_preset = selected
         else:
             self.combo.setCurrentIndex(0)
@@ -193,6 +204,10 @@ class PresetFeature:
         if preset not in self.presets:
             return
 
+        if preset == self.selected_preset:
+            log.debug(f"declining to re-apply current preset {preset}")
+            return
+
         # send any stored attribute values to registered observers
         for obs in self.observers:
             feature = obs.__class__.__name__
@@ -200,10 +215,11 @@ class PresetFeature:
                 for attr in self.observers[obs]:
                     if attr in self.presets[preset][feature]:
                         value = self.presets[preset][feature][attr]
+                        log.debug(f"applying {preset}: setting {feature}.{attr} -> {value}")
                         try:
                             obs.set_preset(attr, value)
                         except:
-                            log.error(f"failed to apply preset {preset} to feature {feature} with {attr} = {value}", exc_info=1)
+                            log.error("failed to apply {preset} to feature {feature} with {attr} = {value}", exc_info=1)
         self.reset(preset)
 
     def remove(self, preset):

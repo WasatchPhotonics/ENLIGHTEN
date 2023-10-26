@@ -76,8 +76,8 @@ class BoxcarFeature(object):
 
     def get_preset(self, attr):
         if attr == "boxcar_half_width":
-            return self.spinner.value()
+            return int(self.spinbox.value())
 
     def set_preset(self, attr, value):
         if attr == "boxcar_half_width":
-            self.spinner.setValue(float(value))
+            self.spinbox.setValue(int(value))

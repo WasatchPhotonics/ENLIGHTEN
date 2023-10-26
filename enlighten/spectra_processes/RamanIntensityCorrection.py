@@ -135,7 +135,8 @@ class RamanIntensityCorrection(object):
 
     def set_preset(self, attr, value):
         if attr == "enabled":
-            self.cb_enable.setChecked(value.lower() == "true")
+            value = value if isinstance(value, bool) else value.lower() == "true"
+            self.cb_enable.setChecked(value)
             self.update_visibility()
 
     def get_preset(self, attr):
