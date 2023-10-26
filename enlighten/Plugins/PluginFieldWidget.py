@@ -5,6 +5,8 @@ from PySide6.QtCore import Qt
 
 from wasatch import utils as wasatch_utils
 
+from enlighten.ScrollStealFilter import ScrollStealFilter
+
 log = logging.getLogger(__name__)
 
 ##
@@ -110,6 +112,7 @@ class PluginFieldWidget(QtWidgets.QWidget):
         widget.setDecimals(int(self.field_config.precision))
         widget.setValue(float(self.field_value))
         widget.valueChanged.connect(lambda: self.update_value(self.field_widget.value()))
+        widget.installEventFilter(ScrollStealFilter(widget))
 
     def create_int_fields(self, widget):
         if self.field_value is None:
@@ -118,6 +121,7 @@ class PluginFieldWidget(QtWidgets.QWidget):
         widget.setSingleStep(int(self.field_config.step))
         widget.setValue(int(self.field_value))
         widget.valueChanged.connect(lambda: self.update_value(self.field_widget.value()))
+        widget.installEventFilter(ScrollStealFilter(widget))
 
     def create_string_fields(self, widget):
         if self.field_value is None:
