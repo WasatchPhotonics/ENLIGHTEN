@@ -455,9 +455,6 @@ class PluginController:
             #
             ####################################################################
 
-            # This is AFTER configure_gui_for_module() is called, meaning 
-            # enlighten_info.dependencies should be populated
-
             connected_ok = False
             try:
                 connected_ok = self.run_worker()
