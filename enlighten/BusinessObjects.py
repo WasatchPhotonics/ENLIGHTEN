@@ -596,14 +596,7 @@ class BusinessObjects:
         ctl.boxcar = BoxcarFeature(ctl)
 
         self.header("instantiating IntegrationTimeFeature")
-        ctl.integration_time_feature = IntegrationTimeFeature(
-            ctl,
-            bt_dn                       = sfu.pushButton_integration_time_ms_dn,
-            bt_up                       = sfu.pushButton_integration_time_ms_up,
-            marquee                     = ctl.marquee,
-            multispec                   = ctl.multispec,
-            slider                      = sfu.slider_integration_time_ms,
-            spinbox                     = sfu.spinBox_integration_time_ms)
+        ctl.integration_time_feature = IntegrationTimeFeature(ctl)
 
         self.header("instantiating GainDBFeature")
         ctl.gain_db_feature = GainDBFeature(ctl)

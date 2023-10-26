@@ -15,23 +15,14 @@ class IntegrationTimeFeature(object):
     TENTHS_TO_SEC = 0.1
     MAX_SLIDER_SEC = 5
 
-    def __init__(self, ctl,
-            bt_dn,
-            bt_up,
-            marquee,
-            multispec,
-            slider,
-            spinbox
-        ):
-
+    def __init__(self, ctl):
         self.ctl = ctl
 
-        self.bt_dn = bt_dn
-        self.bt_up = bt_up
-        self.marquee = marquee
-        self.multispec = multispec
-        self.slider = slider
-        self.spinbox = spinbox
+        sfu = ctl.form.ui
+        self.bt_dn = sfu.pushButton_integration_time_ms_dn
+        self.bt_up = sfu.pushButton_integration_time_ms_up
+        self.slider = sfu.slider_integration_time_ms
+        self.spinbox = sfu.spinBox_integration_time_ms
 
         # bindings
         self.slider.valueChanged.connect(self.slider_callback)
@@ -46,13 +37,13 @@ class IntegrationTimeFeature(object):
 
     # called by initialize_new_device on hotplug, BEFORE reading / applying .ini
     def init_hotplug(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
 
     # called by initialize_new_device a little after the other function
     def reset(self, hotplug=False):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
 
@@ -103,7 +94,7 @@ class IntegrationTimeFeature(object):
 
         if hotplug:
             # save integration time to application state
-            self.multispec.set_state("integration_time_ms", now_ms)
+            self.ctl.multispec.set_state("integration_time_ms", now_ms)
 
             # send integration time change to hardware
             spec.change_device_setting("integration_time_ms", now_ms)
@@ -127,21 +118,21 @@ class IntegrationTimeFeature(object):
         self.spinbox.blockSignals(False)
 
         # save integration time to application state
-        self.multispec.set_state("integration_time_ms", ms)
+        self.ctl.multispec.set_state("integration_time_ms", ms)
 
         # persist integration time in .ini
         log.debug("integration time to config: %d", ms)
         self.ctl.config.set(self.ctl.multispec.current_spectrometer().settings.eeprom.serial_number, "integration_time_ms", ms)
 
         # send changed integration time to hardware
-        self.multispec.change_device_setting("integration_time_ms", ms)
+        self.ctl.multispec.change_device_setting("integration_time_ms", ms)
 
         # reset timeouts
-        if self.multispec.locked:
-            for spec in self.multispec.get_spectrometers():
+        if self.ctl.multispec.locked:
+            for spec in self.ctl.multispec.get_spectrometers():
                 spec.reset_acquisition_timeout()
         else:
-            spec = self.multispec.current_spectrometer()
+            spec = self.ctl.multispec.current_spectrometer()
             if spec is not None:
                 spec.reset_acquisition_timeout()
 
@@ -153,11 +144,11 @@ class IntegrationTimeFeature(object):
             refresh_dark      = app_state.has_dark()      and ms != app_state.dark_integration_time_ms 
             refresh_reference = app_state.has_reference() and ms != app_state.reference_integration_time_ms 
             if refresh_dark and refresh_reference:
-                self.marquee.info("Recommend re-taking dark and reference with new integration time")
+                self.ctl.marquee.info("Recommend re-taking dark and reference with new integration time")
             elif refresh_reference:
-                self.marquee.info("Recommend re-taking reference with new integration time")
+                self.ctl.marquee.info("Recommend re-taking reference with new integration time")
             elif refresh_dark:
-                self.marquee.info("Recommend re-taking dark with new integration time")
+                self.ctl.marquee.info("Recommend re-taking dark with new integration time")
 
     def up_callback(self):
         util.incr_spinbox(self.spinbox)
