@@ -234,6 +234,7 @@ class PresetFeature:
             dlg.setIcon(QMessageBox.Question)
             result = dlg.exec_()
             if result == QMessageBox.Yes:
+                log.debug(f"removing {preset}")
                 del self.presets[preset]
 
         self.reset() 
