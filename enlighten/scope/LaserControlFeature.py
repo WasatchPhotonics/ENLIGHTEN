@@ -39,7 +39,6 @@ class LaserControlFeature:
         sfu.verticalSlider_laser_power  .sliderPressed      .connect(self.slider_power_press_callback)
         sfu.verticalSlider_laser_power  .sliderMoved        .connect(sfu.doubleSpinBox_laser_power.setValue)
         sfu.verticalSlider_laser_power  .sliderReleased     .connect(self.slider_power_callback)
-        sfu.verticalSlider_laser_power  .installEventFilter(MouseWheelFilter(sfu.verticalSlider_laser_power))
         sfu.doubleSpinBox_excitation_nm .valueChanged       .connect(self.excitation_callback)
         sfu.doubleSpinBox_laser_power   .valueChanged       .connect(sfu.verticalSlider_laser_power.setValue)
         sfu.doubleSpinBox_laser_power   .valueChanged       .connect(self.set_laser_power_callback)
@@ -47,9 +46,14 @@ class LaserControlFeature:
         sfu.checkBox_laser_watchdog     .clicked            .connect(self.set_watchdog_enable_callback)
         sfu.comboBox_laser_power_unit   .currentIndexChanged.connect(self.update_visibility)
 
-        for key, item in self.__dict__.items():
-            if key.startswith("spinbox_") or key.startswith("combo_"):
-                item.installEventFilter(ScrollStealFilter(item))
+        for widget in [ sfu.verticalSlider_laser_power ]:
+            widget.installEventFilter(MouseWheelFilter(widget))
+
+        for widget in [ sfu.doubleSpinBox_excitation_nm,
+                        sfu.doubleSpinBox_laser_power,
+                        sfu.spinBox_laser_watchdog_sec,
+                        sfu.comboBox_laser_power_unit ]:
+            widget.installEventFilter(ScrollStealFilter(widget))
 
     # ##########################################################################
     # Public Methods

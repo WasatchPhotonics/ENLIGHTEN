@@ -43,11 +43,11 @@ class GainDBFeature:
         self.ctl = ctl  # type: enlighten.Controller.Controller
 
         self.widgets = [
-          self.ctl.form.ui.pushButton_gain_dn,
-          self.ctl.form.ui.pushButton_gain_up,
-          self.ctl.form.ui.label_gainWidget_title,
-          self.ctl.form.ui.slider_gain,
-          self.ctl.form.ui.doubleSpinBox_gain
+            self.ctl.form.ui.pushButton_gain_dn,
+            self.ctl.form.ui.pushButton_gain_up,
+            self.ctl.form.ui.label_gainWidget_title,
+            self.ctl.form.ui.slider_gain,
+            self.ctl.form.ui.doubleSpinBox_gain
         ]
         self.visible = False
         self.locked = False

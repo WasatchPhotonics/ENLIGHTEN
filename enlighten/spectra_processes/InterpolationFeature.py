@@ -86,9 +86,8 @@ class InterpolationFeature(object):
         self.update_visibility()
 
         # disable scroll stealing
-        for key, item in self.__dict__.items():
-            if key.startswith("dsb_"):
-                item.installEventFilter(ScrollStealFilter(item))
+        for widget in [ self.dsb_end, self.dsb_incr, self.dsb_start ]:
+            widget.installEventFilter(ScrollStealFilter(widget))
 
     def total_pixels(self):
         return 0 if self.new_axis is None else len(self.new_axis) 
