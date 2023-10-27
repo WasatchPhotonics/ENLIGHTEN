@@ -267,6 +267,9 @@ class Measurement(object):
         self.suffix                   = ""
         self.plugin_name              = ""
 
+        # cache of metadata only generated / rendered at save
+        self.metadata                 = {}
+
     ##
     # There are three valid instantiation patterns:
     #
@@ -778,7 +781,12 @@ class Measurement(object):
     #
     # @todo replace if/elif with dict of lambdas
     def get_metadata(self, field):
+        orig = field
         field = field.lower()
+
+        # if this field has already been computed, use cached
+        if orig in self.metadata:
+            return self.metadata[orig]
 
         # allow plugins to stomp metadata
         if self.processed_reading.plugin_metadata is not None:
