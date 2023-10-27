@@ -36,7 +36,7 @@ class PluginFieldWidget(QtWidgets.QWidget):
 
     ##
     # @param field_config is an EnlightenPluginField
-    def __init__(self, config):
+    def __init__(self, config, ctl=None):
         super().__init__()
 
         self.field_config = config
@@ -74,6 +74,9 @@ class PluginFieldWidget(QtWidgets.QWidget):
         except Exception as e:
             log.error(f"Error, plugin {config.name} does not have a valid data type for connection.", exc_info=1)
             return
+
+        if ctl and config.stylesheet:
+            ctl.stylesheets.apply(self.field_widget, config.stylesheet)
         
     def initUI(self):
 

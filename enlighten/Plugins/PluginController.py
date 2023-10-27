@@ -624,12 +624,12 @@ class PluginController:
                 epf.layout = vbox
                 for option in epf.options:
                     epf.name = option
-                    pfw = PluginFieldWidget(epf)
+                    pfw = PluginFieldWidget(epf, self.ctl)
                     parent.append(pfw)
                 continue
 
             log.debug(f"instantiating PluginFieldWidget {epf.name}")
-            pfw = PluginFieldWidget(epf)
+            pfw = PluginFieldWidget(epf, self.ctl)
             parent.append(pfw)
             # old code left to be clear what parent was before dict
             # makes this easier to understand imo

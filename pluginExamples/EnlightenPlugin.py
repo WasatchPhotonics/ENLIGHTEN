@@ -528,6 +528,7 @@ class EnlightenPluginField:
     # @param precision: digits past decimal place (float only)
     # @param callback: function reference if button clicked (button only)
     # @param tooltip: mouseover string
+    # @param stylesheet: optional stylesheet name
     def __init__(self, 
             name, 
             datatype    = "string", 
@@ -539,6 +540,7 @@ class EnlightenPluginField:
             precision   = 2,
             options     = None,
             callback    = None,
+            stylesheet  = None,
             tooltip     = None):
 
         self.name       = name
@@ -551,6 +553,7 @@ class EnlightenPluginField:
         self.precision  = precision
         self.callback   = callback
         self.tooltip    = tooltip
+        self.stylesheet = stylesheet
         self.options    = options
 
 ##
