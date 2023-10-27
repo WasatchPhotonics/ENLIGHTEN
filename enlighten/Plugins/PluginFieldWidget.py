@@ -27,7 +27,8 @@ class PluginFieldWidget(QtWidgets.QWidget):
         'float':    QtWidgets.QDoubleSpinBox,
         'radio':    QtWidgets.QRadioButton,
         'bool':     QtWidgets.QCheckBox,
-        'button':   QtWidgets.QPushButton
+        'button':   QtWidgets.QPushButton,
+        'combobox': QtWidgets.QComboBox
     }
 
     # ##########################################################################
@@ -63,7 +64,8 @@ class PluginFieldWidget(QtWidgets.QWidget):
             "string":   lambda widget : self.create_string_fields  (widget),
             "bool":     lambda widget : self.create_bool_fields    (widget),
             "radio":    lambda widget : self.create_radio_fields   (widget),
-            "button":   lambda widget : self.create_button_fields  (widget)
+            "button":   lambda widget : self.create_button_fields  (widget),
+            "combobox": lambda widget : self.create_combobox_fields(widget)
         }
 
         try:
@@ -124,6 +126,20 @@ class PluginFieldWidget(QtWidgets.QWidget):
         widget.setSingleStep(int(self.field_config.step))
         widget.setValue(int(self.field_value))
         widget.valueChanged.connect(lambda: self.update_value(self.field_widget.value()))
+        widget.installEventFilter(ScrollStealFilter(widget))
+
+    def create_combobox_fields(self, widget):
+        choices = self.field_config.choices
+        if self.field_value is None:
+            self.field_value = choices[0]
+        selected_idx = 0
+        for idx, choice in enumerate(choices):
+            widget.addItem(choice)
+            if choice == self.field_config.initial:
+                selected_idx = idx
+
+        widget.setCurrentIndex(selected_idx)
+        widget.currentIndexChanged.connect(lambda: self.update_value(self.field_widget.currentText()))
         widget.installEventFilter(ScrollStealFilter(widget))
 
     def create_string_fields(self, widget):
@@ -193,3 +209,5 @@ class PluginFieldWidget(QtWidgets.QWidget):
             self.field_widget.setValue(int(round(value)))
         elif self.field_config.datatype == 'float':
             self.field_widget.setValue(float(value))
+        elif self.field_config.datatype == 'combobox':
+            self.field_widget.setCurrentText(str(value))

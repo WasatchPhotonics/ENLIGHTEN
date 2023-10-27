@@ -618,12 +618,14 @@ class PluginController:
                 # no dynamic widget for pandas fields...they use the TableView
                 continue
             elif epf.datatype == "radio":
+                # MZ: considering removing support for these in preference for 
+                # the new "combobox" datatype
                 groupBox = QtWidgets.QGroupBox(f"{epf.name}")
                 vbox = QtWidgets.QVBoxLayout()
                 epf.group = groupBox
                 epf.layout = vbox
-                for option in epf.options:
-                    epf.name = option
+                for choice in epf.choices:
+                    epf.name = choice
                     pfw = PluginFieldWidget(epf, self.ctl)
                     parent.append(pfw)
                 continue
@@ -948,6 +950,7 @@ class PluginController:
         plugin_fields = { pfw.field_name: pfw.field_value for pfw in self.plugin_field_widgets }
         if type(config.fields) == dict:
             plugin_fields["active_page"] = self.widget_selector.currentText()
+        log.debug("get_current_settings: plugin_fields = {plugin_fields}")
         return plugin_fields
 
     ##
