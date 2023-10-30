@@ -1,0 +1,18 @@
+QLabel 
+{
+    color: rgba(255, 0, 0, 255);
+}
+
+QTextEdit
+{
+    color: rgba(255, 0, 0, 255);
+    background: transparent;
+    border: transparent;
+}
+
+QLineEdit
+{
+    color: rgba(0, 0, 0, 255);
+    background: white;
+    border: 1px solid black;
+}

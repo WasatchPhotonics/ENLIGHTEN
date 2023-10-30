@@ -45,7 +45,7 @@ class ColumnFileParser(object):
 
     def parse(self) -> Measurement:
         # read through the input file by line, loading data locally
-        self.csv_loader.load_data()
+        self.csv_loader.load_data(scalar_metadata=True)
 
         # put loaded data into where it goes in ENLIGHTEN datatypes
         self.post_process_metadata()
@@ -86,6 +86,15 @@ class ColumnFileParser(object):
             return 0
 
         v = self.metadata[field]
+        if isinstance(v, list):
+            # if multiple strings were loaded for this field, take the first 
+            # non-empty one
+            value = None
+            for tok in v:
+                if value is None and len(tok.strip()):
+                    value = tok.strip()
+            v = '' if value is None else value
+
         if len(v.strip()) == 0:
             return 0
 

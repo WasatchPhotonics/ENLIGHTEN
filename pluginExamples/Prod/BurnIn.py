@@ -250,7 +250,7 @@ class BurnIn(EnlightenPluginBase):
             # note, we would probably never want to randomize laser setpoint
             degC = random.randint(eeprom.min_temp_degC, eeprom.max_temp_degC)
             self.log(f"randomized detector setpoint to {degC}C")
-            self.signals.append(f"self.ctl.detector_temperature_feature.apply_setpoint({degC})")
+            self.signals.append(f"self.ctl.detector_temperature.apply_setpoint({degC})")
 
         if request.fields["Laser Power"]:
             if eeprom.has_laser_power_calibration():
