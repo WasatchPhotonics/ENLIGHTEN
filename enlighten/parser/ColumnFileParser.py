@@ -62,8 +62,7 @@ class ColumnFileParser:
             source_pathname   = self.pathname, 
             timestamp         = self.timestamp,
             settings          = self.settings,
-            processed_reading = self.processed_reading,
-            save_options      = self.save_options)
+            processed_reading = self.processed_reading)
 
         if "Label" in self.metadata:
             m.label = self.metadata["Label"]
