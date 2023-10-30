@@ -20,7 +20,7 @@ class ScanAveragingFeature(object):
         self.bt_dn      .clicked        .connect(self.down)
         self.bt_up      .clicked        .connect(self.up)
 
-        self.ctl.presets.register(self, ["scans_to_average"])
+        self.ctl.presets.register(self, "scans_to_average", gettor=self.get_scans_to_average, settor=self.set_scans_to_average)
 
         self.reset()
 
@@ -103,12 +103,10 @@ class ScanAveragingFeature(object):
             return False
         return spec.settings.state.scans_to_average > 1
 
-    def set_preset(self, attr, value):
-        if attr == "scans_to_average":
-            value = int(value)
-            if value != int(self.spinbox.value()):
-                self.set(value)
+    def set_scans_to_average(self, value):
+        value = int(value)
+        if value != self.get_scans_to_average():
+            self.set(value)
 
-    def get_preset(self, attr):
-        if attr == "scans_to_average":
-            return int(self.spinbox.value())
+    def get_scans_to_average(self):
+        return int(self.spinbox.value())

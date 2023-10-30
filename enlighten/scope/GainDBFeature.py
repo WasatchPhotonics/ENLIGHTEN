@@ -60,7 +60,7 @@ class GainDBFeature:
         self.ctl.form.ui.pushButton_gain_up.clicked.connect(self.up_callback)
         self.ctl.form.ui.pushButton_gain_dn.clicked.connect(self.dn_callback)
 
-        self.ctl.presets.register(self, ["gain_db"])
+        self.ctl.presets.register(self, "gain_db", gettor=self.get_db, settor=self.set_db_callback)
 
         self.update_visibility()
 
@@ -148,6 +148,7 @@ class GainDBFeature:
         self.spinbox.selectAll()
 
     def set_db(self, db):
+        db = float(db)
         
         # save gain_db to application state
         self.ctl.multispec.set_state("gain_db", db)
@@ -176,16 +177,9 @@ class GainDBFeature:
     def sync_spinbox_to_slider_callback(self):
         self.set_db(self.ctl.form.ui.doubleSpinBox_gain.value())
 
-    def get_preset(self, attr):
-        if not self.visible:
-            return
+    def get_db(self):
+        return self.ctl.form.ui.doubleSpinBox_gain.value()
 
-        if attr == "gain_db":
-            return self.ctl.form.ui.doubleSpinBox_gain.value()
-
-    def set_preset(self, attr, value):
-        if not self.visible:
-            return
-
-        if attr == "gain_db":
-            self.set_db(float(value))
+    def set_db_callback(self, value):
+        if self.visible:
+            self.set_db(value)

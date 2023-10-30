@@ -104,7 +104,8 @@ class BaselineCorrection:
         self.curve = self.ctl.graph.add_curve("baseline", rehide=False, in_legend=False)
         self.curve.setVisible(False)
 
-        self.ctl.presets.register(self, ["enabled", "algo"])
+        self.ctl.presets.register(self, "enabled", gettor=self.get_enabled, settor=self.set_enabled)
+        self.ctl.presets.register(self, "algo",    gettor=self.get_algo,    settor=self.set_algo)
 
     def init_from_config(self):
         """
@@ -313,18 +314,17 @@ class BaselineCorrection:
         except:
             log.error("exception in baseline_correction.generate_baseline with algo %s", self.current_algo_name, exc_info=1)
 
-    def set_preset(self, attr, value):
-        if attr == "enabled":
-            value = value if isinstance(value, bool) else value.lower() == "true"
-            self.cb_enabled.setChecked(value)
-            self.update_visibility()
-        elif attr == "algo":
-            self.combo_algo.setCurrentText(value)
-            self.update_visibility()
+    def set_enabled(self, value):
+        value = value if isinstance(value, bool) else value.lower() == "true"
+        self.cb_enabled.setChecked(value)
+        self.update_visibility()
 
-    def get_preset(self, attr):
-        if attr == "enabled":
-            return self.cb_enabled.isChecked()
-        elif attr == "algo":
-            return self.combo_algo.currentText()
+    def set_algo(self, value):
+        self.combo_algo.setCurrentText(value)
+        self.update_visibility()
 
+    def get_enabled(self):
+        return self.cb_enabled.isChecked()
+
+    def get_algo(self):
+        return self.combo_algo.currentText()

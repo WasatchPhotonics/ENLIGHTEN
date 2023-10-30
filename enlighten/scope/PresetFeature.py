@@ -21,15 +21,14 @@ class PresetFeature:
 
         class IntegrationTimeFeature:
             def __init__:
-                ctl.presets.register(self, ["integration_time_ms"])
+                ctl.presets.register(self, "integration_time_ms", settor=self.set_ms, gettor=self.get_ms)
 
-            def get_preset(self, attr):
-                if attr == "integration_time_ms":
-                    return self.current_ms
+            def get_ms(self):
+                return self.current_ms
 
-            def set_preset(self, attr, value):
-                if attr == "integration_time_ms":
-                    self.set_ms(int(value))
+            def set_ms(self, value):
+                value = int(value) # presets come as strings
+                ... (existing code)
 
     Note that all values will be written and read as strings; it will be 
     on the receiving set_preset to cast any persisted values back to the
@@ -37,13 +36,13 @@ class PresetFeature:
 
     Things we haven't fully thought-through:
 
-    - Some spectrometers may support a preset's range or even the feature itself;
-      consider if we have a preset for gain_db but only have an X-Series plugged
-      in, or a preset for 3ms integration time but are connected to a 785X-C.
-      I am basically assuming that the individual features will be able to 
-      recognize if a given value is impossible / inapplicable to the currently 
-      connected device (or devices under Multispec.locked) and react graciously 
-      (ignore, closest approx, etc).
+    - Some spectrometers may not support a preset value (out of range), or even 
+      the feature itself; consider if we have a preset for gain_db but only have
+      an X-Series plugged in, or a preset for 3ms integration time but are 
+      connected to a 785X-C.  I am basically assuming that the individual 
+      features will be able to recognize if a given value is impossible / 
+      inapplicable to the currently connected device (or devices under 
+      Multispec.locked) and react graciously (ignore, closest approx, etc).
 
     @todo This class should probably register as an observer on Multispec, and 
           re-fire apply(self.selected_preset) when Multispec changes the active 
@@ -59,7 +58,7 @@ class PresetFeature:
         self.selected_preset = None
 
         self.presets = {} # { "Winchester bottles": { "IntegrationTimeFeature": { "integration_time_ms": "2000" } } }
-        self.observers = {} # { <IntegrationTimeFeature>: [ "integration_time_ms"' ] }
+        self.observers = {} # { "IntegrationTimeFeature": { "integration_time_ms": { "get": IntegrationTimeFeature.get_ms, "set": IntegrationTimeFeature.set_ms } } }
 
         self.load_config()
         self.reset()
@@ -93,19 +92,21 @@ class PresetFeature:
         self.presets[preset][feature][attr] = value
         log.debug(f"stored {preset}.{feature}.{attr} = {value}")
 
-    def register(self, feature, attrs):
+    def register(self, obj, attr, gettor, settor):
         """ 
         Another BusinessObject or Plugin has requested to store one or more 
         of their attributes under our Presets.
         """
-        feature_name = feature.__class__.__name__
-        log.debug(f"registered {feature_name}: {attrs}")
-        self.observers[feature] = attrs
+        feature_name = obj.__class__.__name__
+        if obj not in self.observers:
+            self.observers[obj] = {}
+        self.observers[obj][attr] = { "get": gettor, "set": settor }
+        log.debug(f"registered {feature_name}: {attr}")
 
-    def unregister(self, feature):
-        feature_name = feature.__class__.__name__
-        if feature in self.observers:
-            del self.observers[feature]
+    def unregister(self, obj):
+        feature_name = obj.__class__.__name__
+        if obj in self.observers:
+            del self.observers[obj]
         log.debug(f"unregistered {feature_name}")
 
     def combo_callback(self):
@@ -146,7 +147,7 @@ class PresetFeature:
             feature = obs.__class__.__name__
             for attr in self.observers[obs]:
                 try:
-                    value = obs.get_preset(attr)
+                    value = self.observers[obs][attr]["get"]()
                 except:
                     log.error(f"unable to read {attr} from {feature}", exc_info=1)
                     continue
@@ -217,7 +218,7 @@ class PresetFeature:
                         value = self.presets[preset][feature][attr]
                         log.debug(f"applying {preset}: setting {feature}.{attr} -> {value}")
                         try:
-                            obs.set_preset(attr, value)
+                            self.observers[obs][attr]["set"](value)
                         except:
                             log.error("failed to apply {preset} to feature {feature} with {attr} = {value}", exc_info=1)
         self.reset(preset)

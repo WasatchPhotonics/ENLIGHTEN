@@ -33,7 +33,7 @@ class IntegrationTimeFeature(object):
         self.slider.installEventFilter(MouseWheelFilter(self.slider))
         self.spinbox.installEventFilter(ScrollStealFilter(self.spinbox))
 
-        self.ctl.presets.register(self, ["integration_time_ms"])
+        self.ctl.presets.register(self, "integration_time_ms", gettor=self.get_ms, settor=self.set_ms)
 
     # called by initialize_new_device on hotplug, BEFORE reading / applying .ini
     def init_hotplug(self):
@@ -107,6 +107,7 @@ class IntegrationTimeFeature(object):
     # the new value downstream (to one if unlocked, all if locked), plus updates states
     # appropriately.
     def set_ms(self, ms):
+        ms = int(ms)
 
         self.slider.blockSignals(True)
         tenths = int(round(ms * self.MILLISEC_TO_TENTHS, 0))
@@ -176,10 +177,5 @@ class IntegrationTimeFeature(object):
         self.spinbox.setFocus()
         self.spinbox.selectAll()
 
-    def get_preset(self, attr):
-        if attr == "integration_time_ms":
-            return self.spinbox.value()
-
-    def set_preset(self, attr, value):
-        if attr == "integration_time_ms":
-            self.set_ms(int(value))
+    def get_ms(self):
+        return self.spinbox.value()
