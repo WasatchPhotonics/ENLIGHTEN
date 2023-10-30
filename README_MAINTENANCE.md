@@ -10,7 +10,7 @@ introduction to key classes.
 ENLIGHTEN currently depends on an in-progress pull request on a fork of the main
 jcamp repository:
 
-- https://github.com/frenchytheasian/jcamp/blob/writefile/jcamp.py
+- https://github.com/nzhagen/jcamp/pull/35
 
 For now, developers are recommended to clone frenchytheasian/jcamp, checkout the
 writefile branch (for instance, in a sibling directory to ENLIGHTEN) and add the
