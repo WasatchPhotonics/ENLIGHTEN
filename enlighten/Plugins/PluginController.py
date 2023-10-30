@@ -603,6 +603,7 @@ class PluginController:
     # ##########################################################################
     # plug-in selection
     # ##########################################################################
+
     def process_widgets(self, widgets, parent):
         for epf in widgets:
             if not PluginValidator.validate_field(epf):
@@ -746,7 +747,7 @@ class PluginController:
                     else:
                         self.plugin_fields_layout.addLayout(pfw.get_display_element())
 
-            self.frame_fields.setVisible(True)
+            self.frame_fields.setVisible(len(self.plugin_field_widgets) > 0)
 
             if self.panda_field:
                 log.debug("creating output table")
