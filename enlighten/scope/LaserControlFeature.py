@@ -46,6 +46,7 @@ class LaserControlFeature:
         sfu.spinBox_laser_watchdog_sec  .valueChanged       .connect(self.set_watchdog_callback)
         sfu.checkBox_laser_watchdog     .clicked            .connect(self.set_watchdog_enable_callback)
         sfu.comboBox_laser_power_unit   .currentIndexChanged.connect(self.update_visibility)
+        sfu.checkBox_raman_mode_enable  .clicked            .connect(self.raman_mode_enable_callback)
 
         for key, item in self.__dict__.items():
             if key.startswith("spinbox_") or key.startswith("combo_"):
@@ -620,3 +621,6 @@ class LaserControlFeature:
     # When it releases, the flag will be cleared and then it will send one, final, laser value
     def slider_power_press_callback(self):
         self.slider_stop_usb = True
+
+    def raman_mode_enable_callback(self):
+        pass # YOU ARE HERE

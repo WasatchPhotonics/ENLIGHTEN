@@ -26,7 +26,6 @@ from enlighten.spectra_processes.BaselineCorrection import BaselineCorrection
 from enlighten.spectra_processes.HorizROIFeature import HorizROIFeature
 from enlighten.spectra_processes.AbsorbanceFeature import AbsorbanceFeature
 from enlighten.ui.StatusBarFeature import StatusBarFeature
-from enlighten.scope.RamanModeFeature import RamanModeFeature
 from enlighten.ui.StatusIndicators import StatusIndicators
 from enlighten.scope.ReferenceFeature import ReferenceFeature
 from enlighten.measurement.AreaScanFeature import AreaScanFeature
@@ -637,14 +636,6 @@ class BusinessObjects:
             controller_disconnect       = ctl.disconnect_device,
             progress_bar                = sfu.readingProgressBar,
             multispec                   = ctl.multispec)
-
-        self.header("instantiating RamanModeFeature")
-        ctl.raman_mode_feature = RamanModeFeature(
-            bt_laser                    = sfu.pushButton_laser_toggle,
-            cb_enable                   = sfu.checkBox_raman_mode_enable,
-            multispec                   = ctl.multispec,
-            page_nav                    = ctl.page_nav,
-            vcr_controls                = ctl.vcr_controls)
 
         # TODO: refactor like PluginController
         self.header("instantiating KIAFeature")

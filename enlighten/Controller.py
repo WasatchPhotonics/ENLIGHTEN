@@ -287,8 +287,7 @@ class Controller:
 
         for feature in [ self.laser_control,
                          self.accessory_control,
-                         self.area_scan,
-                         self.raman_mode_feature ]:
+                         self.area_scan ]:
             feature.disconnect()
 
         if spec.settings.is_gen15():
@@ -649,7 +648,6 @@ class Controller:
         # (could grow this considerably)
         for feature in [ self.accessory_control,
                          self.laser_control,
-                         self.raman_mode_feature,
                          self.raman_intensity_correction,
                          self.raman_shift_correction,
                          self.reference_feature,
@@ -943,7 +941,6 @@ class Controller:
                          self.laser_control,
                          self.raman_shift_correction,
                          self.raman_intensity_correction,
-                         self.raman_mode_feature,
                          self.reference_feature,
                          self.richardson_lucy,
                          self.status_indicators,
