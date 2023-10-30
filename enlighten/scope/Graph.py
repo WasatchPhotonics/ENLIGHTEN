@@ -325,7 +325,7 @@ class Graph(object):
             log.debug("added raw curve '%s'", name)
 
         if rehide:
-            self.ctl.rehide_curves()
+            self.ctl.update_feature_visibility()
 
         return curve
 
