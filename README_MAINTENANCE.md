@@ -5,6 +5,24 @@ Miscellaneous notes, advice and history on how to maintain and extend ENLIGHTEN.
 If you haven't already, see [Architecture](README_ARCHITECTURE.md) for an 
 introduction to key classes.
 
+## jcamp_writefile
+
+ENLIGHTEN currently depends on an in-progress pull request on a fork of the main
+jcamp repository:
+
+- https://github.com/frenchytheasian/jcamp/blob/writefile/jcamp.py
+
+For now, developers are recommended to clone frenchytheasian/jcamp, checkout the
+writefile branch (for instance, in a sibling directory to ENLIGHTEN) and add the
+workspace to your PYTHONPATH:
+
+    $ cd ..
+    $ git clone https://github.com/frenchytheasian/jcamp --branch writefile
+    $ export PYTHONPATH=$PYTHONPATH:$PWD/jcamp
+
+This note will be removed when frenchytheasian's pull request is merged into the
+main jcamp distribution and released over PyPi.
+
 ## Nomenclature
 
 ### Why "enlighten.Authentication.Authentication" vs just "enlighten.Authentication"?
