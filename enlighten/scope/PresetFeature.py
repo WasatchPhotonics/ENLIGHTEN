@@ -58,7 +58,7 @@ class PresetFeature:
         self.selected_preset = None
 
         self.presets = {} # { "Winchester bottles": { "IntegrationTimeFeature": { "integration_time_ms": "2000" } } }
-        self.observers = {} # { "IntegrationTimeFeature": { "integration_time_ms": { "get": IntegrationTimeFeature.get_ms, "set": IntegrationTimeFeature.set_ms } } }
+        self.observers = {} # { <IntegrationTimeFeature>: { "integration_time_ms": { "get": IntegrationTimeFeature.get_ms, "set": IntegrationTimeFeature.set_ms } } }
 
         self.load_config()
         self.reset()
@@ -94,8 +94,8 @@ class PresetFeature:
 
     def register(self, obj, attr, gettor, settor):
         """ 
-        Another BusinessObject or Plugin has requested to store one or more 
-        of their attributes under our Presets.
+        Another BusinessObject or Plugin has requested to include one of their 
+        attributes as part of new Presets.
         """
         feature_name = obj.__class__.__name__
         if obj not in self.observers:
