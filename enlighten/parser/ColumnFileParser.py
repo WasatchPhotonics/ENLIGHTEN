@@ -12,7 +12,7 @@ from wasatch.CSVLoader            import CSVLoader
 
 log = logging.getLogger(__name__)
 
-class ColumnFileParser(object):
+class ColumnFileParser:
     """
     A file parser to deserialize one ENLIGHTEN-format Measurement from a column-
     ordered CSV file.
@@ -28,7 +28,10 @@ class ColumnFileParser(object):
 
     @see TextFileParser for files with no header row at all.
     """
-    def __init__(self, pathname, save_options=None, encoding="utf-8"):
+    def __init__(self, ctl, pathname, save_options=None, encoding="utf-8"):
+
+        self.ctl = ctl
+
         self.pathname = pathname
         self.save_options = save_options
         self.encoding = encoding
@@ -55,6 +58,7 @@ class ColumnFileParser(object):
 
         # generate a Measurement
         m = Measurement(
+            self.ctl,
             source_pathname   = self.pathname, 
             timestamp         = self.timestamp,
             settings          = self.settings,

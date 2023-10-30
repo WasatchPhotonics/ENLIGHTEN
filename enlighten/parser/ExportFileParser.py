@@ -11,7 +11,7 @@ from wasatch.SpectrometerSettings import SpectrometerSettings
 
 log = logging.getLogger(__name__)
 
-class ExportedMeasurement(object):
+class ExportedMeasurement:
     """
     A temporary pre-Measurement object built-up while reading an export file.
     
@@ -24,7 +24,7 @@ class ExportedMeasurement(object):
         self.metadata = {}
         self.processed_reading = ProcessedReading(reading=Reading())
 
-class ExportFileParser(object):
+class ExportFileParser:
     """
     A file parser to deserialize multiple Measurement objects from a column-ordered
     export file.
@@ -51,6 +51,7 @@ class ExportFileParser(object):
     @warning this does not currently work with "collated" exports.
     """ 
     def __init__(self, pathname, save_options, encoding="utf-8"):
+
         self.pathname = pathname
         self.save_options = save_options
         self.encoding = encoding

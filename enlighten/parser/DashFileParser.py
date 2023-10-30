@@ -9,7 +9,7 @@ from wasatch.SpectrometerSettings import SpectrometerSettings
 
 log = logging.getLogger(__name__)
 
-class DashMeasurement(object):
+class DashMeasurement:
     """
     Represents data that will go into the next Measurement we generate (or "could",
     for Dash data we don't actually disposition at this time).
@@ -44,7 +44,7 @@ class DashMeasurement(object):
         self.note = None
         self.processed_reading = None
 
-class DashSpectrometer(object):
+class DashSpectrometer:
     """
     A kind of mini-Spectrometer, holding state about a Spectrometer which will
     go into the next Measurement we generate.  
@@ -105,7 +105,7 @@ class DashSpectrometer(object):
         else:
             log.error("update_processed_reading has ProcessedReading yet note was '%s'", note)
 
-class DashFileParser(object):
+class DashFileParser:
     """
     Load the specified filename into a list of Measurements.
     Expects a historical Dash v2.1 format csv file like the following:
@@ -159,6 +159,7 @@ class DashFileParser(object):
     """
 
     def __init__(self, pathname, save_options, encoding="utf-8"):
+
         self.pathname = pathname
         self.save_options = save_options
         self.encoding = encoding
