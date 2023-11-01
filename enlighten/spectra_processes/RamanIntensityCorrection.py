@@ -26,7 +26,7 @@ class RamanIntensityCorrection(object):
 
         self.sync_gui()
 
-        self.ctl.presets.register(self, "enabled", gettor=self.get_enabled, settor=self.set_enabled)
+        self.ctl.presets.register(self, "enabled", getter=self.get_enabled, setter=self.set_enabled)
 
     ##
     # Whether Raman Intensity Correction is supported with the current spectrometer.

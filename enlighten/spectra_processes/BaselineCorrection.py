@@ -104,8 +104,8 @@ class BaselineCorrection:
         self.curve = self.ctl.graph.add_curve("baseline", rehide=False, in_legend=False)
         self.curve.setVisible(False)
 
-        self.ctl.presets.register(self, "enabled", gettor=self.get_enabled, settor=self.set_enabled)
-        self.ctl.presets.register(self, "algo",    gettor=self.get_algo,    settor=self.set_algo)
+        self.ctl.presets.register(self, "enabled", getter=self.get_enabled, setter=self.set_enabled)
+        self.ctl.presets.register(self, "algo",    getter=self.get_algo,    setter=self.set_algo)
 
     def init_from_config(self):
         """

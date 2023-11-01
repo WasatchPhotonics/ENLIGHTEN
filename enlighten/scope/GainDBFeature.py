@@ -60,7 +60,7 @@ class GainDBFeature:
         self.ctl.form.ui.pushButton_gain_up.clicked.connect(self.up_callback)
         self.ctl.form.ui.pushButton_gain_dn.clicked.connect(self.dn_callback)
 
-        self.ctl.presets.register(self, "gain_db", gettor=self.get_db, settor=self.set_db_callback)
+        self.ctl.presets.register(self, "gain_db", getter=self.get_db, setter=self.set_db_callback)
 
         self.update_visibility()
 

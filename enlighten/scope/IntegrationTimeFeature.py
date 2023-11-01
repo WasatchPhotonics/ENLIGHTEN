@@ -33,7 +33,7 @@ class IntegrationTimeFeature(object):
         self.slider.installEventFilter(MouseWheelFilter(self.slider))
         self.spinbox.installEventFilter(ScrollStealFilter(self.spinbox))
 
-        self.ctl.presets.register(self, "integration_time_ms", gettor=self.get_ms, settor=self.set_ms)
+        self.ctl.presets.register(self, "integration_time_ms", getter=self.get_ms, setter=self.set_ms)
 
     # called by initialize_new_device on hotplug, BEFORE reading / applying .ini
     def init_hotplug(self):

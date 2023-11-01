@@ -21,7 +21,7 @@ class PresetFeature:
 
         class IntegrationTimeFeature:
             def __init__:
-                ctl.presets.register(self, "integration_time_ms", settor=self.set_ms, gettor=self.get_ms)
+                ctl.presets.register(self, "integration_time_ms", setter=self.set_ms, getter=self.get_ms)
 
             def get_ms(self):
                 return self.current_ms
@@ -92,7 +92,7 @@ class PresetFeature:
         self.presets[preset][feature][attr] = value
         log.debug(f"stored {preset}.{feature}.{attr} = {value}")
 
-    def register(self, obj, attr, gettor, settor):
+    def register(self, obj, attr, getter, setter):
         """ 
         Another BusinessObject or Plugin has requested to include one of their 
         attributes as part of new Presets.
@@ -100,7 +100,7 @@ class PresetFeature:
         feature_name = obj.__class__.__name__
         if obj not in self.observers:
             self.observers[obj] = {}
-        self.observers[obj][attr] = { "get": gettor, "set": settor }
+        self.observers[obj][attr] = { "get": getter, "set": setter}
         log.debug(f"registered {feature_name}: {attr}")
 
     def unregister(self, obj):

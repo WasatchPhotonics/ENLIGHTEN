@@ -22,7 +22,7 @@ class BoxcarFeature(object):
         self.spinbox    .valueChanged   .connect(self.update_from_gui)
         self.spinbox                    .installEventFilter(ScrollStealFilter(self.spinbox))
 
-        self.ctl.presets.register(self, "boxcar_half_width", gettor=self.get_half_width, settor=self.set_half_width)
+        self.ctl.presets.register(self, "boxcar_half_width", getter=self.get_half_width, setter=self.set_half_width)
 
     def update_visibility(self):
         self.update_from_gui()

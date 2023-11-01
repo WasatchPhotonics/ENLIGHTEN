@@ -20,7 +20,7 @@ class ScanAveragingFeature(object):
         self.bt_dn      .clicked        .connect(self.down)
         self.bt_up      .clicked        .connect(self.up)
 
-        self.ctl.presets.register(self, "scans_to_average", gettor=self.get_scans_to_average, settor=self.set_scans_to_average)
+        self.ctl.presets.register(self, "scans_to_average", getter=self.get_scans_to_average, setter=self.set_scans_to_average)
 
         self.reset()
 
