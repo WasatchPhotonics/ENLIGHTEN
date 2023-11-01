@@ -410,6 +410,7 @@ class BusinessObjects:
 
         self.header("instantiating MeasurementFactory")
         ctl.measurement_factory = MeasurementFactory(
+            ctl,
             colors                      = ctl.colors,
             file_manager                = ctl.file_manager,
             focus_listener              = ctl.focus_listener,
@@ -422,22 +423,7 @@ class BusinessObjects:
             stylesheets                 = ctl.stylesheets)
 
         self.header("instantiating Measurements")
-        ctl.measurements = Measurements(
-            button_erase                = sfu.pushButton_erase_captures,
-            button_export               = sfu.pushButton_export_session,
-            button_load                 = sfu.pushButton_scope_capture_load,
-            button_resize               = sfu.pushButton_resize_captures,
-            button_resort               = sfu.pushButton_resort_captures,
-            factory                     = ctl.measurement_factory,
-            file_manager                = ctl.file_manager,
-            form                        = ctl.form,
-            gui                         = ctl.gui,
-            label_count                 = sfu.label_session_count,
-            layout                      = sfu.verticalLayout_scope_capture_save,
-            marquee                     = ctl.marquee,
-            reprocess_callback          = ctl.reprocess,
-            horiz_roi                   = ctl.horiz_roi)
-        ctl.graph.measurements = ctl.measurements
+        ctl.measurements = Measurements(ctl)
 
         self.header("instantiating Authentication")
         ctl.authentication = Authentication(
