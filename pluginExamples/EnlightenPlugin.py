@@ -54,6 +54,7 @@ class EnlightenPluginBase:
         self.y_axis_label = None
 
         self.series = {}
+        self.events = {}
 
         # plugins can do everything
         self.ctl = ctl
@@ -216,7 +217,8 @@ class EnlightenPluginBase:
             lock_enable = self.lock_enable,
             series_names = [], # functional plugins define this on a frame-by-frame basis
             x_axis_label = self.x_axis_label,
-            y_axis_label = self.y_axis_label
+            y_axis_label = self.y_axis_label,
+            events = self.events
         )
     
     def process_request_obj(self, request):
@@ -226,9 +228,11 @@ class EnlightenPluginBase:
         self.metadata = {}
         self.outputs = {}
         self.signals = []
+        self.marquee_message = None
 
         response = self.process_request(request)
-        if response: return response
+        if response: 
+            return response
 
         # if not yet returned, we are running a functional plugin,
         # and so we want Enlighten to construct the EnlightenPluginResponse for us
@@ -242,8 +246,10 @@ class EnlightenPluginBase:
             series = self.series,
             outputs = self.outputs,
             signals = self.signals,
-            metadata = self.metadata
+            metadata = self.metadata,
+            message = self.marquee_message
         )
+
     #### End backwards compatible object-returning wrappers #####
 
     ##
@@ -505,6 +511,7 @@ class EnlightenPluginField:
     # @param precision: digits past decimal place (float only)
     # @param callback: function reference if button clicked (button only)
     # @param tooltip: mouseover string
+    # @param stylesheet: optional stylesheet name
     def __init__(self, 
             name, 
             datatype    = "string", 
@@ -514,8 +521,9 @@ class EnlightenPluginField:
             maximum     = 100,
             step        = 1,
             precision   = 2,
-            options     = None,
+            choices     = None,
             callback    = None,
+            stylesheet  = None,
             tooltip     = None):
 
         self.name       = name
@@ -528,7 +536,8 @@ class EnlightenPluginField:
         self.precision  = precision
         self.callback   = callback
         self.tooltip    = tooltip
-        self.options    = options
+        self.stylesheet = stylesheet
+        self.choices    = choices
 
 ##
 # This is a "request" object sent by the ENLIGHTEN GUI to the plug-in, containing

@@ -619,18 +619,20 @@ class PluginController:
                 # no dynamic widget for pandas fields...they use the TableView
                 continue
             elif epf.datatype == "radio":
+                # MZ: considering removing support for these in preference for 
+                # the new "combobox" datatype
                 groupBox = QtWidgets.QGroupBox(f"{epf.name}")
                 vbox = QtWidgets.QVBoxLayout()
                 epf.group = groupBox
                 epf.layout = vbox
-                for option in epf.options:
-                    epf.name = option
-                    pfw = PluginFieldWidget(epf)
+                for choice in epf.choices:
+                    epf.name = choice
+                    pfw = PluginFieldWidget(epf, self.ctl)
                     parent.append(pfw)
                 continue
 
             log.debug(f"instantiating PluginFieldWidget {epf.name}")
-            pfw = PluginFieldWidget(epf)
+            pfw = PluginFieldWidget(epf, self.ctl)
             parent.append(pfw)
             # old code left to be clear what parent was before dict
             # makes this easier to understand imo
@@ -949,6 +951,7 @@ class PluginController:
         plugin_fields = { pfw.field_name: pfw.field_value for pfw in self.plugin_field_widgets }
         if type(config.fields) == dict:
             plugin_fields["active_page"] = self.widget_selector.currentText()
+        log.debug("get_current_settings: plugin_fields = {plugin_fields}")
         return plugin_fields
 
     ##
@@ -1071,7 +1074,7 @@ class PluginController:
             ####################################################################
 
             if response.message is not None:
-                self.marquee.info(response.message)
+                self.marquee.info(response.message, period_sec=5)
 
             ####################################################################
             # handle outputs                                                   #
@@ -1089,6 +1092,7 @@ class PluginController:
                         pfw.update_value(outputs[epf.name])
 
                 # handle Pandas output
+                model = None
                 if self.panda_field and self.table_view:
                     dataframe = response.outputs.get(self.panda_field.name, None)
                     if dataframe is not None:

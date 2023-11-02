@@ -43,11 +43,11 @@ class GainDBFeature:
         self.ctl = ctl  # type: enlighten.Controller.Controller
 
         self.widgets = [
-          self.ctl.form.ui.pushButton_gain_dn,
-          self.ctl.form.ui.pushButton_gain_up,
-          self.ctl.form.ui.label_gainWidget_title,
-          self.ctl.form.ui.slider_gain,
-          self.ctl.form.ui.doubleSpinBox_gain
+            self.ctl.form.ui.pushButton_gain_dn,
+            self.ctl.form.ui.pushButton_gain_up,
+            self.ctl.form.ui.label_gainWidget_title,
+            self.ctl.form.ui.slider_gain,
+            self.ctl.form.ui.doubleSpinBox_gain
         ]
         self.visible = False
         self.locked = False
@@ -59,6 +59,8 @@ class GainDBFeature:
         self.ctl.form.ui.doubleSpinBox_gain.installEventFilter(ScrollStealFilter(self.ctl.form.ui.doubleSpinBox_gain))
         self.ctl.form.ui.pushButton_gain_up.clicked.connect(self.up_callback)
         self.ctl.form.ui.pushButton_gain_dn.clicked.connect(self.dn_callback)
+
+        self.ctl.presets.register(self, "gain_db", getter=self.get_db, setter=self.set_db_callback)
 
         self.update_visibility()
 
@@ -146,6 +148,7 @@ class GainDBFeature:
         self.spinbox.selectAll()
 
     def set_db(self, db):
+        db = float(db)
         
         # save gain_db to application state
         self.ctl.multispec.set_state("gain_db", db)
@@ -173,3 +176,10 @@ class GainDBFeature:
 
     def sync_spinbox_to_slider_callback(self):
         self.set_db(self.ctl.form.ui.doubleSpinBox_gain.value())
+
+    def get_db(self):
+        return self.ctl.form.ui.doubleSpinBox_gain.value()
+
+    def set_db_callback(self, value):
+        if self.visible:
+            self.set_db(value)

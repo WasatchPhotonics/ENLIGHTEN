@@ -12,20 +12,10 @@ log = logging.getLogger(__name__)
 # intensity (y-axis) on Raman spectra.
 class RamanIntensityCorrection(object):
     
-    def __init__(self,
-            cb_enable,
-            guide,
-            multispec,
-            page_nav,
-            horiz_roi,):
-
-        self.cb_enable      = cb_enable
-        self.guide          = guide
-        self.multispec      = multispec
-        self.page_nav       = page_nav
-        self.horiz_roi      = horiz_roi # MZ: not used?
-
-        self.dark_feature   = None # provided post-construction
+    def __init__(self, ctl):
+        self.ctl = ctl
+        
+        self.cb_enable = ctl.form.ui.checkBox_raman_intensity_correction
 
         self.supported           = False # show the checkbox because we have an SRM calibration
         self.allowed             = False # enable the checkbox because we're in Raman mode and we've taken a dark
@@ -36,11 +26,13 @@ class RamanIntensityCorrection(object):
 
         self.sync_gui()
 
+        self.ctl.presets.register(self, "enabled", getter=self.get_enabled, setter=self.set_enabled)
+
     ##
     # Whether Raman Intensity Correction is supported with the current spectrometer.
     # This decides whether the "[ ] enable" checkbox is visible.
     def is_supported(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is not None:
             self.supported = spec.settings.eeprom.has_raman_intensity_calibration() 
         else:
@@ -57,14 +49,14 @@ class RamanIntensityCorrection(object):
             self.allowed = flag
             return flag
 
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return set(False, "Raman Intensity Correction requires a spectrometer")
         elif not self.is_supported():
             return set(False, "Raman Intensity Correction requires an SRM calibration")
         elif spec.app_state.dark is None:
             return set(False, "Raman Intensity Correction requires a dark measurement")
-        elif not (self.page_nav.doing_raman() or self.page_nav.doing_expert()):
+        elif not (self.ctl.page_nav.doing_raman() or self.ctl.page_nav.doing_expert()):
             return set(False, "Raman Intensity Correction is only valid for Raman and Expert Mode")
         else:
             return set(True, "Raman Intensity Correction optimizes peak intensity using SRM calibration")
@@ -77,6 +69,7 @@ class RamanIntensityCorrection(object):
                 self.cb_enable.setChecked(True)
         else:
             self.enabled = False
+            self.cb_enable.setChecked(False)
 
         self.sync_gui()
         
@@ -87,18 +80,18 @@ class RamanIntensityCorrection(object):
         self.check_block_dark()
 
         if self.enabled:
-            self.guide.clear(token="enable_raman_intensity_correction")
+            self.ctl.guide.clear(token="enable_raman_intensity_correction")
 
         self.sync_gui()
 
     def check_block_dark(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         log.info("checking if need to block dark")
         if spec.app_state.dark is not None and self.enabled:
             log.info("passing block to dark feature")
-            self.dark_feature.handle_blocker(self,"Raman Intensity Correction must be disabled to take a dark")
+            self.ctl.dark_feature.handle_blocker(self,"Raman Intensity Correction must be disabled to take a dark")
         if not self.enabled:
-            self.dark_feature.handle_blocker(self,"",removal=True)
+            self.ctl.dark_feature.handle_blocker(self,"",removal=True)
 
     def sync_gui(self):
         # if logic and configuration and past user inputs have enabled the 
@@ -139,3 +132,11 @@ class RamanIntensityCorrection(object):
             pr.processed *= factors
 
         pr.raman_intensity_corrected = True
+
+    def set_enabled(self, value):
+        value = value if isinstance(value, bool) else value.lower() == "true"
+        self.cb_enable.setChecked(value)
+        self.update_visibility()
+
+    def get_enabled(self):
+        return self.cb_enable.isChecked()
