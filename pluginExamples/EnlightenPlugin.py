@@ -43,6 +43,7 @@ class EnlightenPluginBase:
         # these can be set by functional-plugins to autogenerate EPC
         self.name = None
         self._fields = []
+        self._events = []
         self.is_blocking = False
         self.block_enlighten = False
         self.auto_enable = False
@@ -208,6 +209,7 @@ class EnlightenPluginBase:
         return EnlightenPluginConfiguration(
             name = self.name, 
             fields = self._fields,
+            events = self._events,
             is_blocking = self.is_blocking,
             block_enlighten = self.block_enlighten,
             has_other_graph = self.has_other_graph,
@@ -409,7 +411,6 @@ class EnlightenPluginConfiguration:
     #        plugins.
     # @param multi_devices: True if the plug-in is designed to handle spectra 
     #        from multiple spectrometers (tracks requests by serial_number etc)
-    # @param dependencies: optional array of EnlightenPluginDependency
     # @param events: a hash of supported event names to callbacks
     def __init__(self, 
             name, 
@@ -425,7 +426,6 @@ class EnlightenPluginConfiguration:
             events          = None,
             series_names    = None,
             multi_devices   = False,
-            dependencies    = None,
             graph_type      = "line"):  # "line" or "xy"
 
         self.name            = name
@@ -441,24 +441,7 @@ class EnlightenPluginConfiguration:
         self.events          = events
         self.multi_devices   = multi_devices
         self.series_names    = series_names
-        self.dependencies    = dependencies
         self.graph_type      = graph_type
-
-class EnlightenPluginDependency:
-    ##
-    # @param name: identifying string
-    # @param dep_type: currently supported values are: "existing_directory"
-    # @param persist: save and use previous values as defaults across sessions
-    # @param prompt: if user interaction is involved, use this as prompt / tooltip
-    def __init__(self,
-            name,
-            dep_type    = None,
-            persist     = False,
-            prompt      = None):
-        self.name       = name
-        self.dep_type   = dep_type
-        self.persist    = persist
-        self.prompt     = prompt
 
 ##
 # Each ENLIGHTEN plug-in will be visualized in the ENLIGHTEN GUI via a dynamically

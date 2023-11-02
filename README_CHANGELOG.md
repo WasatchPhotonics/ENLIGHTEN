@@ -6,8 +6,10 @@
 
 - 2023-??-?? 4.0.25
     - plugins
-        - removed plugin 'dependencies'; increase default plugin Marquee period
+        - hide plugin field frame if no fields
+        - deprecate dependencies
         - support events in functional plugins
+        - increase default plugin Marquee period
         - provide self.marquee_message for functional plugins
         - add combobox datatype for plugin fields
         - allow plugin fields to have stylesheets

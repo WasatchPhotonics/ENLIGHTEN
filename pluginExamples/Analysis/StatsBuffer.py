@@ -128,7 +128,7 @@ class Metrics:
         self.mean   = np.mean         (self.data, axis=0)
         self.median = np.median       (self.data, axis=0)
         self.stdev  = np.std          (self.data, axis=0)
-        self.mode   = scipy.stats.mode(self.data, axis=0)[0][0]
+        self.mode   = scipy.stats.mode(self.data, axis=0)[0]
         self.sigma_hi = self.mean + self.stdev
         self.sigma_lo = self.mean - self.stdev
 
