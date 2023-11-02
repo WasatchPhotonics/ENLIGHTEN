@@ -6,6 +6,8 @@ import os
 from enlighten import common
 from enlighten import util
 
+from enlighten.Controller import get_ctl
+
 log = logging.getLogger(__name__)
 
 class SaveOptions():
@@ -211,6 +213,10 @@ class SaveOptions():
         self.le_suffix          .setText   (self.config.get(s, "suffix"))
         self.le_note            .setText   (re.sub(",", "", self.config.get(s, "note")))
 
+        self.directory = get_ctl().config.get("user", "save_location", default=None)
+        display_path = self.generate_display_path(self.directory)
+        self.lb_location.setText(display_path)
+
     def init_checkbox(self, cb, option):
         value = self.config.get_bool("save", option)
         cb.setChecked(value)
@@ -364,6 +370,9 @@ class SaveOptions():
         self.directory = directory
         display_path = self.generate_display_path(directory)
         self.lb_location.setText(display_path)
+
+        # persist save location in .ini
+        get_ctl().config.set("user", "save_location", directory)
 
     ## nicer than having plugins etc access attributes directly
     def get_directory(self):

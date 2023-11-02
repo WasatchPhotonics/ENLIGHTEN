@@ -145,6 +145,10 @@ class EnlightenApplication(object):
             splash            = self.splash,
             window_state      = self.args.window_state,
             autoload_plugin   = self.args.plugin)
+        
+        # store singleton for use by get_ctl
+        Controller._ctl = self.controller
+
         # This requires explanation.  This is obviously a Qt "connect" binding,
         # but Controller is not a Qt widget, and does not inherit from/extend 
         # anything.  What gives?  See Controller.create_signals, which actually

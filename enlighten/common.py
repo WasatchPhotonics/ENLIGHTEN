@@ -131,6 +131,20 @@ class LaserStates(IntEnum):
     FIRING      = 2
 
 def get_default_data_dir():
+    """
+    This function is called all over the place when trying to determine the ~/Documents/EnlightenSpectra path.
+
+    Not only should this give the correct platform variation of the path, but this should also keep track
+    of the user's setting.
+    """
+
+    # don't want all of common to be dependent on ctl instance
+    from enlighten.Controller import get_ctl
+
+    # user has selected an alternative save path
+    if get_ctl().save_options.directory:
+        return get_ctl().save_options.directory
+
     if os.name == "nt":
         return os.path.join(os.path.expanduser("~"), "Documents", "EnlightenSpectra")
     return os.path.join(os.environ["HOME"], "EnlightenSpectra")
