@@ -15,6 +15,9 @@ using Homebrew.  Basically (I'm not sure everything I typed) this:
 
 See appendices below for notes.
 
+See [MAINTENANCE](README_MAINTENANCE.md) for temporary changes or workarounds to
+the build process.
+
 # Installer Build Process
 
 ## Install dependencies, if not already done:

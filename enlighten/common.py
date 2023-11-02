@@ -13,7 +13,7 @@ application.
       can be modules (files) within it
 """
 
-VERSION = "4.0.24"
+VERSION = "4.0.25"
 
 """ ENLIGHTEN's application version number (checked by scripts/deploy and bootstrap.bat) """
 class Techniques(IntEnum):
@@ -160,8 +160,10 @@ def msgbox(prompt, title="Alert", buttons=0):
     # Enlighten's style. This should always be callable as a single function call without
     # the caller needing to create her own class instance
 
-    warn_msg = QMessageBox()
+    # let's persist these in the logfile too
+    log.debug(f"msgbox: {title}: {prompt}")
 
+    warn_msg = QMessageBox()
     warn_msg.setWindowTitle(title)
     warn_msg.setText(prompt)
 

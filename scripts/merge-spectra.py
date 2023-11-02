@@ -90,59 +90,60 @@ if len(filenames) == 0:
 data = {}
 for filename in filenames:
     rec = Record(filename)
-    timestamp = rec.metadata["Timestamp"]
-    data[timestamp] = rec
+    k = rec.metadata["Timestamp"]
+    k = filename
+    data[k] = rec
 
 # generate list of metadata keys
 metadata_keys = set()
-first_timestamp = None
-for timestamp in sorted(data):
-    for key in data[timestamp].metadata:
+first_k = None
+for k in sorted(data):
+    for key in data[k].metadata:
         metadata_keys.add(key)
-    if first_timestamp is None:
-        first_timestamp = timestamp
+    if first_k is None:
+        first_k = k
 
 # PREPARE header row for the merged file 
 # (need to do this before outputting metadata, so we know how many header fields to skip)
 prefix_headers = []
-for header in data[first_timestamp].headers:
+for header in data[first_k].headers:
     if header not in ["Spectrum", "Processed", "Raw", "Dark", "Reference"]:
         prefix_headers.append(header) 
 all_headers = copy.copy(prefix_headers)
-for timestamp in sorted(data):
-    all_headers.append(data[timestamp].metadata["Timestamp"])
+for k in sorted(data):
+    all_headers.append(k)
 
 # OUTPUT metadata 
-for key in sorted(metadata_keys):
+for k in sorted(metadata_keys):
     print(key, end='')                          # atop first prefix header
     for i in range(len(prefix_headers) - 1):    # skip remaining prefix headers
         print(', ', end='')
-    for timestamp in sorted(data):              # repeat value for each data column
-        print(', %s' % data[timestamp].metadata[key], end='')
+    for k in sorted(data):              # repeat value for each data column
+        print(f', {k}', end='')
     print('')
 print("")
 
 # OUTPUT header row
-print((",".join(all_headers)))
+print((", ".join(all_headers)))
 
 # output spectra for all records in columns under timestamp headers
-for i in range(len(data[first_timestamp].spectra[prefix_headers[0]])):
+for i in range(len(data[first_k].spectra[prefix_headers[0]])):
     values = []
 
     # prefix each output row with the pixels, wavelengths etc from first file
     for header in prefix_headers:
-        values.append(data[first_timestamp].spectra[header][i])
+        values.append(data[first_k].spectra[header][i])
 
     # output this pixel's data for each loaded file
-    for timestamp in sorted(data):
+    for k in sorted(data):
 
         # only output a single column from subsequent files...different ENLIGHTEN versions changed column names
-        if "Spectrum" in data[timestamp].spectra:
-            values.append(data[timestamp].spectra["Spectrum"][i])
-        elif "Processed" in data[timestamp].spectra:
-            values.append(data[timestamp].spectra["Processed"][i])
-        elif "Raw" in data[timestamp].spectra:
-            values.append(data[timestamp].spectra["Raw"][i])
+        if "Spectrum" in data[k].spectra:
+            values.append(data[k].spectra["Spectrum"][i])
+        elif "Processed" in data[k].spectra:
+            values.append(data[k].spectra["Processed"][i])
+        elif "Raw" in data[k].spectra:
+            values.append(data[k].spectra["Raw"][i])
 
     # output this pixel's merged data
     print((",".join(values)))
