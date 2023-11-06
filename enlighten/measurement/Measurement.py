@@ -749,7 +749,7 @@ class Measurement:
             self.save_spc_file()
             saved = True
 
-        if self.save_options.save_dx():
+        if self.ctl.save_options.save_dx():
             self.save_dx_file()
             saved = True
 
@@ -1159,7 +1159,7 @@ class Measurement:
         if self.settings and self.settings.eeprom:
             data['SPECTROMETER/DATA SYSTEM'] = f"{self.settings.eeprom.serial_number} {self.settings.eeprom.model}"
 
-        current_x = self.save_options.multispec.graph.current_x_axis 
+        current_x = self.ctl.graph.current_x_axis 
         if current_x == common.Axes.WAVELENGTHS:
             data['y']        = np.array(self.processed_reading.processed)
             data['x']        = np.asarray(self.settings.wavelengths)

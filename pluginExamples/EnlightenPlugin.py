@@ -43,7 +43,6 @@ class EnlightenPluginBase:
         # these can be set by functional-plugins to autogenerate EPC
         self.name = None
         self._fields = []
-        self._events = []
         self.is_blocking = False
         self.block_enlighten = False
         self.auto_enable = False
@@ -209,7 +208,6 @@ class EnlightenPluginBase:
         return EnlightenPluginConfiguration(
             name = self.name, 
             fields = self._fields,
-            events = self._events,
             is_blocking = self.is_blocking,
             block_enlighten = self.block_enlighten,
             has_other_graph = self.has_other_graph,
