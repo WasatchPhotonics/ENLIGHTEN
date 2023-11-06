@@ -4,7 +4,7 @@
 
 ## 4.1.0-Dev
 
-- 2023-??-?? 4.0.25
+- 2023-??-?? 4.1.0
     - plugins
         - hide plugin field frame if no fields
         - deprecate dependencies
@@ -21,6 +21,8 @@
         - moved RamanIntensityCorrection, ScanAveragingFeature, BaselineCorrection, BoxcarFeature, IntegrationTimeFeature to ctl
         - docs and cleanup around ScrollStealFilter and MouseWheelFilter
         - simplified Configuration.save
+---
+- ...
 - 2023-10-09 4.0.24
     - Prod.BurnIn temperature fix
     - added run_from_root
