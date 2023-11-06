@@ -132,18 +132,15 @@ class LaserStates(IntEnum):
 
 def get_default_data_dir():
     """
-    This function is called all over the place when trying to determine the ~/Documents/EnlightenSpectra path.
+    Return the path used for all Enlighten data except for spectra. This will be something like "~/Documents/EnlightenSpectra"
+    The path appropriate for the given platform is returned.
 
-    Not only should this give the correct platform variation of the path, but this should also keep track
-    of the user's setting.
+    This location is used for logs and configuration files. Not that this path is NOT configurable, since it is used to load the 
+    config (.ini) file.
+
+    The default save location for spectra is also ~/Documents/EnlightenSpectra, but that is driven by SaveOptions, and it IS
+    configurable.
     """
-
-    # don't want all of common to be dependent on ctl instance
-    from enlighten.Controller import get_ctl
-
-    # user has selected an alternative save path
-    if get_ctl().save_options.directory:
-        return get_ctl().save_options.directory
 
     if os.name == "nt":
         return os.path.join(os.path.expanduser("~"), "Documents", "EnlightenSpectra")

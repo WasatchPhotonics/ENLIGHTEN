@@ -50,14 +50,6 @@ from enlighten.scope.Spectrometer import Spectrometer
 
 log = logging.getLogger(__name__)
 
-def get_ctl():
-    """
-    Returns the one and only Controller instance from almost any context.
-    Will raise an exception if Controller is not yet initialized.
-    """
-    
-    # _ctl is scope injected in Enlighten.py
-    return _ctl
 
 class AcquiredReading(object):
     """ Trivial class to eliminate a tuple during memory profiling. """

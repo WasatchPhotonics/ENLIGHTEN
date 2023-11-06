@@ -6,8 +6,6 @@ import os
 from enlighten import common
 from enlighten import util
 
-from enlighten.Controller import get_ctl
-
 log = logging.getLogger(__name__)
 
 class SaveOptions():
@@ -61,6 +59,7 @@ class SaveOptions():
 
     def __init__(
              self,
+             ctl,
              bt_location,
              cb_all,
              cb_allow_rename,
@@ -94,6 +93,8 @@ class SaveOptions():
         ):
 
         self.clear()
+
+        self.ctl = ctl
 
         self.bt_location          = bt_location
         self.cb_all               = cb_all
@@ -213,7 +214,8 @@ class SaveOptions():
         self.le_suffix          .setText   (self.config.get(s, "suffix"))
         self.le_note            .setText   (re.sub(",", "", self.config.get(s, "note")))
 
-        self.directory = get_ctl().config.get("user", "save_location", default=None)
+        self.directory = self.ctl.config.get("user", "save_location", default=common.get_default_data_dir())
+
         display_path = self.generate_display_path(self.directory)
         self.lb_location.setText(display_path)
 
@@ -372,7 +374,7 @@ class SaveOptions():
         self.lb_location.setText(display_path)
 
         # persist save location in .ini
-        get_ctl().config.set("user", "save_location", directory)
+        self.ctl.config.set("user", "save_location", directory)
 
     ## nicer than having plugins etc access attributes directly
     def get_directory(self):
@@ -386,8 +388,8 @@ class SaveOptions():
         return today_dir
 
     def generate_display_path(self, path):
-        if len(path) > 25:
-            return "...%s" % path[-25:]
+        if len(path) > 100:
+            return "...%s" % path[-100:]
         return path
 
     ##
