@@ -214,7 +214,7 @@ class SaveOptions():
         self.le_suffix          .setText   (self.config.get(s, "suffix"))
         self.le_note            .setText   (re.sub(",", "", self.config.get(s, "note")))
 
-        self.directory = self.ctl.config.get("user", "save_location", default=common.get_default_data_dir())
+        self.directory = self.ctl.config.get("SaveOptions", "save_location", default=common.get_default_data_dir())
 
         display_path = self.generate_display_path(self.directory)
         self.lb_location.setText(display_path)
@@ -374,7 +374,7 @@ class SaveOptions():
         self.lb_location.setText(display_path)
 
         # persist save location in .ini
-        self.ctl.config.set("user", "save_location", directory)
+        self.ctl.config.set("SaveOptions", "save_location", directory)
 
     ## nicer than having plugins etc access attributes directly
     def get_directory(self):
