@@ -2,6 +2,8 @@
 
 # 4.0 GUI and Plugin Refactoring
 
+- 2023-11-06 4.0.25
+    - persist after restart custom spectra save location
 - 2023-10-06 4.0.22
     - bundle libusb0.dll to Windows install folder :-(
 - 2023-10-06 4.0.21
