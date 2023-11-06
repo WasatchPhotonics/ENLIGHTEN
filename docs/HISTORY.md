@@ -1219,5 +1219,5 @@ The goal of version 1.4 was to support multiple spectrometers.
 
 # 2.0
 
-See [Architecture](README_ARCHITECTURE.md) for current version.
+See [Architecture](ARCHITECTURE.md) for current version.
 

@@ -323,7 +323,7 @@ documentation pages.
     }
 \enddot
 
-(Earlier versions of the architecture are captured at [History (Graphical)](README_HISTORY.md).)
+(Earlier versions of the architecture are captured at [History (Graphical)](HISTORY.md).)
 
 ## Key Files and Classes
 

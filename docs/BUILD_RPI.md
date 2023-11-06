@@ -1,6 +1,6 @@
 # Raspberry Pi
 
-This addendum to our [Linux Docs](README_LINUX.md) applies to Raspberry Pi, 
+This addendum to our [Linux Docs](BUILD_LINUX.md) applies to Raspberry Pi, 
 Odroid and other ARM-based Linux variants following the Debian model.
 
 # Packaged dependencies
