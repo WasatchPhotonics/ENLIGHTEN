@@ -831,19 +831,11 @@ class PluginController:
         self.plugin_plot_legend = self.plugin_plot.addLegend()
 
         self.graph_plugin = Graph(
+            ctl                 = self.ctl,
+
             plot                = self.plugin_plot,
-            generate_x_axis     = self.graph_scope.generate_x_axis,
-            gui                 = self.graph_scope.gui,
             legend              = self.plugin_plot_legend,
             lock_marker         = True,  # let EPC.graph_type control this
-
-            button_copy         = self.graph_scope.button_copy,
-            button_invert       = self.graph_scope.button_invert,
-            button_lock_axes    = self.graph_scope.button_lock_axes,
-            button_zoom         = self.graph_scope.button_zoom,
-            cb_marker           = self.graph_scope.cb_marker,
-            combo_axis          = self.graph_scope.combo_axis,
-            init_graph_axis     = False
         )
 
         # create curves for each series

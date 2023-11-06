@@ -45,6 +45,7 @@ class MeasurementFactory(object):
         self.observers    = set()
 
     def __init__(self,
+            ctl,
             colors,
             file_manager,
             focus_listener,
@@ -55,6 +56,8 @@ class MeasurementFactory(object):
             render_curve,
             save_options,
             stylesheets):
+
+        self.ctl = ctl
 
         self.clear()
 
@@ -93,10 +96,7 @@ class MeasurementFactory(object):
 
         # instantiate the Measurement
         try:
-            measurement = Measurement(
-                save_options = self.save_options,
-                spec         = spec,
-                measurements = self.measurements)
+            measurement = Measurement(self.ctl, spec = spec)
         except:
             msgbox("Failed to create measurement\n\n"+traceback.format_exc(), "Error")
 
@@ -194,7 +194,7 @@ class MeasurementFactory(object):
     #
     # Consider whether this method should be wrapped and called via Measurements.
     def clone(self, measurement, changes=None, generate_thumbnail=True, save=True):
-        new = Measurement(measurement=measurement)
+        new = Measurement(self.ctl, measurement=measurement)
 
         # Fold in changes.  Note this has all kinds of opportunities for
         # error...I'm not currently validating that the returned spectrum has
@@ -409,6 +409,7 @@ class MeasurementFactory(object):
 
     def create_from_columnar_file(self, pathname, encoding="utf-8"):
         parser = ColumnFileParser(
+            self.ctl, # needs a ctl because it creates a Measurement
             pathname     = pathname,
             save_options = self.save_options,
             encoding     = encoding)
@@ -482,12 +483,11 @@ class MeasurementFactory(object):
             if "Measurements" in d:
                 for m_data in d["Measurements"]:
                     log.debug("instantiating Measurement(s) from dict(s)")
-                    m = Measurement(d=m_data, measurements=self.measurements, save_options=self.save_options)
+                    m = Measurement(self.ctl, d=m_data, measurements=self.measurements, save_options=self.save_options)
                     if m is not None:
                         measurments.append(m)
             elif "Measurement" in d:
-                log.debug("instantiating Measurement from dict")
-                m = Measurement(d=d["Measurement"], measurements=self.measurements, save_options=self.save_options)
+                m = Measurement(self.ctl, d=d["Measurement"], measurements=self.measurements, save_options=self.save_options)
                 if m is not None:
                     measurements.append(m)
         except:

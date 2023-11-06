@@ -23,7 +23,7 @@ log = logging.getLogger(__name__)
 # during this session via the Acquire button or BatchCollection, or which have 
 # been loaded from disk via the Load button.  It can be considered to be the set 
 # of ThumbnailWidgets which fill the left-hand capture column in the GUI.
-class Measurements(object):
+class Measurements:
 
     MAX_MEASUREMENT_COUNT = 500 
 
@@ -32,44 +32,19 @@ class Measurements(object):
     def __deepcopy__(self, memo):
         log.debug("blocking deep-copy")
 
-    def __init__(self,
-            button_erase,
-            button_export,
-            button_load,
-            button_resize,
-            button_resort,
-            factory,
-            file_manager,
-            form,
-            gui,
-            label_count,
-            layout,
-            marquee,
-            reprocess_callback,
-            horiz_roi):
+    def __init__(self, ctl):
 
-        self.button_erase       = button_erase
-        self.button_export      = button_export
-        self.button_load        = button_load
-        self.button_resize      = button_resize
-        self.button_resort      = button_resort
-        self.factory            = factory
-        self.file_manager       = file_manager
-        self.form               = form
-        self.gui                = gui
-        self.label_count        = label_count
-        self.layout             = layout
-        self.marquee            = marquee
-        self.reprocess_callback = reprocess_callback
-        self.horiz_roi          = horiz_roi
+        self.ctl = ctl
+
+        sfu = self.ctl.form.ui
 
         self.measurements = []
 
-        self.save_options = self.factory.save_options
+        self.save_options = self.ctl.measurement_factory.save_options
 
         # give Factory a handle to self, both for back-references and for count()
         # SB: this is bad
-        self.factory.measurements = self
+        self.ctl.measurement_factory.measurements = self
 
         self.is_collapsed = False
         self.insert_top = True
@@ -80,17 +55,17 @@ class Measurements(object):
         }
 
         # binding
-        self.button_erase   .clicked    .connect(self.erase_all_callback)
-        self.button_export  .clicked    .connect(self.export_callback)
-        self.button_load    .clicked    .connect(self.load_callback)
-        self.button_resize  .clicked    .connect(self.resize_callback)
-        self.button_resort  .clicked    .connect(self.resort_callback)
+        self.ctl.form.ui.pushButton_erase_captures   .clicked    .connect(self.erase_all_callback)
+        self.ctl.form.ui.pushButton_export_session  .clicked    .connect(self.export_callback)
+        self.ctl.form.ui.pushButton_scope_capture_load    .clicked    .connect(self.load_callback)
+        self.ctl.form.ui.pushButton_resize_captures  .clicked    .connect(self.resize_callback)
+        self.ctl.form.ui.pushButton_resort_captures  .clicked    .connect(self.resort_callback)
 
         # Drop an expanding spacer into the layout, which will force all 
         # ThumbnailWidgets to hold a fixed size and align at one end.  (Could 
         # this not be done in Designer?)
         spacer = QtWidgets.QSpacerItem(20, 1024, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.layout.addItem(spacer)
+        self.ctl.form.ui.verticalLayout_scope_capture_save.addItem(spacer)
 
         self.update_count()
 
@@ -115,7 +90,7 @@ class Measurements(object):
     ## display a file selection dialog, let the user select one or more files, 
     # then load them up (including thumbnail generation)
     def load_callback(self):
-        self.file_manager.select_files_to_load(callback=self.create_from_file)
+        self.ctl.file_manager.select_files_to_load(callback=self.create_from_file)
 
     def resize_callback(self):
         log.debug("re-sizing ThumbnailWidgets (collapsed was %s)", self.is_collapsed)
@@ -130,13 +105,13 @@ class Measurements(object):
         self.is_collapsed = not self.is_collapsed
         self.update_buttons()
 
-    ## Essentially, self.layout.reverse()
+    ## Essentially, self.ctl.form.ui.verticalLayout_scope_capture_save.reverse()
     def resort_callback(self):
         log.debug("re-sorting captures (insert_top was %s)", self.insert_top)
         items = []
         while True:
             try:
-                item = self.layout.takeAt(0)
+                item = self.ctl.form.ui.verticalLayout_scope_capture_save.takeAt(0)
                 if item is None:
                     break
                 items.append(item)
@@ -145,7 +120,7 @@ class Measurements(object):
                 break
 
         for item in items:
-            self.layout.insertItem(0, item)
+            self.ctl.form.ui.verticalLayout_scope_capture_save.insertItem(0, item)
 
         self.insert_top = not self.insert_top
         self.update_buttons()
@@ -193,7 +168,7 @@ class Measurements(object):
         generate_thumbnail = not self.save_options.load_raw()
 
         log.debug("create_from_file: calling MeasurementFactory.create_from_file with %s", pathname)
-        measurements = self.factory.create_from_file(
+        measurements = self.ctl.measurement_factory.create_from_file(
             pathname = pathname, 
             is_collapsed = self.is_collapsed,
             generate_thumbnail = generate_thumbnail)
@@ -209,7 +184,10 @@ class Measurements(object):
             if self.save_options.load_raw():
 
                 log.debug("reprocessing measurement %s", m.measurement_id)
-                new_pr = self.reprocess_callback(m)
+
+                # TODO: can this method be moved into Measurements class?
+                new_pr = self.ctl.reprocess(m)
+
                 if new_pr is None:
                     log.error("failed to reprocess %s", m.measurement_id)
                     return
@@ -218,7 +196,7 @@ class Measurements(object):
                 m.replace_processed_reading(new_pr)
 
                 log.debug("generating thumbnail for updated %s", m.measurement_id)
-                self.factory.create_thumbnail(m)
+                self.ctl.measurement_factory.create_thumbnail(m)
 
                 log.debug("resaving %s", m.measurement_id)
                 m.save()
@@ -241,7 +219,7 @@ class Measurements(object):
 
         # create a Measurement from this Spectrometer's last ProcessedReading,
         # using the current "collapsed" state
-        measurement = self.factory.create_from_spectrometer(
+        measurement = self.ctl.measurement_factory.create_from_spectrometer(
             spec = spec, 
             is_collapsed = self.is_collapsed)
 
@@ -263,9 +241,9 @@ class Measurements(object):
         # add to layout
         log.debug("adding ThumbnailWidget to layout")
         if self.insert_top:
-            self.layout.insertWidget( 0, measurement.thumbnail_widget)
+            self.ctl.form.ui.verticalLayout_scope_capture_save.insertWidget( 0, measurement.thumbnail_widget)
         else:
-            self.layout.insertWidget(-1, measurement.thumbnail_widget)
+            self.ctl.form.ui.verticalLayout_scope_capture_save.insertWidget(-1, measurement.thumbnail_widget)
 
         self.measurements.append(measurement)
         self.update_count()
@@ -323,20 +301,20 @@ class Measurements(object):
     def update_count(self):
         # update the text counter
         count = self.count()
-        self.label_count.setText(util.pluralize_spectra(count))
+        self.ctl.form.ui.label_session_count.setText(util.pluralize_spectra(count))
 
         # update buttons
         enabled = count > 0
-        for b in [ self.button_erase,
-                   self.button_export,
-                   self.button_resize,
-                   self.button_resort ]:
+        for b in [ self.ctl.form.ui.pushButton_erase_captures,
+                   self.ctl.form.ui.pushButton_export_session,
+                   self.ctl.form.ui.pushButton_resize_captures,
+                   self.ctl.form.ui.pushButton_resort_captures ]:
             b.setEnabled(enabled)
 
     # Think this is internal-only
     def update_buttons(self):
-        self.gui.colorize_button(self.button_resize,     self.is_collapsed)
-        self.gui.colorize_button(self.button_resort, not self.insert_top)
+        self.ctl.gui.colorize_button(self.ctl.form.ui.pushButton_resize_captures,     self.is_collapsed)
+        self.ctl.gui.colorize_button(self.ctl.form.ui.pushButton_resort_captures, not self.insert_top)
 
     # ##########################################################################
     #                                                                          #
@@ -377,7 +355,7 @@ class Measurements(object):
                 # prompt the user to override the default filename
                 # @todo give Controller.form to GUI, add gui.promptString()
                 (filename, ok) = QtWidgets.QInputDialog().getText(
-                    self.form,                          # parent
+                    self.ctl.form,                          # parent
                     "Filename",                         # title
                     "Export filename:",                 # label
                     QtWidgets.QLineEdit.Normal, 
@@ -424,7 +402,7 @@ class Measurements(object):
         x_units = SPCXType.SPCXArb
         y_units = SPCYType.SPCYArb
         experiment_type = SPCTechType.SPCTechRmn
-        current_x = self.save_options.multispec.graph.current_x_axis
+        current_x = self.ctl.graph.current_x_axis
         file_type = SPCFileType.TMULTI | SPCFileType.TXVALS | SPCFileType.TXYXYS | SPCFileType.TCGRAM
 
         for m in self.measurements:
@@ -496,7 +474,7 @@ class Measurements(object):
                 else:
                     self.export_by_column(csv_writer)
 
-            self.marquee.info("exported %d spectra" % len(self.measurements))
+            self.ctl.marquee.info("exported %d spectra" % len(self.measurements))
             log.info("exported %d measurements in %s order to %s", self.count(), order, pathname)
 
         except Exception as exc:
@@ -839,7 +817,7 @@ class Measurements(object):
                 # MZ: always export all rows
                 # if spectrometer_count == 1:
                 #     roi = settingss[0].eeprom.get_horizontal_roi()
-                #     if roi is not None and not roi.contains(pixel) and self.horiz_roi.enabled:
+                #     if roi is not None and not roi.contains(pixel) and self.ctl.horiz_roi.enabled:
                 #         continue
 
                 row = []

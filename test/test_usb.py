@@ -6,8 +6,8 @@ import pytest
 import random
 import logging
 import threading
-from PySide2 import QtCore
-from PySide2.QtTest import QTest
+from PySide6 import QtCore
+from PySide6.QtTest import QTest
 
 import numpy
 

@@ -184,6 +184,10 @@ class RamanLines(EnlightenPluginBase):
                 3054.3: 3
             },
 
+            "Silicon": {
+                521: 5
+            },
+
             "Sulfur": {
                 153.8: 3,
                 219.1: 5,

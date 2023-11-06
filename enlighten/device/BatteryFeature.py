@@ -118,7 +118,7 @@ class BatteryFeature:
         curve = self.ctl.multispec.get_hardware_feature_curve(self.name, spec.device_id)
         if curve == None:
             return
-        curve.opts["pen"] = spec.assigned_color
+        curve.opts["pen"] = spec.color
 
     def copy_data(self):
         spec = self.ctl.multispec.current_spectrometer()
