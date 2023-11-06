@@ -50,6 +50,7 @@ from enlighten.scope.Spectrometer import Spectrometer
 
 log = logging.getLogger(__name__)
 
+
 class AcquiredReading(object):
     """ Trivial class to eliminate a tuple during memory profiling. """
     def __init__(self, reading=None, progress=0, disconnect=False):

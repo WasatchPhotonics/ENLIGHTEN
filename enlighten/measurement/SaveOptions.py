@@ -59,6 +59,7 @@ class SaveOptions():
 
     def __init__(
              self,
+             ctl,
              bt_location,
              cb_all,
              cb_allow_rename,
@@ -92,6 +93,8 @@ class SaveOptions():
         ):
 
         self.clear()
+
+        self.ctl = ctl
 
         self.bt_location          = bt_location
         self.cb_all               = cb_all
@@ -210,6 +213,11 @@ class SaveOptions():
         self.le_prefix          .setText   (self.config.get(s, "prefix"))
         self.le_suffix          .setText   (self.config.get(s, "suffix"))
         self.le_note            .setText   (re.sub(",", "", self.config.get(s, "note")))
+
+        self.directory = self.ctl.config.get("SaveOptions", "save_location", default=common.get_default_data_dir())
+
+        display_path = self.generate_display_path(self.directory)
+        self.lb_location.setText(display_path)
 
     def init_checkbox(self, cb, option):
         value = self.config.get_bool("save", option)
@@ -365,6 +373,9 @@ class SaveOptions():
         display_path = self.generate_display_path(directory)
         self.lb_location.setText(display_path)
 
+        # persist save location in .ini
+        self.ctl.config.set("SaveOptions", "save_location", directory)
+
     ## nicer than having plugins etc access attributes directly
     def get_directory(self):
         return self.directory
@@ -377,8 +388,8 @@ class SaveOptions():
         return today_dir
 
     def generate_display_path(self, path):
-        if len(path) > 25:
-            return "...%s" % path[-25:]
+        if len(path) > 100:
+            return "...%s" % path[-100:]
         return path
 
     ##
