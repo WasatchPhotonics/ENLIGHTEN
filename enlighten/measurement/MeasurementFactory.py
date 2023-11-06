@@ -353,13 +353,17 @@ class MeasurementFactory(object):
         linecount = 0
         with open(pathname, "r", encoding=encoding) as infile:
             for line in infile:
-                if line.startswith("Integration Time"):
-                    # count how many values (not empty comma-delimited nulls) appear
-                    count = sum([1 if len(x.strip()) > 0 else 0 for x in line.split(",")])
-                    if test_export:
-                        return count > 2
-                    else:
-                        return count == 2
+                # not all "ENLIGHTEN-style" files will necessarily have any one 
+                # metadata field; check a couple common ones (that are unlikely 
+                # to include embedded commas)
+                for field in ["Integration Time", "Pixel Count", "Technique", "Laser Wavelength"]:
+                    if line.startswith(field):
+                        # count how many values (not empty comma-delimited nulls) appear
+                        count = sum([1 if len(x.strip()) > 0 else 0 for x in line.split(",")])
+                        if test_export:
+                            return count > 2
+                        else:
+                            return count == 2
                 linecount += 1
                 if linecount > 100:
                     break
@@ -466,12 +470,8 @@ class MeasurementFactory(object):
         m.interpolate(settings)
         return m
 
-    # ##########################################################################
-    # External API
-    # ##########################################################################
-
     ##
-    # Used by External.Feature, also loading .json measurements and exports.
+    # Used when loading .json measurements and exports.
     #
     # @param d (Input) a dict containing either a single "Measurement" or a
     #                  "Measurements" list
@@ -482,6 +482,7 @@ class MeasurementFactory(object):
         try:
             if "Measurements" in d:
                 for m_data in d["Measurements"]:
+                    log.debug("instantiating Measurement(s) from dict(s)")
                     m = Measurement(self.ctl, d=m_data, measurements=self.measurements, save_options=self.save_options)
                     if m is not None:
                         measurments.append(m)
@@ -494,3 +495,5 @@ class MeasurementFactory(object):
 
         if len(measurements) > 0:
             return measurements
+        else:
+            log.debug("create_from_dict: no measurements created")

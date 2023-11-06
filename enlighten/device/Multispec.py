@@ -342,12 +342,12 @@ class Multispec(object):
     def set_state(self, field, value):
         if self.locked:
             for spec in self.get_spectrometers():
-                log.debug("%s: settings.state.%s -> %s", spec.label, field, value)
+                log.debug(f"{spec.label}: settings.state.{field} -> {value}")
                 setattr(spec.settings.state, field, value)
         else:
             spec = self.current_spectrometer()
             if spec is not None:
-                log.debug("%s: settings.state.%s -> %s", spec.label, field, value)
+                log.debug(f"{spec.label}: settings.state.{field} -> {value}")
                 setattr(spec.settings.state, field, value)
                 
     ##

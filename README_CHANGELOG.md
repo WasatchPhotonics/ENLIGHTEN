@@ -4,6 +4,23 @@
 
 ## 4.1.0-Dev
 
+- 2023-??-?? 4.0.25
+    - plugins
+        - hide plugin field frame if no fields
+        - deprecate dependencies
+        - support events in functional plugins
+        - increase default plugin Marquee period
+        - provide self.marquee_message for functional plugins
+        - add combobox datatype for plugin fields
+        - allow plugin fields to have stylesheets
+    - file_io
+        - save as JCAMP-DX
+        - support loading columnar CSV files which don't happen to include 'Integration Time'
+    - added PresetFeature
+    - refactoring
+        - moved RamanIntensityCorrection, ScanAveragingFeature, BaselineCorrection, BoxcarFeature, IntegrationTimeFeature to ctl
+        - docs and cleanup around ScrollStealFilter and MouseWheelFilter
+        - simplified Configuration.save
 - 2023-10-09 4.0.24
     - Prod.BurnIn temperature fix
     - added run_from_root

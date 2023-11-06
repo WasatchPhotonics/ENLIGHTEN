@@ -281,9 +281,8 @@ class Feature(object):
         self.table_results      .cellClicked    .connect(self._table_results_callback)
 
         # disable scroll stealing
-        for key, item in self.__dict__.items():
-            if key.startswith("cb_") or key.startswith("sb_"):
-                item.installEventFilter(ScrollStealFilter(item))
+        for widget in [ self.sb_score_min, self.sb_max_results ]:
+            widget.installEventFilter(ScrollStealFilter(widget))
 
         # validate installation
         self.is_installed = self._check_installed()

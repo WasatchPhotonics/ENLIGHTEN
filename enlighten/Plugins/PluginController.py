@@ -455,9 +455,6 @@ class PluginController:
             #
             ####################################################################
 
-            # This is AFTER configure_gui_for_module() is called, meaning 
-            # enlighten_info.dependencies should be populated
-
             connected_ok = False
             try:
                 connected_ok = self.run_worker()
@@ -606,6 +603,7 @@ class PluginController:
     # ##########################################################################
     # plug-in selection
     # ##########################################################################
+
     def process_widgets(self, widgets, parent):
         for epf in widgets:
             if not PluginValidator.validate_field(epf):
@@ -621,18 +619,20 @@ class PluginController:
                 # no dynamic widget for pandas fields...they use the TableView
                 continue
             elif epf.datatype == "radio":
+                # MZ: considering removing support for these in preference for 
+                # the new "combobox" datatype
                 groupBox = QtWidgets.QGroupBox(f"{epf.name}")
                 vbox = QtWidgets.QVBoxLayout()
                 epf.group = groupBox
                 epf.layout = vbox
-                for option in epf.options:
-                    epf.name = option
-                    pfw = PluginFieldWidget(epf)
+                for choice in epf.choices:
+                    epf.name = choice
+                    pfw = PluginFieldWidget(epf, self.ctl)
                     parent.append(pfw)
                 continue
 
             log.debug(f"instantiating PluginFieldWidget {epf.name}")
-            pfw = PluginFieldWidget(epf)
+            pfw = PluginFieldWidget(epf, self.ctl)
             parent.append(pfw)
             # old code left to be clear what parent was before dict
             # makes this easier to understand imo
@@ -674,11 +674,6 @@ class PluginController:
 
             # we're successfully initialized, so proceed
             self.module_name = module_name
-
-            # satisfy dependencies
-            if not self.satisfy_dependencies():
-                log.error("failed to satisfy dependencies")
-                return False
 
             # should we check config.has_other_graph?
             log.debug("configuring graph_pos")
@@ -754,7 +749,7 @@ class PluginController:
                     else:
                         self.plugin_fields_layout.addLayout(pfw.get_display_element())
 
-            self.frame_fields.setVisible(True)
+            self.frame_fields.setVisible(len(self.plugin_field_widgets) > 0)
 
             if self.panda_field:
                 log.debug("creating output table")
@@ -806,52 +801,6 @@ class PluginController:
             flags = Qt.Widget)
         mb.setInformativeText(detail) # setDetailText has sizing issues
         mb.exec()
-
-    def satisfy_dependencies(self):
-        log.debug("satisfy_dependencies: start")
-
-        # this is EnlightenPluginConfiguration
-        config = self.get_current_configuration()
-        if config is None or config.dependencies is None:
-            return True
-
-        # for enlighten.Configuration
-        persist_section = f"Plugin_{config.name}"
-
-        for dep in config.dependencies:
-            log.debug(f"satisfying dependency {dep.name} of type {dep.dep_type}")
-
-            if dep.dep_type == "existing_directory":
-                prompt = dep.prompt if dep.prompt else "Please select an existing directory"
-                self.marquee.info(prompt, persist=True, token="existing_directory")
-
-                # create the dialog
-                dialog = QtWidgets.QFileDialog(parent=self.parent, caption=prompt)
-                dialog.setFileMode(QtWidgets.QFileDialog.Directory)
-                dialog.setOption(QtWidgets.QFileDialog.ShowDirsOnly)
-
-                # default to last selection 
-                dialog.setDirectory(common.get_default_data_dir())
-                if dep.persist:
-                    last_dir = self.config.get(persist_section, dep.name)
-                    if last_dir is not None and os.path.exists(last_dir):
-                        dialog.setDirectory(last_dir)
-
-                # get the user's choice
-                value = dialog.getExistingDirectory()
-                if value is None or len(value) == 0:
-                    return False
-                self.enlighten_info.dependencies[dep.name] = value
-
-                # persist for next time
-                if dep.persist:
-                    self.config.set(persist_section, dep.name, value)
-                self.marquee.clear(token="existing_directory")
-            else:
-                log.error(f"dependency {dep.name} has unsupported type {dep.dep_type}")
-                return False
-
-        return True
 
     # need to clear all depending the layout recursively
     # see https://stackoverflow.com/questions/4528347/clear-all-widgets-in-a-layout-in-pyqt
@@ -994,6 +943,7 @@ class PluginController:
         plugin_fields = { pfw.field_name: pfw.field_value for pfw in self.plugin_field_widgets }
         if type(config.fields) == dict:
             plugin_fields["active_page"] = self.widget_selector.currentText()
+        log.debug("get_current_settings: plugin_fields = {plugin_fields}")
         return plugin_fields
 
     ##
@@ -1116,7 +1066,7 @@ class PluginController:
             ####################################################################
 
             if response.message is not None:
-                self.marquee.info(response.message)
+                self.marquee.info(response.message, period_sec=5)
 
             ####################################################################
             # handle outputs                                                   #
@@ -1134,6 +1084,7 @@ class PluginController:
                         pfw.update_value(outputs[epf.name])
 
                 # handle Pandas output
+                model = None
                 if self.panda_field and self.table_view:
                     dataframe = response.outputs.get(self.panda_field.name, None)
                     if dataframe is not None:

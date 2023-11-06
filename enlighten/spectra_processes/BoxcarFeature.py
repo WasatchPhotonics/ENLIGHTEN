@@ -9,29 +9,20 @@ log = logging.getLogger(__name__)
 
 class BoxcarFeature(object):
     """ Encapsulate the high-frequency noise smoothing "boxcar" filter run at the end of post-processing. """
-    
-    def __init__(self, ctl,
-            bt_dn,
-            bt_up,
-            spinbox,
-
-            multispec,
-            page_nav,
-            ):
-        
+    def __init__(self, ctl):
         self.ctl = ctl
 
-        self.bt_dn      = bt_dn
-        self.bt_up      = bt_up
-        self.spinbox    = spinbox
-
-        self.multispec  = multispec
-        self.page_nav   = page_nav
+        sfu = ctl.form.ui
+        self.bt_dn      = sfu.pushButton_boxcar_half_width_dn
+        self.bt_up      = sfu.pushButton_boxcar_half_width_up
+        self.spinbox    = sfu.spinBox_boxcar_half_width
 
         self.bt_dn      .clicked        .connect(self.dn_callback)
         self.bt_up      .clicked        .connect(self.up_callback)
         self.spinbox    .valueChanged   .connect(self.update_from_gui)
         self.spinbox                    .installEventFilter(ScrollStealFilter(self.spinbox))
+
+        self.ctl.presets.register(self, "boxcar_half_width", getter=self.get_half_width, setter=self.set_half_width)
 
     def update_visibility(self):
         self.update_from_gui()
@@ -40,7 +31,7 @@ class BoxcarFeature(object):
         value = self.spinbox.value()
 
         # save boxcar to application state
-        self.multispec.set_state("boxcar_half_width", value)
+        self.ctl.multispec.set_state("boxcar_half_width", value)
 
         # persist boxcar in .ini
         self.ctl.config.set(self.ctl.multispec.current_spectrometer().settings.eeprom.serial_number, "boxcar_half_width", value)
@@ -66,7 +57,7 @@ class BoxcarFeature(object):
             return
 
         if spec is None:
-            spec = self.multispec.current_spectrometer()
+            spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
 
@@ -76,9 +67,15 @@ class BoxcarFeature(object):
 
         pr.set_processed(wasatch_utils.apply_boxcar(pr.get_processed(), half_width))
 
-        if not self.page_nav.using_reference():
+        if not self.ctl.page_nav.using_reference():
             if pr.recordable_dark is not None:
                 pr.recordable_dark = wasatch_utils.apply_boxcar(pr.recordable_dark, half_width)
             
             if pr.recordable_reference is not None:
                 pr.recordable_reference = wasatch_utils.apply_boxcar(pr.recordable_reference, half_width)
+
+    def get_half_width(self):
+        return int(self.spinbox.value())
+
+    def set_half_width(self, value):
+        self.spinbox.setValue(int(value))

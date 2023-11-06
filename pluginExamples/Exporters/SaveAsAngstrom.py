@@ -18,10 +18,7 @@ class SaveAsAngstrom(EnlightenPluginBase):
         super().__init__(ctl)
 
         # e.g. C:\Users\mzieg\Documents\EnlightenSpectra\SaveAsAngstrom
-        # @todo could now use enlighten_info.get_save_path()
-        self.directory = os.path.join(os.path.expanduser("~"), 
-            "Documents", "EnlightenSpectra", "SaveAsAngstrom")
-
+        self.directory = os.path.join(self.ctl.save_options.get_directory(), "SaveAsAngstrom")
         self.basename = "angstrom"
         self.count = 0
 

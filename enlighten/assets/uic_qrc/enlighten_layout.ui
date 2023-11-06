@@ -2206,6 +2206,7 @@ QComboBox QListView
                 <property name="font">
                  <font>
                   <pointsize>10</pointsize>
+                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -2270,6 +2271,7 @@ QComboBox QListView
                 <property name="font">
                  <font>
                   <pointsize>9</pointsize>
+                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -2298,6 +2300,7 @@ QComboBox QListView
                 <property name="font">
                  <font>
                   <pointsize>9</pointsize>
+                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -2326,6 +2329,7 @@ QComboBox QListView
                 <property name="font">
                  <font>
                   <pointsize>9</pointsize>
+                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -2487,7 +2491,7 @@ QComboBox QListView
         </sizepolicy>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>3</number>
        </property>
        <widget class="QScrollArea" name="scrollArea_hardware">
         <property name="sizePolicy">
@@ -2499,7 +2503,7 @@ QComboBox QListView
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>24</height>
+          <height>20</height>
          </size>
         </property>
         <property name="verticalScrollBarPolicy">
@@ -2513,8 +2517,8 @@ QComboBox QListView
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>636</width>
-           <height>5606</height>
+           <width>619</width>
+           <height>5262</height>
           </rect>
          </property>
          <property name="sizePolicy">
@@ -2567,6 +2571,7 @@ QComboBox QListView
                  <font>
                   <family>MS Shell Dlg 2</family>
                   <pointsize>18</pointsize>
+                  <weight>75</weight>
                   <bold>true</bold>
                   <kerning>false</kerning>
                  </font>
@@ -2646,6 +2651,7 @@ QComboBox QListView
                       <property name="font">
                        <font>
                         <pointsize>10</pointsize>
+                        <weight>75</weight>
                         <bold>true</bold>
                        </font>
                       </property>
@@ -2736,6 +2742,7 @@ QComboBox QListView
                           <property name="font">
                            <font>
                             <pointsize>10</pointsize>
+                            <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
@@ -3361,6 +3368,7 @@ QComboBox QListView
                           <property name="font">
                            <font>
                             <pointsize>10</pointsize>
+                            <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
@@ -3739,6 +3747,7 @@ QComboBox QListView
                           <property name="font">
                            <font>
                             <pointsize>10</pointsize>
+                            <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
@@ -4263,6 +4272,7 @@ QComboBox QListView
                           <property name="font">
                            <font>
                             <pointsize>10</pointsize>
+                            <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
@@ -4699,6 +4709,7 @@ QComboBox QListView
                           <property name="font">
                            <font>
                             <pointsize>10</pointsize>
+                            <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
@@ -4778,6 +4789,7 @@ QComboBox QListView
                           <property name="font">
                            <font>
                             <pointsize>10</pointsize>
+                            <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
@@ -5375,6 +5387,7 @@ QComboBox QListView
                              <property name="font">
                               <font>
                                <pointsize>10</pointsize>
+                               <weight>75</weight>
                                <bold>true</bold>
                               </font>
                              </property>
@@ -5608,6 +5621,7 @@ QComboBox QListView
                           <property name="font">
                            <font>
                             <pointsize>10</pointsize>
+                            <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
@@ -5855,6 +5869,7 @@ QComboBox QListView
                              <property name="font">
                               <font>
                                <pointsize>10</pointsize>
+                               <weight>75</weight>
                                <bold>true</bold>
                               </font>
                              </property>
@@ -6151,6 +6166,7 @@ QComboBox QListView
                              <property name="font">
                               <font>
                                <pointsize>10</pointsize>
+                               <weight>75</weight>
                                <bold>true</bold>
                               </font>
                              </property>
@@ -6603,6 +6619,7 @@ QComboBox QListView
                  <property name="font">
                   <font>
                    <pointsize>10</pointsize>
+                   <weight>75</weight>
                    <bold>true</bold>
                   </font>
                  </property>
@@ -6744,6 +6761,7 @@ QComboBox QListView
                  <property name="font">
                   <font>
                    <pointsize>10</pointsize>
+                   <weight>75</weight>
                    <bold>true</bold>
                   </font>
                  </property>
@@ -6896,6 +6914,7 @@ QComboBox QListView
                  <property name="font">
                   <font>
                    <pointsize>10</pointsize>
+                   <weight>75</weight>
                    <bold>true</bold>
                   </font>
                  </property>
@@ -7158,6 +7177,7 @@ QComboBox QListView
                 <property name="font">
                  <font>
                   <pointsize>10</pointsize>
+                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -7262,6 +7282,7 @@ QComboBox QListView
                 <property name="font">
                  <font>
                   <pointsize>10</pointsize>
+                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -7443,8 +7464,8 @@ QComboBox QListView
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>1152</width>
-                    <height>1206</height>
+                    <width>597</width>
+                    <height>1194</height>
                    </rect>
                   </property>
                   <layout class="QVBoxLayout" name="verticalLayout">
@@ -7815,6 +7836,7 @@ QComboBox QListView
                                       <property name="font">
                                        <font>
                                         <pointsize>26</pointsize>
+                                        <weight>75</weight>
                                         <bold>true</bold>
                                        </font>
                                       </property>
@@ -8000,6 +8022,7 @@ QComboBox QListView
                                       <property name="font">
                                        <font>
                                         <pointsize>26</pointsize>
+                                        <weight>75</weight>
                                         <bold>true</bold>
                                        </font>
                                       </property>
@@ -8185,6 +8208,7 @@ QComboBox QListView
                                       <property name="font">
                                        <font>
                                         <pointsize>26</pointsize>
+                                        <weight>75</weight>
                                         <bold>true</bold>
                                        </font>
                                       </property>
@@ -8379,9 +8403,9 @@ QComboBox QListView
             <property name="geometry">
              <rect>
               <x>0</x>
-              <y>-674</y>
-              <width>670</width>
-              <height>1464</height>
+              <y>0</y>
+              <width>669</width>
+              <height>1420</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -8572,6 +8596,7 @@ QComboBox QListView
                                    <property name="font">
                                     <font>
                                      <pointsize>8</pointsize>
+                                     <weight>75</weight>
                                      <bold>true</bold>
                                     </font>
                                    </property>
@@ -8759,7 +8784,7 @@ QComboBox QListView
                               <number>0</number>
                              </property>
                              <item>
-                              <layout class="QGridLayout" name="gridLayout_saveOptions_fileFormats" rowstretch="0,0,0,0,0,0,0,0">
+                              <layout class="QGridLayout" name="gridLayout_saveOptions_fileFormats" rowstretch="0,0,0,0,0,0,0,0,0">
                                <property name="leftMargin">
                                 <number>0</number>
                                </property>
@@ -8787,23 +8812,6 @@ QComboBox QListView
                                  </property>
                                 </widget>
                                </item>
-                               <item row="5" column="1">
-                                <widget class="QCheckBox" name="checkBox_save_cloud">
-                                 <property name="enabled">
-                                  <bool>false</bool>
-                                 </property>
-                                 <property name="text">
-                                  <string>cloud upload</string>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item row="4" column="0">
-                                <widget class="QCheckBox" name="checkBox_save_spc">
-                                 <property name="text">
-                                  <string>Save SPC</string>
-                                 </property>
-                                </widget>
-                               </item>
                                <item row="0" column="2">
                                 <widget class="QLabel" name="label_6">
                                  <property name="font">
@@ -8816,56 +8824,6 @@ QComboBox QListView
                                  </property>
                                 </widget>
                                </item>
-                               <item row="6" column="0">
-                                <widget class="QCheckBox" name="checkBox_save_all">
-                                 <property name="toolTip">
-                                  <string>When saving spectra, include all connected spectrometers rather than just "selected"</string>
-                                 </property>
-                                 <property name="text">
-                                  <string>All spectrometers</string>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item row="3" column="2">
-                                <widget class="QCheckBox" name="checkBox_save_wavenumber">
-                                 <property name="text">
-                                  <string>wavenumber</string>
-                                 </property>
-                                 <property name="checked">
-                                  <bool>false</bool>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item row="6" column="1">
-                                <widget class="QCheckBox" name="checkBox_allow_rename_files">
-                                 <property name="toolTip">
-                                  <string>When checked, editing a spectrum's label will rename the file</string>
-                                 </property>
-                                 <property name="text">
-                                  <string>Rename files</string>
-                                 </property>
-                                 <property name="checked">
-                                  <bool>true</bool>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item row="2" column="1">
-                                <widget class="QCheckBox" name="checkBox_save_data_append">
-                                 <property name="text">
-                                  <string>append</string>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item row="1" column="3">
-                                <widget class="QCheckBox" name="checkBox_save_raw">
-                                 <property name="text">
-                                  <string>raw</string>
-                                 </property>
-                                 <property name="checked">
-                                  <bool>false</bool>
-                                 </property>
-                                </widget>
-                               </item>
                                <item row="1" column="0">
                                 <widget class="QCheckBox" name="checkBox_save_csv">
                                  <property name="text">
@@ -8873,63 +8831,6 @@ QComboBox QListView
                                  </property>
                                  <property name="checked">
                                   <bool>true</bool>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item row="2" column="3">
-                                <widget class="QCheckBox" name="checkBox_save_dark">
-                                 <property name="text">
-                                  <string>dark</string>
-                                 </property>
-                                 <property name="checked">
-                                  <bool>false</bool>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item row="3" column="0">
-                                <widget class="QCheckBox" name="checkBox_save_text">
-                                 <property name="text">
-                                  <string>Save TXT</string>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item row="2" column="2">
-                                <widget class="QCheckBox" name="checkBox_save_wavelength">
-                                 <property name="text">
-                                  <string>wavelength</string>
-                                 </property>
-                                 <property name="checked">
-                                  <bool>true</bool>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item row="2" column="0">
-                                <widget class="QCheckBox" name="checkBox_save_excel">
-                                 <property name="styleSheet">
-                                  <string notr="true" />
-                                 </property>
-                                 <property name="text">
-                                  <string>Save XLS</string>
-                                 </property>
-                                 <property name="checked">
-                                  <bool>false</bool>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item row="5" column="0">
-                                <widget class="QCheckBox" name="checkBox_save_json">
-                                 <property name="text">
-                                  <string>Save JSON</string>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item row="3" column="3">
-                                <widget class="QCheckBox" name="checkBox_save_reference">
-                                 <property name="text">
-                                  <string>reference</string>
-                                 </property>
-                                 <property name="checked">
-                                  <bool>false</bool>
                                  </property>
                                 </widget>
                                </item>
@@ -8990,7 +8891,138 @@ QComboBox QListView
                                  </property>
                                 </widget>
                                </item>
+                               <item row="1" column="3">
+                                <widget class="QCheckBox" name="checkBox_save_raw">
+                                 <property name="text">
+                                  <string>raw</string>
+                                 </property>
+                                 <property name="checked">
+                                  <bool>false</bool>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item row="2" column="0">
+                                <widget class="QCheckBox" name="checkBox_save_excel">
+                                 <property name="styleSheet">
+                                  <string notr="true" />
+                                 </property>
+                                 <property name="text">
+                                  <string>Save XLS</string>
+                                 </property>
+                                 <property name="checked">
+                                  <bool>false</bool>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item row="2" column="1">
+                                <widget class="QCheckBox" name="checkBox_save_data_append">
+                                 <property name="text">
+                                  <string>append</string>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item row="2" column="2">
+                                <widget class="QCheckBox" name="checkBox_save_wavelength">
+                                 <property name="text">
+                                  <string>wavelength</string>
+                                 </property>
+                                 <property name="checked">
+                                  <bool>true</bool>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item row="2" column="3">
+                                <widget class="QCheckBox" name="checkBox_save_dark">
+                                 <property name="text">
+                                  <string>dark</string>
+                                 </property>
+                                 <property name="checked">
+                                  <bool>false</bool>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item row="3" column="0">
+                                <widget class="QCheckBox" name="checkBox_save_text">
+                                 <property name="text">
+                                  <string>Save TXT</string>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item row="3" column="2">
+                                <widget class="QCheckBox" name="checkBox_save_wavenumber">
+                                 <property name="text">
+                                  <string>wavenumber</string>
+                                 </property>
+                                 <property name="checked">
+                                  <bool>false</bool>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item row="3" column="3">
+                                <widget class="QCheckBox" name="checkBox_save_reference">
+                                 <property name="text">
+                                  <string>reference</string>
+                                 </property>
+                                 <property name="checked">
+                                  <bool>false</bool>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item row="4" column="0">
+                                <widget class="QCheckBox" name="checkBox_save_spc">
+                                 <property name="text">
+                                  <string>Save SPC</string>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item row="5" column="0">
+                                <widget class="QCheckBox" name="checkBox_save_json">
+                                 <property name="text">
+                                  <string>Save JSON</string>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item row="5" column="1">
+                                <widget class="QCheckBox" name="checkBox_save_cloud">
+                                 <property name="enabled">
+                                  <bool>false</bool>
+                                 </property>
+                                 <property name="text">
+                                  <string>cloud upload</string>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item row="6" column="0">
+                                <widget class="QCheckBox" name="checkBox_save_dx">
+                                 <property name="text">
+                                  <string>Save JCAMP-DX</string>
+                                 </property>
+                                </widget>
+                               </item>
                                <item row="7" column="0">
+                                <widget class="QCheckBox" name="checkBox_save_all">
+                                 <property name="toolTip">
+                                  <string>When saving spectra, include all connected spectrometers rather than just "selected"</string>
+                                 </property>
+                                 <property name="text">
+                                  <string>All spectrometers</string>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item row="7" column="1">
+                                <widget class="QCheckBox" name="checkBox_allow_rename_files">
+                                 <property name="toolTip">
+                                  <string>When checked, editing a spectrum's label will rename the file</string>
+                                 </property>
+                                 <property name="text">
+                                  <string>Rename files</string>
+                                 </property>
+                                 <property name="checked">
+                                  <bool>true</bool>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item row="8" column="0">
                                 <widget class="QCheckBox" name="checkBox_save_collated">
                                  <property name="toolTip">
                                   <string>Collate Processed, Raw, Dark etc (loading not supported)</string>
@@ -9380,6 +9412,7 @@ QComboBox QListView
                                <property name="font">
                                 <font>
                                  <pointsize>10</pointsize>
+                                 <weight>50</weight>
                                  <bold>false</bold>
                                 </font>
                                </property>
@@ -10472,6 +10505,7 @@ QComboBox QListView
                     <property name="font">
                      <font>
                       <pointsize>14</pointsize>
+                      <weight>50</weight>
                       <bold>false</bold>
                       <kerning>true</kerning>
                      </font>
@@ -10514,6 +10548,7 @@ QComboBox QListView
                       <property name="font">
                        <font>
                         <pointsize>10</pointsize>
+                        <weight>50</weight>
                         <bold>false</bold>
                        </font>
                       </property>
@@ -10552,6 +10587,7 @@ QComboBox QListView
                       <property name="font">
                        <font>
                         <pointsize>10</pointsize>
+                        <weight>50</weight>
                         <bold>false</bold>
                        </font>
                       </property>
@@ -10632,6 +10668,7 @@ QComboBox QListView
                     <property name="font">
                      <font>
                       <pointsize>14</pointsize>
+                      <weight>50</weight>
                       <bold>false</bold>
                       <kerning>true</kerning>
                      </font>
@@ -10671,6 +10708,7 @@ QComboBox QListView
                       <property name="font">
                        <font>
                         <pointsize>10</pointsize>
+                        <weight>50</weight>
                         <bold>false</bold>
                        </font>
                       </property>
@@ -10705,6 +10743,7 @@ QComboBox QListView
                       <property name="font">
                        <font>
                         <pointsize>10</pointsize>
+                        <weight>50</weight>
                         <bold>false</bold>
                        </font>
                       </property>
@@ -10730,6 +10769,7 @@ QComboBox QListView
                       <property name="font">
                        <font>
                         <pointsize>10</pointsize>
+                        <weight>50</weight>
                         <bold>false</bold>
                         <kerning>true</kerning>
                        </font>
@@ -10785,6 +10825,7 @@ QComboBox QListView
                     <property name="font">
                      <font>
                       <pointsize>14</pointsize>
+                      <weight>50</weight>
                       <bold>false</bold>
                       <kerning>true</kerning>
                      </font>
@@ -10824,6 +10865,7 @@ QComboBox QListView
                       <property name="font">
                        <font>
                         <pointsize>10</pointsize>
+                        <weight>50</weight>
                         <bold>false</bold>
                        </font>
                       </property>
@@ -10858,6 +10900,7 @@ QComboBox QListView
                       <property name="font">
                        <font>
                         <pointsize>10</pointsize>
+                        <weight>50</weight>
                         <bold>false</bold>
                        </font>
                       </property>
@@ -10877,6 +10920,7 @@ QComboBox QListView
                       <property name="font">
                        <font>
                         <pointsize>10</pointsize>
+                        <weight>50</weight>
                         <bold>false</bold>
                         <kerning>true</kerning>
                        </font>
@@ -11003,8 +11047,8 @@ QComboBox QListView
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>199</width>
-                  <height>650</height>
+                  <width>256</width>
+                  <height>790</height>
                  </rect>
                 </property>
                 <property name="sizePolicy">
@@ -11107,6 +11151,7 @@ QComboBox QListView
                            </property>
                            <property name="font">
                             <font>
+                             <weight>75</weight>
                              <bold>true</bold>
                             </font>
                            </property>
@@ -11321,8 +11366,8 @@ QComboBox QListView
                                   <rect>
                                    <x>0</x>
                                    <y>0</y>
-                                   <width>190</width>
-                                   <height>210</height>
+                                   <width>222</width>
+                                   <height>385</height>
                                   </rect>
                                  </property>
                                  <property name="sizePolicy">
@@ -11424,6 +11469,7 @@ QComboBox QListView
                                       <property name="font">
                                        <font>
                                         <pointsize>10</pointsize>
+                                        <weight>50</weight>
                                         <bold>false</bold>
                                         <kerning>true</kerning>
                                        </font>
@@ -11581,6 +11627,7 @@ QComboBox QListView
                             <property name="font">
                              <font>
                               <pointsize>10</pointsize>
+                              <weight>50</weight>
                               <bold>false</bold>
                              </font>
                             </property>
@@ -11738,6 +11785,7 @@ QComboBox QListView
                       </property>
                       <property name="font">
                        <font>
+                        <weight>75</weight>
                         <bold>true</bold>
                        </font>
                       </property>
@@ -11811,6 +11859,7 @@ QComboBox QListView
                                 </property>
                                 <property name="font">
                                  <font>
+                                  <weight>50</weight>
                                   <bold>false</bold>
                                  </font>
                                 </property>
@@ -11842,6 +11891,7 @@ QComboBox QListView
                                 </property>
                                 <property name="font">
                                  <font>
+                                  <weight>50</weight>
                                   <bold>false</bold>
                                  </font>
                                 </property>
@@ -12737,8 +12787,8 @@ QComboBox QListView
                                  <rect>
                                   <x>0</x>
                                   <y>0</y>
-                                  <width>186</width>
-                                  <height>36</height>
+                                  <width>886</width>
+                                  <height>300</height>
                                  </rect>
                                 </property>
                                 <property name="wpClear" stdset="0">
@@ -12899,6 +12949,7 @@ QComboBox QListView
                                </property>
                                <property name="font">
                                 <font>
+                                 <weight>75</weight>
                                  <bold>true</bold>
                                 </font>
                                </property>
@@ -13087,6 +13138,7 @@ QComboBox QListView
                                </property>
                                <property name="font">
                                 <font>
+                                 <weight>75</weight>
                                  <bold>true</bold>
                                 </font>
                                </property>
@@ -13659,6 +13711,7 @@ QComboBox QListView
                   <font>
                    <family>DejaVu Sans Mono</family>
                    <pointsize>9</pointsize>
+                   <weight>50</weight>
                    <bold>false</bold>
                    <kerning>false</kerning>
                   </font>
@@ -13686,11 +13739,8 @@ QComboBox QListView
                  </property>
                  <property name="html">
                   <string notr="true">&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd"&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;meta charset="utf-8" /&gt;&lt;style type="text/css"&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name="qrichtext" content="1" /&gt;&lt;style type="text/css"&gt;
 p, li { white-space: pre-wrap; }
-hr { height: 1px; border-width: 0; }
-li.unchecked::marker { content: "\2610"; }
-li.checked::marker { content: "\2612"; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=" font-family:'DejaVu Sans Mono'; font-size:9pt; font-weight:400; font-style:normal;"&gt;
 &lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
@@ -13831,6 +13881,7 @@ li.checked::marker { content: "\2612"; }
                      <property name="font">
                       <font>
                        <pointsize>10</pointsize>
+                       <weight>75</weight>
                        <bold>true</bold>
                       </font>
                      </property>
@@ -13881,6 +13932,7 @@ li.checked::marker { content: "\2612"; }
                      <property name="font">
                       <font>
                        <pointsize>10</pointsize>
+                       <weight>75</weight>
                        <bold>true</bold>
                       </font>
                      </property>
@@ -13931,6 +13983,7 @@ li.checked::marker { content: "\2612"; }
                      <property name="font">
                       <font>
                        <pointsize>10</pointsize>
+                       <weight>75</weight>
                        <bold>true</bold>
                       </font>
                      </property>
@@ -13975,6 +14028,7 @@ li.checked::marker { content: "\2612"; }
                      <property name="font">
                       <font>
                        <pointsize>10</pointsize>
+                       <weight>75</weight>
                        <bold>true</bold>
                       </font>
                      </property>
@@ -14019,6 +14073,7 @@ li.checked::marker { content: "\2612"; }
                      <property name="font">
                       <font>
                        <pointsize>10</pointsize>
+                       <weight>75</weight>
                        <bold>true</bold>
                       </font>
                      </property>
@@ -14069,6 +14124,7 @@ li.checked::marker { content: "\2612"; }
                      <property name="font">
                       <font>
                        <pointsize>10</pointsize>
+                       <weight>75</weight>
                        <bold>true</bold>
                       </font>
                      </property>
@@ -14113,6 +14169,7 @@ li.checked::marker { content: "\2612"; }
                      <property name="font">
                       <font>
                        <pointsize>10</pointsize>
+                       <weight>75</weight>
                        <bold>true</bold>
                       </font>
                      </property>
@@ -14141,7 +14198,7 @@ li.checked::marker { content: "\2612"; }
              <property name="minimumSize">
               <size>
                <width>0</width>
-               <height>24</height>
+               <height>20</height>
               </size>
              </property>
              <property name="widgetResizable">
@@ -14151,9 +14208,9 @@ li.checked::marker { content: "\2612"; }
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>0</y>
+                <y>-1879</y>
                 <width>240</width>
-                <height>2775</height>
+                <height>2747</height>
                </rect>
               </property>
               <property name="sizePolicy">
@@ -14206,6 +14263,7 @@ li.checked::marker { content: "\2612"; }
                     </property>
                     <property name="font">
                      <font>
+                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -14356,6 +14414,7 @@ li.checked::marker { content: "\2612"; }
                     </property>
                     <property name="font">
                      <font>
+                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -14455,6 +14514,7 @@ li.checked::marker { content: "\2612"; }
                             <property name="font">
                              <font>
                               <pointsize>10</pointsize>
+                              <weight>50</weight>
                               <bold>false</bold>
                              </font>
                             </property>
@@ -14641,6 +14701,7 @@ li.checked::marker { content: "\2612"; }
                     </property>
                     <property name="font">
                      <font>
+                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -14809,6 +14870,7 @@ li.checked::marker { content: "\2612"; }
                     </property>
                     <property name="font">
                      <font>
+                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -14971,6 +15033,7 @@ li.checked::marker { content: "\2612"; }
                                 <property name="font">
                                  <font>
                                   <pointsize>10</pointsize>
+                                  <weight>75</weight>
                                   <bold>true</bold>
                                  </font>
                                 </property>
@@ -15015,6 +15078,7 @@ li.checked::marker { content: "\2612"; }
                                 <property name="font">
                                  <font>
                                   <pointsize>10</pointsize>
+                                  <weight>75</weight>
                                   <bold>true</bold>
                                  </font>
                                 </property>
@@ -15285,6 +15349,7 @@ li.checked::marker { content: "\2612"; }
                     </property>
                     <property name="font">
                      <font>
+                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -15607,6 +15672,7 @@ li.checked::marker { content: "\2612"; }
                     </property>
                     <property name="font">
                      <font>
+                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -15753,6 +15819,7 @@ li.checked::marker { content: "\2612"; }
                                 <property name="font">
                                  <font>
                                   <pointsize>10</pointsize>
+                                  <weight>75</weight>
                                   <bold>true</bold>
                                  </font>
                                 </property>
@@ -15797,6 +15864,7 @@ li.checked::marker { content: "\2612"; }
                                 <property name="font">
                                  <font>
                                   <pointsize>10</pointsize>
+                                  <weight>75</weight>
                                   <bold>true</bold>
                                  </font>
                                 </property>
@@ -16022,6 +16090,7 @@ li.checked::marker { content: "\2612"; }
                                 <property name="font">
                                  <font>
                                   <pointsize>10</pointsize>
+                                  <weight>75</weight>
                                   <bold>true</bold>
                                  </font>
                                 </property>
@@ -16066,6 +16135,7 @@ li.checked::marker { content: "\2612"; }
                                 <property name="font">
                                  <font>
                                   <pointsize>10</pointsize>
+                                  <weight>75</weight>
                                   <bold>true</bold>
                                  </font>
                                 </property>
@@ -16178,6 +16248,7 @@ li.checked::marker { content: "\2612"; }
                     </property>
                     <property name="font">
                      <font>
+                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -16379,6 +16450,7 @@ li.checked::marker { content: "\2612"; }
                               <property name="font">
                                <font>
                                 <pointsize>10</pointsize>
+                                <weight>75</weight>
                                 <bold>true</bold>
                                </font>
                               </property>
@@ -16426,6 +16498,7 @@ li.checked::marker { content: "\2612"; }
                               <property name="font">
                                <font>
                                 <pointsize>10</pointsize>
+                                <weight>75</weight>
                                 <bold>true</bold>
                                </font>
                               </property>
@@ -16499,6 +16572,7 @@ li.checked::marker { content: "\2612"; }
                  </property>
                  <property name="font">
                   <font>
+                   <weight>75</weight>
                    <bold>true</bold>
                   </font>
                  </property>
@@ -16569,6 +16643,7 @@ li.checked::marker { content: "\2612"; }
                        <property name="font">
                         <font>
                          <pointsize>10</pointsize>
+                         <weight>50</weight>
                          <bold>false</bold>
                         </font>
                        </property>
@@ -16627,6 +16702,7 @@ li.checked::marker { content: "\2612"; }
                     </property>
                     <property name="font">
                      <font>
+                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -16711,6 +16787,7 @@ li.checked::marker { content: "\2612"; }
                           </property>
                           <property name="font">
                            <font>
+                            <weight>75</weight>
                             <bold>true</bold>
                            </font>
                           </property>
@@ -16889,6 +16966,7 @@ li.checked::marker { content: "\2612"; }
                     </property>
                     <property name="font">
                      <font>
+                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -16979,6 +17057,7 @@ li.checked::marker { content: "\2612"; }
                             <property name="font">
                              <font>
                               <pointsize>10</pointsize>
+                              <weight>75</weight>
                               <bold>true</bold>
                              </font>
                             </property>
@@ -17066,6 +17145,7 @@ li.checked::marker { content: "\2612"; }
                             <property name="font">
                              <font>
                               <pointsize>10</pointsize>
+                              <weight>75</weight>
                               <bold>true</bold>
                              </font>
                             </property>
@@ -17156,6 +17236,7 @@ li.checked::marker { content: "\2612"; }
                     </property>
                     <property name="font">
                      <font>
+                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -17270,6 +17351,7 @@ li.checked::marker { content: "\2612"; }
                             <property name="font">
                              <font>
                               <pointsize>10</pointsize>
+                              <weight>75</weight>
                               <bold>true</bold>
                              </font>
                             </property>
@@ -17360,6 +17442,7 @@ li.checked::marker { content: "\2612"; }
                             <property name="font">
                              <font>
                               <pointsize>10</pointsize>
+                              <weight>75</weight>
                               <bold>true</bold>
                              </font>
                             </property>
@@ -17429,6 +17512,7 @@ li.checked::marker { content: "\2612"; }
                     </property>
                     <property name="font">
                      <font>
+                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -17622,6 +17706,7 @@ li.checked::marker { content: "\2612"; }
                     </property>
                     <property name="font">
                      <font>
+                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -17717,6 +17802,138 @@ li.checked::marker { content: "\2612"; }
                 </widget>
                </item>
                <item>
+                <widget class="QFrame" name="frame_presets">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="lineWidth">
+                  <number>1</number>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_56x">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label_presets">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <weight>75</weight>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Settings Presets</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QFrame" name="frame_presets_white">
+                    <property name="lineWidth">
+                     <number>1</number>
+                    </property>
+                    <property name="wpBox" stdset="0">
+                     <bool>false</bool>
+                    </property>
+                    <layout class="QGridLayout" name="grid_presets" rowstretch="0" columnstretch="0">
+                     <property name="sizeConstraint">
+                      <enum>QLayout::SetDefaultConstraint</enum>
+                     </property>
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="spacing">
+                      <number>0</number>
+                     </property>
+                     <item row="0" column="0">
+                      <widget class="QFrame" name="frame_presets_black">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>16777215</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="lineWidth">
+                        <number>1</number>
+                       </property>
+                       <property name="wpGrad" stdset="0">
+                        <bool>false</bool>
+                       </property>
+                       <layout class="QHBoxLayout" name="horizontalLayout_37x">
+                        <item>
+                         <layout class="QVBoxLayout" name="verticalLayout_57x">
+                          <item>
+                           <widget class="QComboBox" name="comboBox_presets">
+                            <item>
+                             <property name="text">
+                              <string>Select One</string>
+                             </property>
+                            </item>
+                            <item>
+                             <property name="text">
+                              <string>Create new...</string>
+                             </property>
+                            </item>
+                            <item>
+                             <property name="text">
+                              <string>Remove...</string>
+                             </property>
+                            </item>
+                            <property name="toolTip">
+                             <string>Presets allow you to save and re-apply key acquisition parameters including integration time, gain dB, scan averaging, boxcar, baseline subtraction and Raman intensity correction.</string>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
                 <widget class="QFrame" name="frame_tec_control">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -17750,6 +17967,7 @@ li.checked::marker { content: "\2612"; }
                     </property>
                     <property name="font">
                      <font>
+                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -17867,6 +18085,7 @@ li.checked::marker { content: "\2612"; }
                               <property name="font">
                                <font>
                                 <pointsize>10</pointsize>
+                                <weight>75</weight>
                                 <bold>true</bold>
                                </font>
                               </property>
@@ -17911,6 +18130,7 @@ li.checked::marker { content: "\2612"; }
                               <property name="font">
                                <font>
                                 <pointsize>10</pointsize>
+                                <weight>75</weight>
                                 <bold>true</bold>
                                </font>
                               </property>
@@ -18035,6 +18255,7 @@ li.checked::marker { content: "\2612"; }
                     </property>
                     <property name="font">
                      <font>
+                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -18438,6 +18659,7 @@ li.checked::marker { content: "\2612"; }
                     </property>
                     <property name="font">
                      <font>
+                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -18627,6 +18849,7 @@ li.checked::marker { content: "\2612"; }
                     </property>
                     <property name="font">
                      <font>
+                      <weight>75</weight>
                       <bold>true</bold>
                      </font>
                     </property>
@@ -18800,6 +19023,7 @@ li.checked::marker { content: "\2612"; }
                 </property>
                 <property name="font">
                  <font>
+                  <weight>75</weight>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -18897,6 +19121,7 @@ li.checked::marker { content: "\2612"; }
                       <property name="font">
                        <font>
                         <pointsize>9</pointsize>
+                        <weight>75</weight>
                         <bold>true</bold>
                        </font>
                       </property>
@@ -18922,6 +19147,7 @@ li.checked::marker { content: "\2612"; }
                       <property name="font">
                        <font>
                         <pointsize>9</pointsize>
+                        <weight>75</weight>
                         <bold>true</bold>
                        </font>
                       </property>
@@ -18956,6 +19182,7 @@ li.checked::marker { content: "\2612"; }
                       <property name="font">
                        <font>
                         <pointsize>9</pointsize>
+                        <weight>75</weight>
                         <bold>true</bold>
                        </font>
                       </property>

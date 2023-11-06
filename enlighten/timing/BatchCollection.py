@@ -224,9 +224,14 @@ class BatchCollection(object):
         self.spinbox_collection_timeout    .valueChanged .connect(self.update_from_widgets)
 
         # disable scroll stealing
-        for key, item in self.__dict__.items():
-            if key.startswith("cb_") or key.startswith("rb_") or key.startswith("spinbox_"):
-                item.installEventFilter(ScrollStealFilter(item))
+        for widget in [ 
+                self.spinbox_measurement_count,
+                self.spinbox_measurement_period_ms,
+                self.spinbox_batch_count,
+                self.spinbox_batch_period_sec,
+                self.spinbox_laser_warmup_ms,
+                self.spinbox_collection_timeout ]:
+            widget.installEventFilter(ScrollStealFilter(widget))
 
         # now perform one update
         self.update_from_widgets()
