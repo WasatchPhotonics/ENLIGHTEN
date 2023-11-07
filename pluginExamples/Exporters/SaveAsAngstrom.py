@@ -19,6 +19,7 @@ class SaveAsAngstrom(EnlightenPluginBase):
 
         # e.g. C:\Users\mzieg\Documents\EnlightenSpectra\SaveAsAngstrom
         # @todo could now use enlighten_info.get_save_path()
+        # SB 2023-11-02, actually should use common.get_default_data_dir() + "/SaveAsAngstrom"
         self.directory = os.path.join(os.path.expanduser("~"), 
             "Documents", "EnlightenSpectra", "SaveAsAngstrom")
 

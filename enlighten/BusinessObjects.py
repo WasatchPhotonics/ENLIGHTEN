@@ -344,6 +344,7 @@ class BusinessObjects:
 
         self.header("instantiating SaveOptions")
         ctl.save_options = SaveOptions(
+            ctl,
             bt_location                 = sfu.pushButton_scope_setup_change_save_location,
             cb_all                      = sfu.checkBox_save_all,
             cb_allow_rename             = sfu.checkBox_allow_rename_files,
