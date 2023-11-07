@@ -47,7 +47,7 @@ Major directories and files in the source distribution:
         - environments\
             - Anaconda environment files for supported developer platforms
     - Windows-only
-        - bootstrap.bat (see [Windows](BUILD_WINDOWS.md))
+        - bootstrap.bat (see [Windows](BUILD_WIN11.md))
             - used to configure a Windows development environment 
             - also used to build a Windows installer
         - Application\_InnoSetup.iss
