@@ -34,6 +34,8 @@ if "%1" == "pyinstaller" (
     goto args_parsed
 )
 if "%1" == "innosetup" (
+    set "regenerate_qt=1"
+    set "pyinstaller=1"
     set "innosetup=1"
     goto args_parsed
 )
