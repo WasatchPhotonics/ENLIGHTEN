@@ -10,10 +10,10 @@ Major directories and files in the source distribution:
     - Most of the documentation in this directory is outdated and has not been updated
       or reviewed.  It is retained for historical purposes and needs a major cleanup.
 - udev/
-    - needed for [Linux](README_LINUX.md)
+    - needed for [Linux](BUILD_LINUX.md)
 - tests/
     - not currently used; needs refreshed
-    - see [Testing](README_TESTING.md)
+    - see [Testing](TESTING.md)
 - enlighten/
     - \*.py 
         - Python source code for the ENLIGHTEN application, other than Wasatch.PY 
@@ -47,7 +47,7 @@ Major directories and files in the source distribution:
         - environments\
             - Anaconda environment files for supported developer platforms
     - Windows-only
-        - bootstrap.bat (see [Windows](README_WINDOWS.md))
+        - bootstrap.bat (see [Windows](BUILD_WIN11.md))
             - used to configure a Windows development environment 
             - also used to build a Windows installer
         - Application\_InnoSetup.iss

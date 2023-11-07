@@ -2,7 +2,7 @@
 
 Miscellaneous notes, advice and history on how to maintain and extend ENLIGHTEN.
 
-If you haven't already, see [Architecture](README_ARCHITECTURE.md) for an 
+If you haven't already, see [Architecture](ARCHITECTURE.md) for an 
 introduction to key classes.
 
 ## Nomenclature
@@ -22,16 +22,16 @@ name the file after the class for consistency.
 
 - update version number in enlighten/common.py
     - re-run Enlighten.py (forces common.pyc recompile)
-- update README\_CHANGELOG.md 
-- build a Windows installer (see [Windows](README_WINDOWS.md))
+- update CHANGELOG.md 
+- build a Windows installer (see [Windows](BUILD_WIN11.md))
 - git tag x.y.z
-- git push --tags
-- optionally build [Linux](README_LINUX.md) and [Mac](README_MACOS.md) installers
+- git push --tag
+- optionally build [Linux](BUILD_LINUX.md) and [Mac](BUILD_MACOS.md) installers
 - run scripts/deploy --win [--linux] [--mac]
 
 ## Graphics
 
-(see [Qt](README_QT.md) and [CSS](README_CSS.md) notes)
+(see [Qt](QT.md) and [CSS](CSS.md) notes)
 
 When adding images to uic\_qrc/images/devices or ./grey\_images, remember 
 to update uic\_qrc/devices.qrc or ./grey\_icons.qrc, then do "scripts\rebuild_resources.sh".
