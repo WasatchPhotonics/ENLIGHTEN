@@ -94,103 +94,6 @@ class LocalBaseline(EnlightenPluginBase):
                 # interpolate the domain using (i, f)
                 return xp[i]*(1-f) + xp[i+1]*f
 
-    def get_fwhm(self, i, spectrum_region, start_pixel):
-        r"""
-        Compute Full-Width Half-Max.
-
-        @param i used to workaround duplicate legend entries 
-        @param spectrum_region an array containing a single peak
-        @param start_pixel an index that specifies the start of spectrum_region in the context of the overall spectrum
-
-        parameters additional notes:
-        i: can be removed if used without annotations, or if deduping is moved to self.plot
-        start_pixel: used to define x_region (variable `x_vals`). This could be reparametrized in terms of x_region.
-
-                    ^
-                   / \
-                  |   |
-                 /<--->\_     Computes the width at half the height of the peak
-                /        "`\
-        ____-```            \____
-        """
-
-        # Some fun facts about FWHM:
-        # - Emission peaks will likely be narrower than Raman peaks.
-        # - Not all Raman peaks within the same compound will have the same width (due to atomic bond type).
-        # - FWHM varies across the detector, generally going from "wide to narrow" as you move from "blue to red," due to the grating.
-        # - Different detector models will yield different FWHM when mounted to the same optical bench, due to pixel count, size and spacing.
-
-        # to make use of one-line search operations, it is helpful to keep indexes with values [ O(n) ]
-        region = [(i, spectrum_region[i]) for i in range(len(spectrum_region))]
-        INDEX = 0
-        VALUE = 1
-
-        r"""
-                    ^ <--- find the (index, value) at the top of the peak   [ O(n) ]
-                   / \
-                  |   |
-                 /     \_
-                /        "`\
-        ____-```            \____
-        """
-        region_max = max(region, key=lambda T: T[VALUE])
-
-        r"""
-
-        Separate the array into left and right parts   [ O(2n) ]
-                    |
-                    |
-                   /|\
-        left :=   | | |  =: right
-                 /  |  \_
-                /   |    "`\
-        ____-```    |       \____
-        """
-        left = [T for T in region if T[INDEX] <= region_max[INDEX]]
-        right = [T for T in region if T[INDEX] >= region_max[INDEX]]
-
-        # get Enlighten selected x-value units that correspond to the selected region
-        x_vals = self.get_axis()[start_pixel:start_pixel+len(region)]
-
-        # compute half max
-        half_max = region_max[1]/2
-
-        # :::debug::: show extent of left array
-        """
-        self.plot(
-            color="purple",
-            x=[x_vals[left[0][0]], x_vals[left[-1][0]]],
-            y=[half_max, half_max]
-        )
-        """
-        # :::debug::: show extent of left array
-        """
-        self.plot(
-            color="purple",
-            x=[x_vals[right[0][0]], x_vals[right[-1][0]]],
-            y=[half_max, half_max]
-        )
-        """
-
-        # stop if spectrum_region did not contain a peak
-        if len(left) == 0 or len(right) == 0:
-            return "--"
-
-        # solve for interpolated inverses that land on half_max
-        fwhm_left = self.interp_inverse(half_max, x_vals, [T[VALUE] for T in left])
-        x_vals_right = x_vals[region_max[INDEX]:]
-        fwhm_right = self.interp_inverse(half_max, x_vals_right, [T[VALUE] for T in right])
-
-        self.plot(
-            title=firstonly(i, "FWHM"),
-            color="purple",
-            x=[fwhm_left, fwhm_right],
-            y=[half_max, half_max]
-        )
-
-        if fwhm_left and fwhm_right:
-            return fwhm_right - fwhm_left
-
     def process_request(self, request):
         pr = request.processed_reading
         spectrum = pr.get_processed()
@@ -267,36 +170,28 @@ class LocalBaseline(EnlightenPluginBase):
 
                 peak_baseline_subtracted = peak - interpolated_baseline
 
-                # compute and plot fwhm (full width half max)
-                fwhm_target = self.get_fwhm(i, peak_region_subtracted, start_pixel)
-                if fwhm_target is None:
-                    fwhm_target = "--"
             else:
                 peak = "--"
                 interpolated_baseline = "--"
                 area = "--"
                 peak_baseline_subtracted = "--"
-                fwhm_target = "--"
 
             header = [
                 "Baseline",
                 "Original Peak",
                 "Peak",
                 "Peak Area",
-                "FWHM (%s)" % self.get_axis_short_name()
             ]
             values += [[
                 format_int(interpolated_baseline),
                 format_int(peak),
                 format_int(peak_baseline_subtracted),
                 format_int(area),
-                format_float(fwhm_target)
             ]]
             self.metadata["Baseline_"+str(i)] = interpolated_baseline
             self.metadata["OriginalPeak_"+str(i)] = peak
             self.metadata["PeakBaselineSubtracted_"+str(i)] = peak_baseline_subtracted
             self.metadata["Area_"+str(i)] = area
-            self.metadata["FWHM_"+str(i)] = "FWHM %s" % self.get_axis_name()
 
             # keep input parameters in metadata
             self.metadata["Left_"+str(i)] = self.get_widget_from_name("Left_"+str(i)).value()

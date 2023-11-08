@@ -131,6 +131,17 @@ class LaserStates(IntEnum):
     FIRING      = 2
 
 def get_default_data_dir():
+    """
+    Return the path used for all Enlighten data except for spectra. This will be something like "~/Documents/EnlightenSpectra"
+    The path appropriate for the given platform is returned.
+
+    This location is used for logs and configuration files. Not that this path is NOT configurable, since it is used to load the 
+    config (.ini) file.
+
+    The default save location for spectra is also ~/Documents/EnlightenSpectra, but that is driven by SaveOptions, and it IS
+    configurable.
+    """
+
     if os.name == "nt":
         return os.path.join(os.path.expanduser("~"), "Documents", "EnlightenSpectra")
     return os.path.join(os.environ["HOME"], "EnlightenSpectra")

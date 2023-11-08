@@ -24,7 +24,7 @@ the unofficial grab-bag of competing "Pythonic" approaches growing out of PEP256
 
 # Dot syntax
 
-If you want to make dynamic clickable diagrams like on the [Architecture](README_ARCHITECTURE.md)
+If you want to make dynamic clickable diagrams like on the [Architecture](ARCHITECTURE.md)
 page, see:
 
 - https://www.graphviz.org/pdf/dotguide.pdf

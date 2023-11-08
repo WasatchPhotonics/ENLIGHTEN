@@ -2,7 +2,7 @@
 
 Hints and suggestions on how to maintain the application's CSS stylesheets.
 
-See also: [README_QT](README_QT.md)
+See also: [README_QT](QT.md)
 
 # Stylesheets
 

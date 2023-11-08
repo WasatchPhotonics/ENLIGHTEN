@@ -8569,7 +8569,7 @@ QComboBox QListView
                                     <string>Where new measurements will be saved</string>
                                    </property>
                                    <property name="text">
-                                    <string>C:\path\to\foo</string>
+                                    <string>C:\path\to\EnlightenSpectra</string>
                                    </property>
                                   </widget>
                                  </item>

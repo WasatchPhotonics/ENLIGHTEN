@@ -1,7 +1,5 @@
 # Version History
 
-# 4.0 GUI and Plugin Refactoring
-
 ## 4.1.0-Dev
 
 - 2023-??-?? 4.1.0
@@ -21,8 +19,14 @@
         - moved RamanIntensityCorrection, ScanAveragingFeature, BaselineCorrection, BoxcarFeature, IntegrationTimeFeature to ctl
         - docs and cleanup around ScrollStealFilter and MouseWheelFilter
         - simplified Configuration.save
+
 ---
+
+## 4.0 GUI and Plugin Refactoring
+
 - ...
+- 2023-11-06 4.0.25
+    - persist after restart custom spectra save location
 - 2023-10-09 4.0.24
     - Prod.BurnIn temperature fix
     - added run_from_root

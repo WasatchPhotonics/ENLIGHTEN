@@ -51,22 +51,22 @@ extend ENLIGHTEN in countless ways we never imagined.
 
 # Table of Contents
 
-- [Contents](README_CONTENTS.md) - overview of the distribution structure
+- [Contents](docs/CONTENTS.md) - overview of the distribution structure
 - Development Environment Setup
-    - [Windows 11](README_WIN11.md)
-    - [Windows 10](README_WIN10.md)
-    - [Mac OS](README_MACOS.md)
-    - [Ubuntu Linux](README_LINUX.md)
-    - [Raspberry Pi](README_RPI.md)
+    - [Windows 11](docs/BUILD_WIN11.md)
+    - [Windows 10](docs/BUILD_WIN10.md)
+    - [Mac OS](docs/BUILD_MACOS.md)
+    - [Ubuntu Linux](docs/BUILD_LINUX.md)
+    - [Raspberry Pi](docs/BUILD_RPI.md)
 - Developer Guides
-    - [Architecture](README_ARCHITECTURE.md)
-    - [Plugins](README_PLUGINS.md) 
-    - [Maintenance](README_MAINTENANCE.md)
-    - [Documentation](README_DOCUMENTATION.md)
-    - [Testing](README_TESTING.md)
+    - [Architecture](docs/ARCHITECTURE.md)
+    - [Plugins](docs/PLUGINS.md) 
+    - [Maintenance](docs/MAINTENANCE.md)
+    - [Documentation](docs/DOCUMENTATION.md)
+    - [Testing](docs/TESTING.md)
 - Technical Notes
-    - [Qt](README_QT.md)
-    - [CSS](README_CSS.md)
-- [Backlog](README_BACKLOG.md)
-- [History](README_HISTORY.md)
-- [Changelog](README_CHANGELOG.md)
+    - [Qt](docs/QT.md)
+    - [CSS](docs/CSS.md)
+- [Backlog](docs/BACKLOG.md)
+- [History](docs/HISTORY.md)
+- [Changelog](CHANGELOG.md)
