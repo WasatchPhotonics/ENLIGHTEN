@@ -7,7 +7,7 @@ class AbsorbanceFeature:
     """
     Computes absorbance using Beer's Law.
 
-    Note that any required vignetting is performed within TransmissionFeature.
+    Note that any required cropping is performed within TransmissionFeature.
 
     @see [Beer-Lambert Law](https://en.wikipedia.org/wiki/Beer%E2%80%93Lambert_law)
     """

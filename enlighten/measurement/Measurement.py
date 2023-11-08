@@ -1216,7 +1216,7 @@ class Measurement:
         else:
             pathname = os.path.join(today_dir, "%s.%s" % (self.generate_basename(), ext))
 
-        # vignetting
+        # cropping
         roi = None
         if self.settings is not None and self.ctl.measurements is not None and self.ctl.measurements.ctl.horiz_roi.enabled:
             self.roi_active = True

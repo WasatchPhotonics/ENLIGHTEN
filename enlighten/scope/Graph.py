@@ -280,13 +280,13 @@ class Graph(object):
                 if self.ctl.horiz_roi and measurement:
                     roi = measurement.settings.eeprom.get_horizontal_roi()
                     if roi:
-                        # force vignetting, as clearly y is cropped (likely loaded 
+                        # force cropping, as clearly y is cropped (likely loaded 
                         # from external file), and we really have no choice but to 
                         # use what was in effect when the Measurement was taken
                         x = self.ctl.horiz_roi.crop(x, roi=roi, force=True)
 
             if len(y) != len(x):
-                log.error("unable to correct thumbnail widget by vignetting (len(x) %d != len(y) %d)", len(x), len(y))
+                log.error("unable to correct thumbnail widget by cropping (len(x) %d != len(y) %d)", len(x), len(y))
                 return
 
         if pen is None:

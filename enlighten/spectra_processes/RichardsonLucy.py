@@ -52,7 +52,7 @@ class RichardsonLucy(object):
         # ideal resolution.  Not sure what I was thinking here.
         self.graph.register_observer("change_axis", self.change_axis_callback)
 
-        # If the user dis/enables or changes vignetting, re-generate guassian.  
+        # If the user dis/enables or changes cropping, re-generate guassian.  
         # (Alternative design would be to include ROI tuple in the cache key.)
         self.horiz_roi.register_observer(self.reset)
 
