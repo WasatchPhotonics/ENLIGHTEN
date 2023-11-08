@@ -319,9 +319,11 @@ class EEPROMEditor(object):
             else:
                 for index in self.spinBoxes[name]:
                     array = getattr(self.eeprom, name)
-                    if array:
-                        if index < len(array):
-                            table["%s[%d]" % (name, index)] = array[index]
+                    k = "%s[%0*d]" % (name, 1 if len(self.spinBoxes[name]) < 10 else 2, index)
+                    if array and index < len(array):
+                        table[k] = array[index]
+                    else:
+                        table[k] = ""
 
         for name in self.lineEdits:
             if not isinstance(self.lineEdits[name], dict):
@@ -329,9 +331,11 @@ class EEPROMEditor(object):
             else:
                 for index in self.lineEdits[name]:
                     array = getattr(self.eeprom, name)
-                    if array:
-                        if index < len(array):
-                            table["%s[%d]" % (name, index)] = array[index]
+                    k = "%s[%0*d]" % (name, 1 if len(self.lineEdits[name]) < 10 else 2, index)
+                    if array and index < len(array):
+                        table[k] = array[index]
+                    else:
+                        table[k] = ""
 
         ########################################################################
         # Extra (non-EEPROM)
@@ -345,6 +349,9 @@ class EEPROMEditor(object):
         if spec is not None:
             table["firmware_revision"] = spec.settings.microcontroller_firmware_version
             table["fpga_revision"]     = spec.settings.fpga_firmware_version
+        else:
+            table["firmware_revision"] = ""
+            table["fpga_revision"]     = ""
             
         self.clipboard.copy_dict(table)
 
