@@ -337,6 +337,9 @@ class EEPROMEditor(object):
                     else:
                         table[k] = ""
 
+        # read-only (don't appear in above lists)
+        table["format"] = self.eeprom.format
+
         ########################################################################
         # Extra (non-EEPROM)
         ########################################################################
