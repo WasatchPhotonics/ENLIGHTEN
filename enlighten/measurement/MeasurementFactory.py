@@ -483,11 +483,11 @@ class MeasurementFactory(object):
             if "Measurements" in d:
                 for m_data in d["Measurements"]:
                     log.debug("instantiating Measurement(s) from dict(s)")
-                    m = Measurement(self.ctl, d=m_data, measurements=self.measurements, save_options=self.save_options)
+                    m = Measurement(self.ctl, d=m_data)
                     if m is not None:
                         measurments.append(m)
             elif "Measurement" in d:
-                m = Measurement(self.ctl, d=d["Measurement"], measurements=self.measurements, save_options=self.save_options)
+                m = Measurement(self.ctl, d=d["Measurement"])
                 if m is not None:
                     measurements.append(m)
         except:

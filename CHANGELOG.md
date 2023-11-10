@@ -25,6 +25,9 @@
 ## 4.0 GUI and Plugin Refactoring
 
 - ...
+- 2023-11-10 4.0.26
+    - auto-resize pandas table columns
+    - fix ctl issues in Measurement*
 - 2023-11-06 4.0.25
     - persist after restart custom spectra save location
 - 2023-10-09 4.0.24
