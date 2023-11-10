@@ -129,7 +129,7 @@ echo %date% %time% ======================================================
 REM capture start time
 set TIME_START=%time%
 set PYTHONUTF8=1
-set PYTHONPATH=.;..\Wasatch.PY;..\SPyC_Writer\src;pluginExamples;%CONDA_PREFIX%\lib\site-packages;enlighten\assets\uic_qrc
+set PYTHONPATH=.;..\Wasatch.PY;..\SPyC_Writer\src;..\jcamp;pluginExamples;%CONDA_PREFIX%\lib\site-packages;enlighten\assets\uic_qrc
 echo PYTHONPATH = %PYTHONPATH%
 
 if exist "C:\Program Files (x86)" (
