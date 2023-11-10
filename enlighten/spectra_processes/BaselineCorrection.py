@@ -261,7 +261,7 @@ class BaselineCorrection:
             return
 
         spectrum = pr.get_processed()
-        x_axis = self.ctl.graph.generate_x_axis(spec=spec, cropped=pr.is_cropped())
+        x_axis = self.ctl.generate_x_axis(spec=spec, cropped=pr.is_cropped())
 
         baseline = self.generate_baseline(spectrum=spectrum, x_axis=x_axis)
         if baseline is None:
