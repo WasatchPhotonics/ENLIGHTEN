@@ -11,6 +11,7 @@
         - provide self.marquee_message for functional plugins
         - add combobox datatype for plugin fields
         - allow plugin fields to have stylesheets
+        - auto-resize pandas table columns
     - file_io
         - save as JCAMP-DX
         - support loading columnar CSV files which don't happen to include 'Integration Time'
