@@ -29,6 +29,7 @@
 - 2023-11-10 4.0.26
     - auto-resize pandas table columns
     - fix ctl issues in Measurement*
+    - move jcamp from pip to PYTHONPATH until feature branch released
 - 2023-11-06 4.0.25
     - persist after restart custom spectra save location
 - 2023-10-09 4.0.24
