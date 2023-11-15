@@ -3,7 +3,7 @@
 This addendum to our [Linux Docs](BUILD_LINUX.md) applies to Raspberry Pi, 
 Odroid and other ARM-based Linux variants following the Debian model.
 
-See [MAINTENANCE](README_MAINTENANCE.md) for temporary changes or workarounds to
+See [MAINTENANCE](MAINTENANCE.md) for temporary changes or workarounds to
 the build process.
 
 # Packaged dependencies

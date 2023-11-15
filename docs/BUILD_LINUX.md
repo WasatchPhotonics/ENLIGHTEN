@@ -33,7 +33,7 @@ These are the latest steps for preparing a Linux development environment.
 The following process was tested from a fresh Ubuntu 16.04 LTS VM running under
 Parallels 13.3.2 on MacOS 10.14.2.
 
-See [MAINTENANCE](README_MAINTENANCE.md) for temporary changes or workarounds to
+See [MAINTENANCE](MAINTENANCE.md) for temporary changes or workarounds to
 the build process.
 
 ## Start from a fresh Ubuntu 22.04 VM

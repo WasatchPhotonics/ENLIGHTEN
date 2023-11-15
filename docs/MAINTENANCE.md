@@ -12,16 +12,15 @@ jcamp repository:
 
 - https://github.com/nzhagen/jcamp/pull/35
 
-For now, developers are recommended to clone frenchytheasian/jcamp, checkout the
-writefile branch (for instance, in a sibling directory to ENLIGHTEN) and add the
-workspace to your PYTHONPATH:
+For now, developers are recommended to clone Wasatch's fork of frenchytheasian/jcamp
+(e.g. in in a sibling directory to ENLIGHTEN) and add to your PYTHONPATH:
 
-    $ cd ..
-    $ git clone https://github.com/frenchytheasian/jcamp --branch writefile
+    $ cd ..   
+    $ git clone git@github.com:WasatchPhotonics/jcamp.git
     $ export PYTHONPATH=$PYTHONPATH:$PWD/jcamp
 
 This note will be removed when frenchytheasian's pull request is merged into the
-main jcamp distribution and released over PyPi.
+main (nzhagen) jcamp distribution and released over PyPi.
 
 ## Nomenclature
 

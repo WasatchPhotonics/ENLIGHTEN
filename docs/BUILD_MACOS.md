@@ -5,17 +5,23 @@ longer works with PySide2; it may with PySide6, but we haven't attempted that
 conversion yet.
 
 I was able to get it running from source on an Intel Mac (Ventura 13.4.1(c))
-using Homebrew.  Basically (I'm not sure everything I typed) this:
+using Homebrew.  See the "Appendix: Homebrew" at the bottom of this file for 
+a list of the homebrew and pip packages I had installed.  I'm afraid I have not
+yet generated a "minimal" set of what is required to run ENLIGHTEN, but this set
+seems to work.
+
+The key "learnings" to fix PySide2 were:
 
     $ brew install pyside2
     $ brew install python-tk@3.10
     $ export PATH=/usr/local/Cellar/python@3.10/3.10.13/bin
+
+After that, I could run ENLIGHTEN as normal via:
+
     $ export PYTHONPATH=.:pluginExamples:enlighten/assets/uic_qrc:../Wasatch.PY:../spyc_writer/src
     $ python3.10 scripts/Enlighten.py --log-level debug 1>enlighten.out 2>enlighten.err
 
-See appendices below for notes.
-
-See [MAINTENANCE](README_MAINTENANCE.md) for temporary changes or workarounds to
+See [MAINTENANCE](MAINTENANCE.md) for temporary changes or workarounds to
 the build process.
 
 # Installer Build Process
