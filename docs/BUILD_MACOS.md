@@ -1,25 +1,17 @@
 # MacOS Development Environment
 
-We used to be able to get MacOS running with Miniconda, but I think that no 
-longer works with PySide2; it may with PySide6, but we haven't attempted that 
-conversion yet.
+We used to be able to get MacOS running with Miniconda, but we moved to Homebrew
+after problems with PySide2. Even though we've now moved to PySide6, we're
+currently sticking with Homebrew until a reason presents itself to move back.
 
-I was able to get it running from source on an Intel Mac (Ventura 13.4.1(c))
-using Homebrew.  See the "Appendix: Homebrew" at the bottom of this file for 
+Testing was conducted from an Intel Mac (Ventura 13.4.1(c)) using MacOS 14 Sonoma
+and Homebrew.  See the "Appendix: Homebrew" at the bottom of this file for 
 a list of the homebrew and pip packages I had installed.  I'm afraid I have not
 yet generated a "minimal" set of what is required to run ENLIGHTEN, but this set
 seems to work.
 
-The key "learnings" to fix PySide2 were:
-
-    $ brew install pyside2
-    $ brew install python-tk@3.10
-    $ export PATH=/usr/local/Cellar/python@3.10/3.10.13/bin
-
-After that, I could run ENLIGHTEN as normal via:
-
-    $ export PYTHONPATH=.:pluginExamples:enlighten/assets/uic_qrc:../Wasatch.PY:../spyc_writer/src
-    $ python3.10 scripts/Enlighten.py --log-level debug 1>enlighten.out 2>enlighten.err
+    $ export PYTHONPATH=.:pluginExamples:enlighten/assets/uic_qrc:../Wasatch.PY:../spyc_writer/src:../jcamp
+    $ python scripts/Enlighten.py --log-level debug 1>enlighten.out 2>enlighten.err
 
 See [MAINTENANCE](MAINTENANCE.md) for temporary changes or workarounds to
 the build process.
@@ -121,161 +113,114 @@ Below are some example threads:
 I don't remember everything I installed, when or why, but this is what I had 
 installed when it worked...
 
-    $ brew ls
+    mzieg-macbook.local [~/work/code/enlighten] mzieg  8:16PM $ brew ls
     ==> Formulae
-    aom             gdk-pixbuf  libffi           libxft      openssl@1.1    sdl2
-    apr             gdrive      libheif          libxmp      openssl@3      sdl2_mixer
-    apr-util        gettext     libice           libxmu      opus           shared-mime-info
-    astyle          ghostscript libidn           libxp       opusfile       six
-    awscli          giflib      libidn2          libxrender  p7zip          sloccount
-    bdw-gc          glib        liblqr           libxt       pandoc         sphinx-doc
-    berkeley-db     glm         libmodplug       libyaml     pango          sqlite
-    brotli          gmp         libnghttp2       little-cms2 pcre           stlink
-    c-ares          gnu-getopt  libogg           llvm        pcre2          subversion
-    ca-certificates graphite2   libomp           llvm@15     pdfcrack       swig
-    cairo           graphviz    libpng           lsusb       perl           tcl-tk
-    cffi            gts         libpthread-stubs lua         pixman         telnet
-    cloc            harfbuzz    libraw           lynx        pkg-config     tree
-    cmake           hidapi      librsvg          lz4         platypus       udunits
-    cocoapods       highway     libsamplerate    lzo         portaudio      unrar
-    coreutils       icu4c       libsm            m4          portmidi       utf8proc
-    docbook         ilmbase     libsndfile       mame        pugixml        vim
-    docbook-xsl     imagemagick libsodium        markdown    pycparser      w3m
-    docutils        imath       libtiff          md5sha1sum  pygments       webp
-    dos2unix        jasper      libtool          mpdecimal   pyside@2       wget
-    doxygen         jbig2dec    libunistring     mpg123      python-certifi x265
-    flac            jpeg        libusb           mysql@5.6   python-tk@3.10 xbitmaps
-    fluid-synth     jpeg-turbo  libuv            ncurses     python-tk@3.11 xmlto
-    fontconfig      jpeg-xl     libvmaf          netpbm      python@3.10    xorgproto
-    freetype        jq          libvorbis        node        python@3.11    xpdf
-    fribidi         jsonlint    libx11           oniguruma   qt@5           xz
-    frotz           lame        libxau           openexr     rapidjson      z3
-    gd              libao       libxcb           openjdk     rclone         zstd
-    gdb             libavif     libxdmcp         openjpeg    readline
-    gdbm            libde265    libxext          openmotif   ruby
+    aom             glm              libraw        markdown       python-tk@3.11
+    apr             gmp              librsvg       md5sha1sum     python@3.10
+    apr-util        gnu-getopt       libsamplerate mpdecimal      python@3.11
+    astyle          graphite2        libsm         mpg123         qt@5
+    awscli          graphviz         libsndfile    mysql@5.6      rapidjson
+    bdw-gc          gts              libsodium     ncurses        rclone
+    berkeley-db     harfbuzz         libtiff       netpbm         readline
+    brotli          hidapi           libtool       node           ruby
+    c-ares          highway          libunistring  oniguruma      sdl2
+    ca-certificates icu4c            libusb        openexr        sdl2_mixer
+    cairo           ilmbase          libusb-compat openjdk        shared-mime-info
+    cffi            imagemagick      libuv         openjpeg       six
+    cloc            imath            libvmaf       openmotif      sloccount
+    cmake           jasper           libvorbis     openssl@1.1    sphinx-doc
+    cocoapods       jbig2dec         libx11        openssl@3      sqlite
+    coreutils       jpeg             libxau        opus           stlink
+    docbook         jpeg-turbo       libxcb        opusfile       subversion
+    docbook-xsl     jpeg-xl          libxdmcp      p7zip          swig
+    docutils        jq               libxext       pandoc         tcl-tk
+    dos2unix        jsonlint         libxft        pango          telnet
+    doxygen         lame             libxmp        pcre           tree
+    flac            libao            libxmu        pcre2          udunits
+    fluid-synth     libavif          libxp         pdfcrack       unrar
+    fontconfig      libde265         libxrender    perl           utf8proc
+    freetype        libffi           libxt         pixman         vim
+    fribidi         libheif          libyaml       pkg-config     w3m
+    frotz           libice           little-cms2   platypus       webp
+    gd              libidn           llvm          pngcrush       wget
+    gdb             libidn2          llvm@15       portaudio      x265
+    gdbm            liblqr           lsusb         portmidi       xbitmaps
+    gdk-pixbuf      libmodplug       lua           pugixml        xmlto
+    gdrive          libnghttp2       lynx          pycparser      xorgproto
+    gettext         libogg           lz4           pygments       xpdf
+    ghostscript     libomp           lzo           pyside@2       xz
+    giflib          libpng           m4            python-certifi z3
+    glib            libpthread-stubs mame          python-tk@3.10 zstd
 
     ==> Casks
     xquartz
 
-    mzieg-macbook.local [~/work/code/enlighten] mzieg  8:16PM $ echo $PATH
-    /usr/local/Cellar/python@3.10/3.10.13/bin:/Users/mzieg/bin:/Users/mzieg/work/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/opt/mysql@5.6/bin:/usr/local/share/dotnet
+    (base) mzieg-macbook.local [~/work/code/enlighten] mzieg 10:22AM $ echo $PATH
+    /Users/mzieg/miniconda3/bin:/Users/mzieg/miniconda3/condabin:/Users/mzieg/bin:/Users/mzieg/work/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/opt/mysql@5.6/bin:/usr/local/share/dotnet
 
-    mzieg-macbook.local [~/work/code/enlighten] mzieg  8:16PM $ echo $PYTHONPATH
-    ../spyc_writer/src:../Wasatch.PY:pluginExamples:.:enlighten/assets/uic_qrc
+    (base) mzieg-macbook.local [~/work/code/enlighten] mzieg 10:22AM $ echo $PYTHONPATH
+    .:pluginExamples:enlighten/assets/uic_qrc:../Wasatch.PY:../spyc_writer/src:../jcamp
 
-    mzieg-macbook.local [~/work/code/enlighten] mzieg  8:16PM $ which python3.10
-    /usr/local/Cellar/python@3.10/3.10.13/bin/python3.10
+    (base) mzieg-macbook.local [~/work/code/enlighten] mzieg 10:23AM $ which python
+    python: aliased to python3.10
+
+    (base) mzieg-macbook.local [~/work/code/enlighten] mzieg 10:23AM $ which python3.10 
+    /usr/local/bin/python3.10
 
     macbook.local [~/work/code/enlighten] mzieg  8:15PM $ python3.10 -m pip list
-    Package                          Version
-    -------------------------------- ---------
-    absl-py                          1.4.0
-    Adafruit-Blinka                  8.20.1
-    adafruit-circuitpython-busdevice 5.2.6
-    adafruit-circuitpython-requests  2.0.1
-    adafruit-circuitpython-typing    1.9.4
-    Adafruit-PlatformDetect          3.49.0
-    Adafruit-PureIO                  1.1.11
-    altgraph                         0.17.3
-    astunparse                       1.6.3
-    async-timeout                    4.0.3
-    bleak                            0.20.2
-    boto3                            1.28.38
-    botocore                         1.31.38
-    cachetools                       5.3.1
-    certifi                          2023.7.22
-    charset-normalizer               3.2.0
-    construct                        2.8.22
-    contourpy                        1.1.0
-    crcmod                           1.7
-    cycler                           0.11.0
-    Cython                           3.0.2
-    exceptiongroup                   1.1.3
-    flatbuffers                      23.5.26
-    fonttools                        4.42.1
-    gast                             0.4.0
-    google-auth                      2.22.0
-    google-auth-oauthlib             1.0.0
-    google-pasta                     0.2.0
-    grpcio                           1.57.0
-    h5py                             3.9.0
-    idna                             3.4
-    importlib-metadata               6.8.0
-    importlib-resources              6.0.1
-    iniconfig                        2.0.0
-    jmespath                         1.0.1
-    joblib                           1.3.2
-    keras                            2.13.1
-    kiwisolver                       1.4.5
-    libclang                         16.0.6
-    libusb                           1.0.26b5
-    macholib                         1.16.2
-    Markdown                         3.4.4
-    MarkupSafe                       2.1.3
-    matplotlib                       3.7.2
-    numpy                            1.24.3
-    oauthlib                         3.2.2
-    opt-einsum                       3.3.0
-    packaging                        23.1
-    pandas                           2.1.0
-    pefile                           2023.2.7
-    pexpect                          4.8.0
-    Pillow                           10.0.0
-    pip                              23.2.1
-    pkg-about                        1.0.8
-    pluggy                           1.3.0
-    protobuf                         4.24.2
-    psutil                           5.9.5
-    ptyprocess                       0.7.0
-    pyasn1                           0.5.0
-    pyasn1-modules                   0.3.0
-    pyftdi                           0.55.0
-    Pygments                         2.16.1
-    pygtail                          0.14.0
-    pyinstaller                      5.13.2
-    pyinstaller-hooks-contrib        2023.8
-    pyobjc-core                      9.2
-    pyobjc-framework-Cocoa           9.2
-    pyobjc-framework-CoreBluetooth   9.2
-    pyobjc-framework-libdispatch     9.2
-    pyparsing                        3.0.9
-    pyqtgraph                        0.13.3
-    pyserial                         3.5
-    PySide2                          5.15.2.1
-    pytest                           7.4.0
-    python-dateutil                  2.8.2
-    pytz                             2023.3
-    pyudev                           0.24.1
-    pyusb                            1.2.1
-    PyWavelets                       1.4.1
-    qimage2ndarray                   1.10.0
-    requests                         2.31.0
-    requests-oauthlib                1.3.1
-    rsa                              4.9
-    s3transfer                       0.6.2
-    scikit-learn                     1.3.0
-    scipy                            1.11.2
-    seabreeze                        2.4.0
-    setuptools                       68.1.2
-    shiboken2                        5.15.2.1
-    six                              1.16.0
-    spc-spectra                      0.4.0
-    SPyC_Writer                      0.2.0
-    superman                         0.1.2
-    tensorboard                      2.13.0
-    tensorboard-data-server          0.7.1
-    tensorflow                       2.13.0
-    tensorflow-estimator             2.13.0
-    tensorflow-io-gcs-filesystem     0.33.0
-    termcolor                        2.3.0
-    threadpoolctl                    3.2.0
-    tk                               0.1.0
-    tomli                            2.0.1
-    typing_extensions                4.5.0
-    tzdata                           2023.3
-    urllib3                          1.26.16
-    Werkzeug                         2.3.7
-    wheel                            0.41.2
-    wrapt                            1.15.0
-    xlwt                             1.3.0
-    zipp                             3.16.2
+    Package                 Version
+    ----------------------- ---------
+    boltons                 23.0.0
+    Brotli                  1.0.9
+    certifi                 2023.7.22
+    cffi                    1.15.1
+    charset-normalizer      3.2.0
+    colorama                0.4.6
+    conda                   23.7.3
+    conda-content-trust     0.1.3
+    conda-libmamba-solver   23.7.0
+    conda-package-handling  2.2.0
+    conda_package_streaming 0.9.0
+    contourpy               1.2.0
+    cryptography            38.0.4
+    cycler                  0.12.1
+    fonttools               4.44.0
+    idna                    3.4
+    jsonpatch               1.32
+    jsonpointer             2.0
+    kiwisolver              1.4.5
+    libmambapy              1.5.0
+    matplotlib              3.8.1
+    numpy                   1.26.2
+    packaging               23.1
+    Pillow                  10.1.0
+    pip                     23.2.1
+    pluggy                  1.3.0
+    pycosat                 0.6.4
+    pycparser               2.21
+    pyOpenSSL               23.2.0
+    pyparsing               3.1.1
+    PySide6                 6.6.0
+    PySide6-Addons          6.6.0
+    PySide6-Essentials      6.6.0
+    PySocks                 1.7.1
+    python-dateutil         2.8.2
+    requests                2.31.0
+    ruamel.yaml             0.17.32
+    ruamel.yaml.clib        0.2.7
+    setuptools              68.1.2
+    shiboken6               6.6.0
+    six                     1.16.0
+    toolz                   0.12.0
+    tqdm                    4.66.1
+    urllib3                 2.0.4
+    wheel                   0.41.2
+    zstandard               0.19.0
+
+# Appendix: MacOS and PySide2
+
+If you need to get PySide2 running on MacOS, note the following worked:
+
+    $ brew install pyside2
+    $ brew install python-tk@3.10
+    $ export PATH=/usr/local/Cellar/python@3.10/3.10.13/bin:$PATH
