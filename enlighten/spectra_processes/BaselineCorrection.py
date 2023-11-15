@@ -200,21 +200,9 @@ class BaselineCorrection:
             self.cb_enabled.setChecked(True)
 
     def update_visibility(self):
-        allowed = False
-
-        # implicit operation allowed if RAMAN with VIGNETTING
-        if self.ctl.page_nav.doing_raman():
-            allowed = True
-
-        # explicit operation through Expert Mode
-        if self.ctl.page_nav.doing_expert():
-            allowed = True
-
         spec = self.ctl.multispec.current_spectrometer()
 
-        # store in object (used by KIA)
-        self.allowed = allowed
-
+        self.allowed = self.ctl.page_nav.doing_raman() or self.ctl.page_nav.doing_expert()
         if not self.allowed:
             self.enabled = False
             self.show_curve = False
@@ -273,7 +261,7 @@ class BaselineCorrection:
             return
 
         spectrum = pr.get_processed()
-        x_axis = self.ctl.graph.generate_x_axis(spec=spec, cropped=pr.is_cropped())
+        x_axis = self.ctl.generate_x_axis(spec=spec, cropped=pr.is_cropped())
 
         baseline = self.generate_baseline(spectrum=spectrum, x_axis=x_axis)
         if baseline is None:

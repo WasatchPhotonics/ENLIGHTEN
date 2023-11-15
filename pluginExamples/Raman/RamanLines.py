@@ -37,7 +37,7 @@ class RamanLines(EnlightenPluginBase):
         """
         Generate Raman lines as a list of (x, y) tuples, where x is the Raman shift
         in wavenumbers and y is the relative intensity scaled to the current 
-        spectrum, vignetting to only those points visible within the horizontal ROI.
+        spectrum, cropping to only those points visible within the horizontal ROI.
         """
         wavenumbers = self.settings.wavenumbers
 

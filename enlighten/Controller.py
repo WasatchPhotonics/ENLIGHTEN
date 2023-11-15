@@ -1730,7 +1730,7 @@ class Controller:
         Of particular note are dark and reference, which can be manually
         passed-in for reprocessed measurements if found in input file. Likewise, we
         pass in the loaded Settings object so that the x-axis can be generated from
-        the correct wavecal, pixel count, as well as the correct vignetting ROI.
+        the correct wavecal, pixel count, as well as the correct cropped ROI.
         
         Keywords to help people find this function:
         - update graphs
@@ -1779,15 +1779,20 @@ class Controller:
         # Currently, this is where "recordable_dark" is snapped
         pr = ProcessedReading(reading)
 
-        # saturation check
-        if pr.processed.max() >= 0xfffe:
+        ########################################################################
+        # Saturation Check
+        ########################################################################
+
+        # Test for 0xfffe rather than 0xffff to support older FW clamped to the 
+        # lesser value and reserved 0xffff for "frame markers". Raw should match 
+        # processed at this point, but "raw" is preferred to clarify saturation 
+        # is irrespective of dark correction or any post-processing.
+        if pr.raw.max() >= 0xfffe: 
             # IMX detectors briefly saturate on every change of integration 
             # time...perhaps we should take a couple throwaways in Wasatch.PY?
             if not spec.settings.is_xs():
                 # todo: self.status_indicators.detector_warning("detector saturated")
                 self.marquee.error("detector saturated")
-
-        # post-processing begins here
 
         ########################################################################
         # Dark Correction
@@ -1797,7 +1802,7 @@ class Controller:
             pr.correct_dark(spec.app_state.dark if dark is None else dark)
 
         ########################################################################
-        # Vignetting
+        # Cropping
         ########################################################################
 
         # This should be done before any processing that involves multiple
@@ -1859,12 +1864,12 @@ class Controller:
             # baseline correction
             ####################################################################
 
-            # Obviously baseline correction would benefit from ROI vignetting,
+            # Obviously baseline correction would benefit from ROI cropping,
             # as would boxcar, Offset, Raman ID etc, so add a
             # "processed_cropped" attribute for use downstream.
             self.baseline_correction.process(pr, spec)
 
-            # on 2020-05-19 Deiter asked this to be moved before vignetting
+            # on 2020-05-19 Deiter asked this to be moved before cropping
             if not self.page_nav.using_reference():
                 self.richardson_lucy.process(pr, spec)
 

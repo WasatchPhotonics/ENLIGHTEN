@@ -331,8 +331,7 @@ class Measurement:
             log.debug("instantiating from existing measurement %s", measurement.measurement_id)
             self.settings          = copy.deepcopy(measurement.settings)
             self.processed_reading = copy.deepcopy(measurement.processed_reading)
-            self.ctl.measurements      = measurement.measurements
-            self.ctl.save_options      = measurement.save_options
+            self.ctl               = measurement.ctl
             self.timestamp         = datetime.datetime.now()
 
         elif d:
@@ -352,8 +351,6 @@ class Measurement:
         m = copy.copy(self)
 
         # clean for exporting
-        m.measurements = None
-        m.save_options = None
         m.thumbnail_widget = None
         m.settings = copy.deepcopy(self.settings)
         m.processed_reading = copy.deepcopy(self.processed_reading)
@@ -1216,7 +1213,7 @@ class Measurement:
         else:
             pathname = os.path.join(today_dir, "%s.%s" % (self.generate_basename(), ext))
 
-        # vignetting
+        # cropping
         roi = None
         if self.settings is not None and self.ctl.measurements is not None and self.ctl.measurements.ctl.horiz_roi.enabled:
             self.roi_active = True

@@ -11,6 +11,7 @@
         - provide self.marquee_message for functional plugins
         - add combobox datatype for plugin fields
         - allow plugin fields to have stylesheets
+        - auto-resize pandas table columns
     - file_io
         - save as JCAMP-DX
         - support loading columnar CSV files which don't happen to include 'Integration Time'
@@ -25,6 +26,10 @@
 ## 4.0 GUI and Plugin Refactoring
 
 - ...
+- 2023-11-10 4.0.26
+    - auto-resize pandas table columns
+    - fix ctl issues in Measurement*
+    - move jcamp from pip to PYTHONPATH until feature branch released
 - 2023-11-06 4.0.25
     - persist after restart custom spectra save location
 - 2023-10-09 4.0.24

@@ -862,6 +862,9 @@ class PluginController:
         self.table_view = QtWidgets.QTableView()
         self.table_view.setAccessibleName("Pandas Output")
 
+        header = self.table_view.horizontalHeader()
+        header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
+
         self.layout_graphs.addWidget(self.table_view, 3, 0, 1, 3)
         self.layout_graphs.setRowMinimumHeight(3, 100)
         self.layout_graphs.setRowStretch(3, 0)
