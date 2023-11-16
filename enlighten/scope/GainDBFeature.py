@@ -43,11 +43,11 @@ class GainDBFeature:
         self.ctl = ctl  # type: enlighten.Controller.Controller
 
         self.widgets = [
-          self.ctl.form.ui.pushButton_gain_dn,
-          self.ctl.form.ui.pushButton_gain_up,
-          self.ctl.form.ui.label_gainWidget_title,
-          self.ctl.form.ui.slider_gain,
-          self.ctl.form.ui.doubleSpinBox_gain
+            self.ctl.form.ui.pushButton_gain_dn,
+            self.ctl.form.ui.pushButton_gain_up,
+            self.ctl.form.ui.label_gainWidget_title,
+            self.ctl.form.ui.slider_gain,
+            self.ctl.form.ui.doubleSpinBox_gain
         ]
         self.visible = False
         self.locked = False
@@ -59,6 +59,8 @@ class GainDBFeature:
         self.ctl.form.ui.doubleSpinBox_gain.installEventFilter(ScrollStealFilter(self.ctl.form.ui.doubleSpinBox_gain))
         self.ctl.form.ui.pushButton_gain_up.clicked.connect(self.up_callback)
         self.ctl.form.ui.pushButton_gain_dn.clicked.connect(self.dn_callback)
+
+        self.ctl.presets.register(self, "gain_db", getter=self.get_db, setter=self.set_db_callback)
 
         self.update_visibility()
 
@@ -97,42 +99,41 @@ class GainDBFeature:
         spec = self.ctl.multispec.current_spectrometer()
         spec.settings.state.gain_db = spec.settings.eeprom.detector_gain
 
-        self.ctl.form.ui.doubleSpinBox_gain.setValue(spec.settings.state.gain_db)
-        log.debug("GainDBFeature.init_hotplug: initialized to %.2f", spec.settings.state.gain_db)
-
     # called by initialize_new_device a little after the other function
     def reset(self, hotplug=False):
         if not self.update_visibility():
             return
 
-        # TEMPORARILY set a value within limits 
-        self.ctl.form.ui.slider_gain.blockSignals(True)
-        self.ctl.form.ui.slider_gain.setMinimum(self.MIN_GAIN_DB)
-        self.ctl.form.ui.slider_gain.setMaximum(self.MAX_GAIN_DB)
-        self.ctl.form.ui.slider_gain.setValue(self.MIN_GAIN_DB)
-        self.ctl.form.ui.slider_gain.blockSignals(False)
-
-        log.debug("slider limits (%d, %d) (temporary value %d)",
-            self.ctl.form.ui.slider_gain.minimum(), self.ctl.form.ui.slider_gain.maximum(), self.ctl.form.ui.slider_gain.value())
-
         spec = self.ctl.multispec.current_spectrometer()
-        now_db = spec.settings.state.gain_db
-
-        # apply limits to SPINBOX
-        self.ctl.form.ui.doubleSpinBox_gain.blockSignals(True)
-        self.ctl.form.ui.doubleSpinBox_gain.setMinimum(self.MIN_GAIN_DB)
-        self.ctl.form.ui.doubleSpinBox_gain.setMaximum(self.MAX_GAIN_DB)
-        self.ctl.form.ui.doubleSpinBox_gain.blockSignals(False)
 
         # load gain_db from .ini, falling back to spec.settings.state (copied from EEPROM)
         if spec:
             serial_number = spec.settings.eeprom.serial_number
-            ini_gain_db = self.ctl.config.get_float(serial_number, "gain_db", now_db)
-            log.debug("Get gain from INI: %s", ini_gain_db)
-            self.set_db(ini_gain_db)
 
-        log.info("spinbox limits (%d, %d) (current %d)",
-            self.ctl.form.ui.doubleSpinBox_gain.minimum(), self.ctl.form.ui.doubleSpinBox_gain.maximum(), self.ctl.form.ui.doubleSpinBox_gain.value())
+            if self.ctl.config.has_option(serial_number, "gain_db"):
+                ini_gain_db = self.ctl.config.get_float(serial_number, "gain_db")
+                log.debug("Get gain from INI: %s", ini_gain_db)
+                self.set_db(ini_gain_db)
+            elif spec.settings.state.gain_db != None:
+                log.debug("Get gain from SpectrometerSettings: %s", spec.settings.state.gain_db)
+                self.set_db(spec.settings.state.gain_db)
+            elif spec.settings.eeprom.detector_gain != None:
+                gain_eeprom = spec.settings.eeprom.detector_gain
+                log.debug("Get gain from EEPROM: %s", gain_eeprom)
+                self.set_db(gain_eeprom)
+            else:
+                gain_default = 8
+                log.debug("Get gain from hardcoded default: %s", gain_default)
+                self.set_db(gain_default)
+
+            # apply limits to SPINBOX
+            self.ctl.form.ui.doubleSpinBox_gain.blockSignals(True)
+            self.ctl.form.ui.doubleSpinBox_gain.setMinimum(self.MIN_GAIN_DB)
+            self.ctl.form.ui.doubleSpinBox_gain.setMaximum(self.MAX_GAIN_DB)
+            self.ctl.form.ui.doubleSpinBox_gain.blockSignals(False)
+
+            log.info("spinbox limits (%d, %d) (current %d)",
+                self.ctl.form.ui.doubleSpinBox_gain.minimum(), self.ctl.form.ui.doubleSpinBox_gain.maximum(), self.ctl.form.ui.doubleSpinBox_gain.value())
 
     def _quiet_set(self, widget, value):
         """
@@ -147,9 +148,13 @@ class GainDBFeature:
         self.spinbox.selectAll()
 
     def set_db(self, db):
+        db = float(db)
         
         # save gain_db to application state
         self.ctl.multispec.set_state("gain_db", db)
+
+        # persist gain_db in .ini
+        self.ctl.config.set(self.ctl.multispec.current_spectrometer().settings.eeprom.serial_number, "gain_db", db)
 
         # send gain update message to device
         self.ctl.multispec.change_device_setting("detector_gain", db)
@@ -160,20 +165,21 @@ class GainDBFeature:
 
     def up_callback(self):
         util.incr_spinbox(self.ctl.form.ui.doubleSpinBox_gain)
+        self.set_db(self.ctl.form.ui.doubleSpinBox_gain.value())
 
     def dn_callback(self):
         util.decr_spinbox(self.ctl.form.ui.doubleSpinBox_gain)
+        self.set_db(self.ctl.form.ui.doubleSpinBox_gain.value())
 
     def sync_slider_to_spinbox_callback(self):
-        self.ctl.form.ui.doubleSpinBox_gain.setValue(self.ctl.form.ui.slider_gain.value()) 
+        self.set_db(self.ctl.form.ui.slider_gain.value()) 
 
     def sync_spinbox_to_slider_callback(self):
-        db = self.ctl.form.ui.doubleSpinBox_gain.value()
+        self.set_db(self.ctl.form.ui.doubleSpinBox_gain.value())
 
-        self.ctl.form.ui.slider_gain.blockSignals(True)
-        self.ctl.form.ui.slider_gain.setValue(db)
-        self.ctl.form.ui.slider_gain.blockSignals(False)
+    def get_db(self):
+        return self.ctl.form.ui.doubleSpinBox_gain.value()
 
-        self.ctl.multispec.set_state("gain_db", db)
-        self.ctl.multispec.change_device_setting("detector_gain", db)
-
+    def set_db_callback(self, value):
+        if self.visible:
+            self.set_db(value)

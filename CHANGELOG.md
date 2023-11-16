@@ -1,0 +1,1535 @@
+# Version History
+
+## 4.1.0-Dev
+
+- 2023-??-?? 4.1.0
+    - plugins
+        - hide plugin field frame if no fields
+        - deprecate dependencies
+        - support events in functional plugins
+        - increase default plugin Marquee period
+        - provide self.marquee_message for functional plugins
+        - add combobox datatype for plugin fields
+        - allow plugin fields to have stylesheets
+        - auto-resize pandas table columns
+        - move Controller.post_init to after initial spectrometer connection
+    - file_io
+        - save as JCAMP-DX
+        - support loading columnar CSV files which don't happen to include 'Integration Time'
+    - added PresetFeature
+    - refactoring
+        - moved RamanIntensityCorrection, ScanAveragingFeature, BaselineCorrection, BoxcarFeature, IntegrationTimeFeature to ctl
+        - docs and cleanup around ScrollStealFilter and MouseWheelFilter
+        - simplified Configuration.save
+
+---
+
+## 4.0 GUI and Plugin Refactoring
+
+- ...
+- 2023-11-10 4.0.26
+    - auto-resize pandas table columns
+    - fix ctl issues in Measurement*
+    - move jcamp from pip to PYTHONPATH until feature branch released
+- 2023-11-06 4.0.25
+    - persist after restart custom spectra save location
+- 2023-10-09 4.0.24
+    - Prod.BurnIn temperature fix
+    - added run_from_root
+    - restored hide_from_console (hide-early doesn't work on W11, hide-late doesn't on W10)
+- 2023-10-06 4.0.23
+    - temporarily changed PluginController autoload from "ctor + 1sec" to "first
+      spectrometer connection" (later rolled-back)
+- 2023-10-06 4.0.22
+    - bundle libusb0.dll to Windows install folder :-(
+- 2023-10-06 4.0.21
+    - automatically retain previous 2MB of existing enlighten.log to aid in fault analysis
+- 2023-09-30 4.0.20
+    - updated dependency versions to resolve tensorflow import issue
+        - Python 3.10 -> 3.11
+        - PySide 2 -> 6
+        - pyinstaller 4 -> 5
+        - numpy -> 1.26 (1.24.3?)
+        - tensorflow <- 2.13
+    - let bootstrap pass compression to InnoSetup (default lzma/max)
+    - change pyinstaller --noconsole to --hide-console to fix pexpect issue
+- 2023-09-29 4.0.19
+    - applog tweak
+- 2023-09-29 4.0.18
+    - fixed plugin outputs/table bug
+    - added ScanAveragingFeature.set_locked
+    - changed --headless to --window-state
+    - BurnIn tweak
+- 2023-09-20 4.0.17
+    - support --log-append
+    - moved run-burning.bat to plugins/Prod
+    - improved Prod.BurnIn logging
+- 2023-09-20 4.0.16
+    - bugfixes
+        - RamanIntensityCorrection works in Expert Mode
+        - use EEPROM FWHM for RamanShiftCorrection
+    - UI
+        - splash tweak
+        - msgbox for improved error reporting (e.g. 0 max integration time)
+    - portability
+        - fixed rebuild_resources.sh for MacOS
+        - updated Mac .dmg installer process
+    - production
+        - added BurnIn plugin
+- 2023-09-01 4.0.15
+    - enforce eeprom.max_integration_time_ms on XS
+    - fixed DetectorTemperatureFeature on ambient detectors
+    - plugins
+        - added --plugin command-line option
+        - added Demo.LockSettings
+    - XS-Series
+        - enforce eeprom.max_integration_time_ms
+        - StatusIndicators show laser unavailable when battery low
+    - refactoring
+        - moved BatteryFeature, StatusIndicators to ctl
+- 2023-07-19 4.0.14
+    - extend boxcar to left and right edges of spectra
+    - clear scan average count upon reset
+- 2023-07-07 4.0.13
+    - spectrometer control
+        - support selectable mW/PWM for ILC and Expert Mode
+    - data management
+        - added "use filename as label" checkbox
+        - template improvements
+            - added filename template
+            - macros now work in export filename components
+            - support Reading attributes
+            - user-configurable floating-point precision
+            - added date/time components ({YYYY}, {hh} etc)
+            - added file_timestamp, integration_time_sec macros
+    - persistence
+        - enlighten.ini allows % 
+        - persist gain_db by serial number
+    - GUI updates
+        - added WhatsThis button next to Help
+        - changed Measurement ToolTip to WhatsThis
+        - added min/avg/max to thumbnail WhatsThis
+        - thumbnail label improvements (smaller font, easier editing)
+        - keyboard shortcuts
+            - added ctrl-G/N/T per https://www.goodreads.com/quotes/9934315-it-is-a-curious-fact-and-one-to-which-no
+            - added F1 for help
+        - splash screen messages
+    - plugin improvements
+        - updated Savitzky-Golay
+        - updated StatsBuffer
+        - updated Stats
+        - updated docs
+        - fixed plugin_name in metadata
+    - refactoring
+        - renamed VignetteROIFeature to HorizROIFeature
+        - updated LaserControlFeature to ctl
+        - technique-vs-view fixes
+        - vignette-vs-crop fixes
+        - static analysis support
+    - devtools
+        - pyusb-virtSpec support
+- 2023-06-14 4.0.12
+    - persistence
+        - fixed Configuration defaults
+        - updated Write EEPROM tooltip
+    - file_io
+        - warn when saving but no formats selected
+        - fixed load-then-export use-case
+        - always save all rows of column-ordered CSV spectra regardless of ROI
+        - output "NA" rather than 0 for values omitted due to ROI or spectral range
+        - use prefix and suffix in export filenames
+        - stop forcing loaded data to lowercase
+        - improved data consistency in loaded CSVs
+    - plugins
+        - moved from Settings View to Control Palette
+        - moved RamanLines to Raman
+        - simplified Prod.EmissionLines 
+- 2023-05-15 4.0.11
+    - added collated export
+    - invert x-axis for 1064XL
+- 2023-05-10 4.0.10
+    - "fixed" Marquee
+    - added scripts/transpose.py
+    - fixed save on non-Raman
+    - allow LocalBaseline plugin to save metadata
+    - persist cloud permission
+    - fixed Raman Intensity Correction in 1064XL
+- 2023-05-03 4.0.9
+    - fixed Save and Export
+- 2023-05-02 4.0.8
+    - added LocalBaseline plugin
+    - refactored Business Objects package structure
+    - pyinstaller tweak (excluded _bootlocale)
+- 2023-03-27 4.0.7
+    - persist PluginController marquee while satisfying prerequisites
+    - clamped Python to 3.10 to resolve build issues
+    - removed matplotlib dependency from non-Mac platforms
+    - added cyclohexane peaks
+    - fixed PYTHONPATH issue affecting installer
+- 2023-03-17 4.0.6
+    - Added Plugin Quick Start documentation
+    - Added Worek AChE Timeseries Plugin
+    - Ctrl-E to rename
+    - Fix bugs causing CSV files to fail to load
+    - Added Hello Graph Demo Plugin
+- 2023-02-08 4.0.5
+    - watchdog toggle via checkbox
+    - minimum watchdog of 3 sec
+- 2023-01-31 4.0.4
+    - fixed logo in light mode
+    - fixed installer bug?
+- 2023-01-13 4.0.3
+    - added dark-mode button
+    - hopefully improved laser watchdog handling on older (unsupported) models
+- 2023-01-03 4.0.2
+    - persist initial spectrometer color assignment across disconnects within a session
+    - added thumbnail tooltip
+- 2022-12-19 4.0.1
+    - improved plugin exception-handling
+    - improved plugin dependency messaging
+    - improved Marquee 'immediate' display
+- 2022-12-09 4.0.0
+    - better widget scaling at lower resolutions
+    - refactored Techniques, Modes and Views
+    - refactored GridFeature and VignetteROIFeature
+    - refactored LoggingFeature
+    - reflect laserWatchdog state in GUI
+    - fixed bug when multiple thumbnails have same label
+
+# 3.2 Open-Source
+
+- 2022-12-08 3.2.42
+    - expose save options to plugins
+    - plugins can programmatically change input fields
+    - plugins can save in same date dir as regular save
+    - fix graphing issues for plugins
+    - add measurement metadata so plugin thumbnail overlays show on other graph
+- 2022-12-06 3.2.41
+    - adding widget for laser watchdog
+- 2022-11-29 3.2.40
+    - dark-correct reference spectrum after-the-fact if collected in that order
+    - don't apply boxcar to dark or reference when in reference technique
+- 2022-11-28 3.2.39
+    - i18n
+    - add fix for international computers for plugins creation on install
+- 2022-11-15 3.2.38
+    - add battery data to hardware strip charts
+    - add string formatting to note, prefix, and suffix
+- 2022-10-17 3.2.37
+    - updates to regression tests
+- 2022-10-12 3.2.36
+    - merged pluginWarning / ROI fixes
+- 2022-10-12 3.2.35
+    - Change laser toggle button to on/off
+    - Change status indicator for lamp to be warning when any laser is on
+    - Remove laser units combo box
+- 2022-10-10 3.2.34
+    - fix Raman Shift Correction
+- 2022-09-28 3.2.33
+    - change tensorflow to hidden import to speed up start
+- 2022-10-03 3.2.32
+    - add splash screen on start up
+    - add warning dialogue for plugins
+- 2022-09-22 3.2.31
+    - add graph grid button and roi button to tool bar
+- 2022-09-19 3.2.30
+    - bugfixes while testing merged CEChanges 
+        - count retries in WasatchDeviceWrapper, not Multispec
+        - remove Multispec entries by device_id
+- 2022-09-13 3.2.29
+    - fix plugin metadata in csv exports
+- 2022-09-13 3.2.28
+    - Add spec object to enlighten plugins
+- 2022-09-12 3.2.27
+    - revert to only fpga reset via button
+- 2022-09-12 3.2.26
+    - cause fpga reset during error reconnect
+- 2022-09-08 3.2.25
+    - add fpga reset button
+- 2022-09-06 3.2.24
+    - change plugin to allow exposure to save features
+    - add radio buttons to plugins
+- 2022-08-31 3.2.23
+    - fix for external trigger erroring
+- 2022-08-29 3.2.22
+    - add pyusb reset as a recovery attempt
+- 2022-08-25 3.2.21
+    - update BLEManager so it focuses more on UI, move logic to Wasatch.PY
+    - setup Mock specs with new creation format
+    - Change failure state to perform reset of spec using pyusb
+- 2022-08-16 3.2.20
+    - testing new DeviceFinderUSB
+    - fixed bug parsing FWHM table
+    - making disconnect logic a little more robust
+    - tweaked Raman Intensity Correction tip
+- 2022-08-03 3.2.19
+    - hide high gain by default
+    - event based usb connection Windows and Linux
+    - Switch to std lib csv to support quote csv
+- 2022-07-28 3.2.18
+    - made internet access opt-in
+- 2022-07-27 3.2.17
+    - display error details on connection failures
+    - display detector serial number
+- 2022-07-26 3.2.16
+    - fixed issue renaming files (normalize metacharacters)
+    - resolved Andor cloud issues 
+        - Decimal conversion
+        - DynamoDB schema update
+        - fast is_internet_available check before attempting AWS
+        - added ENLIGHTEN_DISABLE_INTERNET environment variable check
+- 2022-07-22 3.2.15
+    - Andor fixes 
+    - disabled Cloud while analyzing errors
+- 2022-07-21 3.2.14
+    - fixed laser power issue in Wasatch.PY
+- 2022-07-19 3.2.13
+    - fixes to scripts/rebuild_resources.sh for Surface Pro (mzieg-surface)
+    - added Prod/EmissionLines plugin (mzieg-emission_lines)
+    - fixes for SPI (save DeviceID, add CRC) (mzieg-spi-redux)
+    - bugfix on BatchCollectionf filenames
+- 2022-06-23 3.2.12
+    - remove := and match cases to allow greater backwards compatiblity
+    - updates for Raspberry Pi
+- 2022-06-13 3.2.11
+    - add display for andor high gain
+    - add ability grab andor eeprom info from cloud
+- 2022-06-09 3.2.10
+    - fix "load export" bug introduced with 3.2.8
+- 2022-06-08 3.2.9
+    - add eject button feature
+- 2022-06-06 3.2.8
+    - auto-detect utf-8-sig encoding (common in Excel CSV)
+    - default loaded file labels to basename if no metadata found
+- 2022-06-01 3.2.7
+    - add spc file writer
+- 2022-05-31 3.2.6
+    - fix import error for files exported without pixel header
+- 2022-05-19 3.2.5
+    - add 5th wavecal coeff to standard CSV format
+    - limit graph heights on Scope Setup
+- 2022-05-13 3.2.4
+    - editing Thumbnail label now updates "Label" metadata in saved CSV
+    - RamanID plugin
+        - removed SimpleRamanID 
+        - quoted pathnames
+    - cursor fixes when changing x-axis / switching spectrometer
+    - improve readability of connected spectrometer names 
+    - fix "auto-color" retention
+    - added redistributables to source distribution
+    - Andor fan control
+- 2022-05-11 3.2.3
+    - fixed interlock monitoring (driver-only change)
+- 2022-05-06 3.2.2
+    - support .asc files from Andor Solis
+- 2022-05-04 3.2.1
+    - add despiking feature
+- 2022-05-03 3.2.0
+    - moved to GitHub
+
+# 3.1 64-bit
+
+- 2022-04-18 3.1.16
+    - support for spi and resolve
+- 2022-04-27 3.1.15
+    - added support for Andor Newton
+- 2022-04-25 3.1.14
+    - merged 3.1.10/11/12 (mzieg-andor-testing) to master
+- 2022-04-25 3.1.13
+    - fix filter not working on comboboxes
+    - remove mousewheel events for sliders
+- 2022-04-23 3.1.12
+    - internal testing
+- 2022-04-23 3.1.11
+    - reduce error severity if raw laser temperature is zero
+- 2022-04-22 3.1.10
+    - fix multi-spectrometer x-axis bug with vignetted ROI
+    - default strip-chart window to 3min and add unit to label
+    - temperature status indicator now based on last 10sec of readings, regardless of graph window
+    - disable laser temperature chart by default
+    - freeze pyinstaller at 4.10 due to issue #6759
+    - allow up to 2 missed readings before displaying new dialog
+    - Andor changes
+        - only support one Andor unit at a time due to libusb address ghosts
+        - support TECs going down to -120C
+        - made long Andor connection message a little more friendly
+        - many associated Wasatch.PY fixes (TEC setpoint, shutter state etc)
+        - add WP_830XL to ModelConfig
+- 2022-04-21 3.1.9a
+    - fixes to ble gui bugs
+- 2022-04-20 3.1.9
+    - hide reference widgets in Raman mode
+    - Setup interface for SPI device
+- 2022-04-18 3.1.8
+    - label templates support all Measurement metadata field names
+- 2022-04-12 3.1.7
+    - apply boxcar to recordable\_dark
+    - remove blocking call for spectrometer settings
+    - make spec error appear as dialog instead of marquee
+- 2022-04-12 3.1.6
+    - create ble throbber, gui tweaks
+- 2022-04-07 3.1.5
+    - installer automatically uninstalls old version
+- 2022-03-22 3.1.4
+    - add ble connection feature
+- 2022-03-21 3.1.3
+    - added sig\_laser\_tec, has\_interlock\_feedback
+    - added StatusIndicator tooltips
+- 2022-03-17 3.1.2
+    - prefer libusb0 (Wasatch.PY 2.0.2)
+- 2022-03-04 3.1.1
+    - Add batch collection specific timeout
+- 2022-03-02 3.1.0
+    - Move Enlighten to 64 bit
+
+# 3.0 Andor Support
+
+- 2022-03-15 3.0.13
+    - added try-except around writes to enlighten.ini
+- 2022-03-15 3.0.12
+    - fixed --serial-number cmd-line option
+- 2022-03-01 3.0.11
+    - Add restore eeprom from cloud
+- 2022-02-18 3.0.10
+    - fixed bug preventing excitation being set to zero
+- 2022-02-17 3.0.9
+    - Restore tests to working
+    - open-source prep
+- 2022-02-14 3.0.8
+    - Fix hardware graph bugs
+- 2022-02-10 3.0.7
+    - Add load event hook to plugins
+- 2022-02-09 3.0.6
+    - Fix KIA not starting bug
+- 2022-02-07 3.0.5
+    - Fix to work with Raman ID plugin
+    - Fix bug with temperature indicator
+- 2022-02-01 3.0.4
+    - Change hardware strip sampling to be based on integration time
+    - Have non-present hardware graphs not show any data
+    - add auto timeout option for continuous write
+- 2022-01-28 3.0.3
+    - fixed Multispec bug
+- 2022-01-18 3.0.2
+    - Removed ATMCD32D.H (fixed "malicious software" warning on Windows?)
+- 2022-01-18 3.0.1
+    - Andor installer testing
+- 2022-01-18 3.0.0
+    - Added support for Andor spectrometers
+
+# 2.7 External Vendors
+
+- 2021-12-2 2.7.3
+    - Fixed bug where eeprom export didn't take first tuple element which had file path
+- 2021-10-28 2.7.2
+    - changed StatusIndicator laser indicator from laser_enable -> laser_can_fire and laser_is_firing
+    - ROI plugin bugfix
+- 2021-10-20 2.7.1 
+    - Internal Testing
+- 2021-10-10 2.7.0
+    - Internal Testing
+
+# 2.6 Open-Source Prep
+
+- 2021-09-23 2.6.10
+    - fixed LaserControlFeature bug
+- 2021-09-23 2.6.9
+    - updating for Linux
+    - fixing interpolation on exports
+- 2021-09-16 2.6.8
+    - renamed RamanCorrectionFeature -> RamanShiftCorrectionFeature
+    - added RegionControlFeature (AdvancedOptions)
+    - major updates to ROI plugin
+    - Authentication cleanup
+    - deprecated MultiPos
+    - allow plugins to dynamically add graph traces (e.g. for save/clear)
+    - auto-parse ROIs at EEPROM load, but only enable first
+    - added label template
+- 2021-09-16 2.6.7
+    - back to common
+    - fixed Cursor/Graph dependency
+    - cleanup
+        - BatteryFeature
+        - LaserControlFeature 
+        - ExternalTriggerFeature
+        - ImageResources
+        - DetectorTemperatureFeature
+        - LaserTemperatureFeature
+        - LoggingFeature
+        - PageNavigation
+        - StatusIndicators
+- 2021-09-13 2.6.6
+    - fixed load file bug (laserPowerMW)
+    - fixed cursor axes bug (AxesHelper)
+- 2021-08-24 2.6.5
+    - fixed export bug
+    - fixed Common module nomenclature
+    - added RnD.ROI
+    - added DetectorRegions, DetectorROI
+    - added EnlightenPluginResponse.commands
+- 2021-08-20 2.6.4
+    - BatchCollection: added batch count, export, clear, explain
+    - untethered EEPROM subformat
+- 2021-08-18 2.6.3
+    - RelativeIrradiance testing
+- 2021-08-18 2.6.2
+    - internal testing
+- 2021-08-17 2.6.1
+    - export fix
+- 2021-08-17 2.6.0
+    - help button
+    - massive Controller cleanup
+    - added
+        - BusinessObjects
+        - ResourceMonitorFeature
+        - TransmissionFeature
+        - AbsorbanceFeature
+        - DarkFeature
+        - ReferenceFeature
+    - nixed
+        - Analysis
+        - External/*
+        - OffsetFeature
+        - Peak
+        - PeakFinder*
+        - PeakFinding
+        - RamanMatching
+        - Wavecal
+        - WebPowerSwitch
+        - clippings
+        - peakutils/*
+        - raman_matching/*
+    - removed cmd-line args
+        - external-config
+        - geometry
+        - monitor-dir
+        - operation-mode
+        - overrides
+        - production
+        - stylesheet-path
+        - testing
+        - nohotplug
+    - changing to plugins
+        - RamanConcentration
+        - RelativeIrradiance
+
+# 2.5 PlugIns
+
+- 2021-08-13 2.5.25
+    - area scan tweaks (smaller screens)
+    - added DFU-Drivers.zip
+- 2021-08-12 2.5.24
+    - area scan tweaks (progress bar)
+- 2021-08-12 2.5.23
+    - display detector gain as stored on the EEPROM, not as read from the FPGA
+    - many changes to area scan
+- 2021-08-04 2.5.22
+    - startup\_integration\_time\_ms fix
+    - (continuing to work on plugins)
+- 2021-07-30 2.5.21
+    - fixed dark/reference tooltips
+    - added ctrl-R shortcut for reference
+    - added ctrl-1/2 shortcuts for Setup/Capture
+    - initial plug-in architecture and samples looks good?
+- 2021-07-28 2.5.20
+    - fixed load of export files saved in Excel
+- 2021-07-28 2.5.19
+    - updated laserWarmupMS.maximum to 300,000ms (5min)
+    - (working on plugin architecture, not ready for release)
+- 2021-07-19 2.5.18
+    - increased BatchCollection max measurements
+- 2021-07-16 2.5.17
+    - fixed Cursor
+    - added StatusBarFeature persistence
+- 2021-07-16 2.5.16
+    - added splitters 
+        - Scope Capture (clipboard|scope|control)
+        - Hardware Capture (laser|detector)
+    - added StatusBarFeature
+    - added DetectorTemperatureFeature
+- 2021-07-15 2.5.15
+    - InGaAs fix
+- 2021-07-15 2.5.14
+    - fixed spectral load (PySide2)
+    - fixed spectral load of vignetted measurement with only pixel data
+    - reduced rounding in driver
+    - removed Windows Registry entries messing up DPI
+    - removed logfile heartbeats
+- 2021-07-14 2.5.12 - 2.5.13
+    - added hardwareEvenOdd
+- 2021-07-14 2.5.11
+    - increased on-screen detector\_gain precision to 5 digits to avoid internal rounding error
+- 2021-07-14 2.5.9 - 2.5.10
+    - updated to latest PySide2 package structure
+- 2021-07-14 2.5.8
+    - auto-disable fan and TEC on Gen 1.5 at exit
+    - display detector\_gain in hex
+    - increase gainDB precision to 0.1 dB 
+- 2021-07-06 2.5.7
+    - removed regex from SpectrometerSettings.full\_model
+- 2021-07-01 2.5.6
+    - added label suffix in BatchCollection
+    - removed console window
+- 2021-06-18 2.5.5
+    - added battery to Measurement
+- 2021-06-17 2.5.4
+    - better handling of conflicting pixel count information on input files
+    - added uhubctl to README\_RPI
+    - moved Raman Intensity Correction and Richardson-Lucy to new Post-Processing Options widget (Advanced)
+    - added rudimentary loading of SPC spectra (x-axis unit from current graph, scale to 30k)
+- 2021-06-01 2.5.3
+    - updated 'make linux-installer'
+    - moved logfile to EnlightenSpectra/enlighten.log (all platforms)
+    - added post\_linux to scripts/deploy
+    - removed --bus-order
+- 2021-05-26 2.5.2
+    - Mac version
+        - added 'make mac-installer'
+        - added 'make mac-platypus'
+        - added --win, --mac and --linux to scripts/deploy
+        - updated README_MACOS.md
+    - fiddled with Area Scan in AdvancedOptions
+    - optimizing session export
+- 2021-05-25 2.5.1
+    - changed invert x-axis checkbox to button
+    - fixed area scan scroll area on IMX
+    - added "Laser Power mW" in saved files
+- 2021-05-24 2.5.0
+    - initial merge of pluginFeature
+
+# 2.4 MultiThreaded
+
+- 2021-05-24 2.4.10
+    - fixed laser power in mW bug
+- 2021-05-19 2.4.9
+    - fixed vignetting bug in export
+    - downleveled error on graphing mis-sized x/y arrays
+    - close laser warm-up marquee when laser deactivated
+- 2021-05-06 2.4.8
+    - updated for NIR0
+    - added wasatch.ROI
+    - enable vignetting at all times
+- 2021-05-05 2.4.7
+    - baseline correction in Raman bugfix
+- 2021-05-04 2.4.6
+    - fixed timeout bug on IMX
+    - cleanup
+    - added AdvancedOptions
+    - added tooltip explanation when laser button disabled due to low battery
+    - fixed PyInstaller issue (moved back to pip)
+- 2021-04-15 2.4.5
+    - fixed export bug with mixed Raman/non-Raman instruments
+    - GUI tweak
+    - fixed update\_visibility bug
+- 2021-04-14 2.4.4
+    - logging fixes
+    - added FW/FPGA to EEPROM copy-to-clipboard
+    - fixed 4th-order wavecal bug
+    - fixed acetaminophen ASTM peak
+    - support Gen1.5 lamp enable on status indicator
+    - clarified that "SiG" spectrometers always have ARM
+    - clarified handling of Hamamatsu-vs-IMX gain
+    - added InGaAs odd gain/offset to Measurement
+- 2021-04-09 2.4.3
+    - merged Multithread to master
+    - added Hardware -> Setup -> Logging -> pause
+- 2021-04-?? 2.4.2
+    - added 10sec laser initialization message
+- 2021-04-01 2.4.1
+    - fixed GainDBFeature issue on NIR1
+    - rebuilt installer with visible DOS window
+- 2021-03-31 2.4.0
+    - initial internal beta installer
+
+# 2.3 Gen 1.5
+
+- 2021-04-09 2.3.10
+    - changed strobe period to hz
+- 2021-03-30 2.3.9
+    - added EEPROMEditor clipboard, digest
+    - tested Gen 1.5 features (trigger, cont\_strobe, lamp, fan)
+    - Gen 1.5 fan auto-starts if eeprom.has\_cooling, all Gen 1.5 discretes off at disconnect
+- 2021-03-30 2.3.8
+    - increased detector\_gain precision to 3 digits on UI (actual precision 1/256)
+    - fixed GainDBFeature so correctly initialized to EEPROM detector\_gain value
+- 2021-03-30 2.3.7
+    - fixed start/stop lines when switching between multiple spectrometers
+- 2021-03-25 2.3.6
+    - restored even/odd InGaAs gain/offset correction
+- 2021-03-18 2.3.5
+    - fixed InGaAs issue
+- 2021-03-15 2.3.4
+    - make Fast Area Scan the default
+    - testing Gen 1.5
+    - added FeatureMask.{gen15, cutOffFilterInstalled}
+    - added EEPROM.laserWarmupSec
+- 2021-02-23 2.3.3
+    - made Configuration.load more robust
+    - made spectrometer disconnect more robust
+    - added UV-Raman
+    - updated per-model graph colors
+    - improved Ramp logging
+- 2021-02-09 2.3.2
+    - internal
+- 2021-02-02 2.3.1
+    - tweaked raman correction clear, icon, color
+    - changed area scan 'raw' to 'raw x 2^4'
+    - stubbed accessory control opcodes in Wasatch.PY
+- 2021-01-27 2.3.0
+    - added EEPROMWriter
+    - added RamanCorrectionFeature
+    - added AccessoryControlFeature
+    - AreaScanFeature updates
+        - added "fast mode"
+        - added "raw"
+    - installer updates
+        - updated installer script (how?)
+        - added QT_AUTO_SCREEN_SCALE_FACTOR to hopefully help with hi-DPI scaling
+    - misc
+        - added --nohotplug
+        - generalized InGaAs detector detection
+        - fixed handling of bad EEPROM wavecal
+        - fixed wLength_or_data issue in new PyUSB ("" -> 0)
+        - fixed Marquee fade bug
+
+# 2.2 Area Scan
+
+- 2020-12-07 2.2.10
+    - clicking the pencil icon to edit thumbnail label auto-selects label text
+    - fixed Unicode bug in labels, notes, filename suffix etc
+    - fixed timestamp parse error when loading CSV file edited by Excel
+    - fixed bad-pixel correction on inverted detectors
+- 2020-08-27 2.2.9
+    - added Detector to Measurement metadata
+    - added FocusListener
+    - auto-cycle row-oriented appended files when toggled or pre/suffix changes
+    - ctrl-left/right move cursor
+    - cursor y-value updates when spectrum paused
+- 2020-08-06 2.2.8
+    - area scan works reasonably well on FX2 with 031-007 FPGA
+    - added ctrl-H shortcut to Hardware
+- 2020-06-24 2.2.7
+    - added GainDBFeature (SiG)
+    - added RamanModeFeature (SiG)
+    - added IntegrationTimeFeature (finally)
+    - added ctrl-key shortcuts to tooltips
+    - fixed session exports spanning disconnects
+    - fixed scipy.special.cython\_special missing package
+- 2020-06-16 2.2.6
+    - added deconvolved metadata
+    - deprecated SW-only implementation of odd gain and offset
+- 2020-06-11 2.2.5
+    - No excitation, no Raman!
+    - extend subprocess timeout with integration time
+    - fixed double-readout bug 
+- 2020-06-10 2.2.4
+    - Area Scan normalization improvements
+- 2020-06-10 2.2.3
+    - Area Scan normalization improvements
+- 2020-06-08 2.2.2
+    - Removed warning message at startup
+- 2020-06-03 2.2.1
+    - SiG
+        - improved Area Scan
+        - ignore negative vertical ROI
+    - R&D
+        - added support for 2048-pixel ARM
+- 2020-05-28 2.2.0
+    - KnowItAll
+        - fixed guide bug (queued dups)
+    - SiG
+        - Area Scan widget
+    - shortcuts
+        - Ctrl+A = Authenticate/Advanced Features
+        - Ctrl+C = Copy to Clipboard
+        - Ctrl+D = Dark (toggle)
+        - Ctrl+L = Laser (toggle)
+        - Ctrl+P = Pause/Play (toggle)
+        - Ctrl+S = Save
+    - manufacturing
+        - added zipped CyUSB3 drivers for reflashing pre-programmed FX2 boards
+
+# 2.1 KnowItAll
+
+- 2020-05-22 2.1.14
+    - KnowItAll
+        - added "install KnowItAll" clickable tip
+    - misc
+        - bugfix: don't redisplay baseline trace when hiding clipboard traces
+        - bugfix: when clearing guide tips by token, purge from queue as well
+- 2020-05-22 2.1.13
+    - KnowItAll
+        - added score to saved files
+        - added declared match to Thumbnail id tooltip
+        - revisited BaselineCorrection enable/visibility/config 
+        - refactored RamanIntensityCorrection supported/allowed/enabled
+        - disabled benign/hazard functionality
+        - restored baseline guide tip
+        - added SRM guide tip
+    - misc
+        - log timer shutdown fix
+        - removed extra log window
+        - added VISNIR-OEM pic
+- 2020-05-22 2.1.12
+    - INTERNAL RELEASE, TEST INSTALLER
+    - KnowItAll
+        - firmly tied baseline correction availability to vignetting enabled
+        - added "Always Allow" baseline correction checkbox
+        - updated AirPLS defaults
+    - robustness
+        - added KIAConsole to taskkill, and cleaned-up zombies before as well as after
+- 2020-05-21 2.1.11
+    - KnowItAll
+        - disable baseline_correction unless has_horizontal_roi and Raman
+        - re-enabled darks when baseline corrected
+        - added "suppress"
+        - ensured Id buttons only appear when applicable and KIA installed
+        - shrank thumbnail buttons a bit in Raman mode
+        - fixed(?) AirPLS params
+        - moved back to public superman distro
+        - added ModelFWHM
+    - GUI 
+        - rebalanced button bar
+        - fixed tooltips on red buttons
+        - deprecated "alarm on low-scoring hazards" until implemented
+    - robustness
+        - added enlighten.bat 
+        - made ModelInfo a Singleton
+        - increased laser feedback debounce window
+- 2020-05-20 2.1.10
+    - maintainability
+        - buried old prototype code
+        - added eeprom\_backups
+        - simplified ModelInfo
+        - moved write\_setting to dict of lambdas
+        - made all EEPROM fields "active" (sent downstream)
+    - SiG
+        - added SiG-633 picture
+        - associated EEPROM roi_vertical_region_1_start/end with detector start/stop lines
+        - working on Area Scan
+        - working on synchronized laser toggle
+    - KnowItAll
+        - added missing benign/hazard CSS
+        - added eeprom.avg\_resolution
+        - updated Wiley references
+        - added AirPLS parameters
+        - moved to forked Superman
+        - moved sharpening before SRM
+        - clear old matches after 10sec
+        - thumbnail fingerprint ID always enabled if KIA installed
+        - updated logo
+        - moved to bottom-left corner
+        - added Guide
+        - fixed alias bug
+- 2020-05-15 2.1.9
+    - developer functions
+        - added --set-all-dfu
+    - UX
+        - moved Marquee message area to drop-down Drawer
+    - robustness
+        - added "subprocess_timeout_sec" and "heartbeat" Settings
+    - SiG
+        - added Raman Mode, Raman Delay and Laser Watchdog
+        - unsynced Raman Mode from Laser Enable
+        - changed saturation to 0xfffe
+        - auto-save Wavenumbers in Raman Mode
+        - updated photograph
+        - updated WpModelInfo (image search logic, dump)
+    - InGaAs OEM
+        - moved Invert X-axis to EEPROM, possibly prematurely
+    - KnowItAll
+        - added KnowItAll Guide
+        - made Dark and Baseline Correction a little smarter
+        - updated benign / hazard colors and styles
+        - added Marquee cancellation tokens
+        - moved config("baseline_correction", "enable") 
+             to config("batch_collection", "baseline_correction_enable")
+    - bugfixes
+        - fixed bug storing dark from Scope Setup introduced when adding 
+          automatic dark measurements to BatchCollection 
+- 2020-05-01 2.1.8
+    - disable laser if battery < 5%
+    - added --serial-number 
+    - synced Raman Mode to Laser Enable
+    - added Laser Watchdog on OEM tab
+- 2020-04-29 2.1.7
+    - scale acquisition timeouts, poll rates to number of connected devices
+    - fixed bool.clear bug
+    - long model names
+    - Raman Mode
+    - added 5th wavecal coeff and format to EEPROMEditor
+- 2020-03-31 2.1.6
+    - fixed file save bugs (cleaned metachars from prefix/suffix, consistent newlines)
+    - enabled external triggering for FX2
+- 2020-03-27 2.1.5
+    - moved gain/offset initialization to driver
+    - added slit width to saved files
+    - fix 5th-order wavecal bug
+    - prevent infinite cursor recursion
+    - added pop-up notifications for driver messages
+    - increase 2.1.4 timeouts
+- 2020-03-23 2.1.4
+    - fixed row-ordered "append"
+    - fixed external trigger checkbox when changing selected spectrometer
+    - tweaked graph sizing for laptops
+    - scale spectrum timeouts by number of connected devices
+    - KnowItAll fixes
+        - updated to Inno Setup 6.0.4 (from 5.something)
+        - added Visual C++ 2015/17/19 redistributable
+        - added Visual C++ "debug" redistributables 
+        - moved related options to that portion of Scope Setup
+        - persisted baseline correction between sessions
+        - automatically enable baseline correction on first Raman technique
+        - explicitly default to AirPLS
+        - support EEPROM.avg_resolution in Richardson-Lucy
+        - exposed Richardson-Lucy parameters through enlighten.ini
+        - Raman Intensity Correction enable implies Vignetted ROI enabled
+- 2020-03-23 2.1.3
+    - added BatchCollection.take\_dark
+- 2020-03-10 2.1.2
+    - EEPROM fix
+- 2020-02-28 2.1.2
+    - internal bugfix
+- 2020-01-30 2.1.0
+    - ExternalAPI
+        - added MultiPos
+        - added External.{Feature,Wrapper}
+        - added example_data/external/average.{json,py}
+        - added example_data/external/pca.{json,r}
+        - added args.external_config
+        - added optional Position to metadata
+    - VignettedROI
+        - fixed graphing of loaded vignetted measurements
+        - changes to ROI EEPROM fields should take effect immediately
+    - SRM 
+        - reduced Raman Intensity Calibration to 7th order polynomial
+    - Graphing 
+        - fixed graph marker on clipboard traces
+        - in referenced techniques, show y-axis in counts until reference taken
+    - File Import/Export
+        - added ability to load .json measurements
+    - Manufacturing
+        - DFU mode
+    - Build
+        - moved to pyinstaller-dev per "Failed to execute script pyi_rth_pkgres"
+    
+# 2.0 GUI Enhancements
+
+- 2020-01-14 2.0.5 
+    - changed ConfirmWidget to "Delete from Disk?"
+    - hopefully fixed InGaAs high-gain mode checkbox default 
+    - clear dark/reference when updating interpolation settings
+    - fixed hardware status light
+    - fixed under Ubuntu 16.0.4 LTS
+    - fixed under Raspbian (Debian) Buster
+    - fixed exit during Batch Collection
+    - added heartbeat log message
+    - added README_RPI.md
+    - added scripts/changelog-to-html
+    - don't prompt for exit when exceeding resource limits
+    - pass exit code back to spawning shell
+    - added persistent Marquee messages
+    - added .txt file format
+    - fixed BatchCollection for single-measurement batches
+    - add JSON exports
+- 2019-10-30 2.0.4 (internal build)
+    - fixed Raman ID of live vignetted spectra
+- 2019-10-24 2.0.3 (internal build)
+    - re-enabled KnowItAll, External Raman ID
+    - fixed graph traces of vignetted thumbnails
+    - fixed bug in RamanIntensityCorrection.update_visibility
+    - updated scripts/bootstrap.bat to better purge previous build
+- 2019-10-24 2.0.2
+    - added SiG-VIS to ModelInfo
+    - changed ThumbnailWidget button bar to HorizontalLayout
+    - added color button to ThumbnailWidget
+    - added color button to Multispec
+    - fixed multi-spectrometer x-axis bug
+    - fixed multi-spectrometer play/pause bug
+    - fixed absorbance / transmission with VignetteROI
+    - restored VignetteROI to standard features
+    - added InterpolationFeature
+    - added graph markers
+    - always show Spectrometers widget
+- 2019-10-17 2.0.1
+    - added Wavelet baseline correction
+    - support RamanSpecCal / "raw" CSV files w/o metadata
+    - correctly update x-axis when paused
+    - fixed DashFileParser bugs
+- 2019-10-14 2.0.0
+    - added common.hide_future_features
+    - tweaked step-and-save icon
+    - deprecated Analysis page
+
+# 1.7 Qt5, VCRControls
+
+- 2019-10-14 1.7.10
+    - deprecate LaserCharacterization (moved to RamanSpecCal)
+    - generate Thumbnail pixmap from vignetted if available
+    - support 3rd-party Raman ID programs for comparison
+    - support re-processing loaded measurements
+- 2019-10-09 1.7.9
+    - added VignetteROIFeature
+    - added BoxcarFeature
+    - simplified external-trigger / high-gain checkboxes
+    - added temperature status indicator logic
+    - move boxcar smoothing to end of processing (removed from darks & refs)
+    - simplified Offset logic
+    - added horizontal ROI to CSV format
+    - added RollingDataSet all/one_within
+    - added Raman intensity correction in Raman mode when laser is firing
+    - only support baseline correction / deconvolution in non-reference techniques
+    - updated Richardson-Lucy parameters and added epsilon
+    - made installer desktop shortcut default
+    - crop ROI when sending to KnowItAll (live and thumbnails)
+    - removed auto-label from KnowItAll match
+    - added declared match to CSV format
+- 2019-09-27 1.7.8
+    - fixed horizontal ROI start < end bug
+    - fixed SaveOptions select directory bug
+    - added GUI
+    - added VCRControls
+    - added TakeOneFeature
+    - added ScanAveragingFeature
+    - added wasatch.applog timeout (improved robustness)
+    - LineEdit/Spinner color cleanup
+- 2019-09-20 1.7.7
+    - always show reference icon
+    - send EEPROM changes to subprocess
+    - apply horizontal ROI
+    - support saving in JSON
+    - added Richardson-Lucy deconvolution
+- 2019-09-11 1.7.6
+    - added BaselineCorrection
+    - added Technique, Baseline Correction Algo to CSV format
+- 2019-09-11 1.7.5
+    - fixed bug with KnowItAll stomping manually-renamed measurements
+    - implemented load dark/reference from saved spectra
+- 2019-09-09 1.7.4
+    - added Scan Averaging, Boxcar to CSV format
+    - bumped KIAConsole to Release
+- 2019-09-06 1.7.3
+    - added Model to CSV metadata
+    - added SaveOptions.allow_rename_files
+    - fixed export bug 
+    - continuing to simplify GUI layout, CSS
+    - updating status button logic
+    - don't pull new spectra for ID when paused
+- 2019-08-30 1.7.2 
+    - stylesheets
+        - numerous CSS fixes (removed all individual widget styles)
+        - added enlighten.css
+        - added scripts/embed_stylesheet.py
+        - added --stylesheet-path
+        - added README_CSS.md
+    - fixes
+        - deprecated "rescan" button
+        - disable ThumbnailWidget Fingerprint unless KIAFeature enabled
+        - fixed bugs in PeakFinderBaselineWavelet (int, scales.csv)
+- 2019-08-21 1.7.1
+    - updated to latest version of DarkStyle
+    - refactored CSS using properties
+    - kludged around pyside2-uic QComboBox population bug
+    - fixed SpinBoxes
+    - numerous color / style issues remaining, but seems functional
+- 2019-08-14 1.7.0
+    - added --production cmd-line switch 
+    - initial KnowItAll implementation
+        - added KnowItAll.Feature
+        - added KnowItAll.Wrapper
+        - added KnowItAll.Config
+        - added ID buttons to action bar and ThumbnailWidgets
+        - added spectrum icon
+        - added fingerprint icon
+    - file management
+        - fixed wavenumbers when loading CSV with non-integral excitation 
+        - fixed filename prefix/suffix
+        - restored ability to rename files when relabeling spectra
+    - rescale displayed thumbnail traces on x-axis switch
+    - laser power
+        - require modulation if laser power calibration present
+        - default to 1ms modulation pulse width
+    - dependencies
+        - update to Python 3.7 (3.4 deprecated by pyinstaller)
+        - update to Qt 5.13 (necessitated by Python update)
+        - kludged around pyside2-uic QTableWidget column bug
+
+# 1.6 Python 3
+
+- 2019-06-21 1.6.14
+    - hopeful hotplug integration time fix 
+    - initial KIAWrapper proof-of-concept
+- 2019-06-20 1.6.13
+    - made CSV and XLS file formats more consistent (field ordering, 
+      capitalization, inclusion)
+- 2019-06-17 1.6.12
+    - increased resistance to connecting to same spectrometer in parallel
+    - round negatives to zero when writing unsigned EEPROM fields
+- 2019-06-05 1.6.11
+    - cap startup integration time at 1sec at launch
+    - added product config on EEPROMEditor
+    - changed write\_eeprom to 2nd-tier for ARM, restored offset opcode for FX2
+- 2019-05-31 1.6.10
+    - improved laser dis/connect handling
+- 2019-05-31 1.6.9
+    - improving import of session exports
+    - added split-spectra script
+    - changed write\_eeprom to 2nd-tier opcode
+- 2019-05-29 1.6.8
+    - working on Area Scan memory leak?
+    - fixed FPGA Compilation Options display
+    - made EEPROM.min/max\_integration\_time\_ms 32-bit
+- 2019-05-15 1.6.7
+    - split views.py into BasicWindow and BasicDialog 
+    - add support for "untimed" BatchCollection (measurement period 0ms, with "count only" collections)
+- 2019-05-10 1.6.6
+    - confirm on exit
+    - multispec fixes (Py3)
+    - load spectra fixes (Py3)
+- 2019-04-30 1.6.5
+    - linearity and laser power calibration coeffs editable
+- 2019-04-29 1.6.4
+    - Batch Collection fixes
+- 2019-04-29 1.6.3
+    - added Area Scan for FX2 (wo0t!)
+- 2019-04-19 1.6.2
+    - fixed Windows icon (Py3)
+    - fixed(?) Windows logging (Py3)
+    - fixed EEPROMEditor precision (Py3)
+- 2019-04-15 1.6.1
+    - fixed Authentication (Py3)
+- 2019-04-15 1.6.0
+    - Python 3.4 installer builds on Win7
+    - first Python 3 / Pipes release
+
+# 1.5 Business Objects
+
+- 2019-04-15 1.5.19
+    - merging Pipes and Py3
+- 2019-04-15 1.5.18
+    - commented-out memory profiling (issue was in logger)
+- 2019-04-12 py3-1.6.0
+    - runs under Python3 (Linux)
+    - does NOT solve Linux memory leak
+- 2019-04-10 1.5.17
+    - fixed exporting previously-loaded spectra
+    - enabled loading labels and detector/laser temperature (columnar CSV only)
+    - fixed saving dark and reference 
+- 2019-04-10 1.5.16
+    - default "Save Raw" off
+    - fixed loading of minimal columnar files
+    - only save selected columns in columnar format
+    - manual updates
+- 2019-04-10 1.5.15
+    - memory profiling
+- 2019-04-05 1.5.14
+    - made allow\_default\_gain\_reset default (removed checkbox)
+    - changed GUI default TEC setpoint from likely setpoint (forcing change on hotplug)
+    - fixed waterfall issue on Linux
+    - fixed bug with thumbnail labels with colons
+    - fixed bug when renaming thumbnails while trace displayed
+- 2019-04-04 1.5.13
+    - internal test 
+- 2019-04-02 1.5.12
+    - in BatchCollection, process new readings even when paused
+- 2019-04-01 1.5.11
+    - made ENG-0034 Rev 4 default (enabled new EEPROM fields)
+- 2019-03-29 1.5.10
+    - fixed offset excitation bug
+- 2019-03-29 1.5.9
+    - Wasatch.PY version logging
+    - SiG-VIS testing tweaks
+- 2019-03-28 1.5.8
+    - initial SiG-Offset testing
+    - speed limit on SiG-VIS comms
+    - disable acquisition\_timeout on SiG-VIS
+    - merge-spectra updates to new .CSV file format
+- 2019-03-22 1.5.7
+    - fix acquisition timeout for external trigger
+- 2019-03-19 1.5.6
+    - sleep bus listener while spectrometer in\_process
+- 2019-03-18 1.5.5
+    - increased acquisition timeout to at least 10sec
+- 2019-03-12 1.5.4
+    - added OffsetFeature
+    - added Hide Others checkbox
+    - changed default Measurement label to "HH:MM:SS S/N"
+    - added saturation message
+    - added scripts/deploy
+- 2019-03-12 1.5.3
+    - added 6AU saturation for absorbance
+    - fixed pause/play for multiple spectrometers w/acquisition timeout
+    - added ethanol peaks in benign.json
+    - added voices for ethanol and Tylenol
+    - changed ENLIGHTEN\_magenta -> ENLIGHTEN\_default (bluegreen)
+- 2019-03-06 1.5.2
+    - hardcode max\_integration\_time\_ms to 2^24
+    - hide trigger widgets unless on ARM
+- 2019-03-06 1.5.1
+    - added DeviceID (fixed hotplug bug)
+    - fixed dark bug
+    - fixed NIR TEC setpoint bug
+- 2019-03-01 1.5.0
+    - added Graph
+    - added Cursor
+    - added FileManager
+    - added Measurement
+    - added Measurements
+    - refactored ThumbnailWidget
+    - added MeasurementFactory
+    - added ExportFileParser
+    - added ColumnFileParser
+    - added DashFileParser
+    - added SaveOptions.all\_spectrometers
+    - added Architecture diagram
+
+# 1.4 Multiple Spectrometers
+
+- 2019-02-14 1.4.9
+    - add Multispec feature lock
+    - added Stylesheets
+    - added ColorNames
+    - redesigned spectrometer color assignment
+    - support ENG-0034 Rev 4 
+    - use gain/offset from EEPROM
+- 2019-02-07 1.4.8
+    - persist SaveOptions in Configuration
+    - add prefix, suffix and note to capture screen
+    - added "process mode" for long-term data collection
+    - enforce DEBUG logging until connection
+- 2019-02-04 1.4.7
+    - updated color for WP-830
+- 2019-02-04 1.4.6
+    - updated README\_LINUX.md
+    - tested on Ubuntu 16.04 LTS
+- 2019-02-02 1.4.5
+    - added images for 785-ER and NIR1
+    - fixed darks/references on multiple spectrometers
+- 2019-01-31 1.4.4
+    - fixed detector TEC in multi-spectrometers
+    - decline to save .ini settings without serial number
+    - more robust handling of corrupt enlighten.ini
+- 2019-01-24 1.4.3
+    - fix multispec dark subtraction
+- 2019-01-24 1.4.2
+    - add battery readout
+    - improved hotplug logic
+- 2019-01-18 1.4.1
+    - added "Advanced" excitation control on light source widget
+    - update Acquire button when Batch Acquisition enabled
+    - filename pop-up on export
+    - moderate support for hot-plug and hot-unplug (full spectrometer power cycle sometimes required)
+- 2019-01-16 1.4.0 (added support for multiple spectrometers)
+    - added Multispec
+    - added Spectrometer
+
+# 1.3 Class Factoring
+
+- 2019-01-04 1.3.32
+    - started SaveOptions
+    - added SiG to ModelInfo
+    - added 'make cloc'
+    - battery working in Wasatch.PY
+- 2018-12-04 1.3.31
+    - update wavenumbers immediately on excitation change in Hardware -&gt; Setup
+- 2018-11-28 1.3.30
+    - fixed scan averaging in non-free-running mode
+- 2018-11-27 1.3.29
+    - fixed BatchCollection to disable laser before start of batch with automated laser
+- 2018-11-27 1.3.28
+    - allow BatchCollection to fire laser after optional delay
+    - fixed firmware version
+- 2018-10-10 1.3.27
+    - added graph zoom button
+    - added TEC dis/enable checkbox
+    - added quick dark/reference icons
+- 2018-09-25 1.3.26
+    - tested with ARM triggering
+- 2018-08-21 1.3.25
+    - adjustable abs/trans limit 
+- 2018-08-14 1.3.24
+    - fix for IMX123 integration time
+- 2018-08-14 1.3.22
+    - InGaAs offset/gain in software
+- 2018-07-24 1.3.21
+    - sound and peakfinding tweaks
+- 2018-07-11 1.3.20
+    - added comms\_init
+    - fixed detector\_gain/offset writes from EEPROMEditor
+- 2018-07-10 1.3.19
+    - added StatusMessage
+    - disabled initial writes of detector\_gain/offset from EEPROM
+    - updated model images
+- 2018-07-05 1.3.18
+    - added graph\_alternating\_pixels
+    - updated IMX123 overrides
+- 2018-06-13 1.3.17
+    - unbreak FileSpectrometer after IMX additions
+- 2018-06-12 1.3.16
+    - taking spectra with IMX
+- 2018-06-11 1.3.15
+    - fix laser enable on ARM
+- 2018-06-11 1.3.14
+    - audio disabled on non-Windows platforms
+- 2018-06-07 1.3.13
+    - updates for new detector\_gain\_odd and detector\_offset\_odd
+- 2018-06-07 1.3.12
+    - updated H2SO4 raman concentration model
+- 2018-06-07 1.3.11
+    - moved RamanConcentration to JSON
+    - added area-under-curve
+- 2018-05-31 1.3.10
+    - added Overrides
+- 2018-05-31 1.3.9
+    - FileSpectrometer mostly working
+- 2018-05-29 1.3.8
+    - added Sound
+    - peakfinding improvements
+    - changed compound ID database format to JSON
+    - early support for FileSpectrometer
+- 2018-05-21 1.3.7
+    - made laser power a float, toward greater granularity down the road
+- 2018-05-17 1.3.6
+    - fixed 2048-pixel/ms bug
+    - sped secondary ADC readout
+- 2018-05-17 1.3.5
+    - laser\_power\_in\_mW seems to work
+    - fixed export
+- 2018-05-15 1.3.4
+    - added OEM authentication level
+    - EEPROM update works
+- 2018-05-11 1.3.3
+    - status bar uses processed spectra vs raw
+    - fixed ccd\_gain and wavelength coeff updates
+- 2018-05-09 1.3.2
+    - disable waterfall for non-1024-pixel models
+- 2018-05-09 1.3.1
+    - fixed ARM bug
+    - fixed post-launch debug logging in spectrometer process
+    - added support for 2048-pixel FID models
+- 2018-05-08 1.3.0 (Major refactoring of spectrometer state)
+    - added SpectrometerSettings
+    - added SpectrometerState
+    - added Authentication
+    - added EEPROMEditor
+    - added ProcessedReading
+    - added SpectrometerApplicationState
+    - fixed reference graph sizing
+
+# 1.2 Raman Features
+
+- 2018-04-21 1.2.20
+    - LaserCharacterization
+- 2018-04-20 1.2.19
+    - added RamanConcentration 
+    - re-fixed initial integration time
+- 2018-04-19 1.2.18
+    - fixed laser power ramping
+    - draft area scan implementation
+- 2018-04-17 1.2.17
+    - parameterized laser power ramping
+- 2018-04-16 1.2.16
+    - updated laser power ramping
+- 2018-04-14 1.2.15
+    - engineering test
+- 2018-04-14 1.2.14
+    - configurable averaging on secondary ADC
+- 2018-04-13 1.2.14
+    - initial laser power ramping
+- 2018-04-13 1.2.13
+    - remove averaging on secondary ADC
+- 2018-04-12 1.2.11
+    - support calibrated secondary ADC
+- 2018-04-05 1.2.10
+    - graph secondary adc
+- 2018-04-05 1.2.9
+    - added invert\_x\_axis
+    - added enable\_secondary\_adc
+    - groundwork on multiple spectrometers
+- 2017-03-05 1.2.8-OEM
+    - moved key spinboxes to up/down buttons
+    - auto-disconnect when spectra stops streaming
+    - hide TEC and laser controls when not supported
+    - testing OEM branding
+- 2017-03-02 1.2.7
+    - de-dupping spectrometer commands
+    - added max\_usb\_interval\_ms
+- 2017-02-28 1.2.6
+    - UV-VIS testing
+- 2017-02-26 1.2.5
+    - fix BatchCollection bug 
+- 2017-02-16 1.2.4
+    - support 2048-pixel detectors
+- 2017-02-15 1.2.3
+    - added util
+    - added Peak
+    - added Compound
+    - added CompoundID
+    - added CompoundDatabase
+    - added RecognitionEngine
+    - added PeakFinderBaselineWavelet (needs tuning)
+    - fixed default integration time
+    - added support for differential timing on ARM communications
+    - wired-up new gain and offset "advanced features" widgets
+    - disabled wrapping on all spinboxes (esp integration time)
+    - initial compound ID testing (AN, AC worked)
+    - added min\_usb\_interval\_ms
+- 2017-02-09 1.2.2
+    - fixed bug enabling wavecal when paused
+    - added RelativeIrradiance
+    - added Clipboard
+    - added Marquee
+    - generalized LaserTemperatureRamp to Ramp
+- 2017-02-07 1.2.1
+    - Analysis changes
+        - added PeakFinding analytic mode
+        - moved Wavecal under PeakFinding
+    - configuration changes
+        - deprecated serial_lookup.ini
+        - moved .ini file to ~/Documents/EnlightenSpectra/enlighten.ini
+        - auto-create .ini at launch if not found
+        - auto-save .ini file at close
+        - support fractional excitation in .ini
+        - auto-restore integration time by serial number
+        - allow overriding graph line color, width and style via .ini
+    - GUI changes
+        - pre-averaged spectra no longer graphed during scan averaging
+        - each technique (scope, raman etc) remembers the last mode (setup, 
+          capture) you used in for that technique
+        - all graphs start the same color
+        - removed simulation data at startup
+        - on-screen display of key messages like "searching for spectrometer", 
+          "use Setup to store reference" etc 
+        - added "clear list" eraser icon at top of saved spectra column
+          (doesn't delete from disk, just clears session)
+        - more-or-less aligned Hardware Capture waterfall with spectra (feature 
+          still of uncertain use; complete alignment pending; needs labels)
+    - command-line changes
+        - --geometry now accepts 'maximized' and 'fullscreen' (kiosk-mode)
+        - --technique and --operation-mode now take validated string args (vs 
+          enum ordinals)
+    - added PeakFindingCWT
+    - added PeakFindingPeakUtils
+    - added Configuration
+    - added RamanMatching (stub)
+- 2017-01-24 1.2.0 (started Analysis features)
+    - analysis scaffolding
+
+# 1.1 GUI Consolidation
+
+- 2017-01-24 1.1.12
+    - read initial laser temperature setpoint
+    - added background boxcar subtraction
+    - fixed bug loading spectra with header rows
+- 2017-01-24 1.1.11
+    - added laser temperature control for manufacturing
+    - added Ramp
+- 2017-01-09 1.1.10 
+    - moved high-gain mode into detector control widget
+    - fixed display of dark-corrected averaged spectra
+- 2017-01-09 1.1.9  
+    - changed --order argument to --bus-order
+    - colorize traces by name 
+    - added Colors
+    - fixed x-axis when displaying traces
+- 2017-01-08 1.1.8  
+    - possible high-gain mode fix (untested - worked!)
+- 2017-01-05 1.1.7  
+    - possible high-gain mode fix (untested - failed)
+- 2017-01-05 1.1.6  
+    - fixed 2 bugs in wavecal dialog
+    - fixed laser\_enable bug
+    - updated high-gain mode API (untested - failed)
+    - added high-gain support for WP-1064
+    - extracted Wasatch.PY HAL to public GitHub repository
+- 2017-01-04 1.1.5  
+    - fixed rounding bug in integration slider
+    - added experimental support for high-gain mode to WP-NIR-1 (untested - failed)
+    - added BatchCollection 
+    - added Wavecal
+        - extracted into a class
+        - automatically infer model
+        - automatically snap emission wavelength to cursor
+        - allow user to manually override range
+        - fix potential Qt memory leak
+- 2017-12-28 1.1.4  
+    - fixed bug where on-screen spectra lagged on short integrations
+    - fixed "wiggling spectrometer" bug on hardware details page
+    - in row-order data, save serial number in "Blank" column 
+    - simplified integration time slider (.1sec, 5sec max)
+    - "unlock" graph when changing technique OR axis
+    - retain relative cursor position when changing x-axis
+    - fix cursor limits when changing x-axis
+    - added initial wavelength calibration support 
+    - added EmissionLamps
+    - added ModelInfo
+- 2017-12-19 1.1.3  
+    - fixed batch data collection
+    - clarified metadata rows in export
+    - fixed ToolTip colors
+    - fixed bug enabling ScanAveraging during Boxcar
+- 2017-12-18 1.1.2  
+    - reordered control widgets
+    - styled status bar
+    - sync displayAxis control with technique changes
+    - moved scan averaging into devices.py
+    - relocated verbose logging checkbox
+    - fixed technique padding
+    - update 'session spectra' count when deleting spectra
+    - added "Load" button
+    - added feedback when exporting spectra to large CSV
+    - removed ROI
+    - selective saving of CSV vs XLS 
+    - ability to append to single CSV
+    - optimized floating-point precision by field
+    - allow column of captured spectra to collapse 
+    - provide button atop Captured Spectra to invert sort order
+    - added ToolTips 
+    - fixed saved integration time 
+    - allow to export in columnar CSV
+    - added lock icon to un/freeze Y-axis
+    - colorized admin on successful login
+- 2017-12-10 1.1.1  
+    - remove traces when deleting spectra
+    - re-layed-out scope setup to fit smaller screens
+    - re-layed-out hardware setup to fit smaller screens
+    - re-layed-out hardware capture to fit smaller screens
+    - added status bar beneath scope capture 
+- 2017-12-08 1.1.0  (Major GUI Refactoring)
+    - unified scrollable control area
+    - merged transmission and raman screens into scope
+    - removed extraneous checkboxes
+    - allows references to be dark-corrected when captured
+    - allows darks and references to be averaged and smoothed
+    - added absorbance technique
+    - updated logo
+    - spinBoxes wait for completion
+    - optimized scan averaging memory usage
+
+# 1.0 Internal Alpha
+
+- 2017-12-05 1.0.7  
+    - added verbose logging 
+    - added Authentication
+    - installer built on Win7-32 works there and on Win10-64
+- 2017-11-30 1.0.6  
+    - fixed detector temperature smoothing
+    - added RollingDataSet
+    - fixed reconnect issue
+    - removed +/- 20 degC limits on TEC setpoint
+- 2017-11-28 1.0.5  
+    - retain metadata in export
+    - support 0 excitation
+- 2017-11-28 1.0.4  
+    - open to scope
+    - reverse temperatures read from EEPROM
+- 2017-11-27 1.0.3  
+    - fixed temperatures on InGaAs; apply bad\_pixels
+- 2017-11-08 1.0.2  
+    - fixed gain settings; updated logos
+- 2017-11-08 1.0.1 
+    - disable laser on close
+    - added version number to Window bar and installer filename
+    - removed uic\_qrc/\*.py
+- 2017-11-01 1.0.0 
+    - initial alpha of new QT-based Python spectroscopy GUI

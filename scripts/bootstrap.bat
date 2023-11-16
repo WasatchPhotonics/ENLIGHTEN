@@ -129,7 +129,7 @@ echo %date% %time% ======================================================
 REM capture start time
 set TIME_START=%time%
 set PYTHONUTF8=1
-set PYTHONPATH=.;..\Wasatch.PY;..\SPyC_Writer\src;pluginExamples;%CONDA_PREFIX%\lib\site-packages;enlighten\assets\uic_qrc
+set PYTHONPATH=.;..\Wasatch.PY;..\SPyC_Writer\src;..\jcamp;pluginExamples;%CONDA_PREFIX%\lib\site-packages;enlighten\assets\uic_qrc
 echo PYTHONPATH = %PYTHONPATH%
 
 if exist "C:\Program Files (x86)" (
@@ -375,6 +375,8 @@ if "%pyinstaller%" == "1" (
     echo %date% %time% Running PyInstaller OPTIONAL
     echo %date% %time% ======================================================
     echo.
+    REM hide-early worked on Win10 but not Win11
+    REM hide-late doesn't work on Win10
     pyinstaller ^
         --distpath="scripts/built-dist" ^
         --workpath="scripts/work-path" ^

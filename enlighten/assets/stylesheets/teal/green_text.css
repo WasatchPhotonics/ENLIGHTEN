@@ -1,0 +1,24 @@
+QLabel 
+{
+    color: rgba(0, 128, 0, 255);
+}
+
+QTextEdit
+{
+    color: rgba(0, 128, 0, 255);
+    background: transparent;
+    border: transparent;
+}
+
+QLineEdit
+{
+    color: rgba(255, 0, 0, 255);
+    background: transparent;
+    border: 1px solid white;
+}
+
+QPushButton
+{
+    color: rgba(255, 0, 0, 255);
+    background: qlineargradient(spread:pad, x1:0.546341, y1:1, x2:0.512195, y2:0, stop:0 rgba(67, 67, 67, 220), stop:1 rgba(96, 96, 96, 220));
+}

@@ -32,6 +32,7 @@ from enlighten.scope.ReferenceFeature import ReferenceFeature
 from enlighten.measurement.AreaScanFeature import AreaScanFeature
 from enlighten.timing.BatchCollection import BatchCollection
 from enlighten.device.Authentication import Authentication
+from enlighten.scope.PresetFeature import PresetFeature
 from enlighten.ui.ImageResources import ImageResources
 from enlighten.ui.PageNavigation import PageNavigation
 from enlighten.spectra_processes.TakeOneFeature import TakeOneFeature
@@ -80,8 +81,7 @@ class BusinessObjects:
 
     def __init__(self, controller):
         self.controller = controller
-
-        self.obj = {}
+        self.clear()
 
     def header(self, s):
         log.debug("")
@@ -93,6 +93,72 @@ class BusinessObjects:
         self.controller.splash.showMessage(s, alignment=Qt.AlignHCenter | Qt.AlignBottom, color=QColor("white"))
         self.controller.app.processEvents()
 
+    def clear(self):
+        """ Ensures objects can check for other's instantiation during start-up """
+        ctl = self.controller
+
+        ctl.absorbance = None
+        ctl.accessory_control = None
+        ctl.area_scan = None
+        ctl.authentication = None
+        ctl.baseline_correction = None
+        ctl.batch_collection = None
+        ctl.battery_feature = None
+        ctl.ble_manager = None
+        ctl.boxcar = None
+        ctl.clipboard = None
+        ctl.cloud_manager = None
+        ctl.colors = None
+        ctl.config = None
+        ctl.cursor = None
+        ctl.dark_feature = None
+        ctl.detector_temperature = None
+        ctl.eeprom_editor = None
+        ctl.eeprom_writer = None
+        ctl.external_trigger = None
+        ctl.file_manager = None
+        ctl.focus_listener = None
+        ctl.gain_db_feature = None
+        ctl.graph = None
+        ctl.grid = None
+        ctl.gui = None
+        ctl.guide = None
+        ctl.hardware_control_feature = None
+        ctl.hardware_file_manager = None
+        ctl.high_gain_mode = None
+        ctl.horiz_roi = None
+        ctl.image_resources = None
+        ctl.integration_time_feature = None
+        ctl.interp = None
+        ctl.kia_feature = None
+        ctl.laser_control = None
+        ctl.laser_temperature = None
+        ctl.logging_feature = None
+        ctl.marquee = None
+        ctl.measurement_factory = None
+        ctl.measurements = None
+        ctl.mfg = None
+        ctl.model_info = None
+        ctl.multispec = None
+        ctl.page_nav = None
+        ctl.plugin_controller = None
+        ctl.raman_intensity_correction = None
+        ctl.raman_mode_feature = None
+        ctl.raman_shift_correction = None
+        ctl.reference_feature = None
+        ctl.region_control = None
+        ctl.resource_monitor = None
+        ctl.richardson_lucy = None
+        ctl.save_options = None
+        ctl.scan_averaging = None
+        ctl.sounds = None
+        ctl.status_bar = None
+        ctl.status_indicators = None
+        ctl.stylesheets = None
+        ctl.take_one = None
+        ctl.transmission = None
+        ctl.vcr_controls = None
+
     def create_first(self):
         """
         These are things needed early in the Controller's constructor 
@@ -101,12 +167,14 @@ class BusinessObjects:
         ctl = self.controller
         sfu = ctl.form.ui
 
-        ctl.multispec = None 
-
         self.header("instantiating Configuration")
         ctl.config = Configuration(
             button_save                 = sfu.pushButton_save_ini,
             lb_save_result              = sfu.label_save_ini_result)
+
+        # created early so subsequent BusinessObjects can register to it
+        self.header("instantiating Presets")
+        ctl.presets = PresetFeature(ctl)
 
         self.header("instantiating LoggingFeature")
         ctl.logging_feature = LoggingFeature(
@@ -122,17 +190,14 @@ class BusinessObjects:
         ctl.colors = Colors(ctl.config)
 
         self.header("instantiating Stylesheets")
-        ctl.stylesheets = Stylesheets(ctl.stylesheet_path)
+        ctl.stylesheets = Stylesheets(ctl)
 
         self.header("instantiating GUI")
-        ctl.gui = GUI(
-            colors                      = ctl.colors,
-            config                      = ctl.config,
-            form                        = ctl.form,
-            stylesheet_path             = ctl.stylesheet_path,
-            stylesheets                 = ctl.stylesheets,
+        ctl.gui = GUI(ctl)
 
-            bt_dark_mode                = sfu.pushButton_dark_mode)
+        # instantiating this early will simplify letting others register as observers
+        self.header("instantiating PageNavigation")
+        ctl.page_nav = PageNavigation(ctl)
 
     def create_rest(self):
         """
@@ -189,22 +254,7 @@ class BusinessObjects:
             marquee                     = ctl.marquee)
 
         self.header("instantiating Graph")
-        ctl.graph = Graph(
-            clipboard                   = ctl.clipboard,
-            gui                         = ctl.gui,
-
-            button_copy                 = sfu.pushButton_copy_to_clipboard,
-            button_invert               = sfu.pushButton_invert_x_axis,
-            button_lock_axes            = sfu.pushButton_lock_axes,
-            button_zoom                 = sfu.pushButton_zoom_graph,
-            cb_marker                   = sfu.checkBox_graph_marker,
-            combo_axis                  = sfu.displayAxis_comboBox_axis,
-            generate_x_axis             = ctl.generate_x_axis,
-            hide_when_zoomed            = [ sfu.frame_new_save_col_holder, sfu.controlWidget ],
-            layout                      = sfu.layout_scope_capture_graphs,
-            rehide_curves               = ctl.rehide_curves,
-            stacked_widget              = sfu.stackedWidget_scope_setup_live_spectrum,
-            )
+        ctl.graph = Graph(ctl)
 
         self.header("instantiating HardwareFileOutputManager")
         ctl.hardware_file_manager = HardwareFileOutputManager(
@@ -212,12 +262,7 @@ class BusinessObjects:
             spin_timeout=sfu.spinBox_hardware_capture_timeout)
 
         self.header("instantiating Cursor")
-        ctl.cursor = Cursor(
-            button_dn                   = sfu.pushButton_cursor_dn,
-            button_up                   = sfu.pushButton_cursor_up,
-            cb_enable                   = sfu.checkBox_cursor_scope_enabled,
-            ds_value                    = sfu.doubleSpinBox_cursor_scope,
-            graph                       = ctl.graph)
+        ctl.cursor = Cursor(ctl)
 
         self.header("instantiating ImageResources")
         ctl.image_resources = ImageResources()
@@ -234,11 +279,10 @@ class BusinessObjects:
             graph                       = ctl.graph,
             gui                         = ctl.gui,
             layout_colors               = sfu.horizontalLayout_multiSpec_colors,
-            model_info                  = ctl.model_info,
             reinit_callback             = ctl.initialize_new_device,
             stylesheets                 = ctl.stylesheets,
             eject_button                = sfu.pushButton_eject,
-            controller_disconnect       = ctl.disconnect_device,
+            ctl                         = ctl,
 
 			# Essentially, these are widgets corresponding to SpectrometerState fields,
             # SpectrometerApplicationState fields, or change_device_setting() keys
@@ -284,13 +328,7 @@ class BusinessObjects:
             hardware_file_manager       = ctl.hardware_file_manager)
 
         self.header("instantiating HorizROIFeature")
-        ctl.horiz_roi = HorizROIFeature(
-            graph                       = ctl.graph,
-            multispec                   = ctl.multispec,
-            stylesheets                 = ctl.stylesheets,
-
-            button                      = sfu.pushButton_roi_toggle,
-            )
+        ctl.horiz_roi = HorizROIFeature(ctl)
 
         self.header("instantiating TransmissionFeature")
         ctl.transmission = TransmissionFeature(
@@ -344,6 +382,7 @@ class BusinessObjects:
 
         self.header("instantiating SaveOptions")
         ctl.save_options = SaveOptions(
+            ctl,
             bt_location                 = sfu.pushButton_scope_setup_change_save_location,
             cb_all                      = sfu.checkBox_save_all,
             cb_allow_rename             = sfu.checkBox_allow_rename_files,
@@ -355,6 +394,7 @@ class BusinessObjects:
             cb_excel                    = sfu.checkBox_save_excel,
             cb_filename_as_label        = sfu.checkBox_save_filename_as_label,
             cb_json                     = sfu.checkBox_save_json,
+            cb_dx                       = sfu.checkBox_save_dx,
             cb_load_raw                 = sfu.checkBox_load_raw,
             cb_pixel                    = sfu.checkBox_save_pixel,
             cb_raw                      = sfu.checkBox_save_raw,
@@ -375,33 +415,9 @@ class BusinessObjects:
             rb_by_col                   = sfu.radioButton_save_by_column,
             rb_by_row                   = sfu.radioButton_save_by_row)
 
-        self.header("instantiating PageNavigation")
-        ctl.page_nav = PageNavigation(
-            graph                       = ctl.graph,
-            logging_feature             = ctl.logging_feature,
-            marquee                     = ctl.marquee,
-            multispec                   = ctl.multispec,
-            save_options                = ctl.save_options,
-            stylesheets                 = ctl.stylesheets,
-
-            button_raman                = sfu.pushButton_raman,
-            button_non_raman            = sfu.pushButton_non_raman,
-            button_expert               = sfu.pushButton_expert,
-            combo_view                  = sfu.comboBox_view,
-            stack_main                  = sfu.stackedWidget_low,
-
-            fr_transmission_options     = sfu.frame_transmission_options,        # todo move to TransmissionFeature
-            fr_area_scan                = sfu.frame_area_scan_widget,
-            fr_baseline                 = sfu.frame_baseline_correction,
-            fr_post                     = sfu.frame_post_processing,
-            fr_tec                      = sfu.frame_tec_control,
-            fr_region                   = sfu.frame_region_control,
-
-            update_feature_visibility   = ctl.update_feature_visibility,
-            sfu                         = sfu)
-
         self.header("instantiating MeasurementFactory")
         ctl.measurement_factory = MeasurementFactory(
+            ctl,
             colors                      = ctl.colors,
             file_manager                = ctl.file_manager,
             focus_listener              = ctl.focus_listener,
@@ -414,22 +430,7 @@ class BusinessObjects:
             stylesheets                 = ctl.stylesheets)
 
         self.header("instantiating Measurements")
-        ctl.measurements = Measurements(
-            button_erase                = sfu.pushButton_erase_captures,
-            button_export               = sfu.pushButton_export_session,
-            button_load                 = sfu.pushButton_scope_capture_load,
-            button_resize               = sfu.pushButton_resize_captures,
-            button_resort               = sfu.pushButton_resort_captures,
-            factory                     = ctl.measurement_factory,
-            file_manager                = ctl.file_manager,
-            form                        = ctl.form,
-            gui                         = ctl.gui,
-            label_count                 = sfu.label_session_count,
-            layout                      = sfu.verticalLayout_scope_capture_save,
-            marquee                     = ctl.marquee,
-            reprocess_callback          = ctl.reprocess,
-            horiz_roi                   = ctl.horiz_roi)
-        ctl.graph.measurements = ctl.measurements
+        ctl.measurements = Measurements(ctl)
 
         self.header("instantiating Authentication")
         ctl.authentication = Authentication(
@@ -470,12 +471,7 @@ class BusinessObjects:
             current_spectrometer        = ctl.current_spectrometer)
 
         self.header("instantiating RamanIntensityCorrection")
-        ctl.raman_intensity_correction = RamanIntensityCorrection(
-            cb_enable                   = sfu.checkBox_raman_intensity_correction,
-            guide                       = ctl.guide,
-            multispec                   = ctl.multispec,
-            page_nav                    = ctl.page_nav,
-            horiz_roi                   = ctl.horiz_roi)
+        ctl.raman_intensity_correction = RamanIntensityCorrection(ctl)
 
         self.header("instantiating LaserControlFeature")
         ctl.laser_control = LaserControlFeature(ctl)
@@ -498,12 +494,7 @@ class BusinessObjects:
             path                        = "enlighten/assets/example_data/sounds")
 
         self.header("instantiating ScanAveragingFeature")
-        ctl.scan_averaging = ScanAveragingFeature(
-            bt_dn                       = sfu.pushButton_scan_averaging_dn,
-            bt_up                       = sfu.pushButton_scan_averaging_up,
-            multispec                   = ctl.multispec,
-            spinbox                     = sfu.spinBox_scan_averaging,
-            label                       = sfu.label_scan_averaging)
+        ctl.scan_averaging = ScanAveragingFeature(ctl)
 
         self.header("instantiating TakeOneFeature")
         ctl.take_one = TakeOneFeature(
@@ -532,19 +523,10 @@ class BusinessObjects:
             scan_averaging              = ctl.scan_averaging,
             take_one                    = ctl.take_one)
         ctl.vcr_controls.register_observer("save", ctl.save_current_spectra)
-        ctl.scan_averaging.set_vcr_controls(ctl.vcr_controls)
+        ctl.scan_averaging.complete_registrations()
 
         self.header("instantiating BaselineCorrection")
-        ctl.baseline_correction = BaselineCorrection(
-            cb_enabled                  = sfu.checkBox_baselineCorrection_enable,
-            cb_show_curve               = sfu.checkBox_baselineCorrection_show,
-            combo_algo                  = sfu.comboBox_baselineCorrection_algo,
-            config                      = ctl.config,
-            guide                       = ctl.guide,
-            multispec                   = ctl.multispec,
-            page_nav                    = ctl.page_nav,
-            horiz_roi                   = ctl.horiz_roi,
-            graph                       = ctl.graph)
+        ctl.baseline_correction = BaselineCorrection(ctl)
 
         self.header("instantiating DarkFeature")
         ctl.dark_feature = DarkFeature(
@@ -613,26 +595,13 @@ class BusinessObjects:
             )
 
         self.header("instantiating BoxcarFeature")
-        ctl.boxcar = BoxcarFeature(
-            bt_dn                       = sfu.pushButton_boxcar_half_width_dn,
-            bt_up                       = sfu.pushButton_boxcar_half_width_up,
-            spinbox                     = sfu.spinBox_boxcar_half_width,
-            
-            multispec                   = ctl.multispec,
-            page_nav                    = ctl.page_nav,
-            )
+        ctl.boxcar = BoxcarFeature(ctl)
 
         self.header("instantiating IntegrationTimeFeature")
-        ctl.integration_time_feature = IntegrationTimeFeature(
-            bt_dn                       = sfu.pushButton_integration_time_ms_dn,
-            bt_up                       = sfu.pushButton_integration_time_ms_up,
-            marquee                     = ctl.marquee,
-            multispec                   = ctl.multispec,
-            slider                      = sfu.slider_integration_time_ms,
-            spinbox                     = sfu.spinBox_integration_time_ms)
+        ctl.integration_time_feature = IntegrationTimeFeature(ctl)
 
         self.header("instantiating GainDBFeature")
-        ctl.gain_db_feature = GainDBFeature(ctl = ctl)
+        ctl.gain_db_feature = GainDBFeature(ctl)
 
         self.header("instantiating BLEManager")
         ctl.ble_manager = BLEManager(

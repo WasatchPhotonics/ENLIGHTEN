@@ -1,0 +1,5 @@
+QFrame 
+{
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(23, 23, 23, 255), stop:0.497561 rgba(50, 50, 50, 255), stop:1 rgba(44, 44, 44, 255));
+    border: 2px solid black;
+}

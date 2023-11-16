@@ -20,6 +20,8 @@ log = logging.getLogger(__name__)
 # persist with Measurements" (dark/reference timestamps, reading_count, current 
 # temperatures) and "heavyweight things we don't" (waterfall, historical 
 # temperatures).
+#
+# @todo consider moving to enlighten.device
 class SpectrometerApplicationState(object):
 
     def clear(self):

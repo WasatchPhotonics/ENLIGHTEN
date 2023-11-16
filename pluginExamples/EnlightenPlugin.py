@@ -53,6 +53,7 @@ class EnlightenPluginBase:
         self.y_axis_label = None
 
         self.series = {}
+        self.events = {}
 
         # plugins can do everything
         self.ctl = ctl
@@ -214,7 +215,8 @@ class EnlightenPluginBase:
             lock_enable = self.lock_enable,
             series_names = [], # functional plugins define this on a frame-by-frame basis
             x_axis_label = self.x_axis_label,
-            y_axis_label = self.y_axis_label
+            y_axis_label = self.y_axis_label,
+            events = self.events
         )
     
     def process_request_obj(self, request):
@@ -224,9 +226,11 @@ class EnlightenPluginBase:
         self.metadata = {}
         self.outputs = {}
         self.signals = []
+        self.marquee_message = None
 
         response = self.process_request(request)
-        if response: return response
+        if response: 
+            return response
 
         # if not yet returned, we are running a functional plugin,
         # and so we want Enlighten to construct the EnlightenPluginResponse for us
@@ -240,8 +244,10 @@ class EnlightenPluginBase:
             series = self.series,
             outputs = self.outputs,
             signals = self.signals,
-            metadata = self.metadata
+            metadata = self.metadata,
+            message = self.marquee_message
         )
+
     #### End backwards compatible object-returning wrappers #####
 
     ##
@@ -403,7 +409,6 @@ class EnlightenPluginConfiguration:
     #        plugins.
     # @param multi_devices: True if the plug-in is designed to handle spectra 
     #        from multiple spectrometers (tracks requests by serial_number etc)
-    # @param dependencies: optional array of EnlightenPluginDependency
     # @param events: a hash of supported event names to callbacks
     def __init__(self, 
             name, 
@@ -419,7 +424,6 @@ class EnlightenPluginConfiguration:
             events          = None,
             series_names    = None,
             multi_devices   = False,
-            dependencies    = None,
             graph_type      = "line"):  # "line" or "xy"
 
         self.name            = name
@@ -435,24 +439,7 @@ class EnlightenPluginConfiguration:
         self.events          = events
         self.multi_devices   = multi_devices
         self.series_names    = series_names
-        self.dependencies    = dependencies
         self.graph_type      = graph_type
-
-class EnlightenPluginDependency:
-    ##
-    # @param name: identifying string
-    # @param dep_type: currently supported values are: "existing_directory"
-    # @param persist: save and use previous values as defaults across sessions
-    # @param prompt: if user interaction is involved, use this as prompt / tooltip
-    def __init__(self,
-            name,
-            dep_type    = None,
-            persist     = False,
-            prompt      = None):
-        self.name       = name
-        self.dep_type   = dep_type
-        self.persist    = persist
-        self.prompt     = prompt
 
 ##
 # Each ENLIGHTEN plug-in will be visualized in the ENLIGHTEN GUI via a dynamically
@@ -522,6 +509,7 @@ class EnlightenPluginField:
     # @param precision: digits past decimal place (float only)
     # @param callback: function reference if button clicked (button only)
     # @param tooltip: mouseover string
+    # @param stylesheet: optional stylesheet name
     def __init__(self, 
             name, 
             datatype    = "string", 
@@ -531,8 +519,9 @@ class EnlightenPluginField:
             maximum     = 100,
             step        = 1,
             precision   = 2,
-            options     = None,
+            choices     = None,
             callback    = None,
+            stylesheet  = None,
             tooltip     = None):
 
         self.name       = name
@@ -545,7 +534,8 @@ class EnlightenPluginField:
         self.precision  = precision
         self.callback   = callback
         self.tooltip    = tooltip
-        self.options    = options
+        self.stylesheet = stylesheet
+        self.choices    = choices
 
 ##
 # This is a "request" object sent by the ENLIGHTEN GUI to the plug-in, containing

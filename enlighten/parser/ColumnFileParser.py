@@ -12,7 +12,7 @@ from wasatch.CSVLoader            import CSVLoader
 
 log = logging.getLogger(__name__)
 
-class ColumnFileParser(object):
+class ColumnFileParser:
     """
     A file parser to deserialize one ENLIGHTEN-format Measurement from a column-
     ordered CSV file.
@@ -28,7 +28,10 @@ class ColumnFileParser(object):
 
     @see TextFileParser for files with no header row at all.
     """
-    def __init__(self, pathname, save_options=None, encoding="utf-8"):
+    def __init__(self, ctl, pathname, save_options=None, encoding="utf-8"):
+
+        self.ctl = ctl
+
         self.pathname = pathname
         self.save_options = save_options
         self.encoding = encoding
@@ -45,7 +48,7 @@ class ColumnFileParser(object):
 
     def parse(self) -> Measurement:
         # read through the input file by line, loading data locally
-        self.csv_loader.load_data()
+        self.csv_loader.load_data(scalar_metadata=True)
 
         # put loaded data into where it goes in ENLIGHTEN datatypes
         self.post_process_metadata()
@@ -55,11 +58,11 @@ class ColumnFileParser(object):
 
         # generate a Measurement
         m = Measurement(
+            self.ctl,
             source_pathname   = self.pathname, 
             timestamp         = self.timestamp,
             settings          = self.settings,
-            processed_reading = self.processed_reading,
-            save_options      = self.save_options)
+            processed_reading = self.processed_reading)
 
         if "Label" in self.metadata:
             m.label = self.metadata["Label"]
@@ -86,6 +89,15 @@ class ColumnFileParser(object):
             return 0
 
         v = self.metadata[field]
+        if isinstance(v, list):
+            # if multiple strings were loaded for this field, take the first 
+            # non-empty one
+            value = None
+            for tok in v:
+                if value is None and len(tok.strip()):
+                    value = tok.strip()
+            v = '' if value is None else value
+
         if len(v.strip()) == 0:
             return 0
 

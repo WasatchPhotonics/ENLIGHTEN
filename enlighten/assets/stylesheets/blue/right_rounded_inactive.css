@@ -1,0 +1,11 @@
+QPushButton 
+{
+    border-radius: 0;
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+  background-color: qlineargradient(spread:pad, 
+      x1:0.5, y1:1, 
+      x2:0.5, y2:0, 
+      stop:0 hsl(0, 0%, 55%),
+      stop:1 hsl(0, 0%, 43%));
+}

@@ -37,6 +37,7 @@ class SaveOptions():
         self.cb_excel                = None
         self.cb_filename_as_label    = None
         self.cb_json                 = None
+        self.cb_dx                   = None
         self.cb_pixel                = None
         self.cb_raw                  = None
         self.cb_reference            = None
@@ -59,6 +60,7 @@ class SaveOptions():
 
     def __init__(
              self,
+             ctl,
              bt_location,
              cb_all,
              cb_allow_rename,
@@ -70,6 +72,7 @@ class SaveOptions():
              cb_excel,
              cb_filename_as_label,
              cb_json,
+             cb_dx,
              cb_load_raw,
              cb_pixel,
              cb_raw,
@@ -93,6 +96,8 @@ class SaveOptions():
 
         self.clear()
 
+        self.ctl = ctl
+
         self.bt_location          = bt_location
         self.cb_all               = cb_all
         self.cb_allow_rename      = cb_allow_rename
@@ -104,6 +109,7 @@ class SaveOptions():
         self.cb_excel             = cb_excel
         self.cb_filename_as_label = cb_filename_as_label
         self.cb_json              = cb_json
+        self.cb_dx                = cb_dx
         self.cb_load_raw          = cb_load_raw
         self.cb_pixel             = cb_pixel
         self.cb_raw               = cb_raw
@@ -158,6 +164,7 @@ class SaveOptions():
         self.cb_excel           .stateChanged       .connect(self.update_widgets)
         self.cb_filename_as_label.stateChanged      .connect(self.update_widgets)
         self.cb_json            .stateChanged       .connect(self.update_widgets)
+        self.cb_dx              .stateChanged       .connect(self.update_widgets)
         self.cb_pixel           .stateChanged       .connect(self.update_widgets)
         self.cb_raw             .stateChanged       .connect(self.update_widgets)
         self.cb_reference       .stateChanged       .connect(self.update_widgets)
@@ -192,6 +199,7 @@ class SaveOptions():
         self.init_checkbox(self.cb_excel,        "format_excel")
         self.init_checkbox(self.cb_filename_as_label, "filename_as_label")
         self.init_checkbox(self.cb_json,         "format_json")
+        self.init_checkbox(self.cb_dx,           "format_dx")
         self.init_checkbox(self.cb_append,       "append")
         self.init_checkbox(self.cb_pixel,        "pixel")
         self.init_checkbox(self.cb_wavelength,   "wavelength")
@@ -210,6 +218,11 @@ class SaveOptions():
         self.le_prefix          .setText   (self.config.get(s, "prefix"))
         self.le_suffix          .setText   (self.config.get(s, "suffix"))
         self.le_note            .setText   (re.sub(",", "", self.config.get(s, "note")))
+
+        self.directory = self.ctl.config.get("SaveOptions", "save_location", default=common.get_default_data_dir())
+
+        display_path = self.generate_display_path(self.directory)
+        self.lb_location.setText(display_path)
 
     def init_checkbox(self, cb, option):
         value = self.config.get_bool("save", option)
@@ -281,6 +294,7 @@ class SaveOptions():
         self.config.set(s, "format_txt",         self.save_text())
         self.config.set(s, "format_excel",       self.save_excel())
         self.config.set(s, "format_json",        self.save_json())
+        self.config.set(s, "format_dx",          self.save_dx())
         self.config.set(s, "append",             self.append())
         self.config.set(s, "pixel",              self.save_pixel())
         self.config.set(s, "wavelength",         self.save_wavelength())
@@ -332,11 +346,12 @@ class SaveOptions():
     def save_dark               (self): return self.cb_dark.isChecked()
     def save_excel              (self): return self.cb_excel.isChecked()
     def save_json               (self): return self.cb_json.isChecked()
+    def save_dx                 (self): return self.cb_dx.isChecked()
     def save_pixel              (self): return self.cb_pixel.isChecked() or self.save_with_pixel
     def save_raw                (self): return self.cb_raw.isChecked() or self.save_with_raw
     def save_text               (self): return self.cb_text.isChecked()
     def save_reference          (self): return self.cb_reference.isChecked()
-    def save_something          (self): return self.save_csv() or self.save_excel() or self.save_json() or self.save_text()
+    def save_something          (self): return self.save_csv() or self.save_excel() or self.save_json() or self.save_text() or self.save_dx()
     def save_wavelength         (self): return self.cb_wavelength.isChecked() or self.save_with_wavelength
     def save_wavenumber         (self): return self.cb_wavenumber.isChecked() and self.cb_wavenumber.isEnabled() or self.save_with_wavenumber
     def suffix                  (self): return self.le_suffix.text().strip()
@@ -365,6 +380,9 @@ class SaveOptions():
         display_path = self.generate_display_path(directory)
         self.lb_location.setText(display_path)
 
+        # persist save location in .ini
+        self.ctl.config.set("SaveOptions", "save_location", directory)
+
     ## nicer than having plugins etc access attributes directly
     def get_directory(self):
         return self.directory
@@ -377,8 +395,8 @@ class SaveOptions():
         return today_dir
 
     def generate_display_path(self, path):
-        if len(path) > 25:
-            return "...%s" % path[-25:]
+        if len(path) > 100:
+            return "...%s" % path[-100:]
         return path
 
     ##
@@ -427,6 +445,7 @@ class SaveOptions():
             "format_txt": False,
             "format_excel": False,
             "format_json": False,
+            "format_dx": False,
 
             "label_template": SaveOptions.DEFAULT_LABEL_TEMPLATE,
             "filename_template": SaveOptions.DEFAULT_FILENAME_TEMPLATE,

@@ -45,6 +45,7 @@ class MeasurementFactory(object):
         self.observers    = set()
 
     def __init__(self,
+            ctl,
             colors,
             file_manager,
             focus_listener,
@@ -55,6 +56,8 @@ class MeasurementFactory(object):
             render_curve,
             save_options,
             stylesheets):
+
+        self.ctl = ctl
 
         self.clear()
 
@@ -93,10 +96,7 @@ class MeasurementFactory(object):
 
         # instantiate the Measurement
         try:
-            measurement = Measurement(
-                save_options = self.save_options,
-                spec         = spec,
-                measurements = self.measurements)
+            measurement = Measurement(self.ctl, spec = spec)
         except:
             msgbox("Failed to create measurement\n\n"+traceback.format_exc(), "Error")
 
@@ -194,7 +194,7 @@ class MeasurementFactory(object):
     #
     # Consider whether this method should be wrapped and called via Measurements.
     def clone(self, measurement, changes=None, generate_thumbnail=True, save=True):
-        new = Measurement(measurement=measurement)
+        new = Measurement(self.ctl, measurement=measurement)
 
         # Fold in changes.  Note this has all kinds of opportunities for
         # error...I'm not currently validating that the returned spectrum has
@@ -280,6 +280,7 @@ class MeasurementFactory(object):
             elif pathname.lower().endswith(".spc"):
                 measurements = self.create_from_spc_file(pathname)
         except:
+            msgbox("failed to parse file %s" % pathname)
             log.error("failed to parse file %s", pathname, exc_info=1)
 
         if measurements is None:
@@ -352,13 +353,17 @@ class MeasurementFactory(object):
         linecount = 0
         with open(pathname, "r", encoding=encoding) as infile:
             for line in infile:
-                if line.startswith("Integration Time"):
-                    # count how many values (not empty comma-delimited nulls) appear
-                    count = sum([1 if len(x.strip()) > 0 else 0 for x in line.split(",")])
-                    if test_export:
-                        return count > 2
-                    else:
-                        return count == 2
+                # not all "ENLIGHTEN-style" files will necessarily have any one 
+                # metadata field; check a couple common ones (that are unlikely 
+                # to include embedded commas)
+                for field in ["Integration Time", "Pixel Count", "Technique", "Laser Wavelength"]:
+                    if line.startswith(field):
+                        # count how many values (not empty comma-delimited nulls) appear
+                        count = sum([1 if len(x.strip()) > 0 else 0 for x in line.split(",")])
+                        if test_export:
+                            return count > 2
+                        else:
+                            return count == 2
                 linecount += 1
                 if linecount > 100:
                     break
@@ -404,6 +409,7 @@ class MeasurementFactory(object):
 
     def create_from_columnar_file(self, pathname, encoding="utf-8"):
         parser = ColumnFileParser(
+            self.ctl, # needs a ctl because it creates a Measurement
             pathname     = pathname,
             save_options = self.save_options,
             encoding     = encoding)
@@ -464,12 +470,8 @@ class MeasurementFactory(object):
         m.interpolate(settings)
         return m
 
-    # ##########################################################################
-    # External API
-    # ##########################################################################
-
     ##
-    # Used by External.Feature, also loading .json measurements and exports.
+    # Used when loading .json measurements and exports.
     #
     # @param d (Input) a dict containing either a single "Measurement" or a
     #                  "Measurements" list
@@ -480,11 +482,12 @@ class MeasurementFactory(object):
         try:
             if "Measurements" in d:
                 for m_data in d["Measurements"]:
-                    m = Measurement(d=m_data, measurements=self.measurements, save_options=self.save_options)
+                    log.debug("instantiating Measurement(s) from dict(s)")
+                    m = Measurement(self.ctl, d=m_data)
                     if m is not None:
                         measurments.append(m)
             elif "Measurement" in d:
-                m = Measurement(d=d["Measurement"], measurements=self.measurements, save_options=self.save_options)
+                m = Measurement(self.ctl, d=d["Measurement"])
                 if m is not None:
                     measurements.append(m)
         except:
@@ -492,3 +495,5 @@ class MeasurementFactory(object):
 
         if len(measurements) > 0:
             return measurements
+        else:
+            log.debug("create_from_dict: no measurements created")

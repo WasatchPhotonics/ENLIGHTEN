@@ -1,0 +1,32 @@
+/* sync with WPGrad */
+QFrame
+{
+    /*
+    color: #fff;
+    background-color: qlineargradient(spread:pad, 
+        x1:0, y1:0, 
+        x2:0, y2:1, 
+        stop:0 rgba(0, 147, 71, 255), 
+        stop:1 rgba(0, 112, 54, 255));
+    border: 2px solid #000000;
+    border-radius: 6px;
+    */
+
+    color: #eee;
+    background: hsl(0, 0%, 90%);
+    border-style: solid;
+    border: 2px solid #eee;
+    border-radius: 6px;
+    background-color: qlineargradient(spread:pad,
+        x1:0, y1:0,
+        x2:0, y2:1,
+        stop:0   hsl(0, 0%, 80%),
+        stop:0.5 hsl(0, 0%, 88%),
+        stop:1   hsl(0, 0%, 95%));
+}
+
+QFrame QLabel
+{
+    border: none;
+    background: transparent;
+}

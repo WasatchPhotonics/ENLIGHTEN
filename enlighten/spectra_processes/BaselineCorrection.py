@@ -58,26 +58,13 @@ class BaselineCorrection:
 
     DEFAULT_ALGO_NAME = "AirPLS"
     
-    def __init__(self,
-            cb_enabled,         # whether we're actively correcting the baseline
-            cb_show_curve,      # whether we should show the computed baseline (whether it's being subtracted or not)
-            combo_algo,
-            config,
-            guide,
-            multispec,
-            page_nav,
-            horiz_roi,
-            graph):
+    def __init__(self, ctl):
+        self.ctl = ctl
 
-        self.cb_enabled     = cb_enabled
-        self.cb_show_curve  = cb_show_curve
-        self.combo_algo     = combo_algo
-        self.config         = config
-        self.guide          = guide
-        self.multispec      = multispec
-        self.page_nav       = page_nav
-        self.horiz_roi      = horiz_roi
-        self.graph          = graph
+        sfu = ctl.form.ui
+        self.cb_enabled     = sfu.checkBox_baselineCorrection_enable
+        self.cb_show_curve  = sfu.checkBox_baselineCorrection_show
+        self.combo_algo     = sfu.comboBox_baselineCorrection_algo
 
         self.current_algo_name = BaselineCorrection.DEFAULT_ALGO_NAME
         self.enabled = False
@@ -111,11 +98,14 @@ class BaselineCorrection:
         # just in case that didn't trigger a change
         self.update_visibility()
 
-        # we need to know when Vignetting is turned on/off
-        self.horiz_roi.register_observer(self.update_visibility)
+        # we need to know when cropping is turned on/off
+        self.ctl.horiz_roi.register_observer(self.update_visibility)
 
-        self.curve = self.graph.add_curve("baseline", rehide=False, in_legend=False)
+        self.curve = self.ctl.graph.add_curve("baseline", rehide=False, in_legend=False)
         self.curve.setVisible(False)
+
+        self.ctl.presets.register(self, "enabled", getter=self.get_enabled, setter=self.set_enabled)
+        self.ctl.presets.register(self, "algo",    getter=self.get_algo,    setter=self.set_algo)
 
     def init_from_config(self):
         """
@@ -140,15 +130,15 @@ class BaselineCorrection:
             log.debug("%s -> %s", field, value)
             setattr(self, field, value)
 
-        # if self.config.has_option(s, "algo"):
-        #     self.current_algo_name = self.config.get(s, "algo")
+        # if self.ctl.config.has_option(s, "algo"):
+        #     self.current_algo_name = self.ctl.config.get(s, "algo")
 
         # AirPLS options to analyze algorithm performance
-        set("current_algo_name",            self.config.get      (s, "algo",                         default=None))
-        set("airpls_max_iters",             self.config.get_int  (s, "airpls_max_iters",             default=None))
-        set("airpls_smoothness_param",      self.config.get_int  (s, "airpls_smoothness_param",      default=None))
-        set("airpls_whittaker_deriv_order", self.config.get_int  (s, "airpls_whittaker_deriv_order", default=None))
-        set("airpls_conv_thresh",           self.config.get_float(s, "airpls_conv_thresh",           default=None))
+        set("current_algo_name",            self.ctl.config.get      (s, "algo",                         default=None))
+        set("airpls_max_iters",             self.ctl.config.get_int  (s, "airpls_max_iters",             default=None))
+        set("airpls_smoothness_param",      self.ctl.config.get_int  (s, "airpls_smoothness_param",      default=None))
+        set("airpls_whittaker_deriv_order", self.ctl.config.get_int  (s, "airpls_whittaker_deriv_order", default=None))
+        set("airpls_conv_thresh",           self.ctl.config.get_float(s, "airpls_conv_thresh",           default=None))
 
     def init_algos(self):
         """
@@ -210,21 +200,9 @@ class BaselineCorrection:
             self.cb_enabled.setChecked(True)
 
     def update_visibility(self):
-        allowed = False
+        spec = self.ctl.multispec.current_spectrometer()
 
-        # implicit operation allowed if RAMAN with VIGNETTING
-        if self.page_nav.doing_raman():
-            allowed = True
-
-        # explicit operation through Expert Mode
-        if self.page_nav.doing_expert():
-            allowed = True
-
-        spec = self.multispec.current_spectrometer()
-
-        # store in object (used by KIA)
-        self.allowed = allowed
-
+        self.allowed = self.ctl.page_nav.doing_raman() or self.ctl.page_nav.doing_expert()
         if not self.allowed:
             self.enabled = False
             self.show_curve = False
@@ -241,7 +219,7 @@ class BaselineCorrection:
             if name is not None:
                 self.algo = self.algos[name]
                 self.current_algo_name = name
-                self.config.set("baseline_correction", "algo", name)
+                self.ctl.config.set("baseline_correction", "algo", name)
         except:
             self.algo = None
             self.current_algo_name = None
@@ -259,7 +237,7 @@ class BaselineCorrection:
         self.curve.setVisible(self.show_curve)
 
         if self.enabled:
-            self.guide.clear(token="enable_baseline_correction")
+            self.ctl.guide.clear(token="enable_baseline_correction")
 
     def process(self, pr, spec):
         """
@@ -283,7 +261,7 @@ class BaselineCorrection:
             return
 
         spectrum = pr.get_processed()
-        x_axis = self.graph.generate_x_axis(spec=spec, cropped=pr.is_cropped())
+        x_axis = self.ctl.generate_x_axis(spec=spec, cropped=pr.is_cropped())
 
         baseline = self.generate_baseline(spectrum=spectrum, x_axis=x_axis)
         if baseline is None:
@@ -292,7 +270,7 @@ class BaselineCorrection:
 
         # generate the baseline and optionally display it, even if we're not 
         # enabled and therefore not applying the corrected baseline
-        if self.show_curve and self.multispec.is_current_spectrometer(spec):
+        if self.show_curve and self.ctl.multispec.is_current_spectrometer(spec):
             # log.debug("showing baseline: %s", baseline)
             self.curve.setData(y=baseline, x=x_axis)
 
@@ -324,3 +302,17 @@ class BaselineCorrection:
         except:
             log.error("exception in baseline_correction.generate_baseline with algo %s", self.current_algo_name, exc_info=1)
 
+    def set_enabled(self, value):
+        value = value if isinstance(value, bool) else value.lower() == "true"
+        self.cb_enabled.setChecked(value)
+        self.update_visibility()
+
+    def set_algo(self, value):
+        self.combo_algo.setCurrentText(value)
+        self.update_visibility()
+
+    def get_enabled(self):
+        return self.cb_enabled.isChecked()
+
+    def get_algo(self):
+        return self.combo_algo.currentText()

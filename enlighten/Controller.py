@@ -50,6 +50,7 @@ from enlighten.scope.Spectrometer import Spectrometer
 
 log = logging.getLogger(__name__)
 
+
 class AcquiredReading(object):
     """ Trivial class to eliminate a tuple during memory profiling. """
     def __init__(self, reading=None, progress=0, disconnect=False):
@@ -219,7 +220,7 @@ class Controller:
 
         # instantiate major business objects (require access to populated placeholders)
         self.business_objects.create_rest()
-        self.graph.rehide_curves()
+        self.update_feature_visibility()
 
         # configure acquisition loop
         self.setup_main_event_loops() # MZ: move to end?
@@ -643,11 +644,26 @@ class Controller:
                 self.multispec.set_gave_up(device_id)
                 self.multispec.remove_in_process(device_id)
 
-    # also called by PageNavigation.set_view_common
     def update_feature_visibility(self):
-        # disable anything that shouldn't be on without a spectrometer
-        # (could grow this considerably)
+        """
+        Something has occurred which prompts us to update any Business Object 
+        whose visibility / exposed features depends on global application state
+        (including whether we're in Expert mode or not).
+
+        This is called by PageNavigation.set_view_common, for instance when
+        changing Operation Mode (Ranam, Non-Raman, Expert) or View (Scope, 
+        Settings, Hardware, Logging, Factory) or Technique (Raman, Emission,
+        Absorbance, Transmission/Reflectance), etc.
+
+        This is also called when connecting / disconnecting spectrometers.
+
+        IMHO we should give self.bus_obj an iterable list of all business
+        objects, all of which should extend EnlightenBusinessObject or whatever,
+        with overridable methods update_visibility, post_init (to be fired after
+        all Business Objects are instantiated, etc.
+        """
         for feature in [ self.accessory_control,
+                         self.horiz_roi,
                          self.laser_control,
                          self.raman_mode_feature,
                          self.raman_intensity_correction,
@@ -886,7 +902,7 @@ class Controller:
         ########################################################################
 
         # re-hide hidden curves
-        self.rehide_curves()
+        self.update_feature_visibility()
 
         # weight new curve
         self.multispec.check_callback()
@@ -984,19 +1000,6 @@ class Controller:
         # updates from initialization to match time window in spinbox
         # call StripChartFeature getter
         spec.app_state.reset_rolling_data(time_window=sfu.spinBox_strip_window.value(), hotplug=hotplug)
-
-    def rehide_curves(self):
-        """
-        Adding/removing a trace to a graph apparently makes all curves visible,
-        so call this method to allow business objects to re-hide any curves
-        (or other widgets) based on internal business object state.
-        
-        @todo move to Graph and allow other business objects to register as observers
-        @todo Probably need to integrate PluginController into this too.
-        """
-        for feature in [ self.baseline_correction,
-                         self.raman_shift_correction ]:
-            feature.update_visibility()
 
     # ##########################################################################
     # Setup (populate widget placeholders)
@@ -1662,6 +1665,7 @@ class Controller:
 
         self.cursor.update()
 
+    # TODO: can this method be moved into Measurements class?
     def reprocess(self, measurement):
         """
         Called by Measurements.create_from_file if save_options.load_raw.  This
@@ -1727,7 +1731,7 @@ class Controller:
         Of particular note are dark and reference, which can be manually
         passed-in for reprocessed measurements if found in input file. Likewise, we
         pass in the loaded Settings object so that the x-axis can be generated from
-        the correct wavecal, pixel count, as well as the correct vignetting ROI.
+        the correct wavecal, pixel count, as well as the correct cropped ROI.
         
         Keywords to help people find this function:
         - update graphs
@@ -1776,15 +1780,20 @@ class Controller:
         # Currently, this is where "recordable_dark" is snapped
         pr = ProcessedReading(reading)
 
-        # saturation check
-        if pr.processed.max() >= 0xfffe:
+        ########################################################################
+        # Saturation Check
+        ########################################################################
+
+        # Test for 0xfffe rather than 0xffff to support older FW clamped to the 
+        # lesser value and reserved 0xffff for "frame markers". Raw should match 
+        # processed at this point, but "raw" is preferred to clarify saturation 
+        # is irrespective of dark correction or any post-processing.
+        if pr.raw.max() >= 0xfffe: 
             # IMX detectors briefly saturate on every change of integration 
             # time...perhaps we should take a couple throwaways in Wasatch.PY?
             if not spec.settings.is_xs():
                 # todo: self.status_indicators.detector_warning("detector saturated")
                 self.marquee.error("detector saturated")
-
-        # post-processing begins here
 
         ########################################################################
         # Dark Correction
@@ -1794,7 +1803,7 @@ class Controller:
             pr.correct_dark(spec.app_state.dark if dark is None else dark)
 
         ########################################################################
-        # Vignetting
+        # Cropping
         ########################################################################
 
         # This should be done before any processing that involves multiple
@@ -1856,12 +1865,12 @@ class Controller:
             # baseline correction
             ####################################################################
 
-            # Obviously baseline correction would benefit from ROI vignetting,
+            # Obviously baseline correction would benefit from ROI cropping,
             # as would boxcar, Offset, Raman ID etc, so add a
             # "processed_cropped" attribute for use downstream.
             self.baseline_correction.process(pr, spec)
 
-            # on 2020-05-19 Deiter asked this to be moved before vignetting
+            # on 2020-05-19 Deiter asked this to be moved before cropping
             if not self.page_nav.using_reference():
                 self.richardson_lucy.process(pr, spec)
 
