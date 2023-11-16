@@ -20,7 +20,7 @@ Windows environments have additional dependencies if you need KnowItAll support:
 
 Binary snapshots of key installers are retained for posterity in [Enlighten-dependencies](https://github.com/WasatchPhotonics/Enlighten-dependencies).
 
-See [MAINTENANCE](README_MAINTENANCE.md) for temporary changes or workarounds to
+See [MAINTENANCE](MAINTENANCE.md) for temporary changes or workarounds to
 the build process.
 
 ## Getting Enlighten Source
