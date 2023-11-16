@@ -251,21 +251,21 @@ class Controller:
             # default to "floating"
             self.form.show()
 
-    def schedule_post_init(self):
-        self.post_init_timer = QtCore.QTimer()
-        self.post_init_timer.timeout.connect(self.post_init)
-        self.post_init_timer.setSingleShot(True)
-        self.post_init_timer.start(1000)
-
-    def post_init(self):
-        """
-        Things that should happen outside the constructor, after the GUI is fully
-        instantiated and displayed with all event loops running. Experimentally
-        moving this to after the first spectrometer has connected.
-        """
-        log.debug("performing post-construction initialization")
-        if self.autoload_plugin:
-            self.plugin_controller.autoload(self.autoload_plugin)
+    # def schedule_post_init(self):
+    #     self.post_init_timer = QtCore.QTimer()
+    #     self.post_init_timer.timeout.connect(self.post_init)
+    #     self.post_init_timer.setSingleShot(True)
+    #     self.post_init_timer.start(1000)
+    # 
+    # def post_init(self):
+    #     """
+    #     Things that should happen outside the constructor, after the GUI is fully
+    #     instantiated and displayed with all event loops running. Experimentally
+    #     moving this to after the first spectrometer has connected.
+    #     """
+    #     log.debug("performing post-construction initialization")
+    #     if self.autoload_plugin:
+    #         self.plugin_controller.autoload(self.autoload_plugin)
 
     def disconnect_device(self, spec=None, closing=False):
         if spec in self.other_devices:
@@ -968,14 +968,25 @@ class Controller:
             feature.update_visibility()
 
         ########################################################################
-        # Change to Raman if first connected device is Raman
+        # Things that should only occur after the FIRST spectrometer connects
         ########################################################################
 
         if not self.has_connected:
             self.has_connected = True
+
+            # if first spectrometer is Raman, default to Raman mode
+            # (should we do this when connecting ANY Raman spectrometer?)
             if spec.settings.has_excitation():
                 self.page_nav.set_operation_mode_raman()
-            self.schedule_post_init()
+
+            # If a plugin was specified at the command-line, load it now. This
+            # allows plugins to self-configure based on the properties of a
+            # fully connected and communicating spectrometer. We may wish to 
+            # later give plugins an event notification when new spectrometers
+            # connect, so they can re-configure themselves accordingly, but at
+            # this time plugin configuration is normally only performed when the
+            # plugin "loads / connects".  We can grow this lifecycle over time.
+            self.plugin_controller.autoload(self.autoload_plugin)
 
         ########################################################################
         # Batch Collection should kick-off on the FIRST connected spectrometer
