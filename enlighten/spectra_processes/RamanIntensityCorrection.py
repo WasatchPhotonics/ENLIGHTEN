@@ -3,14 +3,13 @@ import numpy as np
 
 log = logging.getLogger(__name__)
 
-##
-# This object has several states:
-#
-# Note this is NOT the same as RamanShiftCorrectionFeature!  
-# RamanShiftCorrectionFeature uses a single Raman measurement to correct the 
-# x-axis on Raman measurements; this uses an EEPROM calibration to correct 
-# intensity (y-axis) on Raman spectra.
 class RamanIntensityCorrection(object):
+    """
+    Note this is NOT the same as RamanShiftCorrectionFeature!  
+    
+    RamanIntensityCorrection uses an EEPROM calibration to correct 
+    intensity (y-axis) on Raman spectra.
+    """
     
     def __init__(self,
             cb_enable,
