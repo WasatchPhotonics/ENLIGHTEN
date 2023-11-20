@@ -104,9 +104,7 @@ class PluginValidator:
             ########################################################################
 
             # button / callback
-            if field.callback is not None and field.datatype != "button":
-                log.error("EnlightenPlugInField %s callback ignored for datatype %s", field.name, field.datatype)
-            elif field.datatype == "button" and field.callback is None:
+            if field.datatype == "button" and field.callback is None:
                 log.error("EnlightenPlugInField %s button missing callback", field.name)
                 return False
             elif field.datatype == "combobox" and (field.choices is None or len(field.choices) == 0):
