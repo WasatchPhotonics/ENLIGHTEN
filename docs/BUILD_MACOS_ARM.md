@@ -39,9 +39,33 @@ do not wish to modify these repositories you may use these alternative commands 
 
 5) Rebuild resources
 
-Eventually:
+I had trouble running our rebuild_resources.sh script on the ARM mac. I'm not sure if it works on Intel macs
+either. I decided to remove the generated files from our .gitignore so it can be generated on a different
+OS and pulled into the build platform.
 
-    $ python scripts/Enlighten.py --log-level debug 1>enlighten.out 2>enlighten.err
+6) Install additional dependencies
+
+Some of these are left out of requirements.txt because they are installed via miniconda on other platforms.
+
+    python3 -m pip install psutil
+    brew install libusb # get a backend for pyusb
+    ln -s /opt/homebrew/lib ~/lib # make it available to python
+    python3 -m pip install xlwt
+    python3 -m pip install qimage2ndarray
+    python3 -m pip install pexpect
+    python3 -m pip install pandas
+
+    # enlighten will start without these, but they are still useful or needed for some features
+    python3 -m pip install scipy
+    python3 -m pip install pytest
+
+7) Start Enlighten
+
+    python scripts/Enlighten.py --log-level debug 1>enlighten.out 2>enlighten.err
+
+You can also use the shorter to type command, for a quick test:
+
+    python scripts/Enlighten.py
 
 See [MAINTENANCE](MAINTENANCE.md) for temporary changes or workarounds to
 the build process.
