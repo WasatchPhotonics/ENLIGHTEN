@@ -15,7 +15,11 @@ enlighten.egg-info
 *.bak
 Enlighten*.zip
 
-enlighten/assets/uic_qrc/*.py
+# don't ignore these files, because 
+#   - sometime we rely on Windows to generate them for other platforms
+#   - it's helpful to get the latest correct files instead of regenerating after a pull fails to start
+#enlighten/assets/uic_qrc/*.py
+
 enlighten/assets/example_data/serial_lookup.ini
 environment.yml
 
