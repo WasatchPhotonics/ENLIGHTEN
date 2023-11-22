@@ -74,15 +74,40 @@ the build process.
 
 ## Install dependencies, if not already done:
 
-    $ pip install pyinstaller
-    $ brew install platypus
+    pip install pyinstaller
 
 ## Run pyinstaller
 
-    $ make mac-installer
+    make mac-installer
 
-(Note this will automatically run Platypus to convert the Mac Python .dylibs to 
-a MacOS .app "application".)
+We used platypus to convert the program into a MacOS .app, but platypus is no longer supported.
+It is also no longer available on brew.
+
+## Test the program.
+
+    cd build-mac/EnlightenGUI
+    ./EnlightenGUI
+
+I had an error where jcamp was not found. I resolved it by copying the repository into the _internal folder.
+
+    cp -rf ../../../jcamp _internal
+
+Clicking the [x] to close the program causes it to segfault without the normal prompt.
+Then the program halts without returning to a new prompt line. Press Ctrl-C to fully close it.
+
+This is something we should fix, but I will continue now to see if I can get it to the .dmg stage.
+I checked that the program is able to display spectra from an XS unit.
+
+## Package into a .app
+
+The steps for creating a .app package may change over time. I recommended checking online for the latest technique, and applying that to the output binary and resource files generated in the last step (The contents of build-mac/EnlightenGUI).
+
+I am following these steps: https://apple.stackexchange.com/a/269045
+
+It's simply to make a folder with the .app extension and place the executable script (binary) of the same name in it.
+
+This method does not provide the app icon. That can be added by dragging it into the Get Info window in
+macOS.
 
 ## Create a .dmg
 

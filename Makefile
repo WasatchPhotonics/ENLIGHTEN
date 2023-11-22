@@ -124,7 +124,7 @@ mac-installer:
 	@rm -rf build-mac build-mac-work
 	@mkdir -p build-mac
 	@echo "Running PyInstaller..." # note capitalization
-	@python3.10 -m PyInstaller \
+	@python3 -m PyInstaller \
         --distpath="build-mac" \
         --workpath="build-mac-work" \
         --noconfirm \
@@ -142,7 +142,7 @@ mac-installer:
 	mkdir -p                             build-mac/EnlightenGUI/enlighten/assets
 	cp -rv enlighten/assets/stylesheets  build-mac/EnlightenGUI/enlighten/assets
 	cp -rv enlighten/assets/example_data build-mac/EnlightenGUI/enlighten/assets
-	@$(MAKE) mac-platypus
+	#@$(MAKE) mac-platypus
 
 # install with "brew install platypus"
 mac-platypus:
