@@ -34,7 +34,7 @@ do not wish to modify these repositories you may use these alternative commands 
 
 4) Install pip requirements
 
-    python4 -m pip install -r requirements.txt
+    python3 -m pip install -r requirements.txt
 
 
 5) Rebuild resources
