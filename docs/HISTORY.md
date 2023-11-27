@@ -8,7 +8,7 @@ current documentation wouldn't apply to old versions anyway.
 
 # ENLIGHTEN 1.0
 
-Basically as-received from Nathan.
+Basically as-received from Nathan. (View the [rendered version](https://wasatchphotonics.com/api/ENLIGHTEN/md_docs__h_i_s_t_o_r_y.html) of this document)
 
 \dot
     digraph enlighten_1_0 {
