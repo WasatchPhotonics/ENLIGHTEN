@@ -11,13 +11,8 @@ yet generated a "minimal" set of what is required to run ENLIGHTEN, but this set
 seems to work.
 
     $ export PYTHONPATH=.:pluginExamples:enlighten/assets/uic_qrc:../Wasatch.PY:../spyc_writer/src:../jcamp
-
-    $ python -m pip install matplotlib PySide6 pyqtgraph pyusb psutil \
-        libusb pyobjc seabreeze crcmod bleak scipy xlwt spc_spectra \
-        superman qimage2ndarray pygtail boto3 pexpect pandas
-    
+    $ pip install -r requirements.txt
     $ scripts/rebuild_resources.sh
-    
     $ python scripts/Enlighten.py --log-level debug 1>enlighten.out 2>enlighten.err
 
 See [MAINTENANCE](MAINTENANCE.md) for temporary changes or workarounds to
@@ -34,8 +29,26 @@ the build process.
 
     $ make mac-installer
 
-(Note this will automatically run Platypus to convert the Mac Python .dylibs to 
-a MacOS .app "application".)
+At this point, historically we would then run Platypus using the following to 
+convert the Mac Python .dylibs to a MacOS .app "application":
+
+    $ make mac-platypus
+
+However, the Homebrew cask for Platypus doesn't seem to be working at the moment
+(at least on ARM), so currently we recommend building Platypus from source per
+instructions at:
+
+- https://github.com/sveinbjornt/Platypus
+
+Basically:
+
+    $ git clone git@github.com:sveinbjornt/Platypus.git
+    $ cd Platypus
+    $ make build_unsigned
+
+Then use the Platypus GUI to generate the .app:
+
+![Platypus](images/platypus.png)
 
 ## Create a .dmg
 
