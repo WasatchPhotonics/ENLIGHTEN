@@ -12,7 +12,7 @@ seems to work.
 
     $ export PYTHONPATH=.:pluginExamples:enlighten/assets/uic_qrc:../Wasatch.PY:../spyc_writer/src:../jcamp
     $ pip install -r requirements.txt
-    $ scripts/rebuild_resources.sh
+    $ scripts/rebuild_resources.sh 
     $ python scripts/Enlighten.py --log-level debug 1>enlighten.out 2>enlighten.err
 
 See [MAINTENANCE](MAINTENANCE.md) for temporary changes or workarounds to
