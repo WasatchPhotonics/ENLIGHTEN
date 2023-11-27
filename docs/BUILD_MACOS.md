@@ -11,6 +11,13 @@ yet generated a "minimal" set of what is required to run ENLIGHTEN, but this set
 seems to work.
 
     $ export PYTHONPATH=.:pluginExamples:enlighten/assets/uic_qrc:../Wasatch.PY:../spyc_writer/src:../jcamp
+
+    $ python -m pip install matplotlib PySide6 pyqtgraph pyusb psutil \
+        libusb pyobjc seabreeze crcmod bleak scipy xlwt spc_spectra \
+        superman qimage2ndarray pygtail boto3 pexpect pandas
+    
+    $ scripts/rebuild_resources.sh
+    
     $ python scripts/Enlighten.py --log-level debug 1>enlighten.out 2>enlighten.err
 
 See [MAINTENANCE](MAINTENANCE.md) for temporary changes or workarounds to
