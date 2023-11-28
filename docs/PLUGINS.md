@@ -14,7 +14,7 @@ GUI.
 ## Quick Start
 
 
-![Screenshot of Hello Graph plugin. Shows a duplicate of the main scope graph.](docs/images/hello-graph-screenshot.png)
+![Screenshot of Hello Graph plugin. Shows a duplicate of the main scope graph.](images/hello-graph-screenshot.png)
 
 ```python
 from EnlightenPlugin import *

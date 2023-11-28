@@ -46,7 +46,7 @@ ENLIGHTEN is committed to providing convenient graphical desktop support for
 accessing, testing and controlling the most common functions supported by 
 Wasatch Photonics spectrometers.  Some higher-level aggregate / analytic 
 functions are left for customers or 3rd-party tools to provide, and our
-[plug-in architecture](PLUGINS.md) makes it simple for users to
+[plug-in architecture](docs/PLUGINS.md) makes it simple for users to
 extend ENLIGHTEN in countless ways we never imagined.
 
 # Table of Contents
