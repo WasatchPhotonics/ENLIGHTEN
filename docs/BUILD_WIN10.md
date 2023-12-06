@@ -1,6 +1,8 @@
-# Windows 10 Development Environment
+# Windows 10/11 Development Environment
 
-Consider using the wiki page instead: https://github.com/WasatchPhotonics/ENLIGHTEN/wiki/Build-Win10
+This document attempts to maintain a common build process for both
+Windows 10 and Windows 11.  Note that released installers are currently
+always built from Windows 10 (but work on Windows 11).
 
 ## Dependencies
 
@@ -81,16 +83,18 @@ Except when it tells you to navigate here:
 
 instead navigate here:
 
-    enlighten\scripts\support\files\libusb\drivers.
+    enlighten\scripts\support\files\libusb\drivers
 
 ## Build a Release Installer
 
 The current recommended process is to build installers on Win10-64.
+Creating installers from Windows 11 is currently prone to runtime errors 
+(missing dependencies psutil, \_fblas). 
 
 To build an installer, you need to first install all dependencies for your
-platform, then run this from a Git Cmd shell:
+platform, then run this from a Git Cmd shell (after Conda activation):
 
-    scripts\bootstrap.bat installer
+    scripts\bootstrap.bat installer (or "just-installer")
 
 ## Convenience Scripts
 
