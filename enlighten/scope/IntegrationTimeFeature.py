@@ -153,11 +153,9 @@ class IntegrationTimeFeature(object):
 
     def up_callback(self):
         util.incr_spinbox(self.spinbox)
-        self.set_ms(ms) 
 
     def dn_callback(self):
         util.decr_spinbox(self.spinbox)
-        self.set_ms(ms) 
 
     def slider_callback(self):
         tenths = self.slider.value()
