@@ -79,8 +79,8 @@ class IntegrationTimeFeature(object):
         # downstream and to state...IF THEY REPRESENT A CHANGE (may not be the 
         # case for some hotplug events).
         if hotplug:
-            # cap at 1sec, else application seems dead
-            now_ms = min(max_ms, max(min_ms, min(1000, now_ms)))
+            # cap at 5sec, else application seems dead
+            now_ms = min(max_ms, max(min_ms, min(5000, now_ms)))
             
         self.spinbox.blockSignals(True)
         self.spinbox.setMinimum(min_ms)
