@@ -299,17 +299,6 @@ if "%install_python_deps%" == "1" (
     REM because of this separately install pywin32 since it's only meant for windows
     pip install pywin32 
     if %errorlevel% neq 0 goto script_failure
-
-    python -m pip uninstall pyqt5
-    python -m pip install --upgrade pyqt5
-
-    echo.
-    echo %date% %time% ======================================================
-    echo %date% %time% Installing pyinstaller from pip
-    echo %date% %time% ======================================================
-    echo.
-    pip install pyinstaller
-    if %errorlevel% neq 0 goto script_failure
 )
 
 if "%virtspec%" == "1" (

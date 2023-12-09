@@ -3,6 +3,7 @@
 ## 4.0 GUI and Plugin Refactoring
 
 - 2023-12-08 4.0.27
+    - locked to Python 3.11 for Tensorflow
     - default to maximized
     - restore previous integration time up to 5sec (was 1sec)
     - plugins

@@ -1,5 +1,6 @@
 # Requirements without specifiers. Grab latest of each package
 PySide6
+PyQt5
 pygtail 
 pyusb 
 pefile 
