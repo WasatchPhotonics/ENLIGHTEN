@@ -118,6 +118,8 @@ class PluginFieldWidget(QtWidgets.QWidget):
         widget.setValue(float(self.field_value))
         widget.valueChanged.connect(lambda: self.update_value(self.field_widget.value()))
         widget.installEventFilter(ScrollStealFilter(widget))
+        if self.field_config.callback:
+            widget.valueChanged.connect(self.field_config.callback)
 
     def create_int_fields(self, widget):
         if self.field_value is None:
@@ -127,6 +129,8 @@ class PluginFieldWidget(QtWidgets.QWidget):
         widget.setValue(int(self.field_value))
         widget.valueChanged.connect(lambda: self.update_value(self.field_widget.value()))
         widget.installEventFilter(ScrollStealFilter(widget))
+        if self.field_config.callback:
+            widget.valueChanged.connect(self.field_config.callback)
 
     def create_combobox_fields(self, widget):
         choices = self.field_config.choices
@@ -141,6 +145,8 @@ class PluginFieldWidget(QtWidgets.QWidget):
         widget.setCurrentIndex(selected_idx)
         widget.currentIndexChanged.connect(lambda: self.update_value(self.field_widget.currentText()))
         widget.installEventFilter(ScrollStealFilter(widget))
+        if self.field_config.callback:
+            widget.currentIndexChanged.connect(self.field_config.callback)
 
     def create_string_fields(self, widget):
         if self.field_value is None:
@@ -148,6 +154,8 @@ class PluginFieldWidget(QtWidgets.QWidget):
 
         widget.setText(self.field_value)
         widget.textChanged.connect(lambda: self.update_value(self.field_widget.text()))
+        if self.field_config.callback:
+            widget.textChanged.connect(self.field_config.callback)
 
     def create_radio_fields(self, widget):
         if self.field_value is None:
@@ -156,6 +164,8 @@ class PluginFieldWidget(QtWidgets.QWidget):
         if isinstance(self.field_value, bool):
             widget.setChecked(self.field_value)
         widget.toggled.connect(lambda check: self.update_value(check))
+        if self.field_config.callback:
+            widget.toggled.connect(self.field_config.callback)
 
     def create_bool_fields(self, widget):
         if self.field_value is None:
@@ -164,11 +174,14 @@ class PluginFieldWidget(QtWidgets.QWidget):
         if isinstance(self.field_value, bool):
             widget.setChecked(self.field_value)
         widget.stateChanged.connect(lambda: self.update_value(self.field_widget.isChecked()))
+        if self.field_config.callback:
+            widget.stateChanged.connect(self.field_config.callback)
 
     def create_button_fields(self, widget):
         widget.setText(self.field_name)
         widget.setMinimumHeight(30) 
-        widget.pressed.connect(self.field_config.callback)
+        if self.field_config.callback:
+            widget.pressed.connect(self.field_config.callback)
 
     # ##########################################################################
     # public methods
