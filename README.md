@@ -53,8 +53,7 @@ extend ENLIGHTEN in countless ways we never imagined.
 
 - [Contents](docs/CONTENTS.md) - overview of the distribution structure
 - Development Environment Setup
-    - [Windows 11](docs/BUILD_WIN11.md)
-    - [Windows 10](docs/BUILD_WIN10.md)
+    - [Windows](docs/BUILD_WINDOWS.md)
     - [Mac OS](docs/BUILD_MACOS.md)
     - [Ubuntu Linux](docs/BUILD_LINUX.md)
     - [Raspberry Pi](docs/BUILD_RPI.md)
