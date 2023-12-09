@@ -2,12 +2,14 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
-- 2023-??-?? 4.0.27
-    - updated Windows docs for 10/11
+- 2023-12-08 4.0.27
     - default to maximized
     - restore previous integration time up to 5sec (was 1sec)
-    - updated MacOS docs for ARM
-    - updated Windows docs for 10/11
+    - plugins
+        - all field types support callbacks
+    - docs
+        - updated Windows docs for 10/11
+        - updated MacOS docs for ARM
 - 2023-11-10 4.0.26
     - auto-resize pandas table columns
     - fix ctl issues in Measurement*
