@@ -40,7 +40,7 @@ name the file after the class for consistency.
 - update version number in enlighten/common.py
     - re-run Enlighten.py (forces common.pyc recompile)
 - update CHANGELOG.md 
-- build a Windows installer (see [Windows](BUILD_WIN11.md))
+- build a Windows installer (see [Windows](BUILD_WINDOWS.md))
 - git tag x.y.z
 - git push --tag
 - optionally build [Linux](BUILD_LINUX.md) and [Mac](BUILD_MACOS.md) installers

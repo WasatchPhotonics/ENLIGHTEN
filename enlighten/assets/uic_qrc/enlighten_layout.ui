@@ -16658,7 +16658,7 @@ p, li { white-space: pre-wrap; }
                         <string>Loads and "starts" the selected plug-in</string>
                        </property>
                        <property name="text">
-                        <string>Connected</string>
+                        <string>Connect</string>
                        </property>
                       </widget>
                      </item>

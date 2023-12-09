@@ -9,6 +9,7 @@
 VERSION := $(shell grep 'VERSION =' enlighten/common.py | awk '{print $$3}' | tr -d '"')
 RPI_ID := $(shell test -f /etc/os-release && grep '^ID=' /etc/os-release | awk -F= '{print $$2}' | tr -d '"')
 RPI_CODENAME := $(shell test -f /etc/os-release && grep '^VERSION_CODENAME=' /etc/os-release | awk -F= '{print $$2}' | tr -d '"')
+PLATYPUS_BIN := ../Platypus/products/platypus_clt
 
 help:
 	@echo "To build and run Enlighten, see README.md"
@@ -139,17 +140,18 @@ mac-installer:
         --name EnlightenGUI \
         scripts/Enlighten.py 2>&1 \
         | sed 's/^/pyinstaller: /'
-	mkdir -p                             build-mac/EnlightenGUI/enlighten/assets
-	cp -rv enlighten/assets/stylesheets  build-mac/EnlightenGUI/enlighten/assets
-	cp -rv enlighten/assets/example_data build-mac/EnlightenGUI/enlighten/assets
-	@$(MAKE) mac-platypus
+	@mkdir -p                             build-mac/EnlightenGUI/enlighten/assets
+	@cp -rv enlighten/assets/stylesheets  build-mac/EnlightenGUI/enlighten/assets
+	@cp -rv enlighten/assets/example_data build-mac/EnlightenGUI/enlighten/assets
+	@echo "Now run:"
+	@echo "    make mac-platypus"
 
 # install with "brew install platypus"
 mac-platypus:
 	@echo "Running Platypus..."
 	@rm -rf ENLIGHTEN-$(VERSION).app
 	@DIR=build-mac/EnlightenGUI ; ls $$DIR | grep -v EnlightenGUI | sed "s!^!-f $$DIR/!" > mac.bundled
-	@platypus \
+	@$(PLATYPUS_BIN) \
         --name "ENLIGHTEN™ $(VERSION)" \
         --interface-type 'None' \
         --interpreter /usr/bin/env \

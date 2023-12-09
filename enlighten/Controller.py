@@ -249,7 +249,6 @@ class Controller:
         elif self.window_state == "fullscreen":
             self.form.showFullScreen()
         else:
-            # default to "floating"
             self.form.show()
 
     def schedule_post_init(self):

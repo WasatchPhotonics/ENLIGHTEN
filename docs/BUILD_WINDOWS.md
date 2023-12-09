@@ -1,4 +1,8 @@
-# Windows 11 Development Environment
+# Windows 10/11 Development Environment
+
+This document attempts to maintain a common build process for both
+Windows 10 and Windows 11.  Note that released installers are currently
+always built from Windows 10 (but work on Windows 11).
 
 ## Dependencies
 
@@ -11,7 +15,7 @@ The following installation sequence is recommended:
 - [Wasatch.PY](https://github.com/WasatchPhotonics/Wasatch.PY) (clone parallel to Enlighten)
 - [Enlighten](https://github.com/WasatchPhotonics/ENLIGHTEN) (clone parallel to Wasatch.PY)
 
-Windows environments have additional dependencies for KnowItAll support:
+Windows environments have additional dependencies if you need KnowItAll support:
 
 - [KnowItAllWrapper](https://github.com/WasatchPhotonics/KnowItAllWrapper)
     - a compiled copy of KIAConsole is in dist/
@@ -46,9 +50,16 @@ _do not_ quote them (e.g., do *not* type: set PYTHONPATH="..\Wasatch.PY")
 
 ## Activating the environment
 
-When interacting with Enlighten, be sure to activate your shell. This provides access to the dependencies, such as numpy and matplotlib, and it is required for running Enlighten or creating installers.
+When interacting with Enlighten, be sure to activate your shell. This provides 
+access to the dependencies, such as numpy and matplotlib, and it is required for
+running Enlighten or creating installers.
 
     $ scripts\bootstrap.bat activate
+
+Note that conda will "solve" (create) environments much more quickly if you
+use the new libmamba solver described here:
+
+- https://www.anaconda.com/blog/a-faster-conda-for-a-growing-community
 
 ## Running Enlighten
 
@@ -72,16 +83,18 @@ Except when it tells you to navigate here:
 
 instead navigate here:
 
-    enlighten\scripts\support\files\libusb\drivers.
+    enlighten\scripts\support\files\libusb\drivers
 
 ## Build a Release Installer
 
-Creating installers from Windows 11 is currently prone to runtime errors (missing dependencies psutil, \_fblas). 
+The current recommended process is to build installers on Win10-64.
+Creating installers from Windows 11 is currently prone to runtime errors 
+(missing dependencies psutil, \_fblas). 
 
-The best method is to create installers from Windows 10, which are usable in Windows 11.
+To build an installer, you need to first install all dependencies for your
+platform, then run this from a Git Cmd shell (after Conda activation):
 
-~~From an activated shell, do not run as administrator~~
-~~$ scripts\bootstrap.bat just-installer~~
+    scripts\bootstrap.bat installer (or "just-installer")
 
 ## Convenience Scripts
 
