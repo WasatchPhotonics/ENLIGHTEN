@@ -63,10 +63,8 @@ else
         OS="RPi"
 
         # probably in /usr/bin per apt-get install pyside2-tools
-        # RCC=`which pyside2-rcc`
-        # UIC=`which pyside2-uic`
-        RCC=`which pyrcc5`
-        UIC=`which pyuic5`
+        RCC=`which pyside2-rcc`
+        UIC=`which pyside2-uic`
         TWO_TO_THREE=`which 2to3`  # probably in ${CONDA_ENV_PATH}/bin/2to3
         PYTHON="python3"
 
@@ -76,8 +74,14 @@ else
         then
             OS="MacOS"
             # PATH should include /usr/local/lib/python3.10/site-packages/PySide2 or equivalent
-            RCC=`which pyside6-rcc`
-            UIC=`which pyside6-uic`
+            if [ "$USE_PYSIDE_2" ]
+            then
+                RCC=`which pyside2-rcc`
+                UIC=`which pyside2-uic`
+            else
+                RCC=`which pyside6-rcc`
+                UIC=`which pyside6-uic`
+            fi
             TWO_TO_THREE=`which 2to3-3.10`
 
             PYTHON="python3.10"

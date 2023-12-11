@@ -3,6 +3,9 @@
 ## 4.0 GUI and Plugin Refactoring
 
 - 2023-12-11 4.0.28
+    - platforms
+        - updating Raspberry Pi build docs
+        - support both PySide6 and PySide2
     - GUI 
         - laser button tooltip fix
         - fixed markers

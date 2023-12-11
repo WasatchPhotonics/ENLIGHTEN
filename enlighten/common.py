@@ -1,4 +1,5 @@
 import logging
+import sys
 import os
 
 from enum import IntEnum
@@ -193,8 +194,13 @@ def msgbox(prompt, title="Alert", buttons=0):
     return warn_msg.exec_() in [QMessageBox.Ok, QMessageBox.Yes]
 
 def is_rpi():
-    (sysname, nodename, release, version, machine) = os.uname()
-    result = nodename == "raspberrypi"
+    result = False
+    try:
+        # Win32 doesn't even have os.uname :-(
+        (sysname, nodename, release, version, machine) = os.uname()
+        result = nodename == "raspberrypi"
+    except:
+        pass
     log.debug(f"is_rpi {result}")
     return result
 
