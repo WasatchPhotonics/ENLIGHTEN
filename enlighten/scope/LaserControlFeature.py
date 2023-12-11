@@ -611,7 +611,7 @@ class LaserControlFeature:
 
         b = self.ctl.form.ui.pushButton_laser_toggle
         b.setEnabled(enough_for_laser)
-        b.setToolTip("Toggle laser (ctrl-L)" if enough_for_laser else "battery low ({perc:.2f}%)")
+        b.setToolTip("Toggle laser (ctrl-L)" if enough_for_laser else f"battery low ({perc:.2f}%)")
 
     def slider_power_callback(self):
         self.slider_stop_usb = False
