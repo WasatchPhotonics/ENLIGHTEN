@@ -162,7 +162,10 @@ class EnlightenApplication(object):
         # pass off control to Qt to manage its objects until application shutdown
         self.splash.finish(self.controller.form)
         if not self.testing:
-            self.app.exec()
+            if common.use_pyside2():
+                self.app.exec_()
+            else:
+                self.app.exec()
 
         if not self.testing:
             print("back from app.exec")

@@ -1092,7 +1092,10 @@ class Controller:
 
         def make_shortcut(kseq, callback):
             log.debug(f"setting shortcut from {kseq} to {callback}")
-            shortcut = QtGui.QShortcut(QtGui.QKeySequence(kseq), self.form)
+            if common.use_pyside2():
+                shortcut = QtWidgets.QShortcut(QtGui.QKeySequence(kseq), self.form)
+            else:
+                shortcut = QtGui.QShortcut(QtGui.QKeySequence(kseq), self.form)
             shortcut.activated.connect(callback)
             self.shortcuts[kseq] = shortcut
 
