@@ -3,7 +3,9 @@
 ## 4.0 GUI and Plugin Refactoring
 
 - 2023-12-11 4.0.28
-    - tooltip tweak
+    - GUI 
+        - laser button tooltip fix
+        - fixed markers
 - 2023-12-08 4.0.27
     - locked to Python 3.11 for Tensorflow
     - default to maximized

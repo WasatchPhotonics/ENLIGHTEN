@@ -354,7 +354,7 @@ class Graph(object):
         if self.show_marker:
             if curve.opts['symbol'] is None:
                 curve.setSymbol('o')
-                curve.setSymbolBrush(self.ctl.gui.colors.color_names.get("enlighten_name_n1"))
+                curve.setSymbolBrush(self.ctl.colors.color_names.get("enlighten_name_n1"))
         else:
             curve.setSymbol(None)
 
