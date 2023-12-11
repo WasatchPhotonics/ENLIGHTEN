@@ -165,7 +165,10 @@ def msgbox(prompt, title="Alert", buttons=0):
 
     # doing this import within this method to avoid breaking all dependents of common.py
     # not sure that this would break anything, just to be safe -- move up when confident
-    from PySide6.QtWidgets import QMessageBox
+    if use_pyside2():
+        from PySide2.QtWidgets import QMessageBox
+    else:
+        from PySide6.QtWidgets import QMessageBox
 
     # TODO: see enlighten/ui/BasicWindow.py for an example how to implement this using
     # Enlighten's style. This should always be callable as a single function call without
@@ -188,3 +191,14 @@ def msgbox(prompt, title="Alert", buttons=0):
     warn_msg.setIcon(QMessageBox.Warning)
 
     return warn_msg.exec_() in [QMessageBox.Ok, QMessageBox.Yes]
+
+def is_rpi():
+    (sysname, nodename, release, version, machine) = os.uname()
+    result = nodename == "raspberrypi"
+    log.debug(f"is_rpi {result}")
+    return result
+
+def use_pyside2():
+    result = is_rpi() or "USE_PYSIDE_2" in os.environ
+    log.debug(f"use_pyside2 {result}")
+    return result

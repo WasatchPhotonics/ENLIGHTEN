@@ -1,5 +1,3 @@
-from PySide6 import QtGui
-
 import pyqtgraph.exporters
 import pyqtgraph
 import logging
@@ -7,13 +5,13 @@ import json
 import os
 import re
 
+from enlighten.measurement.Measurement import Measurement
 from enlighten.parser.ColumnFileParser import ColumnFileParser
 from enlighten.parser.ExportFileParser import ExportFileParser
 from enlighten.parser.TextFileParser import TextFileParser
+from enlighten.parser.DashFileParser import DashFileParser
 from enlighten.parser.SPCFileParser import SPCFileParser
 from enlighten.ui.ThumbnailWidget import ThumbnailWidget
-from enlighten.parser.DashFileParser import DashFileParser
-from enlighten.measurement.Measurement import Measurement
 
 import traceback
 
@@ -23,7 +21,12 @@ from wasatch.ProcessedReading import ProcessedReading
 from wasatch.SpectrometerSettings import SpectrometerSettings
 from wasatch import utils as wasatch_utils
 
-from enlighten import util
+from enlighten import util, common
+
+if common.use_pyside2():
+    from PySide2 import QtGui
+else:
+    from PySide6 import QtGui
 
 log = logging.getLogger(__name__)
 

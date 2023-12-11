@@ -1,13 +1,18 @@
 import logging
 
-import PySide6
 import pyqtgraph
-from PySide6 import QtCore, QtWidgets, QtGui
 
 from enlighten import common
 from enlighten.ScrollStealFilter import ScrollStealFilter
 
 from wasatch import utils
+
+if common.use_pyside2():
+    import PySide2
+    from PySide2 import QtCore, QtWidgets, QtGui
+else:
+    import PySide6
+    from PySide6 import QtCore, QtWidgets, QtGui
 
 log = logging.getLogger(__name__)
 

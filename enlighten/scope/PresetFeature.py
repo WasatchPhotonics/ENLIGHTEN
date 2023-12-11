@@ -1,8 +1,14 @@
 import logging
 import re
 
-from PySide6 import QtWidgets
-from PySide6.QtWidgets import QMessageBox
+from enlighten import common
+
+if common.use_pyside2():
+    from PySide2 import QtWidgets
+    from PySide2.QtWidgets import QMessageBox
+else:
+    from PySide6 import QtWidgets
+    from PySide6.QtWidgets import QMessageBox
 
 from enlighten.ScrollStealFilter import ScrollStealFilter
 

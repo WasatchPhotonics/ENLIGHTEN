@@ -1,7 +1,12 @@
 import logging
 import datetime
 
-from PySide6 import QtGui, QtCore, QtWidgets
+import common from enlighten
+
+if common.use_pyside2():
+    from PySide2 import QtGui, QtCore, QtWidgets
+else:
+    from PySide6 import QtGui, QtCore, QtWidgets
 
 log = logging.getLogger(__name__)
 

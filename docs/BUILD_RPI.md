@@ -8,7 +8,10 @@ the build process.
 
 # Packaged dependencies
 
-Conda doesn't seem to have PySide2 packages for ARM, so follow this:
+PySide6 doesn't seem to have made it to RPi yet, so reverting to PySide2 
+instructions.
+
+Even so, Conda doesn't seem to have PySide2 packages for ARM, so follow this:
 
 - https://www.raspberrypi.org/forums/viewtopic.php?p=1485265&sid=eb447c56004ea941be4aaefa2f837108#p1485265
 
@@ -53,38 +56,40 @@ Then remaining packages:
 
     $ sudo apt-get install pyside2-tools python3-xlwt libatlas-base-dev \
                            python3-pywt 2to3 python3-pil.imagetk libusb-0.1-4 \
-			   libusb-dev
+               libusb-dev
 
 And finally, install everything in requirements.txt OTHER THAN PySide2 :-)
 
     $ pip3 install \
-	adafruit-blinka \
-	bleak \
-	boto3 \
-	crcmod \
-	libusb \
-	pandas \
-	pefile \
-	pexpect \
-	pyftdi \
-	pygtail \
-	pyinstaller \
-	pyqtgraph \
-	pyudev \
-	pyusb \
-	pywavelets \
-	qimage2ndarray \
-	seabreeze \
-	spc_spectra \
-	SPyC_Writer \
-	superman \
-	tensorflow
+        adafruit-blinka \
+        bleak \
+        boto3 \
+        crcmod \
+        libusb \
+        pandas \
+        pefile \
+        pexpect \
+        pyftdi \
+        pygtail \
+        pyinstaller \
+        pyqtgraph \
+        pyudev \
+        pyusb \
+        pywavelets \
+        qimage2ndarray \
+        seabreeze \
+        spc_spectra \
+        SPyC_Writer \
+        superman \
+        tensorflow
 
 If you also want to build and deploy installers, the following additional utilities are required:
 
     $ sudo apt-get install doxygen graphviz pandoc
 
 ## Issue: missing python3-pyside2uic
+
+NOTE: testing pyqt5-dev-tools (pyrcc5 and pyuic5)
 
 Ideally, we would want to also `pip3 install python3-pyside2uic` (and historically, 
 that was indeed part of the process).

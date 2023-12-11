@@ -6,15 +6,19 @@ import csv
 import os
 
 import numpy as np
-from PySide6 import QtGui, QtWidgets
 
-from enlighten.measurement.Measurement import Measurement
 from SPyC_Writer import SPCFileWriter
 from SPyC_Writer.SPCEnums import SPCFileType, SPCXType, SPCYType, SPCTechType
 
+from enlighten import util
 from enlighten import common
 from enlighten.common import msgbox
-from enlighten import util
+from enlighten.measurement.Measurement import Measurement
+
+if common.use_pyside2():
+    from PySide2 import QtGui, QtWidgets
+else:
+    from PySide6 import QtGui, QtWidgets
 
 log = logging.getLogger(__name__)
 

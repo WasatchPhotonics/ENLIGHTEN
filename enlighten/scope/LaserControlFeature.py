@@ -2,15 +2,18 @@ import time
 from datetime import datetime, timedelta
 import logging
 
-from PySide6 import QtWidgets 
-
-from enlighten import util
+from enlighten import util, common
 from enlighten.common import LaserStates
 
-from wasatch.EEPROM                   import EEPROM
+from wasatch.EEPROM import EEPROM
 
 from enlighten.ScrollStealFilter import ScrollStealFilter
 from enlighten.MouseWheelFilter import MouseWheelFilter
+
+if common.use_pyside2():
+    from PySide2 import QtWidgets 
+else:
+    from PySide6 import QtWidgets 
 
 log = logging.getLogger(__name__)
 

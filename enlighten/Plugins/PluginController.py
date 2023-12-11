@@ -16,9 +16,6 @@ import importlib.util
 
 from time import sleep
 from queue import Queue
-from PySide6 import QtGui, QtWidgets, QtCore
-from PySide6.QtWidgets import QMessageBox, QCheckBox
-from PySide6.QtCore import Qt
 
 from .EnlightenApplicationInfoReal import EnlightenApplicationInfoReal
 from .PluginFieldWidget import PluginFieldWidget
@@ -27,15 +24,23 @@ from .PluginValidator   import PluginValidator
 from .PluginWorker      import PluginWorker
 from .TableModel        import TableModel
 
-from .. import common
-from ..ScrollStealFilter import ScrollStealFilter
-
+from enlighten import common
+from enlighten.ScrollStealFilter import ScrollStealFilter
 from enlighten.scope.Graph import Graph
 
 # this is in ../../pluginExamples
 from EnlightenPlugin import *
 
 from wasatch import utils as wasatch_utils
+
+if common.use_pyside2():
+    from PySide2 import QtGui, QtWidgets, QtCore
+    from PySide2.QtWidgets import QMessageBox, QCheckBox
+    from PySide2.QtCore import Qt
+else:
+    from PySide6 import QtGui, QtWidgets, QtCore
+    from PySide6.QtWidgets import QMessageBox, QCheckBox
+    from PySide6.QtCore import Qt
 
 log = logging.getLogger(__name__)
 

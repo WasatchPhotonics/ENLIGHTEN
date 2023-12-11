@@ -58,13 +58,15 @@ then
     SCRIPT_DIR=`dirname $0` 
     cd $SCRIPT_DIR/.. 
 else
-    if uname -a | grep -qi armv7
+    if uname -a | grep -qi raspberrypi
     then
         OS="RPi"
 
         # probably in /usr/bin per apt-get install pyside2-tools
-        RCC=`which pyside2-rcc`
-        UIC=`which pyside2-uic`
+        # RCC=`which pyside2-rcc`
+        # UIC=`which pyside2-uic`
+        RCC=`which pyrcc5`
+        UIC=`which pyuic5`
         TWO_TO_THREE=`which 2to3`  # probably in ${CONDA_ENV_PATH}/bin/2to3
         PYTHON="python3"
 

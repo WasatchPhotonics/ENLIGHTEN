@@ -1,9 +1,8 @@
 import os
 import re
-import logging
 import json
+import logging
 
-from PySide6 import QtGui, QtWidgets # for product image
 from decimal import *
 from wasatch import utils as wasatch_utils
 
@@ -11,6 +10,11 @@ from enlighten import util
 from enlighten import common
 from enlighten.device.Authentication import Authentication
 from wasatch.EEPROM import EEPROM
+
+if common.use_pyside2():
+    from PySide2 import QtGui, QtWidgets
+else:
+    from PySide6 import QtGui, QtWidgets
 
 log = logging.getLogger(__name__)
 

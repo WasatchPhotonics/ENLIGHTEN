@@ -4,13 +4,18 @@ import random
 import pytest
 import logging
 import threading
-from PySide6 import QtCore
-from PySide6.QtTest import QTest
 
-from enlighten import common
 import scripts.Enlighten as enlighten
+from enlighten import common
 from wasatch.MockUSBDevice import MockUSBDevice
 from conftest import wait_until, create_sim_spec, disconnect_spec
+
+if common.use_pyside2():
+    from PySide2 import QtCore
+    from PySide2.QtTest import QTest
+else:
+    from PySide6 import QtCore
+    from PySide6.QtTest import QTest
 
 logging.getLogger("enlighten").setLevel(logging.CRITICAL)
 logging.getLogger("wasatch").setLevel(logging.CRITICAL)

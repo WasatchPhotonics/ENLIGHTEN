@@ -4,9 +4,14 @@ import pyqtgraph
 
 from enlighten.ScrollStealFilter import ScrollStealFilter
 
-log = logging.getLogger(__name__)
+from enlighten import common
 
-from PySide6 import QtGui, QtCore 
+if common.use_pyside2():
+    from PySide2 import QtGui, QtCore 
+else:
+    from PySide6 import QtGui, QtCore 
+
+log = logging.getLogger(__name__)
 
 class DetectorTemperatureFeature:
     """

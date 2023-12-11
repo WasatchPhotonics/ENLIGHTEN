@@ -1,8 +1,13 @@
-from PySide6 import QtCore, QtGui, QtWidgets
-
 import hashlib
 import logging
 import time
+
+from enlighten import common
+
+if common.use_pyside2():
+    from PySide2 import QtCore, QtGui, QtWidgets
+else:
+    from PySide6 import QtCore, QtGui, QtWidgets
 
 log = logging.getLogger(__name__)
 

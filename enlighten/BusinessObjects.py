@@ -1,6 +1,13 @@
 import logging
-from PySide6.QtGui import QColor
-from PySide6.QtCore import *
+
+from enlighten import common
+
+if common.use_pyside2():
+    from PySide2.QtGui import QColor
+    from PySide2.QtCore import *
+else:
+    from PySide6.QtGui import QColor
+    from PySide6.QtCore import *
 
 log = logging.getLogger(__name__)
 

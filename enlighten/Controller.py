@@ -12,11 +12,6 @@ import sys
 import os
 import re
 
-import PySide6
-from PySide6 import QtCore, QtWidgets, QtGui
-from PySide6.QtCore import QObject, QEvent
-from PySide6.QtWidgets import QMessageBox, QVBoxLayout, QWidget, QLabel
-
 from collections import defaultdict
 from threading import Thread
 
@@ -24,10 +19,6 @@ from threading import Thread
 if "macOS" in platform.platform():
     import matplotlib
     import matplotlib.pyplot as plt
-
-from . import util
-from . import common
-from .scope import Graph
 
 import wasatch
 from wasatch import applog
@@ -43,13 +34,27 @@ from wasatch.WasatchBus               import WasatchBus
 from wasatch.BLEDevice                import BLEDevice
 from wasatch.Reading                  import Reading
 
-from enlighten.ui.ThumbnailWidget import ThumbnailWidget
-from .BusinessObjects                 import BusinessObjects
-from enlighten.ui.TimeoutDialog import TimeoutDialog
+from enlighten import util
+from enlighten import common
+
 from enlighten.scope.Spectrometer import Spectrometer
+from enlighten.ui.ThumbnailWidget import ThumbnailWidget
+from enlighten.ui.TimeoutDialog import TimeoutDialog
+from enlighten.BusinessObjects import BusinessObjects
+from enlighten.scope import Graph
+
+if common.use_pyside2():
+    import PySide2
+    from PySide2 import QtCore, QtWidgets, QtGui
+    from PySide2.QtCore import QObject, QEvent
+    from PySide2.QtWidgets import QMessageBox, QVBoxLayout, QWidget, QLabel
+else:
+    import PySide6
+    from PySide6 import QtCore, QtWidgets, QtGui
+    from PySide6.QtCore import QObject, QEvent
+    from PySide6.QtWidgets import QMessageBox, QVBoxLayout, QWidget, QLabel
 
 log = logging.getLogger(__name__)
-
 
 class AcquiredReading(object):
     """ Trivial class to eliminate a tuple during memory profiling. """
@@ -150,7 +155,10 @@ class Controller:
         log.info("Stylesheet path %s",       self.stylesheet_path)
         log.info("Python version %s",        util.python_version())
         log.info(f"Operating system {sys.platform} {struct.calcsize('P')*8 } bit")
-        log.info("PySide version %s",        PySide6.__version__)
+        if common.use_pyside2():
+            log.info("PySide version %s",        PySide2.__version__)
+        else:
+            log.info("PySide version %s",        PySide6.__version__)
         log.info("PySide QtCore version %s", QtCore.__version__)
         log.info("QtCore version %s",        QtCore.qVersion())
 
