@@ -60,7 +60,7 @@ class HorizROIFeature:
         self.enabled = not self.enabled
         self.user_requested_enabled = self.enabled
 
-        log.debug(f"toggle: user_requested_enabled = {self.user_requested_enabled}, enabled = {self.enabled}")
+        log.debug(f"button_callback: user_requested_enabled = {self.user_requested_enabled}, enabled = {self.enabled}")
         
         self.update_visibility()
 
