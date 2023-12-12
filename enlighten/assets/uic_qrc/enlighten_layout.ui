@@ -8404,7 +8404,7 @@ QComboBox QListView
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>669</width>
+              <width>562</width>
               <height>1420</height>
              </rect>
             </property>
@@ -9191,7 +9191,7 @@ QComboBox QListView
                                 <string>wavelength</string>
                                </property>
                                <property name="checked">
-                                <bool>true</bool>
+                                <bool>false</bool>
                                </property>
                               </widget>
                              </item>
@@ -9235,7 +9235,7 @@ QComboBox QListView
                                 <double>9999.000000000000000</double>
                                </property>
                                <property name="value">
-                                <double>1000.000000000000000</double>
+                                <double>2400.000000000000000</double>
                                </property>
                               </widget>
                              </item>
@@ -9243,6 +9243,9 @@ QComboBox QListView
                               <widget class="QRadioButton" name="radioButton_save_interpolation_wavenumber">
                                <property name="text">
                                 <string>wavenumber</string>
+                               </property>
+                               <property name="checked">
+                                <bool>false</bool>
                                </property>
                               </widget>
                              </item>
@@ -12183,38 +12186,6 @@ QComboBox QListView
                             <enum>QLayout::SetDefaultConstraint</enum>
                            </property>
                            <item>
-                            <widget class="QPushButton" name="pushButton_zoom_graph">
-                             <property name="sizePolicy">
-                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                               <horstretch>5</horstretch>
-                               <verstretch>0</verstretch>
-                              </sizepolicy>
-                             </property>
-                             <property name="minimumSize">
-                              <size>
-                               <width>14</width>
-                               <height>26</height>
-                              </size>
-                             </property>
-                             <property name="maximumSize">
-                              <size>
-                               <width>30</width>
-                               <height>26</height>
-                              </size>
-                             </property>
-                             <property name="toolTip">
-                              <string>Zoom graph</string>
-                             </property>
-                             <property name="text">
-                              <string />
-                             </property>
-                             <property name="icon">
-                              <iconset resource="grey_icons.qrc">
-                               <normaloff>:/greys/images/grey_icons/zoom.svg</normaloff>:/greys/images/grey_icons/zoom.svg</iconset>
-                             </property>
-                            </widget>
-                           </item>
-                           <item>
                             <widget class="QPushButton" name="pushButton_lock_axes">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -12243,6 +12214,38 @@ QComboBox QListView
                              <property name="icon">
                               <iconset resource="grey_icons.qrc">
                                <normaloff>:/greys/images/grey_icons/lock-spectra.svg</normaloff>:/greys/images/grey_icons/lock-spectra.svg</iconset>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QPushButton" name="pushButton_zoom_graph">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>5</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>14</width>
+                               <height>26</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>30</width>
+                               <height>26</height>
+                              </size>
+                             </property>
+                             <property name="toolTip">
+                              <string>Zoom graph</string>
+                             </property>
+                             <property name="text">
+                              <string />
+                             </property>
+                             <property name="icon">
+                              <iconset resource="grey_icons.qrc">
+                               <normaloff>:/greys/images/grey_icons/zoom.svg</normaloff>:/greys/images/grey_icons/zoom.svg</iconset>
                              </property>
                             </widget>
                            </item>
@@ -12278,6 +12281,7 @@ QComboBox QListView
                              </property>
                             </widget>
                            </item>
+
                            <item>
                             <widget class="QPushButton" name="pushButton_invert_x_axis">
                              <property name="sizePolicy">
@@ -12310,6 +12314,8 @@ QComboBox QListView
                              </property>
                             </widget>
                            </item>
+
+
                            <item>
                             <widget class="QPushButton" name="pushButton_roi_toggle">
                              <property name="sizePolicy">
@@ -12338,6 +12344,40 @@ QComboBox QListView
                              </property>
                             </widget>
                            </item>
+
+                           <item>
+                            <widget class="QPushButton" name="pushButton_interp_toggle">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>5</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>14</width>
+                               <height>26</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>30</width>
+                               <height>26</height>
+                              </size>
+                             </property>
+                             <property name="toolTip">
+                              <string>Toggle interpolation of x-axis</string>
+                             </property>
+                             <property name="text">
+                              <string />
+                             </property>
+                             <property name="icon">
+                              <iconset resource="grey_icons.qrc">
+                               <normaloff>:/greys/images/grey_icons/ruler.svg</normaloff>:/greys/images/grey_icons/ruler.svg</iconset>
+                             </property>
+                            </widget>
+                           </item>
+
                            <item>
                             <spacer name="horizontalSpacer_gap_left">
                              <property name="orientation">
@@ -12456,6 +12496,7 @@ QComboBox QListView
                              </property>
                             </widget>
                            </item>
+
                            <item>
                             <widget class="QPushButton" name="pushButton_ramanCorrection">
                              <property name="sizePolicy">
@@ -12494,6 +12535,46 @@ QComboBox QListView
                              </property>
                             </widget>
                            </item>
+
+                           <item>
+                            <widget class="QPushButton" name="pushButton_laser_convenience">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>5</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>16</width>
+                               <height>26</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>30</width>
+                               <height>26</height>
+                              </size>
+                             </property>
+                             <property name="toolTip">
+                              <string>Convenience laser toggle</string>
+                             </property>
+                             <property name="text">
+                              <string />
+                             </property>
+                             <property name="icon">
+                              <iconset resource="grey_icons.qrc">
+                               <normaloff>:/greys/images/grey_icons/laser.svg</normaloff>:/greys/images/grey_icons/laser.svg</iconset>
+                             </property>
+                             <property name="iconSize">
+                              <size>
+                               <width>20</width>
+                               <height>20</height>
+                              </size>
+                             </property>
+                            </widget>
+                           </item>
+
                            <item>
                             <spacer name="horizontalSpacer_gap_right">
                              <property name="orientation">
@@ -14208,9 +14289,9 @@ p, li { white-space: pre-wrap; }
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-1879</y>
+                <y>0</y>
                 <width>240</width>
-                <height>2747</height>
+                <height>2777</height>
                </rect>
               </property>
               <property name="sizePolicy">
@@ -17902,6 +17983,9 @@ p, li { white-space: pre-wrap; }
                          <layout class="QVBoxLayout" name="verticalLayout_57x">
                           <item>
                            <widget class="QComboBox" name="comboBox_presets">
+                            <property name="toolTip">
+                             <string>Presets allow you to save and re-apply key acquisition parameters including integration time, gain dB, scan averaging, boxcar, baseline subtraction and Raman intensity correction.</string>
+                            </property>
                             <item>
                              <property name="text">
                               <string>Select One</string>
@@ -17917,9 +18001,6 @@ p, li { white-space: pre-wrap; }
                               <string>Remove...</string>
                              </property>
                             </item>
-                            <property name="toolTip">
-                             <string>Presets allow you to save and re-apply key acquisition parameters including integration time, gain dB, scan averaging, boxcar, baseline subtraction and Raman intensity correction.</string>
-                            </property>
                            </widget>
                           </item>
                          </layout>

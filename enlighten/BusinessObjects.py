@@ -363,16 +363,7 @@ class BusinessObjects:
             detector_temperature        = ctl.detector_temperature)
 
         self.header("instantiating InterpolationFeature")
-        ctl.interp = InterpolationFeature(
-            config                      = ctl.config,
-            cb_enabled                  = sfu.checkBox_save_interpolation_enabled,
-            dsb_end                     = sfu.doubleSpinBox_save_interpolation_end,
-            dsb_incr                    = sfu.doubleSpinBox_save_interpolation_incr,
-            dsb_start                   = sfu.doubleSpinBox_save_interpolation_start,
-            multispec                   = ctl.multispec,
-            rb_wavelength               = sfu.radioButton_save_interpolation_wavelength,
-            rb_wavenumber               = sfu.radioButton_save_interpolation_wavenumber,
-            horiz_roi                   = ctl.horiz_roi)
+        ctl.interp = InterpolationFeature(ctl)
 
         self.header("instantiating ExternalTriggerFeature")
         ctl.external_trigger = ExternalTriggerFeature(
