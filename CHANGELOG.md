@@ -3,6 +3,8 @@
 ## 4.0 GUI and Plugin Refactoring
 
 - 2023-12-11 4.0.28
+    - refactoring
+        - moved DarkFeature to ctl
     - GUI 
         - laser button tooltip fix
         - fixed markers
