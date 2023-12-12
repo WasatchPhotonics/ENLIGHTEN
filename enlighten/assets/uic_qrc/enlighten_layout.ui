@@ -8035,7 +8035,7 @@ QComboBox QListView
                                      </widget>
                                     </item>
                                     <item>
-                                     <widget class="QPushButton" name="pushButton_laser_copy">
+                                     <widget class="QPushButton" name="pushButton_copy_laser_temperature_data">
                                       <property name="sizePolicy">
                                        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                                         <horstretch>0</horstretch>
@@ -8055,7 +8055,7 @@ QComboBox QListView
                                      </widget>
                                     </item>
                                     <item>
-                                     <widget class="QPushButton" name="laser_temp_pushButton">
+                                     <widget class="QPushButton" name="pushButton_clear_laser_temperature_data">
                                       <property name="sizePolicy">
                                        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                                         <horstretch>0</horstretch>

@@ -473,7 +473,6 @@ class BusinessObjects:
             graph                       = ctl.graph,
             multispec                   = ctl.multispec,
             lb_degC                     = sfu.label_hardware_capture_details_laser_temperature,
-            clear_btn                   = sfu.laser_temp_pushButton,
             make_pen                    = ctl.gui.make_pen,
             clipboard                   = ctl.clipboard,
             hardware_file_manager       = ctl.hardware_file_manager)
