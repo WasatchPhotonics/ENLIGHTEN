@@ -1030,38 +1030,30 @@ class Measurement:
     # for both save_json_file and External.Feature.
     def to_dict(self):
         pr          = self.processed_reading
-        wavelengths = self.settings.wavelengths
-        wavenumbers = self.settings.wavenumbers
         pixels      = len(pr.processed)
 
-        m = {                   # m = Measurement
+        m = { # Measurement
             "spectrum": {},
             "metadata": self.get_all_metadata(),
+            "spectrometerSettings": self.settings.to_dict()
         }
-
-        md = m["metadata"]
-        sp = m["spectrum"]      # sp = Spectrum (should have used spectra?)
 
         # interpolation
         ipr = None
         interp = self.ctl.save_options.interp if self.ctl.save_options is not None else None
         if interp is not None and interp.enabled:
-            ipr = interp.interpolate_processed_reading(pr, wavelengths=wavelengths, wavenumbers=wavenumbers, settings=self.settings)
+            ipr = interp.interpolate_processed_reading(pr, wavelengths=self.settings.wavelengths, wavenumbers=self.settings.wavenumbers, settings=self.settings)
             if ipr is not None:
                 pixels = ipr.pixels
-                pr = ipr.processed_reading
+                pr = ipr.processed_reading # note this includes processed, raw, dark, reference etc
+                m["spectrometerSettings"]["wavelengths"] = ipr.wavelengths
+                m["spectrometerSettings"]["wavenumbers"] = ipr.wavenumbers
 
         # same capitalization as CSV per request
-        if self.ctl.save_options.save_processed()   and pr.processed is not None: sp["Processed"] = util.clean_list(pr.get_processed())
-        if self.ctl.save_options.save_raw()         and pr.raw       is not None: sp["Raw"]       = util.clean_list(pr.raw)
-        if self.ctl.save_options.save_dark()        and pr.dark      is not None: sp["Dark"]      = util.clean_list(pr.dark)
-        if self.ctl.save_options.save_reference()   and pr.reference is not None: sp["Reference"] = util.clean_list(pr.reference)
-
-        m["spectrometerSettings"] = self.settings.to_dict()
-
-        if ipr is not None:
-            m["spectrometerSettings"]["wavelengths"] = ipr.wavelengths
-            m["spectrometerSettings"]["wavenumbers"] = ipr.wavenumbers
+        if self.ctl.save_options.save_processed()   and pr.processed is not None: m["spectrum"]["Processed"] = util.clean_list(pr.get_processed())
+        if self.ctl.save_options.save_raw()         and pr.raw       is not None: m["spectrum"]["Raw"]       = util.clean_list(pr.raw)
+        if self.ctl.save_options.save_dark()        and pr.dark      is not None: m["spectrum"]["Dark"]      = util.clean_list(pr.dark)
+        if self.ctl.save_options.save_reference()   and pr.reference is not None: m["spectrum"]["Reference"] = util.clean_list(pr.reference)
 
         return m
 
