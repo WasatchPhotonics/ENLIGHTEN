@@ -2364,6 +2364,44 @@ QComboBox QListView
                </spacer>
               </item>
               <item>
+               <widget class="QPushButton" name="pushButton_laser_convenience">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>5</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>16</width>
+                  <height>26</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>30</width>
+                  <height>26</height>
+                 </size>
+                </property>
+                <property name="toolTip">
+                 <string>Convenience laser toggle</string>
+                </property>
+                <property name="text">
+                 <string />
+                </property>
+                <property name="icon">
+                 <iconset resource="grey_icons.qrc">
+                  <normaloff>:/greys/images/grey_icons/laser.svg</normaloff>:/greys/images/grey_icons/laser.svg</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>20</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QPushButton" name="pushButton_dark_mode">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -12281,7 +12319,6 @@ QComboBox QListView
                              </property>
                             </widget>
                            </item>
-
                            <item>
                             <widget class="QPushButton" name="pushButton_invert_x_axis">
                              <property name="sizePolicy">
@@ -12314,8 +12351,6 @@ QComboBox QListView
                              </property>
                             </widget>
                            </item>
-
-
                            <item>
                             <widget class="QPushButton" name="pushButton_roi_toggle">
                              <property name="sizePolicy">
@@ -12344,7 +12379,6 @@ QComboBox QListView
                              </property>
                             </widget>
                            </item>
-
                            <item>
                             <widget class="QPushButton" name="pushButton_interp_toggle">
                              <property name="sizePolicy">
@@ -12377,7 +12411,6 @@ QComboBox QListView
                              </property>
                             </widget>
                            </item>
-
                            <item>
                             <spacer name="horizontalSpacer_gap_left">
                              <property name="orientation">
@@ -12496,7 +12529,6 @@ QComboBox QListView
                              </property>
                             </widget>
                            </item>
-
                            <item>
                             <widget class="QPushButton" name="pushButton_ramanCorrection">
                              <property name="sizePolicy">
@@ -12535,46 +12567,6 @@ QComboBox QListView
                              </property>
                             </widget>
                            </item>
-
-                           <item>
-                            <widget class="QPushButton" name="pushButton_laser_convenience">
-                             <property name="sizePolicy">
-                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                               <horstretch>5</horstretch>
-                               <verstretch>0</verstretch>
-                              </sizepolicy>
-                             </property>
-                             <property name="minimumSize">
-                              <size>
-                               <width>16</width>
-                               <height>26</height>
-                              </size>
-                             </property>
-                             <property name="maximumSize">
-                              <size>
-                               <width>30</width>
-                               <height>26</height>
-                              </size>
-                             </property>
-                             <property name="toolTip">
-                              <string>Convenience laser toggle</string>
-                             </property>
-                             <property name="text">
-                              <string />
-                             </property>
-                             <property name="icon">
-                              <iconset resource="grey_icons.qrc">
-                               <normaloff>:/greys/images/grey_icons/laser.svg</normaloff>:/greys/images/grey_icons/laser.svg</iconset>
-                             </property>
-                             <property name="iconSize">
-                              <size>
-                               <width>20</width>
-                               <height>20</height>
-                              </size>
-                             </property>
-                            </widget>
-                           </item>
-
                            <item>
                             <spacer name="horizontalSpacer_gap_right">
                              <property name="orientation">
