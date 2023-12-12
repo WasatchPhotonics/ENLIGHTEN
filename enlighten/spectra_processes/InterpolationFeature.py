@@ -12,6 +12,7 @@ from enlighten.ScrollStealFilter import ScrollStealFilter
 log = logging.getLogger(__name__)
 
 class InterpolatedProcessedReading:
+    # Note ProcessedReading includes dark and reference, so this implicitly does too
     def __init__(self):
         self.wavelengths = None
         self.wavenumbers = None
@@ -43,9 +44,6 @@ class InterpolatedProcessedReading:
 # the "index" of the other axes.  I suppose you could say it's "the pixel on 
 # which the interpolated intensity of the interpolated wavelength would presumably
 # have fallen in a hypothesized ideal unit spectrometer."  
-#
-# @todo we should use a callback to clear spectrometers' dark/ref so the button 
-#       state is updated
 #
 class InterpolationFeature(object):
     def __init__(self, ctl):
@@ -113,9 +111,12 @@ class InterpolationFeature(object):
             self.bt_toggle.setToolTip(f"Enable x-axis interpolation")
 
         # invalidate stored dark/references
-        for spec in self.ctl.multispec.get_spectrometers():
-            spec.app_state.clear_dark()
-            spec.app_state.clear_reference()
+        #
+        # MZ: why were we doing this? I don't think we need to do this.
+        #     commenting out for now.
+        # for spec in self.ctl.multispec.get_spectrometers():
+        #     spec.app_state.clear_dark()
+        #     spec.app_state.clear_reference()
 
         s = "interpolation"
         for name in [ "enabled", "use_wavelengths", "use_wavenumbers", "start", "end", "incr" ]:
@@ -157,6 +158,7 @@ class InterpolationFeature(object):
         return wasatch_utils.generate_excitation(wavelengths=wavelengths, wavenumbers=wavenumbers)
 
     def interpolate_processed_reading(self, pr, wavelengths=None, wavenumbers=None, settings=None):
+        """ This does dark and reference as well as processed and raw """
         if self.new_axis is None:
             log.error("new axis not provided, returning none")
             return 
