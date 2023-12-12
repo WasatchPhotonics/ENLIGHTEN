@@ -123,14 +123,12 @@ class Authentication(object):
 
         self.gui.colorize_button(self.button_login, self.level != self.BASIC)
         self.update_widgets()
+        try:
+            self.combo_view.removeItem(self.combo_view.findText("Factory"))
+        except:
+            pass
         if self.level > self.BASIC:
             self.combo_view.addItem("Factory")
-        else:
-            try:
-                self.combo_view.removeItem(self.combo_view.findText("Factory"))
-            except:
-                log.error("Couldn't remove factory screen on deauth")
-
 
         for callback in self.observers:
             callback()
