@@ -9,6 +9,7 @@
         - added convenience laser button where permanently visible
         - added interpolation button above graph
         - restored original ordering of (lock, fullwidth) buttons
+        - fixed multiple Factory items on multiple logins
 - 2023-12-08 4.0.27
     - locked to Python 3.11 for Tensorflow
     - default to maximized
