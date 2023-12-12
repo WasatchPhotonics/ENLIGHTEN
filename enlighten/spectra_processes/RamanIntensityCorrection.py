@@ -76,21 +76,13 @@ class RamanIntensityCorrection(object):
     def enable_callback(self):
         self.enabled = self.cb_enable.isChecked()
         self.enable_when_allowed = self.enabled
-        self.check_block_dark()
 
         if self.enabled:
             self.ctl.guide.clear(token="enable_raman_intensity_correction")
 
-        self.sync_gui()
+        self.ctl.dark_feature.update_enable()
 
-    def check_block_dark(self):
-        spec = self.ctl.multispec.current_spectrometer()
-        log.info("checking if need to block dark")
-        if spec.app_state.dark is not None and self.enabled:
-            log.info("passing block to dark feature")
-            self.ctl.dark_feature.handle_blocker(self,"Raman Intensity Correction must be disabled to take a dark")
-        if not self.enabled:
-            self.ctl.dark_feature.handle_blocker(self,"",removal=True)
+        self.sync_gui()
 
     def sync_gui(self):
         # if logic and configuration and past user inputs have enabled the 
