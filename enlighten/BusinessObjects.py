@@ -210,12 +210,7 @@ class BusinessObjects:
         sfu = ctl.form.ui
 
         self.header("instantiating ResourceMonitorFeature")
-        ctl.resource_monitor = ResourceMonitorFeature(
-            lb_growth                   = sfu.label_process_growth_mb,
-            lb_size                     = sfu.label_process_size_mb,
-            max_growth_perc             = ctl.max_memory_growth,
-            run_sec                     = ctl.run_sec
-        )
+        ctl.resource_monitor = ResourceMonitorFeature(ctl)
 
         self.header("instantiating FocusListener")
         ctl.focus_listener = FocusListener(app = ctl.app)

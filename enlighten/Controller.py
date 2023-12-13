@@ -1000,7 +1000,7 @@ class Controller:
 
         # we've connected to at least one spectrometer, so set logging to 
         # whatever the user selected (we default at DEBUG until connection)
-        logging.getLogger().setLevel(self.logging_feature.level)
+        logging.getLogger().setLevel(self.log_level)
         log.info(f"successfully %s {spec.label}", "initialized" if hotplug else "selected")
 
         # updates from initialization to match time window in spinbox

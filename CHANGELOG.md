@@ -9,11 +9,12 @@
         - added battery to StatusBar
         - generalized PluginController.display_plugin_warning into GUI.msgbox_with_checkbox
         - simplified font sizes
-    - refactoring
-        - moved StatusBarFeature to ctl
-        - moved ThumbnailWidget to ctl
-        - moved Configuration to ctl
-        - moved LoggingFeature to ctl
+    - moved to ctl
+        - StatusBarFeature
+        - ThumbnailWidget
+        - Configuration
+        - LoggingFeature
+        - ResourceMonitorFeature
 - 2023-12-13 4.0.29
     - stopped clearing dark/refs when changing interpolation
     - RamanShiftCorrection tweaks (fixed width unit, obey ROI, show nm hint)

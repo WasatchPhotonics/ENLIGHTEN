@@ -10,18 +10,12 @@ class ResourceMonitorFeature:
 
     UPDATE_RATE_SEC = 5
 
-    ##
-    # @param max_growth_perc: float >= 0 (100 = 100% = doubling in size)
-    def __init__(self, 
-            lb_growth,
-            lb_size,
-            max_growth_perc,
-            run_sec):
+    def __init__(self, ctl):
+        self.ctl = ctl
+        sfu = ctl.form.ui
 
-        self.lb_growth       = lb_growth
-        self.lb_size         = lb_size
-        self.max_growth_perc = max_growth_perc
-        self.run_sec         = run_sec
+        self.lb_growth       = sfu.label_process_growth_mb
+        self.lb_size         = sfu.label_process_size_mb
 
         self.process_id = os.getpid()
 
@@ -46,8 +40,8 @@ class ResourceMonitorFeature:
 
     ## @returns True if copacetic
     def check_runtime(self, now):
-        if self.run_sec > 0 and self.run_sec >= (datetime.datetime.now() - self.start_time).total_seconds():
-            log.critical("exceeded configured runtime (%d sec)", self.run_sec)
+        if self.ctl.run_sec > 0 and self.ctl.run_sec >= (datetime.datetime.now() - self.start_time).total_seconds():
+            log.critical("exceeded configured runtime (%d sec)", self.ctl.run_sec)
             return False
         
         return True
@@ -66,8 +60,8 @@ class ResourceMonitorFeature:
         if self.initial_size is None:
             log.info("initial_size = %d bytes", size_in_bytes)
             self.initial_size = size_in_bytes
-            if self.max_growth_perc > 0:
-                self.max_allowed_size = round(size_in_bytes * (1 + (0.01 * self.max_growth_perc)))
+            if self.ctl.max_memory_growth > 0:
+                self.max_allowed_size = round(size_in_bytes * (1 + (0.01 * self.ctl.max_memory_growth)))
                 log.info("max_alloweds_size = %d bytes", self.max_allowed_size)
             return True
 
@@ -84,4 +78,3 @@ class ResourceMonitorFeature:
             return False
 
         return True
-
