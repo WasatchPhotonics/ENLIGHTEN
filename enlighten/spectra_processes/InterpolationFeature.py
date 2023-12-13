@@ -1,5 +1,3 @@
-from PySide6 import QtCore
-
 import logging
 import numpy as np
 import copy
@@ -8,6 +6,12 @@ from wasatch.ProcessedReading import ProcessedReading
 
 from wasatch import utils as wasatch_utils
 from enlighten.ScrollStealFilter import ScrollStealFilter
+from enlighten import common
+
+if common.use_pyside2():
+    from PySide2 import QtCore
+else:
+    from PySide6 import QtCore
 
 log = logging.getLogger(__name__)
 

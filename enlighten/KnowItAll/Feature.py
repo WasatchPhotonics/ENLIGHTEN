@@ -5,13 +5,16 @@ import logging
 import time
 import os
 
-from PySide6 import QtGui, QtWidgets
-
 from .Wrapper import Wrapper
 from .Config  import Config 
-from ..ScrollStealFilter import ScrollStealFilter
 
-from .. import util
+from enlighten.ScrollStealFilter import ScrollStealFilter
+from enlighten import util, common
+
+if common.use_pyside2():
+    from PySide2 import QtGui, QtWidgets
+else:
+    from PySide6 import QtGui, QtWidgets
 
 log = logging.getLogger(__name__)
 

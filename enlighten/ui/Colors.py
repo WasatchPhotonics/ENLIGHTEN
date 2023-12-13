@@ -1,8 +1,13 @@
 import logging
 import colorsys
-from PySide6 import QtGui
 
 from enlighten.data.ColorNames import ColorNames
+from enlighten import common
+
+if common.use_pyside2():
+    from PySide2 import QtGui
+else:
+    from PySide6 import QtGui
 
 log = logging.getLogger(__name__)
 

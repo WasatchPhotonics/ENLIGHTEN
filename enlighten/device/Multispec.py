@@ -1,7 +1,6 @@
 import pyqtgraph
 
 from collections import defaultdict
-from PySide6 import QtGui
 import logging
 import re
 
@@ -12,6 +11,12 @@ from wasatch.DeviceID import DeviceID
 from wasatch.WasatchDeviceWrapper import WasatchDeviceWrapper
 
 from enlighten import util
+from enlighten import common
+
+if common.use_pyside2():
+    from PySide2 import QtGui
+else:
+    from PySide6 import QtGui
 
 log = logging.getLogger(__name__)
 

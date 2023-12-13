@@ -1,10 +1,12 @@
 import logging
 import pyqtgraph
-from PySide6 import QtGui
 
-from enlighten.ui.TimeoutDialog import TimeoutDialog
 from enlighten import common
-from enlighten.common import msgbox
+
+if common.use_pyside2():
+    from PySide2 import QtGui
+else:
+    from PySide6 import QtGui
 
 log = logging.getLogger(__name__)
 

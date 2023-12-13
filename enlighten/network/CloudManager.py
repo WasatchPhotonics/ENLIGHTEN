@@ -10,13 +10,18 @@ from decimal import Decimal
 import boto3
 from botocore.config import Config
 
-from PySide6 import QtCore, QtWidgets, QtGui
-from PySide6.QtWidgets import QInputDialog, QLineEdit, QMessageBox, QPushButton, QCheckBox
-
-from enlighten.common import get_default_data_dir
 from enlighten.device.EEPROMEditor import EEPROMEditor
 from enlighten.file_io.Configuration import Configuration
+
+from enlighten import common
 from enlighten import util
+
+if common.use_pyside2():
+    from PySide2 import QtCore, QtWidgets, QtGui
+    from PySide2.QtWidgets import QInputDialog, QLineEdit, QMessageBox, QPushButton, QCheckBox
+else:
+    from PySide6 import QtCore, QtWidgets, QtGui
+    from PySide6.QtWidgets import QInputDialog, QLineEdit, QMessageBox, QPushButton, QCheckBox
 
 log = logging.getLogger(__name__)
 
@@ -188,7 +193,7 @@ class CloudManager:
         local_file = ''
         try:
             log.debug(f"downloading EEPROM for serial {serial_number}")
-            local_file = os.path.join(get_default_data_dir(), "eeprom_backups", f"{serial_number}.json")
+            local_file = os.path.join(common.get_default_data_dir(), "eeprom_backups", f"{serial_number}.json")
             response = self.eeprom_table.get_item(Key={"serialNumber": serial_number})
             eeprom_response = response["Item"]
             # default is required, see function definition

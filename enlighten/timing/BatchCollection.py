@@ -1,10 +1,14 @@
-from PySide6 import QtCore, QtGui
-
 import datetime
 import logging
 
 from enlighten import util
+from enlighten import common
 from enlighten.ScrollStealFilter import ScrollStealFilter
+
+if common.use_pyside2():
+    from PySide2 import QtCore, QtGui
+else:
+    from PySide6 import QtCore, QtGui
 
 log = logging.getLogger(__name__)
 

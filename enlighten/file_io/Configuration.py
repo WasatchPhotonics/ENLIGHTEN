@@ -1,5 +1,3 @@
-from PySide6 import QtCore
-
 import os
 import re
 import shutil
@@ -12,6 +10,11 @@ from enlighten.data.ColorNames import ColorNames
 from enlighten.measurement.SaveOptions import SaveOptions
 
 from enlighten import common
+
+if common.use_pyside2():
+    from PySide2 import QtCore
+else:
+    from PySide6 import QtCore
 
 log = logging.getLogger(__name__)
 

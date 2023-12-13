@@ -1,6 +1,4 @@
-from PySide6 import QtGui, QtCore, QtWidgets
 import pyqtgraph
-
 from datetime import datetime
 import logging
 
@@ -9,6 +7,11 @@ from enlighten.ui.ConfirmWidget import ConfirmWidget
 from enlighten import KnowItAll
 from enlighten import common
 from enlighten import util
+
+if common.use_pyside2():
+    from PySide2 import QtGui, QtCore, QtWidgets
+else:
+    from PySide6 import QtGui, QtCore, QtWidgets
 
 log = logging.getLogger(__name__)
 

@@ -2,7 +2,6 @@ import datetime
 import logging
 import copy
 
-from PySide6 import QtGui
 import pyqtgraph
 
 from enlighten.SpectrometerApplicationState import SpectrometerApplicationState
@@ -13,6 +12,11 @@ from enlighten import common
 from wasatch.SpectrometerState     import SpectrometerState
 from wasatch.AbstractUSBDevice     import AbstractUSBDevice
 from wasatch.MockUSBDevice         import MockUSBDevice
+
+if common.use_pyside2():
+    from PySide2 import QtGui
+else:
+    from PySide6 import QtGui
 
 log = logging.getLogger(__name__)
 

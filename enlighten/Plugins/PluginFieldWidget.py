@@ -1,7 +1,13 @@
 import logging
 
-from PySide6 import QtGui, QtWidgets, QtCore
-from PySide6.QtCore import Qt
+from enlighten import common
+
+if common.use_pyside2():
+    from PySide2 import QtGui, QtWidgets, QtCore
+    from PySide2.QtCore import Qt
+else:
+    from PySide6 import QtGui, QtWidgets, QtCore
+    from PySide6.QtCore import Qt
 
 from wasatch import utils as wasatch_utils
 

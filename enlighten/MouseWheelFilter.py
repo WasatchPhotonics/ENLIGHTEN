@@ -1,7 +1,13 @@
 import logging
 
-import PySide6
-from PySide6.QtCore import QObject, QEvent
+from enlighten import common
+
+if common.use_pyside2():
+    import PySide2
+    from PySide2.QtCore import QObject, QEvent
+else:
+    import PySide6
+    from PySide6.QtCore import QObject, QEvent
 
 log = logging.getLogger(__name__)
 

@@ -1,8 +1,12 @@
 import webbrowser
 
-from PySide6 import QtCore, QtGui, QtWidgets
-
+from enlighten import common
 from enlighten import util
+
+if common.use_pyside2():
+    from PySide2 import QtCore, QtGui, QtWidgets
+else:
+    from PySide6 import QtCore, QtGui, QtWidgets
 
 import logging
 

@@ -108,7 +108,8 @@ linux-installer-base:
 	cp -rv enlighten/assets/stylesheets  build-linux/EnlightenGUI/enlighten/assets
 	cp -rv enlighten/assets/example_data build-linux/EnlightenGUI/enlighten/assets
 	cp -rv ../Wasatch.PY/udev            build-linux/EnlightenGUI/
-	mv build-linux/EnlightenGUI build-linux/ENLIGHTEN-$(VERSION)
+	rm -fv build-linux/EnlightenGUI/_internal/libusb-1.0.so.0
+	mv -v  build-linux/EnlightenGUI build-linux/ENLIGHTEN-$(VERSION)
 	( cd build-linux && tar zcvf ../ENLIGHTEN-linux-$(VERSION).tgz ENLIGHTEN-$(VERSION) | sed 's/^/compressing: /' )
 
 linux-installer: linux-installer-base

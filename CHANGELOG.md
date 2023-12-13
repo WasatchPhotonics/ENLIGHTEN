@@ -2,12 +2,15 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
-- 2023-??-?? 4.0.29
+- 2023-12-13 4.0.29
     - stopped clearing dark/refs when changing interpolation
     - RamanShiftCorrection tweaks (fixed width unit, obey ROI, show nm hint)
     - refactoring
         - moved DarkFeature to ctl
 - 2023-12-11 4.0.28
+    - platforms
+        - updating Raspberry Pi build docs
+        - support both PySide6 and PySide2
     - GUI 
         - laser button tooltip fix
         - fixed markers
