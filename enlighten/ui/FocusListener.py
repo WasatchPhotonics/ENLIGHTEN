@@ -10,9 +10,9 @@ log = logging.getLogger(__name__)
 #       signal in unregister(), and reconnect in register
 class FocusListener(object):
 
-    def __init__(self, app):
+    def __init__(self, ctl):
         self.callbacks = {}
-        app.focusChanged.connect(self.on_focus_changed)
+        ctl.app.focusChanged.connect(self.on_focus_changed)
 
     def on_focus_changed(self, old, new):
         if not self.registered(old):

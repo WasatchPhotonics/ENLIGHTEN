@@ -18,7 +18,9 @@ log = logging.getLogger(__name__)
 # Convenience class providing access to pre-built subtypes of WpModelInfo, plus
 # ModelFWHM.
 class ModelInfo(object):
-    def __init__(self):
+    def __init__(self, ctl):
+        self.ctl = ctl
+
         self.model_fwhm = ModelFWHM()
 
         self.models = {}

@@ -213,21 +213,13 @@ class BusinessObjects:
         ctl.resource_monitor = ResourceMonitorFeature(ctl)
 
         self.header("instantiating FocusListener")
-        ctl.focus_listener = FocusListener(app = ctl.app)
+        ctl.focus_listener = FocusListener(ctl)
 
         self.header("instantiating ModelInfo")
-        ctl.model_info = ModelInfo()
+        ctl.model_info = ModelInfo(ctl)
 
         self.header("instantiating Marquee")
-        ctl.marquee = Marquee(
-            app                         = ctl.app,
-            bt_close                    = sfu.pushButton_marquee_close,
-            form                        = ctl.form,
-            frame                       = sfu.frame_drawer_white,
-            inner                       = sfu.frame_drawer_black,
-            label                       = sfu.label_drawer,
-            stylesheets                 = ctl.stylesheets)
-        ctl.gui.marquee = ctl.marquee
+        ctl.marquee = Marquee(ctl)
 
         self.header("instantiating FileManager")
         ctl.file_manager = FileManager(
