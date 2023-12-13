@@ -8,6 +8,7 @@
     - GUI
         - added battery to StatusBar
         - generalized PluginController.display_plugin_warning into GUI.msgbox_with_checkbox
+        - simplified font sizes
     - refactoring
         - moved StatusBarFeature to ctl
         - moved ThumbnailWidget to ctl
