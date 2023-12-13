@@ -38,7 +38,8 @@ class StatusBarFeature:
                       [ "Area",                 sfu.label_StatusBar_area_name,    sfu.label_StatusBar_area_value ],
                       [ "Detector Temperature", sfu.label_StatusBar_temp_name,    sfu.label_StatusBar_temp_value ],
                       [ "Cursor Intensity",     sfu.label_StatusBar_cursor_name,  sfu.label_StatusBar_cursor_value ],
-                      [ "Spectrum Count",       sfu.label_StatusBar_count_name,   sfu.label_StatusBar_count_value ] ]:
+                      [ "Spectrum Count",       sfu.label_StatusBar_count_name,   sfu.label_StatusBar_count_value ],
+                      [ "Battery",              sfu.label_StatusBar_battery_name, sfu.label_StatusBar_battery_value ] ]:
             (name, label, value) = trio
             self.menu_order.append(name)
             self.widgets[name] = (label, value)
@@ -46,6 +47,7 @@ class StatusBarFeature:
         # register for notifications from other business objects
         ctl.cursor.register_observer(self.cursor_updated)
         ctl.detector_temperature.register_observer(self.temp_updated)
+        ctl.battery_feature.register_observer(self.battery_updated)
 
         self.create_status_menu()
 
@@ -159,10 +161,15 @@ class StatusBarFeature:
         s = action.text()
         self.show(s, action.isChecked())
 
-    ## receives a point from Cursor
     def cursor_updated(self, x, y):
         self.set("Cursor Intensity", f"{y:.2f}")
 
-    ## receives a temperature from DetectorTemperatureFeature
     def temp_updated(self, degC):
         self.set("Detector Temperature", f"{degC:-.2f} °C")
+
+    def battery_updated(self, perc, charging):
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec and spec.settings.eeprom.has_battery:
+            self.set("Battery", f"{perc:.2f}%")
+        else:
+            self.set("Battery", "none")
