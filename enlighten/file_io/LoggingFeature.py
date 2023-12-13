@@ -22,40 +22,27 @@ class LoggingFeature:
 
     TIMER_SLEEP_MS = 2000
 
-    def __init__(self,
-            bt_copy,
-            cb_paused,
-            cb_verbose,
-            config,
-            level,
-            queue,
-            te_log):
+    def __init__(self, ctl):
+        self.ctl = ctl
+        sfu = ctl.form.ui
 
-        self.bt_copy    = bt_copy
-        self.cb_paused  = cb_paused
-        self.cb_verbose = cb_verbose
-        self.config     = config
-        self.level      = level
-        self.queue      = queue
-        self.te_log     = te_log
+        self.cb_paused  = sfu.checkBox_logging_pause
+        self.cb_verbose = sfu.checkBox_verbose_logging
+        self.te_log     = sfu.textEdit_log
 
-        self.status_indicators = None
-        self.clipboard         = None
-        self.page_nav          = None
-
-        self.cb_verbose.setVisible(True)
+        self.cb_verbose.setVisible(True) # MZ: when would this be False?
 
         self.timer = QtCore.QTimer()
         self.timer.setSingleShot(True)
         self.timer.timeout.connect(self.tick)
         self.timer.start(LoggingFeature.TIMER_SLEEP_MS)
 
-        self.cb_verbose .stateChanged   .connect(self.verbose_callback)
-        self.bt_copy    .clicked        .connect(self.copy_to_clipboard)
+        self.cb_verbose                         .stateChanged   .connect(self.verbose_callback)
+        sfu.pushButton_copy_log_to_clipboard    .clicked        .connect(self.copy_to_clipboard)
 
         # if verbose logging was specified at the command-line OR 
         # previously set via .ini, use that
-        if log.isEnabledFor(logging.DEBUG) or self.config.get_bool("logging", "verbose"):
+        if log.isEnabledFor(logging.DEBUG) or self.ctl.config.get_bool("logging", "verbose"):
             self.cb_verbose.setChecked(True)
 
         try:
@@ -76,31 +63,24 @@ class LoggingFeature:
         if enabled:
             log.info("enabling verbose logging")
             logging.getLogger().setLevel(logging.DEBUG)
-            self.config.set("logging", "verbose", "True")
-            self.level = "DEBUG"
+            self.ctl.config.set("logging", "verbose", "True")
+            self.ctl.log_level = "DEBUG"
         else:
             log.info("disabling verbose logging")
             logging.getLogger().setLevel(logging.INFO)
-            self.config.set("logging", "verbose", "False")
-            self.level = "INFO"
+            self.ctl.config.set("logging", "verbose", "False")
+            self.ctl.log_level = "INFO"
 
     def paused(self):
         return self.cb_paused.isChecked()
 
     def copy_to_clipboard(self):
-        if self.clipboard:
+        if self.ctl.clipboard:
             s = self.te_log.toPlainText()
-            self.clipboard.raw_set_text(s)
+            self.ctl.clipboard.raw_set_text(s)
 
     def tick(self):
-        # if self.area_scan.enabled:
-        #     return
-
         # need to run all the time to populate Hardware Status Indicator :-(
-        #
-        # if not (self.page_nav and self.page_nav.doing_log()):
-        #     return
-
         if not self.paused():
             try:
                 # is there a less memory-intensive way to do this?
@@ -139,7 +119,7 @@ class LoggingFeature:
 
         if color:
             html = f"<span style='color: #{color}'>" + html + "</span>"
-            if self.status_indicators:
-                self.status_indicators.raise_hardware_error()
+            if self.ctl.status_indicators:
+                self.ctl.status_indicators.raise_hardware_error()
 
         return html

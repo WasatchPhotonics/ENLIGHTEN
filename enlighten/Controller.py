@@ -588,7 +588,7 @@ class Controller:
         log.debug("connect_new: instantiating WasatchDeviceWrapper with %s", new_device_id)
         device = WasatchDeviceWrapper(
             device_id = new_device_id,
-            log_level = self.logging_feature.level)
+            log_level = self.log_level)
 
         # flag that an attempt to connect to the device is ongoing
         self.header("connect_new: setting in-process: %s" % new_device_id)

@@ -80,19 +80,20 @@ class Configuration:
         self.multispec = None
         self.linenum = 0
 
-    def __init__(self,
-            button_save,
-            lb_save_result):
+    def __init__(self, ctl):
         self.clear()
 
-        self.button_save    = button_save
-        self.lb_save_result = lb_save_result
+        self.ctl = ctl
 
+        sfu = ctl.form.ui
+        self.lb_save_result = sfu.label_save_ini_result
+
+        # not using Colors.color_names because not yet constructed
         self.color_names = ColorNames()
 
         self.directory = common.get_default_data_dir()
         self.pathname  = os.path.join(self.directory, "enlighten.ini")
-        self.test_dir = os.path.join(self.directory,'testSpectrometers')
+        self.test_dir = os.path.join(self.directory, 'testSpectrometers')
 
         self.load_defaults()
         self.stub_missing()
@@ -105,7 +106,7 @@ class Configuration:
         except:
             log.error("encountered exception during Configuration.reload", exc_info=1)
 
-        self.button_save.clicked.connect(self.save_callback)
+        sfu.pushButton_save_ini.clicked.connect(self.save_callback)
 
     def reload(self):
         """

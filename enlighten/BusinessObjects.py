@@ -175,23 +175,14 @@ class BusinessObjects:
         sfu = ctl.form.ui
 
         self.header("instantiating Configuration")
-        ctl.config = Configuration(
-            button_save                 = sfu.pushButton_save_ini,
-            lb_save_result              = sfu.label_save_ini_result)
+        ctl.config = Configuration(ctl)
 
         # created early so subsequent BusinessObjects can register to it
         self.header("instantiating Presets")
         ctl.presets = PresetFeature(ctl)
 
         self.header("instantiating LoggingFeature")
-        ctl.logging_feature = LoggingFeature(
-            bt_copy     = sfu.pushButton_copy_log_to_clipboard,
-            cb_paused   = sfu.checkBox_logging_pause,
-            cb_verbose  = sfu.checkBox_verbose_logging,
-            config      = ctl.config,
-            level       = ctl.log_level,
-            queue       = ctl.log_queue,
-            te_log      = sfu.textEdit_log)
+        ctl.logging_feature = LoggingFeature(ctl)
 
         self.header("instantiating Colors")
         ctl.colors = Colors(ctl.config)
