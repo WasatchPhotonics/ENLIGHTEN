@@ -58,8 +58,13 @@ class BasicWindow(QtWidgets.QMainWindow):
 
         if self.prompt_on_exit:
             quit_msg = "Are you sure you want to exit ENLIGHTEN?" 
-            reply = QtWidgets.QMessageBox.question(self, 'Confirm Exit', 
-                quit_msg, QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No)
+            reply = QtWidgets.QMessageBox.question(
+                self,                       # parent
+                "Confirm Exit",             # title
+                quit_msg,                   # text
+                QtWidgets.QMessageBox.Yes,  # button0
+                QtWidgets.QMessageBox.No)   # button1
+
             if reply != QtWidgets.QMessageBox.Yes:
                 log.debug('"We are cancelling the apocalypse!"')
                 event.ignore()

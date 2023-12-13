@@ -626,7 +626,6 @@ class BusinessObjects:
             table_results               = sfu.tableWidget_id_match_results,
             vcr_controls                = ctl.vcr_controls,
             horiz_roi                   = ctl.horiz_roi)
-        ctl.measurement_factory.kia = ctl.kia_feature
 
         self.header("instantiating RichardsonLucy")
         ctl.richardson_lucy = RichardsonLucy(

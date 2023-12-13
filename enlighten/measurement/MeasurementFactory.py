@@ -39,7 +39,6 @@ class MeasurementFactory(object):
         self.colors       = None
         self.graph        = None
         self.gui          = None
-        self.kia          = None
         self.render_graph = None
         self.render_curve = None
         self.save_options = None
@@ -77,7 +76,6 @@ class MeasurementFactory(object):
 
         # will receive post-construction
         self.measurements = None    # backreference to Measurements 
-        self.kia          = None    # KnowItAll.Feature 
 
     def register_observer(self, callback):
         self.observers.add(callback)
@@ -128,20 +126,17 @@ class MeasurementFactory(object):
     # rasterized thumbnail image.  Also add Measurements back-reference.
     def create_thumbnail(self, measurement, is_collapsed=False):
         if measurement.plugin_name == "":
-            graph = self.graph
+            graph = self.ctl.graph
         else:
             log.debug(f"graph is plugin so sending plugin graph")
             graph = self.plugin_graph()
+
         measurement.thumbnail_widget = ThumbnailWidget(
+            ctl             = self.ctl,
             measurement     = measurement,
-            graph           = graph,
-            gui             = self.gui,
-            colors          = self.colors,
-            stylesheets     = self.stylesheets,
-            is_collapsed    = is_collapsed,
-            technique       = measurement.technique,
-            focus_listener  = self.focus_listener,
-            kia             = self.kia)
+            graph           = graph,        
+            is_collapsed    = is_collapsed)
+
         try:
             pixmap = self.render_thumbnail_to_qpixmap(measurement)
             measurement.thumbnail_widget.set_pixmap(pixmap)

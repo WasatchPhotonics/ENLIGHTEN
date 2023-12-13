@@ -554,6 +554,10 @@ class Measurement:
         if self.thumbnail_widget is not None:
             self.thumbnail_widget.add_curve_to_graph()
 
+    def is_displayed(self):
+        if self.thumbnail_widget is not None:
+            return self.thumbnail_widget.is_displayed
+
     ##
     # Release any resources associated with this Measurement.  Note that this
     # will automatically delete the ThumbnailWidget from its parent layout (if

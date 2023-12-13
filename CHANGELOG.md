@@ -3,11 +3,14 @@
 ## 4.0 GUI and Plugin Refactoring
 
 - 2023-??-?? 4.0.30
+    - File I/O
+        - optionally Export only displayed traces
     - GUI
         - added battery to StatusBar
         - generalized PluginController.display_plugin_warning into GUI.msgbox_with_checkbox
     - refactoring
         - moved StatusBarFeature to ctl
+        - moved ThumbnailWidget to ctl
 - 2023-12-13 4.0.29
     - stopped clearing dark/refs when changing interpolation
     - RamanShiftCorrection tweaks (fixed width unit, obey ROI, show nm hint)

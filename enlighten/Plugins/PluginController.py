@@ -258,7 +258,6 @@ class PluginController:
         log.debug("registering observer on MeasurementFactory")
         self.combo_module.installEventFilter(ScrollStealFilter(self.combo_module))
         self.measurement_factory.register_observer(self.events_factory_callback)
-        self.measurements.register_observer("export", self.export_event_callback)
 
     def stub_plugin(self):
         """Create the plugins folder if it does not exist"""
@@ -433,16 +432,16 @@ class PluginController:
 
         warn_suppress = self.config.get("advanced_options", "suppress_plugin_warning", default=False)
         if not warn_suppress and connected:
-            plugin_ok, suppress = self.ctl.gui.msgbox_with_checkbox(
+            result = self.ctl.gui.msgbox_with_checkbox(
                 title="Plugin Warning", 
                 text="Plugins allow external code to run. Verify that you trust the plugin and it is safe before running it.",
                 checkbox_text="Don't show again")
 
-            if not plugin_ok:
+            if not result["ok"]:
                 self.cb_connected.setChecked(False)
                 return
 
-            if suppress:
+            if result["checked"]:
                 self.config.set("advanced_options", "suppress_plugin_warning", True)
 
         if connected:
@@ -1298,9 +1297,6 @@ class PluginController:
 
         log.debug(f"passing measurement to {callback}")
         callback(measurement = m)
-
-    def export_event_callback(self, measurement):
-        self.events_factory_callback(measurement, "export")
 
     ############################################################################
     # utility                                                                  #
