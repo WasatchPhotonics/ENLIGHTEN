@@ -87,6 +87,10 @@ If you also want to build and deploy installers, the following additional utilit
 
     $ sudo apt-get install doxygen graphviz pandoc
 
+I had to do this to add pyinstaller to my PATH:
+
+    $ export PATH=$HOME/.local/bin:$PATH
+
 ## Issue: missing python3-pyside2uic
 
 NOTE: testing pyqt5-dev-tools (pyrcc5 and pyuic5)
@@ -146,11 +150,3 @@ via USB.  This can be done with commands like:
 or
 
     $ sudo uhubctl --action 2 --location 2 --repeat 2 --delay 5 --wait 1000
-
-# Deprecated
-
-Since PySide2 currently needs to be installed via apt-get on RPi, and will therefore be
-installed in the "system Python" package tree, there doesn't seem much point in using
-Miniconda at this time.  That said, instructions are retained here:
-
-- https://github.com/WasatchPhotonics/Wasatch.PY/blob/master/README_RPI.md#install-miniconda3
