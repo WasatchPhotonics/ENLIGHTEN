@@ -5,6 +5,7 @@
 - 2023-??-?? 4.0.30
     - GUI
         - added battery to StatusBar
+        - generalized PluginController.display_plugin_warning into GUI.msgbox_with_checkbox
     - refactoring
         - moved StatusBarFeature to ctl
 - 2023-12-13 4.0.29

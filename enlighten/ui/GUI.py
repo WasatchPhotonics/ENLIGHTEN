@@ -5,8 +5,10 @@ from enlighten import common
 
 if common.use_pyside2():
     from PySide2 import QtGui
+    from PySide2.QtWidgets import QMessageBox, QCheckBox
 else:
     from PySide6 import QtGui
+    from PySide6.QtWidgets import QMessageBox, QCheckBox
 
 log = logging.getLogger(__name__)
 
@@ -136,3 +138,18 @@ class GUI(object):
             title += " (+%d)" % (cnt - 1)
 
         self.ctl.form.setWindowTitle(title)
+
+    def msgbox_with_checkbox(self, title, text, checkbox_text):
+        cb = QCheckBox(checkbox_text, self.ctl.form)
+        dialog = QMessageBox(self.ctl.form)
+        dialog.setWindowTitle(title)
+        dialog.setText(text)
+        dialog.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        dialog.setIcon(QMessageBox.Warning)
+        dialog.setCheckBox(cb)
+        result = dialog.exec_()
+
+        ok = (result == QMessageBox.Ok)
+        checked = dialog.checkBox().isChecked()
+
+        return (ok, checked)

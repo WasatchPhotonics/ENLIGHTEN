@@ -433,10 +433,15 @@ class PluginController:
 
         warn_suppress = self.config.get("advanced_options", "suppress_plugin_warning", default=False)
         if not warn_suppress and connected:
-            plugin_ok, suppress = self.display_plugin_warning()
+            plugin_ok, suppress = self.ctl.gui.msgbox_with_checkbox(
+                title="Plugin Warning", 
+                text="Plugins allow external code to run. Verify that you trust the plugin and it is safe before running it.",
+                checkbox_text="Don't show again")
+
             if not plugin_ok:
                 self.cb_connected.setChecked(False)
                 return
+
             if suppress:
                 self.config.set("advanced_options", "suppress_plugin_warning", True)
 
@@ -1354,15 +1359,3 @@ class PluginController:
 
         self.plugin_curves = {}
 
-    def display_plugin_warning(self):
-        suppress_cb = QCheckBox("Don't show again.", self.cb_connected)
-        warn_msg = QMessageBox(self.cb_connected)
-        warn_msg.setWindowTitle("Plugin Warning")
-        warn_msg.setText("Plugins allow additional code to run. Verify that you trust the plugin and it is safe before running it.")
-        warn_msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-        warn_msg.setIcon(QMessageBox.Warning)
-        warn_msg.setCheckBox(suppress_cb)
-        clk_btn = warn_msg.exec_()
-        plugin_ok = (clk_btn == QMessageBox.Ok)
-        suppress_checked = warn_msg.checkBox().isChecked()
-        return (plugin_ok, suppress_checked)
