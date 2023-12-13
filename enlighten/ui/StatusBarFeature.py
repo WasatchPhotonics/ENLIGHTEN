@@ -12,66 +12,40 @@ else:
 
 log = logging.getLogger(__name__)
 
-##
-# This class encapsulates the horizontal status bar at the bottom of the 
-# ENLIGHTEN Scope Capture screen.  It offers several real-time status fields
-# providing metrics about the current spectrum and selected spectrometer,
-# and has a pop-up menu allowing the user to select which fields they would
-# like to display (especially useful on small screens).  Selections are 
-# persisted across application sessions.
 class StatusBarFeature:
+    """
+    This class encapsulates the horizontal status bar at the bottom of the 
+    ENLIGHTEN Scope Capture screen.  It offers several real-time status fields
+    providing metrics about the current spectrum and selected spectrometer,
+    and has a pop-up menu allowing the user to select which fields they would
+    like to display (especially useful on small screens).  Selections are 
+    persisted across application sessions.
+    """
 
     # ##########################################################################
     # initialization
     # ##########################################################################
 
-    ##
-    # Each "pair" represents two QLabels, containing the "name" and "value"
-    # of a "Name: value" tuple in the rendered StatusBar.  Both are needed so we
-    # can show/hide pairs, and there are two (rather than one) to simplify left-
-    # justified names and right-justified values.
-    def __init__(self,
-            pair_min,
-            pair_max,
-            pair_mean,
-            pair_area,
-            pair_temp,
-            pair_cursor,
-            pair_count,
+    def __init__(self, ctl):
+        self.ctl = ctl
 
-            config,
-            multispec, 
-            tool_button,
-            generate_x_axis,
-            parent,
-
-            cursor,
-            detector_temperature):
-
-        self.config = config
-        self.multispec = multispec
-        self.tool_button = tool_button
-        self.generate_x_axis = generate_x_axis
-        self.parent = parent
-
+        sfu = ctl.form.ui
         self.widgets = {}
         self.menu_order = []
-
-        # ordered strings represent menu items as well as dict key
-        for group in [ [ "Min",                  pair_min    ],
-                       [ "Max",                  pair_max    ],
-                       [ "Mean",                 pair_mean   ],
-                       [ "Area",                 pair_area   ],
-                       [ "Detector Temperature", pair_temp   ],
-                       [ "Cursor Intensity",     pair_cursor ], 
-                       [ "Spectrum Count",       pair_count  ] ]:
-            (name, pair) = group
+        for trio in [ [ "Min",                  sfu.label_StatusBar_min_name,     sfu.label_StatusBar_min_value ],
+                      [ "Max",                  sfu.label_StatusBar_max_name,     sfu.label_StatusBar_max_value ],
+                      [ "Mean",                 sfu.label_StatusBar_mean_name,    sfu.label_StatusBar_mean_value ],
+                      [ "Area",                 sfu.label_StatusBar_area_name,    sfu.label_StatusBar_area_value ],
+                      [ "Detector Temperature", sfu.label_StatusBar_temp_name,    sfu.label_StatusBar_temp_value ],
+                      [ "Cursor Intensity",     sfu.label_StatusBar_cursor_name,  sfu.label_StatusBar_cursor_value ],
+                      [ "Spectrum Count",       sfu.label_StatusBar_count_name,   sfu.label_StatusBar_count_value ] ]:
+            (name, label, value) = trio
             self.menu_order.append(name)
-            self.widgets[name] = pair
+            self.widgets[name] = (label, value)
 
         # register for notifications from other business objects
-        cursor.register_observer(self.cursor_updated)
-        detector_temperature.register_observer(self.temp_updated)
+        ctl.cursor.register_observer(self.cursor_updated)
+        ctl.detector_temperature.register_observer(self.temp_updated)
 
         self.create_status_menu()
 
@@ -79,14 +53,14 @@ class StatusBarFeature:
     # initialize the pop-up menu allowing users to selectively dis/enable
     # individual key-value pairs on the StatusBar
     def create_status_menu(self):
-        menu = QMenu(parent=self.parent) # inherit parent's stylesheet
+        menu = QMenu(parent=self.ctl.form) # inherit parent's stylesheet
 
-        for name  in self.menu_order:
+        for name in self.menu_order:
             action = menu.addAction(name)
             action.setCheckable(True)
 
-            if self.config.has_option("StatusBar", name):
-                enabled = self.config.get_bool("StatusBar", name)
+            if self.ctl.config.has_option("StatusBar", name):
+                enabled = self.ctl.config.get_bool("StatusBar", name)
             elif name in ["Area", "Spectrum Count"]:
                 enabled = False
             else:                    
@@ -96,10 +70,12 @@ class StatusBarFeature:
             self.show(name, enabled)
 
         menu.triggered.connect(self.toggle_option_visible)
-        self.tool_button.setMenu(menu)
+
+        tool_button = self.ctl.form.ui.status_bar_toolButton
+        tool_button.setMenu(menu)
 
         # This line shouldn't be needed but the menu won't show up if it's not here
-        self.tool_button.menu() 
+        tool_button.menu() 
 
     # ##########################################################################
     # Utility
@@ -107,24 +83,33 @@ class StatusBarFeature:
 
     ## @return the "name" widget associated with that key (e.g. lb_min_name)
     def name(self, s):
-        return self.widgets[s][0]
+        if s in self.widgets:
+            return self.widgets[s][0]
 
     ## @return the "value" widget associated with that key (e.g. lb_min_value)
     def value(self, s):
-        return self.widgets[s][1]
+        if s in self.widgets:
+            return self.widgets[s][1]
 
     ## clear all values associated with the current spectrum
     def clear(self):
         for s in [ "Min", "Max", "Mean" ]:
-            self.value(s).clear()
+            value = self.value(s)
+            if value:
+                value.clear()
 
     ## show or hide all the widgets associated with a given key (and persist)
     def show(self, name, flag):
         if name in self.widgets:
             for widget in self.widgets[name]:
                 widget.setVisible(flag)
-            self.config.set("StatusBar", name, flag)
+            self.ctl.config.set("StatusBar", name, flag)
 
+    def set(self, name, v):
+        value = self.value(name)
+        if value:
+            value.setText(str(v))
+        
     # ##########################################################################
     # methods
     # ##########################################################################
@@ -137,7 +122,7 @@ class StatusBarFeature:
     # Reading objects, we could always subscribe to notifications from that (as
     # would Graph, KnowItAll, PluginManager etc).
     def update(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return self.clear()
 
@@ -146,16 +131,16 @@ class StatusBarFeature:
         if pr is not None:
 
             # count
-            self.value("Spectrum Count").setText(str(pr.session_count))
+            self.set("Spectrum Count", pr.session_count)
 
             # current spectrum
             spectrum = pr.get_processed()
             if spectrum is not None:
-                self.value("Min").setText("%.2f" % np.min(spectrum))
-                self.value("Max").setText("%.2f" % np.max(spectrum))
-                self.value("Mean").setText("%.2f" % np.average(spectrum))
+                self.set("Min", f"{np.min(spectrum):.2f}")
+                self.set("Max", f"{np.max(spectrum):.2f}")
+                self.set("Mean", f"{np.average(spectrum):.2f}")
 
-                x_axis = self.generate_x_axis(spec=spec, cropped=pr.is_cropped())
+                x_axis = self.ctl.generate_x_axis(spec=spec, cropped=pr.is_cropped())
                 if len(spectrum) != len(x_axis):
                     # can happen when EEPROM is in bad state, or we've set a DetectorROI etc
                     log.error("can't update: spectrum %d != x_axis %d", len(spectrum), len(x_axis))
@@ -163,7 +148,7 @@ class StatusBarFeature:
 
                 # area
                 area = 0 if x_axis is None else np.trapz(spectrum, x_axis)
-                self.value("Area").setText("%.3e" % area)
+                self.set("Area", f"{area:.3e}")
 
     # ##########################################################################
     # callbacks
@@ -176,8 +161,8 @@ class StatusBarFeature:
 
     ## receives a point from Cursor
     def cursor_updated(self, x, y):
-        self.value("Cursor Intensity").setText("%.2f" % y)
+        self.set("Cursor Intensity", f"{y:.2f}")
 
     ## receives a temperature from DetectorTemperatureFeature
     def temp_updated(self, degC):
-        self.value("Detector Temperature").setText("%-.2f °C" % degC)
+        self.set("Detector Temperature", f"{degC:-.2f} °C")

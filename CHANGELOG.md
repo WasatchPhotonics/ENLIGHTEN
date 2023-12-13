@@ -2,6 +2,9 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2023-??-?? 4.0.30
+    - refactoring
+        - moved StatusBarFeature to ctl
 - 2023-12-13 4.0.29
     - stopped clearing dark/refs when changing interpolation
     - RamanShiftCorrection tweaks (fixed width unit, obey ROI, show nm hint)

@@ -351,23 +351,7 @@ class BusinessObjects:
             transmission                = ctl.transmission)
 
         self.header("instantiating StatusBarFeature")
-        ctl.status_bar = StatusBarFeature(
-            pair_min                    = [ sfu.label_StatusBar_min_name,     sfu.label_StatusBar_min_value ],
-            pair_max                    = [ sfu.label_StatusBar_max_name,     sfu.label_StatusBar_max_value ],
-            pair_mean                   = [ sfu.label_StatusBar_mean_name,    sfu.label_StatusBar_mean_value ],
-            pair_area                   = [ sfu.label_StatusBar_area_name,    sfu.label_StatusBar_area_value ],
-            pair_temp                   = [ sfu.label_StatusBar_temp_name,    sfu.label_StatusBar_temp_value ],
-            pair_cursor                 = [ sfu.label_StatusBar_cursor_name,  sfu.label_StatusBar_cursor_value ],
-            pair_count                  = [ sfu.label_StatusBar_count_name,   sfu.label_StatusBar_count_value ],
-                                       
-            config                      = ctl.config,
-            multispec                   = ctl.multispec,
-            tool_button                 = sfu.status_bar_toolButton,
-            generate_x_axis             = ctl.generate_x_axis,
-            parent                      = ctl.form,
-                                       
-            cursor                      = ctl.cursor,
-            detector_temperature        = ctl.detector_temperature)
+        ctl.status_bar = StatusBarFeature(ctl)
 
         self.header("instantiating InterpolationFeature")
         ctl.interp = InterpolationFeature(ctl)
