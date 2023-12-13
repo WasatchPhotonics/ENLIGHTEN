@@ -39,6 +39,7 @@ class LaserControlFeature:
         sfu.pushButton_laser_power_dn   .clicked            .connect(self.dn_callback)
         sfu.pushButton_laser_power_up   .clicked            .connect(self.up_callback)
         sfu.pushButton_laser_toggle     .clicked            .connect(self.toggle_callback)
+        sfu.pushButton_laser_convenience.clicked            .connect(self.toggle_callback)
         sfu.verticalSlider_laser_power  .sliderPressed      .connect(self.slider_power_press_callback)
         sfu.verticalSlider_laser_power  .sliderMoved        .connect(sfu.doubleSpinBox_laser_power.setValue)
         sfu.verticalSlider_laser_power  .sliderReleased     .connect(self.slider_power_callback)
@@ -48,6 +49,7 @@ class LaserControlFeature:
         sfu.spinBox_laser_watchdog_sec  .valueChanged       .connect(self.set_watchdog_callback)
         sfu.checkBox_laser_watchdog     .clicked            .connect(self.set_watchdog_enable_callback)
         sfu.comboBox_laser_power_unit   .currentIndexChanged.connect(self.update_visibility)
+
 
         for widget in [ sfu.verticalSlider_laser_power ]:
             widget.installEventFilter(MouseWheelFilter(widget))
@@ -292,12 +294,16 @@ class LaserControlFeature:
     def refresh_laser_button(self):
         spec = self.ctl.multispec.current_spectrometer()
         enabled = spec.settings.state.laser_enabled if spec else False
-        b = self.ctl.form.ui.pushButton_laser_toggle
+
+        sfu = self.ctl.form.ui
+
         if enabled:
-            b.setText(self.BTN_OFF_TEXT)
+            sfu.pushButton_laser_toggle.setText(self.BTN_OFF_TEXT)
         else:
-            b.setText(self.BTN_ON_TEXT)
-        self.ctl.gui.colorize_button(b, enabled)
+            sfu.pushButton_laser_toggle.setText(self.BTN_ON_TEXT)
+
+        for b in [ sfu.pushButton_laser_toggle, sfu.pushButton_laser_convenience ]:
+            self.ctl.gui.colorize_button(b, enabled)
 
         self.refresh_watchdog_tooltip()
 
@@ -609,12 +615,13 @@ class LaserControlFeature:
 
     # gets called by BatteryFeature when a new battery reading is received
     def battery_callback(self, perc, charging):
+        sfu = self.ctl.form.ui
         enough_for_laser = perc >= self.MIN_BATTERY_PERC
         log.debug("enough_for_laser = %s (%.2f%%)" % (enough_for_laser, perc))
 
-        b = self.ctl.form.ui.pushButton_laser_toggle
-        b.setEnabled(enough_for_laser)
-        b.setToolTip("Toggle laser (ctrl-L)" if enough_for_laser else f"battery low ({perc:.2f}%)")
+        for b in [ sfu.pushButton_laser_toggle, sfu.pushButton_laser_convenience ]:
+            b.setEnabled(enough_for_laser)
+            b.setToolTip("Toggle laser (ctrl-L)" if enough_for_laser else f"battery low ({perc:.2f}%)")
 
     def slider_power_callback(self):
         self.slider_stop_usb = False

@@ -16,6 +16,7 @@ else:
 log = logging.getLogger(__name__)
 
 class InterpolatedProcessedReading:
+    # Note ProcessedReading includes dark and reference, so this implicitly does too
     def __init__(self):
         self.wavelengths = None
         self.wavenumbers = None
@@ -48,36 +49,25 @@ class InterpolatedProcessedReading:
 # which the interpolated intensity of the interpolated wavelength would presumably
 # have fallen in a hypothesized ideal unit spectrometer."  
 #
-# @todo we should use a callback to clear spectrometers' dark/ref so the button 
-#       state is updated
-#
 class InterpolationFeature(object):
-    def __init__(self,
-            config,
-            cb_enabled,
-            dsb_end,
-            dsb_incr,
-            dsb_start,
-            multispec,
-            rb_wavelength,
-            rb_wavenumber,
-            horiz_roi ):
+    def __init__(self, ctl):
+        self.ctl = ctl
 
-        self.config         = config
-        self.cb_enabled     = cb_enabled
-        self.dsb_end        = dsb_end
-        self.dsb_incr       = dsb_incr
-        self.dsb_start      = dsb_start
-        self.multispec      = multispec
-        self.rb_wavelength  = rb_wavelength
-        self.rb_wavenumber  = rb_wavenumber
-        self.horiz_roi      = horiz_roi
+        sfu = self.ctl.form.ui
+        self.bt_toggle      = sfu.pushButton_interp_toggle
+        self.cb_enabled     = sfu.checkBox_save_interpolation_enabled
+        self.dsb_end        = sfu.doubleSpinBox_save_interpolation_end
+        self.dsb_incr       = sfu.doubleSpinBox_save_interpolation_incr
+        self.dsb_start      = sfu.doubleSpinBox_save_interpolation_start
+        self.rb_wavelength  = sfu.radioButton_save_interpolation_wavelength
+        self.rb_wavenumber  = sfu.radioButton_save_interpolation_wavenumber
 
         self.mutex = QtCore.QMutex()
         self.new_axis = None
 
         self.init_from_config()
 
+        self.bt_toggle          .clicked            .connect(self._toggle_callback)
         self.cb_enabled         .stateChanged       .connect(self._update_widgets)
         self.dsb_end            .valueChanged       .connect(self._update_widgets)
         self.dsb_incr           .valueChanged       .connect(self._update_widgets)
@@ -99,6 +89,10 @@ class InterpolationFeature(object):
     def update_visibility(self):
         pass
 
+    def _toggle_callback(self):
+        enabled = not self.cb_enabled.isChecked()
+        self.cb_enabled.setChecked(enabled)
+
     def _update_widgets(self):
         """
         Called once at init to set internal state (and apply NOOP to config).
@@ -114,14 +108,23 @@ class InterpolationFeature(object):
         self.end             = self.dsb_end.value()
         self.incr            = self.dsb_incr.value()
 
+        self.ctl.gui.colorize_button(self.bt_toggle, self.enabled)
+        if self.enabled:
+            self.bt_toggle.setToolTip(f"Disable x-axis interpolation")
+        else:
+            self.bt_toggle.setToolTip(f"Enable x-axis interpolation")
+
         # invalidate stored dark/references
-        for spec in self.multispec.get_spectrometers():
-            spec.app_state.clear_dark()
-            spec.app_state.clear_reference()
+        #
+        # MZ: why were we doing this? I don't think we need to do this.
+        #     commenting out for now.
+        # for spec in self.ctl.multispec.get_spectrometers():
+        #     spec.app_state.clear_dark()
+        #     spec.app_state.clear_reference()
 
         s = "interpolation"
         for name in [ "enabled", "use_wavelengths", "use_wavenumbers", "start", "end", "incr" ]:
-            self.config.set(s, name, getattr(self, name))
+            self.ctl.config.set(s, name, getattr(self, name))
 
         self.new_axis = self._generate_axis()
 
@@ -159,6 +162,7 @@ class InterpolationFeature(object):
         return wasatch_utils.generate_excitation(wavelengths=wavelengths, wavenumbers=wavenumbers)
 
     def interpolate_processed_reading(self, pr, wavelengths=None, wavenumbers=None, settings=None):
+        """ This does dark and reference as well as processed and raw """
         if self.new_axis is None:
             log.error("new axis not provided, returning none")
             return 
@@ -246,7 +250,7 @@ class InterpolationFeature(object):
             roi is not None)
         if pr.processed_cropped is not None and settings is not None and roi is not None:
             log.debug("interpolating cropped spectrum to new axis of %d pixels", len(self.new_axis))
-            old_axis_cropped = self.horiz_roi.crop(old_axis, roi=roi)
+            old_axis_cropped = self.ctl.horiz_roi.crop(old_axis, roi=roi)
             ipr.processed_reading.processed_cropped = np.interp(self.new_axis, old_axis_cropped, pr.processed_cropped)
 
         return ipr
@@ -255,9 +259,9 @@ class InterpolationFeature(object):
         log.debug("init_from_config")
         s = "interpolation"
 
-        self.cb_enabled.setChecked(self.config.get_bool(s,"enabled"))
-        self.dsb_end.setValue(self.config.get_float(s, "end"))
-        self.dsb_incr.setValue(self.config.get_float(s, "incr"))
-        self.dsb_start.setValue(self.config.get_float(s, "start"))
-        self.rb_wavelength.setChecked(self.config.get_bool(s, "use_wavelengths"))
-        self.rb_wavenumber.setChecked(self.config.get_bool(s, "use_wavenumbers"))
+        self.cb_enabled.setChecked(self.ctl.config.get_bool(s,"enabled"))
+        self.dsb_end.setValue(self.ctl.config.get_float(s, "end"))
+        self.dsb_incr.setValue(self.ctl.config.get_float(s, "incr"))
+        self.dsb_start.setValue(self.ctl.config.get_float(s, "start"))
+        self.rb_wavelength.setChecked(self.ctl.config.get_bool(s, "use_wavelengths"))
+        self.rb_wavenumber.setChecked(self.ctl.config.get_bool(s, "use_wavenumbers"))

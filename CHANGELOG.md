@@ -2,6 +2,11 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2023-12-13 4.0.29
+    - stopped clearing dark/refs when changing interpolation
+    - RamanShiftCorrection tweaks (fixed width unit, obey ROI, show nm hint)
+    - refactoring
+        - moved DarkFeature to ctl
 - 2023-12-11 4.0.28
     - platforms
         - updating Raspberry Pi build docs
@@ -9,6 +14,10 @@
     - GUI 
         - laser button tooltip fix
         - fixed markers
+        - added convenience laser button where permanently visible
+        - added interpolation button above graph
+        - restored original ordering of (lock, fullwidth) buttons
+        - fixed multiple Factory items on multiple logins
 - 2023-12-08 4.0.27
     - locked to Python 3.11 for Tensorflow
     - default to maximized

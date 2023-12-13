@@ -60,7 +60,7 @@ class HorizROIFeature:
         self.enabled = not self.enabled
         self.user_requested_enabled = self.enabled
 
-        log.debug(f"toggle: user_requested_enabled = {self.user_requested_enabled}, enabled = {self.enabled}")
+        log.debug(f"button_callback: user_requested_enabled = {self.user_requested_enabled}, enabled = {self.enabled}")
         
         self.update_visibility()
 
@@ -83,14 +83,12 @@ class HorizROIFeature:
         if spec is None:
             return
 
-        # disable for now -- still testing
-        self.cb_editing.setVisible(False and self.ctl.page_nav.doing_expert())
+        self.cb_editing.setVisible(self.ctl.page_nav.doing_expert())
 
         log.debug(f"update_visibility: setting enabled to user_requested_enabled {self.user_requested_enabled}")
         self.enabled = self.user_requested_enabled
 
-        # disable for now -- still testing
-        if False and spec is not None and spec.settings.eeprom.has_horizontal_roi():
+        if spec is not None and spec.settings.eeprom.has_horizontal_roi():
             log.debug(f"update_visibility: showing because spec and ROI")
             self.button.setVisible(True)
 

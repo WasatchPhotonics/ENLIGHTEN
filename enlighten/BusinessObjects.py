@@ -370,16 +370,7 @@ class BusinessObjects:
             detector_temperature        = ctl.detector_temperature)
 
         self.header("instantiating InterpolationFeature")
-        ctl.interp = InterpolationFeature(
-            config                      = ctl.config,
-            cb_enabled                  = sfu.checkBox_save_interpolation_enabled,
-            dsb_end                     = sfu.doubleSpinBox_save_interpolation_end,
-            dsb_incr                    = sfu.doubleSpinBox_save_interpolation_incr,
-            dsb_start                   = sfu.doubleSpinBox_save_interpolation_start,
-            multispec                   = ctl.multispec,
-            rb_wavelength               = sfu.radioButton_save_interpolation_wavelength,
-            rb_wavenumber               = sfu.radioButton_save_interpolation_wavenumber,
-            horiz_roi                   = ctl.horiz_roi)
+        ctl.interp = InterpolationFeature(ctl)
 
         self.header("instantiating ExternalTriggerFeature")
         ctl.external_trigger = ExternalTriggerFeature(
@@ -489,7 +480,6 @@ class BusinessObjects:
             graph                       = ctl.graph,
             multispec                   = ctl.multispec,
             lb_degC                     = sfu.label_hardware_capture_details_laser_temperature,
-            clear_btn                   = sfu.laser_temp_pushButton,
             make_pen                    = ctl.gui.make_pen,
             clipboard                   = ctl.clipboard,
             hardware_file_manager       = ctl.hardware_file_manager)
@@ -536,22 +526,7 @@ class BusinessObjects:
         ctl.baseline_correction = BaselineCorrection(ctl)
 
         self.header("instantiating DarkFeature")
-        ctl.dark_feature = DarkFeature(
-            generate_x_axis             = ctl.generate_x_axis,
-            gui                         = ctl.gui,
-            marquee                     = ctl.marquee,
-            measurement_factory         = ctl.measurement_factory,
-            multispec                   = ctl.multispec,
-            save_options                = ctl.save_options,
-            set_curve_data              = ctl.set_curve_data,
-            raman_intensity_correction  = ctl.raman_intensity_correction,
-            button_clear                = sfu.pushButton_dark_clear,
-            button_load                 = sfu.pushButton_dark_load,
-            button_store                = sfu.pushButton_dark_store,
-            button_toggle               = sfu.pushButton_scope_toggle_dark,
-            lb_timestamp                = sfu.label_dark_timestamp,
-            stacked_widget              = sfu.stackedWidget_scope_setup_dark_spectrum,
-            gui_make_pen                = ctl.gui.make_pen)
+        ctl.dark_feature = DarkFeature(ctl)
 
         self.header("instantiating ReferenceFeature")
         ctl.reference_feature = ReferenceFeature(
