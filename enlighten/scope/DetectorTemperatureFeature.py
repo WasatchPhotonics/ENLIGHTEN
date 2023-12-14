@@ -18,57 +18,38 @@ class DetectorTemperatureFeature:
     Encapsulate the monitoring of detector temperature.
     """
 
-    def __init__(self,
-            graph,
-            multispec,
-            status_indicators,
-            cb_enabled,
-            lb_degC,
-            lb_raw,
-            slider,
-            spinbox,
-            button_up,
-            button_dn,
-            clear_btn,
-            sfu,
-            gui,
-            clipboard,
-            hardware_file_manager):
+    def __init__(self, ctl):
+        self.ctl = ctl
+        sfu = ctl.form.ui
 
         self.curve                 = None
         self.name                  = "Detector_TEC_Temperature"
-        self.graph                 = graph
-        self.multispec             = multispec
-        self.status_indicators     = status_indicators
-        self.sfu                   = sfu
-        self.gui                   = gui
-        self.clipboard             = clipboard
         self.output_to_file        = False
-        self.hardware_file_manager = hardware_file_manager
 
-        self.cb_enabled         = cb_enabled
-        self.lb_degC            = lb_degC
-        self.lb_raw             = lb_raw
-        self.slider             = slider
-        self.spinbox            = spinbox
-        self.button_up          = button_up
-        self.button_dn          = button_dn
-        self.clear_btn          = clear_btn
+        self.cb_enabled     = sfu.checkBox_tec_enabled
+        self.lb_degC        = sfu.label_hardware_capture_details_detector_temperature
+        self.lb_raw         = sfu.label_ccd_temperature_raw
+        self.slider         = sfu.verticalSlider_detector_setpoint_degC
+        self.spinbox        = sfu.spinBox_detector_setpoint_degC
+        self.button_up      = sfu.temperatureWidget_pushButton_detector_setpoint_up
+        self.button_dn      = sfu.temperatureWidget_pushButton_detector_setpoint_dn
+        self.clear_btn      = sfu.detector_temp_pushButton
+        self.copy_btn       = sfu.pushButton_detector_tec_copy
 
-        self.cb_enabled             	    	.stateChanged       .connect(self.enabled_callback)
-        self.spinbox            	        	.valueChanged       .connect(self.slider.setValue)
-        self.spinbox                                                .installEventFilter(ScrollStealFilter(self.spinbox))
-        self.spinbox                		    .valueChanged       .connect(self.spinbox_callback)
-        self.slider                 			.valueChanged       .connect(self.spinbox.setValue)
-        self.button_up              			.clicked            .connect(self.up_callback)
-        self.button_dn                          .clicked            .connect(self.dn_callback)
-        self.clear_btn                          .clicked            .connect(self.clear_data)
-        self.sfu.pushButton_detector_tec_copy   .clicked            .connect(self.copy_data)
+        self.cb_enabled     .stateChanged       .connect(self.enabled_callback)
+        self.spinbox        .valueChanged       .connect(self.slider.setValue)
+        self.spinbox        .installEventFilter(ScrollStealFilter(self.spinbox))
+        self.spinbox        .valueChanged       .connect(self.spinbox_callback)
+        self.slider         .valueChanged       .connect(self.spinbox.setValue)
+        self.button_up      .clicked            .connect(self.up_callback)
+        self.button_dn      .clicked            .connect(self.dn_callback)
+        self.clear_btn      .clicked            .connect(self.clear_data)
+        self.copy_btn       .clicked            .connect(self.copy_data)
 
         self.observers = []
         self.populate_placeholder()
-        self.multispec.register_strip_feature(self)
-        self.hardware_file_manager.register_feature(self)
+        self.ctl.multispec.register_strip_feature(self)
+        self.ctl.hardware_file_manager.register_feature(self)
 
     # ##########################################################################
     # public methods
@@ -88,11 +69,11 @@ class DetectorTemperatureFeature:
                    self.button_up,
                    self.button_dn,
                    self.clear_btn,
-                   self.sfu.pushButton_detector_tec_copy ]:
+                   self.copy_btn ]:
             w.setEnabled(flag)
 
     def init_hotplug(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
 
@@ -117,7 +98,7 @@ class DetectorTemperatureFeature:
 
     def update_visibility(self):
         """ The user just selected a different spectrometer (but it isn't a hotplug). """
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
 
@@ -133,7 +114,7 @@ class DetectorTemperatureFeature:
         self.cb_enabled.setChecked(spec.settings.state.tec_enabled)
 
     def update_limits(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
 
@@ -158,7 +139,7 @@ class DetectorTemperatureFeature:
         self.spinbox.blockSignals(False)
 
     def process_reading(self, spec, reading):
-        current_spec = self.multispec.current_spectrometer()
+        current_spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
 
@@ -181,7 +162,7 @@ class DetectorTemperatureFeature:
         # update the primary label
         if spec == current_spec:
             self.lb_degC.setText("%-5.2f °C" % reading.detector_temperature_degC)
-        curve = self.multispec.get_hardware_feature_curve(self.name, spec.device_id)
+        curve = self.ctl.multispec.get_hardware_feature_curve(self.name, spec.device_id)
         if curve is None:
             log.error(f"curve was none for spec that had cooling, returning")
             return
@@ -189,9 +170,11 @@ class DetectorTemperatureFeature:
         current_time = datetime.datetime.now()
         app_state.detector_temperatures_degC_averaged_display.add(reading.detector_temperature_degC)
         if self.output_to_file:
-            self.hardware_file_manager.write_line(self.name,f"{self.name},{spec.label},{current_time},{reading.detector_temperature_degC}")
+            self.ctl.hardware_file_manager.write_line(
+                self.name,
+                f"{self.name}, {spec.label}, {current_time}, {reading.detector_temperature_degC}")
         x_time = [(current_time-x).total_seconds() for x,y in app_state.detector_temperatures_degC_averaged_display.data]
-        self.graph.set_data(
+        self.ctl.graph.set_data(
             curve = curve,
             y     = app_state.detector_temperatures_degC_averaged_display.get_values(),
             x     = x_time)
@@ -214,11 +197,11 @@ class DetectorTemperatureFeature:
         value = self.spinbox.value() 
         log.debug(f"apply_setpoint: triggered by change to {value}")
 
-        self.multispec.set_state("tec_setpoint_degC", value)
-        self.multispec.change_device_setting("detector_tec_setpoint_degC", value)
+        self.ctl.multispec.set_state("tec_setpoint_degC", value)
+        self.ctl.multispec.change_device_setting("detector_tec_setpoint_degC", value)
 
         if self.cb_enabled.isChecked():
-            self.status_indicators.update_visibility()
+            self.ctl.status_indicators.update_visibility()
         else:
             log.debug("auto-enabling TEC")
             self.cb_enabled.setChecked(True)
@@ -228,31 +211,33 @@ class DetectorTemperatureFeature:
     # ##########################################################################
 
     def populate_placeholder(self):
-        self.sfu.tec_temperature_graph = pyqtgraph.PlotWidget(name="TEC Temperature")
-        self.sfu.tec_temperature_graph.setLabel(axis="bottom", text="seconds ago")
-        self.sfu.tec_temperature_graph.setLabel(axis="left", text="Celsius")
-        self.sfu.tec_temperature_graph.invertX(True)
-        self.sfu.stackedWidget_detector_temperature.addWidget(self.sfu.tec_temperature_graph)
-        self.sfu.stackedWidget_detector_temperature.setCurrentIndex(1)
+        sfu = self.ctl.form.ui
+
+        sfu.tec_temperature_graph = pyqtgraph.PlotWidget(name="TEC Temperature")
+        sfu.tec_temperature_graph.setLabel(axis="bottom", text="seconds ago")
+        sfu.tec_temperature_graph.setLabel(axis="left", text="Celsius")
+        sfu.tec_temperature_graph.invertX(True)
+        sfu.stackedWidget_detector_temperature.addWidget(sfu.tec_temperature_graph)
+        sfu.stackedWidget_detector_temperature.setCurrentIndex(1)
 
     def add_spec_curve(self, spec):
-        if self.multispec.check_hardware_curve_present(self.name, spec.device_id):
+        if self.ctl.multispec.check_hardware_curve_present(self.name, spec.device_id):
             log.info(f"Called add_spec_curve for spec {spec.label} with curve already present, returning")
             return
-        curve = self.sfu.tec_temperature_graph.plot([], pen=spec.curve.opts['pen'],name=str(spec.label))
-        self.multispec.register_hardware_feature_curve(self.name, spec.device_id, curve)
+        curve = self.ctl.form.ui.tec_temperature_graph.plot([], pen=spec.curve.opts['pen'],name=str(spec.label))
+        self.ctl.multispec.register_hardware_feature_curve(self.name, spec.device_id, curve)
 
     def remove_spec_curve(self, spec):
-        cur_curve = self.multispec.get_hardware_feature_curve(self.name, spec.device_id)
+        cur_curve = self.ctl.multispec.get_hardware_feature_curve(self.name, spec.device_id)
         if cur_curve == None:
             log.info(f"attempted to delete curve for spec {spec.label} that doesn't exist. Returning")
             return
         # remove current curve from graph
-        for curve in self.sfu.tec_temperature_graph.listDataItems():
+        for curve in self.ctl.form.ui.tec_temperature_graph.listDataItems():
             if curve.name() == cur_curve.name():
-                self.sfu.tec_temperature_graph.removeItem(curve)
+                self.ctl.form.ui.tec_temperature_graph.removeItem(curve)
         # remove current curve from multispec record
-        self.multispec.remove_hardware_curve(self.name, spec.device_id)
+        self.ctl.multispec.remove_hardware_curve(self.name, spec.device_id)
     
     def get_default_temp(self, spec):
         """
@@ -298,8 +283,8 @@ class DetectorTemperatureFeature:
         """
         enabled = self.cb_enabled.isChecked()
 
-        self.multispec.set_state("tec_enabled", enabled)
-        self.multispec.change_device_setting("detector_tec_enable", enabled)
+        self.ctl.multispec.set_state("tec_enabled", enabled)
+        self.ctl.multispec.change_device_setting("detector_tec_enable", enabled)
 
         for widget in [
                 self.spinbox,
@@ -308,10 +293,10 @@ class DetectorTemperatureFeature:
                 self.button_dn]:
             widget.setEnabled(enabled)
 
-        self.status_indicators.update_visibility()
+        self.ctl.status_indicators.update_visibility()
 
     def clear_data(self):
-        for spec in self.multispec.get_spectrometers():
+        for spec in self.ctl.multispec.get_spectrometers():
             if spec is None:
                 continue
 
@@ -323,15 +308,15 @@ class DetectorTemperatureFeature:
             app_state.detector_temperatures_degC_averaged_display.clear()
 
     def update_curve_color(self, spec):
-        curve = self.multispec.get_hardware_feature_curve(self.name, spec.device_id)
+        curve = self.ctl.multispec.get_hardware_feature_curve(self.name, spec.device_id)
         if curve == None:
             return
         curve.opts["pen"] = spec.color
 
     def copy_data(self):
         copy_str = []
-        for spec in self.multispec.get_spectrometers():
-            if not self.multispec.check_hardware_curve_present(self.name, spec.device_id):
+        for spec in self.ctl.multispec.get_spectrometers():
+            if not self.ctl.multispec.check_hardware_curve_present(self.name, spec.device_id):
                 continue
 
             app_state = spec.app_state
@@ -339,4 +324,4 @@ class DetectorTemperatureFeature:
                 continue
             rds = app_state.detector_temperatures_degC_averaged_display
             copy_str.append(rds.get_csv_data("Detector Tec Temperature",spec.label))
-        self.clipboard.raw_set_text('\n'.join(copy_str))
+        self.ctl.clipboard.raw_set_text('\n'.join(copy_str))

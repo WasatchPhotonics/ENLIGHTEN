@@ -44,7 +44,6 @@ class SaveOptions():
         self.cb_text                 = None
         self.cb_wavelength           = None
         self.cb_wavenumber           = None
-        self.config                  = None
         self.directory               = None
         self.lb_location             = None
         self.le_label_template       = None
@@ -53,82 +52,43 @@ class SaveOptions():
         self.le_prefix               = None
         self.le_suffix               = None
         self.line_number             = 0
-        self.multispec               = None
         self.multipart_suffix        = None # currently set/cleared by BatchCollection, used by Measurement
         self.rb_by_col               = None
         self.rb_by_row               = None
 
-    def __init__(
-             self,
-             ctl,
-             bt_location,
-             cb_all,
-             cb_allow_rename,
-             cb_append,
-             cb_collated,
-             cb_csv,
-             cb_spc,
-             cb_dark,
-             cb_excel,
-             cb_filename_as_label,
-             cb_json,
-             cb_dx,
-             cb_load_raw,
-             cb_pixel,
-             cb_raw,
-             cb_reference,
-             cb_text,
-             cb_wavelength,
-             cb_wavenumber,
-             config,
-             file_manager,
-             interp,
-             lb_location,
-             le_label_template,
-             le_filename_template,
-             le_note,
-             le_prefix,
-             le_suffix,
-             multispec,
-             rb_by_col,
-             rb_by_row
-        ):
-
+    def __init__(self, ctl):
         self.clear()
 
         self.ctl = ctl
+        sfu = ctl.form.ui
 
-        self.bt_location          = bt_location
-        self.cb_all               = cb_all
-        self.cb_allow_rename      = cb_allow_rename
-        self.cb_append            = cb_append
-        self.cb_collated          = cb_collated
-        self.cb_csv               = cb_csv
-        self.cb_spc               = cb_spc
-        self.cb_dark              = cb_dark
-        self.cb_excel             = cb_excel
-        self.cb_filename_as_label = cb_filename_as_label
-        self.cb_json              = cb_json
-        self.cb_dx                = cb_dx
-        self.cb_load_raw          = cb_load_raw
-        self.cb_pixel             = cb_pixel
-        self.cb_raw               = cb_raw
-        self.cb_reference         = cb_reference
-        self.cb_text              = cb_text
-        self.cb_wavelength        = cb_wavelength
-        self.cb_wavenumber        = cb_wavenumber
-        self.config               = config
-        self.file_manager         = file_manager
-        self.interp               = interp
-        self.lb_location          = lb_location
-        self.le_label_template    = le_label_template
-        self.le_filename_template = le_filename_template
-        self.le_note              = le_note
-        self.le_prefix            = le_prefix
-        self.le_suffix            = le_suffix
-        self.multispec            = multispec
-        self.rb_by_col            = rb_by_col
-        self.rb_by_row            = rb_by_row
+        self.bt_location          = sfu.pushButton_scope_setup_change_save_location
+        self.cb_all               = sfu.checkBox_save_all
+        self.cb_allow_rename      = sfu.checkBox_allow_rename_files
+        self.cb_append            = sfu.checkBox_save_data_append
+        self.cb_collated          = sfu.checkBox_save_collated
+        self.cb_csv               = sfu.checkBox_save_csv
+        self.cb_spc               = sfu.checkBox_save_spc
+        self.cb_dark              = sfu.checkBox_save_dark
+        self.cb_excel             = sfu.checkBox_save_excel
+        self.cb_filename_as_label = sfu.checkBox_save_filename_as_label
+        self.cb_json              = sfu.checkBox_save_json
+        self.cb_dx                = sfu.checkBox_save_dx
+        self.cb_load_raw          = sfu.checkBox_load_raw
+        self.cb_pixel             = sfu.checkBox_save_pixel
+        self.cb_raw               = sfu.checkBox_save_raw
+        self.cb_reference         = sfu.checkBox_save_reference
+        self.cb_text              = sfu.checkBox_save_text
+        self.cb_wavelength        = sfu.checkBox_save_wavelength
+        self.cb_wavenumber        = sfu.checkBox_save_wavenumber
+        self.lb_location          = sfu.label_scope_setup_save_location
+        self.le_label_template    = sfu.lineEdit_save_label_template
+        self.le_filename_template = sfu.lineEdit_save_filename_template
+        self.le_note              = sfu.lineEdit_scope_capture_save_note
+        self.le_prefix            = sfu.lineEdit_scope_capture_save_prefix
+        self.le_suffix            = sfu.lineEdit_scope_capture_save_suffix
+        self.rb_by_col            = sfu.radioButton_save_by_column
+        self.rb_by_row            = sfu.radioButton_save_by_row
 
         # used for plugins indicating to save
         self.save_with_raw = False
@@ -185,7 +145,7 @@ class SaveOptions():
     def init_from_config(self):
         s = "save"
 
-        by_row = self.config.get(s, "order").lower() == "row"
+        by_row = self.ctl.config.get(s, "order").lower() == "row"
 
         log.debug("init_from_config: by_row %s", by_row)
 
@@ -210,14 +170,14 @@ class SaveOptions():
         self.init_checkbox(self.cb_dark,         "dark")
         self.init_checkbox(self.cb_reference,    "reference")
 
-        if self.config.has_option(s, "label_template"):
-            self.le_label_template.setText(self.config.get(s, "label_template"))
-        if self.config.has_option(s, "filename_template"):
-            self.le_filename_template.setText(self.config.get(s, "filename_template"))
+        if self.ctl.config.has_option(s, "label_template"):
+            self.le_label_template.setText(self.ctl.config.get(s, "label_template"))
+        if self.ctl.config.has_option(s, "filename_template"):
+            self.le_filename_template.setText(self.ctl.config.get(s, "filename_template"))
 
-        self.le_prefix          .setText   (self.config.get(s, "prefix"))
-        self.le_suffix          .setText   (self.config.get(s, "suffix"))
-        self.le_note            .setText   (re.sub(",", "", self.config.get(s, "note")))
+        self.le_prefix          .setText   (self.ctl.config.get(s, "prefix"))
+        self.le_suffix          .setText   (self.ctl.config.get(s, "suffix"))
+        self.le_note            .setText   (re.sub(",", "", self.ctl.config.get(s, "note")))
 
         self.directory = self.ctl.config.get("SaveOptions", "save_location", default=common.get_default_data_dir())
 
@@ -225,7 +185,7 @@ class SaveOptions():
         self.lb_location.setText(display_path)
 
     def init_checkbox(self, cb, option):
-        value = self.config.get_bool("save", option)
+        value = self.ctl.config.get_bool("save", option)
         cb.setChecked(value)
 
     ## Update widgets and config state when:
@@ -234,7 +194,7 @@ class SaveOptions():
     # - user selects a different spectrometer (might have different capabilities)
     # - user takes or clears a dark or reference
     def update_widgets(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
 
         ########################################################################
         # decide which widgets should be ENABLED (not checked)
@@ -287,29 +247,29 @@ class SaveOptions():
         ########################################################################
 
         s = "save"
-        self.config.set(s, "order", "row" if self.save_by_row() else "col")
-        self.config.set(s, "collated",           self.save_collated())
-        self.config.set(s, "format_csv",         self.save_csv())
-        self.config.set(s, "format_spc",         self.save_spc())
-        self.config.set(s, "format_txt",         self.save_text())
-        self.config.set(s, "format_excel",       self.save_excel())
-        self.config.set(s, "format_json",        self.save_json())
-        self.config.set(s, "format_dx",          self.save_dx())
-        self.config.set(s, "append",             self.append())
-        self.config.set(s, "pixel",              self.save_pixel())
-        self.config.set(s, "wavelength",         self.save_wavelength())
-        self.config.set(s, "wavenumber",         self.save_wavenumber())
-        self.config.set(s, "raw",                self.save_raw())
-        self.config.set(s, "dark",               self.save_dark())
-        self.config.set(s, "reference",          self.save_reference())
-        self.config.set(s, "prefix",             self.prefix())
-        self.config.set(s, "suffix",             self.suffix())
-        self.config.set(s, "note",               self.note())
-        self.config.set(s, "label_template",     self.label_template())
-        self.config.set(s, "filename_template",  self.filename_template())
-        self.config.set(s, "allow_rename_files", self.allow_rename_files())
-        self.config.set(s, "all_spectrometers",  self.save_all_spectrometers())
-        self.config.set(s, "filename_as_label",  self.filename_as_label())
+        self.ctl.config.set(s, "order", "row" if self.save_by_row() else "col")
+        self.ctl.config.set(s, "collated",           self.save_collated())
+        self.ctl.config.set(s, "format_csv",         self.save_csv())
+        self.ctl.config.set(s, "format_spc",         self.save_spc())
+        self.ctl.config.set(s, "format_txt",         self.save_text())
+        self.ctl.config.set(s, "format_excel",       self.save_excel())
+        self.ctl.config.set(s, "format_json",        self.save_json())
+        self.ctl.config.set(s, "format_dx",          self.save_dx())
+        self.ctl.config.set(s, "append",             self.append())
+        self.ctl.config.set(s, "pixel",              self.save_pixel())
+        self.ctl.config.set(s, "wavelength",         self.save_wavelength())
+        self.ctl.config.set(s, "wavenumber",         self.save_wavenumber())
+        self.ctl.config.set(s, "raw",                self.save_raw())
+        self.ctl.config.set(s, "dark",               self.save_dark())
+        self.ctl.config.set(s, "reference",          self.save_reference())
+        self.ctl.config.set(s, "prefix",             self.prefix())
+        self.ctl.config.set(s, "suffix",             self.suffix())
+        self.ctl.config.set(s, "note",               self.note())
+        self.ctl.config.set(s, "label_template",     self.label_template())
+        self.ctl.config.set(s, "filename_template",  self.filename_template())
+        self.ctl.config.set(s, "allow_rename_files", self.allow_rename_files())
+        self.ctl.config.set(s, "all_spectrometers",  self.save_all_spectrometers())
+        self.ctl.config.set(s, "filename_as_label",  self.filename_as_label())
 
     # ##########################################################################
     # Accessors
@@ -372,7 +332,7 @@ class SaveOptions():
     ## Show the directory dialog selection, set the default save location
     #  to the selected directory.
     def update_location(self):
-        directory = self.file_manager.get_directory()
+        directory = self.ctl.file_manager.get_directory()
         if directory is None:
             return
 

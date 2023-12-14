@@ -250,22 +250,7 @@ class BusinessObjects:
         ctl.status_indicators = StatusIndicators(ctl)
 
         self.header("instantiating DetectorTemperatureFeature")
-        ctl.detector_temperature = DetectorTemperatureFeature(
-            graph                       = ctl.graph,
-            multispec                   = ctl.multispec,
-            status_indicators           = ctl.status_indicators,
-            button_up                   = sfu.temperatureWidget_pushButton_detector_setpoint_up,
-            button_dn                   = sfu.temperatureWidget_pushButton_detector_setpoint_dn,
-            cb_enabled                  = sfu.checkBox_tec_enabled,
-            lb_degC                     = sfu.label_hardware_capture_details_detector_temperature,
-            lb_raw                      = sfu.label_ccd_temperature_raw,
-            slider                      = sfu.verticalSlider_detector_setpoint_degC,
-            spinbox                     = sfu.spinBox_detector_setpoint_degC,
-            clear_btn                   = sfu.detector_temp_pushButton,
-            sfu                         = sfu,
-            gui                         = ctl.gui,
-            clipboard                   = ctl.clipboard,
-            hardware_file_manager       = ctl.hardware_file_manager)
+        ctl.detector_temperature = DetectorTemperatureFeature(ctl)
 
         self.header("instantiating HorizROIFeature")
         ctl.horiz_roi = HorizROIFeature(ctl)
@@ -286,39 +271,7 @@ class BusinessObjects:
         ctl.external_trigger = ExternalTriggerFeature(ctl)
 
         self.header("instantiating SaveOptions")
-        ctl.save_options = SaveOptions(
-            ctl,
-            bt_location                 = sfu.pushButton_scope_setup_change_save_location,
-            cb_all                      = sfu.checkBox_save_all,
-            cb_allow_rename             = sfu.checkBox_allow_rename_files,
-            cb_append                   = sfu.checkBox_save_data_append,
-            cb_collated                 = sfu.checkBox_save_collated,
-            cb_csv                      = sfu.checkBox_save_csv,
-            cb_spc                      = sfu.checkBox_save_spc,
-            cb_dark                     = sfu.checkBox_save_dark,
-            cb_excel                    = sfu.checkBox_save_excel,
-            cb_filename_as_label        = sfu.checkBox_save_filename_as_label,
-            cb_json                     = sfu.checkBox_save_json,
-            cb_dx                       = sfu.checkBox_save_dx,
-            cb_load_raw                 = sfu.checkBox_load_raw,
-            cb_pixel                    = sfu.checkBox_save_pixel,
-            cb_raw                      = sfu.checkBox_save_raw,
-            cb_reference                = sfu.checkBox_save_reference,
-            cb_text                     = sfu.checkBox_save_text,
-            cb_wavelength               = sfu.checkBox_save_wavelength,
-            cb_wavenumber               = sfu.checkBox_save_wavenumber,
-            config                      = ctl.config,
-            file_manager                = ctl.file_manager,
-            interp                      = ctl.interp,
-            lb_location                 = sfu.label_scope_setup_save_location,
-            le_label_template           = sfu.lineEdit_save_label_template,
-            le_filename_template        = sfu.lineEdit_save_filename_template,
-            le_note                     = sfu.lineEdit_scope_capture_save_note,
-            le_prefix                   = sfu.lineEdit_scope_capture_save_prefix,
-            le_suffix                   = sfu.lineEdit_scope_capture_save_suffix,
-            multispec                   = ctl.multispec,
-            rb_by_col                   = sfu.radioButton_save_by_column,
-            rb_by_row                   = sfu.radioButton_save_by_row)
+        ctl.save_options = SaveOptions(ctl)
 
         self.header("instantiating MeasurementFactory")
         ctl.measurement_factory = MeasurementFactory(
