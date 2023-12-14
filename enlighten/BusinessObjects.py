@@ -241,40 +241,7 @@ class BusinessObjects:
         ctl.image_resources = ImageResources()
 
         self.header("instantiating Multispec")
-        ctl.multispec = Multispec(
-            button_lock                 = sfu.pushButton_multiSpec_lock,
-            check_autocolor             = sfu.checkBox_multiSpec_autocolor,
-            check_hide_others           = sfu.checkBox_multiSpec_hide_others,
-            colors                      = ctl.colors,
-            combo_spectrometer          = sfu.comboBox_multiSpec,
-            desired_serial              = ctl.serial_number_desired,
-            frame_widget                = sfu.frame_multiSpecWidget,
-            graph                       = ctl.graph,
-            gui                         = ctl.gui,
-            layout_colors               = sfu.horizontalLayout_multiSpec_colors,
-            reinit_callback             = ctl.initialize_new_device,
-            stylesheets                 = ctl.stylesheets,
-            eject_button                = sfu.pushButton_eject,
-            ctl                         = ctl,
-
-			# Essentially, these are widgets corresponding to SpectrometerState fields,
-            # SpectrometerApplicationState fields, or change_device_setting() keys
-			# which can therefore be "locked" in Multispec.  There is currently NO
-			# CONNECTION in code between the widgets which "visually suggest they can be locked"
-            # (via this list), and those which actually can be.
-            #
-            # @todo pass in Features, not Widgets
-            lockable_widgets            = [
-                                             sfu.lightSourceWidget_shaded,
-                                             sfu.detectorControlWidget_shaded,
-                                             sfu.displayAxisWidget_shaded,
-                                             sfu.scanAveragingWidget_shaded,
-                                             sfu.boxcarWidget_shaded,
-                                             sfu.temperatureWidget_shaded
-                                          ]
-        )
-        for feature in [ ctl.cursor, ctl.config, ctl.gui ]:
-            feature.multispec = ctl.multispec
+        ctl.multispec = Multispec(ctl)
 
         self.header("instantiating BatteryFeature")
         ctl.battery_feature = BatteryFeature(ctl)

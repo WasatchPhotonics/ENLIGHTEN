@@ -39,41 +39,32 @@ log = logging.getLogger(__name__)
 # It's worth considering whether to give Multispec a shutting_down flag, or a 
 # callback to get it, but the tear-down process is sufficiently lightweight to
 # just let it ride.
+#
 class Multispec(object):
 
-    def __init__(self, 
-            button_lock,
-            check_autocolor,
-            check_hide_others,
-            colors,
-            combo_spectrometer, 
-            desired_serial,
-            frame_widget,
-            graph,
-            gui,
-            layout_colors,
-            reinit_callback,
-            stylesheets,
-            eject_button,
-            ctl,
+    def __init__(self, ctl):
+        self.ctl = ctl
+        sfu = ctl.form.ui
 
-            lockable_widgets):
+        self.button_lock           = sfu.pushButton_multiSpec_lock
+        self.check_autocolor       = sfu.checkBox_multiSpec_autocolor
+        self.check_hide_others     = sfu.checkBox_multiSpec_hide_others
+        self.combo_spectrometer    = sfu.comboBox_multiSpec
+        self.frame_widget          = sfu.frame_multiSpecWidget
+        self.layout_colors         = sfu.horizontalLayout_multiSpec_colors
+        self.eject_button          = sfu.pushButton_eject
 
-        self.button_lock           = button_lock
-        self.check_autocolor       = check_autocolor
-        self.check_hide_others     = check_hide_others
-        self.colors                = colors
-        self.combo_spectrometer    = combo_spectrometer
-        self.desired_serial        = desired_serial
-        self.frame_widget          = frame_widget
-        self.gui                   = gui
-        self.reinit_callback       = reinit_callback      # Controller.initialize_new_device()
-        self.layout_colors         = layout_colors
-        self.stylesheets           = stylesheets
-        self.eject_button          = eject_button
-        self.ctl                   = ctl
-        self.lockable_widgets      = lockable_widgets
-
+        # Essentially, these are widgets corresponding to SpectrometerState fields,
+        # SpectrometerApplicationState fields, or change_device_setting() keys
+        # which can therefore be "locked" in Multispec.  There is currently NO
+        # CONNECTION in code between the widgets which "visually suggest they can
+        # be locked" (via this list), and those which actually can be.
+        self.lockable_widgets      = [ sfu.lightSourceWidget_shaded,
+                                       sfu.detectorControlWidget_shaded,
+                                       sfu.displayAxisWidget_shaded,
+                                       sfu.scanAveragingWidget_shaded,
+                                       sfu.boxcarWidget_shaded,
+                                       sfu.temperatureWidget_shaded ]
         self.device_id = None
         self.ejected = set()
         self.strip_features = []
@@ -125,17 +116,17 @@ class Multispec(object):
 
     ## @returns True if we're only looking for one spectrometer, and already found it
     def found_desired(self):
-        return self.desired_serial is not None and self.count() > 0
+        return self.ctl.serial_number_desired is not None and self.count() > 0
 
     ## @returns True if we're only looking for one spectrometer, and this isn't it
     def reject_undesireable(self, device):
-        if self.desired_serial is None:
+        if self.ctl.serial_number_desired is None:
             return False # we're not filtering, so don't reject
 
-        if self.desired_serial == device.settings.eeprom.serial_number:
+        if self.ctl.serial_number_desired == device.settings.eeprom.serial_number:
             return False # passed filter, so don't reject
 
-        log.info("rejecting spectrometer (%s != %s)", self.desired_serial, device.settings.eeprom.serial_number)
+        log.info("rejecting spectrometer (%s != %s)", self.ctl.serial_number_desired, device.settings.eeprom.serial_number)
         self.set_ignore(device.device_id)
         return True # failed filter
 
@@ -148,7 +139,7 @@ class Multispec(object):
     def add_color_button(self):
         button = pyqtgraph.ColorButton()
         util.force_size(button, width=30, height=26)
-        self.gui.colorize_button(button, False)
+        self.ctl.gui.colorize_button(button, False)
         self.layout_colors.addWidget(button)
         return button
 
@@ -264,11 +255,11 @@ class Multispec(object):
     def lock_callback(self):
         self.locked = not self.locked
 
-        self.gui.colorize_button(self.button_lock, self.locked)
+        self.ctl.gui.colorize_button(self.button_lock, self.locked)
         if self.locked:
-            css = self.stylesheets.get("multispec_locked")
+            css = self.ctl.stylesheets.get("multispec_locked")
         else:
-            css = self.stylesheets.get("multispec_unlocked")
+            css = self.ctl.stylesheets.get("multispec_unlocked")
 
         for widget in self.lockable_widgets:
             widget.setStyleSheet(css)
@@ -631,7 +622,7 @@ class Multispec(object):
         self.device_id = device_id
 
         # this is a no-op when shutting down
-        self.reinit_callback(spec.device)
+        ctl.initialize_new_device(spec.device)
 
         # update traces (make selected bold), so just use checkbox callback
         self.check_callback()
@@ -666,7 +657,7 @@ class Multispec(object):
             color = spec.color
 
         try:
-            pen = self.gui.make_pen(
+            pen = self.ctl.gui.make_pen(
                 widget   = "scope", 
                 selected = self.is_selected(spec.device_id),
                 color    = color)
@@ -681,9 +672,9 @@ class Multispec(object):
         elif spec.color is not None:
             return spec.color
         else:
-            color = self.colors.get_by_widget("scope")
+            color = self.ctl.colors.get_by_widget("scope")
             while color in self.seen_colors:
-                color = self.colors.get_next_random()
+                color = self.ctl.colors.get_next_random()
             self.seen_colors.add(color)
             return color
 
