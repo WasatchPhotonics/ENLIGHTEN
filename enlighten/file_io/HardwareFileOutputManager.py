@@ -8,16 +8,16 @@ log = logging.getLogger(__name__)
 
 class HardwareFileOutputManager:
 
-    def __init__(self,
-                 cb_output,
-                 spin_timeout):
+    def __init__(self, ctl):
+        self.ctl = ctl
+        sfu = ctl.form.ui
 
         self.features = []
         self.file_map = {}
 
-        self.enlighten_dir = common.get_default_data_dir()
-        self.cb_output = cb_output 
-        self.spin_timeout = spin_timeout
+        self.cb_output = sfu.checkBox_feature_file_capture
+        self.spin_timeout = sfu.spinBox_hardware_capture_timeout
+
         self.output_timeout = None
         
         self.cb_output.toggled.connect(self.cb_callback)
@@ -34,7 +34,7 @@ class HardwareFileOutputManager:
     def enable_output(self):
         current_time = datetime.datetime.now()
         time_info = f"{current_time.isoformat(sep='-',timespec='hours')}-{current_time.minute}-{current_time.second}-"
-        self.hardware_dir = os.path.join(self.enlighten_dir, "hardware_captures", f"{time_info}hardware_capture")
+        self.hardware_dir = os.path.join(common.get_default_data_dir(), "hardware_captures", f"{time_info}hardware_capture")
         timeout = self.spin_timeout.value()
         if timeout != 0:
             delta = datetime.timedelta(minutes=timeout)

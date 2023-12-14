@@ -9,14 +9,11 @@ class ExternalTriggerFeature:
     Encapsulate external hardware triggering.
     """
     
-    def __init__(self,
-             cb_enabled,
-             marquee,
-             multispec):
+    def __init__(self, ctl):
+        self.ctl = ctl
+        sfu = ctl.form.ui
 
-        self.cb_enabled = cb_enabled 
-        self.multispec  = multispec
-        self.marquee    = marquee
+        self.cb_enabled = sfu.checkBox_external_trigger_enabled
 
         self.enabled = False
 
@@ -24,7 +21,7 @@ class ExternalTriggerFeature:
         
     def update_visibility(self):
         """ Called by init_new_spectrometer on connection or selection. """
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             self.cb_enabled.setVisible(False)
             return
@@ -46,7 +43,7 @@ class ExternalTriggerFeature:
         return self.enabled
 
     def enable_callback(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
 
@@ -68,12 +65,12 @@ class ExternalTriggerFeature:
         # as soon as the current acquisition times-out, it immediately says "I timed-
         # out but wasn't externally triggered, so let's flow a poison pill upstream!"
         #
-        # self.multispec.set_state("trigger_source", value)
+        # self.ctl.multispec.set_state("trigger_source", value)
 
-        self.multispec.change_device_setting("trigger_source", value)
+        self.ctl.multispec.change_device_setting("trigger_source", value)
         log.warn("Trigger source set to %d", value)
 
         if self.enabled:
-            self.marquee.info("waiting for trigger")
+            self.ctl.marquee.info("waiting for trigger")
 
         spec.reset_acquisition_timeout()

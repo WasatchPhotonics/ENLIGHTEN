@@ -177,7 +177,6 @@ class BusinessObjects:
         self.header("instantiating Configuration")
         ctl.config = Configuration(ctl)
 
-        # created early so subsequent BusinessObjects can register to it
         self.header("instantiating Presets")
         ctl.presets = PresetFeature(ctl)
 
@@ -193,7 +192,6 @@ class BusinessObjects:
         self.header("instantiating GUI")
         ctl.gui = GUI(ctl)
 
-        # instantiating this early will simplify letting others register as observers
         self.header("instantiating PageNavigation")
         ctl.page_nav = PageNavigation(ctl)
 
@@ -225,24 +223,16 @@ class BusinessObjects:
         ctl.file_manager = FileManager(ctl)
 
         self.header("instantiating Clipboard")
-        ctl.clipboard = Clipboard(
-            clipboard                   = ctl.app.clipboard(),
-            marquee                     = ctl.marquee)
-        ctl.logging_feature.clipboard = ctl.clipboard
+        ctl.clipboard = Clipboard(ctl)
 
         self.header("instantiating GuideFeature")
-        ctl.guide = GuideFeature(
-            bt_enable                   = sfu.pushButton_guide,
-            gui                         = ctl.gui,
-            marquee                     = ctl.marquee)
+        ctl.guide = GuideFeature(ctl)
 
         self.header("instantiating Graph")
         ctl.graph = Graph(ctl)
 
         self.header("instantiating HardwareFileOutputManager")
-        ctl.hardware_file_manager = HardwareFileOutputManager(
-            cb_output=sfu.checkBox_feature_file_capture,
-            spin_timeout=sfu.spinBox_hardware_capture_timeout)
+        ctl.hardware_file_manager = HardwareFileOutputManager(ctl)
 
         self.header("instantiating Cursor")
         ctl.cursor = Cursor(ctl)
@@ -314,17 +304,10 @@ class BusinessObjects:
         ctl.horiz_roi = HorizROIFeature(ctl)
 
         self.header("instantiating TransmissionFeature")
-        ctl.transmission = TransmissionFeature(
-            marquee                     = ctl.marquee,
-            horiz_roi                   = ctl.horiz_roi,
-                                       
-            cb_max_enable               = sfu.checkBox_enable_max_transmission,
-            sb_max_perc                 = sfu.spinBox_max_transmission_perc)
+        ctl.transmission = TransmissionFeature(ctl)
 
         self.header("instantiating AbsorbanceFeature")
-        ctl.absorbance = AbsorbanceFeature(
-            marquee                     = ctl.marquee,
-            transmission                = ctl.transmission)
+        ctl.absorbance = AbsorbanceFeature(ctl)
 
         self.header("instantiating StatusBarFeature")
         ctl.status_bar = StatusBarFeature(ctl)
@@ -333,10 +316,7 @@ class BusinessObjects:
         ctl.interp = InterpolationFeature(ctl)
 
         self.header("instantiating ExternalTriggerFeature")
-        ctl.external_trigger = ExternalTriggerFeature(
-            cb_enabled                  = sfu.checkBox_external_trigger_enabled,
-            marquee                     = ctl.marquee,
-            multispec                   = ctl.multispec)
+        ctl.external_trigger = ExternalTriggerFeature(ctl)
 
         self.header("instantiating SaveOptions")
         ctl.save_options = SaveOptions(

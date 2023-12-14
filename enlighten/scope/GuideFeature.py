@@ -24,19 +24,16 @@ class Tip(object):
         self.token = token
         self.link = link 
 
-class GuideFeature(object):
+class GuideFeature:
 
     MIN_DISPLAY_SEC = 8 
     POLL_SEC = 1
 
-    def __init__(self,
-            bt_enable,
-            gui,
-            marquee):
+    def __init__(self, ctl):
+        self.ctl = ctl
+        sfu = ctl.form.ui
 
-        self.bt_enable = bt_enable
-        self.gui       = gui
-        self.marquee   = marquee
+        self.bt_enable = sfu.pushButton_guide
 
         self.queue = multiprocessing.Queue()
         self.last_tipped = None
@@ -56,7 +53,7 @@ class GuideFeature(object):
     # ##########################################################################
 
     def update_visibility(self):
-        self.gui.colorize_button(self.bt_enable, self.enabled)
+        self.ctl.gui.colorize_button(self.bt_enable, self.enabled)
         if self.enabled:
             self.timer.start()
         else:
@@ -86,7 +83,7 @@ class GuideFeature(object):
     # any queued tips
     # @public
     def clear(self, token):
-        self.marquee.clear(token)
+        self.ctl.marquee.clear(token)
         self.copy_queue(drop_token=token)
 
     ##
@@ -122,13 +119,13 @@ class GuideFeature(object):
 
     ## @private
     def _reset_timer(self):
-        self.timer.start(GuideFeature.POLL_SEC * 1000)
+        self.timer.start(self.POLL_SEC * 1000)
 
     ## @private
     def _tick(self):
         # don't stop recent tips with new ones
         now = datetime.datetime.now()
-        if self.last_tipped is not None and ((now - self.last_tipped).total_seconds() < GuideFeature.MIN_DISPLAY_SEC):
+        if self.last_tipped is not None and ((now - self.last_tipped).total_seconds() < self.MIN_DISPLAY_SEC):
             log.debug("tick: not time")
             return self._reset_timer()
 
@@ -144,5 +141,5 @@ class GuideFeature(object):
 
         self.current_tip = tip
         self.last_tipped = datetime.datetime.now()
-        self.marquee.info(tip.msg, token=tip.token, persist=tip.persist, link=tip.link)
+        self.ctl.marquee.info(tip.msg, token=tip.token, persist=tip.persist, link=tip.link)
         self._reset_timer()

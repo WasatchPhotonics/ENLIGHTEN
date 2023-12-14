@@ -8,18 +8,12 @@ log = logging.getLogger(__name__)
 # @todo redo process() math with numpy
 class TransmissionFeature:
     
-    def __init__(self,
-            marquee,
-            horiz_roi,
+    def __init__(self, ctl):
+        self.ctl = ctl
+        sfu = ctl.form.ui
 
-            cb_max_enable,
-            sb_max_perc):
-
-        self.marquee        = marquee
-        self.horiz_roi      = horiz_roi
-                            
-        self.cb_max_enable  = cb_max_enable
-        self.sb_max_perc    = sb_max_perc
+        self.cb_max_enable  = sfu.checkBox_enable_max_transmission
+        self.sb_max_perc    = sfu.spinBox_max_transmission_perc
 
         self.update_from_gui()
 
@@ -35,12 +29,12 @@ class TransmissionFeature:
         pr = processed_reading
 
         if pr.dark is None:
-            self.marquee.error("Please take dark")
+            self.ctl.marquee.error("Please take dark")
             return False
 
         ref = pr.reference
         if ref is None:
-            self.marquee.error("Please take reference")
+            self.ctl.marquee.error("Please take reference")
             return False
 
         # dark-correct reference if not already done
@@ -55,10 +49,10 @@ class TransmissionFeature:
 
         if pr.is_cropped() and settings is not None:
             roi = settings.eeprom.get_horizontal_roi()
-            ref = self.horiz_roi.crop(ref, roi=roi)
+            ref = self.ctl.horiz_roi.crop(ref, roi=roi)
 
         if len(ref) != len(sample):
-            self.marquee.error("reference and sample must be same size")
+            self.ctl.marquee.error("reference and sample must be same size")
             return False
 
         transmission = []
@@ -78,7 +72,7 @@ class TransmissionFeature:
                 has_neg = True
 
         if has_neg:
-            self.marquee.error("measurement out-of-range")
+            self.ctl.marquee.error("measurement out-of-range")
 
         pr.set_processed(transmission)
         log.debug("trans = %s", transmission[0:10])
