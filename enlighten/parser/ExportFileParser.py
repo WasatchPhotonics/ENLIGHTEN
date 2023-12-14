@@ -50,10 +50,9 @@ class ExportFileParser:
 
     @warning this does not currently work with "collated" exports.
     """ 
-    def __init__(self, pathname, save_options, encoding="utf-8"):
+    def __init__(self, pathname, encoding="utf-8"):
 
         self.pathname = pathname
-        self.save_options = save_options
         self.encoding = encoding
 
         self.spectrometers = {}
@@ -193,8 +192,7 @@ class ExportFileParser:
                 source_pathname   = self.pathname, 
                 timestamp         = em.timestamp,
                 settings          = em.settings,
-                processed_reading = em.processed_reading,
-                save_options      = self.save_options)
+                processed_reading = em.processed_reading)
 
             # additional Measurement attributes
             if "Label" in em.metadata:
@@ -456,13 +454,14 @@ class ExportFileParser:
             for line in csv_lines:
                 values = [ x.strip() for x in line ]
 
-                if line_count < 25:
-                    log.debug("load_data: [%s] line = %s", state, line)
+                non_empty_values = [ x for x in values if len(str(x)) > 0 ]
+
+                log.debug("load_data: [%s] line = %s", state, line)
                 line_count += 1
 
                 if state == "reading_metadata":
 
-                    if len(values) == 0:
+                    if len(values) == 0 or len(non_empty_values) == 0:
                         state = "looking_for_header"
 
                     else:

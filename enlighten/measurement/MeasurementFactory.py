@@ -314,7 +314,7 @@ class MeasurementFactory(object):
     #     0,     802.35,     275.46,     892,       892, 0
     # \endverbatim
     #
-    # Essentially, whether the first valid line is an x-axis header
+    # Essentially, whether the FIRST valid (non-blank, non-column) line is an x-axis header
     def looks_like_labeled_columns(self, pathname, encoding="utf-8"):
         result = False
         first_line = None
@@ -354,16 +354,21 @@ class MeasurementFactory(object):
                 # not all "ENLIGHTEN-style" files will necessarily have any one 
                 # metadata field; check a couple common ones (that are unlikely 
                 # to include embedded commas)
-                for field in ["Integration Time", "Pixel Count", "Technique", "Laser Wavelength"]:
+                for field in ["Integration Time", "Pixel Count", "Serial Number", "Model", "Laser Wavelength"]:
                     if line.startswith(field):
                         # count how many values (not empty comma-delimited nulls) appear
                         count = sum([1 if len(x.strip()) > 0 else 0 for x in line.split(",")])
                         if test_export:
+                            result = count > 2
+                            log.debug(f"looks_like_enlighten_columns: {result} (count {count}, required >2, line {line})")
                             return count > 2
                         else:
+                            result = count == 2
+                            log.debug(f"looks_like_enlighten_columns: {result} (count {count}, required 2, line {line})")
                             return count == 2
                 linecount += 1
                 if linecount > 100:
+                    log.debug(f"looks_line_enlighten_columns: false because no typical metadata in {linecount} lines")
                     break
             
     def looks_like_simple_columns(self, pathname, encoding="utf-8") -> bool:

@@ -274,7 +274,8 @@ class Measurement:
     # - with spec (take latest from that Spectrometer)
     # - with source_pathname (deserializing from disk)
     # - with data (for instance, from processed plugin spectra)
-    def __init__(self, ctl,
+    def __init__(self, 
+            ctl                 = None,
             processed_reading   = None,
             settings            = None,
             source_pathname     = None,
@@ -315,10 +316,11 @@ class Measurement:
             self.timestamp          = datetime.datetime.now()
             self.baseline_correction_algo = spec.app_state.baseline_correction_algo
 
-            # do these AFTER we have a processed_reading
-            self.note   = self.expand_template(self.ctl.save_options.note())
-            self.prefix = self.expand_template(self.ctl.save_options.prefix())
-            self.suffix = self.expand_template(self.ctl.save_options.suffix())
+            if self.ctl:
+                # do these AFTER we have a processed_reading
+                self.note   = self.expand_template(self.ctl.save_options.note())
+                self.prefix = self.expand_template(self.ctl.save_options.prefix())
+                self.suffix = self.expand_template(self.ctl.save_options.suffix())
 
         elif source_pathname:
             log.debug("instantiating from source pathname %s", source_pathname)
@@ -426,13 +428,14 @@ class Measurement:
             log.debug(f"generate_label: retaining existing label {self.label}")
             return
 
-        if self.ctl.save_options.filename_as_label():
-            # note this will be wrapped with prefix and suffix
-            self.label = self.basename 
-        else:
-            self.label = self.expand_template(self.ctl.save_options.label_template())
-            if self.ctl.save_options.multipart_suffix:
-                self.label += f" {self.ctl.save_options.multipart_suffix}"
+        if self.ctl:
+            if self.ctl.save_options.filename_as_label():
+                # note this will be wrapped with prefix and suffix
+                self.label = self.basename 
+            else:
+                self.label = self.expand_template(self.ctl.save_options.label_template())
+                if self.ctl.save_options.multipart_suffix:
+                    self.label += f" {self.ctl.save_options.multipart_suffix}"
 
     def expand_template(self, template):
         """
@@ -520,7 +523,7 @@ class Measurement:
     # Note that this wraps the prefix and suffix around the expanded template.
     # Prefix and Suffix are not retained in manually-renamed measurements (ctrl-E).
     def generate_basename(self):
-        if self.ctl.save_options is None:
+        if self.ctl is None or self.ctl.save_options is None:
             return self.measurement_id
         else:
             if self.renamed_manually and self.ctl.save_options.allow_rename_files():
@@ -585,7 +588,7 @@ class Measurement:
             #
             # MZ: this feels a bit kludgy?
 
-            if self.ctl.measurements is not None:
+            if self.ctl and self.ctl.measurements is not None:
                 self.ctl.measurements.delete_measurement(measurement=self)
                 return
 
@@ -630,8 +633,9 @@ class Measurement:
         self.label = label
 
         # rename the underlying file(s)
-        if self.ctl.save_options.allow_rename_files() or self.ctl.save_options.filename_as_label():
-            self.rename_files()
+        if self.ctl:
+            if self.ctl.save_options.allow_rename_files() or self.ctl.save_options.filename_as_label():
+                self.rename_files()
 
         # re-apply trace with new legend
         if was_displayed:
@@ -730,6 +734,9 @@ class Measurement:
     ## @todo cloud etc
     def save(self):
         saved = False
+        if not self.ctl:
+            return
+
         if self.ctl.save_options.save_csv():
             self.save_csv_file()
             saved = True
@@ -759,10 +766,13 @@ class Measurement:
                 self.ctl.measurements.ctl.marquee.error("No save formats selected -- spectrum not saved to disk")
 
     def save_csv_file(self):
-        if self.ctl.save_options is not None and self.ctl.save_options.save_by_row():
-            self.save_csv_file_by_row()
-        else:
+        if self.ctl is None:
             self.save_csv_file_by_column()
+        else:
+            if self.ctl.save_options is not None and self.ctl.save_options.save_by_row():
+                self.save_csv_file_by_row()
+            else:
+                self.save_csv_file_by_column()
 
     ##
     # This function is provided because legacy Dash and ENLIGHTEN saved row-
@@ -801,7 +811,7 @@ class Measurement:
         if field == "detector":                  return self.settings.eeprom.detector
         if field == "scan averaging":            return self.settings.state.scans_to_average
         if field == "boxcar":                    return self.settings.state.boxcar_half_width
-        if field == "line number":               return self.ctl.save_options.line_number if self.ctl.save_options is not None else 0
+        if field == "line number":               return self.ctl.save_options.line_number if (self.ctl and self.ctl.save_options) else 0
         if field == "integration time":          return self.settings.state.integration_time_ms
         if field == "timestamp":                 return self.timestamp
         if field == "blank":                     return self.settings.eeprom.serial_number # for Multispec
@@ -827,7 +837,7 @@ class Measurement:
         if field == "roi pixel start":           return self.settings.eeprom.roi_horizontal_start
         if field == "roi pixel end":             return self.settings.eeprom.roi_horizontal_end
         if field == "cropped":                   return self.processed_reading.is_cropped()
-        if field == "interpolated":              return self.ctl.save_options.interp.enabled if self.ctl.save_options is not None else False
+        if field == "interpolated":              return self.ctl.interp.enabled if self.ctl else False
         if field == "raman intensity corrected": return self.processed_reading.raman_intensity_corrected
         if field == "deconvolved":               return self.processed_reading.deconvolved
         if field == "region":                    return self.settings.state.region
@@ -940,7 +950,7 @@ class Measurement:
         cropped = roi is not None and pr.is_cropped()
 
         # interpolation
-        interp = self.ctl.save_options.interp if self.ctl.save_options is not None else None
+        interp = self.ctl.save_options.interp if (self.ctl and self.ctl.save_options) else None
         if interp is not None and interp.enabled:
             ipr = interp.interpolate_processed_reading(pr, wavelengths=wavelengths, wavenumbers=wavenumbers, settings=self.settings)
             if ipr is not None:
@@ -1023,7 +1033,7 @@ class Measurement:
             log.critical("Problem saving workbook: %s", pathname, exc_info=1)
 
     def generate_today_dir(self):
-        return "." if self.ctl.save_options is None else self.ctl.save_options.generate_today_dir()
+        return self.ctl.save_options.generate_today_dir() if (self.ctl and self.ctl.save_options) else "."
 
     # ##########################################################################
     # JSON
@@ -1044,7 +1054,7 @@ class Measurement:
 
         # interpolation
         ipr = None
-        interp = self.ctl.save_options.interp if self.ctl.save_options is not None else None
+        interp = self.ctl.save_options.interp if (self.ctl and self.ctl.save_options) else None
         if interp is not None and interp.enabled:
             ipr = interp.interpolate_processed_reading(pr, wavelengths=self.settings.wavelengths, wavenumbers=self.settings.wavenumbers, settings=self.settings)
             if ipr is not None:
@@ -1054,10 +1064,11 @@ class Measurement:
                 m["spectrometerSettings"]["wavenumbers"] = ipr.wavenumbers
 
         # same capitalization as CSV per request
-        if self.ctl.save_options.save_processed()   and pr.processed is not None: m["spectrum"]["Processed"] = util.clean_list(pr.get_processed())
-        if self.ctl.save_options.save_raw()         and pr.raw       is not None: m["spectrum"]["Raw"]       = util.clean_list(pr.raw)
-        if self.ctl.save_options.save_dark()        and pr.dark      is not None: m["spectrum"]["Dark"]      = util.clean_list(pr.dark)
-        if self.ctl.save_options.save_reference()   and pr.reference is not None: m["spectrum"]["Reference"] = util.clean_list(pr.reference)
+        if self.ctl:
+            if self.ctl.save_options.save_processed()   and pr.processed is not None: m["spectrum"]["Processed"] = util.clean_list(pr.get_processed())
+            if self.ctl.save_options.save_raw()         and pr.raw       is not None: m["spectrum"]["Raw"]       = util.clean_list(pr.raw)
+            if self.ctl.save_options.save_dark()        and pr.dark      is not None: m["spectrum"]["Dark"]      = util.clean_list(pr.dark)
+            if self.ctl.save_options.save_reference()   and pr.reference is not None: m["spectrum"]["Reference"] = util.clean_list(pr.reference)
 
         return m
 
@@ -1211,13 +1222,13 @@ class Measurement:
 
         # cropping
         roi = None
-        if self.settings is not None and self.ctl.measurements is not None and self.ctl.measurements.ctl.horiz_roi.enabled:
+        if self.settings is not None and self.ctl and self.ctl.measurements and self.ctl.measurements.ctl.horiz_roi.enabled:
             self.roi_active = True
             roi = self.settings.eeprom.get_horizontal_roi()
         cropped = roi is not None and pr.is_cropped()
 
         # interpolation
-        interp = self.ctl.save_options.interp if self.ctl.save_options is not None else None
+        interp = self.ctl.save_options.interp if (self.ctl and self.ctl.save_options) else None
         if interp is not None and interp.enabled:
             ipr = interp.interpolate_processed_reading(pr, wavelengths=wavelengths, wavenumbers=wavenumbers, settings=self.settings)
             if ipr is not None:
@@ -1255,7 +1266,7 @@ class Measurement:
                 out.writerow([])
 
             headers = []
-            if self.ctl.save_options is not None:
+            if self.ctl and self.ctl.save_options:
                 if self.ctl.save_options.save_pixel():       headers.append("Pixel")
                 if self.ctl.save_options.save_wavelength():  headers.append("Wavelength")
                 if self.ctl.save_options.save_wavenumber():  headers.append("Wavenumber")
@@ -1282,7 +1293,7 @@ class Measurement:
             for pixel in range(pixels):
 
                 values = []
-                if self.ctl.save_options is not None:
+                if self.ctl and self.ctl.save_options:
                     if self.ctl.save_options.save_pixel():       values.append(pixel)
                     if self.ctl.save_options.save_wavelength():  values.append(formatted(2,         wavelengths,  pixel))
                     if self.ctl.save_options.save_wavenumber():  values.append(formatted(2,         wavenumbers,  pixel))

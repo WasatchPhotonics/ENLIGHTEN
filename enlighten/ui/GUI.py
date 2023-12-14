@@ -30,7 +30,6 @@ class GUI(object):
         
         self.ctl = ctl
 
-        self.multispec = None
         self.theme = self.ctl.config.get("theme", "theme")
 
         # apply ENLIGHTEN application stylesheet found in configured directory
@@ -121,7 +120,7 @@ class GUI(object):
 
         style = self.ctl.config.get(self.SECTION, f"{widget}_pen_style")
         width = int(self.ctl.config.get(self.SECTION, f"{widget}_pen_width"))
-        if selected and self.multispec is not None and self.multispec.count() > 1 and not self.multispec.hide_others:
+        if selected and self.ctl.multispec and self.ctl.multispec.count() > 1 and not self.ctl.multispec.hide_others:
             width = int(width * 2)
 
         return pyqtgraph.mkPen(color=color, width=width, style=style)
@@ -130,7 +129,7 @@ class GUI(object):
         ver   = common.VERSION
         model = spec.settings.full_model()
         sn    = spec.settings.eeprom.serial_number
-        cnt   = self.multispec.count()
+        cnt   = self.ctl.multispec.count()
 
         title = f"ENLIGHTEN {ver}: {model} [{sn}]"
 

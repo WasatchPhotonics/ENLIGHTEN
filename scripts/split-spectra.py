@@ -27,7 +27,7 @@ label_counts = {}
 for filename in filenames:
     print("Processing %s" % filename)
 
-    parser = ExportFileParser(filename, save_options=None)
+    parser = ExportFileParser(filename)
     measurements = parser.parse()
     print("  %d measurements parsed" % len(measurements))
 
@@ -50,7 +50,7 @@ for filename in filenames:
 
         if args.label is not None:
             if args.label.lower() not in label.lower():
-                print(f"  skipping (label {args.label} not in {label}")
+                print(f"  skipping (label {args.label} not in {label})")
                 continue
 
         if label not in label_counts:
