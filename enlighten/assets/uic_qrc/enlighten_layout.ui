@@ -2556,7 +2556,7 @@ QComboBox QListView
            <x>0</x>
            <y>0</y>
            <width>1169</width>
-           <height>5612</height>
+           <height>5412</height>
           </rect>
          </property>
          <property name="sizePolicy">
@@ -2607,7 +2607,7 @@ QComboBox QListView
                 </property>
                 <property name="font">
                  <font>
-                  <pointsize>14</pointsize>
+                  <pointsize>20</pointsize>
                   <weight>75</weight>
                   <bold>true</bold>
                  </font>
