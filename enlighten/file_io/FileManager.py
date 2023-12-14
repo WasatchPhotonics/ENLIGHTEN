@@ -17,15 +17,8 @@ class FileManager(object):
     
     FILTER = "CSV (*.csv);;JSON (*.json);;SPC (*.spc);;ASC (*.asc)"
 
-    ##
-    # @param form for QDialogs requiring a parent
-    # @param marquee for displaying status information to the user
-    def __init__(self,
-            form,
-            marquee):
-        self.form           = form       
-        self.marquee        = marquee
-        #self.progress_bar   = progress_bar
+    def __init__(self, ctl):
+        self.ctl = ctl
 
         self.files_to_load = []
         self.last_load_dir = common.get_default_data_dir()
@@ -40,7 +33,7 @@ class FileManager(object):
     def get_pathname(self, caption="Select file to load", filter=None):
         if filter is None:
             filter = FileManager.FILTER
-        result = QtWidgets.QFileDialog.getOpenFileName(self.form, caption, self.last_load_dir, filter)
+        result = QtWidgets.QFileDialog.getOpenFileName(self.ctl.form, caption, self.last_load_dir, filter)
         if result is None or len(result) < 1:
             return
         pathname = result[0]
@@ -70,7 +63,7 @@ class FileManager(object):
     def select_files_to_load(self, callback):
         self.load_count = 0
 
-        result = QtWidgets.QFileDialog.getOpenFileNames(self.form, 
+        result = QtWidgets.QFileDialog.getOpenFileNames(self.ctl.form, 
             "Select spectra to load", 
             self.last_load_dir,
             FileManager.FILTER)
@@ -101,7 +94,7 @@ class FileManager(object):
         if not self.files_to_load:
             log.debug("finished loading files")
             #self.progress_bar.setVisible(False)
-            self.marquee.info("loaded %d files" % self.load_count)
+            self.ctl.marquee.info("loaded %d files" % self.load_count)
             return
 
         ########################################################################

@@ -222,9 +222,7 @@ class BusinessObjects:
         ctl.marquee = Marquee(ctl)
 
         self.header("instantiating FileManager")
-        ctl.file_manager = FileManager(
-            form                        = ctl.form,
-            marquee                     = ctl.marquee)
+        ctl.file_manager = FileManager(ctl)
 
         self.header("instantiating Clipboard")
         ctl.clipboard = Clipboard(

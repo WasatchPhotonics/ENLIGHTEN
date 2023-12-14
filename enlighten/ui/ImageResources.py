@@ -11,8 +11,8 @@ log = logging.getLogger(__name__)
 
 ##
 # This requires some explanation.  Device (model) images come from 
-# enlighten/assets/uic_qrc/images/devices. However, they also have to be
-# listed in devices.qrc.  They are then exposed through Qt through
+# enlighten/assets/uic_qrc/images/devices. However, they also have to be listed 
+# in devices.qrc.  They are then exposed through Qt through 
 # QtCore.QDirIterator.Subdirectories, which is iterated in this ctor.
 #
 # The final image is updated in EEPROMEditor.update_from_spec, using a pathname 

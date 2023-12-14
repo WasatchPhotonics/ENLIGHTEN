@@ -81,7 +81,6 @@ class EEPROMEditor(object):
         self.bt_copy                         = bt_copy
         self.clipboard                       = clipboard
         self.eeprom_writer                   = eeprom_writer
-        self.image_resources                 = image_resources
         self.lb_digest                       = lb_digest
         self.lb_product_image                = lb_product_image
         self.lb_serial                       = lb_serial
@@ -659,8 +658,8 @@ class EEPROMEditor(object):
 
         # update the big serial number and graphic atop Hardware Setup
         self.lb_serial.setText(self.eeprom.serial_number)
-        pathname = spec.get_image_pathname(self.image_resources)
-        if self.image_resources.contains(pathname):
+        pathname = spec.get_image_pathname()
+        if self.ctl.image_resources.contains(pathname):
             self.lb_product_image.setPixmap(QtGui.QPixmap(pathname))
 
         for name in self.checkBoxes:

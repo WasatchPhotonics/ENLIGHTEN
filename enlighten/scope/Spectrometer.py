@@ -173,10 +173,10 @@ class Spectrometer:
         if self.wp_model_info is not None:
             return self.wp_model_info.get_fwhm(unit, int(round(self.settings.eeprom.slit_size_um, 0)))
 
-    def get_image_pathname(self, resources):
-        default = ':/spectrometers/images/devices/stroker.png'
+    def get_image_pathname(self):
+        default = ':/spectrometers/images/devices/WP-785X-ILP.png'
 
-        if self.wp_model_info is None or resources is None:
+        if self.wp_model_info is None:
             log.debug("get_image_pathname: no wp_model_info, so default %s", default)
             return default
 
@@ -206,7 +206,8 @@ class Spectrometer:
 
             log.debug("get_image_pathname: likely [%s]", likely)
             pathname = ":/spectrometers/images/devices/%s.png" % likely
-            if resources.contains(pathname):
+
+            if self.image_resources.contains(pathname):
                 log.debug("get_image_pathname: likely %s", pathname)
                 return pathname
 
