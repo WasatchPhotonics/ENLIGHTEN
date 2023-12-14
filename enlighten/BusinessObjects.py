@@ -411,22 +411,7 @@ class BusinessObjects:
             reset_hardware_errors       = ctl.clear_response_errors)
 
         self.header("instantiating EEPROMEditor")
-        ctl.eeprom_editor = EEPROMEditor(
-            authentication              = ctl.authentication,
-            bt_copy                     = sfu.pushButton_eeprom_clipboard,
-            clipboard                   = ctl.clipboard,
-            eeprom_writer               = ctl.eeprom_writer,
-            image_resources             = ctl.image_resources,
-            lb_digest                   = sfu.label_eeprom_digest,
-            lb_product_image            = sfu.label_product_image,
-            lb_serial                   = sfu.label_serial,
-            multispec                   = ctl.multispec,
-            sfu                         = sfu,
-            stylesheets                 = ctl.stylesheets,
-            update_gain_and_offset_callback = ctl.update_gain_and_offset,
-            update_wavecal_callback     = ctl.update_wavecal,
-            horiz_roi                   = ctl.horiz_roi,
-            current_spectrometer        = ctl.current_spectrometer)
+        ctl.eeprom_editor = EEPROMEditor(ctl)
 
         self.header("instantiating RamanIntensityCorrection")
         ctl.raman_intensity_correction = RamanIntensityCorrection(ctl)

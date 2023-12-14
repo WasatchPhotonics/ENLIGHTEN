@@ -201,10 +201,8 @@ def is_rpi():
         result = nodename == "raspberrypi"
     except:
         pass
-    log.debug(f"is_rpi {result}")
     return result
 
 def use_pyside2():
     result = is_rpi() or "USE_PYSIDE_2" in os.environ
-    log.debug(f"use_pyside2 {result}")
     return result

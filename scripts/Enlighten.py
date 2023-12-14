@@ -42,10 +42,10 @@ signal.signal(signal.SIGINT, signal_handler)
 # This class encapsulates processing of command-line arguments, instantiates a
 # Controller then passes control to the Qt framework.
 #
-class EnlightenApplication(object):
+class EnlightenApplication:
 
     def __init__(self,testing=False):
-        self.app = QtWidgets.QApplication(["windows:dpiawareness=1"])
+        self.app = QtWidgets.QApplication()
 
         self.parser = self.create_parser()
         self.controller = None
@@ -98,14 +98,9 @@ class EnlightenApplication(object):
 
         return parser
 
-    ##
-    # Spawn a QApplication, instantiate a Controller (which will instantiate
-    # the Form within the QApplication), then call the QApplication's exec()
-    # method (which will tick QWidgets defined by the form in an event loop until
-    # something generates an exit signal).
     def run(self):
         # instantiate form (a QMainWindow with named "MainWindow")
-        # UI needs to be imported here in order to access qresources for the splash screen
+        # UI needs to be imported here in order to access QResources for the splash screen
         self.form = BasicWindow(title="ENLIGHTEN %s" % common.VERSION)
 
         pixmap = QPixmap(":/application/images/splash.png")

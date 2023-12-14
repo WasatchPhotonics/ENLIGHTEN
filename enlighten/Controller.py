@@ -56,7 +56,7 @@ else:
 
 log = logging.getLogger(__name__)
 
-class AcquiredReading(object):
+class AcquiredReading():
     """ Trivial class to eliminate a tuple during memory profiling. """
     def __init__(self, reading=None, progress=0, disconnect=False):
         self.reading    = reading
@@ -390,26 +390,17 @@ class Controller:
     # Multispec Shortcuts
     # ##########################################################################
 
+    ## @todo DEPRECATE
     def current_spectrometer(self):
-        if self.multispec is None:
-            log.error("current_spectrometer: multispec is None")
-            return None
-        spec = self.multispec.current_spectrometer()
-        if spec is None:
-            log.error("current_spectrometer: spectrometer is None")
-        return spec
+        return self.multispec.current_spectrometer() if self.multispec else None
 
     def settings(self):
         spec = self.current_spectrometer()
-        if spec is None:
-            return None
-        return spec.settings
+        return spec.settings if spec else None
 
     def app_state(self):
         spec = self.current_spectrometer()
-        if spec is None:
-            return None
-        return spec.app_state
+        return spec.app_state if spec else None
 
     # ##########################################################################
     #                                                                          #
@@ -664,10 +655,14 @@ class Controller:
 
         This is also called when connecting / disconnecting spectrometers.
 
+        It also helps to "re-hide" pyqtgraph curves which had been previously
+        hidden, but then erroneously re-show themselves when a curve is removed
+        from the chart.  (I'm assuming that pyqtgraph bug hasn't been fixed?)
+
         IMHO we should give self.bus_obj an iterable list of all business
         objects, all of which should extend EnlightenBusinessObject or whatever,
         with overridable methods update_visibility, post_init (to be fired after
-        all Business Objects are instantiated, etc.
+        all Business Objects are instantiated), etc.
         """
         for feature in [ self.accessory_control,
                          self.horiz_roi,
@@ -677,7 +672,7 @@ class Controller:
                          self.raman_shift_correction,
                          self.reference_feature,
                          self.baseline_correction,
-                         self.kia_feature]:
+                         self.kia_feature ]:
             feature.update_visibility()
 
     # ##########################################################################

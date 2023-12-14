@@ -2554,9 +2554,9 @@ QComboBox QListView
          <property name="geometry">
           <rect>
            <x>0</x>
-           <y>-1182</y>
+           <y>0</y>
            <width>1169</width>
-           <height>5262</height>
+           <height>5612</height>
           </rect>
          </property>
          <property name="sizePolicy">
@@ -2623,10 +2623,10 @@ QComboBox QListView
                  <string />
                 </property>
                 <property name="pixmap">
-                 <pixmap resource="devices.qrc">:/spectrometers/images/devices/stroker.png</pixmap>
+                 <pixmap resource="devices.qrc">:/spectrometers/images/devices/WP-785X-ILP.png</pixmap>
                 </property>
                 <property name="scaledContents">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
@@ -7486,7 +7486,7 @@ QComboBox QListView
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>1151</width>
+                    <width>402</width>
                     <height>1194</height>
                    </rect>
                   </property>
@@ -8418,7 +8418,7 @@ QComboBox QListView
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>669</width>
+              <width>562</width>
               <height>1365</height>
              </rect>
             </property>
@@ -11044,8 +11044,8 @@ QComboBox QListView
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>256</width>
-                  <height>790</height>
+                  <width>183</width>
+                  <height>628</height>
                  </rect>
                 </property>
                 <property name="sizePolicy">
@@ -11363,8 +11363,8 @@ QComboBox QListView
                                   <rect>
                                    <x>0</x>
                                    <y>0</y>
-                                   <width>222</width>
-                                   <height>388</height>
+                                   <width>190</width>
+                                   <height>210</height>
                                   </rect>
                                  </property>
                                  <property name="sizePolicy">
@@ -12801,8 +12801,8 @@ QComboBox QListView
                                  <rect>
                                   <x>0</x>
                                   <y>0</y>
-                                  <width>886</width>
-                                  <height>300</height>
+                                  <width>186</width>
+                                  <height>36</height>
                                  </rect>
                                 </property>
                                 <property name="wpClear" stdset="0">
@@ -14201,7 +14201,7 @@ p, li { white-space: pre-wrap; }
                 <x>0</x>
                 <y>0</y>
                 <width>240</width>
-                <height>2779</height>
+                <height>2809</height>
                </rect>
               </property>
               <property name="sizePolicy">
@@ -17629,8 +17629,31 @@ p, li { white-space: pre-wrap; }
                        <property name="wpGrad" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_137">
-                        <item>
+                       <layout class="QGridLayout" name="gridLayout_12" columnstretch="0,0" columnminimumwidth="0,0">
+                        <item row="1" column="1">
+                         <widget class="QCheckBox" name="checkBox_show_srm">
+                          <property name="text">
+                           <string>Show SRM Curve</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="1" column="0">
+                         <spacer name="horizontalSpacer_7">
+                          <property name="orientation">
+                           <enum>Qt::Horizontal</enum>
+                          </property>
+                          <property name="sizeType">
+                           <enum>QSizePolicy::Fixed</enum>
+                          </property>
+                          <property name="sizeHint" stdset="0">
+                           <size>
+                            <width>20</width>
+                            <height>20</height>
+                           </size>
+                          </property>
+                         </spacer>
+                        </item>
+                        <item row="0" column="0" colspan="2">
                          <widget class="QCheckBox" name="checkBox_raman_intensity_correction">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -17646,7 +17669,7 @@ p, li { white-space: pre-wrap; }
                           </property>
                          </widget>
                         </item>
-                        <item>
+                        <item row="2" column="0" colspan="2">
                          <widget class="QCheckBox" name="checkBox_richardson_lucy">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">

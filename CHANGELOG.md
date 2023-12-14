@@ -9,6 +9,8 @@
         - added battery to StatusBar
         - generalized PluginController.display_plugin_warning into GUI.msgbox_with_checkbox
         - simplified font sizes
+        - added X series png's
+        - fixed Hardware tab device image
     - moved to ctl
         - StatusBarFeature
         - ThumbnailWidget
@@ -19,6 +21,7 @@
         - ModelInfo
         - Marquee
         - FileManager
+        - EEPROMEditor
 - 2023-12-13 4.0.29
     - stopped clearing dark/refs when changing interpolation
     - RamanShiftCorrection tweaks (fixed width unit, obey ROI, show nm hint)

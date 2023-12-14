@@ -85,18 +85,18 @@ class ModelInfo(object):
         elif re.search('532.*er',     model): info = self.models["WP-532-ER"]
         elif re.search('532',         model): info = self.models["WP-532"]
         elif re.search('633',         model): info = self.models["WP-633"]
-        elif re.search('638x.*ic'     model): info = self.models["WP-638X-IC"]
-        elif re.search('638x.*ilc'    model): info = self.models["WP-638X-ILC"]
-        elif re.search('638x.*ilp'    model): info = self.models["WP-638X-ILP"]
+        elif re.search('638x.*ic',    model): info = self.models["WP-638X-IC"]
+        elif re.search('638x.*ilc',   model): info = self.models["WP-638X-ILC"]
+        elif re.search('638x.*ilp',   model): info = self.models["WP-638X-ILP"]
         elif re.search('638',         model): info = self.models["WP-638"]
-        elif re.search('785x.*ic'     model): info = self.models["WP-785X-IC"]
-        elif re.search('785x.*ilc'    model): info = self.models["WP-785X-ILC"]
-        elif re.search('785x.*ilp'    model): info = self.models["WP-785X-ILP"]
+        elif re.search('785x.*ic',    model): info = self.models["WP-785X-IC"]
+        elif re.search('785x.*ilc',   model): info = self.models["WP-785X-ILC"]
+        elif re.search('785x.*ilp',   model): info = self.models["WP-785X-ILP"]
         elif re.search('785.*er',     model): info = self.models["WP-785-ER"]
         elif re.search('785',         model): info = self.models["WP-785"]
-        elif re.search('830x.*ic'     model): info = self.models["WP-830X-IC"]
-        elif re.search('830x.*ilc'    model): info = self.models["WP-830X-ILC"]
-        elif re.search('830x.*ilp'    model): info = self.models["WP-830X-ILP"]
+        elif re.search('830x.*ic',    model): info = self.models["WP-830X-IC"]
+        elif re.search('830x.*ilc',   model): info = self.models["WP-830X-ILC"]
+        elif re.search('830x.*ilp',   model): info = self.models["WP-830X-ILP"]
         elif re.search('830xl',       model): info = self.models["WP-830XL"]
         elif re.search('830',         model): info = self.models["WP-830"]
         elif re.search('248',         model): info = self.models["WP-248"]
@@ -128,6 +128,13 @@ class WpModelInfo(object):
             color=None,
             image=None):
 
+        self.wavenumber_min = wavenumber_min
+        self.wavenumber_max = wavenumber_max
+        self.excitation = excitation
+        self.pixels = pixels
+        self.color = color
+        self.image = image if image is not None else name
+
         if wavenumber_min is not None:
             self.wavenumber_min = wavenumber_min
             wavelength_min = wasatch_utils.wavenumber_to_wavelength(excitation=excitation, wavenumber=wavenumber_min)
@@ -135,18 +142,14 @@ class WpModelInfo(object):
             self.wavenumber_max = wavenumber_max
             wavelength_max = wasatch_utils.wavenumber_to_wavelength(excitation=excitation, wavenumber=wavenumber_max)
 
-        self.excitation = excitation
         self.wavelength_min = wavelength_min
         self.wavelength_max = wavelength_max
-        self.pixels = pixels
-        self.color = color
-        self.image = image if image is not None else name
 
         if name is not None:
             self.name = name
         else:
             self.name = re.sub("_", "-", type(self).__name__)
-        # log.debug("WpModelInfo: instantiated %s", self.name)
+        log.debug("WpModelInfo: instantiated %s", self.name)
 
         self.has_excitation = excitation != 0
 
@@ -155,7 +158,7 @@ class WpModelInfo(object):
 
         if self.has_excitation and self.wavelength_min <= self.excitation:
             log.error(f"WpModelInfo: {self.name} can see {self.excitation} laser " + 
-                      f"from spectral range ({self.wavelength_min:.2f}, {self.wavelength_max:.2f})"
+                      f"from spectral range ({self.wavelength_min:.2f}, {self.wavelength_max:.2f})")
 
     def dump(self):
         log.debug("WpModelInfo:")
@@ -171,40 +174,61 @@ class WpModelInfo(object):
     def __str__(self):
         return "WpModelInfo { name %s, excitation %s, pixels %s, color %s, image %s }" % (self.name, self.excitation, self.pixels, self.color, self.image)
 
-class WP_UV_VIS   (WpModelInfo): def __init__(self): super(WP_UV_VIS,   self).__init__(wavelength_min= 280, wavelength_max= 950, color="#bdb427")
-class WP_VIS      (WpModelInfo): def __init__(self): super(WP_VIS,      self).__init__(wavelength_min= 400, wavelength_max= 800, color="#57a0c3")
-class WP_VIS_NIR  (WpModelInfo): def __init__(self): super(WP_VIS_NIR,  self).__init__(wavelength_min= 400, wavelength_max=1080, color="#325b93")
-class WP_NIR_1    (WpModelInfo): def __init__(self): super(WP_NIR_1,    self).__init__(wavelength_min= 400, wavelength_max=1080, color="#bdbfbc",                   pixels=512)
-
-class WP_248      (WpModelInfo): def __init__(self): super(WP_248,      self).__init__(wavelength_min= 249, wavelength_max= 268, color="#a32d90", excitation= 248)
-class WP_405      (WpModelInfo): def __init__(self): super(WP_405,      self).__init__(wavelength_min= 409, wavelength_max= 477, color="#8f47ae", excitation= 405)
-
-class WP_532X_IC  (WpModelInfo): def __init__(self): super(WP_532,      self).__init__(wavelength_min= 535, wavelength_max= 641, color="#009e51", excitation= 532, pixels=2048)
-class WP_532      (WpModelInfo): def __init__(self): super(WP_532,      self).__init__(wavelength_min= 535, wavelength_max= 641, color="#009e51", excitation= 532)
-class WP_532_ER   (WpModelInfo): def __init__(self): super(WP_532_ER,   self).__init__(wavelength_min= 539, wavelength_max= 690, color="#009e51", excitation= 532)
-
-class WP_633      (WpModelInfo): def __init__(self): super(WP_633,      self).__init__(wavelength_min= 643, wavelength_max= 747, color="#fd8e25", excitation= 633, image)
-
-class WP_638X_IC  (WpModelInfo): def __init__(self): super(WP_638X_IC,  self).__init__(wavelength_min= 535, wavelength_max= 641, color="#009e51", excitation= 638, pixels=2048)
-class WP_638X_ILC (WpModelInfo): def __init__(self): super(WP_638X_ILC, self).__init__(wavelength_min= 535, wavelength_max= 641, color="#009e51", excitation= 638, pixels=2048)
-class WP_638X_ILP (WpModelInfo): def __init__(self): super(WP_638X_ILP, self).__init__(wavelength_min= 535, wavelength_max= 641, color="#009e51", excitation= 638, pixels=2048)
-class WP_638      (WpModelInfo): def __init__(self): super(WP_638,      self).__init__(wavelength_min= 648, wavelength_max= 754, color="#fd8e25", excitation= 638, image="WP-633")
-
-class WP_785X_IC  (WpModelInfo): def __init__(self): super(WP_785X_IC,  self).__init__(wavelength_min= 535, wavelength_max= 641, color="#009e51", excitation= 785, pixels=2048)
-class WP_785X_ILC (WpModelInfo): def __init__(self): super(WP_785X_ILC, self).__init__(wavelength_min= 535, wavelength_max= 641, color="#009e51", excitation= 785, pixels=2048)
-class WP_785X_ILP (WpModelInfo): def __init__(self): super(WP_785X_ILP, self).__init__(wavelength_min= 535, wavelength_max= 641, color="#009e51", excitation= 785, pixels=2048)
-class WP_785      (WpModelInfo): def __init__(self): super(WP_785,      self).__init__(wavelength_min= 802, wavelength_max= 931, color="#d53242", excitation= 785)
-class WP_785_ER   (WpModelInfo): def __init__(self): super(WP_785_ER,   self).__init__(wavelength_min= 802, wavelength_max=1144, color="#d53242", excitation= 785, pixels=2048)
-
-class WP_830X_IC  (WpModelInfo): def __init__(self): super(WP_830X_IC,  self).__init__(wavelength_min= 535, wavelength_max= 641, color="#009e51", excitation= 830, pixels=2048)
-class WP_830X_ILC (WpModelInfo): def __init__(self): super(WP_830X_ILC, self).__init__(wavelength_min= 535, wavelength_max= 641, color="#009e51", excitation= 830, pixels=2048)
-class WP_830X_ILP (WpModelInfo): def __init__(self): super(WP_830X_ILP, self).__init__(wavelength_min= 535, wavelength_max= 641, color="#009e51", excitation= 830, pixels=2048)
-class WP_830      (WpModelInfo): def __init__(self): super(WP_830,      self).__init__(wavelength_min= 844, wavelength_max= 981, color="#666660", excitation= 830)
-class WP_830XL    (WpModelInfo): def __init__(self): super(WP_830XL,    self).__init__(wavenumber_min= 158, wavenumber_max=2017, color="#666660", excitation= 830)
-
-class WP_1064     (WpModelInfo): def __init__(self): super(WP_1064,     self).__init__(wavelength_min=1093, wavelength_max=1325, color="#cbc392", excitation=1064, pixels= 512)
-
-class SiG_633     (WpModelInfo): def __init__(self): super(SiG_633,     self).__init__(wavelength_min= 595, wavelength_max= 800, color="#da613e", excitation= 633, pixels=1952, image="SiG-633-FS")
-class SiG_785     (WpModelInfo): def __init__(self): super(SiG_785,     self).__init__(wavelength_min= 802, wavelength_max= 931, color="#d53242", excitation= 785, pixels=1952, image="SiG-785-FS")
-class SiG_830     (WpModelInfo): def __init__(self): super(SiG_830,     self).__init__(wavelength_min= 844, wavelength_max= 981, color="#666660", excitation= 830, pixels=1952, image="SiG-785-FS") # no 830 image yet
-class SiG_VIS     (WpModelInfo): def __init__(self): super(SiG_VIS,     self).__init__(wavelength_min= 400, wavelength_max= 800, color="#57a0c3",                  pixels=1952)
+class WP_UV_VIS   (WpModelInfo): 
+    def __init__(self): super(WP_UV_VIS,   self).__init__(wavelength_min= 280, wavelength_max= 950, color="#bdb427")
+class WP_VIS      (WpModelInfo): 
+    def __init__(self): super(WP_VIS,      self).__init__(wavelength_min= 400, wavelength_max= 800, color="#57a0c3")
+class WP_VIS_NIR  (WpModelInfo): 
+    def __init__(self): super(WP_VIS_NIR,  self).__init__(wavelength_min= 400, wavelength_max=1080, color="#325b93")
+class WP_NIR_1    (WpModelInfo): 
+    def __init__(self): super(WP_NIR_1,    self).__init__(wavelength_min= 400, wavelength_max=1080, color="#bdbfbc",                   pixels=512)
+class WP_248      (WpModelInfo): 
+    def __init__(self): super(WP_248,      self).__init__(wavelength_min= 249, wavelength_max= 268, color="#a32d90", excitation= 248)
+class WP_405      (WpModelInfo): 
+    def __init__(self): super(WP_405,      self).__init__(wavelength_min= 409, wavelength_max= 477, color="#8f47ae", excitation= 405)
+class WP_532X_IC  (WpModelInfo): 
+    def __init__(self): super(WP_532X_IC,  self).__init__(wavelength_min= 535, wavelength_max= 641, color="#009e51", excitation= 532, pixels=2048)
+class WP_532      (WpModelInfo): 
+    def __init__(self): super(WP_532,      self).__init__(wavelength_min= 535, wavelength_max= 641, color="#009e51", excitation= 532)
+class WP_532_ER   (WpModelInfo): 
+    def __init__(self): super(WP_532_ER,   self).__init__(wavelength_min= 539, wavelength_max= 690, color="#009e51", excitation= 532)
+class WP_633      (WpModelInfo): 
+    def __init__(self): super(WP_633,      self).__init__(wavelength_min= 643, wavelength_max= 747, color="#fd8e25", excitation= 633)
+class WP_638X_IC  (WpModelInfo): 
+    def __init__(self): super(WP_638X_IC,  self).__init__(wavelength_min= 535, wavelength_max= 641, color="#009e51", excitation= 638, pixels=2048)
+class WP_638X_ILC (WpModelInfo): 
+    def __init__(self): super(WP_638X_ILC, self).__init__(wavelength_min= 535, wavelength_max= 641, color="#009e51", excitation= 638, pixels=2048)
+class WP_638X_ILP (WpModelInfo): 
+    def __init__(self): super(WP_638X_ILP, self).__init__(wavelength_min= 535, wavelength_max= 641, color="#009e51", excitation= 638, pixels=2048)
+class WP_638      (WpModelInfo): 
+    def __init__(self): super(WP_638,      self).__init__(wavelength_min= 648, wavelength_max= 754, color="#fd8e25", excitation= 638, image="WP-633")
+class WP_785X_IC  (WpModelInfo): 
+    def __init__(self): super(WP_785X_IC,  self).__init__(wavelength_min= 535, wavelength_max= 641, color="#009e51", excitation= 785, pixels=2048)
+class WP_785X_ILC (WpModelInfo): 
+    def __init__(self): super(WP_785X_ILC, self).__init__(wavelength_min= 535, wavelength_max= 641, color="#009e51", excitation= 785, pixels=2048)
+class WP_785X_ILP (WpModelInfo): 
+    def __init__(self): super(WP_785X_ILP, self).__init__(wavelength_min= 535, wavelength_max= 641, color="#009e51", excitation= 785, pixels=2048)
+class WP_785      (WpModelInfo): 
+    def __init__(self): super(WP_785,      self).__init__(wavelength_min= 802, wavelength_max= 931, color="#d53242", excitation= 785)
+class WP_785_ER   (WpModelInfo): 
+    def __init__(self): super(WP_785_ER,   self).__init__(wavelength_min= 802, wavelength_max=1144, color="#d53242", excitation= 785, pixels=2048)
+class WP_830X_IC  (WpModelInfo): 
+    def __init__(self): super(WP_830X_IC,  self).__init__(wavelength_min= 535, wavelength_max= 641, color="#009e51", excitation= 830, pixels=2048)
+class WP_830X_ILC (WpModelInfo): 
+    def __init__(self): super(WP_830X_ILC, self).__init__(wavelength_min= 535, wavelength_max= 641, color="#009e51", excitation= 830, pixels=2048)
+class WP_830X_ILP (WpModelInfo): 
+    def __init__(self): super(WP_830X_ILP, self).__init__(wavelength_min= 535, wavelength_max= 641, color="#009e51", excitation= 830, pixels=2048)
+class WP_830      (WpModelInfo): 
+    def __init__(self): super(WP_830,      self).__init__(wavelength_min= 844, wavelength_max= 981, color="#666660", excitation= 830)
+class WP_830XL    (WpModelInfo): 
+    def __init__(self): super(WP_830XL,    self).__init__(wavenumber_min= 158, wavenumber_max=2017, color="#666660", excitation= 830)
+class WP_1064     (WpModelInfo): 
+    def __init__(self): super(WP_1064,     self).__init__(wavelength_min=1093, wavelength_max=1325, color="#cbc392", excitation=1064, pixels= 512)
+class SiG_633     (WpModelInfo): 
+    def __init__(self): super(SiG_633,     self).__init__(wavelength_min= 595, wavelength_max= 800, color="#da613e", excitation= 633, pixels=1952, image="SiG-633-FS")
+class SiG_785     (WpModelInfo): 
+    def __init__(self): super(SiG_785,     self).__init__(wavelength_min= 802, wavelength_max= 931, color="#d53242", excitation= 785, pixels=1952, image="SiG-785-FS")
+class SiG_830     (WpModelInfo): 
+    def __init__(self): super(SiG_830,     self).__init__(wavelength_min= 844, wavelength_max= 981, color="#666660", excitation= 830, pixels=1952, image="SiG-785-FS") # no 830 image yet
+class SiG_VIS     (WpModelInfo): 
+    def __init__(self): super(SiG_VIS,     self).__init__(wavelength_min= 400, wavelength_max= 800, color="#57a0c3",                  pixels=1952)

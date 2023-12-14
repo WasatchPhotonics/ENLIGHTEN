@@ -21,11 +21,17 @@ log = logging.getLogger(__name__)
 class ImageResources:
 
     def __init__(self):
+        log.debug("iterating subdirectories")
         self.resources = []
-        it = QtCore.QDirIterator(":", QtCore.QDirIterator.Subdirectories)
+
+        it = QtCore.QDirIterator(":", flags=QtCore.QDirIterator.Subdirectories)
         while it.hasNext():
-            self.resources.append(it.next())
+            pathname = it.next()
+            # log.debug(f"appending {pathname}")
+            self.resources.append(pathname)
+
         self.resources.sort()
+        log.debug(f"found {len(self.resources)} resources")
 
     def contains(self, name):
         if name is None:

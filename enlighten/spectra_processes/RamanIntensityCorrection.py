@@ -13,15 +13,22 @@ class RamanIntensityCorrection(object):
     
     def __init__(self, ctl):
         self.ctl = ctl
+        sfu = ctl.form.ui
         
-        self.cb_enable = ctl.form.ui.checkBox_raman_intensity_correction
+        self.cb_enable      = sfu.checkBox_raman_intensity_correction
+        self.cb_show_curve  = sfu.checkBox_show_srm
 
         self.supported           = False # show the checkbox because we have an SRM calibration
         self.allowed             = False # enable the checkbox because we're in Raman mode and we've taken a dark
         self.enabled             = False # checkbox is checked
         self.enable_when_allowed = False # checkbox was checked before we went unallowed / invisible for some reason
+        self.show_curve          = False
+        
+        self.curve = self.ctl.graph.add_curve("SRM", rehide=False, in_legend=False)
+        self.curve.setVisible(False)
 
         self.cb_enable.stateChanged.connect(self.enable_callback)
+        self.cb_enable.stateChanged.connect(self.show_callback)
 
         self.sync_gui()
 
@@ -64,14 +71,20 @@ class RamanIntensityCorrection(object):
         self.cb_enable.setEnabled(self.is_allowed())
 
         if self.supported and self.allowed:
+            self.curve.setVisible(self.show_curve)
             if self.enable_when_allowed:
                 self.cb_enable.setChecked(True)
         else:
             self.enabled = False
             self.cb_enable.setChecked(False)
+            self.curve.setVisible(False)
 
         self.sync_gui()
         
+    def show_callback(self):
+        self.show_curve = self.cb_show_curve.isChecked()
+        self.update_visibility()
+
     ## the user manually clicked the enable checkbox
     def enable_callback(self):
         self.enabled = self.cb_enable.isChecked()
@@ -116,11 +129,14 @@ class RamanIntensityCorrection(object):
             # probably a faster Numpy way to do this
             for i in range(len(pr.processed_cropped)):
                 pr.processed_cropped[i] *= factors[i + roi.start]
+            self.ctl.set_curve_data(self.curve, factors[roi.start:len(pr.processed_cropped)] * max(pr.processed_cropped))
         else:
             # note that this scales the entire spectrum, within and without the 
             # ROI, even though the factors are really only applicable/sensible/
             # defined within the ROI
+            self.ctl.marquee.error("Raman Intensity Correction should be performed with ROI enabled")
             pr.processed *= factors
+            self.ctl.set_curve_data(self.curve, factors * max(pr.processed))
 
         pr.raman_intensity_corrected = True
 

@@ -174,53 +174,32 @@ class Spectrometer:
             return self.wp_model_info.get_fwhm(unit, int(round(self.settings.eeprom.slit_size_um, 0)))
 
     def get_image_pathname(self):
-        default = ':/spectrometers/images/devices/WP-785X-ILP.png'
+
+        def make_pathname(model):
+            # this must correspond exactly to the paths specified in devices.rc 
+            # and iterated in ImageResources
+            return f":/spectrometers/images/devices/{model}.png"
+
+        pathname = make_pathname("WP-785X-ILP")
 
         if self.wp_model_info is None:
-            log.debug("get_image_pathname: no wp_model_info, so default %s", default)
-            return default
+            log.debug("get_image_pathname: no wp_model_info, so default")
+            return pathname
 
-        eeprom_model = self.settings.full_model()
-        log.debug("get_image_pathname: eeprom_model = [%s]", eeprom_model)
+        model = self.settings.full_model()
+        log.debug("get_image_pathname: eeprom_model = [%s]", model)
         log.debug("get_image_pathname: wp_model_info =")
         if self.wp_model_info is not None:
             self.wp_model_info.dump()
+            name = self.wp_model_info.name
+            pathname = make_pathname(name)
+            if self.ctl.image_resources.contains(pathname):
+                log.debug(f"get_image_pathname: found {pathname}")
+            else:
+                log.debug(f"get_image_pathname: not found: {pathname}")
 
-        # try to build up an exact match of NAME + COUPLING
-        if eeprom_model is not None:
-            likely = self.wp_model_info.name
-
-            # image files don't include -SR, so just add nothing for that case
-            if "-ER" in eeprom_model:
-                likely += "-ER"
-
-            if "-L" in eeprom_model:
-                likely += "-L"
-            elif "-F" in eeprom_model: # Freespace, not Fiber
-                likely += "-FS"
-            elif "-S" in eeprom_model: 
-                likely += "-SMA"
-
-            if "-OEM" in eeprom_model:
-                likely += "-OEM"
-
-            log.debug("get_image_pathname: likely [%s]", likely)
-            pathname = ":/spectrometers/images/devices/%s.png" % likely
-
-            if self.image_resources.contains(pathname):
-                log.debug("get_image_pathname: likely %s", pathname)
-                return pathname
-
-        # okay, then try to find NAME with any COUPLING
-        for coupling in [ 'SMA', 'FS', 'L' ]: 
-            pathname = ":/spectrometers/images/devices/%s-%s.png" % (self.wp_model_info.name, coupling)
-            if resources.contains(pathname):
-                log.debug("get_image_pathname: best %s is %s", self.wp_model_info.name, pathname)
-                return pathname
-            log.debug("get_image_pathname: not found: %s", pathname)
-
-        log.debug("get_image_pathname: gave up, so default %s", default)
-        return default
+        log.debug(f"returning {pathname}")
+        return pathname
 
     def is_acquisition_timeout(self):
 
