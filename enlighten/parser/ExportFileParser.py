@@ -194,6 +194,8 @@ class ExportFileParser:
                 settings          = em.settings,
                 processed_reading = em.processed_reading)
 
+            m.metadata = em.metadata
+
             # additional Measurement attributes
             if "Label" in em.metadata:
                 m.label = em.metadata["Label"]

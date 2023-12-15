@@ -7,6 +7,7 @@
 # $ python split-spectra.py /path/to/*.csv
 
 import re
+import os
 import sys
 import logging
 import argparse
@@ -17,6 +18,7 @@ from wasatch import applog
 parser = argparse.ArgumentParser(description="Split 'export' CSV into individual per-measurement CSV files")
 parser.add_argument("--integration-time-ms",    type=int,   help="only export meansurements with this integration time")
 parser.add_argument("--label",                  type=str,   help="only export spectra matching this label (raw, dark, processed etc)")
+parser.add_argument("--out-dir",                type=str,   help="output directory (default .)")
 (args, filenames) = parser.parse_known_args(sys.argv[1:])
 
 log = logging.getLogger(__name__)
@@ -59,6 +61,8 @@ for filename in filenames:
 
         # replace basename with label-NN
         m.basename = "%s-%03d" % (label, label_counts[label])
+        if args.out_dir:
+            m.basename = os.path.join(args.out_dir, m.basename)
 
         print("  extracting %s" % m.basename)
         m.save_csv_file_by_column(use_basename=True)
