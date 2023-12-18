@@ -36,46 +36,12 @@ log = logging.getLogger(__name__)
 class MeasurementFactory(object):
 
     def clear(self):
-        self.colors       = None
-        self.graph        = None
-        self.gui          = None
-        self.render_graph = None
-        self.render_curve = None
-        self.save_options = None
-        self.stylesheets  = None
-        self.measurements = None
-        self.observers    = set()
+        pass
 
-    def __init__(self,
-            ctl,
-            colors,
-            file_manager,
-            focus_listener,
-            graph,
-            plugin_graph,
-            gui,
-            render_graph,
-            render_curve,
-            save_options,
-            stylesheets):
-
+    def __init__(self, ctl):
         self.ctl = ctl
 
-        self.clear()
-
-        self.colors         = colors
-        self.file_manager   = file_manager
-        self.focus_listener = focus_listener
-        self.graph          = graph
-        self.gui            = gui
-        self.render_graph   = render_graph
-        self.render_curve   = render_curve
-        self.save_options   = save_options
-        self.stylesheets    = stylesheets
-        self.plugin_graph   = plugin_graph
-
-        # will receive post-construction
-        self.measurements = None    # backreference to Measurements 
+        self.observers = set()
 
     def register_observer(self, callback):
         self.observers.add(callback)
@@ -129,7 +95,7 @@ class MeasurementFactory(object):
             graph = self.ctl.graph
         else:
             log.debug(f"graph is plugin so sending plugin graph")
-            graph = self.plugin_graph()
+            graph = self.ctl.get_plugin_graph()
 
         measurement.thumbnail_widget = ThumbnailWidget(
             ctl             = self.ctl,
@@ -155,10 +121,10 @@ class MeasurementFactory(object):
             return
 
         # apply the spectrum to the curve
-        self.render_curve.setData(spectrum)
+        self.ctl.thumbnail_render_curve.setData(spectrum)
 
         # instantiate an exporter (could we re-use one for all thumbnails?)
-        exporter = pyqtgraph.exporters.ImageExporter(self.render_graph.plotItem)
+        exporter = pyqtgraph.exporters.ImageExporter(self.ctl.thumbnail_render_graph.plotItem)
 
         # configure the exporter
         exporter.params.param('width' ).sigValueChanged.disconnect()
@@ -220,7 +186,7 @@ class MeasurementFactory(object):
         if save:
             new.save()
 
-        self.measurements.add(new)
+        self.ctl.measurements.add(new)
 
         return new
 
@@ -228,7 +194,7 @@ class MeasurementFactory(object):
     # Deserialize from disk
     # ##########################################################################
 
-    ## Note that this always returns a LIST of Measurements, because the user 
+    ## Note that this always returns a LIST of Measurement, because the user 
     #  may select an Export file, or an appended Dash file, etc.
     def create_from_file(self, pathname, is_collapsed=False, generate_thumbnail=True):
         log.debug("create_from_file: pathname %s, is_collapsed %s", pathname, is_collapsed)
@@ -241,8 +207,8 @@ class MeasurementFactory(object):
             log.error("create_from_file: can't find %s", pathname)
             return
 
-        # Some files can hold many Measurements, so even though we're loading
-        # one file, we may return a list of Measurements
+        # Some files can hold many Measurement, so even though we're loading
+        # one file, we may return a list of Measurement
         measurements = None
 
         # peek in the file and guess at the format
@@ -406,7 +372,7 @@ class MeasurementFactory(object):
     def create_from_dash_file(self, pathname, encoding="utf-8"):
         parser = DashFileParser(
             pathname     = pathname,
-            save_options = self.save_options,
+            save_options = self.ctl.save_options,
             encoding     = encoding)
         return parser.parse()
 
@@ -414,14 +380,14 @@ class MeasurementFactory(object):
         parser = ColumnFileParser(
             self.ctl, # needs a ctl because it creates a Measurement
             pathname     = pathname,
-            save_options = self.save_options,
+            save_options = self.ctl.save_options,
             encoding     = encoding)
         return parser.parse()
 
     def create_from_export_file(self, pathname, encoding="utf-8"):
         parser = ExportFileParser(
             pathname     = pathname,
-            save_options = self.save_options,
+            save_options = self.ctl.save_options,
             encoding     = encoding)
         return parser.parse()
 
@@ -446,17 +412,17 @@ class MeasurementFactory(object):
     def create_from_spc_file(self, pathname):
         parser = SPCFileParser(
             pathname = pathname,
-            graph = self.graph)
+            graph = self.ctl.graph)
         return parser.parse()
 
     def create_from_simple_columnar_file(self, pathname, encoding="utf-8"):
         parser = TextFileParser(
             pathname = pathname,
-            graph = self.graph)
+            graph = self.ctl.graph)
         return parser.parse()
 
     def load_interpolated(self, settings):
-        pathname = self.file_manager.get_pathname("Select measurement")
+        pathname = self.ctl.file_manager.get_pathname("Select measurement")
         if pathname is None:
             return
 
@@ -478,14 +444,13 @@ class MeasurementFactory(object):
     #
     # @param d (Input) a dict containing either a single "Measurement" or a
     #                  "Measurements" list
-    # @returns a list of Measurements (even if only one), or none if invalid input
+    # @returns a list of Measurement (even if only one), or none if invalid input
     def create_from_dict(self, d):
         measurements = []
 
         try:
             if "Measurements" in d:
                 for m_data in d["Measurements"]:
-                    log.debug("instantiating Measurement(s) from dict(s)")
                     m = Measurement(self.ctl, d=m_data)
                     if m is not None:
                         measurments.append(m)
@@ -498,5 +463,3 @@ class MeasurementFactory(object):
 
         if len(measurements) > 0:
             return measurements
-        else:
-            log.debug("create_from_dict: no measurements created")

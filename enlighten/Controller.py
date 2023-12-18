@@ -1031,6 +1031,7 @@ class Controller:
         self.thumbnail_render_graph = pyqtgraph.PlotWidget(name="Measurement Thumbnail Renderer")
 
         # this is a fake curve (trace) on the chart
+        # TODO: move to Measurement F
         data = list(range(1024, 1638)) # MZ: ???
         self.thumbnail_render_curve = self.thumbnail_render_graph.plot(
             data,
@@ -2340,7 +2341,7 @@ class Controller:
 
         spec.device.change_setting("reset_fpga", None)
 
-    def get_plugin_graph(self) -> Graph:
+    def get_plugin_graph(self):
         """
         Check if the current plugin has a graph and return it otherwise return the main graph
         """

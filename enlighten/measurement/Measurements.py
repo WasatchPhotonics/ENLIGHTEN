@@ -44,12 +44,6 @@ class Measurements:
 
         self.measurements = []
 
-        self.save_options = self.ctl.measurement_factory.save_options
-
-        # give Factory a handle to self, both for back-references and for count()
-        # SB: this is bad
-        self.ctl.measurement_factory.measurements = self
-
         self.is_collapsed = False
         self.insert_top = True
 
@@ -170,7 +164,7 @@ class Measurements:
         # if we're reprocessing loaded measurements, don't bother creating 
         # thumbnails on instantiation; we'll do that after re-processing the
         # spectra
-        generate_thumbnail = not self.save_options.load_raw()
+        generate_thumbnail = not self.ctl.save_options.load_raw()
 
         log.debug("create_from_file: calling MeasurementFactory.create_from_file with %s", pathname)
         measurements = self.ctl.measurement_factory.create_from_file(
@@ -186,7 +180,7 @@ class Measurements:
             log.debug("create_from_file: completing new measurement")
 
             # reprocess if requested
-            if self.save_options.load_raw():
+            if self.ctl.save_options.load_raw():
 
                 log.debug("reprocessing measurement %s", m.measurement_id)
 
@@ -352,9 +346,9 @@ class Measurements:
         if filename is None:
             now = datetime.datetime.now()
 
-            default_filename = f"{self.save_options.prefix()}-" if self.save_options.has_prefix() else "Session-"
+            default_filename = f"{self.ctl.save_options.prefix()}-" if self.ctl.save_options.has_prefix() else "Session-"
             default_filename += now.strftime("%Y%m%d-%H%M%S")
-            default_filename += f"-{self.save_options.suffix()}" if self.save_options.has_suffix() else ""
+            default_filename += f"-{self.ctl.save_options.suffix()}" if self.ctl.save_options.has_suffix() else ""
 
             default_filename = self.measurements[-1].expand_template(default_filename)
 
@@ -378,17 +372,17 @@ class Measurements:
         directory = common.get_default_data_dir()
 
         # doesn't use the dict
-        if self.save_options.save_csv():
+        if self.ctl.save_options.save_csv():
             self.export_session_csv(directory, filename, visible_only=visible_only)
 
         # cache export dictionary so we can re-use it between JSON and ExternalAPI
-        if self.save_options.save_json() or len(self.observers["export"]) > 0:
+        if self.ctl.save_options.save_json() or len(self.observers["export"]) > 0:
             export = self.generate_export_dict(visible_only=visible_only)
 
-        if self.save_options.save_json():
+        if self.ctl.save_options.save_json():
             self.export_session_json(directory, filename, export)
 
-        if self.save_options.save_spc():
+        if self.ctl.save_options.save_spc():
             self.export_session_spc(directory, filename, visible_only=visible_only)
 
         for callback in self.observers["export"]:
@@ -476,7 +470,7 @@ class Measurements:
             filename += ".csv"
         pathname = os.path.join(directory, filename)
 
-        order = "row" if self.save_options.save_by_row() else "column"
+        order = "row" if self.ctl.save_options.save_by_row() else "column"
 
         if visible_only:
             export_measurements = [ m for m in self.measurements if m.is_displayed() ]
@@ -581,22 +575,22 @@ class Measurements:
 
         # count x-axis headers (px, wl)
         x_headers = []
-        if self.save_options.save_pixel():
+        if self.ctl.save_options.save_pixel():
             x_headers.append("Pixel")
-        if self.save_options.save_wavelength():
+        if self.ctl.save_options.save_wavelength():
             x_headers.append("Wavelength")
-        if self.save_options.save_wavenumber():
+        if self.ctl.save_options.save_wavenumber():
             x_headers.append("Wavenumber")
 
         # count ProcessedReading subspectra headers (pr, rw, dk)
         pr_headers = []
-        if self.save_options.save_processed():
+        if self.ctl.save_options.save_processed():
             pr_headers.append("Processed")
-        if self.save_options.save_raw():
+        if self.ctl.save_options.save_raw():
             pr_headers.append("Raw")
-        if self.save_options.save_dark():
+        if self.ctl.save_options.save_dark():
             pr_headers.append("Dark")
-        if self.save_options.save_reference():
+        if self.ctl.save_options.save_reference():
             pr_headers.append("Reference")
 
         # @todo: it would be cool if plugins could add their own subspectra
@@ -654,7 +648,7 @@ class Measurements:
                 row.extend(BLANK * (len(settingss) * len(x_headers) - 1))
 
                 # now output the metadata atop the data columns
-                if self.save_options.save_collated():
+                if self.ctl.save_options.save_collated():
                     for header in pr_headers:
                         row.extend(BLANK) # for the subspectrum name
                         # now re-write the value above every measurement for this subspectrum
@@ -693,7 +687,7 @@ class Measurements:
             # other consumers.
             row.append(settings.eeprom.serial_number)
             row.extend(BLANK * (len(x_headers) - 1))
-        if self.save_options.save_collated():
+        if self.ctl.save_options.save_collated():
             for header in pr_headers:
                 row.append(header)
                 row.extend(BLANK * len(export_measurements))
@@ -721,7 +715,7 @@ class Measurements:
         for settings in settingss:
             for header in x_headers:
                 row.append(header)
-        if self.save_options.save_collated():
+        if self.ctl.save_options.save_collated():
             for header in pr_headers:
                 row.extend(BLANK)
                 for m in export_measurements:
@@ -788,8 +782,7 @@ class Measurements:
 
             return '%.*f' % (use_prec, value)
 
-        interp = self.save_options.interp
-        if interp is not None and interp.enabled:
+        if self.ctl.interp.enabled:
 
             #####################################################################           
             # Export Interpolated (you are here)
@@ -801,7 +794,7 @@ class Measurements:
             max_roi_end = float("-inf")
             min_roi_start = float("inf")
             for m in export_measurements:
-                ipr = interp.interpolate_processed_reading(
+                ipr = self.ctl.interp.interpolate_processed_reading(
                     m.processed_reading, 
                     wavelengths=m.settings.wavelengths, 
                     wavenumbers=m.settings.wavenumbers, 
@@ -824,7 +817,7 @@ class Measurements:
                 for settings in settingss:
                     for header in x_headers:
                         row.append(get_x_header_value(ipr.wavelengths, ipr.wavenumbers, header, pixel))
-                if self.save_options.save_collated():
+                if self.ctl.save_options.save_collated():
                     for header in pr_headers:
                         row.extend(BLANK)
                         for m in export_measurements:
@@ -855,7 +848,7 @@ class Measurements:
                             row.append(get_x_header_value(settings.wavelengths, settings.wavenumbers, header, pixel))
                     else:
                         row.extend(BLANK * len(x_headers))
-                if self.save_options.save_collated():
+                if self.ctl.save_options.save_collated():
                     for header in pr_headers:
                         row.extend(BLANK)
                         for m in export_measurements:
@@ -901,15 +894,15 @@ class Measurements:
         # continue appending to the current open row-ordered file -- this 
         # is currently stored as an instance attribute in the SaveOptions
         # singleton, meaning it will get trampled in the row-ordered export.
-        save_line_number = self.save_options.line_number
-        self.save_options.line_number = 0
+        save_line_number = self.ctl.save_options.line_number
+        self.ctl.save_options.line_number = 0
 
         for m in export_measurements:
             if visible_only and not m.is_displayed():
                 continue
             m.write_x_axis_lines(csv_writer)
             m.write_processed_reading_lines(csv_writer)
-            self.save_options.line_number += 1
+            self.ctl.save_options.line_number += 1
 
         # restore the saved line number
-        self.save_options.line_number = save_line_number
+        self.ctl.save_options.line_number = save_line_number

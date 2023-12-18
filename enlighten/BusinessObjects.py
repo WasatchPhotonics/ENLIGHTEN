@@ -274,41 +274,16 @@ class BusinessObjects:
         ctl.save_options = SaveOptions(ctl)
 
         self.header("instantiating MeasurementFactory")
-        ctl.measurement_factory = MeasurementFactory(
-            ctl,
-            colors                      = ctl.colors,
-            file_manager                = ctl.file_manager,
-            focus_listener              = ctl.focus_listener,
-            graph                       = ctl.graph,
-            plugin_graph                = ctl.get_plugin_graph,
-            gui                         = ctl.gui,
-            render_curve                = ctl.thumbnail_render_curve,
-            render_graph                = ctl.thumbnail_render_graph,
-            save_options                = ctl.save_options,
-            stylesheets                 = ctl.stylesheets)
+        ctl.measurement_factory = MeasurementFactory(ctl)
 
         self.header("instantiating Measurements")
         ctl.measurements = Measurements(ctl)
 
         self.header("instantiating Authentication")
-        ctl.authentication = Authentication(
-            gui                         = ctl.gui,
-            marquee                     = ctl.marquee,
-            parent                      = ctl.form,
-
-            button_login                = sfu.pushButton_admin_login,
-            combo_view                  = sfu.comboBox_view,
-
-            oem_widgets                 = [ sfu.pushButton_write_eeprom, sfu.pushButton_importEEPROM, sfu.pushButton_exportEEPROM, sfu.pushButton_restore_eeprom, sfu.pushButton_reset_fpga ],
-            advanced_widgets            = [ sfu.tabWidget_advanced_features ])
+        ctl.authentication = Authentication(ctl)
 
         self.header("instantiating EEPROMWriter")
-        ctl.eeprom_writer = EEPROMWriter(
-            authentication              = ctl.authentication,
-            button_save                 = sfu.pushButton_write_eeprom,
-            marquee                     = ctl.marquee,
-            multispec                   = ctl.multispec,
-            reset_hardware_errors       = ctl.clear_response_errors)
+        ctl.eeprom_writer = EEPROMWriter(ctl)
 
         self.header("instantiating EEPROMEditor")
         ctl.eeprom_editor = EEPROMEditor(ctl)

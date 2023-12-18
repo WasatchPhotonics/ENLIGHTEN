@@ -2,15 +2,20 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
-- 2023-??-?? 4.0.30
-    - File I/O
-        - optionally Export only displayed traces
+- 2023-??-?? 4.0.31
+    - retain more metadata in split-spectra
+    - moved to ctl
+        - Authentication
+        - EEPROMWriter
+        - MeasurementFactory
+- 2023-12-14 4.0.30
     - GUI
         - added battery to StatusBar
         - generalized PluginController.display_plugin_warning into GUI.msgbox_with_checkbox
         - simplified font sizes
         - added X series png's
         - fixed Hardware tab device image
+        - optionally Export only displayed traces
     - moved to ctl
         - AbsorbanceFeature
         - Clipboard

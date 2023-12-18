@@ -384,7 +384,8 @@ class Measurement:
         self.settings = SpectrometerSettings(d=wasatch_utils.dict_get_norm(d, "SpectrometerSettings"))
 
         # ProcessedReading
-        self.processed_reading = ProcessedReading(d=wasatch_utils.dict_get_norm(d, ["ProcessedReading", "Spectrum", "Spectra"]))
+        pr_d = wasatch_utils.dict_get_norm(d, ["ProcessedReading", "Spectrum", "Spectra"])
+        self.processed_reading = ProcessedReading(d=pr_d)
 
         # how/where to do this properly?
         if len(self.processed_reading.processed) < len(self.settings.wavelengths):
@@ -950,9 +951,8 @@ class Measurement:
         cropped = roi is not None and pr.is_cropped()
 
         # interpolation
-        interp = self.ctl.save_options.interp if (self.ctl and self.ctl.save_options) else None
-        if interp is not None and interp.enabled:
-            ipr = interp.interpolate_processed_reading(pr, wavelengths=wavelengths, wavenumbers=wavenumbers, settings=self.settings)
+        if self.ctl.interp.enabled:
+            ipr = self.ctl.interp.interpolate_processed_reading(pr, wavelengths=wavelengths, wavenumbers=wavenumbers, settings=self.settings)
             if ipr is not None:
                 wavelengths = ipr.wavelengths
                 wavenumbers = ipr.wavenumbers
@@ -979,7 +979,7 @@ class Measurement:
 
             if not cropped:
                 sheet_spectrum.write    (row, 3, float(pr.processed [pixel]), style)
-            elif interp.enabled:
+            elif self.ctl.interp.enabled:
                 sheet_spectrum.write    (row, 3, float(pr.processed_cropped[pixel]), style)
             elif roi.contains(pixel):
                 sheet_spectrum.write    (row, 3, float(pr.processed_cropped[pixel - roi.start]), style)
@@ -1054,9 +1054,8 @@ class Measurement:
 
         # interpolation
         ipr = None
-        interp = self.ctl.save_options.interp if (self.ctl and self.ctl.save_options) else None
-        if interp is not None and interp.enabled:
-            ipr = interp.interpolate_processed_reading(pr, wavelengths=self.settings.wavelengths, wavenumbers=self.settings.wavenumbers, settings=self.settings)
+        if self.ctl.interp.enabled:
+            ipr = self.ctl.interp.interpolate_processed_reading(pr, wavelengths=self.settings.wavelengths, wavenumbers=self.settings.wavenumbers, settings=self.settings)
             if ipr is not None:
                 pixels = ipr.pixels
                 pr = ipr.processed_reading # note this includes processed, raw, dark, reference etc
@@ -1228,9 +1227,8 @@ class Measurement:
         cropped = roi is not None and pr.is_cropped()
 
         # interpolation
-        interp = self.ctl.save_options.interp if (self.ctl and self.ctl.save_options) else None
-        if interp is not None and interp.enabled:
-            ipr = interp.interpolate_processed_reading(pr, wavelengths=wavelengths, wavenumbers=wavenumbers, settings=self.settings)
+        if self.ctl.interp.enabled:
+            ipr = self.ctl.interp.interpolate_processed_reading(pr, wavelengths=wavelengths, wavenumbers=wavenumbers, settings=self.settings)
             if ipr is not None:
                 wavelengths = ipr.wavelengths
                 wavenumbers = ipr.wavenumbers
@@ -1301,7 +1299,7 @@ class Measurement:
                     if self.ctl.save_options.save_processed():
                         if not cropped:
                             values.append(formatted(precision, pr.processed, pixel))
-                        elif interp.enabled:
+                        elif self.ctl.interp.enabled:
                             values.append(formatted(precision, pr.processed_cropped, pixel))
                         elif roi.contains(pixel):
                             values.append(formatted(precision, pr.processed_cropped, pixel - roi.start))
