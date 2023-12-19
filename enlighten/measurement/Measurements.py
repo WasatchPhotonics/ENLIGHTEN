@@ -735,12 +735,17 @@ class Measurements:
         pr_headers = [ s.lower() for s in pr_headers ]
 
         def get_x_header_value(wavelengths, wavenumbers, header, pixel):
+            result = ""
             if header == "pixel":
-                return pixel
+                result = str(pixel)
             elif header == "wavelength":
-                return ('%.2f' % wavelengths[pixel]) if (wavelengths is not None and pixel < len(wavelengths)) else ""
+                if wavelengths is not None and pixel < len(wavelengths):
+                    result = f"{wavelengths[pixel]:.2f}"
             elif header == "wavenumber":
-                return ('%.2f' % wavenumbers[pixel]) if (wavenumbers is not None and pixel < len(wavenumbers)) else ""
+                if wavenumbers is not None and pixel < len(wavenumbers):
+                    result = f"{wavenumbers[pixel]:.2f}"
+            log.debug(f"get_x_header_value: header {header}, pixel {pixel}, result {result}")
+            return result
 
         def get_pr_header_value(m, header, pixel, pr=None):
             if pr is None:
@@ -751,6 +756,7 @@ class Measurements:
             a = None
 
             if header == "processed":
+                # handle ROI on processed (not others?)
                 if not pr.is_cropped():
                     a = pr.processed
                 else:
@@ -784,13 +790,16 @@ class Measurements:
 
         if self.ctl.interp.enabled:
 
+            log.debug(f"export_by_column: interpolation enabled: {self.ctl.interp}")
+
             #####################################################################           
             # Export Interpolated (you are here)
             #####################################################################           
 
             # Interpolate each Measurement to an InterpolatedProcessedReading.
-            # Keep handle to last IPR, as we can use it for the "global" 
-            # pixel, wavelength and wavenumber axes.
+            # Keep handle to last IPR, as we can use it for the "global" pixel, 
+            # wavelength and wavenumber axes.
+
             max_roi_end = float("-inf")
             min_roi_start = float("inf")
             for m in export_measurements:
@@ -800,19 +809,18 @@ class Measurements:
                     wavenumbers=m.settings.wavenumbers, 
                     settings=m.settings)
                 if ipr is None:
-                    log.error("failed export due to interpolation error")
+                    self.ctl.marquee.error("export failed due to interpolation error")
+                    return
+                m.ipr = ipr
+
                 if m.roi_active:
                     roi = m.settings.eeprom.get_horizontal_roi()
                     min_roi_start = min(min_roi_start, int(roi.start))
                     max_roi_end = max(max_roi_end, int(roi.end))
-                m.ipr = ipr
 
-            if max_roi_end != float("-inf") and min_roi_start != float("inf"):
-                px_range = range(min_roi_start, max_roi_end)
-            else:
-                px_range = range(ipr.pixels)
+            log.debug(f"export_by_column: min_roi_start {min_roi_start}, max_roi_end {max_roi_end}")
 
-            for pixel in px_range:
+            for pixel in range(ipr.pixels):
                 row = []
                 for settings in settingss:
                     for header in x_headers:

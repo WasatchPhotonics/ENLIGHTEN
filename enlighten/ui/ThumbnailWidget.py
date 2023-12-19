@@ -459,11 +459,13 @@ class ThumbnailWidget(QtWidgets.QFrame):
         # take axis unit from Graph, then load axis values from Measurement
         if self.graph.current_x_axis == common.Axes.WAVELENGTHS:
             log.debug("axis is wavelengths so getting settings wavelengths")
-            x_axis = self.measurement.settings.wavelengths
+            # x_axis = self.measurement.settings.wavelengths
+            x_axis = self.measurement.processed_reading.get_wavelengths()
             log.debug(f"wavelengths len is {len(x_axis)}")
         elif self.graph.current_x_axis == common.Axes.WAVENUMBERS:
             log.debug("axis is waveunmbers so getting settings wavenumbers")
-            x_axis = self.measurement.settings.wavenumbers
+            # x_axis = self.measurement.settings.wavenumbers
+            x_axis = self.measurement.processed_reading.get_wavenumbers()
         elif first_pixel is None:
             log.debug("generating from first pixel")
             x_axis = list(range(pixels))
@@ -484,12 +486,13 @@ class ThumbnailWidget(QtWidgets.QFrame):
 
         log.debug("add_curve_to_graph: generated x_axis of %d elements (%.2f to %.2f)", len(x_axis), x_axis[0], x_axis[-1])
 
-        spectrum = self.measurement.processed_reading.processed
-        if self.measurement.processed_reading.is_cropped():
-            roi = self.measurement.settings.eeprom.get_horizontal_roi()
-            if roi is not None and self.ctl.horiz_roi is not None:
-                spectrum = self.measurement.processed_reading.processed_cropped
-                x_axis = self.ctl.horiz_roi.crop(x_axis, roi=roi)
+        spectrum = self.measurement.processed_reading.get_processed()
+        if False: # MZ: don't think we need this now?
+            if self.measurement.processed_reading.is_cropped():
+                roi = self.measurement.settings.eeprom.get_horizontal_roi()
+                if roi is not None and self.ctl.horiz_roi is not None:
+                    spectrum = self.measurement.processed_reading.processed_cropped
+                    x_axis = self.ctl.horiz_roi.crop(x_axis, roi=roi)
 
         # use named color if found in label
         color = self.selected_color

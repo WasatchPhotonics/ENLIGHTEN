@@ -1783,7 +1783,7 @@ class Controller:
         # associate the "at creation" x-axis and some of this other setup?
         #
         # Currently, this is where "recordable_dark" is snapped
-        pr = ProcessedReading(reading)
+        pr = ProcessedReading(reading, settings=settings)
 
         ########################################################################
         # Saturation Check
@@ -1813,8 +1813,9 @@ class Controller:
 
         # This should be done before any processing that involves multiple
         # pixels, e.g. offset, boxcar, baseline correction, or Richardson-Lucy.
+        # It should be done BEFORE interpolation.
         log.debug("process_reading: calling horiz_roi.process")
-        self.horiz_roi.process(pr, settings)
+        self.horiz_roi.process(pr)
 
         ########################################################################
         # Reference
@@ -1870,12 +1871,10 @@ class Controller:
             # baseline correction
             ####################################################################
 
-            # Obviously baseline correction would benefit from ROI cropping,
-            # as would boxcar, Offset, Raman ID etc, so add a
-            # "processed_cropped" attribute for use downstream.
             self.baseline_correction.process(pr, spec)
 
             # on 2020-05-19 Deiter asked this to be moved before cropping
+            # (yet clearly we haven't...)
             if not self.page_nav.using_reference():
                 self.richardson_lucy.process(pr, spec)
 
@@ -1886,8 +1885,15 @@ class Controller:
         # Boxcar Smoothing
         ########################################################################
 
-        # Do this last, so it doesn't screw anything else up.
+        # One could argue whether boxcar should be before or after interpolation
         self.boxcar.process(pr, spec)
+
+        ########################################################################
+        # Interpolation
+        ########################################################################
+
+        if self.interp.enabled:
+            self.interp.process(pr)
 
         ########################################################################
         # Plugins
@@ -1904,7 +1910,7 @@ class Controller:
             self.plugin_controller.process_reading(pr, settings, spec)
 
         ########################################################################
-        # Graph Post-Processed Spectrum
+        # Graph 
         ########################################################################
 
         if spec is None:
@@ -1917,53 +1923,12 @@ class Controller:
         else:
             graphed = False
             if pr.has_processed():
-
-                # @todo needs updated to support DetectorRegions: multiple curves, 
-                #       multiple wavecals...unsure how to handle interpolation.
-                #
-                #       Should we treat each DetectorROI as a separate "spectrometer"
-                #       of sorts?  Probably not.  Should we send the pre-split 
-                #       sub-spectra back as separate ROIs?  Not sure.  They really
-                #       are "one reading"...for now, split the spectra into different
-                #       graphs via plug-in chart?
-                #
-                #       Two questions: (1) what to do about ONE DetectorROI, and 
-                #       (2) what to do about TWO+ DetectorROI.
-                #
-                #       1. Treat as starting with pixel 0.  Use configured full-detector
-                #          wavecal, cropping wavelengths[] array using DetectorROI.x0/x1.
-                #
-                #       2. Each DetectorROI Will need EEPROM storage for:
-                #          numRegions (1 byte)
-                #          y0, y1, x0, x1 (8 bytes)
-                #          wavecal C0-3 (16 bytes) 
-                #          = 2 EEPROM pages (6, 7)?
-                #
-                if self.interp.enabled and not self.graph.in_pixels():
-                    ipr = self.interp.interpolate_processed_reading(pr, settings=settings)
-                    if ipr is not None:
-                        if self.graph.in_wavelengths():
-                            graphed = self.set_curve_data(spec.curve, x=ipr.wavelengths, y=ipr.processed_reading.get_processed(), label="process_reading[interp:nm]")
-                        elif self.graph.in_wavenumbers():
-                            graphed = self.set_curve_data(spec.curve, x=ipr.wavenumbers, y=ipr.processed_reading.get_processed(), label="process_reading[interp:cm]")
-                        else:
-                            log.error("process_reading: impossible graph axis: %s", self.graph.get_x_axis_unit())
-                    else:
-                        self.marquee.error("Interpolation error. Are your interp values right?")
-                        log.error("process_reading: error generating interpolated graph curve")
+                if self.graph.in_wavelengths():
+                    graphed = self.set_curve_data(spec.curve, x=pr.get_wavelengths(), y=pr.get_processed(), label="nm")
+                elif self.graph.in_wavenumbers():
+                    graphed = self.set_curve_data(spec.curve, x=pr.get_wavenumbers(), y=pr.get_processed(), label="cm")
                 else:
-                    cropped = pr.is_cropped()
-                    log.debug(f"process_reading: graphing non-interpolated data (cropped = {cropped})")
-                    x_axis = self.generate_x_axis(settings=spec.settings, cropped=cropped)
-                    if x_axis is None:
-                        # this can happen for instance if we have both Raman and
-                        # non-Raman spectrometers connected, and we switch to
-                        # wavenumber axis
-                        log.error(f"process_reading: unable to generate x-axis of non-interpolated (cropped = {cropped})?")
-                    else:
-                        # this is where most spectra is graphed
-                        log.debug(f"process_reading: x_axis of {len(x_axis)} points (cropped {cropped}) is {x_axis[:3]} .. {x_axis[-3:]}") 
-                        graphed = self.set_curve_data(spec.curve, x=x_axis, y=pr.get_processed(), label="process_reading[non-interp]")
+                    graphed = self.set_curve_data(spec.curve, x=[], y=pr.get_processed(), label="px")
 
             if not graphed:
                 # This can happen in transmission or absorbance mode before a reference
