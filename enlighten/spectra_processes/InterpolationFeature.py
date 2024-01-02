@@ -152,104 +152,77 @@ class InterpolationFeature(object):
             log.error("Interpolation requires a ProcessedReading")
             return 
 
-        if pr.interpolated:
-            log.error("ProcessedReading already interpolated?!")
-            return
-
-        wavelengths = pr.get_wavelengths()
-        wavenumbers = pr.get_wavenumbers()
-
-        if wavelengths is None and wavenumbers is None:
-            log.error("Wavelengths and wavenumbers were none, returning none.")
-            return
-
         if not (self.use_wavelengths or self.use_wavenumbers):
             log.error("Using neither wavelengths nor wavenumbers, returning none.")
             return 
 
+        wavelengths = pr.get_wavelengths()
+        wavenumbers = pr.get_wavenumbers()
+
         log.debug("interpolating processed reading")
 
-        ipr = ProcessedReading()
+        interpolated = ProcessedReading()
         old_axis = None
 
         if self.use_wavelengths:
-            ipr.wavelengths = self.new_axis
+            if wavelengths is None:
+                log.error("Missing required wavelengths")
+                return
+
+            interpolated.wavelengths = self.new_axis
             old_axis = wavelengths
 
-            YOU ARE HERE
-
-            # generate wavenumbers if we can
+            # generate corresponding wavenumbers if we can
             excitation = self.generate_excitation(wavelengths, wavenumbers, pr.settings)
-            if excitation is not None:
-                ipr.wavenumbers = wasatch_utils.generate_wavenumbers(
-                    excitation  = excitation, 
-                    wavelengths = ipr.wavelengths))
+            if excitation:
+                interpolated.wavenumbers = wasatch_utils.generate_wavenumbers(excitation=excitation, wavelengths=interpolated.wavelengths)
 
         elif self.use_wavenumbers:
-            ipr.set_wavenumbers(self.new_axis)
+            if wavenumbers is None:
+                log.error("Missing required wavenumbers")
+                return
+
+            interpolated.wavenumbers = self.new_axis
             old_axis = wavenumbers
 
-            # generate wavelengths if we can
-            excitation = self.generate_excitation(wavelengths, wavenumbers, settings)
+            # generate corresponding wavelengths if we can
+            excitation = self.generate_excitation(wavelengths, wavenumbers, pr.settings)
             if excitation is not None:
-                ipr.set_wavelengths(wasatch_utils.generate_wavelengths_from_wavenumbers(
-                    excitation  = excitation, 
-                    wavenumbers = ipr.wavenumbers))
+                interpolated.wavelengths = wasatch_utils.generate_wavelengths_from_wavenumbers(excitation=excitation, wavenumbers=interpolated.wavenumbers)
 
         if old_axis is None:
             log.error("Old axis was none, returning none.")
             return None
 
-        # processed will include ROI
         processed = pr.get_processed()
         if processed is not None:
-            ipr.processed_reading.processed = np.interp(self.new_axis, old_axis, processed)
+            interpolated.processed = np.interp(self.new_axis, old_axis, processed)
 
         raw = pr.get_raw()
         if raw is not None:
             if len(raw) == len(old_axis):
-                ipr.processed_reading.raw = np.interp(self.new_axis, old_axis, raw)
+                interpolated.raw = np.interp(self.new_axis, old_axis, raw)
             else:
-                log.error(f"ipr: len(old_axis) {len(old_axis)} != len(raw) ({len(raw)})")
-                ipr.processed_reading.raw = None
+                log.error(f"process: len(old_axis) {len(old_axis)} != len(raw) ({len(raw)})")
+                interpolated.raw = None
 
         dark = pr.get_dark()
         if dark is not None:
             if len(dark) == len(old_axis):
-                ipr.processed_reading.dark = np.interp(self.new_axis, old_axis, dark)
+                interpolated.dark = np.interp(self.new_axis, old_axis, dark)
             else:
-                log.error(f"ipr: len(old_axis) {len(old_axis)} != len(dark) ({len(dark)})")
-                ipr.processed_reading.dark = None
+                log.error(f"process: len(old_axis) {len(old_axis)} != len(dark) ({len(dark)})")
+                interpolated.dark = None
 
         reference = pr.get_reference()
         if reference is not None:
             if len(reference) == len(old_axis):
-                ipr.processed_reading.reference = np.interp(self.new_axis, old_axis, reference)
+                interpolated.reference = np.interp(self.new_axis, old_axis, reference)
             else:
-                log.error(f"ipr: len(old_axis) {len(old_axis)} != len(reference) ({len(reference)})")
-                ipr.processed_reading.dark = None
+                log.error(f"process: len(old_axis) {len(old_axis)} != len(reference) ({len(reference)})")
+                interpolated.dark = None
 
-        if False:
-            # Not sure we need this
-
-            # The weird case of extrapolating a cropped ROI.  Consider that we had
-            # an original spectrum "abcdefghijklmnopqrstuvwxyz".  We then cropped
-            # it to "ghijklmnopqrstu".  We are now extrapolating it out to
-            # "ggggggggggggGHIJKLMNOPQRSTUuuuuuuuuuuu".  Even if we've cropped it
-            # down, we're still obliged to extrapolate out to the newly defined range,
-            # and the only pixels we have "qualified" as being valid to extrapolate
-            # are those within the ROI.
-            roi = settings.eeprom.get_horizontal_roi()
-            log.debug("processed_cropped is %s and settings is %s and roi is %s",
-                pr.processed_cropped is not None,
-                settings is not None,
-                roi is not None)
-            if pr.processed_cropped is not None and settings is not None and roi is not None:
-                log.debug("interpolating cropped spectrum to new axis of %d pixels", len(self.new_axis))
-                old_axis_cropped = self.ctl.horiz_roi.crop(old_axis, roi=roi)
-                ipr.processed_reading.processed_cropped = np.interp(self.new_axis, old_axis_cropped, pr.processed_cropped)
-
-        return ipr
+        pr.interpolated = interpolated
 
     def init_from_config(self):
         log.debug("init_from_config")

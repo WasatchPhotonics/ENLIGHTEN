@@ -756,23 +756,13 @@ class Measurements:
             a = None
 
             if header == "processed":
-                # handle ROI on processed (not others?)
-                if not pr.is_cropped():
-                    a = pr.processed
-                else:
-                    spec = m.spec
-                    if spec is not None:
-                        roi = spec.settings.eeprom.get_horizontal_roi()
-                        if roi is not None and m.roi_active:
-                            if roi.contains(pixel):
-                                pixel -= roi.start
-                                a = pr.processed_cropped
+                a = pr.get_processed()
             elif header == "reference":
-                a = pr.reference
+                a = pr.get_reference()
             elif header == "dark":
-                a = pr.dark
+                a = pr.get_dark()
             elif header == "raw":                                           
-                a = pr.raw
+                a = pr.get_raw()
 
             if a is not None and pixel < len(a):
                 value = a[pixel]
@@ -796,44 +786,31 @@ class Measurements:
             # Export Interpolated (you are here)
             #####################################################################           
 
-            # Interpolate each Measurement to an InterpolatedProcessedReading.
-            # Keep handle to last IPR, as we can use it for the "global" pixel, 
-            # wavelength and wavenumber axes.
-
-            max_roi_end = float("-inf")
-            min_roi_start = float("inf")
             for m in export_measurements:
-                ipr = self.ctl.interp.interpolate_processed_reading(
-                    m.processed_reading, 
-                    wavelengths=m.settings.wavelengths, 
-                    wavenumbers=m.settings.wavenumbers, 
-                    settings=m.settings)
-                if ipr is None:
-                    self.ctl.marquee.error("export failed due to interpolation error")
+                
+                # ensure all measurements are interpolated to the SAME (current)
+                # target axis; if any have already been interpolated to this axis
+                # (the normal case), this should be a no-op
+                self.ctl.interp.process(m.processed_reading)
+                if not m.processed_reading.interpolated:
+                    self.ctl.marquee.error("export failed due to interpolation failure")
                     return
-                m.ipr = ipr
 
-                if m.roi_active:
-                    roi = m.settings.eeprom.get_horizontal_roi()
-                    min_roi_start = min(min_roi_start, int(roi.start))
-                    max_roi_end = max(max_roi_end, int(roi.end))
-
-            log.debug(f"export_by_column: min_roi_start {min_roi_start}, max_roi_end {max_roi_end}")
-
-            for pixel in range(ipr.pixels):
+            first = export_measurements[0]
+            for pixel in range(len(first.processed_reading.get_processed())):
                 row = []
                 for settings in settingss:
                     for header in x_headers:
-                        row.append(get_x_header_value(ipr.wavelengths, ipr.wavenumbers, header, pixel))
+                        row.append(get_x_header_value(first.processed_reading.get_wavelengths(), first.processed_reading.get_wavenumbers(), header, pixel))
                 if self.ctl.save_options.save_collated():
                     for header in pr_headers:
                         row.extend(BLANK)
                         for m in export_measurements:
-                            row.append(get_pr_header_value(m, header, pixel, pr=m.ipr.processed_reading))
+                            row.append(get_pr_header_value(m, header, pixel, pr=m.processed_reading.interpolated))
                 else:
                     for m in export_measurements:
                         for header in pr_headers:
-                            row.append(get_pr_header_value(m, header, pixel, pr=m.ipr.processed_reading))
+                            row.append(get_pr_header_value(m, header, pixel, pr=m.processed_reading.interpolated))
                 csv_writer.writerow(row)
 
         else:
@@ -842,12 +819,14 @@ class Measurements:
             # Export Non-Interpolated
             #####################################################################           
 
+            # Note that if some of these measurements were interpolated WHEN THEY
+            # WERE COLLECTED, they will be exported interpolated, even if 
+            # interpolation was subsequently disabled before the export. We 
+            # could change this by adding a "no_interpolation=False" default 
+            # param to ProcessedReading.get_foo() methods, but I don't currently
+            # see it as a problem.
+
             for pixel in range(max_pixels):
-                # MZ: always export all rows
-                # if spectrometer_count == 1:
-                #     roi = settingss[0].eeprom.get_horizontal_roi()
-                #     if roi is not None and not roi.contains(pixel) and self.ctl.horiz_roi.enabled:
-                #         continue
 
                 row = []
                 for settings in settingss:

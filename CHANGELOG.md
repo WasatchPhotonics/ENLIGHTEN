@@ -3,6 +3,7 @@
 ## 4.0 GUI and Plugin Refactoring
 
 - 2023-??-?? 4.0.31
+    - replaced InterpolatedProcessedReading with ProcessedReading.cropped and .interpolated
     - retain more metadata in split-spectra
     - moved to ctl
         - Authentication

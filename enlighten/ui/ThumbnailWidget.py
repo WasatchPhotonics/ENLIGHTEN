@@ -459,44 +459,26 @@ class ThumbnailWidget(QtWidgets.QFrame):
         # take axis unit from Graph, then load axis values from Measurement
         if self.graph.current_x_axis == common.Axes.WAVELENGTHS:
             log.debug("axis is wavelengths so getting settings wavelengths")
-            # x_axis = self.measurement.settings.wavelengths
             x_axis = self.measurement.processed_reading.get_wavelengths()
             log.debug(f"wavelengths len is {len(x_axis)}")
         elif self.graph.current_x_axis == common.Axes.WAVENUMBERS:
             log.debug("axis is waveunmbers so getting settings wavenumbers")
-            # x_axis = self.measurement.settings.wavenumbers
             x_axis = self.measurement.processed_reading.get_wavenumbers()
-        elif first_pixel is None:
-            log.debug("generating from first pixel")
-            x_axis = list(range(pixels))
         else:
-            log.debug("generating from range since all else didn't work")
-            x_axis = list(range(first_pixel, first_pixel + pixels))
+            log.debug("generating from pixels")
+            x_axis = list(range(pixels))
+
         if x_axis is None:
             # maybe from a loaded file with insufficient data?
             log.debug("add_curve_to_graph: somehow have no x-axis?")
             return
 
-        regions = self.measurement.settings.state.detector_regions
-        log.debug(f"add_curve_to_graph: regions = {regions}")
-        if regions:
-            log.debug(f"processing regions")
-            x_axis = regions.chop(x_axis, flatten=True) # which region?
-            log.debug(f"after regions make x_axis {len(x_axis)}")
-
         log.debug("add_curve_to_graph: generated x_axis of %d elements (%.2f to %.2f)", len(x_axis), x_axis[0], x_axis[-1])
-
         spectrum = self.measurement.processed_reading.get_processed()
-        if False: # MZ: don't think we need this now?
-            if self.measurement.processed_reading.is_cropped():
-                roi = self.measurement.settings.eeprom.get_horizontal_roi()
-                if roi is not None and self.ctl.horiz_roi is not None:
-                    spectrum = self.measurement.processed_reading.processed_cropped
-                    x_axis = self.ctl.horiz_roi.crop(x_axis, roi=roi)
 
-        # use named color if found in label
         color = self.selected_color
         if color is None:
+            # use named color if found in label
             color = self.ctl.colors.color_names.search(label)
         if color is None:
             color = self.ctl.colors.get_next_random()

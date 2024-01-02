@@ -910,9 +910,15 @@ class Measurement:
     # limit the total columns to 255 when saving multiple spectra.
     def save_excel_file(self):
         pr          = self.processed_reading
-        wavelengths = self.settings.wavelengths
-        wavenumbers = self.settings.wavenumbers
-        pixels      = len(pr.raw)
+
+        processed   = pr.get_processed()
+        raw         = pr.get_raw()
+        dark        = pr.get_dark()
+        reference   = pr.get_reference()
+        wavelengths = pr.get_wavelengths()
+        wavenumbers = pr.get_wavenumbers()
+
+        pixels      = len(processed)
 
         wbk = xlwt.Workbook()
         sheet_summary    = wbk.add_sheet('Summary')
@@ -945,20 +951,6 @@ class Measurement:
         if pr.reference is not None:
             style = style_f5
 
-        roi = None
-        if self.settings is not None:
-            roi = self.settings.eeprom.get_horizontal_roi()
-        cropped = roi is not None and pr.is_cropped()
-
-        # interpolation
-        if self.ctl.interp.enabled:
-            ipr = self.ctl.interp.interpolate_processed_reading(pr, wavelengths=wavelengths, wavenumbers=wavenumbers, settings=self.settings)
-            if ipr is not None:
-                wavelengths = ipr.wavelengths
-                wavenumbers = ipr.wavenumbers
-                pixels = ipr.pixels
-                pr = ipr.processed_reading
-
         # spectra (float() calls because library gets confused by Numpy types)
         first_row = 1
         row_count = 0
@@ -967,24 +959,26 @@ class Measurement:
                 continue
 
             row = first_row + row_count
+
             sheet_spectrum.write        (row, 0, pixel)
-            sheet_spectrum.write        (row, 1, float(wavelengths  [pixel]), style_f2)
-            if wavenumbers is not None:
+
+            if wavelengths is not None and self.ctl.save_options.save_wavelength():
+                sheet_spectrum.write    (row, 1, float(wavelengths  [pixel]), style_f2)
+
+            if wavenumbers is not None and self.ctl.save_options.save_wavenumber():
                 sheet_spectrum.write    (row, 2, float(wavenumbers  [pixel]), style_f2)
-            sheet_spectrum.write        (row, 4, float(pr.raw       [pixel]), style)
-            if pr.dark is not None:
-                sheet_spectrum.write    (row, 5, float(pr.dark      [pixel]), style)
-            if pr.reference is not None:
-                sheet_spectrum.write    (row, 6, float(pr.reference [pixel]), style)
 
-            # MZ: update for new ProcessedReading.cropped 
+            if processed is not None:
+                sheet_spectrum.write    (row, 3, float(processed    [pixel]), style)
 
-            if not cropped:
-                sheet_spectrum.write    (row, 3, float(pr.processed [pixel]), style)
-            elif self.ctl.interp.enabled:
-                sheet_spectrum.write    (row, 3, float(pr.processed_cropped[pixel]), style)
-            elif roi.contains(pixel):
-                sheet_spectrum.write    (row, 3, float(pr.processed_cropped[pixel - roi.start]), style)
+            if raw is not None and self.ctl.save_options.save_raw():
+                sheet_spectrum.write        (row, 4, float(raw      [pixel]), style)
+
+            if dark is not None and self.ctl.save_options.save_dark():
+                sheet_spectrum.write    (row, 5, float(dark         [pixel]), style)
+
+            if reference is not None and self.ctl.save_options.save_ref():
+                sheet_spectrum.write    (row, 6, float(reference    [pixel]), style)
 
             row_count += 1
 
@@ -1045,8 +1039,7 @@ class Measurement:
     # Express the current Measurement as a single JSON-compatible dict.  Use this
     # for both save_json_file and External.Feature.
     def to_dict(self):
-        pr          = self.processed_reading
-        pixels      = len(pr.processed)
+        pr = self.processed_reading
 
         m = { # Measurement
             "spectrum": {},
@@ -1055,21 +1048,33 @@ class Measurement:
         }
 
         # interpolation
-        ipr = None
         if self.ctl.interp.enabled:
-            ipr = self.ctl.interp.interpolate_processed_reading(pr, wavelengths=self.settings.wavelengths, wavenumbers=self.settings.wavenumbers, settings=self.settings)
-            if ipr is not None:
-                pixels = ipr.pixels
-                pr = ipr.processed_reading # note this includes processed, raw, dark, reference etc
-                m["spectrometerSettings"]["wavelengths"] = ipr.wavelengths
-                m["spectrometerSettings"]["wavenumbers"] = ipr.wavenumbers
+            self.ctl.interp.process(pr)
+            # note we don't update active_horizontal_pixels, etc
+            m["spectrometerSettings"]["wavelengths"] = pr.get_wavelengths()
+            m["spectrometerSettings"]["wavenumbers"] = pr.get_wavenumbers()
 
         # same capitalization as CSV per request
         if self.ctl:
-            if self.ctl.save_options.save_processed()   and pr.processed is not None: m["spectrum"]["Processed"] = util.clean_list(pr.get_processed())
-            if self.ctl.save_options.save_raw()         and pr.raw       is not None: m["spectrum"]["Raw"]       = util.clean_list(pr.raw)
-            if self.ctl.save_options.save_dark()        and pr.dark      is not None: m["spectrum"]["Dark"]      = util.clean_list(pr.dark)
-            if self.ctl.save_options.save_reference()   and pr.reference is not None: m["spectrum"]["Reference"] = util.clean_list(pr.reference)
+            if self.ctl.save_options.save_processed():
+                a = pr.get_processed()
+                if a is not None:
+                    m["spectrum"]["Processed"] = util.clean_list(a)
+
+            if self.ctl.save_options.save_raw():
+                a = pr.get_raw()
+                if a is not None:
+                    m["spectrum"]["Raw"] = util.clean_list(a)
+
+            if self.ctl.save_options.save_dark():
+                a = pr.get_dark()
+                if a is not None:
+                    m["spectrum"]["Dark"] = util.clean_list(a)
+
+            if self.ctl.save_options.save_reference():
+                a = pr.get_reference()
+                if a is not None:
+                    m["spectrum"]["Reference"] = util.clean_list(a)
 
         return m
 
@@ -1211,9 +1216,6 @@ class Measurement:
     # generated labels are Unicode.  (Dieter doesn't seem to like Unicode CSV)
     def save_csv_file_by_column(self, use_basename=False, ext="csv", delim=",", include_header=True, include_metadata=True):
         pr          = self.processed_reading
-        wavelengths = pr.get_wavelengths()
-        wavenumbers = pr.get_wavenumbers()
-        pixels      = len(pr.get_raw())
 
         today_dir = self.generate_today_dir()
         if use_basename:
@@ -1223,12 +1225,11 @@ class Measurement:
 
         # interpolation
         if self.ctl.interp.enabled:
-            ipr = self.ctl.interp.interpolate_processed_reading(pr) # , wavelengths=wavelengths, wavenumbers=wavenumbers, settings=self.settings)
-            if ipr is not None:
-                wavelengths = ipr.wavelengths
-                wavenumbers = ipr.wavenumbers
-                pixels = ipr.pixels
-                pr = ipr.processed_reading
+            self.ctl.interp.process(pr)
+
+        wavelengths = pr.get_wavelengths()
+        wavenumbers = pr.get_wavenumbers()
+        pixels      = pr.get_pixel_count()
 
         with open(pathname, "w", newline="", encoding='utf-8') as f:
 
@@ -1348,7 +1349,7 @@ class Measurement:
     # Note that Measurements saved while "appending" are NOT considered renamable
     # at the file level, while Measurements saved to individual files are.
     #
-    # @todo support processed_cropped
+    # @todo support .cropped, .interpolated
     def save_csv_file_by_row(self):
         sn = self.settings.eeprom.serial_number
 
