@@ -259,6 +259,8 @@ class Controller:
         else:
             self.form.show()
 
+        common.set_controller_instance(self)
+
     def schedule_post_init(self):
         self.post_init_timer = QtCore.QTimer()
         self.post_init_timer.timeout.connect(self.post_init)

@@ -142,7 +142,9 @@ class InterpolationFeature(object):
         return wasatch_utils.generate_excitation(wavelengths=wavelengths, wavenumbers=wavenumbers)
 
     def process(self, pr):
-        """ This does dark and reference as well as processed and raw """
+        """ 
+        This does dark and reference as well as processed and raw.
+        """
 
         if self.new_axis is None:
             log.error("new axis not provided, returning none")
@@ -159,7 +161,17 @@ class InterpolationFeature(object):
         wavelengths = pr.get_wavelengths()
         wavenumbers = pr.get_wavenumbers()
 
-        log.debug("interpolating processed reading")
+        # Log occurances of re-interpolation, but don't prevent or short-circuit
+        # them. Partly, this is so that we can re-interpolate a previously-
+        # interpolated measurements to a new axis (e.g. for loaded spectra). 
+        # However, it should also be the case that re-interpolating a previously-
+        # interpolated measurement to the SAME target x-axis should be virtually
+        # a no-op, as every "new x" value will resolve to an existing datapoint 
+        # and thus require no computations.
+        if pr.interpolated:
+            log.debug("re-interpolating processed reading")
+        else:
+            log.debug("interpolating processed reading")
 
         interpolated = ProcessedReading()
         old_axis = None

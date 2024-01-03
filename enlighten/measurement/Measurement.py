@@ -343,6 +343,9 @@ class Measurement:
         else:
             raise Exception("Measurement requires exactly one of (spec, source_pathname, measurement, dict)")
 
+        if self.ctl.interp.enabled:
+            self.ctl.interp.process(self.processed_reading)
+
         self.generate_id()
         self.generate_label()
 
@@ -1050,7 +1053,7 @@ class Measurement:
         # interpolation
         if self.ctl.interp.enabled:
             self.ctl.interp.process(pr)
-            # note we don't update active_horizontal_pixels, etc
+            # note we don't update active_pixels_horizontal, etc
             m["spectrometerSettings"]["wavelengths"] = pr.get_wavelengths()
             m["spectrometerSettings"]["wavenumbers"] = pr.get_wavenumbers()
 
@@ -1215,7 +1218,11 @@ class Measurement:
     # Note that currently this is NOT writing UTF-8 / Unicode, although KIA-
     # generated labels are Unicode.  (Dieter doesn't seem to like Unicode CSV)
     def save_csv_file_by_column(self, use_basename=False, ext="csv", delim=",", include_header=True, include_metadata=True):
-        pr          = self.processed_reading
+        pr = self.processed_reading
+
+        if not self.ctl or not self.ctl.save_options:
+            log.error("Measurement.save* requires SaveOptions")
+            return
 
         today_dir = self.generate_today_dir()
         if use_basename:
@@ -1223,13 +1230,31 @@ class Measurement:
         else:
             pathname = os.path.join(today_dir, "%s.%s" % (self.generate_basename(), ext))
 
-        # interpolation
-        if self.ctl.interp.enabled:
-            self.ctl.interp.process(pr)
+        roi = None
+        stage = None
+        if pr.interpolated:
+            # If we're saving interpolated data, we don't care what the ROI was,
+            # or how many physical pixels are on the detector. We won't display 
+            # "NA" for any values, because interpolation includes extrapolation 
+            # at the range ends.
+            pass
+        else:
+            # We're not outputting extrapolated data, so we will output as many
+            # rows (pixels) as there are active pixels on the detector. Pixels
+            # outside the ROI will receive "NA" for "processed", but should 
+            # include wavelength/wavenumber axis values, and might as well include
+            # raw, dark and reference.
+            if self.ctl.horiz_roi.enabled:
+                stage = "orig"
+                if self.settings and self.settings.eeprom:
+                    roi = self.settings.eeprom.get_horizontal_roi()
 
-        wavelengths = pr.get_wavelengths()
-        wavenumbers = pr.get_wavenumbers()
-        pixels      = pr.get_pixel_count()
+        wavelengths = pr.get_wavelengths(stage)
+        wavenumbers = pr.get_wavenumbers(stage)
+        processed = pr.get_processed(stage)
+        raw = pr.get_raw(stage)
+        dark = pr.get_dark(stage)
+        reference = pr.get_reference(stage)
 
         with open(pathname, "w", newline="", encoding='utf-8') as f:
 
@@ -1260,41 +1285,39 @@ class Measurement:
                 out.writerow([])
 
             headers = []
-            if self.ctl and self.ctl.save_options:
-                if self.ctl.save_options.save_pixel():       headers.append("Pixel")
-                if self.ctl.save_options.save_wavelength():  headers.append("Wavelength")
-                if self.ctl.save_options.save_wavenumber():  headers.append("Wavenumber")
-                if self.ctl.save_options.save_processed():   headers.append("Processed")
-                if self.ctl.save_options.save_raw():         headers.append("Raw")
-                if self.ctl.save_options.save_dark():        headers.append("Dark")
-                if self.ctl.save_options.save_reference():   headers.append("Reference")
-            else:
-                headers.append("Wavenumber")
-                headers.append("Processed")
+            if self.ctl.save_options.save_pixel():       headers.append("Pixel")
+            if self.ctl.save_options.save_wavelength():  headers.append("Wavelength")
+            if self.ctl.save_options.save_wavenumber():  headers.append("Wavenumber")
+            if self.ctl.save_options.save_processed():   headers.append("Processed")
+            if self.ctl.save_options.save_raw():         headers.append("Raw")
+            if self.ctl.save_options.save_dark():        headers.append("Dark")
+            if self.ctl.save_options.save_reference():   headers.append("Reference")
 
             if include_header:
                 out.writerow(headers)
 
-            def formatted(prec, array, pixel):
+            def formatted(prec, array, pixel, obey_roi=False):
                 if array is None:
                     return
+                if roi and obey_roi:
+                    if pixel < roi.start or pixel > roi.end:
+                        return "NA"
+
                 value = array[pixel]
                 return '%.*f' % (prec, value)
 
             # store extra precision for relative measurements
             precision = 5 if pr.reference is not None else 2
 
-            for pixel in range(pixels):
-
+            for pixel in range(len(wavelengths)):
                 values = []
-                if self.ctl:
-                    if self.ctl.save_options.save_pixel():       values.append(pixel)
-                    if self.ctl.save_options.save_wavelength():  values.append(formatted(2,         wavelengths,        pixel))
-                    if self.ctl.save_options.save_wavenumber():  values.append(formatted(2,         wavenumbers,        pixel))
-                    if self.ctl.save_options.save_processed():   values.append(formatted(precision, pr.get_processed(), pixel))
-                    if self.ctl.save_options.save_raw():         values.append(formatted(precision, pr.get_raw(),       pixel))
-                    if self.ctl.save_options.save_dark():        values.append(formatted(precision, pr.get_dark(),      pixel))
-                    if self.ctl.save_options.save_reference():   values.append(formatted(precision, pr.get_reference(), pixel))
+                if self.ctl.save_options.save_pixel():       values.append(pixel)
+                if self.ctl.save_options.save_wavelength():  values.append(formatted(2,         wavelengths, pixel))
+                if self.ctl.save_options.save_wavenumber():  values.append(formatted(2,         wavenumbers, pixel))
+                if self.ctl.save_options.save_processed():   values.append(formatted(precision, processed,   pixel, obey_roi=True))
+                if self.ctl.save_options.save_raw():         values.append(formatted(precision, raw,         pixel))
+                if self.ctl.save_options.save_dark():        values.append(formatted(precision, dark,        pixel))
+                if self.ctl.save_options.save_reference():   values.append(formatted(precision, reference,   pixel))
                 out.writerow(values)
 
         log.info("saved columnar %s", pathname)

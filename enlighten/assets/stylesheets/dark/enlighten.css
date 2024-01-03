@@ -1013,6 +1013,9 @@ QDialog QPushButton {
     padding-right: 30px;
 }
 
+QMessageBox {
+    background-color: #383838;
+}
 
 /* QToolButton ------------------------------------------------------------
 https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qtoolbutton

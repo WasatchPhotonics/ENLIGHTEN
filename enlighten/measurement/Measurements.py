@@ -496,12 +496,19 @@ class Measurements:
 
         except Exception as exc:
             log.critical("exception exporting session", exc_info=1)
+            # we could optionally unlink pathname here; leaving for troubleshooting
 
-    ## 
-    # Returns a list of all SpectrometerSettings (unique by serial_number) 
-    # contributing to our current set of saved measurements, in order of initial
-    # appearance.
     def _get_spectrometer_settings(self):
+        """
+        Returns a list of all SpectrometerSettings (unique by serial_number) 
+        contributing to our current set of saved measurements, in order of initial
+        appearance.
+
+        To be perfectly clear, this returns a dictionary of 
+        wasatch.SpectrometerSettings by serial number.  Be aware that different
+        Measurement objects generated from the same spectrometer serial number 
+        may have different ROI and interpolation settings.
+        """
         settingss = []
         seen_sn = set()
         for m in self.measurements:
@@ -510,6 +517,36 @@ class Measurements:
                 seen_sn.add(m.settings.eeprom.serial_number)
 
         return settingss
+
+    def incompatible_axes(self, export_measurements):
+        specs = {}
+        
+        # group by serial
+        for m in export_measurements:
+            sn = "default"
+            if m.settings and m.settings.eeprom:
+                sn = m.settings.eeprom.serial_number
+            if sn not in specs:
+                specs[sn] = []
+            specs[sn].append(m)
+        
+        # check each serial
+        for sn in specs:
+            if len(specs[sn]) < 2:
+                continue
+            first_pr = specs[sn][0].processed_reading
+            first_wl = first_pr.get_wavelengths()
+            for i in range(1, len(specs[sn])):
+                this_pr = specs[sn][i].processed_reading
+                this_wl = this_pr.get_wavelengths()
+                if first_wl != this_wl:
+                    log.debug(f"incompatible_axes: {sn} measurements 0 and {i} had different wavelengths")
+                    return True
+                else:
+                    log.debug(f"incompatible_axes: {sn} measurements 0 and {i} had identical wavelengths ({first_wl[0]:.2f}, {first_wl[-1]:0.2f}) ({this_wl[0]:.2f}, {this_wl[-1]:0.2f})")
+                    first_pr.dump()
+                    this_pr.dump()
+        return False
 
     ##
     # Export each Measurement in turn in a columnar CSV.
@@ -624,6 +661,13 @@ class Measurements:
             export_measurements = [ m for m in self.measurements if m.is_displayed() ]
         else:
             export_measurements = self.measurements
+
+        if not self.ctl.interp.enabled and self.incompatible_axes(export_measurements):
+            msg = "The selected measurements include differing ROI and/or " \
+                + "interpolation settings for the same spectrometer. Please " \
+                + "enable interpolation to export these measurements as a group."
+            common.msgbox(msg)
+            raise ValueError(msg)
 
         # roll-in any plugin metadata appearing in any measurement
         for m in export_measurements:
@@ -783,14 +827,17 @@ class Measurements:
             log.debug(f"export_by_column: interpolation enabled: {self.ctl.interp}")
 
             #####################################################################           
-            # Export Interpolated (you are here)
+            # Export Interpolated
             #####################################################################           
 
             for m in export_measurements:
                 
-                # ensure all measurements are interpolated to the SAME (current)
+                # Ensure all measurements are interpolated to the SAME (current)
                 # target axis; if any have already been interpolated to this axis
-                # (the normal case), this should be a no-op
+                # (the normal case), this should be a no-op. Note that this may
+                # CHANGE individual Measurements, in that each will now have a 
+                # ProcessedReading.interpolated, regardless of whether it did 
+                # before.
                 self.ctl.interp.process(m.processed_reading)
                 if not m.processed_reading.interpolated:
                     self.ctl.marquee.error("export failed due to interpolation failure")
