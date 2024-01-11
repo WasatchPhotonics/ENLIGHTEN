@@ -1853,6 +1853,7 @@ class Controller:
             # aren't, really. Expert mode is a union of Raman, NonRaman and other 
             # features (see PageNavigation docs). When the user clicks Expert, 
             # doing_raman() is no longer true, hence the need for doing_expert().
+            # This MUST be done before interpolation.
             if self.page_nav.doing_raman() or self.page_nav.doing_expert():
                 self.raman_intensity_correction.process(pr, spec)
 
@@ -2003,7 +2004,7 @@ class Controller:
             log.error("set_curve_data[%s]: no y", label)
             return False
 
-        if x is None:
+        if x is None or x == []:
             log.debug("set_curve_data[%s]: no x (y_len = %d, y=%s, curve = %s)", label, len(y), y[:5], str(curve))
             self.graph.set_data(curve=curve, y=y)
             return True
