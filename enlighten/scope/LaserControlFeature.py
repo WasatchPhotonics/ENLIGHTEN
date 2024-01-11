@@ -113,7 +113,9 @@ class LaserControlFeature:
         is_ilc = any([component in settings.full_model().upper() for component in ["-ILC", "-IL-IC"]])
         combo_unit = sfu.comboBox_laser_power_unit
 
-        sfu.frame_lightSourceControl.setVisible(has_laser)
+        for widget in [ sfu.frame_lightSourceControl,
+                   sfu.pushButton_laser_convenience ]:
+            widget.setVisible(has_laser)
         if not has_laser:
             return
 

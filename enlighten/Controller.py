@@ -259,6 +259,7 @@ class Controller:
         else:
             self.form.show()
 
+        # support styling of common.msgbox
         common.set_controller_instance(self)
 
     def schedule_post_init(self):
