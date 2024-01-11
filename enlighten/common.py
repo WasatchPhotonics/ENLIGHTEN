@@ -16,8 +16,10 @@ application.
 
 VERSION = "4.0.31"
 
-""" ENLIGHTEN's application version number (checked by scripts/deploy and bootstrap.bat) """
+ctl = None
+
 class Techniques(IntEnum):
+    """ ENLIGHTEN's application version number (checked by scripts/deploy and bootstrap.bat) """
     NONE                     = 0
     EMISSION                 = 1
     RAMAN                    = 2
@@ -37,21 +39,21 @@ class TechniquesHelper:
         Techniques.COLOR: "Color",
         Techniques.FLUORESCENCE: "Fluorescence",
         Techniques.RELATIVE_IRRADIANCE: "Relative Irradiance",
-        }
+    }
 
     def get_pretty_name(n):
         return TechniquesHelper.pretty_names.get(n, "UNKNOWN")
 
 class Views(IntEnum):
+    """
+    It's important to keep this list in sync with the comboBox_view items.
+    @todo consider auto-populating inside code
+    """
     SCOPE               = 0
     SETTINGS            = 1
     HARDWARE            = 2
     LOG                 = 3
     FACTORY             = 4
-"""
-It's important to keep this list in sync with the comboBox_view items.
-@todo consider auto-populating inside code
-"""
 
 class ViewsHelper:
     pretty_names = {
@@ -147,18 +149,19 @@ def get_default_data_dir():
         return os.path.join(os.path.expanduser("~"), "Documents", "EnlightenSpectra")
     return os.path.join(os.environ["HOME"], "EnlightenSpectra")
 
-
-"""
-Looking for a method to display Marquee messages? 
-(Those non-intrusive messages at the top of Enlighten)
-
-One way is to use self.ctl.marquee.info("Message")
-This assumes your FeatureObject class has an instance of Controller.
-"""
+def set_controller_instance(inst):
+    global ctl
+    ctl = inst
 
 def msgbox(prompt, title="Alert", buttons=0):
     """
     Display an interupting message to the user.
+
+    Looking for a method to display Marquee messages? 
+    (Those non-intrusive messages at the top of Enlighten)
+
+    One way is to use self.ctl.marquee.info("Message")
+    This assumes your FeatureObject class has an instance of Controller.
 
     Inspired by VB msgbox: 
     https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/msgbox-function
@@ -178,20 +181,20 @@ def msgbox(prompt, title="Alert", buttons=0):
     # let's persist these in the logfile too
     log.debug(f"msgbox: {title}: {prompt}")
 
-    warn_msg = QMessageBox()
-    warn_msg.setWindowTitle(title)
-    warn_msg.setText(prompt)
+    mb = QMessageBox(parent=ctl.form) if ctl else QMessageBox()
+    mb.setWindowTitle(title)
+    mb.setText(prompt)
 
     if buttons == 0:
-        warn_msg.setStandardButtons(QMessageBox.Ok)
+        mb.setStandardButtons(QMessageBox.Ok)
     elif buttons == 1:
-        warn_msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        mb.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
     elif buttons == 4:
-        warn_msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        mb.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
 
-    warn_msg.setIcon(QMessageBox.Warning)
+    mb.setIcon(QMessageBox.Warning)
 
-    return warn_msg.exec_() in [QMessageBox.Ok, QMessageBox.Yes]
+    return mb.exec_() in [QMessageBox.Ok, QMessageBox.Yes]
 
 def is_rpi():
     result = False

@@ -59,6 +59,7 @@ extend ENLIGHTEN in countless ways we never imagined.
     - [Raspberry Pi](docs/BUILD_RPI.md)
 - Developer Guides
     - [Architecture](docs/ARCHITECTURE.md)
+    - [Order of Operations](docs/ORDER_OF_OPERATIONS.md)
     - [Plugins](docs/PLUGINS.md) 
     - [Maintenance](docs/MAINTENANCE.md)
     - [Documentation](docs/DOCUMENTATION.md)

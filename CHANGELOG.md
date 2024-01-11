@@ -3,11 +3,17 @@
 ## 4.0 GUI and Plugin Refactoring
 
 - 2023-??-?? 4.0.31
+    - replaced InterpolatedProcessedReading with ProcessedReading.cropped and 
+      .interpolated
+    - for now, prevent export from trying to mix different x-axes from the same 
+      serial number (ultimately we could extend the export format in different 
+      ways to support this)
     - retain more metadata in split-spectra
     - moved to ctl
         - Authentication
         - EEPROMWriter
         - MeasurementFactory
+    - styled common.msgbox
 - 2023-12-14 4.0.30
     - GUI
         - added battery to StatusBar

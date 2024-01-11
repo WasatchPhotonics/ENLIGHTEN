@@ -170,6 +170,13 @@ class RamanLines(EnlightenPluginBase):
                 1085: 3
             },
 
+            "Methanol": {
+                1060: 3,
+                1481: 2,
+                2840: 4,
+                2950: 5
+            },
+
             "Polystyrene": {
                 620.9: 3,
                 795.8: 1, 

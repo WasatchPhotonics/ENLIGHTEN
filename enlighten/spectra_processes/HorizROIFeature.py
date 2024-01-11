@@ -1,38 +1,66 @@
 import pyqtgraph
 import logging
 
+from wasatch.ProcessedReading import ProcessedReading
+
 log = logging.getLogger(__name__)
 
 class HorizROIFeature:
     """
     Encapsulate the Horizontal ROI feature.
+
+    @par Persistance
+
+    The result of HorizROI processing is stored in the given ProcessedReading,
+    by storing cropped versions of that PR's key arrays (proc/raw/dark/ref/wl/wn)
+    in a new .cropped ProcessedReading.
+
+    @par Order of Operations
+
+    This should be called BEFORE Interpolation, and most everything else.
+    @see ORDER_OF_OPERATIONS.md
+
+    @par Enabling and Visualization
     
     It is very important to understand what it means for this feature to be 
     "enabled," and how that is visualized.
     
-    By default, Wasatch software should show all data. Given the choice, we should
-    default to exposing the raw, grainy, noisy truth, while giving users access to
-    convenient tools to smooth, crop, normalize etc.
-    
-    Therefore, by default the Horizontal ROI feature is OFF (the full spectrum is
-    shown), even if a horizontal ROI is configured in the spectrometer's EEPROM.
-    
-    If a horizontal ROI is configured, the button is ENABLED (clickable); if no
-    ROI is configured, the button is DISABLED (unclickable). In either case, a
-    ToolTip should explain the current status.
+    Wasatch has gone back and forth a couple times on whether this feature
+    should default to enabled (only show GOOD data to avoid confusing users)
+    or disabled (show all raw data to scientists). 
 
-    If the user clicks the button and enables the Horiz ROI, what will happen 
+    The current behavior is to default ENABLED (the cropped spectrum is shown) 
+    if a horizontal ROI is configured in the spectrometer's EEPROM.
+
+    The colorization of this button may seem a little non-intuitive in comparison
+    to other ENLIGHTEN features, but actually it's consistent "...from a certain
+    point of view."
+
+    Normally ENLIGHTEN colors buttons red when they have been clicked (changed
+    from their "default" state), and particularly if they are in a "dangerous/
+    hazardous" mode (laser firing, unusual transformations applied etc).
+
+    That is arguably the case here. The button is grey when in a "safe, happy"
+    state (ROI enabled and showing good data), and red when in an unusual "risky"
+    state (ROI disabled and showing invalid data).
+
+    (One could argue that by that logic, the DarkCorrection button should be
+    red when dark is NOT applied, i.e. in a dangerous state...hmm.)
+    
+    If a horizontal ROI is configured, the BUTTON is ENABLED (clickable); if no
+    ROI is configured, the button is DISABLED (not clickable). In either case, a
+    ToolTip explains the current status.
+
+    If the user clicks the button and DISABLES the Horiz ROI, what will happen 
     depends on whether the user is in Expert Mode or not.
 
-
+    @verbatim
                     ROI in EEPROM           No ROI in EEPROM
     At launch:      - button enabled        - button disabled
-                    - button off (grey)     - button off (grey)
+                    - button on (grey)      - button off (grey)
                     - ToolTip "click to     - ToolTip "no horiz ROI"
-                      crop to horiz ROI"
-
-    
-
+                      disable horiz ROI"
+    @endverbatim
     """
     
     def __init__(self, ctl):
@@ -117,36 +145,29 @@ class HorizROIFeature:
     def is_editing(self):
         return self.cb_editing.isChecked()
 
-    ##
-    # Called by LOTS of classes :-(
-    #
-    # @param spectrum (Input) Note this is really "array" or "data", as this can 
-    #                      be (and often is) used to crop an x-axis of wavelengths 
-    #                      or wavenumbers.
-    # @param force (Input) if we've loaded a saved spectrum from disk, and the 
-    #                      "processed" array literally has fewer values than the 
-    #                      x-axes, and the Measurement metadata clearly shows
-    #                      an ROI, then we can assume that the Measurement was
-    #                      cropped when it was saved / generated, and we really
-    #                      have no choice to un-crop it now (other than by
-    #                      prefixing/suffixing zeros or something).  
-    # @returns cropped spectrum
-    # @note does not currently check .enabled
-    def crop(self, spectrum, spec=None, roi=None, force=False):
+    def crop(self, spectrum, spec=None, roi=None, settings=None):
+        """
+        We are trying to get fewer classes to call this, in preference of using the 
+        .cropped attribute stored in the original ProcessedReading.
+
+        Note this can be used for any array, not just spectra.
+        """
         if spectrum is None:
             return
 
+        # we need an ROI
+        if roi is None and settings:
+            roi = spec.settings.eeprom.get_horizontal_roi()
+        if roi is None and spec:
+            roi = spec.settings.eeprom.get_horizontal_roi()
         if roi is None:
-            if spec is None:
-                spec = self.ctl.multispec.current_spectrometer()
-            if spec is not None:
+            spec = self.ctl.multispec.current_spectrometer()
+            if spec:
                 roi = spec.settings.eeprom.get_horizontal_roi()
-
         if roi is None:
             return spectrum
 
         orig_len = len(spectrum)
-
         if not roi.valid() or roi.start >= orig_len or roi.end >= orig_len:
             return spectrum
 
@@ -154,12 +175,12 @@ class HorizROIFeature:
         return roi.crop(spectrum)
         
     ##
-    # Called by Controller.
+    # Called by Controller.process_reading.
     # 
     # @param pr (In/Out) ProcessedReading
     # @param settings (Input) SpectrometerSettings
     #
-    # @returns Nothing (side-effect: populates pr.processed_cropped)
+    # @returns Nothing (side-effect: populates pr.cropped)
     def process(self, pr, settings=None):
         if not self.enabled:
             return
@@ -167,6 +188,8 @@ class HorizROIFeature:
         if pr is None or pr.processed is None:
             return
 
+        if settings is None:
+            settings = pr.settings
         if settings is None:
             spec = self.ctl.multispec.current_spectrometer()
             if spec is not None:
@@ -178,7 +201,14 @@ class HorizROIFeature:
         if roi is None:
             return 
             
-        pr.processed_cropped = self.crop(pr.processed, roi=roi)
+        prc = ProcessedReading(settings=settings)
+        prc.processed   = self.crop(pr.processed,         roi=roi)
+        prc.raw         = self.crop(pr.raw,               roi=roi)
+        prc.reference   = self.crop(pr.raw,               roi=roi)
+        prc.wavelengths = self.crop(settings.wavelengths, roi=roi)
+        prc.wavenumbers = self.crop(settings.wavenumbers, roi=roi)
+
+        pr.cropped = prc
 
     def update_regions(self, spec=None):
         if spec is None:

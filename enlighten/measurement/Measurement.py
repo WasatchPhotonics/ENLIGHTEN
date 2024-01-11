@@ -343,6 +343,9 @@ class Measurement:
         else:
             raise Exception("Measurement requires exactly one of (spec, source_pathname, measurement, dict)")
 
+        if self.ctl.interp.enabled:
+            self.ctl.interp.process(self.processed_reading)
+
         self.generate_id()
         self.generate_label()
 
@@ -386,10 +389,6 @@ class Measurement:
         # ProcessedReading
         pr_d = wasatch_utils.dict_get_norm(d, ["ProcessedReading", "Spectrum", "Spectra"])
         self.processed_reading = ProcessedReading(d=pr_d)
-
-        # how/where to do this properly?
-        if len(self.processed_reading.processed) < len(self.settings.wavelengths):
-            self.processed_reading.processed_cropped = self.processed_reading.processed
 
     ##
     # We presumably loaded a measurement from disk, reprocessed it, and are now
@@ -545,12 +544,16 @@ class Measurement:
 
         pr = self.processed_reading
         if pr is not None:
+            proc = pr.get_processed()
+            raw  = pr.get_raw()
+            dark = pr.get_dark()
+            ref  = pr.get_reference()
+
             log.debug("  processed_reading:")
-            log.debug("    processed_cropped:   %s", pr.processed_cropped[:5] if pr.processed_cropped is not None else None)
-            log.debug("    processed:           %s", pr.processed[:5] if pr.processed is not None else None)
-            log.debug("    raw:                 %s", pr.raw      [:5] if pr.raw       is not None else None)
-            log.debug("    dark:                %s", pr.dark     [:5] if pr.dark      is not None else None)
-            log.debug("    reference:           %s", pr.reference[:5] if pr.reference is not None else None)
+            log.debug("    processed:           %s", proc[:5] if proc is not None else None)
+            log.debug("    raw:                 %s", raw [:5] if raw  is not None else None)
+            log.debug("    dark:                %s", dark[:5] if dark is not None else None)
+            log.debug("    reference:           %s", ref [:5] if ref  is not None else None)
 
     ##
     # Display on the graph, if not already shown.
@@ -910,9 +913,15 @@ class Measurement:
     # limit the total columns to 255 when saving multiple spectra.
     def save_excel_file(self):
         pr          = self.processed_reading
-        wavelengths = self.settings.wavelengths
-        wavenumbers = self.settings.wavenumbers
-        pixels      = len(pr.raw)
+
+        processed   = pr.get_processed()
+        raw         = pr.get_raw()
+        dark        = pr.get_dark()
+        reference   = pr.get_reference()
+        wavelengths = pr.get_wavelengths()
+        wavenumbers = pr.get_wavenumbers()
+
+        pixels      = len(processed)
 
         wbk = xlwt.Workbook()
         sheet_summary    = wbk.add_sheet('Summary')
@@ -945,20 +954,6 @@ class Measurement:
         if pr.reference is not None:
             style = style_f5
 
-        roi = None
-        if self.settings is not None:
-            roi = self.settings.eeprom.get_horizontal_roi()
-        cropped = roi is not None and pr.is_cropped()
-
-        # interpolation
-        if self.ctl.interp.enabled:
-            ipr = self.ctl.interp.interpolate_processed_reading(pr, wavelengths=wavelengths, wavenumbers=wavenumbers, settings=self.settings)
-            if ipr is not None:
-                wavelengths = ipr.wavelengths
-                wavenumbers = ipr.wavenumbers
-                pixels = ipr.pixels
-                pr = ipr.processed_reading
-
         # spectra (float() calls because library gets confused by Numpy types)
         first_row = 1
         row_count = 0
@@ -967,22 +962,26 @@ class Measurement:
                 continue
 
             row = first_row + row_count
-            sheet_spectrum.write        (row, 0, pixel)
-            sheet_spectrum.write        (row, 1, float(wavelengths  [pixel]), style_f2)
-            if wavenumbers is not None:
-                sheet_spectrum.write    (row, 2, float(wavenumbers  [pixel]), style_f2)
-            sheet_spectrum.write        (row, 4, float(pr.raw       [pixel]), style)
-            if pr.dark is not None:
-                sheet_spectrum.write    (row, 5, float(pr.dark      [pixel]), style)
-            if pr.reference is not None:
-                sheet_spectrum.write    (row, 6, float(pr.reference [pixel]), style)
 
-            if not cropped:
-                sheet_spectrum.write    (row, 3, float(pr.processed [pixel]), style)
-            elif self.ctl.interp.enabled:
-                sheet_spectrum.write    (row, 3, float(pr.processed_cropped[pixel]), style)
-            elif roi.contains(pixel):
-                sheet_spectrum.write    (row, 3, float(pr.processed_cropped[pixel - roi.start]), style)
+            sheet_spectrum.write        (row, 0, pixel)
+
+            if wavelengths is not None and self.ctl.save_options.save_wavelength():
+                sheet_spectrum.write    (row, 1, float(wavelengths  [pixel]), style_f2)
+
+            if wavenumbers is not None and self.ctl.save_options.save_wavenumber():
+                sheet_spectrum.write    (row, 2, float(wavenumbers  [pixel]), style_f2)
+
+            if processed is not None:
+                sheet_spectrum.write    (row, 3, float(processed    [pixel]), style)
+
+            if raw is not None and self.ctl.save_options.save_raw():
+                sheet_spectrum.write        (row, 4, float(raw      [pixel]), style)
+
+            if dark is not None and self.ctl.save_options.save_dark():
+                sheet_spectrum.write    (row, 5, float(dark         [pixel]), style)
+
+            if reference is not None and self.ctl.save_options.save_ref():
+                sheet_spectrum.write    (row, 6, float(reference    [pixel]), style)
 
             row_count += 1
 
@@ -1043,8 +1042,7 @@ class Measurement:
     # Express the current Measurement as a single JSON-compatible dict.  Use this
     # for both save_json_file and External.Feature.
     def to_dict(self):
-        pr          = self.processed_reading
-        pixels      = len(pr.processed)
+        pr = self.processed_reading
 
         m = { # Measurement
             "spectrum": {},
@@ -1053,21 +1051,33 @@ class Measurement:
         }
 
         # interpolation
-        ipr = None
         if self.ctl.interp.enabled:
-            ipr = self.ctl.interp.interpolate_processed_reading(pr, wavelengths=self.settings.wavelengths, wavenumbers=self.settings.wavenumbers, settings=self.settings)
-            if ipr is not None:
-                pixels = ipr.pixels
-                pr = ipr.processed_reading # note this includes processed, raw, dark, reference etc
-                m["spectrometerSettings"]["wavelengths"] = ipr.wavelengths
-                m["spectrometerSettings"]["wavenumbers"] = ipr.wavenumbers
+            self.ctl.interp.process(pr)
+            # note we don't update active_pixels_horizontal, etc
+            m["spectrometerSettings"]["wavelengths"] = pr.get_wavelengths()
+            m["spectrometerSettings"]["wavenumbers"] = pr.get_wavenumbers()
 
         # same capitalization as CSV per request
         if self.ctl:
-            if self.ctl.save_options.save_processed()   and pr.processed is not None: m["spectrum"]["Processed"] = util.clean_list(pr.get_processed())
-            if self.ctl.save_options.save_raw()         and pr.raw       is not None: m["spectrum"]["Raw"]       = util.clean_list(pr.raw)
-            if self.ctl.save_options.save_dark()        and pr.dark      is not None: m["spectrum"]["Dark"]      = util.clean_list(pr.dark)
-            if self.ctl.save_options.save_reference()   and pr.reference is not None: m["spectrum"]["Reference"] = util.clean_list(pr.reference)
+            if self.ctl.save_options.save_processed():
+                a = pr.get_processed()
+                if a is not None:
+                    m["spectrum"]["Processed"] = util.clean_list(a)
+
+            if self.ctl.save_options.save_raw():
+                a = pr.get_raw()
+                if a is not None:
+                    m["spectrum"]["Raw"] = util.clean_list(a)
+
+            if self.ctl.save_options.save_dark():
+                a = pr.get_dark()
+                if a is not None:
+                    m["spectrum"]["Dark"] = util.clean_list(a)
+
+            if self.ctl.save_options.save_reference():
+                a = pr.get_reference()
+                if a is not None:
+                    m["spectrum"]["Reference"] = util.clean_list(a)
 
         return m
 
@@ -1208,10 +1218,11 @@ class Measurement:
     # Note that currently this is NOT writing UTF-8 / Unicode, although KIA-
     # generated labels are Unicode.  (Dieter doesn't seem to like Unicode CSV)
     def save_csv_file_by_column(self, use_basename=False, ext="csv", delim=",", include_header=True, include_metadata=True):
-        pr          = self.processed_reading
-        wavelengths = self.settings.wavelengths
-        wavenumbers = self.settings.wavenumbers
-        pixels      = len(pr.raw)
+        pr = self.processed_reading
+
+        if not self.ctl or not self.ctl.save_options:
+            log.error("Measurement.save* requires SaveOptions")
+            return
 
         today_dir = self.generate_today_dir()
         if use_basename:
@@ -1219,21 +1230,31 @@ class Measurement:
         else:
             pathname = os.path.join(today_dir, "%s.%s" % (self.generate_basename(), ext))
 
-        # cropping
         roi = None
-        if self.settings is not None and self.ctl and self.ctl.measurements and self.ctl.measurements.ctl.horiz_roi.enabled:
-            self.roi_active = True
-            roi = self.settings.eeprom.get_horizontal_roi()
-        cropped = roi is not None and pr.is_cropped()
+        stage = None
+        if pr.interpolated:
+            # If we're saving interpolated data, we don't care what the ROI was,
+            # or how many physical pixels are on the detector. We won't display 
+            # "NA" for any values, because interpolation includes extrapolation 
+            # at the range ends.
+            pass
+        else:
+            # We're not outputting extrapolated data, so we will output as many
+            # rows (pixels) as there are active pixels on the detector. Pixels
+            # outside the ROI will receive "NA" for "processed", but should 
+            # include wavelength/wavenumber axis values, and might as well include
+            # raw, dark and reference.
+            if self.ctl.horiz_roi.enabled:
+                stage = "orig"
+                if self.settings and self.settings.eeprom:
+                    roi = self.settings.eeprom.get_horizontal_roi()
 
-        # interpolation
-        if self.ctl.interp.enabled:
-            ipr = self.ctl.interp.interpolate_processed_reading(pr, wavelengths=wavelengths, wavenumbers=wavenumbers, settings=self.settings)
-            if ipr is not None:
-                wavelengths = ipr.wavelengths
-                wavenumbers = ipr.wavenumbers
-                pixels = ipr.pixels
-                pr = ipr.processed_reading
+        wavelengths = pr.get_wavelengths(stage)
+        wavenumbers = pr.get_wavenumbers(stage)
+        processed = pr.get_processed(stage)
+        raw = pr.get_raw(stage)
+        dark = pr.get_dark(stage)
+        reference = pr.get_reference(stage)
 
         with open(pathname, "w", newline="", encoding='utf-8') as f:
 
@@ -1264,63 +1285,41 @@ class Measurement:
                 out.writerow([])
 
             headers = []
-            if self.ctl and self.ctl.save_options:
-                if self.ctl.save_options.save_pixel():       headers.append("Pixel")
-                if self.ctl.save_options.save_wavelength():  headers.append("Wavelength")
-                if self.ctl.save_options.save_wavenumber():  headers.append("Wavenumber")
-                if self.ctl.save_options.save_processed():   headers.append("Processed")
-                if self.ctl.save_options.save_raw():         headers.append("Raw")
-                if self.ctl.save_options.save_dark():        headers.append("Dark")
-                if self.ctl.save_options.save_reference():   headers.append("Reference")
-            else:
-                headers.append("Wavenumber")
-                headers.append("Processed")
+            if self.ctl.save_options.save_pixel():       headers.append("Pixel")
+            if self.ctl.save_options.save_wavelength():  headers.append("Wavelength")
+            if self.ctl.save_options.save_wavenumber():  headers.append("Wavenumber")
+            if self.ctl.save_options.save_processed():   headers.append("Processed")
+            if self.ctl.save_options.save_raw():         headers.append("Raw")
+            if self.ctl.save_options.save_dark():        headers.append("Dark")
+            if self.ctl.save_options.save_reference():   headers.append("Reference")
 
             if include_header:
                 out.writerow(headers)
 
-            def formatted(prec, array, pixel):
+            def formatted(prec, array, pixel, obey_roi=False):
                 if array is None:
                     return
+                if roi and obey_roi:
+                    if pixel < roi.start or pixel > roi.end:
+                        return "NA"
+
                 value = array[pixel]
                 return '%.*f' % (prec, value)
 
             # store extra precision for relative measurements
             precision = 5 if pr.reference is not None else 2
 
-            for pixel in range(pixels):
-
+            for pixel in range(len(wavelengths)):
                 values = []
-                if self.ctl and self.ctl.save_options:
-                    if self.ctl.save_options.save_pixel():       values.append(pixel)
-                    if self.ctl.save_options.save_wavelength():  values.append(formatted(2,         wavelengths,  pixel))
-                    if self.ctl.save_options.save_wavenumber():  values.append(formatted(2,         wavenumbers,  pixel))
-
-                    if self.ctl.save_options.save_processed():
-                        if not cropped:
-                            values.append(formatted(precision, pr.processed, pixel))
-                        elif self.ctl.interp.enabled:
-                            values.append(formatted(precision, pr.processed_cropped, pixel))
-                        elif roi.contains(pixel):
-                            values.append(formatted(precision, pr.processed_cropped, pixel - roi.start))
-                        else:
-                            # this is a cropped pixel, so arguably it could be None (,,), @na, -1
-                            # or 0, or various other things, but consensus converged on "NA"
-                            values.append("NA")
-
-                    # Note that we're always output raw/dark/ref (if selected), regardless of ROI (makes sense).
-                    # I'm less sure why we don't interpolate raw/dark/ref, or how this comes out in the file if
-                    # we are interpolating...
-                    if self.ctl.save_options.save_raw():         values.append(formatted(precision, pr.raw,       pixel))
-                    if self.ctl.save_options.save_dark():        values.append(formatted(precision, pr.dark,      pixel))
-                    if self.ctl.save_options.save_reference():   values.append(formatted(precision, pr.reference, pixel))
-                else:
-                    # MZ: I don't remember the use-case for this.  May involve
-                    # this class being imported and used by an outside script?
-                    values.append(formatted(2, wavenumbers,  pixel))
-                    values.append(formatted(precision, pr.processed, pixel))
-
+                if self.ctl.save_options.save_pixel():       values.append(pixel)
+                if self.ctl.save_options.save_wavelength():  values.append(formatted(2,         wavelengths, pixel))
+                if self.ctl.save_options.save_wavenumber():  values.append(formatted(2,         wavenumbers, pixel))
+                if self.ctl.save_options.save_processed():   values.append(formatted(precision, processed,   pixel, obey_roi=True))
+                if self.ctl.save_options.save_raw():         values.append(formatted(precision, raw,         pixel))
+                if self.ctl.save_options.save_dark():        values.append(formatted(precision, dark,        pixel))
+                if self.ctl.save_options.save_reference():   values.append(formatted(precision, reference,   pixel))
                 out.writerow(values)
+
         log.info("saved columnar %s", pathname)
         self.add_renamable(pathname)
 
@@ -1373,7 +1372,7 @@ class Measurement:
     # Note that Measurements saved while "appending" are NOT considered renamable
     # at the file level, while Measurements saved to individual files are.
     #
-    # @todo support processed_cropped
+    # @todo support .cropped, .interpolated
     def save_csv_file_by_row(self):
         sn = self.settings.eeprom.serial_number
 

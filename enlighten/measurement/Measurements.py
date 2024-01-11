@@ -496,12 +496,19 @@ class Measurements:
 
         except Exception as exc:
             log.critical("exception exporting session", exc_info=1)
+            # we could optionally unlink pathname here; leaving for troubleshooting
 
-    ## 
-    # Returns a list of all SpectrometerSettings (unique by serial_number) 
-    # contributing to our current set of saved measurements, in order of initial
-    # appearance.
     def _get_spectrometer_settings(self):
+        """
+        Returns a list of all SpectrometerSettings (unique by serial_number) 
+        contributing to our current set of saved measurements, in order of initial
+        appearance.
+
+        To be perfectly clear, this returns a dictionary of 
+        wasatch.SpectrometerSettings by serial number.  Be aware that different
+        Measurement objects generated from the same spectrometer serial number 
+        may have different ROI and interpolation settings.
+        """
         settingss = []
         seen_sn = set()
         for m in self.measurements:
@@ -510,6 +517,36 @@ class Measurements:
                 seen_sn.add(m.settings.eeprom.serial_number)
 
         return settingss
+
+    def incompatible_axes(self, export_measurements):
+        specs = {}
+        
+        # group by serial
+        for m in export_measurements:
+            sn = "default"
+            if m.settings and m.settings.eeprom:
+                sn = m.settings.eeprom.serial_number
+            if sn not in specs:
+                specs[sn] = []
+            specs[sn].append(m)
+        
+        # check each serial
+        for sn in specs:
+            if len(specs[sn]) < 2:
+                continue
+            first_pr = specs[sn][0].processed_reading
+            first_wl = first_pr.get_wavelengths()
+            for i in range(1, len(specs[sn])):
+                this_pr = specs[sn][i].processed_reading
+                this_wl = this_pr.get_wavelengths()
+                if first_wl != this_wl:
+                    log.debug(f"incompatible_axes: {sn} measurements 0 and {i} had different wavelengths")
+                    return True
+                else:
+                    log.debug(f"incompatible_axes: {sn} measurements 0 and {i} had identical wavelengths ({first_wl[0]:.2f}, {first_wl[-1]:0.2f}) ({this_wl[0]:.2f}, {this_wl[-1]:0.2f})")
+                    first_pr.dump()
+                    this_pr.dump()
+        return False
 
     ##
     # Export each Measurement in turn in a columnar CSV.
@@ -625,6 +662,13 @@ class Measurements:
         else:
             export_measurements = self.measurements
 
+        if not self.ctl.interp.enabled and self.incompatible_axes(export_measurements):
+            msg = "The selected measurements include differing ROI and/or " \
+                + "interpolation settings for the same spectrometer. Please " \
+                + "enable interpolation to export these measurements as a group."
+            common.msgbox(msg)
+            raise ValueError(msg)
+
         # roll-in any plugin metadata appearing in any measurement
         for m in export_measurements:
             if m.processed_reading.plugin_metadata is not None:
@@ -735,12 +779,17 @@ class Measurements:
         pr_headers = [ s.lower() for s in pr_headers ]
 
         def get_x_header_value(wavelengths, wavenumbers, header, pixel):
+            result = ""
             if header == "pixel":
-                return pixel
+                result = str(pixel)
             elif header == "wavelength":
-                return ('%.2f' % wavelengths[pixel]) if (wavelengths is not None and pixel < len(wavelengths)) else ""
+                if wavelengths is not None and pixel < len(wavelengths):
+                    result = f"{wavelengths[pixel]:.2f}"
             elif header == "wavenumber":
-                return ('%.2f' % wavenumbers[pixel]) if (wavenumbers is not None and pixel < len(wavenumbers)) else ""
+                if wavenumbers is not None and pixel < len(wavenumbers):
+                    result = f"{wavenumbers[pixel]:.2f}"
+            log.debug(f"get_x_header_value: header {header}, pixel {pixel}, result {result}")
+            return result
 
         def get_pr_header_value(m, header, pixel, pr=None):
             if pr is None:
@@ -751,22 +800,13 @@ class Measurements:
             a = None
 
             if header == "processed":
-                if not pr.is_cropped():
-                    a = pr.processed
-                else:
-                    spec = m.spec
-                    if spec is not None:
-                        roi = spec.settings.eeprom.get_horizontal_roi()
-                        if roi is not None and m.roi_active:
-                            if roi.contains(pixel):
-                                pixel -= roi.start
-                                a = pr.processed_cropped
+                a = pr.get_processed()
             elif header == "reference":
-                a = pr.reference
+                a = pr.get_reference()
             elif header == "dark":
-                a = pr.dark
+                a = pr.get_dark()
             elif header == "raw":                                           
-                a = pr.raw
+                a = pr.get_raw()
 
             if a is not None and pixel < len(a):
                 value = a[pixel]
@@ -784,48 +824,40 @@ class Measurements:
 
         if self.ctl.interp.enabled:
 
+            log.debug(f"export_by_column: interpolation enabled: {self.ctl.interp}")
+
             #####################################################################           
-            # Export Interpolated (you are here)
+            # Export Interpolated
             #####################################################################           
 
-            # Interpolate each Measurement to an InterpolatedProcessedReading.
-            # Keep handle to last IPR, as we can use it for the "global" 
-            # pixel, wavelength and wavenumber axes.
-            max_roi_end = float("-inf")
-            min_roi_start = float("inf")
             for m in export_measurements:
-                ipr = self.ctl.interp.interpolate_processed_reading(
-                    m.processed_reading, 
-                    wavelengths=m.settings.wavelengths, 
-                    wavenumbers=m.settings.wavenumbers, 
-                    settings=m.settings)
-                if ipr is None:
-                    log.error("failed export due to interpolation error")
-                if m.roi_active:
-                    roi = m.settings.eeprom.get_horizontal_roi()
-                    min_roi_start = min(min_roi_start, int(roi.start))
-                    max_roi_end = max(max_roi_end, int(roi.end))
-                m.ipr = ipr
+                
+                # Ensure all measurements are interpolated to the SAME (current)
+                # target axis; if any have already been interpolated to this axis
+                # (the normal case), this should be a no-op. Note that this may
+                # CHANGE individual Measurements, in that each will now have a 
+                # ProcessedReading.interpolated, regardless of whether it did 
+                # before.
+                self.ctl.interp.process(m.processed_reading)
+                if not m.processed_reading.interpolated:
+                    self.ctl.marquee.error("export failed due to interpolation failure")
+                    return
 
-            if max_roi_end != float("-inf") and min_roi_start != float("inf"):
-                px_range = range(min_roi_start, max_roi_end)
-            else:
-                px_range = range(ipr.pixels)
-
-            for pixel in px_range:
+            first = export_measurements[0]
+            for pixel in range(len(first.processed_reading.get_processed())):
                 row = []
                 for settings in settingss:
                     for header in x_headers:
-                        row.append(get_x_header_value(ipr.wavelengths, ipr.wavenumbers, header, pixel))
+                        row.append(get_x_header_value(first.processed_reading.get_wavelengths(), first.processed_reading.get_wavenumbers(), header, pixel))
                 if self.ctl.save_options.save_collated():
                     for header in pr_headers:
                         row.extend(BLANK)
                         for m in export_measurements:
-                            row.append(get_pr_header_value(m, header, pixel, pr=m.ipr.processed_reading))
+                            row.append(get_pr_header_value(m, header, pixel, pr=m.processed_reading.interpolated))
                 else:
                     for m in export_measurements:
                         for header in pr_headers:
-                            row.append(get_pr_header_value(m, header, pixel, pr=m.ipr.processed_reading))
+                            row.append(get_pr_header_value(m, header, pixel, pr=m.processed_reading.interpolated))
                 csv_writer.writerow(row)
 
         else:
@@ -834,12 +866,14 @@ class Measurements:
             # Export Non-Interpolated
             #####################################################################           
 
+            # Note that if some of these measurements were interpolated WHEN THEY
+            # WERE COLLECTED, they will be exported interpolated, even if 
+            # interpolation was subsequently disabled before the export. We 
+            # could change this by adding a "no_interpolation=False" default 
+            # param to ProcessedReading.get_foo() methods, but I don't currently
+            # see it as a problem.
+
             for pixel in range(max_pixels):
-                # MZ: always export all rows
-                # if spectrometer_count == 1:
-                #     roi = settingss[0].eeprom.get_horizontal_roi()
-                #     if roi is not None and not roi.contains(pixel) and self.ctl.horiz_roi.enabled:
-                #         continue
 
                 row = []
                 for settings in settingss:
