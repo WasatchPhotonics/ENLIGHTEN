@@ -116,6 +116,14 @@ class StatusBarFeature:
     # methods
     # ##########################################################################
 
+    def update_visibility(self):
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return self.clear()
+
+        for w in self.widgets["Battery"]:
+            w.setVisible(spec.settings.eeprom.has_battery)
+
     ## 
     # Update any fields we can get to from inside the class (not waiting on
     # external notifications).

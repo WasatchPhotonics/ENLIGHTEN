@@ -13549,7 +13549,7 @@ QComboBox QListView
                               </size>
                              </property>
                              <property name="text">
-                              <string>0.0</string>
+                              <string>none</string>
                              </property>
                              <property name="alignment">
                               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

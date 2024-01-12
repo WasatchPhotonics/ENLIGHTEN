@@ -2,6 +2,8 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2023-??-?? 4.0.32
+    - StatusBar only shows battery when appropriate
 - 2023-01-11 4.0.31
     - axis corner-cases
         - replaced InterpolatedProcessedReading with ProcessedReading.cropped and 

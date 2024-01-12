@@ -675,6 +675,7 @@ class Controller:
                          self.raman_shift_correction,
                          self.reference_feature,
                          self.baseline_correction,
+                         self.status_bar,
                          self.kia_feature ]:
             feature.update_visibility()
 
