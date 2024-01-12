@@ -75,18 +75,32 @@ class RamanLines(EnlightenPluginBase):
         @see https://www.chem.ualberta.ca/~mccreery/ramanmaterials.html
         """
         return {
+            # note, synonym for 4-Acetamidophenol and Paracetamol
             "Acetaminophen": {
-                390.9: 2,
-                651.6: 3,
-                857.9: 5,
+                 213.3: 1,
+                 329.2: 1,
+                 390.9: 2,
+                 465.1: 1,
+                 504.0: 1,
+                 651.6: 2,
+                 710.8: 1,
+                 797.2: 2,
+                 834.5: 5,
+                 857.9: 3,
+                 968.7: 1,
+                1105.5: 1,
                 1168.5: 3,
-                1236.8: 4,
-                1323.9: 5,
-                1371.5: 3,
-                1561.5: 2,
-                1648.4: 4,
-                2931.1: 3,
-                3064.6: 3
+                1236.8: 3,
+                1278.5: 2,
+                1323.9: 4,
+                1371.5: 2,
+                1515.1: 1,
+                1561.6: 2,
+                1648.4: 3,
+                2931.1: 2,
+                3064.6: 2,
+                3102.4: 2,
+                3326.6: 1
             },
 
             "Acetone": {
@@ -95,6 +109,14 @@ class RamanLines(EnlightenPluginBase):
                 1222.8: 2,
                 1440: 3,    # 1430.5?
                 1727: 2     # 1711?
+            },
+
+            "Acetonitrile": {
+                378.5: 1,
+                919.0: 2,
+                2253.7: 4,
+                2292.6: 1,
+                2940.8: 5
             },
 
             "Air": {
@@ -137,6 +159,8 @@ class RamanLines(EnlightenPluginBase):
             },
 
             "Cyclohexane": {
+                384.1: 1,
+                426.3: 1,
                 801.3: 5,
                 1028.3: 2,
                 1157.6: 0.5,
@@ -210,7 +234,18 @@ class RamanLines(EnlightenPluginBase):
                 1382: 3
             },
 
+            "Toluene": {
+                521.7: 1,
+                786.5: 3,
+                1003.6: 5,
+                1030.6: 2,
+                1211.4: 1,
+                1605.1: 1,
+                3057.1: 3
+            },
+
             "Toluene+Acetonitrile": {
+                378.5: 1,
                 521.7: 1,
                 786.5: 3,
                 919.0: 1,

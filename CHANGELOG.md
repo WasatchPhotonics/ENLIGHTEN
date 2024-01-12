@@ -4,6 +4,7 @@
 
 - 2023-??-?? 4.0.32
     - StatusBar only shows battery when appropriate
+    - updated peaks in RamanLines and ASTM-1840 configuration
 - 2023-01-11 4.0.31
     - axis corner-cases
         - replaced InterpolatedProcessedReading with ProcessedReading.cropped and 
