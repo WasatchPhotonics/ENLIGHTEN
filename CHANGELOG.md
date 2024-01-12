@@ -2,8 +2,14 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
-- 2023-??-?? 4.0.32
-    - StatusBar only shows battery when appropriate
+- 2023-01-12 4.0.32
+    - GUI
+        - StatusBar only shows battery when appropriate
+        - added common.msgbox(..., detail)
+        - added GUI.msgbox_with_textedit
+    - plugins
+        - renamed logfile to plugin.log
+        - truncate plugin logfile on load
     - updated peaks in RamanLines and ASTM-1840 configuration
 - 2023-01-11 4.0.31
     - axis corner-cases

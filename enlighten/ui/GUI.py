@@ -5,10 +5,10 @@ from enlighten import common
 
 if common.use_pyside2():
     from PySide2 import QtGui
-    from PySide2.QtWidgets import QMessageBox, QCheckBox, QDialog, QLineEdit, QDialogButtonBox, QVBoxLayout, QLabel
+    from PySide2.QtWidgets import QMessageBox, QCheckBox, QDialog, QLineEdit, QDialogButtonBox, QVBoxLayout, QLabel, QTextEdit
 else:
     from PySide6 import QtGui
-    from PySide6.QtWidgets import QMessageBox, QCheckBox, QDialog, QLineEdit, QDialogButtonBox, QVBoxLayout, QLabel
+    from PySide6.QtWidgets import QMessageBox, QCheckBox, QDialog, QLineEdit, QDialogButtonBox, QVBoxLayout, QLabel, QTextEdit
 
 log = logging.getLogger(__name__)
 
@@ -183,3 +183,21 @@ class GUI(object):
             "checked": cb.isChecked(),
             "lineedit": le.text() 
         }
+
+    def msgbox_with_textedit(self, title, label_text, textedit_text):
+        dialog = QDialog(parent=self.ctl.form)
+        dialog.setModal(True)
+        dialog.setWindowTitle(title)
+        dialog.setSizeGripEnabled(True)
+
+        lb = QLabel(label_text, parent=dialog)
+
+        te = QTextEdit(parent=dialog)
+        te.setText(textedit_text)
+        te.setReadOnly(True)
+
+        vb = QVBoxLayout(dialog)
+        vb.addWidget(lb)
+        vb.addWidget(te)
+
+        dialog.exec_()

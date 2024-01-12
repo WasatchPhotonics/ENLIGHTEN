@@ -153,7 +153,7 @@ def set_controller_instance(inst):
     global ctl
     ctl = inst
 
-def msgbox(prompt, title="Alert", buttons=0):
+def msgbox(prompt, title="Alert", buttons=0, detail=None):
     """
     Display an interupting message to the user.
 
@@ -194,12 +194,15 @@ def msgbox(prompt, title="Alert", buttons=0):
 
     mb.setIcon(QMessageBox.Warning)
 
+    if detail:
+        mb.setDetailedText(detail)
+
     return mb.exec_() in [QMessageBox.Ok, QMessageBox.Yes]
 
 def is_rpi():
     result = False
     try:
-        # Win32 doesn't even have os.uname :-(
+        # Win32 doesn't have os.uname :-(
         (sysname, nodename, release, version, machine) = os.uname()
         result = nodename == "raspberrypi"
     except:

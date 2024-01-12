@@ -59,7 +59,9 @@ class EnlightenPluginBase:
         self.ctl = ctl
 
         # allow plugins to override their logfile name/location
-        self.logfile = os.path.join(common.get_default_data_dir(), 'plugin_log.txt')
+        self.logfile = os.path.join(common.get_default_data_dir(), 'plugin.log')
+        if os.path.exists(self.logfile):
+            os.remove(self.logfile)
 
     def get_axis(self):
         if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVELENGTHS:
@@ -88,10 +90,9 @@ class EnlightenPluginBase:
     ### Begin functional-plugins backend ###
 
     def log(self, *msgs):
-        # initially made this because the regular logger wasn't working
-        # but it makes sense for plugins to have their own log separate from enlighten
+        # it makes sense for plugins to have their own log separate from enlighten
         now = datetime.datetime.now()
-        with open(self.logfile, 'at') as pl:
+        with open(self.logfile, 'a') as pl:
             pl.write(f"{now} " + ' '.join([str(msg) for msg in msgs]) + "\n")
 
     def field(self, **kwargs):
