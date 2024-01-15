@@ -99,6 +99,8 @@ class IntegrationTimeFeature(object):
             # send integration time change to hardware
             spec.change_device_setting("integration_time_ms", now_ms)
 
+            spec.app_state.received_reading_at_current_integration_time = False
+
             spec.reset_acquisition_timeout()
 
     ## If you're not sure which function to call, call this one.
@@ -127,6 +129,7 @@ class IntegrationTimeFeature(object):
 
         # send changed integration time to hardware
         self.ctl.multispec.change_device_setting("integration_time_ms", ms)
+        self.ctl.multispec.set_app_state("received_reading_at_current_integration_time", False)
 
         # reset timeouts
         if self.ctl.multispec.locked:

@@ -1400,7 +1400,8 @@ class Controller:
             # this doesn't have to be done after each keepalive...we could do this at 1Hz or so
             if spec.app_state.missed_reading_count > self.MAX_MISSED_READINGS and \
                     not spec.app_state.spec_timeout_prompt_shown and \
-                    not self.multispec.is_in_reset(spec.device.device_id):
+                    not self.multispec.is_in_reset(spec.device.device_id) and \
+                    spec.app_state.received_reading_at_current_integration_time:
                 log.info("displaying Timeout Warning MessageBox (stay connected, or disconnect)")
                 spec.app_state.spec_timeout_prompt_shown = True
                 dlg = QMessageBox(self.form)
@@ -1440,6 +1441,7 @@ class Controller:
         spec.app_state.reading_count += 1
         spec.app_state.missed_reading_count = 0
         spec.app_state.spec_timeout_prompt_shown = False
+        spec.app_state.received_reading_at_current_integration_time = True
 
         if spec.device.is_ble and acquired_reading.progress != 1:
             sfu.readingProgressBar.setValue(acquired_reading.progress*100)

@@ -2,7 +2,7 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
-- 2023-??-?? 4.0.33
+- 2023-01-15 4.0.33
     - fix load bug
     - simplify common.msgbox api
     - simplify thumbnail removal prompt
@@ -10,6 +10,8 @@
     - give Graphs names for tracking
     - make utf8 settings more explicit
     - default logfile to truncate
+    - added SpectrometerApplicationState.received_reading_at_current_integration_time,
+      in contention for ENLIGHTEN Longest Variable Name
 - 2023-01-12 4.0.32
     - GUI
         - StatusBar only shows battery when appropriate

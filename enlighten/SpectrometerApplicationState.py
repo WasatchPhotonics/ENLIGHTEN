@@ -51,6 +51,7 @@ class SpectrometerApplicationState(object):
         self.baseline_correction_enabled = False # MZ: is this used? should it be?
         self.spec_timeout_prompt_shown = False
         self.missed_reading_count = 0
+        self.received_reading_at_current_integration_time = False
         self.laser_state = LaserStates.DISABLED
 
         # we set this if the watchdog was already set to 0 in the EEPROM at initial connection
