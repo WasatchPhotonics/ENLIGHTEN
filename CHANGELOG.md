@@ -2,6 +2,14 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2023-??-?? 4.0.33
+    - fix load bug
+    - simplify common.msgbox api
+    - simplify thumbnail removal prompt
+    - correctly associate thumbnails with generating plugin
+    - give Graphs names for tracking
+    - make utf8 settings more explicit
+    - default logfile to truncate
 - 2023-01-12 4.0.32
     - GUI
         - StatusBar only shows battery when appropriate
