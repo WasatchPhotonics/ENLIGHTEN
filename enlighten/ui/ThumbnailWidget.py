@@ -158,21 +158,6 @@ class ThumbnailWidget(QtWidgets.QFrame):
         # self.button_edit.setAutoDefault(True) 
 
         ########################################################################
-        # Delete confirmation pop-up
-        ########################################################################
-
-        # Each ThumbnailWidget contains its own ConfirmWidget, which defaults to
-        # invisible, and is only shown when the Trash icon is clicked.  An
-        # alternate implementation would be to create the ConfirmWidget when the
-        # Trash icon is clicked.
-        self.confirm_widget = ConfirmWidget(
-            callback_no     = self.confirm_no_callback,
-            callback_yes    = self.confirm_yes_callback,
-            parent          = self,
-            stylesheets     = self.ctl.stylesheets)
-        self.confirm_widget.move(17, 30)
-
-        ########################################################################
         # Tooltip
         ########################################################################
 
@@ -342,23 +327,12 @@ class ThumbnailWidget(QtWidgets.QFrame):
 
     ## Display the ConfirmWidget
     def trash_callback(self):
-        self.confirm_widget.setVisible(True)
         self.ctl.gui.colorize_button(self.button_trash, True)
-
-    ## 
-    # Passed from ConfirmWidget.button_no
-    def confirm_no_callback(self):
-        self.confirm_widget.setVisible(False)
+        response = common.msgbox("Also delete measurement from disk?", buttons="Yes, No, Cancel")
         self.ctl.gui.colorize_button(self.button_trash, False)
-        self.measurement.delete(from_disk=False, update_parent=True)
-
-    ##
-    # Passed from ConfirmWidget.button_yes
-    #
-    # The user does indeed want to delete this Measurement (and the Trash icon
-    # indicates 'from_disk' as well), so pass the message up the chain.
-    def confirm_yes_callback(self):
-        self.measurement.delete(from_disk=True, update_parent=True)
+        if response == "Cancel":
+            return
+        self.measurement.delete(from_disk=(response == "Yes"), update_parent=True)
 
     def display_callback(self):
         if self.is_displayed:
