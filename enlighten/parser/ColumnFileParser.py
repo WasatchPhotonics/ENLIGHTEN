@@ -53,7 +53,8 @@ class ColumnFileParser:
         # put loaded data into where it goes in ENLIGHTEN datatypes
         self.post_process_metadata()
 
-        # clear any spectral components that never got populated
+        self.processed_reading.wavelengths = self.settings.wavelengths
+        self.processed_reading.wavenumbers = self.settings.wavenumbers
         self.processed_reading.post_load_cleanup()
 
         # generate a Measurement

@@ -253,7 +253,6 @@ class MeasurementFactory(object):
 
         for m in measurements:
             try:
-                m.measurements = self.measurements
                 if generate_thumbnail:
                     self.create_thumbnail(m, is_collapsed)
             except:
