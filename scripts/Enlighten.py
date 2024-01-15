@@ -86,7 +86,7 @@ class EnlightenApplication:
             formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
         parser.add_argument("--log-level",         type=str, default="info",      help="logging level", choices=['debug', 'info', 'warning', 'error', 'critical'])
-        parser.add_argument("--log-append",        type=str, default="LIMIT",     help="append to existing logfile", choices=["False", "True", "LIMIT"])
+        parser.add_argument("--log-append",        type=str, default="False",     help="append to existing logfile", choices=["False", "True", "LIMIT"])
         parser.add_argument("--logfile",           type=str,                      help="explicit path for the logfile")
         parser.add_argument("--max-memory-growth", type=int, default=0,           help="automatically exit after this percent memory growth (0 for never, 100 = doubling)")
         parser.add_argument("--run-sec",           type=int, default=0,           help="automatically exit after this many seconds (0 for never)")
@@ -101,7 +101,7 @@ class EnlightenApplication:
     def run(self):
         # instantiate form (a QMainWindow with named "MainWindow")
         # UI needs to be imported here in order to access QResources for the splash screen
-        self.form = BasicWindow(title="ENLIGHTEN %s" % common.VERSION)
+        self.form = BasicWindow(title="ENLIGHTEN™ %s" % common.VERSION)
 
         pixmap = QPixmap(":/application/images/splash.png")
         pixmap = pixmap.scaled(pixmap.width()/2, pixmap.height()/2) # eyeballed, default seemed to take whole screen
@@ -117,9 +117,10 @@ class EnlightenApplication:
             append_arg=str(self.args.log_append)
         )
 
-        # This violates convention but Controller has so many imports that it takes a while to import
-        # This needs to occur here because the Qt app needs to be made before the splash screen
-        # So it has to occur in this function after both the app creation and splash screen creation
+        # This violates convention but Controller has so many imports that it 
+        # takes a while to import. This needs to occur here because the Qt app 
+        # needs to be made before the splash screen. So it has to occur in this 
+        # function after both the app creation and splash screen creation.
         from enlighten.Controller import Controller
 
         log.debug("platform = %s", platform.platform())
