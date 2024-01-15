@@ -91,11 +91,12 @@ class MeasurementFactory(object):
     # Create the ThumbnailWidget for a Measurement, then render and emplace the 
     # rasterized thumbnail image.  Also add Measurements back-reference.
     def create_thumbnail(self, measurement, is_collapsed=False):
-        if measurement.plugin_name == "":
-            graph = self.ctl.graph
+        if measurement.plugin_name:
+            log.debug(f"measurement came from a plugin so checking for second graph")
+            graph = self.ctl.plugin_controller.get_active_graph()
         else:
-            log.debug(f"graph is plugin so sending plugin graph")
-            graph = self.ctl.get_plugin_graph()
+            log.debug("measurement doesn't have a plugin so default graph")
+            graph = self.ctl.graph
 
         measurement.thumbnail_widget = ThumbnailWidget(
             ctl             = self.ctl,

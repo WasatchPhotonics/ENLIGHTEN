@@ -832,7 +832,7 @@ class PluginController:
         if config is None:
             return
 
-        self.plugin_plot= pyqtgraph.PlotWidget(name=f"{config.name}")
+        self.plugin_plot = pyqtgraph.PlotWidget(name=f"{config.name}")
         if self.grid is not None and self.grid.enabled:
             self.plugin_plot.showGrid(True, True)
         self.combo_graph_pos.setVisible(True)
@@ -841,6 +841,7 @@ class PluginController:
 
         self.graph_plugin = Graph(
             ctl                 = self.ctl,
+            name                = f"Plugin {config.name}",
 
             plot                = self.plugin_plot,
             legend              = self.plugin_plot_legend,
@@ -1281,7 +1282,7 @@ class PluginController:
         log.debug(f"received Measurement from event {event}")
 
         if event == "pre-save" and self.enabled:
-            measurement.set_plugin_name(self.module_name)
+            measurement.plugin_name = self.module_name
 
         config = self.get_current_configuration()
         if config is None or config.events is None:
@@ -1355,3 +1356,8 @@ class PluginController:
 
         self.plugin_curves = {}
 
+    def get_active_graph(self):
+        module_info = self.get_current_module_info()
+        if module_info and module_info.config:
+            return self.graph_plugin if module_info.config.has_other_graph else self.graph_scope
+        return self.graph_scope

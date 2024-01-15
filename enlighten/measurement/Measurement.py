@@ -370,8 +370,8 @@ class Measurement:
     # for parsing external formats like SPC.
     def init_from_dict(self, d):
 
-        if "Label" in d:
-            self.label = d["Label"]
+        self.label = d.get("Label", None)
+        self.plugin_name = d.get("Plugin Name", None)
 
         # timestamp
         self.timestamp = datetime.datetime.now()
@@ -403,9 +403,6 @@ class Measurement:
 
     def add_renamable(self, pathname):
         self.renamable_files.add(pathname)
-
-    def set_plugin_name(self, text: str) -> None:
-        self.plugin_name = text
 
     def generate_id(self):
         # It is unlikely that the same serial number will ever generate multiple
