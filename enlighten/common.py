@@ -153,7 +153,7 @@ def set_controller_instance(inst):
     global ctl
     ctl = inst
 
-def msgbox(prompt, title="Alert", buttons=0, detail=None):
+def msgbox(prompt, title="Alert", buttons=None, detail=None):
     """
     Display an interupting message to the user.
 
@@ -185,19 +185,26 @@ def msgbox(prompt, title="Alert", buttons=0, detail=None):
     mb.setWindowTitle(title)
     mb.setText(prompt)
 
-    if buttons == 0:
-        mb.setStandardButtons(QMessageBox.Ok)
-    elif buttons == 1:
-        mb.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-    elif buttons == 4:
-        mb.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+    mask = 0
+    buttons = buttons.lower()
+    if "ok"     in buttons: mask |= QMessageBox.Ok
+    if "no"     in buttons: mask |= QMessageBox.No
+    if "yes"    in buttons: mask |= QMessageBox.Yes
+    if "cancel" in buttons: mask |= QMessageBox.Cancel
+    if mask == 0:
+        mask = QMessageBox.Okay
 
+    mb.setStandardButtons(mask)
     mb.setIcon(QMessageBox.Warning)
 
     if detail:
         mb.setDetailedText(detail)
 
-    return mb.exec_() in [QMessageBox.Ok, QMessageBox.Yes]
+    result = mb.exec_()
+    if result == QMessageBox.Ok: return "Ok"
+    if result == QMessageBox.No: return "No"
+    if result == QMessageBox.Yes: return "Yes"
+    if result == QMessageBox.Cancel: return "Cancel"
 
 def is_rpi():
     result = False
