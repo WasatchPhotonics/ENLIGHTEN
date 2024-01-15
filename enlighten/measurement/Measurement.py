@@ -1256,6 +1256,13 @@ class Measurement:
         dark = pr.get_dark(stage)
         reference = pr.get_reference(stage)
 
+        if wavelengths is not None:
+            pixels = len(wavelengths)
+        elif wavenumbers is not None:
+            pixels = len(wavenumbers)
+        else:
+            pixels = len(processed)
+
         with open(pathname, "w", newline="", encoding='utf-8') as f:
 
             out = csv.writer(f, delimiter=delim)
@@ -1309,7 +1316,7 @@ class Measurement:
             # store extra precision for relative measurements
             precision = 5 if pr.reference is not None else 2
 
-            for pixel in range(len(wavelengths)):
+            for pixel in range(pixels):
                 values = []
                 if self.ctl.save_options.save_pixel():       values.append(pixel)
                 if self.ctl.save_options.save_wavelength():  values.append(formatted(2,         wavelengths, pixel))
