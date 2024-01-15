@@ -229,7 +229,7 @@ class BusinessObjects:
         ctl.guide = GuideFeature(ctl)
 
         self.header("instantiating Graph")
-        ctl.graph = Graph(ctl)
+        ctl.graph = Graph(ctl, name="Scope")
 
         self.header("instantiating HardwareFileOutputManager")
         ctl.hardware_file_manager = HardwareFileOutputManager(ctl)

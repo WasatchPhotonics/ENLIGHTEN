@@ -48,6 +48,7 @@ class Graph(object):
     # already-constructed chart and legend. Perhaps we need a GraphFactory?
     def __init__(self,
             ctl,
+            name,
 
             legend                      = None,
             lock_marker                 = False, # for 'xy' graphs
@@ -55,6 +56,7 @@ class Graph(object):
             ):               
 
         self.ctl                        = ctl
+        self.name                       = name
         self.legend                     = legend
         self.lock_marker                = lock_marker
         self.plot                       = plot

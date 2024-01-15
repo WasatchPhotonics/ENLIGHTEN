@@ -55,6 +55,8 @@ class ThumbnailWidget(QtWidgets.QFrame):
         self.is_collapsed   = is_collapsed
         self.graph          = graph 
 
+        log.debug(f"using graph {graph.name}")
+
         self.is_displayed  = False
         self.selected_color = None
         self.curve = None
