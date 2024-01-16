@@ -37,7 +37,7 @@ cloc:
 # etc to force .pyc rebuilds
 clean:
 	@rm -rfv scripts/built-dist/Enlighten* \
-             scripts/windows_installer/*.exe \
+             scripts/windows_installer/ \
              scripts/work-path/Enlighten \
              enlighten/assets/uic_qrc/*.py \
              build \

@@ -402,6 +402,8 @@ if "%innosetup%" == "1" (
         set "COMPRESSION=lzma/max"
     )
 
+    if not exist "scripts\windows_installer\" mkdir scripts\windows_installer
+
     "%PROGRAM_FILES_X86%\Inno Setup 6\iscc.exe" ^
         /DENLIGHTEN_VERSION=%ENLIGHTEN_VERSION% ^
         /DCOMPRESSION=%COMPRESSION% ^
