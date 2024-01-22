@@ -1462,8 +1462,12 @@ class Controller:
 
         log.debug("attempt_reading(%s): update spectrum data: %s and length (%s)", device_id, str(reading.spectrum[0:5]), str(len(reading.spectrum)))
 
-        # When using BatchCollection's Spectrum LaserMode, the driver may attach
-        # an averaged dark to the Reading.
+        # When using BatchCollection's Spectrum LaserMode, or RamanModeFeature, 
+        # the driver may attach an averaged dark to the laser-illuminated Reading. 
+        # Note that Wasatch.PY is not performing dark subtraction in these cases,
+        # so the current process is to apply the attached dark to the current
+        # application state, such that "normal" dark subtraction will occur within
+        # ENLIGHTEN.
         if reading.dark is not None:
             log.debug("attempt_reading: setting dark from Reading: %s", reading.dark)
             self.dark_feature.store(dark=reading.dark)
@@ -2357,7 +2361,7 @@ class Controller:
                                                   dlg_btns)
         # Generate a bool list by comparing the clicked btn against the btn options
         self.dialog_open = False
-        spec.settings.state.ignore_timeouts_until = datetime.datetime(datetime.MAXYEAR,12,1)
+        spec.settings.state.ignore_timeouts_until = datetime.datetime(datetime.MAXYEAR,12,1) # MZ: hrmm
         if selection == [True, False, False]:
             log.info("user clicked 'Okay' to dismiss the dialog with no action")
         elif selection == [False, True, False]:
