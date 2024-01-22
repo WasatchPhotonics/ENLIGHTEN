@@ -314,9 +314,7 @@ class BusinessObjects:
         ctl.scan_averaging = ScanAveragingFeature(ctl)
 
         self.header("instantiating TakeOneFeature")
-        ctl.take_one = TakeOneFeature(
-            multispec                   = ctl.multispec,
-            scan_averaging              = ctl.scan_averaging)
+        ctl.take_one = TakeOneFeature(ctl)
 
         self.header("instantiating CloudManager")
         ctl.cloud_manager = CloudManager(
@@ -415,12 +413,7 @@ class BusinessObjects:
             multispec                   = ctl.multispec)
 
         self.header("instantiating RamanModeFeature")
-        ctl.raman_mode_feature = RamanModeFeature(
-            bt_laser                    = sfu.pushButton_laser_toggle,
-            cb_enable                   = sfu.checkBox_raman_mode_enable,
-            multispec                   = ctl.multispec,
-            page_nav                    = ctl.page_nav,
-            vcr_controls                = ctl.vcr_controls)
+        ctl.raman_mode_feature = RamanModeFeature(ctl)
 
         # TODO: refactor like PluginController
         self.header("instantiating KIAFeature")
