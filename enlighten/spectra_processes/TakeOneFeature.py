@@ -8,16 +8,12 @@ log = logging.getLogger(__name__)
 #
 class TakeOneFeature(object):
 
-    def __init__(self,
-            multispec,
-            scan_averaging):
-        self.multispec      = multispec
-        self.scan_averaging = scan_averaging
-
-        # will be populated post-instantiation
-        self.vcr_controls = None    
+    def __init__(self, ctl):
+        self.ctl = ctl
 
         self.reset()
+
+        self.observers = {}
 
     def reset(self):
         log.debug("resetting")
@@ -30,17 +26,22 @@ class TakeOneFeature(object):
 
         # anyone waiting on the NEXT completion
 
-        if self.vcr_controls is not None:
-            self.vcr_controls.unregister_observer("stop", self.stop)
-            self.vcr_controls.update_visibility()
-        self.scan_averaging.reset()
+        if self.ctl.vcr_controls:
+            self.ctl.vcr_controls.unregister_observer("stop", self.stop)
+            self.ctl.vcr_controls.update_visibility()
+        self.ctl.scan_averaging.reset()
+
+    def register_observer(self, event, callback):
+        if event not in self.observers:
+            self.observers[event] = set()
+        self.observers[event].add(callback)
 
     ##
     # @param spec   which spectrometer to use, or None for all
     # @param save   whether to save the measurement at completion
     # @param completion_callback if provided, fire when done
     def start(self, spec=None, save=False, completion_callback=None):
-        log.debug("starting")
+        log.debug(f"starting (spec {spec}, save {save}, completion_callback {completion_callback}")
 
         self.spec = spec
         self.save = save
@@ -48,20 +49,32 @@ class TakeOneFeature(object):
         self.completion_count = 0
         self.completion_callback = completion_callback
 
-        self.vcr_controls.register_observer("stop", self.stop)
+        log.debug("registering VCRControls.stop -> self.stop")
+        self.ctl.vcr_controls.register_observer("stop", self.stop)
+
+        # note that we trigger callbacks before actually unpausing and sending 
+        # the take_one, so subscribers can prepare themselves to "catch" / 
+        # process the upcoming measurement
+        if "start" in self.observers:
+            for callback in self.observers["start"]:
+                callback()
+
+        log.debug("unpausing")
         self.pause(False)
 
         if self.spec is None:
-            self.multispec.change_device_setting("take_one", True)
+            self.ctl.multispec.change_device_setting("take_one", True)
         else:
             self.spec.change_device_setting("take_one", True)
+
+        log.debug(f"done starting")
 
     def stop(self):
         log.debug("stopping")
 
         if self.running:
             if self.spec is None:
-                self.multispec.change_device_setting("cancel_take_one")
+                self.ctl.multispec.change_device_setting("cancel_take_one")
             else:
                 self.spec.change_device_setting("cancel_take_one")
             self.pause(True)
@@ -77,6 +90,8 @@ class TakeOneFeature(object):
                 processed_reading.reading is None:
             return
 
+        log.debug("process: start")
+
         # did we get an averaged reading (completing a single TakeOne within a spectrometer?)
         reading = processed_reading.reading
         if not reading.averaged:
@@ -84,28 +99,40 @@ class TakeOneFeature(object):
         self.completion_count += 1
 
         # does this complete the overall TakeOne operation?
+        log.debug("process: checking for completion")
         if self.check_complete():
+            log.debug("process: calling complete")
             self.complete()
 
     def check_complete(self):
         if self.spec is None:
-            return self.completion_count >= self.multispec.count()
+            return self.completion_count >= self.ctl.multispec.count()
         else:
             return self.completion_count >= 1
 
     def complete(self):
+        log.debug("complete: starting")
         self.pause(True)
         if self.save:
-            self.vcr_controls.save()
+            log.debug("complete: saving")
+            self.ctl.vcr_controls.save()
 
         if self.completion_callback:
+            log.debug(f"complete: notifying {self.completion_callback}")
             self.completion_callback()
 
+        if "complete" in self.observers:
+            for callback in self.observers["complete"]:
+                callback()
+
+        log.debug("complete: resetting")
         self.reset()
+
+        log.debug("complete: done")
 
     def pause(self, flag):
         if self.spec is None:
-            self.multispec.set_app_state("paused", flag)
+            self.ctl.multispec.set_app_state("paused", flag)
         else:
             self.spec.app_state.paused = flag
             
