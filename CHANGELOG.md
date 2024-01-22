@@ -2,6 +2,11 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2023-01-16 4.0.34
+    - RamanModeFeature 
+        - include convenience laser button
+        - default 3s laser warmup
+    - moved RamanModeFeature, TakeOneFeature to ctl
 - 2023-01-15 4.0.33
     - fix load bug
     - simplify common.msgbox api
