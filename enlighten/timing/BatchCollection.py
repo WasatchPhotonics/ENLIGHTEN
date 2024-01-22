@@ -31,7 +31,7 @@ class BatchCollection(object):
     running mode, and simply timed a sequence of "Save" events running in
     parallel to the ongoing stream of spectra continually rendered to the scope.
     
-    As a result, the beginning of ACQUISITIONS were not synchronized to the
+    As a result, the beginning of acquisitions were not synchronized to the
     beginning of each batch "step", and the "save event" was not specifically
     tied to the END of an acquisition started within the step.
     
