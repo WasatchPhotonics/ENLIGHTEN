@@ -293,10 +293,10 @@ class LaserControlFeature:
     # Private Methods
     # ##########################################################################
 
-    def refresh_laser_button(self):
+    def refresh_laser_button(self, force_on=False):
         spec = self.ctl.multispec.current_spectrometer()
-        enabled = spec.settings.state.laser_enabled if spec else False
 
+        enabled = force_on or (spec and spec.settings.state.laser_enabled)
         sfu = self.ctl.form.ui
 
         if enabled:
@@ -620,10 +620,14 @@ class LaserControlFeature:
         sfu = self.ctl.form.ui
         enough_for_laser = perc >= self.MIN_BATTERY_PERC
         log.debug("enough_for_laser = %s (%.2f%%)" % (enough_for_laser, perc))
+        self.set_allowed(enough_for_laser, reason_why_not=f"battery low ({perc:.2f}%)")
 
+    # also used by RamanModeFeature
+    def set_allowed(self, flag, reason_why_not):
+        sfu = self.ctl.form.ui
         for b in [ sfu.pushButton_laser_toggle, sfu.pushButton_laser_convenience ]:
-            b.setEnabled(enough_for_laser)
-            b.setToolTip("Toggle laser (ctrl-L)" if enough_for_laser else f"battery low ({perc:.2f}%)")
+            b.setEnabled(flag)
+            b.setToolTip("Toggle laser (ctrl-L)" if flag else reason_why_not)
 
     def slider_power_callback(self):
         self.slider_stop_usb = False
