@@ -1371,7 +1371,7 @@ class Controller:
             return
 
         # we collected the reading (to clear the queue), but don't do anything with it
-        if spec.app_state.paused and not self.batch_collection.running:
+        if spec.app_state.paused and not (self.batch_collection.running or spec.app_state.take_one_request):
             return
 
         if acquired_reading is None or acquired_reading.reading is None:
@@ -1422,6 +1422,22 @@ class Controller:
             return
 
         reading = acquired_reading.reading
+
+        # are we waiting on a SPECIFIC reading?
+        if spec.app_state.take_one_request:
+            # is this that reading?
+            if reading.take_one_request:
+                if reading.take_one_request.request_id == spec.app_state.take_one_request.request_id:
+                    log.debug(f"TakeOneRequest matched: {spec.app_state.take_one_request}")
+                else:
+                    log.critical(f"TakeOneRequest mismatch: expected {spec.app_state.take_one_request} but received {reading.take_one_request}...clearing")
+                spec.app_state.take_one_request = None
+            else:
+                log.debug(f"TakeOneRequest missing: ignoring Reading without {spec.app_state.take_one_request}")
+                return
+        else:
+            log.debug("not looking for any particular reading")
+
         self.multispec.spec_most_recent_reads[spec] = reading
         if reading.failure is not None:
             # WasatchDeviceWrapper currently turns these into upstream poison-pills,
