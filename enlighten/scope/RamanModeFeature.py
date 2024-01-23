@@ -1,6 +1,8 @@
 import logging
 from datetime import datetime, timedelta
 
+from wasatch.TakeOneRequest import TakeOneRequest
+
 log = logging.getLogger(__name__)
 
 ##
@@ -38,6 +40,17 @@ class RamanModeFeature(object):
         self.ctl.take_one.register_observer("start", self.take_one_start)
         self.ctl.take_one.register_observer("complete", self.take_one_complete)
 
+    ##
+    # called by Controller.disconnect_device to ensure we turn this off between
+    # connections
+    def disconnect(self):
+        self.cb_enable.setChecked(False)
+        self.update_visibility()
+
+    ############################################################################
+    # Methods
+    ############################################################################
+
     def update_visibility(self):
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
@@ -50,7 +63,7 @@ class RamanModeFeature(object):
                            self.ctl.vcr_controls.is_paused() and \
                            spec.settings.eeprom.has_laser
 
-        log.debug("visible = %s", self.visible)
+        # log.debug("visible = %s", self.visible)
         self.cb_enable.setVisible(self.visible)
 
         if not self.visible:
@@ -58,18 +71,15 @@ class RamanModeFeature(object):
         else:
             self.enable_callback()
 
-    ##
-    # called by Controller.disconnect_device to ensure we turn this off between
-    # connections
-    def disconnect(self):
-        self.cb_enable.setChecked(False)
-        self.update_visibility()
+    def generate_take_one_request(self):
+        return TakeOneRequest(take_dark=True, enable_laser_before=True, disable_laser_after=True, laser_warmup_ms=3000)
 
     ############################################################################
     # Callbacks
     ############################################################################
 
     def take_one_start(self):
+        log.debug(f"take_one_start: enabled {self.enabled}")
         if self.enabled:
             self.ctl.dark_feature.clear(quiet=True)
             buffer_ms = 2000
@@ -79,6 +89,7 @@ class RamanModeFeature(object):
                 ignore_until = datetime.now() + timedelta(milliseconds=timeout_ms)
                 log.debug(f"take_one_start: setting {spec} ignore_timeouts_util = {ignore_until} ({timeout_ms} ms)")
                 spec.settings.state.ignore_timeouts_until = ignore_until
+
             log.debug("take_one_start: forcing laser button")
             self.ctl.laser_control.refresh_laser_button(force_on=True)
 
@@ -92,11 +103,3 @@ class RamanModeFeature(object):
         log.debug("enable = %s", self.enabled)
 
         self.ctl.laser_control.set_allowed(not self.enabled, reason_why_not="Raman Mode enabled")
-
-        for attr in [ 'acquisition_laser_trigger_enable', 'acquisition_take_dark_enable' ]:
-            log.debug(f"setting {attr} {self.enabled}")
-            self.ctl.multispec.set_state(attr, self.enabled)
-            self.ctl.multispec.change_device_setting(attr, self.enabled)
-
-        self.ctl.multispec.change_device_setting("acquisition_laser_trigger_delay_ms", self.LASER_WARMUP_MS)
-        self.ctl.multispec.set_state("acquisition_laser_trigger_delay_ms", self.LASER_WARMUP_MS)
