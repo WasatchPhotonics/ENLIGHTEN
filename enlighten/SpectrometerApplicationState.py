@@ -43,6 +43,7 @@ class SpectrometerApplicationState(object):
 
         self.reading_count = 0
         self.paused = False
+        self.take_one_request = None
         self.hidden = False
         self.waterfall = []
         self.missing_acquisition_timeout = None
@@ -75,6 +76,7 @@ class SpectrometerApplicationState(object):
         log.info("  Reference Dark-Corrected:   %s", self.reference_is_dark_corrected)
         log.info("  Reading Count:              %d", self.reading_count)
         log.info("  Paused:                     %s", self.paused)
+        log.info("  Take One Request            %s", self.take_one_request)
         log.info("  Hidden:                     %s", self.hidden)
         log.info("  Waterfall:                  %s", None if self.waterfall is None else self.waterfall[:5])
         log.info("  Missing Acquisition Timeout:%s", self.missing_acquisition_timeout)
