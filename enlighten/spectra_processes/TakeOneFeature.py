@@ -1,4 +1,5 @@
 import logging
+from wasatch.TakeOneRequest import TakeOneRequest
 
 log = logging.getLogger(__name__)
 
@@ -59,13 +60,20 @@ class TakeOneFeature(object):
             for callback in self.observers["start"]:
                 callback()
 
-        log.debug("unpausing")
-        self.pause(False)
+        # log.debug("unpausing")
+        # self.pause(False)
+
+        if self.ctl.raman_mode_feature.enabled:
+            take_one_request = self.ctl.raman_mode_feature.generate_take_one_request()
+        else:
+            take_one_request = TakeOneRequest()
 
         if self.spec is None:
-            self.ctl.multispec.change_device_setting("take_one", True)
+            self.ctl.multispec.set_app_state("take_one_request", take_one_request)
+            self.ctl.multispec.change_device_setting("take_one_request", take_one_request)
         else:
-            self.spec.change_device_setting("take_one", True)
+            self.spec.app_state.take_one_request = take_one_request
+            spec.change_device_setting("take_one_request", take_one_request)
 
         log.debug(f"done starting")
 
