@@ -5,6 +5,8 @@ from enlighten import util
 from enlighten import common
 from enlighten.ScrollStealFilter import ScrollStealFilter
 
+from wasatch.TakeOneRequest import TakeOneRequest
+
 if common.use_pyside2():
     from PySide2 import QtCore, QtGui
 else:
@@ -31,7 +33,7 @@ class BatchCollection(object):
     running mode, and simply timed a sequence of "Save" events running in
     parallel to the ongoing stream of spectra continually rendered to the scope.
     
-    As a result, the beginning of ACQUISITIONS were not synchronized to the
+    As a result, the beginning of acquisitions were not synchronized to the
     beginning of each batch "step", and the "save event" was not specifically
     tied to the END of an acquisition started within the step.
     
@@ -128,56 +130,24 @@ class BatchCollection(object):
     subtraction within the driver, but adding a .dark attribute to the Reading
     which ENLIGHTEN can register and store upon receipt.
     """
-    def __init__(self,
-            config,
-            dark_feature,
-            factory,
-            laser_enable_callback,
-            marquee,
-            measurements,
-            multispec,
-            save_options,
-            vcr_controls,
+    def __init__(self, ctl):
+        self.ctl = ctl
+        sfu = ctl.form.ui
 
-            cb_enabled,
-            cb_dark_before_batch,
-            cb_clear_before_batch,
-            cb_export_after_batch,
-            lb_explain,
-            rb_laser_manual,
-            rb_laser_spectrum,
-            rb_laser_batch,
-            spinbox_measurement_count,
-            spinbox_measurement_period_ms,
-            spinbox_batch_count,
-            spinbox_batch_period_sec,
-            spinbox_laser_warmup_ms,
-            spinbox_collection_timeout):
-
-        self.config                         = config
-        self.dark_feature                   = dark_feature
-        self.factory                        = factory
-        self.laser_enable_callback          = laser_enable_callback
-        self.marquee                        = marquee
-        self.measurements                   = measurements
-        self.multispec                      = multispec
-        self.save_options                   = save_options
-        self.vcr_controls                   = vcr_controls
-
-        self.cb_enabled                     = cb_enabled
-        self.cb_dark_before_batch           = cb_dark_before_batch
-        self.cb_clear_before_batch          = cb_clear_before_batch
-        self.cb_export_after_batch          = cb_export_after_batch
-        self.lb_explain                     = lb_explain
-        self.rb_laser_manual                = rb_laser_manual
-        self.rb_laser_spectrum              = rb_laser_spectrum
-        self.rb_laser_batch                 = rb_laser_batch
-        self.spinbox_measurement_count      = spinbox_measurement_count
-        self.spinbox_measurement_period_ms  = spinbox_measurement_period_ms
-        self.spinbox_batch_count            = spinbox_batch_count
-        self.spinbox_batch_period_sec       = spinbox_batch_period_sec
-        self.spinbox_laser_warmup_ms        = spinbox_laser_warmup_ms
-        self.spinbox_collection_timeout     = spinbox_collection_timeout
+        self.cb_enabled                     = sfu.checkBox_BatchCollection_enabled
+        self.cb_dark_before_batch           = sfu.checkBox_BatchCollection_dark_before_batch
+        self.cb_clear_before_batch          = sfu.checkBox_BatchCollection_clear_before_batch
+        self.cb_export_after_batch          = sfu.checkBox_BatchCollection_export_after_batch
+        self.lb_explain                     = sfu.label_BatchCollection_explain
+        self.rb_laser_manual                = sfu.radioButton_BatchCollection_laser_manual
+        self.rb_laser_spectrum              = sfu.radioButton_BatchCollection_laser_spectrum
+        self.rb_laser_batch                 = sfu.radioButton_BatchCollection_laser_batch
+        self.spinbox_measurement_count      = sfu.spinBox_BatchCollection_measurement_count
+        self.spinbox_measurement_period_ms  = sfu.spinBox_BatchCollection_measurement_period_ms
+        self.spinbox_batch_count            = sfu.spinBox_BatchCollection_batch_count
+        self.spinbox_batch_period_sec       = sfu.spinBox_BatchCollection_batch_period_sec
+        self.spinbox_laser_warmup_ms        = sfu.spinBox_BatchCollection_laser_warmup_ms
+        self.spinbox_collection_timeout     = sfu.spinBox_BatchCollection_collection_timeout
 
         # if true, save each measurement for each spectrometer (when timing is
         # disabled and we're just counting down measurements)
@@ -241,42 +211,42 @@ class BatchCollection(object):
         self.update_from_widgets()
 
         # register with VCRButtons
-        self.vcr_controls.batch_collection = self
-        self.vcr_controls.register_observer("start_collection", self.start_collection)
+        self.ctl.vcr_controls.batch_collection = self
+        self.ctl.vcr_controls.register_observer("start_collection", self.start_collection)
 
     def init_from_config(self):
         log.debug("init_from_config")
         s = "batch"
 
-        self.start_on_connect = self.config.get_bool(s, "start_on_connect")
-        self.cb_enabled.setChecked(self.config.get_bool(s, "enabled"))
-        self.cb_dark_before_batch.setChecked(self.config.get_bool(s, "dark_before_batch"))
-        self.cb_clear_before_batch.setChecked(self.config.get_bool(s, "clear_before_batch"))
-        self.cb_export_after_batch.setChecked(self.config.get_bool(s, "export_after_batch"))
+        self.start_on_connect = self.ctl.config.get_bool(s, "start_on_connect")
+        self.cb_enabled.setChecked(self.ctl.config.get_bool(s, "enabled"))
+        self.cb_dark_before_batch.setChecked(self.ctl.config.get_bool(s, "dark_before_batch"))
+        self.cb_clear_before_batch.setChecked(self.ctl.config.get_bool(s, "clear_before_batch"))
+        self.cb_export_after_batch.setChecked(self.ctl.config.get_bool(s, "export_after_batch"))
 
-        if self.config.has_option(s, "measurement_count"):
-            measure_count = self.config.get_int(s, "measurement_count") 
+        if self.ctl.config.has_option(s, "measurement_count"):
+            measure_count = self.ctl.config.get_int(s, "measurement_count") 
             self.spinbox_measurement_count.setValue(measure_count)
 
-        if self.config.has_option(s, "measurement_period_ms"):
-            self.spinbox_measurement_period_ms.setValue(self.config.get_int(s, "measurement_period_ms"))
+        if self.ctl.config.has_option(s, "measurement_period_ms"):
+            self.spinbox_measurement_period_ms.setValue(self.ctl.config.get_int(s, "measurement_period_ms"))
 
-        if self.config.has_option(s, "batch_period_sec"):
-            self.spinbox_batch_period_sec.setValue(self.config.get_int(s, "batch_period_sec"))
+        if self.ctl.config.has_option(s, "batch_period_sec"):
+            self.spinbox_batch_period_sec.setValue(self.ctl.config.get_int(s, "batch_period_sec"))
 
-        if self.config.has_option(s, "laser_warmup_ms"):
-            self.spinbox_laser_warmup_ms.setValue(self.config.get_int(s, "laser_warmup_ms"))
+        if self.ctl.config.has_option(s, "laser_warmup_ms"):
+            self.spinbox_laser_warmup_ms.setValue(self.ctl.config.get_int(s, "laser_warmup_ms"))
 
-        if self.config.has_option(s, "batch_count"):
-            self.spinbox_batch_count.setValue(self.config.get_int(s,"batch_count"))
+        if self.ctl.config.has_option(s, "batch_count"):
+            self.spinbox_batch_count.setValue(self.ctl.config.get_int(s,"batch_count"))
 
         # defaults
         self.laser_mode = "manual"
         self.rb_laser_manual.setChecked(True)
 
         # laser mode
-        if self.config.has_option(s, "laser_mode"):
-            self.laser_mode = self.config.get(s, "laser_mode").lower()
+        if self.ctl.config.has_option(s, "laser_mode"):
+            self.laser_mode = self.ctl.config.get(s, "laser_mode").lower()
             log.debug("init_from_config: laser_mode %s", self.laser_mode)
             if self.laser_mode == "batch":
                 self.rb_laser_batch.setChecked(True)
@@ -308,11 +278,11 @@ class BatchCollection(object):
         for name in [ "enabled", "dark_before_batch", "clear_before_batch", "export_after_batch",
                       "measurement_count", "measurement_period_ms", "batch_count", "batch_period_sec",
                       "laser_warmup_ms", "start_on_connect", "laser_mode" ]:
-            self.config.set(s, name, getattr(self, name))
+            self.ctl.config.set(s, name, getattr(self, name))
 
         # todo: have BatchCollection support observers and events, so VCRControls
         #       can register for an "enable" event
-        self.vcr_controls.update_visibility()
+        self.ctl.vcr_controls.update_visibility()
 
         self.update_explanation()
 
@@ -365,8 +335,8 @@ class BatchCollection(object):
             self.stop() # just to be safe
             return False
 
-        self.vcr_controls.register_observer("stop", self.vcr_stop)
-        #self.vcr_controls.register_observer("save", self.save_complete)
+        self.ctl.vcr_controls.register_observer("stop", self.vcr_stop)
+        #self.ctl.vcr_controls.register_observer("save", self.save_complete)
         self.collection_start_time = datetime.datetime.now()
         if self.spinbox_collection_timeout.value() != 0:
             self.collection_timeout = self.collection_start_time + datetime.timedelta(seconds=self.spinbox_collection_timeout.value())
@@ -378,18 +348,13 @@ class BatchCollection(object):
 
             # initialize driver-level laser auto_triggering and dark collection
             if self.laser_mode == "spectrum":
-                log.debug("starting laser_mode '%s', so setting acquisition_laser options", self.laser_mode)
-                self.multispec.change_device_setting("acquisition_laser_trigger_delay_ms", self.laser_warmup_ms)
-                self.multispec.change_device_setting("acquisition_laser_trigger_enable", True)
-                if self.dark_before_batch:
-                    self.multispec.change_device_setting("acquisition_take_dark_enable", True)
-
+                take_one_request = TakeOneRequest(take_dark=self.dark_before_batch, enable_laser_before=True, disable_laser_after=True, laser_warmup_ms=self.laser_warmup_ms)
             else:
-                log.debug("starting laser_mode '%s', so disabling acquisition_laser options", self.laser_mode)
-                self.multispec.change_device_setting("acquisition_laser_trigger_delay_ms", 0)
-                self.multispec.change_device_setting("acquisition_laser_trigger_enable", False)
-                self.multispec.change_device_setting("acquisition_take_dark_enable", False)
+                take_one_requst = TakeOneRequest()
 
+            log.debug(f"starting laser_mode {self.laser_mode}, so take_one_request {take_one_request}")
+            self.ctl.multispec.change_device_setting("take_one_request", take_one_request)
+            self.ctl.multispec.set_app_state("take_one_request", take_one_request)
             self.running = True
 
         else:
@@ -403,11 +368,11 @@ class BatchCollection(object):
 
     def start_batch(self):
         label = util.pluralize(self.measurement_count, "measurement", "measurements")
-        self.marquee.info("Starting batch %d/%d (%d %s)" % (
+        self.ctl.marquee.info("Starting batch %d/%d (%d %s)" % (
             self.current_batch_count + 1, self.batch_count, self.measurement_count, label), persist=True)
 
         if self.clear_before_batch:
-            self.measurements.erase_all()
+            self.ctl.measurements.erase_all()
 
         self.current_measurement_count = 0
         self.current_batch_start_time = datetime.datetime.now()
@@ -415,7 +380,7 @@ class BatchCollection(object):
         self.first_tick = True
 
         # we should only be ABLE to start a batch if we're paused, but...just to be sure:
-        self.vcr_controls.pause(all=self.save_options.save_all_spectrometers())
+        self.ctl.vcr_controls.pause(all=self.ctl.save_options.save_all_spectrometers())
 
         # Compute "next start time" now, at the beginning of the batch,
         # because it's defined as a PERIOD (start-to-start), not a DELAY.
@@ -424,25 +389,25 @@ class BatchCollection(object):
         log.debug("next batch would start at %s", self.next_batch_start_time)
 
         if self.dark_before_batch and self.laser_mode == "batch":
-            self.marquee.info("generating pre-laser batch dark", persist=True)
-            self.vcr_controls.step(completion_callback=self.start_batch_post_dark)
+            self.ctl.marquee.info("generating pre-laser batch dark", persist=True)
+            self.ctl.vcr_controls.step(completion_callback=self.start_batch_post_dark)
         else:
             self.start_batch_post_dark()
 
     def start_batch_post_dark(self):
         if self.dark_before_batch:
             log.debug("saving the new dark before enabling laser")
-            self.dark_feature.store()
+            self.ctl.dark_feature.store()
 
         # default to processing first tick immediately
         sleep_ms = 0
 
         # if we're not in manual laser mode, initialize laser for the batch
         if self.laser_mode == "batch":
-            self.laser_enable_callback(True, all=self.save_options.save_all_spectrometers())
+            self.ctl.laser_control.set_laser_enable(True, all=self.ctl.save_options.save_all_spectrometers())
             sleep_ms = self.laser_warmup_ms
             if sleep_ms > 0:
-                self.marquee.info("warming up laser", persist=True)
+                self.ctl.marquee.info("warming up laser", persist=True)
         elif self.laser_mode == "spectrum":
             # This is debatable, but seems safest.  Since we're going to be
             # turning the laser on and off for each individual acquisition,
@@ -450,7 +415,7 @@ class BatchCollection(object):
             #
             # To be doubly safe, we're turning off ALL lasers, regardless of
             # whether we're in "save_all" or not.
-            self.laser_enable_callback(False, all=True)
+            self.ctl.laser_control.set_laser_enable(False, all=True)
 
         log.debug("scheduling first tick in %d ms", sleep_ms)
         self.timer_measurement.start(sleep_ms)
@@ -466,10 +431,10 @@ class BatchCollection(object):
     # I don't think we can easily do this right now, perhaps for good reason.
     def generate_export_filename(self, now):
         filename = "Batch"
-        if prefix := self.save_options.prefix():
+        if prefix := self.ctl.save_options.prefix():
             filename += "-" + prefix
         filename += "-" + now.strftime("%Y%m%d-%H%M%S")
-        if suffix := self.save_options.suffix():
+        if suffix := self.ctl.save_options.suffix():
             filename += "-" + suffix
         if self.batch_count > 1:
             filename += f"-{self.current_batch_count}-of-{self.batch_count}"
@@ -486,19 +451,19 @@ class BatchCollection(object):
 
         if self.laser_mode == "batch":
             log.debug("disabling laser")
-            self.laser_enable_callback(False, all=True)
+            self.ctl.laser_control.set_laser_enable(False, all=True)
 
-        self.marquee.info("batch of %d measurements complete" % self.measurement_count, persist=True)
+        self.ctl.marquee.info("batch of %d measurements complete" % self.measurement_count, persist=True)
         self.current_batch_start_time = None
 
         # batches end in paused state
-        save_all = self.save_options.save_all_spectrometers()
-        self.vcr_controls.pause(all=save_all)
+        save_all = self.ctl.save_options.save_all_spectrometers()
+        self.ctl.vcr_controls.pause(all=save_all)
 
         # export if requested
         if self.export_after_batch:
             filename = self.generate_export_filename(now)
-            self.measurements.export_session(filename=filename)
+            self.ctl.measurements.export_session(filename=filename)
 
         # If the batch ends after the timeout then stop
         if self.collection_timeout is not None and now > self.collection_timeout:
@@ -522,11 +487,11 @@ class BatchCollection(object):
         else:
             sleep_ms = (self.next_batch_start_time - now).total_seconds() * 1000
             log.info("starting next batch in %d ms", sleep_ms)
-            self.marquee.info("next batch @ %s" % self.next_batch_start_time.strftime('%H:%M:%S'), persist=True)
+            self.ctl.marquee.info("next batch @ %s" % self.next_batch_start_time.strftime('%H:%M:%S'), persist=True)
             self.timer_batch.start(sleep_ms)
             
     def vcr_stop(self):
-        self.save_options.multipart_suffix = None
+        self.ctl.save_options.multipart_suffix = None
         self.stop()
 
     def stop(self):
@@ -534,13 +499,12 @@ class BatchCollection(object):
         self.running = False
         self.timer_measurement.stop()
         self.timer_batch.stop()
-        self.vcr_controls.unregister_observer("save", self.save_complete)
-        self.vcr_controls.unregister_observer("stop", self.vcr_stop)
+        self.ctl.vcr_controls.unregister_observer("save", self.save_complete)
+        self.ctl.vcr_controls.unregister_observer("stop", self.vcr_stop)
         self.current_batch_start_time = None
 
-        self.multispec.change_device_setting("acquisition_laser_trigger_delay_ms", 0)
-        self.multispec.change_device_setting("acquisition_laser_trigger_enable", False)
-        self.multispec.change_device_setting("acquisition_take_dark_enable", False)
+        self.ctl.multispec.change_device_setting("take_one_request", None)
+        self.ctl.multispec.set_app_state("take_one_request", None)
 
     def tick_measurement(self):
         """ At each tick of the Batch timer, initiate a Step And Save event. """
@@ -558,19 +522,19 @@ class BatchCollection(object):
             self.stop()
             return
 
-        self.save_options.multipart_suffix = "B%d %d-of-%d" % (self.current_batch_count + 1, self.current_measurement_count + 1, self.measurement_count)
+        self.ctl.save_options.multipart_suffix = "B%d %d-of-%d" % (self.current_batch_count + 1, self.current_measurement_count + 1, self.measurement_count)
 
         # compute (but don't yet schedule) next start-time now, so that the
         # measurement period can be "start-to-start"
         self.next_tick_start_time = datetime.datetime.now() + datetime.timedelta(milliseconds=self.measurement_period_ms)
 
         # when this event completes, VCRControls will call our save_complete method
-        self.vcr_controls.step_save(self.save_complete)
+        self.ctl.vcr_controls.step_save(self.save_complete)
 
     def save_complete(self):
         """ A VCRControls "step_save" event has completed. """
 
-        self.save_options.multipart_suffix = None
+        self.ctl.save_options.multipart_suffix = None
 
         if not self.running:
             return
@@ -589,7 +553,7 @@ class BatchCollection(object):
             self.complete_batch()
             return
 
-        self.marquee.info(
+        self.ctl.marquee.info(
             "saved %s of %s (batch %d)" % (self.current_measurement_count, self.measurement_count, self.current_batch_count + 1),
             persist=True)
 

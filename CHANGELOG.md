@@ -2,6 +2,13 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2023-01-16 4.0.34
+    - Refactored RamanModeFeature, VCRControls and TakeOneFeature around TakeOneRequest
+    - moved to ctl
+        - BatchCollection
+        - RamanModeFeature
+        - TakeOneFeature
+        - VCRControls
 - 2023-01-15 4.0.33
     - fix load bug
     - simplify common.msgbox api

@@ -24,32 +24,18 @@ log = logging.getLogger(__name__)
 #
 class VCRControls(object):
 
-    def __init__(self,
-            bt_pause,
-            bt_play,
-            bt_save,
-            bt_start_collection,
-            bt_step,
-            bt_step_save,
-            bt_stop,
-            gui,
-            multispec,
-            scan_averaging,
-            take_one):
+    def __init__(self, ctl):
+        self.ctl = ctl
+        sfu = ctl.form.ui
 
-        self.bt_pause            = bt_pause
-        self.bt_play             = bt_play
-        self.bt_save             = bt_save
-        self.bt_start_collection = bt_start_collection
-        self.bt_step             = bt_step
-        self.bt_step_save        = bt_step_save
-        self.bt_stop             = bt_stop
-        self.gui                 = gui
-        self.multispec           = multispec
-        self.scan_averaging      = scan_averaging
-        self.take_one            = take_one
+        self.bt_pause            = sfu.pushButton_scope_capture_pause
+        self.bt_play             = sfu.pushButton_scope_capture_play
+        self.bt_save             = sfu.pushButton_scope_capture_save
+        self.bt_start_collection = sfu.pushButton_scope_capture_start_collection
+        self.bt_step             = sfu.pushButton_scope_capture_step
+        self.bt_step_save        = sfu.pushButton_scope_capture_step_save
+        self.bt_stop             = sfu.pushButton_scope_capture_stop
 
-        self.batch_collection = None
         self.paused = False     # external callers should use is_paused()
 
         self.bt_pause           .clicked.connect(self.pause)
@@ -83,11 +69,7 @@ class VCRControls(object):
         self.bt_stop            .setToolTip(self.tooltips["stop"])
 
         # always colorize stop
-        gui.colorize_button(self.bt_stop, True)
-
-        # register with sibling objects
-        self.take_one.vcr_controls = self
-        self.scan_averaging.vcr_controls = self
+        self.ctl.gui.colorize_button(self.bt_stop, True)
 
         self.update_visibility()
 
@@ -140,7 +122,7 @@ class VCRControls(object):
     ## pause the current spectrometer
     def pause(self, all=False, spec=None): 
         log.debug("pause")
-        self._set_all_paused(paused=True, all=self.multispec.locked, spec=spec)
+        self._set_paused(True, all=self.ctl.multispec.locked, spec=spec)
         for callback in list(self.callbacks["pause"]):
             callback()
         self.update_visibility()
@@ -148,7 +130,7 @@ class VCRControls(object):
     ## set the current spectrometer to continuous acquisition
     def play(self, all=False, spec=None):
         log.debug("play")
-        self._set_all_paused(paused=False, all=self.multispec.locked, spec=spec)
+        self._set_paused(False, all=self.ctl.multispec.locked, spec=spec)
         for callback in list(self.callbacks["play"]):
             callback()
         self.update_visibility()
@@ -174,8 +156,8 @@ class VCRControls(object):
         # but it's not implemented in the list, as we don't want the callback to expire,
         # nor do we want it to trigger a state change in the sense of displaying
         # a permanent [stop] button
-        if self.scan_averaging:
-            self.scan_averaging.reset()
+        if self.ctl.scan_averaging:
+            self.ctl.scan_averaging.reset()
 
         # after the stop has been processed, clear all observers 
         # (each stop is a one-time event)
@@ -202,7 +184,7 @@ class VCRControls(object):
         log.debug("step")
 
         # pass along any callback related to the completion of the TakeOne process
-        self.take_one.start(save=save, completion_callback=completion_callback)
+        self.ctl.take_one.start(save=save, completion_callback=completion_callback)
 
         # to be clear, these callbacks indicate the "step" button was clicked/fired, 
         # NOT that it is complete
@@ -222,8 +204,8 @@ class VCRControls(object):
         log.debug("start_collection")
 
         # testing: pause, if not already
-        spec = self.multispec.current_spectrometer()
-        if spec is not None:
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec:
             paused = spec.app_state.paused
         else:
             paused = self.paused 
@@ -239,13 +221,6 @@ class VCRControls(object):
     # public methods
     # ##########################################################################
 
-    def is_paused(self):
-        spec = self.multispec.current_spectrometer()
-        if spec is not None:
-            return spec.app_state.paused
-        else:
-            return self.paused 
-
     ##
     # There are basically 5 typical permutations of buttons (lowercase = disabled)
     #
@@ -260,9 +235,9 @@ class VCRControls(object):
     #
     # This is called externally by BatchCollection and probably others.
     def update_visibility(self):
-        bc_enabled   = self.batch_collection is not None and self.batch_collection.enabled
-        bc_running   = self.batch_collection is not None and self.batch_collection.running
-        to_running   = self.take_one is not None and self.take_one.running
+        bc_enabled   = self.ctl.batch_collection is not None and self.ctl.batch_collection.enabled
+        bc_running   = self.ctl.batch_collection is not None and self.ctl.batch_collection.running
+        to_running   = self.ctl.take_one is not None and self.ctl.take_one.running
         stop_enabled = self._stop_enabled()
         paused       = self.is_paused()
 
@@ -304,7 +279,7 @@ class VCRControls(object):
     # @return whether the current spectrometer is paused or not
     def is_paused(self, spec=None):
         if spec is None:
-            spec = self.multispec.current_spectrometer()
+            spec = self.ctl.multispec.current_spectrometer()
         if spec is None or spec.app_state is None:
             return False
 
@@ -322,24 +297,38 @@ class VCRControls(object):
     # Private methods
     # ##########################################################################
 
-    ## pause the current spectrometer (or all, if specified)
-    ## @private
-    def _set_all_paused(self, paused, all=False, spec=None):
-        log.debug("set_all_paused: %s", paused)
-        self.paused = paused
+    def _set_paused(self, flag, all=False, spec=None):
+        """
+        Pause the current spectrometer (or all, if specified).
+
+        This used to set free_running_mode downstream when Paused, telling 
+        Wasatch.PY to stop endlessly reading spectra at the current integration 
+        time. The reason for that was probably to minimize latency when 
+        externally triggered, or perhaps just to minimize latency when resuming 
+        "Play". At the moment, this is not "playing" well with SiG, due to 
+        internal automatic sensor sleep modes, so I'm leaving the WrapperWorker
+        in free_running_mode at all times. Arguably we could treat Hamamatsu
+        and SiG separately, but I'm not doing that right now.
+
+        @private
+        """
+        log.debug(f"_set_paused: {flag}")
+        self.paused = flag
 
         if all:
-            for spec in self.multispec.get_spectrometers():
+            for spec in self.ctl.multispec.get_spectrometers():
                 spec.reset_acquisition_timeout()
-            self.multispec.set_app_state("paused", paused, all=all)
-            self.multispec.change_device_setting("free_running_mode", not paused)
+                spec.app_state.paused = flag
+                # spec.change_device_setting("free_running_mode", not flag) # see above
             return
 
+        # only change the current spectrometer
+
         if spec is None:
-            spec = self.multispec.current_spectrometer()
+            spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
         
-        spec.app_state.paused = paused
+        spec.app_state.paused = flag
         spec.reset_acquisition_timeout()
-        spec.change_device_setting("free_running_mode", not paused)
+        # spec.change_device_setting("free_running_mode", not flag) # see above

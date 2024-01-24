@@ -1,4 +1,7 @@
 import logging
+from datetime import datetime, timedelta
+
+from wasatch.TakeOneRequest import TakeOneRequest
 
 log = logging.getLogger(__name__)
 
@@ -15,48 +18,27 @@ log = logging.getLogger(__name__)
 # @todo consider if and where we should disable the laser if battery too low
 class RamanModeFeature(object):
 
-    def __init__(self,
-            bt_laser,
-            cb_enable,
-            multispec,
-            page_nav,
-            vcr_controls):
+    LASER_WARMUP_MS = 5000
 
-        self.bt_laser           = bt_laser
-        self.cb_enable          = cb_enable
-        self.page_nav           = page_nav
-        self.multispec          = multispec
-        self.vcr_controls       = vcr_controls
+    def __init__(self, ctl):
+        self.ctl = ctl
+        sfu = self.ctl.form.ui
+
+        self.bt_laser  = sfu.pushButton_laser_toggle
+        self.cb_enable = sfu.checkBox_raman_mode_enable
 
         self.enabled = False
         self.visible = False
 
-        self.vcr_controls.register_observer("pause", self.update_visibility)
-        self.vcr_controls.register_observer("play",  self.update_visibility)
+        self.ctl.vcr_controls.register_observer("pause", self.update_visibility)
+        self.ctl.vcr_controls.register_observer("play",  self.update_visibility)
 
-        self.cb_enable          .stateChanged       .connect(self.enable_callback)
+        self.cb_enable.stateChanged.connect(self.enable_callback)
 
         self.update_visibility()
 
-    def update_visibility(self):
-        spec = self.multispec.current_spectrometer()
-        if spec is None:
-            self.visible = False
-            is_micro = False
-        else:
-            is_micro = spec.settings.is_micro()
-            self.visible = is_micro and \
-                           self.page_nav.doing_raman() and \
-                           self.vcr_controls.is_paused() and \
-                           spec.settings.eeprom.has_laser
-
-        log.debug("visible = %s", self.visible)
-        self.cb_enable      .setVisible(self.visible)
-
-        if not self.visible:
-            self.cb_enable.setChecked(False)
-        else:
-            self.enable_callback()
+        self.ctl.take_one.register_observer("start", self.take_one_start)
+        self.ctl.take_one.register_observer("complete", self.take_one_complete)
 
     ##
     # called by Controller.disconnect_device to ensure we turn this off between
@@ -66,17 +48,58 @@ class RamanModeFeature(object):
         self.update_visibility()
 
     ############################################################################
+    # Methods
+    ############################################################################
+
+    def update_visibility(self):
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            self.visible = False
+            is_micro = False
+        else:
+            is_micro = spec.settings.is_micro()
+            self.visible = is_micro and \
+                           self.ctl.page_nav.doing_raman() and \
+                           self.ctl.vcr_controls.is_paused() and \
+                           spec.settings.eeprom.has_laser
+
+        # log.debug("visible = %s", self.visible)
+        self.cb_enable.setVisible(self.visible)
+
+        if not self.visible:
+            self.cb_enable.setChecked(False)
+        else:
+            self.enable_callback()
+
+    def generate_take_one_request(self):
+        return TakeOneRequest(take_dark=True, enable_laser_before=True, disable_laser_after=True, laser_warmup_ms=3000)
+
+    ############################################################################
     # Callbacks
     ############################################################################
+
+    def take_one_start(self):
+        log.debug(f"take_one_start: enabled {self.enabled}")
+        if self.enabled:
+            self.ctl.dark_feature.clear(quiet=True)
+            buffer_ms = 2000
+            scans_to_average = self.ctl.scan_averaging.get_scans_to_average()
+            for spec in self.ctl.multispec.get_spectrometers():
+                timeout_ms = buffer_ms + self.LASER_WARMUP_MS + 2 * spec.settings.state.integration_time_ms * scans_to_average
+                ignore_until = datetime.now() + timedelta(milliseconds=timeout_ms)
+                log.debug(f"take_one_start: setting {spec} ignore_timeouts_util = {ignore_until} ({timeout_ms} ms)")
+                spec.settings.state.ignore_timeouts_until = ignore_until
+
+            log.debug("take_one_start: forcing laser button")
+            self.ctl.laser_control.refresh_laser_button(force_on=True)
+
+    def take_one_complete(self):
+        log.debug("take_one_complete: refreshing laser button")
+        self.ctl.laser_control.refresh_laser_button()
 
     def enable_callback(self):
         self.enabled = self.visible and self.cb_enable.isChecked()
 
         log.debug("enable = %s", self.enabled)
 
-        self.multispec.set_state("acquisition_laser_trigger_enable", self.enabled)
-        self.multispec.change_device_setting("acquisition_laser_trigger_enable", self.enabled)
-
-        # is there anything else in ENLIGHTEN which might dis/enable the laser button?
-        self.bt_laser.setEnabled(not self.enabled)
-        self.bt_laser.setToolTip("disabled in Raman Mode" if self.enabled else "fire laser (ctrl-L)")
+        self.ctl.laser_control.set_allowed(not self.enabled, reason_why_not="Raman Mode enabled")

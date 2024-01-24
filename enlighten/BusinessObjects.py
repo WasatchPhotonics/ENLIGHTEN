@@ -314,9 +314,7 @@ class BusinessObjects:
         ctl.scan_averaging = ScanAveragingFeature(ctl)
 
         self.header("instantiating TakeOneFeature")
-        ctl.take_one = TakeOneFeature(
-            multispec                   = ctl.multispec,
-            scan_averaging              = ctl.scan_averaging)
+        ctl.take_one = TakeOneFeature(ctl)
 
         self.header("instantiating CloudManager")
         ctl.cloud_manager = CloudManager(
@@ -327,18 +325,7 @@ class BusinessObjects:
             eeprom_editor               = ctl.eeprom_editor)
 
         self.header("instantiating VCRControls")
-        ctl.vcr_controls = VCRControls(
-            bt_pause                    = sfu.pushButton_scope_capture_pause,
-            bt_play                     = sfu.pushButton_scope_capture_play,
-            bt_save                     = sfu.pushButton_scope_capture_save,
-            bt_start_collection         = sfu.pushButton_scope_capture_start_collection,
-            bt_step                     = sfu.pushButton_scope_capture_step,
-            bt_step_save                = sfu.pushButton_scope_capture_step_save,
-            bt_stop                     = sfu.pushButton_scope_capture_stop,
-            gui                         = ctl.gui,
-            multispec                   = ctl.multispec,
-            scan_averaging              = ctl.scan_averaging,
-            take_one                    = ctl.take_one)
+        ctl.vcr_controls = VCRControls(ctl)
         ctl.vcr_controls.register_observer("save", ctl.save_current_spectra)
         ctl.scan_averaging.complete_registrations()
 
@@ -369,32 +356,7 @@ class BusinessObjects:
             gui_make_pen                = ctl.gui.make_pen)
 
         self.header("instantiating BatchCollection")
-        ctl.batch_collection = BatchCollection(
-            config                        = ctl.config,
-            dark_feature                  = ctl.dark_feature,
-            factory                       = ctl.measurement_factory,
-            laser_enable_callback         = ctl.laser_control.set_laser_enable,
-            marquee                       = ctl.marquee,
-            measurements                  = ctl.measurements,
-            multispec                     = ctl.multispec,
-            save_options                  = ctl.save_options,
-            vcr_controls                  = ctl.vcr_controls,
-
-            cb_enabled                    = sfu.checkBox_BatchCollection_enabled,
-            cb_dark_before_batch          = sfu.checkBox_BatchCollection_dark_before_batch,
-            cb_clear_before_batch         = sfu.checkBox_BatchCollection_clear_before_batch,
-            cb_export_after_batch         = sfu.checkBox_BatchCollection_export_after_batch,
-            lb_explain                    = sfu.label_BatchCollection_explain,
-            rb_laser_manual               = sfu.radioButton_BatchCollection_laser_manual,
-            rb_laser_spectrum             = sfu.radioButton_BatchCollection_laser_spectrum,
-            rb_laser_batch                = sfu.radioButton_BatchCollection_laser_batch,
-            spinbox_measurement_count     = sfu.spinBox_BatchCollection_measurement_count,
-            spinbox_measurement_period_ms = sfu.spinBox_BatchCollection_measurement_period_ms,
-            spinbox_batch_count           = sfu.spinBox_BatchCollection_batch_count,
-            spinbox_batch_period_sec      = sfu.spinBox_BatchCollection_batch_period_sec,
-            spinbox_laser_warmup_ms       = sfu.spinBox_BatchCollection_laser_warmup_ms,
-            spinbox_collection_timeout    = sfu.spinBox_BatchCollection_collection_timeout,
-            )
+        ctl.batch_collection = BatchCollection(ctl)
 
         self.header("instantiating BoxcarFeature")
         ctl.boxcar = BoxcarFeature(ctl)
@@ -415,12 +377,7 @@ class BusinessObjects:
             multispec                   = ctl.multispec)
 
         self.header("instantiating RamanModeFeature")
-        ctl.raman_mode_feature = RamanModeFeature(
-            bt_laser                    = sfu.pushButton_laser_toggle,
-            cb_enable                   = sfu.checkBox_raman_mode_enable,
-            multispec                   = ctl.multispec,
-            page_nav                    = ctl.page_nav,
-            vcr_controls                = ctl.vcr_controls)
+        ctl.raman_mode_feature = RamanModeFeature(ctl)
 
         # TODO: refactor like PluginController
         self.header("instantiating KIAFeature")
