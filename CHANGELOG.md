@@ -2,10 +2,11 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
-- 2023-01-25 4.0.35
+- 2023-??-?? 4.0.35
     - RamanModeFeature 
         - prompt for confirmation
         - release restriction on LaserControlFeature when invisible
+        - better handling of case where laser already firing when Raman Mode engaged
 - 2023-01-24 4.0.34
     - Refactored RamanModeFeature, VCRControls and TakeOneFeature around TakeOneRequest
     - moved to ctl
