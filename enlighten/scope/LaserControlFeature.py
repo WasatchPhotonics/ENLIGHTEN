@@ -33,6 +33,7 @@ class LaserControlFeature:
         self.slider_stop_usb = False
         self.displayed_srm_tip = False
         self.locked = False
+        self.restrictions = set()
 
         sfu = self.ctl.form.ui
 
@@ -159,7 +160,7 @@ class LaserControlFeature:
                        sfu.comboBox_laser_power_unit ]:
                 w.setEnabled(False)
 
-        self.refresh_laser_button()
+        self.refresh_laser_buttons()
 
     # expose this setter for BatchCollection and plugins
     def set_laser_enable(self, flag, spec=None, all=False):
@@ -208,7 +209,7 @@ class LaserControlFeature:
         log.debug(f"set_laser_enable: spec.settings.state.laser_enabled = {spec.settings.state.laser_enabled}, spec.app_state.laser_state = {spec.app_state.laser_state}")
 
         if self.ctl.multispec.is_current_spectrometer(spec):
-            self.refresh_laser_button()
+            self.refresh_laser_buttons()
 
         self.ctl.status_indicators.update_visibility()
 
@@ -293,11 +294,13 @@ class LaserControlFeature:
     # Private Methods
     # ##########################################################################
 
-    def refresh_laser_button(self, force_on=False):
+    def refresh_laser_buttons(self, force_on=False):
         spec = self.ctl.multispec.current_spectrometer()
+        sfu = self.ctl.form.ui
 
         enabled = force_on or (spec and spec.settings.state.laser_enabled)
-        sfu = self.ctl.form.ui
+        allowed = 0 == len(self.restrictions)
+        why_not = ", ".join(self.restrictions)
 
         if enabled:
             sfu.pushButton_laser_toggle.setText(self.BTN_OFF_TEXT)
@@ -305,6 +308,8 @@ class LaserControlFeature:
             sfu.pushButton_laser_toggle.setText(self.BTN_ON_TEXT)
 
         for b in [ sfu.pushButton_laser_toggle, sfu.pushButton_laser_convenience ]:
+            b.setEnabled(allowed)
+            b.setToolTip("Toggle laser (ctrl-L)" if allowed else f"Disabled ({why_not})")
             self.ctl.gui.colorize_button(b, enabled)
 
         self.refresh_watchdog_tooltip()
@@ -620,14 +625,20 @@ class LaserControlFeature:
         sfu = self.ctl.form.ui
         enough_for_laser = perc >= self.MIN_BATTERY_PERC
         log.debug("enough_for_laser = %s (%.2f%%)" % (enough_for_laser, perc))
-        self.set_allowed(enough_for_laser, reason_why_not=f"battery low ({perc:.2f}%)")
 
-    # also used by RamanModeFeature
-    def set_allowed(self, flag, reason_why_not):
-        sfu = self.ctl.form.ui
-        for b in [ sfu.pushButton_laser_toggle, sfu.pushButton_laser_convenience ]:
-            b.setEnabled(flag)
-            b.setToolTip("Toggle laser (ctrl-L)" if flag else reason_why_not)
+        if enough_for_laser:
+            self.remove_restriction("low battery")
+        else:
+            self.set_restriction("low battery")
+
+    def clear_restriction(self, reason):
+        if reason in self.restrictions:
+            self.restrictions.remove(reason)
+        self.refresh_laser_buttons()
+
+    def set_restriction(self, reason):
+        self.restrictions.add(reason)
+        self.refresh_laser_buttons()
 
     def slider_power_callback(self):
         self.slider_stop_usb = False

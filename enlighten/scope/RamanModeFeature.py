@@ -19,6 +19,8 @@ log = logging.getLogger(__name__)
 class RamanModeFeature(object):
 
     LASER_WARMUP_MS = 5000
+    SECTION = "Raman Mode"
+    LASER_CONTROL_DISABLE_REASON = "Raman Mode enabled"
 
     def __init__(self, ctl):
         self.ctl = ctl
@@ -33,7 +35,7 @@ class RamanModeFeature(object):
         self.ctl.vcr_controls.register_observer("pause", self.update_visibility)
         self.ctl.vcr_controls.register_observer("play",  self.update_visibility)
 
-        self.cb_enable.stateChanged.connect(self.enable_callback)
+        self.cb_enable.clicked.connect(self.enable_callback)
 
         self.update_visibility()
 
@@ -68,6 +70,7 @@ class RamanModeFeature(object):
 
         if not self.visible:
             self.cb_enable.setChecked(False)
+            self.ctl.laser_control.clear_restriction(self.LASER_CONTROL_DISABLE_REASON)
         else:
             self.enable_callback()
 
@@ -91,15 +94,51 @@ class RamanModeFeature(object):
                 spec.settings.state.ignore_timeouts_until = ignore_until
 
             log.debug("take_one_start: forcing laser button")
-            self.ctl.laser_control.refresh_laser_button(force_on=True)
+            self.ctl.laser_control.refresh_laser_buttons(force_on=True)
 
     def take_one_complete(self):
         log.debug("take_one_complete: refreshing laser button")
-        self.ctl.laser_control.refresh_laser_button()
+        self.ctl.laser_control.refresh_laser_buttons()
 
     def enable_callback(self):
-        self.enabled = self.visible and self.cb_enable.isChecked()
+        enabled = self.visible and self.cb_enable.isChecked()
+        log.debug("enable_callback: enable = %s", enabled)
 
-        log.debug("enable = %s", self.enabled)
+        if enabled and not self.confirm():
+            self.cb_enable.setChecked(False)
+            log.debug("enable_callback: user declined (returning)")
+            return
 
-        self.ctl.laser_control.set_allowed(not self.enabled, reason_why_not="Raman Mode enabled")
+        log.debug(f"enable_callback: either we're disabling the feature (enabled {enabled}) or user confirmed okay")
+        self.enabled = enabled
+        if enabled:
+            self.ctl.laser_control.set_restriction(self.LASER_CONTROL_DISABLE_REASON)
+        else:
+            self.ctl.laser_control.clear_restriction(self.LASER_CONTROL_DISABLE_REASON)
+        log.debug("enable_callback: done")
+
+    def confirm(self):
+        log.debug("confirm: start")
+        option = "suppress_raman_mode_warning"
+
+        if self.ctl.config.get(self.SECTION, option, default=False):
+            log.debug("confirm: user already confirmed and disabled future warnings")
+            return True
+
+        # Prompt the user. Make it scary.
+        result = self.ctl.gui.msgbox_with_checkbox(
+            title="Raman Mode Warning", 
+            text="Raman Mode will AUTOMATICALLY FIRE THE LASER when taking measurements " + \
+                 "using the ⏯ button. Be aware that the laser will automtically enable " + \
+                 "and disable when taking spectra while this mode is enabled.",
+            checkbox_text="Don't show again")
+
+        if not result["ok"]:
+            log.debug("confirm: user declined")
+            return False
+
+        if result["checked"]:
+            log.debug("confirm: saving approval")
+            self.ctl.config.set(self.SECTION, option, True)
+        log.debug("confirm: returning True")
+        return True
