@@ -81,12 +81,13 @@ class LoggingFeature:
 
     def tick(self):
         # need to run all the time to populate Hardware Status Indicator :-(
+        lines = None
         if not self.paused():
             try:
                 # is there a less memory-intensive way to do this?
                 # maybe implement ring-buffer inside the loop...
                 lines = []
-                for line in Pygtail(applog.get_location()):
+                for line in Pygtail(applog.get_location(), encoding="utf-8"):
                     lines.append(line)
                 self.process(lines)
             except IOError as exc:
@@ -95,6 +96,9 @@ class LoggingFeature:
         self.timer.start(LoggingFeature.TIMER_SLEEP_MS)
 
     def process(self, lines):
+        if lines is None or lines == []:
+            return
+
         if len(lines) > 150:
             lines = lines[-150:]
             lines.insert(0, "...snip...")
