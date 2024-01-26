@@ -51,9 +51,8 @@ class BatchCollection:
     In so-called "process mode" (intended for 24/7 process line control systems),
     batches themselves can be indefinitely iterated if 'batch_count' is zero.
     
-    For process environments, the enlighten.ini Configuration setting
-    "batch.start_on_connect = True" will initiate a continuous sequence of batches
-    upon first spectrometer connection.
+    For process environments, the command-line switch --start-batch can initiate
+    a continuous sequence of batches upon first spectrometer connection.
     
     To be clear, the word "process" here has nothing to do with OS kernels or
     threads, and relates to continuous-measurement industrial environments.
@@ -172,7 +171,6 @@ class BatchCollection:
         self.current_batch_start_time = None
         self.next_batch_start_time = None
         self.next_tick_start_time = None
-        self.start_on_connect = False
         self.dark_before_batch = False
         self.laser_mode = "manual"
         self.clear_before_batch = False
@@ -218,7 +216,6 @@ class BatchCollection:
         log.debug("init_from_config")
         s = "batch"
 
-        self.start_on_connect = self.ctl.config.get_bool(s, "start_on_connect")
         self.cb_enabled.setChecked(self.ctl.config.get_bool(s, "enabled"))
         self.cb_dark_before_batch.setChecked(self.ctl.config.get_bool(s, "dark_before_batch"))
         self.cb_clear_before_batch.setChecked(self.ctl.config.get_bool(s, "clear_before_batch"))
@@ -277,7 +274,7 @@ class BatchCollection:
         s = "batch"
         for name in [ "enabled", "dark_before_batch", "clear_before_batch", "export_after_batch",
                       "measurement_count", "measurement_period_ms", "batch_count", "batch_period_sec",
-                      "laser_warmup_ms", "start_on_connect", "laser_mode" ]:
+                      "laser_warmup_ms", "laser_mode" ]:
             self.ctl.config.set(s, name, getattr(self, name))
 
         # todo: have BatchCollection support observers and events, so VCRControls

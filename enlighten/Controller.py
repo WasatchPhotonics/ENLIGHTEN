@@ -102,6 +102,7 @@ class Controller:
                 form              = None,
                 splash            = None,
                 window_state      = None,
+                start_batch       = False,
                 autoload_plugin   = None,
             ):
         """
@@ -132,6 +133,7 @@ class Controller:
         self.stylesheet_path        = stylesheet_path
         self.set_all_dfu            = set_all_dfu
         self.window_state           = window_state
+        self.start_batch            = start_batch
         self.autoload_plugin        = autoload_plugin
         self.spec_timeout           = 30
         self.splash                 = splash
@@ -171,7 +173,6 @@ class Controller:
                         sfu.tabWidget_advanced_features
                       ]:
             widget.setVisible(False)
-
 
         # @todo this shouldn't go here
         sfu.pushButton_reset_fpga.clicked.connect(self.perform_fpga_reset)
@@ -984,12 +985,11 @@ class Controller:
         # Batch Collection should kick-off on the FIRST connected spectrometer
         ########################################################################
 
-        if self.batch_collection.start_on_connect:
+        if self.start_batch:
+            self.start_batch = False
             log.info("Starting Batch Collection on connect")
             self.vcr_controls.pause()
             self.batch_collection.start_collection()
-        else:
-            log.info("not starting Batch Collection on connect")
 
         ########################################################################
         # done

@@ -95,6 +95,7 @@ class EnlightenApplication:
         parser.add_argument("--stylesheet-path",   type=str,                      help="path to CSS directory")
         parser.add_argument("--window-state",      type=str, default="maximized", help="window initial state", choices=["normal", "maximized", "fullscreen", "minimized"])
         parser.add_argument("--plugin",            type=str,                      help="plugin name to start enabled")
+        parser.add_argument("--start-batch",       action="store_true",           help="start a Batch Collection as soon as a spectrometer connects")
 
         return parser
 
@@ -138,6 +139,7 @@ class EnlightenApplication:
             form              = self.form,
             splash            = self.splash,
             window_state      = self.args.window_state,
+            start_batch       = self.args.start_batch,
             autoload_plugin   = self.args.plugin)
         # This requires explanation.  This is obviously a Qt "connect" binding,
         # but Controller is not a Qt widget, and does not inherit from/extend
