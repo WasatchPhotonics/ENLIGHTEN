@@ -124,7 +124,7 @@ class GuideFeature:
     def _tick(self):
         """ @private """
         # don't tip during BatchCollection
-        if self.ctl.BatchCollection.running:
+        if self.ctl.batch_collection and self.ctl.batch_collection.running:
             log.debug("tick: not during BatchCollection")
             return self._reset_timer()
 
