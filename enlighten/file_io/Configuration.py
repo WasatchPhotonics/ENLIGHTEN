@@ -1,5 +1,3 @@
-from PySide6 import QtCore
-
 import os
 import re
 import shutil
@@ -12,6 +10,11 @@ from enlighten.data.ColorNames import ColorNames
 from enlighten.measurement.SaveOptions import SaveOptions
 
 from enlighten import common
+
+if common.use_pyside2():
+    from PySide2 import QtCore
+else:
+    from PySide6 import QtCore
 
 log = logging.getLogger(__name__)
 
@@ -61,6 +64,13 @@ class Configuration:
     structured data.  For now, the compromise will be that "complex" objects
     requiring JSON configuration can use their own configuration files,
     pointed to by this one.
+
+    @par Stale code notice
+
+    We are using what current configparser docs call the "legacy API" -- my
+    recollection is that it was the only API when this class was written 
+    under Python 2.7. At some point we may want to update to the newer dict-
+    style interface.
     """
 
     def clear(self):
@@ -70,20 +80,20 @@ class Configuration:
         self.multispec = None
         self.linenum = 0
 
-    def __init__(self,
-            button_save,
-            lb_save_result):
+    def __init__(self, ctl):
         self.clear()
 
-        self.button_save    = button_save
-        self.lb_save_result = lb_save_result
+        self.ctl = ctl
 
-        self.lock = threading.Lock()
+        sfu = ctl.form.ui
+        self.lb_save_result = sfu.label_save_ini_result
+
+        # not using Colors.color_names because not yet constructed
         self.color_names = ColorNames()
 
         self.directory = common.get_default_data_dir()
         self.pathname  = os.path.join(self.directory, "enlighten.ini")
-        self.test_dir = os.path.join(self.directory,'testSpectrometers')
+        self.test_dir = os.path.join(self.directory, 'testSpectrometers')
 
         self.load_defaults()
         self.stub_missing()
@@ -96,7 +106,7 @@ class Configuration:
         except:
             log.error("encountered exception during Configuration.reload", exc_info=1)
 
-        self.button_save.clicked.connect(self.save_callback)
+        sfu.pushButton_save_ini.clicked.connect(self.save_callback)
 
     def reload(self):
         """
@@ -197,7 +207,7 @@ class Configuration:
         for section in self.config.sections():
             log.debug("  [%s]", section)
             for key in self.config.options(section):
-                log.debug("  %s = %s", key, self.config.get(section, key))
+                log.debug("  %s = %s", key, self.config.get(section, key, raw=True))
             log.debug("")
 
     # ##########################################################################
@@ -210,80 +220,16 @@ class Configuration:
         self.config.set(section, key, str(value))
         log.debug("Configuration.set: (%s, %s, %s)", section, key, value)
 
-    def write(self, f, s):
-        log.debug(s)
-        f.write(s + "\n")
-            
     def save(self):
         try:
-            with self.lock:
-                section = None
-                seen = {}
-
-                with open(self.pathname, "w", newline="", encoding="utf-8") as outfile:
-
-                    def dump_keys():
-                        if section is not None and section in seen and self.config.has_section(section):
-                            for key in sorted(self.config.options(section)):
-                                if key not in seen[section]:
-                                    value = self.get(section, key, raw=True)
-                                    self.write(outfile, "%s = %s" % (key, value))
-                                    seen[section].add(key)
-                
-                    # first re-create the originally loaded file, updating any non-
-                    # commented options and filling-out old sections
-                    log.debug("saving old lines")
-                    for line in self.lines:
-
-                        # ignore blanks
-                        if len(line.strip()) == 0:
-                            continue
-
-                        # retain comments
-                        if line.startswith("#"):
-                            self.write(outfile, line)
-                            continue
-
-                        # was this a section header?
-                        m = re.match(r'^\[(.+)\]$', line)
-                        if m:
-                            # dump any new keys from the PREVIOUS section
-                            dump_keys()
-
-                            # start next section
-                            section = m.group(1)
-                            seen[section] = set()
-                            self.write(outfile, "")
-                            self.write(outfile, "[%s]" % section)
-                            continue
-
-                        # was it a key-value line?
-                        m = re.match(r"^([A-Za-z0-9_ ]+) *=", line)
-                        if m and section is not None:
-                            # it was a key-value line, so update the line with the current value
-                            key = m.group(1).strip()
-
-                            # ensure we don't output duplicate keys
-                            if key not in seen[section]:
-                                self.write(outfile, "%s = %s" % (key, self.get(section, key, raw=True)))
-                                seen[section].add(key)
-                            continue
-
-                        log.error("unexpected line in source .ini file: %s", line)
-
-                    # dump any new keys from the FINAL section
-                    log.debug("dumping new keys from final section")
-                    dump_keys()
-
-                    # add any NEW sections
-                    log.debug("adding new sections")
-                    for section in sorted(self.config.sections()):
-                        if section not in seen:
-                            self.write(outfile, "\n[%s]" % section)
-                            for key in sorted(self.config.options(section)):
-                                self.write(outfile, "%s = %s" % (key, self.config.get(section, key, raw=True)))
-
-                log.info("saved %s", self.pathname)
+            with open(self.pathname, "w", encoding="utf-8") as outfile:
+                for section in sorted(self.config.sections()):
+                    outfile.write(f"[{section}]\n")
+                    for key in sorted(self.config.options(section)):
+                        value = self.config.get(section, key, raw=True)
+                        outfile.write(f"{key} = {value}\n")
+                    outfile.write("\n")
+            log.info("saved %s", self.pathname)
         except:
             log.critical(f"failed to save {self.pathname}")
 
@@ -302,7 +248,7 @@ class Configuration:
         @returns something, always (defaults to string "0")
         """
         if self.config and self.config.has_section(section) and self.config.has_option(section, key):
-            value = self.config.get(section, key)   # self.config != self :-)
+            value = self.config.get(section, key, raw=True)   # self.config != self :-)
         elif section in self.defaults and key in self.defaults[section]:
             value = str(self.defaults[section][key])
         else:
@@ -316,6 +262,21 @@ class Configuration:
                 value = self.process_pen_style(value)
 
         return value
+
+    def get_sections(self):
+        keys = []
+        for k, v in self.config.items():
+            keys.append(k)
+        return keys
+
+    def get_options(self, section):
+        if not (self.config and self.config.has_section(section)):
+            return
+
+        keys = []
+        for k, v in self.config[section].items():
+            keys.append(k)
+        return keys
 
     def get_bool(self, section, key, default=False):
         """ Not using ConfigParser.getboolean() because we want to support defaults. """
@@ -347,6 +308,12 @@ class Configuration:
             return True
         else:
             return section in self.defaults
+
+    def remove_section(self, section):
+        if not self.config:
+            return
+        log.debug(f"removing Configuration section {section}")
+        self.config.remove_section(section)
 
     def has_option(self, section, option):
         # any option which is defaulted will always indicate "has_option -> true";
@@ -502,19 +469,14 @@ class Configuration:
             for spec in self.multispec.get_spectrometers():
                 if spec.device:
                     settings = spec.settings
-                    eeprom = settings.eeprom
-                    state = settings.state
-                    sn = eeprom.serial_number
+                    eeprom = spec.settings.eeprom
+                    state = spec.settings.state
+                    sn = spec.settings.eeprom.serial_number
                     if sn is None or len(sn) == 0:
                         log.error("declining to save settings for unit without serial number")
                         continue
 
                     log.info("saving config for %s", sn)
-
-                    # these application-session settings can always be saved
-                    self.set(sn, "integration_time_ms", state.integration_time_ms)
-                    self.set(sn, "boxcar_half_width", state.boxcar_half_width)
-                    self.set(sn, "gain_db", state.gain_db)
 
                     # only save EEPROM overrides if explicitly instructed
                     if full:

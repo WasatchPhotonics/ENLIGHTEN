@@ -1,5 +1,3 @@
-from PySide6 import QtGui
-
 import pyqtgraph.exporters
 import pyqtgraph
 import logging
@@ -7,13 +5,13 @@ import json
 import os
 import re
 
+from enlighten.measurement.Measurement import Measurement
 from enlighten.parser.ColumnFileParser import ColumnFileParser
 from enlighten.parser.ExportFileParser import ExportFileParser
 from enlighten.parser.TextFileParser import TextFileParser
+from enlighten.parser.DashFileParser import DashFileParser
 from enlighten.parser.SPCFileParser import SPCFileParser
 from enlighten.ui.ThumbnailWidget import ThumbnailWidget
-from enlighten.parser.DashFileParser import DashFileParser
-from enlighten.measurement.Measurement import Measurement
 
 import traceback
 
@@ -23,7 +21,12 @@ from wasatch.ProcessedReading import ProcessedReading
 from wasatch.SpectrometerSettings import SpectrometerSettings
 from wasatch import utils as wasatch_utils
 
-from enlighten import util
+from enlighten import util, common
+
+if common.use_pyside2():
+    from PySide2 import QtGui
+else:
+    from PySide6 import QtGui
 
 log = logging.getLogger(__name__)
 
@@ -33,45 +36,12 @@ log = logging.getLogger(__name__)
 class MeasurementFactory(object):
 
     def clear(self):
-        self.colors       = None
-        self.graph        = None
-        self.gui          = None
-        self.kia          = None
-        self.render_graph = None
-        self.render_curve = None
-        self.save_options = None
-        self.stylesheets  = None
-        self.measurements = None
-        self.observers    = set()
+        pass
 
-    def __init__(self,
-            colors,
-            file_manager,
-            focus_listener,
-            graph,
-            plugin_graph,
-            gui,
-            render_graph,
-            render_curve,
-            save_options,
-            stylesheets):
+    def __init__(self, ctl):
+        self.ctl = ctl
 
-        self.clear()
-
-        self.colors         = colors
-        self.file_manager   = file_manager
-        self.focus_listener = focus_listener
-        self.graph          = graph
-        self.gui            = gui
-        self.render_graph   = render_graph
-        self.render_curve   = render_curve
-        self.save_options   = save_options
-        self.stylesheets    = stylesheets
-        self.plugin_graph   = plugin_graph
-
-        # will receive post-construction
-        self.measurements = None    # backreference to Measurements 
-        self.kia          = None    # KnowItAll.Feature 
+        self.observers = set()
 
     def register_observer(self, callback):
         self.observers.add(callback)
@@ -93,10 +63,7 @@ class MeasurementFactory(object):
 
         # instantiate the Measurement
         try:
-            measurement = Measurement(
-                save_options = self.save_options,
-                spec         = spec,
-                measurements = self.measurements)
+            measurement = Measurement(self.ctl, spec = spec)
         except:
             msgbox("Failed to create measurement\n\n"+traceback.format_exc(), "Error")
 
@@ -124,21 +91,19 @@ class MeasurementFactory(object):
     # Create the ThumbnailWidget for a Measurement, then render and emplace the 
     # rasterized thumbnail image.  Also add Measurements back-reference.
     def create_thumbnail(self, measurement, is_collapsed=False):
-        if measurement.plugin_name == "":
-            graph = self.graph
+        if measurement.plugin_name:
+            log.debug(f"measurement came from a plugin so checking for second graph")
+            graph = self.ctl.plugin_controller.get_active_graph()
         else:
-            log.debug(f"graph is plugin so sending plugin graph")
-            graph = self.plugin_graph()
+            log.debug("measurement doesn't have a plugin so default graph")
+            graph = self.ctl.graph
+
         measurement.thumbnail_widget = ThumbnailWidget(
+            ctl             = self.ctl,
             measurement     = measurement,
-            graph           = graph,
-            gui             = self.gui,
-            colors          = self.colors,
-            stylesheets     = self.stylesheets,
-            is_collapsed    = is_collapsed,
-            technique       = measurement.technique,
-            focus_listener  = self.focus_listener,
-            kia             = self.kia)
+            graph           = graph,        
+            is_collapsed    = is_collapsed)
+
         try:
             pixmap = self.render_thumbnail_to_qpixmap(measurement)
             measurement.thumbnail_widget.set_pixmap(pixmap)
@@ -157,10 +122,10 @@ class MeasurementFactory(object):
             return
 
         # apply the spectrum to the curve
-        self.render_curve.setData(spectrum)
+        self.ctl.thumbnail_render_curve.setData(spectrum)
 
         # instantiate an exporter (could we re-use one for all thumbnails?)
-        exporter = pyqtgraph.exporters.ImageExporter(self.render_graph.plotItem)
+        exporter = pyqtgraph.exporters.ImageExporter(self.ctl.thumbnail_render_graph.plotItem)
 
         # configure the exporter
         exporter.params.param('width' ).sigValueChanged.disconnect()
@@ -194,7 +159,7 @@ class MeasurementFactory(object):
     #
     # Consider whether this method should be wrapped and called via Measurements.
     def clone(self, measurement, changes=None, generate_thumbnail=True, save=True):
-        new = Measurement(measurement=measurement)
+        new = Measurement(self.ctl, measurement=measurement)
 
         # Fold in changes.  Note this has all kinds of opportunities for
         # error...I'm not currently validating that the returned spectrum has
@@ -222,7 +187,7 @@ class MeasurementFactory(object):
         if save:
             new.save()
 
-        self.measurements.add(new)
+        self.ctl.measurements.add(new)
 
         return new
 
@@ -230,7 +195,7 @@ class MeasurementFactory(object):
     # Deserialize from disk
     # ##########################################################################
 
-    ## Note that this always returns a LIST of Measurements, because the user 
+    ## Note that this always returns a LIST of Measurement, because the user 
     #  may select an Export file, or an appended Dash file, etc.
     def create_from_file(self, pathname, is_collapsed=False, generate_thumbnail=True):
         log.debug("create_from_file: pathname %s, is_collapsed %s", pathname, is_collapsed)
@@ -243,8 +208,8 @@ class MeasurementFactory(object):
             log.error("create_from_file: can't find %s", pathname)
             return
 
-        # Some files can hold many Measurements, so even though we're loading
-        # one file, we may return a list of Measurements
+        # Some files can hold many Measurement, so even though we're loading
+        # one file, we may return a list of Measurement
         measurements = None
 
         # peek in the file and guess at the format
@@ -280,6 +245,7 @@ class MeasurementFactory(object):
             elif pathname.lower().endswith(".spc"):
                 measurements = self.create_from_spc_file(pathname)
         except:
+            msgbox("failed to parse file %s" % pathname)
             log.error("failed to parse file %s", pathname, exc_info=1)
 
         if measurements is None:
@@ -287,7 +253,6 @@ class MeasurementFactory(object):
 
         for m in measurements:
             try:
-                m.measurements = self.measurements
                 if generate_thumbnail:
                     self.create_thumbnail(m, is_collapsed)
             except:
@@ -315,7 +280,7 @@ class MeasurementFactory(object):
     #     0,     802.35,     275.46,     892,       892, 0
     # \endverbatim
     #
-    # Essentially, whether the first valid line is an x-axis header
+    # Essentially, whether the FIRST valid (non-blank, non-column) line is an x-axis header
     def looks_like_labeled_columns(self, pathname, encoding="utf-8"):
         result = False
         first_line = None
@@ -352,15 +317,24 @@ class MeasurementFactory(object):
         linecount = 0
         with open(pathname, "r", encoding=encoding) as infile:
             for line in infile:
-                if line.startswith("Integration Time"):
-                    # count how many values (not empty comma-delimited nulls) appear
-                    count = sum([1 if len(x.strip()) > 0 else 0 for x in line.split(",")])
-                    if test_export:
-                        return count > 2
-                    else:
-                        return count == 2
+                # not all "ENLIGHTEN-style" files will necessarily have any one 
+                # metadata field; check a couple common ones (that are unlikely 
+                # to include embedded commas)
+                for field in ["Integration Time", "Pixel Count", "Serial Number", "Model", "Laser Wavelength"]:
+                    if line.startswith(field):
+                        # count how many values (not empty comma-delimited nulls) appear
+                        count = sum([1 if len(x.strip()) > 0 else 0 for x in line.split(",")])
+                        if test_export:
+                            result = count > 2
+                            log.debug(f"looks_like_enlighten_columns: {result} (count {count}, required >2, line {line})")
+                            return count > 2
+                        else:
+                            result = count == 2
+                            log.debug(f"looks_like_enlighten_columns: {result} (count {count}, required 2, line {line})")
+                            return count == 2
                 linecount += 1
                 if linecount > 100:
+                    log.debug(f"looks_line_enlighten_columns: false because no typical metadata in {linecount} lines")
                     break
             
     def looks_like_simple_columns(self, pathname, encoding="utf-8") -> bool:
@@ -398,21 +372,22 @@ class MeasurementFactory(object):
     def create_from_dash_file(self, pathname, encoding="utf-8"):
         parser = DashFileParser(
             pathname     = pathname,
-            save_options = self.save_options,
+            save_options = self.ctl.save_options,
             encoding     = encoding)
         return parser.parse()
 
     def create_from_columnar_file(self, pathname, encoding="utf-8"):
         parser = ColumnFileParser(
+            self.ctl, # needs a ctl because it creates a Measurement
             pathname     = pathname,
-            save_options = self.save_options,
+            save_options = self.ctl.save_options,
             encoding     = encoding)
         return parser.parse()
 
     def create_from_export_file(self, pathname, encoding="utf-8"):
         parser = ExportFileParser(
             pathname     = pathname,
-            save_options = self.save_options,
+            save_options = self.ctl.save_options,
             encoding     = encoding)
         return parser.parse()
 
@@ -437,17 +412,17 @@ class MeasurementFactory(object):
     def create_from_spc_file(self, pathname):
         parser = SPCFileParser(
             pathname = pathname,
-            graph = self.graph)
+            graph = self.ctl.graph)
         return parser.parse()
 
     def create_from_simple_columnar_file(self, pathname, encoding="utf-8"):
         parser = TextFileParser(
             pathname = pathname,
-            graph = self.graph)
+            graph = self.ctl.graph)
         return parser.parse()
 
     def load_interpolated(self, settings):
-        pathname = self.file_manager.get_pathname("Select measurement")
+        pathname = self.ctl.file_manager.get_pathname("Select measurement")
         if pathname is None:
             return
 
@@ -464,27 +439,23 @@ class MeasurementFactory(object):
         m.interpolate(settings)
         return m
 
-    # ##########################################################################
-    # External API
-    # ##########################################################################
-
     ##
-    # Used by External.Feature, also loading .json measurements and exports.
+    # Used when loading .json measurements and exports.
     #
     # @param d (Input) a dict containing either a single "Measurement" or a
     #                  "Measurements" list
-    # @returns a list of Measurements (even if only one), or none if invalid input
+    # @returns a list of Measurement (even if only one), or none if invalid input
     def create_from_dict(self, d):
         measurements = []
 
         try:
             if "Measurements" in d:
                 for m_data in d["Measurements"]:
-                    m = Measurement(d=m_data, measurements=self.measurements, save_options=self.save_options)
+                    m = Measurement(self.ctl, d=m_data)
                     if m is not None:
                         measurments.append(m)
             elif "Measurement" in d:
-                m = Measurement(d=d["Measurement"], measurements=self.measurements, save_options=self.save_options)
+                m = Measurement(self.ctl, d=d["Measurement"])
                 if m is not None:
                     measurements.append(m)
         except:

@@ -5,10 +5,14 @@ import pyqtgraph
 import numpy as np
 import qimage2ndarray
 
-from PySide6 import QtCore, QtWidgets, QtGui
-
 from enlighten import util
+from enlighten import common
 from enlighten.ScrollStealFilter import ScrollStealFilter
+
+if common.use_pyside2():
+    from PySide2 import QtCore, QtWidgets, QtGui
+else:
+    from PySide6 import QtCore, QtWidgets, QtGui
 
 log = logging.getLogger(__name__)
 
@@ -405,7 +409,7 @@ class AreaScanFeature(object):
         curve = self.multispec.get_hardware_feature_curve(self.name, spec.device_id)
         if curve == None:
             return
-        curve.opts["pen"] = spec.assigned_color
+        curve.opts["pen"] = spec.color
 
     def resize(self):
         spec = self.multispec.current_spectrometer()

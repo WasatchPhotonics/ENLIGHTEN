@@ -1,13 +1,28 @@
 import logging
 
-import PySide6
-from PySide6.QtCore import QObject, QEvent
+from enlighten import common
+
+if common.use_pyside2():
+    import PySide2
+    from PySide2.QtCore import QObject, QEvent
+else:
+    import PySide6
+    from PySide6.QtCore import QObject, QEvent
 
 log = logging.getLogger(__name__)
 
-# see https://stackoverflow.com/questions/5821802/qspinbox-inside-a-qscrollarea-how-to-prevent-spin-box-from-stealing-focus-when
-# and https://doc.qt.io/qtforpython/overviews/eventsandfilters.html
 class MouseWheelFilter(QObject):
+    """
+    This should be applied to QVerticalSlider widgets where you don't want the 
+    mouse-wheel to affect the widget EVER (whether it's in focus or not).
+
+    In contrast, ScrollStealFilter allows the mouse-wheel to change the widget
+    after you've clicked to focus it (appropriate for QSpinBox, QDoubleSpinBox, 
+    QComboBox etc).
+
+    @see https://stackoverflow.com/questions/5821802/qspinbox-inside-a-qscrollarea-how-to-prevent-spin-box-from-stealing-focus-when
+    @see https://doc.qt.io/qtforpython/overviews/eventsandfilters.html
+    """
     def __init__(self, parent):
         super().__init__(parent)
 

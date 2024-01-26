@@ -12,9 +12,8 @@ class Clipboard(object):
     edge of ENLIGHTEN's GUI, although we seem to be converging toward calling that
     "the ENLIGHTEN Clipboard."
     """
-    def __init__(self, clipboard, marquee):
-        self.clipboard = clipboard
-        self.marquee   = marquee
+    def __init__(self, ctl):
+        self.ctl = ctl
 
     def copy_spectra(self, spectra):
         """
@@ -41,8 +40,8 @@ class Clipboard(object):
 
             s += "\t".join(values) + "\n" 
             
-        self.clipboard.setText(s)
-        self.marquee.info("copied %d rows to clipboard" % rows)
+        self.ctl.app.clipboard().setText(s)
+        self.ctl.marquee.info("copied %d rows to clipboard" % rows)
 
     def copy_dict(self, d):
         log.debug("Clipboard.copy_dict called with %s", d)
@@ -51,8 +50,8 @@ class Clipboard(object):
         for key in sorted(d):
             s += "%s\t%s\n" % (key, d[key])
             rows += 1
-        self.clipboard.setText(s)
-        self.marquee.info("copied %d rows to clipboard" % rows)
+        self.ctl.app.clipboard().setText(s)
+        self.ctl.marquee.info("copied %d rows to clipboard" % rows)
 
     def copy_table_widget(self, table):
         """
@@ -87,10 +86,10 @@ class Clipboard(object):
                         new_table[i % rows][i / rows] = item.text()
                 tab_delimited = "\n".join(("\t".join(i) for i in new_table))
 
-            self.clipboard.setText(tab_delimited)
-            self.marquee.info("copied %d rows to clipboard" % rows)
+            self.ctl.app.clipboard().setText(tab_delimited)
+            self.ctl.marquee.info("copied %d rows to clipboard" % rows)
         except:
             log.error("error copying table", exc_info=1)
 
     def raw_set_text(self, text):
-        self.clipboard.setText(text)
+        self.ctl.app.clipboard().setText(text)

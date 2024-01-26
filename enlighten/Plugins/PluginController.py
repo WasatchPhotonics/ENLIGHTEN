@@ -16,9 +16,6 @@ import importlib.util
 
 from time import sleep
 from queue import Queue
-from PySide6 import QtGui, QtWidgets, QtCore
-from PySide6.QtWidgets import QMessageBox, QCheckBox
-from PySide6.QtCore import Qt
 
 from .EnlightenApplicationInfoReal import EnlightenApplicationInfoReal
 from .PluginFieldWidget import PluginFieldWidget
@@ -27,15 +24,23 @@ from .PluginValidator   import PluginValidator
 from .PluginWorker      import PluginWorker
 from .TableModel        import TableModel
 
-from .. import common
-from ..ScrollStealFilter import ScrollStealFilter
-
+from enlighten import common
+from enlighten.ScrollStealFilter import ScrollStealFilter
 from enlighten.scope.Graph import Graph
 
 # this is in ../../pluginExamples
 from EnlightenPlugin import *
 
 from wasatch import utils as wasatch_utils
+
+if common.use_pyside2():
+    from PySide2 import QtGui, QtWidgets, QtCore
+    from PySide2.QtWidgets import QMessageBox, QCheckBox
+    from PySide2.QtCore import Qt
+else:
+    from PySide6 import QtGui, QtWidgets, QtCore
+    from PySide6.QtWidgets import QMessageBox, QCheckBox
+    from PySide6.QtCore import Qt
 
 log = logging.getLogger(__name__)
 
@@ -253,7 +258,6 @@ class PluginController:
         log.debug("registering observer on MeasurementFactory")
         self.combo_module.installEventFilter(ScrollStealFilter(self.combo_module))
         self.measurement_factory.register_observer(self.events_factory_callback)
-        self.measurements.register_observer("export", self.export_event_callback)
 
     def stub_plugin(self):
         """Create the plugins folder if it does not exist"""
@@ -428,11 +432,16 @@ class PluginController:
 
         warn_suppress = self.config.get("advanced_options", "suppress_plugin_warning", default=False)
         if not warn_suppress and connected:
-            plugin_ok, suppress = self.display_plugin_warning()
-            if not plugin_ok:
+            result = self.ctl.gui.msgbox_with_checkbox(
+                title="Plugin Warning", 
+                text="Plugins allow external code to run. Verify that you trust the plugin and it is safe before running it.",
+                checkbox_text="Don't show again")
+
+            if not result["ok"]:
                 self.cb_connected.setChecked(False)
                 return
-            if suppress:
+
+            if result["checked"]:
                 self.config.set("advanced_options", "suppress_plugin_warning", True)
 
         if connected:
@@ -454,9 +463,6 @@ class PluginController:
             #   .connect() is called
             #
             ####################################################################
-
-            # This is AFTER configure_gui_for_module() is called, meaning 
-            # enlighten_info.dependencies should be populated
 
             connected_ok = False
             try:
@@ -606,6 +612,7 @@ class PluginController:
     # ##########################################################################
     # plug-in selection
     # ##########################################################################
+
     def process_widgets(self, widgets, parent):
         for epf in widgets:
             if not PluginValidator.validate_field(epf):
@@ -621,18 +628,20 @@ class PluginController:
                 # no dynamic widget for pandas fields...they use the TableView
                 continue
             elif epf.datatype == "radio":
+                # MZ: considering removing support for these in preference for 
+                # the new "combobox" datatype
                 groupBox = QtWidgets.QGroupBox(f"{epf.name}")
                 vbox = QtWidgets.QVBoxLayout()
                 epf.group = groupBox
                 epf.layout = vbox
-                for option in epf.options:
-                    epf.name = option
-                    pfw = PluginFieldWidget(epf)
+                for choice in epf.choices:
+                    epf.name = choice
+                    pfw = PluginFieldWidget(epf, self.ctl)
                     parent.append(pfw)
                 continue
 
             log.debug(f"instantiating PluginFieldWidget {epf.name}")
-            pfw = PluginFieldWidget(epf)
+            pfw = PluginFieldWidget(epf, self.ctl)
             parent.append(pfw)
             # old code left to be clear what parent was before dict
             # makes this easier to understand imo
@@ -674,11 +683,6 @@ class PluginController:
 
             # we're successfully initialized, so proceed
             self.module_name = module_name
-
-            # satisfy dependencies
-            if not self.satisfy_dependencies():
-                log.error("failed to satisfy dependencies")
-                return False
 
             # should we check config.has_other_graph?
             log.debug("configuring graph_pos")
@@ -754,7 +758,7 @@ class PluginController:
                     else:
                         self.plugin_fields_layout.addLayout(pfw.get_display_element())
 
-            self.frame_fields.setVisible(True)
+            self.frame_fields.setVisible(len(self.plugin_field_widgets) > 0)
 
             if self.panda_field:
                 log.debug("creating output table")
@@ -807,52 +811,6 @@ class PluginController:
         mb.setInformativeText(detail) # setDetailText has sizing issues
         mb.exec()
 
-    def satisfy_dependencies(self):
-        log.debug("satisfy_dependencies: start")
-
-        # this is EnlightenPluginConfiguration
-        config = self.get_current_configuration()
-        if config is None or config.dependencies is None:
-            return True
-
-        # for enlighten.Configuration
-        persist_section = f"Plugin_{config.name}"
-
-        for dep in config.dependencies:
-            log.debug(f"satisfying dependency {dep.name} of type {dep.dep_type}")
-
-            if dep.dep_type == "existing_directory":
-                prompt = dep.prompt if dep.prompt else "Please select an existing directory"
-                self.marquee.info(prompt, persist=True, token="existing_directory")
-
-                # create the dialog
-                dialog = QtWidgets.QFileDialog(parent=self.parent, caption=prompt)
-                dialog.setFileMode(QtWidgets.QFileDialog.Directory)
-                dialog.setOption(QtWidgets.QFileDialog.ShowDirsOnly)
-
-                # default to last selection 
-                dialog.setDirectory(common.get_default_data_dir())
-                if dep.persist:
-                    last_dir = self.config.get(persist_section, dep.name)
-                    if last_dir is not None and os.path.exists(last_dir):
-                        dialog.setDirectory(last_dir)
-
-                # get the user's choice
-                value = dialog.getExistingDirectory()
-                if value is None or len(value) == 0:
-                    return False
-                self.enlighten_info.dependencies[dep.name] = value
-
-                # persist for next time
-                if dep.persist:
-                    self.config.set(persist_section, dep.name, value)
-                self.marquee.clear(token="existing_directory")
-            else:
-                log.error(f"dependency {dep.name} has unsupported type {dep.dep_type}")
-                return False
-
-        return True
-
     # need to clear all depending the layout recursively
     # see https://stackoverflow.com/questions/4528347/clear-all-widgets-in-a-layout-in-pyqt
     def clear_plugin_layout(self, layout):
@@ -874,7 +832,7 @@ class PluginController:
         if config is None:
             return
 
-        self.plugin_plot= pyqtgraph.PlotWidget(name=f"{config.name}")
+        self.plugin_plot = pyqtgraph.PlotWidget(name=f"{config.name}")
         if self.grid is not None and self.grid.enabled:
             self.plugin_plot.showGrid(True, True)
         self.combo_graph_pos.setVisible(True)
@@ -882,19 +840,12 @@ class PluginController:
         self.plugin_plot_legend = self.plugin_plot.addLegend()
 
         self.graph_plugin = Graph(
+            ctl                 = self.ctl,
+            name                = f"Plugin {config.name}",
+
             plot                = self.plugin_plot,
-            generate_x_axis     = self.graph_scope.generate_x_axis,
-            gui                 = self.graph_scope.gui,
             legend              = self.plugin_plot_legend,
             lock_marker         = True,  # let EPC.graph_type control this
-
-            button_copy         = self.graph_scope.button_copy,
-            button_invert       = self.graph_scope.button_invert,
-            button_lock_axes    = self.graph_scope.button_lock_axes,
-            button_zoom         = self.graph_scope.button_zoom,
-            cb_marker           = self.graph_scope.cb_marker,
-            combo_axis          = self.graph_scope.combo_axis,
-            init_graph_axis     = False
         )
 
         # create curves for each series
@@ -920,6 +871,9 @@ class PluginController:
         log.debug("creating output table widget")
         self.table_view = QtWidgets.QTableView()
         self.table_view.setAccessibleName("Pandas Output")
+
+        header = self.table_view.horizontalHeader()
+        header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
 
         self.layout_graphs.addWidget(self.table_view, 3, 0, 1, 3)
         self.layout_graphs.setRowMinimumHeight(3, 100)
@@ -1002,6 +956,7 @@ class PluginController:
         plugin_fields = { pfw.field_name: pfw.field_value for pfw in self.plugin_field_widgets }
         if type(config.fields) == dict:
             plugin_fields["active_page"] = self.widget_selector.currentText()
+        log.debug("get_current_settings: plugin_fields = {plugin_fields}")
         return plugin_fields
 
     ##
@@ -1124,7 +1079,7 @@ class PluginController:
             ####################################################################
 
             if response.message is not None:
-                self.marquee.info(response.message)
+                self.marquee.info(response.message, period_sec=5)
 
             ####################################################################
             # handle outputs                                                   #
@@ -1142,6 +1097,7 @@ class PluginController:
                         pfw.update_value(outputs[epf.name])
 
                 # handle Pandas output
+                model = None
                 if self.panda_field and self.table_view:
                     dataframe = response.outputs.get(self.panda_field.name, None)
                     if dataframe is not None:
@@ -1326,7 +1282,7 @@ class PluginController:
         log.debug(f"received Measurement from event {event}")
 
         if event == "pre-save" and self.enabled:
-            measurement.set_plugin_name(self.module_name)
+            measurement.plugin_name = self.module_name
 
         config = self.get_current_configuration()
         if config is None or config.events is None:
@@ -1342,9 +1298,6 @@ class PluginController:
 
         log.debug(f"passing measurement to {callback}")
         callback(measurement = m)
-
-    def export_event_callback(self, measurement):
-        self.events_factory_callback(measurement, "export")
 
     ############################################################################
     # utility                                                                  #
@@ -1403,15 +1356,8 @@ class PluginController:
 
         self.plugin_curves = {}
 
-    def display_plugin_warning(self):
-        suppress_cb = QCheckBox("Don't show again.", self.cb_connected)
-        warn_msg = QMessageBox(self.cb_connected)
-        warn_msg.setWindowTitle("Plugin Warning")
-        warn_msg.setText("Plugins allow additional code to run. Verify that you trust the plugin and it is safe before running it.")
-        warn_msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-        warn_msg.setIcon(QMessageBox.Warning)
-        warn_msg.setCheckBox(suppress_cb)
-        clk_btn = warn_msg.exec_()
-        plugin_ok = (clk_btn == QMessageBox.Ok)
-        suppress_checked = warn_msg.checkBox().isChecked()
-        return (plugin_ok, suppress_checked)
+    def get_active_graph(self):
+        module_info = self.get_current_module_info()
+        if module_info and module_info.config:
+            return self.graph_plugin if module_info.config.has_other_graph else self.graph_scope
+        return self.graph_scope

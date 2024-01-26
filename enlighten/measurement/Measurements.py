@@ -6,15 +6,19 @@ import csv
 import os
 
 import numpy as np
-from PySide6 import QtGui, QtWidgets
 
-from enlighten.measurement.Measurement import Measurement
 from SPyC_Writer import SPCFileWriter
 from SPyC_Writer.SPCEnums import SPCFileType, SPCXType, SPCYType, SPCTechType
 
+from enlighten import util
 from enlighten import common
 from enlighten.common import msgbox
-from enlighten import util
+from enlighten.measurement.Measurement import Measurement
+
+if common.use_pyside2():
+    from PySide2 import QtGui, QtWidgets
+else:
+    from PySide6 import QtGui, QtWidgets
 
 log = logging.getLogger(__name__)
 
@@ -23,7 +27,7 @@ log = logging.getLogger(__name__)
 # during this session via the Acquire button or BatchCollection, or which have 
 # been loaded from disk via the Load button.  It can be considered to be the set 
 # of ThumbnailWidgets which fill the left-hand capture column in the GUI.
-class Measurements(object):
+class Measurements:
 
     MAX_MEASUREMENT_COUNT = 500 
 
@@ -32,44 +36,13 @@ class Measurements(object):
     def __deepcopy__(self, memo):
         log.debug("blocking deep-copy")
 
-    def __init__(self,
-            button_erase,
-            button_export,
-            button_load,
-            button_resize,
-            button_resort,
-            factory,
-            file_manager,
-            form,
-            gui,
-            label_count,
-            layout,
-            marquee,
-            reprocess_callback,
-            horiz_roi):
+    def __init__(self, ctl):
 
-        self.button_erase       = button_erase
-        self.button_export      = button_export
-        self.button_load        = button_load
-        self.button_resize      = button_resize
-        self.button_resort      = button_resort
-        self.factory            = factory
-        self.file_manager       = file_manager
-        self.form               = form
-        self.gui                = gui
-        self.label_count        = label_count
-        self.layout             = layout
-        self.marquee            = marquee
-        self.reprocess_callback = reprocess_callback
-        self.horiz_roi          = horiz_roi
+        self.ctl = ctl
+
+        sfu = self.ctl.form.ui
 
         self.measurements = []
-
-        self.save_options = self.factory.save_options
-
-        # give Factory a handle to self, both for back-references and for count()
-        # SB: this is bad
-        self.factory.measurements = self
 
         self.is_collapsed = False
         self.insert_top = True
@@ -80,17 +53,17 @@ class Measurements(object):
         }
 
         # binding
-        self.button_erase   .clicked    .connect(self.erase_all_callback)
-        self.button_export  .clicked    .connect(self.export_callback)
-        self.button_load    .clicked    .connect(self.load_callback)
-        self.button_resize  .clicked    .connect(self.resize_callback)
-        self.button_resort  .clicked    .connect(self.resort_callback)
+        sfu.pushButton_erase_captures      .clicked    .connect(self.erase_all_callback)
+        sfu.pushButton_export_session      .clicked    .connect(self.export_callback)
+        sfu.pushButton_scope_capture_load  .clicked    .connect(self.load_callback)
+        sfu.pushButton_resize_captures     .clicked    .connect(self.resize_callback)
+        sfu.pushButton_resort_captures     .clicked    .connect(self.resort_callback)
 
         # Drop an expanding spacer into the layout, which will force all 
         # ThumbnailWidgets to hold a fixed size and align at one end.  (Could 
         # this not be done in Designer?)
         spacer = QtWidgets.QSpacerItem(20, 1024, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.layout.addItem(spacer)
+        sfu.verticalLayout_scope_capture_save.addItem(spacer)
 
         self.update_count()
 
@@ -115,7 +88,7 @@ class Measurements(object):
     ## display a file selection dialog, let the user select one or more files, 
     # then load them up (including thumbnail generation)
     def load_callback(self):
-        self.file_manager.select_files_to_load(callback=self.create_from_file)
+        self.ctl.file_manager.select_files_to_load(callback=self.create_from_file)
 
     def resize_callback(self):
         log.debug("re-sizing ThumbnailWidgets (collapsed was %s)", self.is_collapsed)
@@ -130,13 +103,14 @@ class Measurements(object):
         self.is_collapsed = not self.is_collapsed
         self.update_buttons()
 
-    ## Essentially, self.layout.reverse()
+    ## Essentially, sfu.verticalLayout_scope_capture_save.reverse()
     def resort_callback(self):
+        sfu = self.ctl.form.ui
         log.debug("re-sorting captures (insert_top was %s)", self.insert_top)
         items = []
         while True:
             try:
-                item = self.layout.takeAt(0)
+                item = sfu.verticalLayout_scope_capture_save.takeAt(0)
                 if item is None:
                     break
                 items.append(item)
@@ -145,7 +119,7 @@ class Measurements(object):
                 break
 
         for item in items:
-            self.layout.insertItem(0, item)
+            sfu.verticalLayout_scope_capture_save.insertItem(0, item)
 
         self.insert_top = not self.insert_top
         self.update_buttons()
@@ -190,10 +164,10 @@ class Measurements(object):
         # if we're reprocessing loaded measurements, don't bother creating 
         # thumbnails on instantiation; we'll do that after re-processing the
         # spectra
-        generate_thumbnail = not self.save_options.load_raw()
+        generate_thumbnail = not self.ctl.save_options.load_raw()
 
         log.debug("create_from_file: calling MeasurementFactory.create_from_file with %s", pathname)
-        measurements = self.factory.create_from_file(
+        measurements = self.ctl.measurement_factory.create_from_file(
             pathname = pathname, 
             is_collapsed = self.is_collapsed,
             generate_thumbnail = generate_thumbnail)
@@ -206,10 +180,13 @@ class Measurements(object):
             log.debug("create_from_file: completing new measurement")
 
             # reprocess if requested
-            if self.save_options.load_raw():
+            if self.ctl.save_options.load_raw():
 
                 log.debug("reprocessing measurement %s", m.measurement_id)
-                new_pr = self.reprocess_callback(m)
+
+                # TODO: can this method be moved into Measurements class?
+                new_pr = self.ctl.reprocess(m)
+
                 if new_pr is None:
                     log.error("failed to reprocess %s", m.measurement_id)
                     return
@@ -218,7 +195,7 @@ class Measurements(object):
                 m.replace_processed_reading(new_pr)
 
                 log.debug("generating thumbnail for updated %s", m.measurement_id)
-                self.factory.create_thumbnail(m)
+                self.ctl.measurement_factory.create_thumbnail(m)
 
                 log.debug("resaving %s", m.measurement_id)
                 m.save()
@@ -241,7 +218,7 @@ class Measurements(object):
 
         # create a Measurement from this Spectrometer's last ProcessedReading,
         # using the current "collapsed" state
-        measurement = self.factory.create_from_spectrometer(
+        measurement = self.ctl.measurement_factory.create_from_spectrometer(
             spec = spec, 
             is_collapsed = self.is_collapsed)
 
@@ -251,6 +228,7 @@ class Measurements(object):
     # Add the new measurement to our on-screen list.  Kick-off old measurement
     # if necessary.
     def add(self, measurement):
+        sfu = self.ctl.form.ui
         if measurement.thumbnail_widget is None:
             log.error("unable to add Measurement w/o ThumbnailWidget")
             return
@@ -263,9 +241,9 @@ class Measurements(object):
         # add to layout
         log.debug("adding ThumbnailWidget to layout")
         if self.insert_top:
-            self.layout.insertWidget( 0, measurement.thumbnail_widget)
+            sfu.verticalLayout_scope_capture_save.insertWidget( 0, measurement.thumbnail_widget)
         else:
-            self.layout.insertWidget(-1, measurement.thumbnail_widget)
+            sfu.verticalLayout_scope_capture_save.insertWidget(-1, measurement.thumbnail_widget)
 
         self.measurements.append(measurement)
         self.update_count()
@@ -321,22 +299,24 @@ class Measurements(object):
     ##
     # Update the "X spectra" label on the GUI, and dis/enable buttons
     def update_count(self):
+        sfu = self.ctl.form.ui
+
         # update the text counter
         count = self.count()
-        self.label_count.setText(util.pluralize_spectra(count))
+        sfu.label_session_count.setText(util.pluralize_spectra(count))
 
         # update buttons
         enabled = count > 0
-        for b in [ self.button_erase,
-                   self.button_export,
-                   self.button_resize,
-                   self.button_resort ]:
+        for b in [ sfu.pushButton_erase_captures,
+                   sfu.pushButton_export_session,
+                   sfu.pushButton_resize_captures,
+                   sfu.pushButton_resort_captures ]:
             b.setEnabled(enabled)
 
     # Think this is internal-only
     def update_buttons(self):
-        self.gui.colorize_button(self.button_resize,     self.is_collapsed)
-        self.gui.colorize_button(self.button_resort, not self.insert_top)
+        self.ctl.gui.colorize_button(self.ctl.form.ui.pushButton_resize_captures,     self.is_collapsed)
+        self.ctl.gui.colorize_button(self.ctl.form.ui.pushButton_resort_captures, not self.insert_top)
 
     # ##########################################################################
     #                                                                          #
@@ -362,12 +342,13 @@ class Measurements(object):
         # Generate pathname
         ########################################################################
 
+        visible_only = False
         if filename is None:
             now = datetime.datetime.now()
 
-            default_filename = f"{self.save_options.prefix()}-" if self.save_options.has_prefix() else "Session-"
+            default_filename = f"{self.ctl.save_options.prefix()}-" if self.ctl.save_options.has_prefix() else "Session-"
             default_filename += now.strftime("%Y%m%d-%H%M%S")
-            default_filename += f"-{self.save_options.suffix()}" if self.save_options.has_suffix() else ""
+            default_filename += f"-{self.ctl.save_options.suffix()}" if self.ctl.save_options.has_suffix() else ""
 
             default_filename = self.measurements[-1].expand_template(default_filename)
 
@@ -375,45 +356,49 @@ class Measurements(object):
                 filename = default_filename
             else:
                 # prompt the user to override the default filename
-                # @todo give Controller.form to GUI, add gui.promptString()
-                (filename, ok) = QtWidgets.QInputDialog().getText(
-                    self.form,                          # parent
-                    "Filename",                         # title
-                    "Export filename:",                 # label
-                    QtWidgets.QLineEdit.Normal, 
-                    default_filename)
-                if not ok or filename is None:
+                result = self.ctl.gui.msgbox_with_lineedit_and_checkbox(
+                    title = "Export",
+                    label_text = "Enter export filename",
+                    lineedit_text = default_filename,
+                    checkbox_text = "Only export displayed traces")
+                log.debug(f"msgbox result: {result}")
+                filename = result["lineedit"]
+                visible_only = result["checked"]
+                if not (result["ok"] and filename):
                     log.info("cancelling export")
                     return 
-
+                
         # currently, all Sessions are stored in ~/EnlightenSpectra
         directory = common.get_default_data_dir()
 
         # doesn't use the dict
-        if self.save_options.save_csv():
-            self.export_session_csv(directory, filename)
+        if self.ctl.save_options.save_csv():
+            self.export_session_csv(directory, filename, visible_only=visible_only)
 
         # cache export dictionary so we can re-use it between JSON and ExternalAPI
-        if self.save_options.save_json() or len(self.observers["export"]) > 0:
-            export = self.generate_export_dict()
+        if self.ctl.save_options.save_json() or len(self.observers["export"]) > 0:
+            export = self.generate_export_dict(visible_only=visible_only)
 
-        if self.save_options.save_json():
+        if self.ctl.save_options.save_json():
             self.export_session_json(directory, filename, export)
 
-        if self.save_options.save_spc():
-            self.export_session_spc(directory, filename)
+        if self.ctl.save_options.save_spc():
+            self.export_session_spc(directory, filename, visible_only=visible_only)
 
         for callback in self.observers["export"]:
-            callback(export)
+            callback(export, visible_only)
 
-    def read_measurements(self) -> list[dict]:
+    def read_measurements(self):
         return self.generate_export_dict()
 
-    def generate_export_dict(self) -> list[dict]:
-        export = [m.to_dict() for m in self.measurements]
+    def generate_export_dict(self, visible_only=False) -> list[dict]:
+        if visible_only:
+            export = [ m.to_dict() for m in self.measurements if m.is_displayed() ]
+        else:
+            export = [ m.to_dict() for m in self.measurements ]
         return export
 
-    def export_session_spc(self, directory: str, filename: str) -> bool:
+    def export_session_spc(self, directory, filename, visible_only=False):
         if not filename.endswith(".spc"):
             filename += ".spc"
         pathname = os.path.join(directory, filename)
@@ -424,10 +409,15 @@ class Measurements(object):
         x_units = SPCXType.SPCXArb
         y_units = SPCYType.SPCYArb
         experiment_type = SPCTechType.SPCTechRmn
-        current_x = self.save_options.multispec.graph.current_x_axis
+        current_x = self.ctl.graph.current_x_axis
         file_type = SPCFileType.TMULTI | SPCFileType.TXVALS | SPCFileType.TXYXYS | SPCFileType.TCGRAM
 
-        for m in self.measurements:
+        if visible_only:
+            export_measurements = [ m for m in self.measurements if m.is_displayed() ]
+        else:
+            export_measurements = self.measurements 
+
+        for m in export_measurements:
             devices.append(m.spec.label)
             if current_x == common.Axes.WAVELENGTHS:
                 x_units = SPCXType.SPCXNMetr
@@ -475,14 +465,19 @@ class Measurements(object):
         with open(pathname, "w") as f:
             f.write(util.clean_json(s))
 
-    def export_session_csv(self, directory, filename):
+    def export_session_csv(self, directory, filename, visible_only=False):
         if not filename.endswith(".csv"):
             filename += ".csv"
         pathname = os.path.join(directory, filename)
 
-        order = "row" if self.save_options.save_by_row() else "column"
+        order = "row" if self.ctl.save_options.save_by_row() else "column"
 
-        log.info("exporting %d measurements in %s order to %s", self.count(), order, pathname)
+        if visible_only:
+            export_measurements = [ m for m in self.measurements if m.is_displayed() ]
+        else:
+            export_measurements = self.measurements
+
+        log.info("exporting %d measurements in %s order to %s", len(export_measurements), order, pathname)
 
         ########################################################################
         # Generate the export
@@ -492,21 +487,28 @@ class Measurements(object):
             with open(pathname, "w", newline="") as f:
                 csv_writer = csv.writer(f)
                 if order == "row":
-                    self.export_by_row(csv_writer)
+                    self.export_by_row(csv_writer, visible_only)
                 else:
-                    self.export_by_column(csv_writer)
+                    self.export_by_column(csv_writer, visible_only)
 
-            self.marquee.info("exported %d spectra" % len(self.measurements))
+            self.ctl.marquee.info("exported %d spectra" % len(export_measurements))
             log.info("exported %d measurements in %s order to %s", self.count(), order, pathname)
 
         except Exception as exc:
             log.critical("exception exporting session", exc_info=1)
+            # we could optionally unlink pathname here; leaving for troubleshooting
 
-    ## 
-    # Returns a list of all SpectrometerSettings (unique by serial_number) 
-    # contributing to our current set of saved measurements, in order of initial
-    # appearance.
     def _get_spectrometer_settings(self):
+        """
+        Returns a list of all SpectrometerSettings (unique by serial_number) 
+        contributing to our current set of saved measurements, in order of initial
+        appearance.
+
+        To be perfectly clear, this returns a dictionary of 
+        wasatch.SpectrometerSettings by serial number.  Be aware that different
+        Measurement objects generated from the same spectrometer serial number 
+        may have different ROI and interpolation settings.
+        """
         settingss = []
         seen_sn = set()
         for m in self.measurements:
@@ -515,6 +517,36 @@ class Measurements(object):
                 seen_sn.add(m.settings.eeprom.serial_number)
 
         return settingss
+
+    def incompatible_axes(self, export_measurements):
+        specs = {}
+        
+        # group by serial
+        for m in export_measurements:
+            sn = "default"
+            if m.settings and m.settings.eeprom:
+                sn = m.settings.eeprom.serial_number
+            if sn not in specs:
+                specs[sn] = []
+            specs[sn].append(m)
+        
+        # check each serial
+        for sn in specs:
+            if len(specs[sn]) < 2:
+                continue
+            first_pr = specs[sn][0].processed_reading
+            first_wl = first_pr.get_wavelengths()
+            for i in range(1, len(specs[sn])):
+                this_pr = specs[sn][i].processed_reading
+                this_wl = this_pr.get_wavelengths()
+                if first_wl != this_wl:
+                    log.debug(f"incompatible_axes: {sn} measurements 0 and {i} had different wavelengths")
+                    return True
+                else:
+                    log.debug(f"incompatible_axes: {sn} measurements 0 and {i} had identical wavelengths ({first_wl[0]:.2f}, {first_wl[-1]:0.2f}) ({this_wl[0]:.2f}, {this_wl[-1]:0.2f})")
+                    first_pr.dump()
+                    this_pr.dump()
+        return False
 
     ##
     # Export each Measurement in turn in a columnar CSV.
@@ -566,7 +598,7 @@ class Measurements(object):
     # S1    S2    Pr          Rw          Dk            <-- a "blank column" is inserted between each grouping, with the label of that subspectrum
     # px wl px wl    Aa Bb Cc    Aa Bb Cc    Aa Bb Cc   <-- the Measurement.label is used as the header within each grouping
     # \endverbatim
-    def export_by_column(self, csv_writer):
+    def export_by_column(self, csv_writer, visible_only=False):
 
         # could output some "Session" stuff up here
 
@@ -580,22 +612,22 @@ class Measurements(object):
 
         # count x-axis headers (px, wl)
         x_headers = []
-        if self.save_options.save_pixel():
+        if self.ctl.save_options.save_pixel():
             x_headers.append("Pixel")
-        if self.save_options.save_wavelength():
+        if self.ctl.save_options.save_wavelength():
             x_headers.append("Wavelength")
-        if self.save_options.save_wavenumber():
+        if self.ctl.save_options.save_wavenumber():
             x_headers.append("Wavenumber")
 
         # count ProcessedReading subspectra headers (pr, rw, dk)
         pr_headers = []
-        if self.save_options.save_processed():
+        if self.ctl.save_options.save_processed():
             pr_headers.append("Processed")
-        if self.save_options.save_raw():
+        if self.ctl.save_options.save_raw():
             pr_headers.append("Raw")
-        if self.save_options.save_dark():
+        if self.ctl.save_options.save_dark():
             pr_headers.append("Dark")
-        if self.save_options.save_reference():
+        if self.ctl.save_options.save_reference():
             pr_headers.append("Reference")
 
         # @todo: it would be cool if plugins could add their own subspectra
@@ -625,8 +657,20 @@ class Measurements(object):
         fields = self.measurements[0].get_extra_header_fields()
         fields.extend(Measurement.CSV_HEADER_FIELDS)
 
+        if visible_only:
+            export_measurements = [ m for m in self.measurements if m.is_displayed() ]
+        else:
+            export_measurements = self.measurements
+
+        if not self.ctl.interp.enabled and self.incompatible_axes(export_measurements):
+            msg = "The selected measurements include differing ROI and/or " \
+                + "interpolation settings for the same spectrometer. Please " \
+                + "enable interpolation to export these measurements as a group."
+            common.msgbox(msg)
+            raise ValueError(msg)
+
         # roll-in any plugin metadata appearing in any measurement
-        for m in self.measurements:
+        for m in export_measurements:
             if m.processed_reading.plugin_metadata is not None:
                 for k in sorted(m.processed_reading.plugin_metadata.keys()):
                     if k not in fields:
@@ -648,15 +692,15 @@ class Measurements(object):
                 row.extend(BLANK * (len(settingss) * len(x_headers) - 1))
 
                 # now output the metadata atop the data columns
-                if self.save_options.save_collated():
+                if self.ctl.save_options.save_collated():
                     for header in pr_headers:
                         row.extend(BLANK) # for the subspectrum name
                         # now re-write the value above every measurement for this subspectrum
-                        for m in self.measurements:
+                        for m in export_measurements:
                             value = m.get_metadata(field)
                             row.append(value)
                 else:                     
-                    for m in self.measurements:
+                    for m in export_measurements:
                         value = m.get_metadata(field)
                         row.append(value)
                         row.extend(BLANK * (len(pr_headers) - 1))
@@ -687,12 +731,12 @@ class Measurements(object):
             # other consumers.
             row.append(settings.eeprom.serial_number)
             row.extend(BLANK * (len(x_headers) - 1))
-        if self.save_options.save_collated():
+        if self.ctl.save_options.save_collated():
             for header in pr_headers:
                 row.append(header)
-                row.extend(BLANK * len(self.measurements))
+                row.extend(BLANK * len(export_measurements))
         else:
-            for m in self.measurements:
+            for m in export_measurements:
                 row.append(m.label)
                 row.extend(BLANK * (len(pr_headers) - 1))
         csv_writer.writerow(row)
@@ -715,13 +759,13 @@ class Measurements(object):
         for settings in settingss:
             for header in x_headers:
                 row.append(header)
-        if self.save_options.save_collated():
+        if self.ctl.save_options.save_collated():
             for header in pr_headers:
                 row.extend(BLANK)
-                for m in self.measurements:
+                for m in export_measurements:
                     row.append(m.label)
         else:
-            for m in self.measurements:
+            for m in export_measurements:
                 for header in pr_headers:
                     row.append(header)
         csv_writer.writerow(row)
@@ -735,12 +779,17 @@ class Measurements(object):
         pr_headers = [ s.lower() for s in pr_headers ]
 
         def get_x_header_value(wavelengths, wavenumbers, header, pixel):
+            result = ""
             if header == "pixel":
-                return pixel
+                result = str(pixel)
             elif header == "wavelength":
-                return ('%.2f' % wavelengths[pixel]) if (wavelengths is not None and pixel < len(wavelengths)) else ""
+                if wavelengths is not None and pixel < len(wavelengths):
+                    result = f"{wavelengths[pixel]:.2f}"
             elif header == "wavenumber":
-                return ('%.2f' % wavenumbers[pixel]) if (wavenumbers is not None and pixel < len(wavenumbers)) else ""
+                if wavenumbers is not None and pixel < len(wavenumbers):
+                    result = f"{wavenumbers[pixel]:.2f}"
+            log.debug(f"get_x_header_value: header {header}, pixel {pixel}, result {result}")
+            return result
 
         def get_pr_header_value(m, header, pixel, pr=None):
             if pr is None:
@@ -751,22 +800,13 @@ class Measurements(object):
             a = None
 
             if header == "processed":
-                if not pr.is_cropped():
-                    a = pr.processed
-                else:
-                    spec = m.spec
-                    if spec is not None:
-                        roi = spec.settings.eeprom.get_horizontal_roi()
-                        if roi is not None and m.roi_active:
-                            if roi.contains(pixel):
-                                pixel -= roi.start
-                                a = pr.processed_cropped
+                a = pr.get_processed()
             elif header == "reference":
-                a = pr.reference
+                a = pr.get_reference()
             elif header == "dark":
-                a = pr.dark
+                a = pr.get_dark()
             elif header == "raw":                                           
-                a = pr.raw
+                a = pr.get_raw()
 
             if a is not None and pixel < len(a):
                 value = a[pixel]
@@ -782,51 +822,42 @@ class Measurements(object):
 
             return '%.*f' % (use_prec, value)
 
-        interp = self.save_options.interp
-        if interp is not None and interp.enabled:
+        if self.ctl.interp.enabled:
+
+            log.debug(f"export_by_column: interpolation enabled: {self.ctl.interp}")
 
             #####################################################################           
-            # Export Interpolated (you are here)
+            # Export Interpolated
             #####################################################################           
 
-            # Interpolate each Measurement to an InterpolatedProcessedReading.
-            # Keep handle to last IPR, as we can use it for the "global" 
-            # pixel, wavelength and wavenumber axes.
-            max_roi_end = float("-inf")
-            min_roi_start = float("inf")
-            for m in self.measurements:
-                ipr = interp.interpolate_processed_reading(
-                    m.processed_reading, 
-                    wavelengths=m.settings.wavelengths, 
-                    wavenumbers=m.settings.wavenumbers, 
-                    settings=m.settings)
-                if ipr is None:
-                    log.error("failed export due to interpolation error")
-                if m.roi_active:
-                    roi = m.settings.eeprom.get_horizontal_roi()
-                    min_roi_start = min(min_roi_start, int(roi.start))
-                    max_roi_end = max(max_roi_end, int(roi.end))
-                m.ipr = ipr
+            for m in export_measurements:
+                
+                # Ensure all measurements are interpolated to the SAME (current)
+                # target axis; if any have already been interpolated to this axis
+                # (the normal case), this should be a no-op. Note that this may
+                # CHANGE individual Measurements, in that each will now have a 
+                # ProcessedReading.interpolated, regardless of whether it did 
+                # before.
+                self.ctl.interp.process(m.processed_reading)
+                if not m.processed_reading.interpolated:
+                    self.ctl.marquee.error("export failed due to interpolation failure")
+                    return
 
-            if max_roi_end != float("-inf") and min_roi_start != float("inf"):
-                px_range = range(min_roi_start, max_roi_end)
-            else:
-                px_range = range(ipr.pixels)
-
-            for pixel in px_range:
+            first = export_measurements[0]
+            for pixel in range(len(first.processed_reading.get_processed())):
                 row = []
                 for settings in settingss:
                     for header in x_headers:
-                        row.append(get_x_header_value(ipr.wavelengths, ipr.wavenumbers, header, pixel))
-                if self.save_options.save_collated():
+                        row.append(get_x_header_value(first.processed_reading.get_wavelengths(), first.processed_reading.get_wavenumbers(), header, pixel))
+                if self.ctl.save_options.save_collated():
                     for header in pr_headers:
                         row.extend(BLANK)
-                        for m in self.measurements:
-                            row.append(get_pr_header_value(m, header, pixel, pr=m.ipr.processed_reading))
+                        for m in export_measurements:
+                            row.append(get_pr_header_value(m, header, pixel, pr=m.processed_reading.interpolated))
                 else:
-                    for m in self.measurements:
+                    for m in export_measurements:
                         for header in pr_headers:
-                            row.append(get_pr_header_value(m, header, pixel, pr=m.ipr.processed_reading))
+                            row.append(get_pr_header_value(m, header, pixel, pr=m.processed_reading.interpolated))
                 csv_writer.writerow(row)
 
         else:
@@ -835,12 +866,14 @@ class Measurements(object):
             # Export Non-Interpolated
             #####################################################################           
 
+            # Note that if some of these measurements were interpolated WHEN THEY
+            # WERE COLLECTED, they will be exported interpolated, even if 
+            # interpolation was subsequently disabled before the export. We 
+            # could change this by adding a "no_interpolation=False" default 
+            # param to ProcessedReading.get_foo() methods, but I don't currently
+            # see it as a problem.
+
             for pixel in range(max_pixels):
-                # MZ: always export all rows
-                # if spectrometer_count == 1:
-                #     roi = settingss[0].eeprom.get_horizontal_roi()
-                #     if roi is not None and not roi.contains(pixel) and self.horiz_roi.enabled:
-                #         continue
 
                 row = []
                 for settings in settingss:
@@ -849,16 +882,16 @@ class Measurements(object):
                             row.append(get_x_header_value(settings.wavelengths, settings.wavenumbers, header, pixel))
                     else:
                         row.extend(BLANK * len(x_headers))
-                if self.save_options.save_collated():
+                if self.ctl.save_options.save_collated():
                     for header in pr_headers:
                         row.extend(BLANK)
-                        for m in self.measurements:
+                        for m in export_measurements:
                             if pixel < m.settings.pixels():
                                 row.append(get_pr_header_value(m, header, pixel))
                             else:
                                 row.extend("NA")
                 else:
-                    for m in self.measurements:
+                    for m in export_measurements:
                         if pixel < m.settings.pixels():
                             for header in pr_headers:
                                 row.append(get_pr_header_value(m, header, pixel))
@@ -882,7 +915,7 @@ class Measurements(object):
     # It is believed that this exported file will match what you would have 
     # generated if you had initially saved the first Measurement as a row-ordered
     # CSV, then appended subsequent Measurements.
-    def export_by_row(self, csv_writer):
+    def export_by_row(self, csv_writer, visible_only=False):
         settingss = self._get_spectrometer_settings()
 
         file_header = Measurement.generate_dash_file_header(
@@ -895,13 +928,15 @@ class Measurements(object):
         # continue appending to the current open row-ordered file -- this 
         # is currently stored as an instance attribute in the SaveOptions
         # singleton, meaning it will get trampled in the row-ordered export.
-        save_line_number = self.save_options.line_number
-        self.save_options.line_number = 0
+        save_line_number = self.ctl.save_options.line_number
+        self.ctl.save_options.line_number = 0
 
-        for m in self.measurements:
+        for m in export_measurements:
+            if visible_only and not m.is_displayed():
+                continue
             m.write_x_axis_lines(csv_writer)
             m.write_processed_reading_lines(csv_writer)
-            self.save_options.line_number += 1
+            self.ctl.save_options.line_number += 1
 
         # restore the saved line number
-        self.save_options.line_number = save_line_number
+        self.ctl.save_options.line_number = save_line_number

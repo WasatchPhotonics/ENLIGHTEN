@@ -1,19 +1,22 @@
 # MacOS Development Environment
 
-We used to be able to get MacOS running with Miniconda, but I think that no 
-longer works with PySide2; it may with PySide6, but we haven't attempted that 
-conversion yet.
+We used to be able to get MacOS running with Miniconda, but we moved to Homebrew
+after problems with PySide2. Even though we've now moved to PySide6, we're
+currently sticking with Homebrew until a reason presents itself to move back.
 
-I was able to get it running from source on an Intel Mac (Ventura 13.4.1(c))
-using Homebrew.  Basically (I'm not sure everything I typed) this:
+Testing was conducted from an Intel Mac (Ventura 13.4.1(c)) using MacOS 14 Sonoma
+and Homebrew.  See the "Appendix: Homebrew" at the bottom of this file for 
+a list of the homebrew and pip packages I had installed.  I'm afraid I have not
+yet generated a "minimal" set of what is required to run ENLIGHTEN, but this set
+seems to work.
 
-    $ brew install pyside2
-    $ brew install python-tk@3.10
-    $ export PATH=/usr/local/Cellar/python@3.10/3.10.13/bin
-    $ export PYTHONPATH=.:pluginExamples:enlighten/assets/uic_qrc:../Wasatch.PY:../spyc_writer/src
-    $ python3.10 scripts/Enlighten.py --log-level debug 1>enlighten.out 2>enlighten.err
+    $ export PYTHONPATH=.:pluginExamples:enlighten/assets/uic_qrc:../Wasatch.PY:../spyc_writer/src:../jcamp
+    $ pip install -r requirements.txt
+    $ scripts/rebuild_resources.sh 
+    $ python scripts/Enlighten.py --log-level debug 1>enlighten.out 2>enlighten.err
 
-See appendices below for notes.
+See [MAINTENANCE](MAINTENANCE.md) for temporary changes or workarounds to
+the build process.
 
 # Installer Build Process
 
@@ -26,8 +29,26 @@ See appendices below for notes.
 
     $ make mac-installer
 
-(Note this will automatically run Platypus to convert the Mac Python .dylibs to 
-a MacOS .app "application".)
+At this point, historically we would then run Platypus using the following to 
+convert the Mac Python .dylibs to a MacOS .app "application":
+
+    $ make mac-platypus
+
+However, the Homebrew cask for Platypus doesn't seem to be working at the moment
+(at least on ARM), so currently we recommend building Platypus from source per
+instructions at:
+
+- https://github.com/sveinbjornt/Platypus
+
+Basically:
+
+    $ git clone git@github.com:sveinbjornt/Platypus.git
+    $ cd Platypus
+    $ make build_unsigned
+
+Then use the Platypus GUI to generate the .app:
+
+![Platypus](images/platypus.png)
 
 ## Create a .dmg
 
@@ -112,52 +133,61 @@ Below are some example threads:
 I don't remember everything I installed, when or why, but this is what I had 
 installed when it worked...
 
-    $ brew ls
+    mzieg-macbook.local [~/work/code/enlighten] mzieg  8:16PM $ brew ls
     ==> Formulae
-    aom             gdk-pixbuf  libffi           libxft      openssl@1.1    sdl2
-    apr             gdrive      libheif          libxmp      openssl@3      sdl2_mixer
-    apr-util        gettext     libice           libxmu      opus           shared-mime-info
-    astyle          ghostscript libidn           libxp       opusfile       six
-    awscli          giflib      libidn2          libxrender  p7zip          sloccount
-    bdw-gc          glib        liblqr           libxt       pandoc         sphinx-doc
-    berkeley-db     glm         libmodplug       libyaml     pango          sqlite
-    brotli          gmp         libnghttp2       little-cms2 pcre           stlink
-    c-ares          gnu-getopt  libogg           llvm        pcre2          subversion
-    ca-certificates graphite2   libomp           llvm@15     pdfcrack       swig
-    cairo           graphviz    libpng           lsusb       perl           tcl-tk
-    cffi            gts         libpthread-stubs lua         pixman         telnet
-    cloc            harfbuzz    libraw           lynx        pkg-config     tree
-    cmake           hidapi      librsvg          lz4         platypus       udunits
-    cocoapods       highway     libsamplerate    lzo         portaudio      unrar
-    coreutils       icu4c       libsm            m4          portmidi       utf8proc
-    docbook         ilmbase     libsndfile       mame        pugixml        vim
-    docbook-xsl     imagemagick libsodium        markdown    pycparser      w3m
-    docutils        imath       libtiff          md5sha1sum  pygments       webp
-    dos2unix        jasper      libtool          mpdecimal   pyside@2       wget
-    doxygen         jbig2dec    libunistring     mpg123      python-certifi x265
-    flac            jpeg        libusb           mysql@5.6   python-tk@3.10 xbitmaps
-    fluid-synth     jpeg-turbo  libuv            ncurses     python-tk@3.11 xmlto
-    fontconfig      jpeg-xl     libvmaf          netpbm      python@3.10    xorgproto
-    freetype        jq          libvorbis        node        python@3.11    xpdf
-    fribidi         jsonlint    libx11           oniguruma   qt@5           xz
-    frotz           lame        libxau           openexr     rapidjson      z3
-    gd              libao       libxcb           openjdk     rclone         zstd
-    gdb             libavif     libxdmcp         openjpeg    readline
-    gdbm            libde265    libxext          openmotif   ruby
+    aom             glm              libraw        markdown       python-tk@3.11
+    apr             gmp              librsvg       md5sha1sum     python@3.10
+    apr-util        gnu-getopt       libsamplerate mpdecimal      python@3.11
+    astyle          graphite2        libsm         mpg123         qt@5
+    awscli          graphviz         libsndfile    mysql@5.6      rapidjson
+    bdw-gc          gts              libsodium     ncurses        rclone
+    berkeley-db     harfbuzz         libtiff       netpbm         readline
+    brotli          hidapi           libtool       node           ruby
+    c-ares          highway          libunistring  oniguruma      sdl2
+    ca-certificates icu4c            libusb        openexr        sdl2_mixer
+    cairo           ilmbase          libusb-compat openjdk        shared-mime-info
+    cffi            imagemagick      libuv         openjpeg       six
+    cloc            imath            libvmaf       openmotif      sloccount
+    cmake           jasper           libvorbis     openssl@1.1    sphinx-doc
+    cocoapods       jbig2dec         libx11        openssl@3      sqlite
+    coreutils       jpeg             libxau        opus           stlink
+    docbook         jpeg-turbo       libxcb        opusfile       subversion
+    docbook-xsl     jpeg-xl          libxdmcp      p7zip          swig
+    docutils        jq               libxext       pandoc         tcl-tk
+    dos2unix        jsonlint         libxft        pango          telnet
+    doxygen         lame             libxmp        pcre           tree
+    flac            libao            libxmu        pcre2          udunits
+    fluid-synth     libavif          libxp         pdfcrack       unrar
+    fontconfig      libde265         libxrender    perl           utf8proc
+    freetype        libffi           libxt         pixman         vim
+    fribidi         libheif          libyaml       pkg-config     w3m
+    frotz           libice           little-cms2   platypus       webp
+    gd              libidn           llvm          pngcrush       wget
+    gdb             libidn2          llvm@15       portaudio      x265
+    gdbm            liblqr           lsusb         portmidi       xbitmaps
+    gdk-pixbuf      libmodplug       lua           pugixml        xmlto
+    gdrive          libnghttp2       lynx          pycparser      xorgproto
+    gettext         libogg           lz4           pygments       xpdf
+    ghostscript     libomp           lzo           pyside@2       xz
+    giflib          libpng           m4            python-certifi z3
+    glib            libpthread-stubs mame          python-tk@3.10 zstd
 
     ==> Casks
     xquartz
 
-    mzieg-macbook.local [~/work/code/enlighten] mzieg  8:16PM $ echo $PATH
-    /usr/local/Cellar/python@3.10/3.10.13/bin:/Users/mzieg/bin:/Users/mzieg/work/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/opt/mysql@5.6/bin:/usr/local/share/dotnet
+    mzieg-macbook.local [~/work/code/enlighten] mzieg $ echo $PATH
+    /Users/mzieg/bin:/Users/mzieg/work/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/opt/mysql@5.6/bin:/usr/local/share/dotnet
 
-    mzieg-macbook.local [~/work/code/enlighten] mzieg  8:16PM $ echo $PYTHONPATH
-    ../spyc_writer/src:../Wasatch.PY:pluginExamples:.:enlighten/assets/uic_qrc
+    mzieg-macbook.local [~/work/code/enlighten] mzieg $ echo $PYTHONPATH
+    .:pluginExamples:enlighten/assets/uic_qrc:../Wasatch.PY:../spyc_writer/src:../jcamp
 
-    mzieg-macbook.local [~/work/code/enlighten] mzieg  8:16PM $ which python3.10
-    /usr/local/Cellar/python@3.10/3.10.13/bin/python3.10
+    mzieg-macbook.local [~/work/code/enlighten] mzieg $ which python
+    python: aliased to python3.10
 
-    macbook.local [~/work/code/enlighten] mzieg  8:15PM $ python3.10 -m pip list
+    mzieg-macbook.local [~/work/code/enlighten] mzieg $ which python3.10 
+    /usr/local/bin/python3.10
+
+    macbook.local [~/work/code/enlighten] mzieg $ pip list
     Package                          Version
     -------------------------------- ---------
     absl-py                          1.4.0
@@ -212,7 +242,7 @@ installed when it worked...
     pefile                           2023.2.7
     pexpect                          4.8.0
     Pillow                           10.0.0
-    pip                              23.2.1
+    pip                              23.3.1
     pkg-about                        1.0.8
     pluggy                           1.3.0
     protobuf                         4.24.2
@@ -233,6 +263,9 @@ installed when it worked...
     pyqtgraph                        0.13.3
     pyserial                         3.5
     PySide2                          5.15.2.1
+    PySide6                          6.6.0
+    PySide6-Addons                   6.6.0
+    PySide6-Essentials               6.6.0
     pytest                           7.4.0
     python-dateutil                  2.8.2
     pytz                             2023.3
@@ -249,6 +282,7 @@ installed when it worked...
     seabreeze                        2.4.0
     setuptools                       68.1.2
     shiboken2                        5.15.2.1
+    shiboken6                        6.6.0
     six                              1.16.0
     spc-spectra                      0.4.0
     SPyC_Writer                      0.2.0
@@ -270,3 +304,11 @@ installed when it worked...
     wrapt                            1.15.0
     xlwt                             1.3.0
     zipp                             3.16.2
+
+# Appendix: MacOS and PySide2
+
+If you need to get PySide2 running on MacOS, note the following worked:
+
+    $ brew install pyside2
+    $ brew install python-tk@3.10
+    $ export PATH=/usr/local/Cellar/python@3.10/3.10.13/bin:$PATH

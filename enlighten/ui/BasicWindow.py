@@ -1,7 +1,12 @@
 import logging
 import datetime
 
-from PySide6 import QtGui, QtCore, QtWidgets
+from enlighten import common
+
+if common.use_pyside2():
+    from PySide2 import QtGui, QtCore, QtWidgets
+else:
+    from PySide6 import QtGui, QtCore, QtWidgets
 
 # This line imports the "enlighten_layout.py" module which is generated from 
 # enlighten_layout.ui when you run scripts/rebuild_resources.sh.  
@@ -25,8 +30,6 @@ class BasicWindow(QtWidgets.QMainWindow):
         # the all-important "sfu"
         self.ui = enlighten_layout.Ui_MainWindow()
         self.ui.setupUi(self)
-        new_line = '\n'
-        #log.error(f"type of main window is {type(self.ui)} {f'{new_line}'.join(dir(self.ui))}")
 
         self.create_signals()
         self.setWindowIcon(QtGui.QIcon(":/application/images/EnlightenIcon.ico"))
@@ -53,8 +56,13 @@ class BasicWindow(QtWidgets.QMainWindow):
 
         if self.prompt_on_exit:
             quit_msg = "Are you sure you want to exit ENLIGHTEN?" 
-            reply = QtWidgets.QMessageBox.question(self, 'Confirm Exit', 
-                quit_msg, QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No)
+            reply = QtWidgets.QMessageBox.question(
+                self,                       # parent
+                "Confirm Exit",             # title
+                quit_msg,                   # text
+                QtWidgets.QMessageBox.Yes,  # button0
+                QtWidgets.QMessageBox.No)   # button1
+
             if reply != QtWidgets.QMessageBox.Yes:
                 log.debug('"We are cancelling the apocalypse!"')
                 event.ignore()

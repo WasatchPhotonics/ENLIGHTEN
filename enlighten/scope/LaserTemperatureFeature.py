@@ -11,7 +11,6 @@ class LaserTemperatureFeature:
              graph,
              multispec,
              lb_degC,
-             clear_btn,
              make_pen,
              clipboard,
              hardware_file_manager):
@@ -22,7 +21,6 @@ class LaserTemperatureFeature:
         self.graph                 = graph
         self.multispec             = multispec
         self.lb_degC               = lb_degC
-        self.clear_btn             = clear_btn
         self.make_pen              = make_pen
         self.clipboard             = clipboard
         self.output_to_file        = False
@@ -32,8 +30,8 @@ class LaserTemperatureFeature:
         self.multispec.register_strip_feature(self)
         self.hardware_file_manager.register_feature(self)
 
-        self.clear_btn                   .clicked            .connect(self.clear_data)
-        self.sfu.pushButton_laser_copy   .clicked            .connect(self.copy_data)
+        sfu.pushButton_clear_laser_temperature_data .clicked    .connect(self.clear_data)
+        sfu.pushButton_copy_laser_temperature_data  .clicked    .connect(self.copy_data)
 
     def process_reading(self, spec, reading):
         current_spec = self.multispec.current_spectrometer()
@@ -114,7 +112,7 @@ class LaserTemperatureFeature:
         curve = self.multispec.get_hardware_feature_curve(self.name, spec.device_id)
         if curve == None:
             return
-        curve.opts["pen"] = spec.assigned_color
+        curve.opts["pen"] = spec.color
 
     def copy_data(self):
         spec = self.multispec.current_spectrometer()

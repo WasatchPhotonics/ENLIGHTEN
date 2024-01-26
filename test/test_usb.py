@@ -6,8 +6,6 @@ import pytest
 import random
 import logging
 import threading
-from PySide2 import QtCore
-from PySide2.QtTest import QTest
 
 import numpy
 
@@ -17,6 +15,13 @@ from wasatch.ProcessedReading import ProcessedReading
 import scripts.Enlighten as enlighten
 from wasatch.MockUSBDevice import MockUSBDevice
 from conftest import wait_until, create_sim_spec, disconnect_spec
+
+if common.use_pyside2():
+    from PySide2 import QtCore
+    from PySide2.QtTest import QTest
+else:
+    from PySide6 import QtCore
+    from PySide6.QtTest import QTest
 
 log = logging.getLogger(__name__)
 

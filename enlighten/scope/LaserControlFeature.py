@@ -2,15 +2,18 @@ import time
 from datetime import datetime, timedelta
 import logging
 
-from PySide6 import QtWidgets 
-
-from enlighten import util
+from enlighten import util, common
 from enlighten.common import LaserStates
 
-from wasatch.EEPROM                   import EEPROM
+from wasatch.EEPROM import EEPROM
 
 from enlighten.ScrollStealFilter import ScrollStealFilter
 from enlighten.MouseWheelFilter import MouseWheelFilter
+
+if common.use_pyside2():
+    from PySide2 import QtWidgets 
+else:
+    from PySide6 import QtWidgets 
 
 log = logging.getLogger(__name__)
 
@@ -30,16 +33,17 @@ class LaserControlFeature:
         self.slider_stop_usb = False
         self.displayed_srm_tip = False
         self.locked = False
+        self.restrictions = set()
 
         sfu = self.ctl.form.ui
 
         sfu.pushButton_laser_power_dn   .clicked            .connect(self.dn_callback)
         sfu.pushButton_laser_power_up   .clicked            .connect(self.up_callback)
         sfu.pushButton_laser_toggle     .clicked            .connect(self.toggle_callback)
+        sfu.pushButton_laser_convenience.clicked            .connect(self.toggle_callback)
         sfu.verticalSlider_laser_power  .sliderPressed      .connect(self.slider_power_press_callback)
         sfu.verticalSlider_laser_power  .sliderMoved        .connect(sfu.doubleSpinBox_laser_power.setValue)
         sfu.verticalSlider_laser_power  .sliderReleased     .connect(self.slider_power_callback)
-        sfu.verticalSlider_laser_power  .installEventFilter(MouseWheelFilter(sfu.verticalSlider_laser_power))
         sfu.doubleSpinBox_excitation_nm .valueChanged       .connect(self.excitation_callback)
         sfu.doubleSpinBox_laser_power   .valueChanged       .connect(sfu.verticalSlider_laser_power.setValue)
         sfu.doubleSpinBox_laser_power   .valueChanged       .connect(self.set_laser_power_callback)
@@ -47,9 +51,15 @@ class LaserControlFeature:
         sfu.checkBox_laser_watchdog     .clicked            .connect(self.set_watchdog_enable_callback)
         sfu.comboBox_laser_power_unit   .currentIndexChanged.connect(self.update_visibility)
 
-        for key, item in self.__dict__.items():
-            if key.startswith("spinbox_") or key.startswith("combo_"):
-                item.installEventFilter(ScrollStealFilter(item))
+
+        for widget in [ sfu.verticalSlider_laser_power ]:
+            widget.installEventFilter(MouseWheelFilter(widget))
+
+        for widget in [ sfu.doubleSpinBox_excitation_nm,
+                        sfu.doubleSpinBox_laser_power,
+                        sfu.spinBox_laser_watchdog_sec,
+                        sfu.comboBox_laser_power_unit ]:
+            widget.installEventFilter(ScrollStealFilter(widget))
 
     # ##########################################################################
     # Public Methods
@@ -104,7 +114,9 @@ class LaserControlFeature:
         is_ilc = any([component in settings.full_model().upper() for component in ["-ILC", "-IL-IC"]])
         combo_unit = sfu.comboBox_laser_power_unit
 
-        sfu.frame_lightSourceControl.setVisible(has_laser)
+        for widget in [ sfu.frame_lightSourceControl,
+                   sfu.pushButton_laser_convenience ]:
+            widget.setVisible(has_laser)
         if not has_laser:
             return
 
@@ -148,7 +160,7 @@ class LaserControlFeature:
                        sfu.comboBox_laser_power_unit ]:
                 w.setEnabled(False)
 
-        self.refresh_laser_button()
+        self.refresh_laser_buttons()
 
     # expose this setter for BatchCollection and plugins
     def set_laser_enable(self, flag, spec=None, all=False):
@@ -197,7 +209,7 @@ class LaserControlFeature:
         log.debug(f"set_laser_enable: spec.settings.state.laser_enabled = {spec.settings.state.laser_enabled}, spec.app_state.laser_state = {spec.app_state.laser_state}")
 
         if self.ctl.multispec.is_current_spectrometer(spec):
-            self.refresh_laser_button()
+            self.refresh_laser_buttons()
 
         self.ctl.status_indicators.update_visibility()
 
@@ -282,15 +294,23 @@ class LaserControlFeature:
     # Private Methods
     # ##########################################################################
 
-    def refresh_laser_button(self):
+    def refresh_laser_buttons(self, force_on=False):
         spec = self.ctl.multispec.current_spectrometer()
-        enabled = spec.settings.state.laser_enabled if spec else False
-        b = self.ctl.form.ui.pushButton_laser_toggle
+        sfu = self.ctl.form.ui
+
+        enabled = force_on or (spec and spec.settings.state.laser_enabled)
+        allowed = 0 == len(self.restrictions)
+        why_not = ", ".join(self.restrictions)
+
         if enabled:
-            b.setText(self.BTN_OFF_TEXT)
+            sfu.pushButton_laser_toggle.setText(self.BTN_OFF_TEXT)
         else:
-            b.setText(self.BTN_ON_TEXT)
-        self.ctl.gui.colorize_button(b, enabled)
+            sfu.pushButton_laser_toggle.setText(self.BTN_ON_TEXT)
+
+        for b in [ sfu.pushButton_laser_toggle, sfu.pushButton_laser_convenience ]:
+            b.setEnabled(allowed)
+            b.setToolTip("Toggle laser (ctrl-L)" if allowed else f"Disabled ({why_not})")
+            self.ctl.gui.colorize_button(b, enabled)
 
         self.refresh_watchdog_tooltip()
 
@@ -602,12 +622,23 @@ class LaserControlFeature:
 
     # gets called by BatteryFeature when a new battery reading is received
     def battery_callback(self, perc, charging):
+        sfu = self.ctl.form.ui
         enough_for_laser = perc >= self.MIN_BATTERY_PERC
         log.debug("enough_for_laser = %s (%.2f%%)" % (enough_for_laser, perc))
 
-        b = self.ctl.form.ui.pushButton_laser_toggle
-        b.setEnabled(enough_for_laser)
-        b.setToolTip("Toggle laser (ctrl-L)" if enough_for_laser else "battery low ({perc:.2f}%)")
+        if enough_for_laser:
+            self.remove_restriction("low battery")
+        else:
+            self.set_restriction("low battery")
+
+    def clear_restriction(self, reason):
+        if reason in self.restrictions:
+            self.restrictions.remove(reason)
+        self.refresh_laser_buttons()
+
+    def set_restriction(self, reason):
+        self.restrictions.add(reason)
+        self.refresh_laser_buttons()
 
     def slider_power_callback(self):
         self.slider_stop_usb = False

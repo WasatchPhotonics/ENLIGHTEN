@@ -58,7 +58,7 @@ then
     SCRIPT_DIR=`dirname $0` 
     cd $SCRIPT_DIR/.. 
 else
-    if uname -a | grep -qi armv7
+    if uname -a | grep -qi raspberrypi
     then
         OS="RPi"
 
@@ -74,8 +74,14 @@ else
         then
             OS="MacOS"
             # PATH should include /usr/local/lib/python3.10/site-packages/PySide2 or equivalent
-            RCC=`which rcc`
-            UIC=`which uic`
+            if [ "$USE_PYSIDE_2" ]
+            then
+                RCC=`which pyside2-rcc`
+                UIC=`which pyside2-uic`
+            else
+                RCC=`which pyside6-rcc`
+                UIC=`which pyside6-uic`
+            fi
             TWO_TO_THREE=`which 2to3-3.10`
 
             PYTHON="python3.10"
@@ -83,8 +89,8 @@ else
             RCC_OPTS="--generator python"
         else
             OS="Linux"
-            RCC="$CONDA_PREFIX/bin/pyside2-rcc"
-            UIC="$CONDA_PREFIX/bin/pyside2-uic"
+            RCC="$CONDA_PREFIX/bin/pyside6-rcc"
+            UIC="$CONDA_PREFIX/bin/pyside6-uic"
             TWO_TO_THREE="$CONDA_PREFIX/bin/2to3"
         fi
     fi

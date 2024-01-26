@@ -1,7 +1,6 @@
 import pyqtgraph
 
 from collections import defaultdict
-from PySide6 import QtGui
 import logging
 import re
 
@@ -12,6 +11,12 @@ from wasatch.DeviceID import DeviceID
 from wasatch.WasatchDeviceWrapper import WasatchDeviceWrapper
 
 from enlighten import util
+from enlighten import common
+
+if common.use_pyside2():
+    from PySide2 import QtGui
+else:
+    from PySide6 import QtGui
 
 log = logging.getLogger(__name__)
 
@@ -34,44 +39,32 @@ log = logging.getLogger(__name__)
 # It's worth considering whether to give Multispec a shutting_down flag, or a 
 # callback to get it, but the tear-down process is sufficiently lightweight to
 # just let it ride.
+#
 class Multispec(object):
 
-    def __init__(self, 
-            button_lock,
-            check_autocolor,
-            check_hide_others,
-            colors,
-            combo_spectrometer, 
-            desired_serial,
-            frame_widget,
-            graph,
-            gui,
-            layout_colors,
-            model_info,
-            reinit_callback,
-            stylesheets,
-            eject_button,
-            controller_disconnect,
+    def __init__(self, ctl):
+        self.ctl = ctl
+        sfu = ctl.form.ui
 
-            lockable_widgets):
+        self.button_lock           = sfu.pushButton_multiSpec_lock
+        self.check_autocolor       = sfu.checkBox_multiSpec_autocolor
+        self.check_hide_others     = sfu.checkBox_multiSpec_hide_others
+        self.combo_spectrometer    = sfu.comboBox_multiSpec
+        self.frame_widget          = sfu.frame_multiSpecWidget
+        self.layout_colors         = sfu.horizontalLayout_multiSpec_colors
+        self.eject_button          = sfu.pushButton_eject
 
-        self.button_lock           = button_lock
-        self.check_autocolor       = check_autocolor
-        self.check_hide_others     = check_hide_others
-        self.colors                = colors
-        self.combo_spectrometer    = combo_spectrometer
-        self.desired_serial        = desired_serial
-        self.frame_widget          = frame_widget
-        self.graph                 = graph
-        self.gui                   = gui
-        self.reinit_callback       = reinit_callback      # Controller.initialize_new_device()
-        self.layout_colors         = layout_colors
-        self.model_info            = model_info
-        self.stylesheets           = stylesheets
-        self.eject_button          = eject_button
-        self.controller_disconnect = controller_disconnect
-        self.lockable_widgets      = lockable_widgets
-
+        # Essentially, these are widgets corresponding to SpectrometerState fields,
+        # SpectrometerApplicationState fields, or change_device_setting() keys
+        # which can therefore be "locked" in Multispec.  There is currently NO
+        # CONNECTION in code between the widgets which "visually suggest they can
+        # be locked" (via this list), and those which actually can be.
+        self.lockable_widgets      = [ sfu.lightSourceWidget_shaded,
+                                       sfu.detectorControlWidget_shaded,
+                                       sfu.displayAxisWidget_shaded,
+                                       sfu.scanAveragingWidget_shaded,
+                                       sfu.boxcarWidget_shaded,
+                                       sfu.temperatureWidget_shaded ]
         self.device_id = None
         self.ejected = set()
         self.strip_features = []
@@ -80,14 +73,19 @@ class Multispec(object):
         self.spec_laser_temp_curves = {}
         self.spec_hardware_live_curves = {}
         self.spec_detector_temp_curves = {}
-        self.spec_roi_curtains = {}
+        self.spec_roi_curtains = {} # MZ: should not be here
         self.reset_spec_objs = {}
         self.spec_in_reset = defaultdict(int) # deafult of int() is 0
         self.spec_hardware_feature_curves = defaultdict(dict)
         self.in_process = {} # a dict of device_id to WasatchDeviceWrapper (may be None if "gave up")
         self.disconnecting = {}
         self.ignore = {}
-        self.serial_colors = {} # dict of serial_number to color
+
+        # dict of serial_number to color - persisted in Multispec so that 
+        # Spectrometers which disconnect and reconnect can easily re-acquire 
+        # their previously-assigned color, and not confuse the user by shifting 
+        # through a rainbow
+        self.serial_colors = {} 
 
         # This refers to the Multispec feature of "locking" spectrometer state 
         # changes so that they apply to all connected spectrometers (or if 
@@ -98,8 +96,6 @@ class Multispec(object):
         self.locked = False     
 
         self.hide_others = False
-
-        self.graph.multispec = self # cross-register
 
         self.reset_seen()
         self.combo_spectrometer.clear()
@@ -120,17 +116,17 @@ class Multispec(object):
 
     ## @returns True if we're only looking for one spectrometer, and already found it
     def found_desired(self):
-        return self.desired_serial is not None and self.count() > 0
+        return self.ctl.serial_number_desired is not None and self.count() > 0
 
     ## @returns True if we're only looking for one spectrometer, and this isn't it
     def reject_undesireable(self, device):
-        if self.desired_serial is None:
+        if self.ctl.serial_number_desired is None:
             return False # we're not filtering, so don't reject
 
-        if self.desired_serial == device.settings.eeprom.serial_number:
+        if self.ctl.serial_number_desired == device.settings.eeprom.serial_number:
             return False # passed filter, so don't reject
 
-        log.info("rejecting spectrometer (%s != %s)", self.desired_serial, device.settings.eeprom.serial_number)
+        log.info("rejecting spectrometer (%s != %s)", self.ctl.serial_number_desired, device.settings.eeprom.serial_number)
         self.set_ignore(device.device_id)
         return True # failed filter
 
@@ -143,7 +139,7 @@ class Multispec(object):
     def add_color_button(self):
         button = pyqtgraph.ColorButton()
         util.force_size(button, width=30, height=26)
-        self.gui.colorize_button(button, False)
+        self.ctl.gui.colorize_button(button, False)
         self.layout_colors.addWidget(button)
         return button
 
@@ -154,7 +150,8 @@ class Multispec(object):
         spec = self.current_spectrometer()
         if spec is None:
             return
-        spec.assigned_color = btn.color()
+        spec.color = btn.color()
+        self.serial_colors[spec.settings.eeprom.serial_number] = spec.color
         self.update_spectrometer_colors()
         for feature in self.strip_features:
             feature.update_curve_color(spec)
@@ -163,9 +160,8 @@ class Multispec(object):
         spec = self.current_spectrometer()
         if spec is None:
             return
-        color = spec.assigned_color
-        if color is not None:
-            self.button_color.setColor(color)
+        if spec.color is not None:
+            self.button_color.setColor(spec.color)
 
     def is_in_reset(self, device_id):
         return any([device_id == key for key in self.spec_in_reset.keys()])
@@ -238,8 +234,7 @@ class Multispec(object):
         del self.in_process[device_id]
 
     def reset_seen(self):
-        self.seen_colors = set()
-        self.seen_model_colors = set()
+        self.seen_colors = set() # '#abcdef' etc
 
     def set_disconnecting(self, device_id: str, status: bool) -> None:
         """
@@ -260,11 +255,11 @@ class Multispec(object):
     def lock_callback(self):
         self.locked = not self.locked
 
-        self.gui.colorize_button(self.button_lock, self.locked)
+        self.ctl.gui.colorize_button(self.button_lock, self.locked)
         if self.locked:
-            css = self.stylesheets.get("multispec_locked")
+            css = self.ctl.stylesheets.get("multispec_locked")
         else:
-            css = self.stylesheets.get("multispec_unlocked")
+            css = self.ctl.stylesheets.get("multispec_unlocked")
 
         for widget in self.lockable_widgets:
             widget.setStyleSheet(css)
@@ -294,7 +289,7 @@ class Multispec(object):
         if spec is None:
             return
         log.critical(f"user clicked eject on {spec}")
-        self.controller_disconnect(spec)
+        self.ctl.disconnect_device(spec)
         self.ejected.add(spec.device.device_id)
 
     def update_hide_others(self):
@@ -324,7 +319,7 @@ class Multispec(object):
         spec.app_state.hidden = True
 
         # now that we're adding device_id backreferences, could alternately delete by device_id
-        self.graph.remove_curve(spec.label)
+        self.ctl.graph.remove_curve(spec.label)
 
     def unhide(self, spec):
         if not spec.app_state.hidden:
@@ -332,7 +327,7 @@ class Multispec(object):
 
         log.debug("unhiding %s", spec.device_id)
         spec.app_state.hidden = False
-        spec.curve = self.graph.add_curve(
+        spec.curve = self.ctl.graph.add_curve(
             pen=self.make_pen(spec),
             name=spec.label,
             spec=spec)
@@ -343,12 +338,12 @@ class Multispec(object):
     def set_state(self, field, value):
         if self.locked:
             for spec in self.get_spectrometers():
-                log.debug("%s: settings.state.%s -> %s", spec.label, field, value)
+                log.debug(f"{spec.label}: settings.state.{field} -> {value}")
                 setattr(spec.settings.state, field, value)
         else:
             spec = self.current_spectrometer()
             if spec is not None:
-                log.debug("%s: settings.state.%s -> %s", spec.label, field, value)
+                log.debug(f"{spec.label}: settings.state.{field} -> {value}")
                 setattr(spec.settings.state, field, value)
                 
     ##
@@ -464,7 +459,7 @@ class Multispec(object):
         device_id = device.device_id
 
         log.debug("Multispec.add: instantiating Spectrometer for device_id %s", device_id)
-        spec = Spectrometer(device, self.model_info)
+        spec = Spectrometer(device, self.ctl)
 
         log.debug("Multispec.add: adding to self.spectrometers: %s", device_id)
         self.spectrometers[device_id] = spec
@@ -485,11 +480,23 @@ class Multispec(object):
         ########################################################################
         # initialize graph trace
         ########################################################################
-        
-        # this is where newly connected spectrometers receive their curve color
+
+        # this is where the spectrometer's "normal" graph color is initialized
+        # (whether or not "autocolor" is currently enabled)
+
+        sn = spec.settings.eeprom.serial_number
+        if sn in self.serial_colors:
+            # this is a reconnection, so re-use previous color
+            spec.color = self.serial_colors[sn]
+        else:
+            # assign a new color
+            spec.color = self.choose_color(spec, ignore_auto=True)
+            self.serial_colors[sn] = spec.color
+
+        # now add to the curve, noting that autocolor may be in effect
         log.debug("Multispec.add: adding curve %s", spec.label)
         pen = self.make_pen(spec)
-        spec.curve = self.graph.add_curve(
+        spec.curve = self.ctl.graph.add_curve(
             pen=pen,
             name=spec.label,
             spec=spec)
@@ -498,25 +505,13 @@ class Multispec(object):
         # initialize horizontal ROI "curtains"
         ########################################################################
 
-        region_color = pen.color()
-        region_color.setAlpha(20)
+        log.debug("add: calling init_curtains")
+        spec.init_curtains()
 
-        spec.roi_region_left = None
-        spec.roi_region_right = None
+        log.debug("add: calling update_regions")
+        self.ctl.horiz_roi.update_regions(spec)
 
-        if spec.settings.eeprom.has_horizontal_roi():
-            # initialize in pixel space (whether graphed in wavelengths or 
-            # wavenumbers, regions will have the SAME NUMBER of datapoints)
-            roi = spec.settings.eeprom.get_horizontal_roi()
-            spec.roi_region_left = pyqtgraph.LinearRegionItem((0, roi.start), 
-                                                              pen = region_color,
-                                                              brush = region_color,
-                                                              movable = False)
-            spec.roi_region_right = pyqtgraph.LinearRegionItem((roi.end, spec.settings.eeprom.active_pixels_horizontal),
-                                                              pen = region_color,
-                                                              brush = region_color,
-                                                              movable = False)
-        self.graph.update_roi_regions(spec)
+        log.debug("add: back from scary changed stuff")
 
         # done
         self.update_widget()
@@ -562,9 +557,9 @@ class Multispec(object):
         device_id = spec.device_id 
         label = spec.label
 
-        self.graph.remove_curve(label)
-        self.graph.remove_roi_region(spec.roi_region_right)
-        self.graph.remove_roi_region(spec.roi_region_left)
+        self.ctl.graph.remove_curve(label)
+        self.ctl.graph.remove_roi_region(spec.roi_region_right)
+        self.ctl.graph.remove_roi_region(spec.roi_region_left)
 
         # this should cause combo_callback to trigger, calling 
         # Controller.initialize_new_device and thus updating Multispec.device_id to 
@@ -627,7 +622,7 @@ class Multispec(object):
         self.device_id = device_id
 
         # this is a no-op when shutting down
-        self.reinit_callback(spec.device)
+        ctl.initialize_new_device(spec.device)
 
         # update traces (make selected bold), so just use checkbox callback
         self.check_callback()
@@ -637,15 +632,12 @@ class Multispec(object):
     # ##########################################################################
 
     def check_callback(self):
-        self.seen_model_colors = {}
         self.update_spectrometer_colors()
 
     def update_spectrometer_colors(self):
         for spec in self.get_spectrometers():
             if spec is not None:
                 spec.curve.setPen(self.make_pen(spec))
-            else:
-                log.critical("update_spectrometer_colors: None spectrometer?!")
 
     def make_pen(self, spec):
         """
@@ -659,13 +651,13 @@ class Multispec(object):
 
         if self.is_autocolor():
             color = self.choose_color(spec)
-        elif spec.assigned_color is None:
+        elif spec.color is None:
             color = self.choose_color(spec)
         else:
-            color = spec.assigned_color
+            color = spec.color
 
         try:
-            pen = self.gui.make_pen(
+            pen = self.ctl.gui.make_pen(
                 widget   = "scope", 
                 selected = self.is_selected(spec.device_id),
                 color    = color)
@@ -674,42 +666,17 @@ class Multispec(object):
             log.error("unable to generate pen", exc_info=1)
             return None
 
-    def choose_color(self, spec):
-        if self.is_autocolor() and spec.wp_model_info is not None:
-            model_color = spec.wp_model_info.color
-            if model_color in self.seen_model_colors.keys() and self.seen_model_colors.get(model_color, None) != spec:
-                if spec.assigned_color is not None:
-                    color = spec.assigned_color
-                elif spec.settings.eeprom.serial_number in self.serial_colors:
-                    color = self.serial_colors[spec.settings.eeprom.serial_number]
-                else:
-                    color = self.colors.get_next_random()
-                    while color in self.seen_colors:
-                        color = self.colors.get_next_random()
-            else:
-                color = model_color
-                self.seen_model_colors[color] = spec
+    def choose_color(self, spec, ignore_auto=False):
+        if self.is_autocolor() and spec.wp_model_info is not None and not ignore_auto:
+            return spec.wp_model_info.color
+        elif spec.color is not None:
+            return spec.color
         else:
-            color = self.colors.get_by_widget("scope")
-            if color in self.seen_colors:
-                if spec.assigned_color is not None:
-                    color = spec.assigned_color 
-                elif spec.settings.eeprom.serial_number in self.serial_colors:
-                    color = self.serial_colors[spec.settings.eeprom.serial_number]
-                else:
-                    color = self.colors.get_next_random()
-                    while color in self.seen_colors:
-                        color = self.colors.get_next_random()
-
-        if not isinstance(color, QtGui.QColor):
+            color = self.ctl.colors.get_by_widget("scope")
+            while color in self.seen_colors:
+                color = self.ctl.colors.get_next_random()
             self.seen_colors.add(color)
-        
-        if spec.assigned_color is None:
-            log.debug("spectrometer %s permanently assigned color %s", spec.label, color)
-            spec.assigned_color = color
-            self.serial_colors[spec.settings.eeprom.serial_number] = color
-
-        return color
+            return color
 
     ## send commands to device subprocess via (name, value) pickleable tuples
     def change_device_setting(self, setting, value=0, all=False):
@@ -738,7 +705,3 @@ class Multispec(object):
 
     def check_hardware_curve_present(self, name, spec_id) -> bool:
         return spec_id in self.spec_hardware_feature_curves[name]
-
-
-
-

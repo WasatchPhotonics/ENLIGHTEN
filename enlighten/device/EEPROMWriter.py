@@ -2,9 +2,12 @@ import os
 import hashlib
 import logging
 
-from PySide6 import QtGui, QtWidgets
-
 from enlighten import common
+
+if common.use_pyside2():
+    from PySide2 import QtGui, QtWidgets
+else:
+    from PySide6 import QtGui, QtWidgets
 
 log = logging.getLogger(__name__)
 
@@ -12,28 +15,17 @@ class EEPROMWriter(object):
     """
     Encapsulate reflashing the EEPROM to the device.
     """
+    def __init__(self, ctl):
+        self.ctl = ctl
 
-    def __init__(self,
-            authentication,
-            button_save,
-            marquee,
-            multispec,
-            reset_hardware_errors):
-
-        self.authentication        = authentication
-        self.button_save           = button_save
-        self.marquee               = marquee
-        self.multispec             = multispec
-        self.reset_hardware_errors = reset_hardware_errors
-
-        self.button_save.setVisible(False)
-
-        self.button_save    .clicked            .connect(self.write)
+        b = ctl.form.ui.pushButton_write_eeprom
+        b.setVisible(False)
+        b.clicked.connect(self.write)
 
     def write(self, verify=True):
         log.debug("asked to write EEPROM (verify %s)", verify)
 
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             log.error("can't write EEPROM (no Spectrometer)")
             return
@@ -64,7 +56,7 @@ class EEPROMWriter(object):
 
             if retval != QtWidgets.QMessageBox.Yes:
                 log.debug("user declined to write EEPROM on %s", label)
-                self.marquee.clear(token="eeprom")
+                self.ctl.marquee.clear(token="eeprom")
                 return
 
         log.debug("user elected to write EEPROM on %s", label)
@@ -74,23 +66,23 @@ class EEPROMWriter(object):
         # that the following command can tell the subprocess to WRITE its
         # cached copy to the hardware.
         if not self.send_to_subprocess():
-            self.marquee.error("failed to send EEPROM to subprocess")
+            self.ctl.marquee.error("failed to send EEPROM to subprocess")
             return
 
         # now take a backup of the EEPROM, just to be paranoid
         if not self.backup():
-            self.marquee.error("failed to backup EEPROM")
+            self.ctl.marquee.error("failed to backup EEPROM")
             return
 
         # we're now ready to actually send the "write" command to the subprocess
-        self.marquee.info("writing EEPROM")
+        self.ctl.marquee.info("writing EEPROM")
         spec.change_device_setting("write_eeprom", (sn, spec.settings.eeprom))
-        self.reset_hardware_errors(spec)
+        self.ctl.clear_response_errors(spec)
 
     def send_to_subprocess(self):
         log.debug("sending EEPROM to subprocess")
 
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
 
@@ -100,11 +92,11 @@ class EEPROMWriter(object):
             sn = spec.settings.eeprom_backup.serial_number
 
         # note that the order of these checks is significant
-        if self.authentication.has_production_rights():
+        if self.ctl.authentication.has_production_rights():
             # update all EEPROM fields
             log.debug("sending 'replace_eeprom'")
             spec.change_device_setting("replace_eeprom", (sn, spec.settings.eeprom))
-        elif self.authentication.has_advanced_rights():
+        elif self.ctl.authentication.has_advanced_rights():
             # update editable EEPROM fields
             spec.change_device_setting("update_eeprom", (sn, spec.settings.eeprom))
         else:
@@ -139,7 +131,7 @@ class EEPROMWriter(object):
         """
         log.debug("backing up EEPROM")
 
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         try:
             text = spec.settings.eeprom_backup.json()
             digest = hashlib.sha1(text.encode("UTF-8")).hexdigest()

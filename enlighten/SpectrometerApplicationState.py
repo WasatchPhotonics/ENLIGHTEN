@@ -20,6 +20,8 @@ log = logging.getLogger(__name__)
 # persist with Measurements" (dark/reference timestamps, reading_count, current 
 # temperatures) and "heavyweight things we don't" (waterfall, historical 
 # temperatures).
+#
+# @todo consider moving to enlighten.device
 class SpectrometerApplicationState(object):
 
     def clear(self):
@@ -41,6 +43,7 @@ class SpectrometerApplicationState(object):
 
         self.reading_count = 0
         self.paused = False
+        self.take_one_request = None
         self.hidden = False
         self.waterfall = []
         self.missing_acquisition_timeout = None
@@ -49,6 +52,7 @@ class SpectrometerApplicationState(object):
         self.baseline_correction_enabled = False # MZ: is this used? should it be?
         self.spec_timeout_prompt_shown = False
         self.missed_reading_count = 0
+        self.received_reading_at_current_integration_time = False
         self.laser_state = LaserStates.DISABLED
 
         # we set this if the watchdog was already set to 0 in the EEPROM at initial connection
@@ -72,6 +76,7 @@ class SpectrometerApplicationState(object):
         log.info("  Reference Dark-Corrected:   %s", self.reference_is_dark_corrected)
         log.info("  Reading Count:              %d", self.reading_count)
         log.info("  Paused:                     %s", self.paused)
+        log.info("  Take One Request            %s", self.take_one_request)
         log.info("  Hidden:                     %s", self.hidden)
         log.info("  Waterfall:                  %s", None if self.waterfall is None else self.waterfall[:5])
         log.info("  Missing Acquisition Timeout:%s", self.missing_acquisition_timeout)

@@ -1,16 +1,19 @@
 import os
 import re
-import logging
 import json
+import logging
 
-from PySide6 import QtGui, QtWidgets # for product image
 from decimal import *
 from wasatch import utils as wasatch_utils
 
 from enlighten import util
 from enlighten import common
-from enlighten.device.Authentication import Authentication
 from wasatch.EEPROM import EEPROM
+
+if common.use_pyside2():
+    from PySide2 import QtGui, QtWidgets
+else:
+    from PySide6 import QtGui, QtWidgets
 
 log = logging.getLogger(__name__)
 
@@ -40,54 +43,13 @@ class EEPROMEditor(object):
     not sure that would actually simplify life for most end-users (though 
     developers would appreciate it).
     """
-    
-    def __init__(self, 
-                authentication,
-                clipboard,
-                bt_copy,
-                eeprom_writer,
-                image_resources,
-                lb_digest,
-                lb_product_image,
-                lb_serial,
-                multispec,
-                sfu,
-                stylesheets,
-                update_wavecal_callback, 
-                update_gain_and_offset_callback,
-                horiz_roi,
-                current_spectrometer): 
-        """
-        @param authentication     So the EEPROMEditor will know which fields
-                                  to make editable
-        @param eeprom_writer      used to save EEPROM changes
-        @param sfu                self.form.ui (easier than passing in 100-odd widgets)
-        @param update_wavecal_callback if any EEPROM fields relating to the wavecal
-                                  are editted, call this to update x-axes
-        @param update_gain_and_offset_callback if any EEPROM fields relating to gain
-                                  or offset are editted, call this to update the
-                                  spectrometer
-        @param horiz_roi          allows feature updates on value changes
-        
-        @todo if we had business objects for DetectorFeature and WavecalFeature, 
-              we could structure this better than the Controller callbacks
-        """
+    def __init__(self, ctl):
+        self.ctl = ctl
+        sfu = ctl.form.ui
 
-        self.authentication                  = authentication
-        self.bt_copy                         = bt_copy
-        self.clipboard                       = clipboard
-        self.eeprom_writer                   = eeprom_writer
-        self.image_resources                 = image_resources
-        self.lb_digest                       = lb_digest
-        self.lb_product_image                = lb_product_image
-        self.lb_serial                       = lb_serial
-        self.multispec                       = multispec
-        self.sfu                             = sfu
-        self.stylesheets                     = stylesheets
-        self.update_wavecal_callback         = update_wavecal_callback
-        self.update_gain_and_offset_callback = update_gain_and_offset_callback
-        self.horiz_roi                       = horiz_roi # MZ: not used?
-        self.current_spectrometer            = current_spectrometer
+        self.lb_digest                       = sfu.label_eeprom_digest
+        self.lb_product_image                = sfu.label_product_image
+        self.lb_serial                       = sfu.label_serial
 
         self.updated_from_eeprom = False
 
@@ -116,7 +78,7 @@ class EEPROMEditor(object):
         self.bind()
         self.update_subformat()
 
-        self.authentication.register_observer(self.update_authentication)
+        self.ctl.authentication.register_observer(self.update_authentication)
         self.wpsc_translations = {
             "slit_width": "slit_size_um",
             "serial": "serial_number",
@@ -157,7 +119,7 @@ class EEPROMEditor(object):
         (at this point in program flow) read from the EEPROM object or updated to 
         the widgets, until update_from_spec is called.
         """
-        sfu = self.sfu
+        sfu = self.ctl.form.ui
 
         # Type                    Widget                                      EEPROM field                     
         self.bind_checkBox        (sfu.checkBox_ee_has_battery,               "has_battery")
@@ -290,7 +252,7 @@ class EEPROMEditor(object):
 
         self.lb_gain_hex = sfu.label_ee_detector_gain_hex
 
-        self.bt_copy.clicked.connect(self.copy_to_clipboard)
+        sfu.pushButton_eeprom_clipboard.clicked.connect(self.copy_to_clipboard)
         sfu.pushButton_importEEPROM.clicked.connect(self.import_eeprom)
         sfu.pushButton_exportEEPROM.clicked.connect(self.export_eeprom)
 
@@ -319,9 +281,11 @@ class EEPROMEditor(object):
             else:
                 for index in self.spinBoxes[name]:
                     array = getattr(self.eeprom, name)
-                    if array:
-                        if index < len(array):
-                            table["%s[%d]" % (name, index)] = array[index]
+                    k = "%s[%0*d]" % (name, 1 if len(self.spinBoxes[name]) < 10 else 2, index)
+                    if array and index < len(array):
+                        table[k] = array[index]
+                    else:
+                        table[k] = ""
 
         for name in self.lineEdits:
             if not isinstance(self.lineEdits[name], dict):
@@ -329,9 +293,14 @@ class EEPROMEditor(object):
             else:
                 for index in self.lineEdits[name]:
                     array = getattr(self.eeprom, name)
-                    if array:
-                        if index < len(array):
-                            table["%s[%d]" % (name, index)] = array[index]
+                    k = "%s[%0*d]" % (name, 1 if len(self.lineEdits[name]) < 10 else 2, index)
+                    if array and index < len(array):
+                        table[k] = array[index]
+                    else:
+                        table[k] = ""
+
+        # read-only (don't appear in above lists)
+        table["format"] = self.eeprom.format
 
         ########################################################################
         # Extra (non-EEPROM)
@@ -341,12 +310,15 @@ class EEPROMEditor(object):
         table["digest_original"] = self.eeprom.digest
         table["digest_current"] = digest
 
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is not None:
             table["firmware_revision"] = spec.settings.microcontroller_firmware_version
             table["fpga_revision"]     = spec.settings.fpga_firmware_version
+        else:
+            table["firmware_revision"] = ""
+            table["fpga_revision"]     = ""
             
-        self.clipboard.copy_dict(table)
+        self.ctl.clipboard.copy_dict(table)
 
     def create_callback(self, name, index=None):
         """
@@ -502,12 +474,12 @@ class EEPROMEditor(object):
 
             # Wavecal
             if name.startswith("wavelength_coeffs") or name == "excitation_nm_float":
-                self.update_wavecal_callback()
+                self.ctl.update_wavecal()
 
             # Detector
             elif self.updated_from_eeprom and ("detector_gain" in name or "detector_offset" in name):
                 log.debug("widget_callback: gain or offset updated post-init, so forcing those downstream")
-                self.update_gain_and_offset_callback(force=True)
+                self.ctl.update_gain_and_offset(force=True)
                 self.update_gain_in_hex()
 
             # SRM
@@ -519,7 +491,7 @@ class EEPROMEditor(object):
                 self.update_subformat()
 
             elif "roi_vertical_region_1" in name:
-                spec = self.multispec.current_spectrometer()
+                spec = self.ctl.multispec.current_spectrometer()
                 if spec is not None:
                     end = self.eeprom.roi_vertical_region_1_end
                     start = self.eeprom.roi_vertical_region_1_start
@@ -527,7 +499,7 @@ class EEPROMEditor(object):
 
             # send "user" updates downstream (not when switching between spectrometers though)
             if self.updated_from_eeprom:
-                self.eeprom_writer.send_to_subprocess()
+                self.ctl.eeprom_writer.send_to_subprocess()
 
             ####################################################################
             # update digest (highlight if changed)
@@ -550,7 +522,7 @@ class EEPROMEditor(object):
 
     def update_gain_in_hex(self):
         """ production request: display detector_gain in hex """
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is not None:
             gain_uint16 = spec.settings.eeprom.float_to_uint16(spec.settings.eeprom.detector_gain)
             self.lb_gain_hex.setText("0x%04x" % gain_uint16)
@@ -575,7 +547,7 @@ class EEPROMEditor(object):
         else:
             css = "red_text"   
             tt = "EEPROM has current format but contents changed since load"
-        self.stylesheets.apply(self.lb_digest, css)
+        self.ctl.stylesheets.apply(self.lb_digest, css)
         self.lb_digest.setText(new_digest)
         self.lb_digest.setToolTip(tt)
 
@@ -593,9 +565,9 @@ class EEPROMEditor(object):
         for widget in self.widgets:
             editable = False 
 
-            if self.authentication.has_production_rights():
+            if self.ctl.authentication.has_production_rights():
                 editable = True 
-            elif self.authentication.has_advanced_rights():
+            elif self.ctl.authentication.has_advanced_rights():
                 editable = widget.is_editable   # both Advanced and OEM can edit "many"
 
             widget.setEnabled(editable)
@@ -606,19 +578,21 @@ class EEPROMEditor(object):
                 widget.setStyleSheet("color: #eee;")
 
     def update_fpga_option_display(self):
-        spec = self.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
-        fpga = spec.settings.fpga_options
 
-        self.sfu.label_fpga_integration_time_resolution  .setText(fpga.stringify_resolution())
-        self.sfu.label_fpga_data_header                  .setText(fpga.stringify_header())
-        self.sfu.label_fpga_has_cf_select                .setText(str(fpga.has_cf_select))
-        self.sfu.label_fpga_laser_type                   .setText(fpga.stringify_laser_type())
-        self.sfu.label_fpga_laser_control                .setText(fpga.stringify_laser_control())
-        self.sfu.label_has_area_scan                     .setText(str(fpga.has_area_scan))
-        self.sfu.label_has_actual_integration_time       .setText(str(fpga.has_actual_integ_time))
-        self.sfu.label_has_horizontal_binning            .setText(str(fpga.has_horiz_binning))
+        fpga = spec.settings.fpga_options
+        sfu = self.ctl.form.ui
+
+        sfu.label_fpga_integration_time_resolution  .setText(fpga.stringify_resolution())
+        sfu.label_fpga_data_header                  .setText(fpga.stringify_header())
+        sfu.label_fpga_has_cf_select                .setText(str(fpga.has_cf_select))
+        sfu.label_fpga_laser_type                   .setText(fpga.stringify_laser_type())
+        sfu.label_fpga_laser_control                .setText(fpga.stringify_laser_control())
+        sfu.label_has_area_scan                     .setText(str(fpga.has_area_scan))
+        sfu.label_has_actual_integration_time       .setText(str(fpga.has_actual_integ_time))
+        sfu.label_has_horizontal_binning            .setText(str(fpga.has_horiz_binning))
 
     def update_from_spec(self):
         """
@@ -632,7 +606,7 @@ class EEPROMEditor(object):
         However, we don't want to send a long stream of "send_to_subprocess"
         events, so only send one at the end of this update if needed.
         """
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
 
@@ -640,14 +614,16 @@ class EEPROMEditor(object):
         self.eeprom = self.settings.eeprom
         self.updated_from_eeprom = False
 
-        self.sfu.label_ee_format.setText(str(self.eeprom.format))
+        self.ctl.form.ui.label_ee_format.setText(str(self.eeprom.format))
         self.lb_digest.setText(str(self.eeprom.digest))
 
         # update the big serial number and graphic atop Hardware Setup
         self.lb_serial.setText(self.eeprom.serial_number)
-        pathname = spec.get_image_pathname(self.image_resources)
-        if self.image_resources.contains(pathname):
+        pathname = spec.get_image_pathname()
+        if self.ctl.image_resources.contains(pathname):
             self.lb_product_image.setPixmap(QtGui.QPixmap(pathname))
+        else:
+            log.error(f"received pathname not in resources: {pathname}")
 
         for name in self.checkBoxes:
             value = getattr(self.eeprom, name)
@@ -829,7 +805,7 @@ class EEPROMEditor(object):
         return eeprom_dump
 
     def import_eeprom(self, file_name=None):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return False
         self.settings = spec.settings
@@ -867,6 +843,6 @@ class EEPROMEditor(object):
         file_name = QtWidgets.QFileDialog.getSaveFileName(None,
             "Export EEPROM", common.get_default_data_dir(), "EEPROM Files (*.json)")
         if file_name is not None:
-            self.eeprom_writer.backup(file_name[0])
+            self.ctl.eeprom_writer.backup(file_name[0])
         else:
             log.error("Error in selecting save location path for eeprom")

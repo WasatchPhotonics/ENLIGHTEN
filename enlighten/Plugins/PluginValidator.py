@@ -84,12 +84,12 @@ class PluginValidator:
             field.direction = field.direction.lower().strip()
 
             # check for valid datatypes
-            if field.datatype not in ["string", "int", "float", "bool", "button", "pandas", "radio"]:
+            if field.datatype not in ["string", "int", "float", "bool", "button", "pandas", "radio", "combobox"]:
                 log.error("invalid EnlightenPluginField %s datatype: %s", field.name, field.datatype)
                 return False
 
             # override direction (some datatypes are one-way)
-            if field.datatype in ["button"]:
+            if field.datatype in ["button", "combobox"]:
                 field.direction = "input"
             elif field.datatype in ["pandas"]:
                 field.direction = "output"
@@ -104,10 +104,11 @@ class PluginValidator:
             ########################################################################
 
             # button / callback
-            if field.callback is not None and field.datatype != "button":
-                log.error("EnlightenPlugInField %s callback ignored for datatype %s", field.name, field.datatype)
-            elif field.datatype == "button" and field.callback is None:
+            if field.datatype == "button" and field.callback is None:
                 log.error("EnlightenPlugInField %s button missing callback", field.name)
+                return False
+            elif field.datatype == "combobox" and (field.choices is None or len(field.choices) == 0):
+                log.error(f"EnlightenPlugInField {field.name} combobox missing choices")
                 return False
         except:
             log.error("error validating EnlightenPluginField", exc_info=1)

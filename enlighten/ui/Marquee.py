@@ -1,8 +1,12 @@
 import webbrowser
 
-from PySide6 import QtCore, QtGui, QtWidgets
-
+from enlighten import common
 from enlighten import util
+
+if common.use_pyside2():
+    from PySide2 import QtCore, QtGui, QtWidgets
+else:
+    from PySide6 import QtCore, QtGui, QtWidgets
 
 import logging
 
@@ -23,27 +27,19 @@ class Marquee:
     TOAST_FADE_STEP_MS =   75
     TOAST_FADE_STEP_OPACITY_PERCENT = 0.05  # fade x% of original opacity each step
 
-    def __init__(self, 
-            app,
-            bt_close,
-            form,        # needed for Toast parent
-            frame,
-            inner,
-            label,
-            stylesheets):
-        self.app         = app
-        self.bt_close    = bt_close
-        self.form        = form
-        self.frame       = frame
-        self.inner       = inner
-        self.label       = label
-        self.stylesheets = stylesheets
+    def __init__(self, ctl):
+        self.ctl = ctl
+        sfu = ctl.form.ui
+
+        self.frame       = sfu.frame_drawer_white
+        self.inner       = sfu.frame_drawer_black
+        self.label       = sfu.label_drawer
 
         self.height = Marquee.ORIG_HEIGHT
 
         self.hide()
 
-        self.bt_close.clicked.connect(self.close_callback)
+        sfu.pushButton_marquee_close.clicked.connect(self.close_callback)
 
         ########################################################################
         # for pop-ups
@@ -195,9 +191,9 @@ class Marquee:
 
     def show_immediate(self, benign=None):
         self.clear_timer.stop()
-        self.stylesheets.set_benign(self.inner, benign)
+        self.ctl.stylesheets.set_benign(self.inner, benign)
         self.schedule_clear()
-        self.app.processEvents()
+        self.ctl.app.processEvents()
 
     def tick_clear(self):
         self.hide()
@@ -217,7 +213,7 @@ class Marquee:
     # @public
     def toast(self, msg, persist=False, error=False):
         log.info("toast: %s", msg)
-        dialog = QtWidgets.QMessageBox(parent=self.form)
+        dialog = QtWidgets.QMessageBox(parent=self.ctl.form)
         dialog.setIcon(QtWidgets.QMessageBox.Critical if error else QtWidgets.QMessageBox.Information)
         dialog.setWindowTitle("Notification")
         dialog.setText(msg)

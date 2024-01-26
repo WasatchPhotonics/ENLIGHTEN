@@ -1,9 +1,147 @@
 # Version History
 
-# 4.0 GUI and Plugin Refactoring
+## 4.0 GUI and Plugin Refactoring
 
+- 2023-??-?? 4.0.35
+    - RamanModeFeature 
+        - prompt for confirmation
+        - release restriction on LaserControlFeature when invisible
+        - better handling of case where laser already firing when Raman Mode engaged
+    - BatchCollection
+        - bugfix (typo)
+        - disable Guide during BatchCollection
+        - enforce 2sec gap between subsequent Batches to allow manual "Stop" and stabilization
+        - reset TakeOneFeature before calling TakeOne.complete observers
+    - HelpFeature: added shortcuts to tooltip
+- 2023-01-24 4.0.34
+    - Refactored RamanModeFeature, VCRControls and TakeOneFeature around TakeOneRequest
+    - moved to ctl
+        - BatchCollection
+        - RamanModeFeature
+        - TakeOneFeature
+        - VCRControls
+- 2023-01-15 4.0.33
+    - fix load bug
+    - simplify common.msgbox api
+    - simplify thumbnail removal prompt
+    - correctly associate thumbnails with generating plugin
+    - give Graphs names for tracking
+    - make utf8 settings more explicit
+    - default logfile to truncate
+    - added SpectrometerApplicationState.received_reading_at_current_integration_time,
+      in contention for ENLIGHTEN Longest Variable Name
+- 2023-01-12 4.0.32
+    - GUI
+        - StatusBar only shows battery when appropriate
+        - added common.msgbox(..., detail)
+        - added GUI.msgbox_with_textedit
+    - plugins
+        - renamed logfile to plugin.log
+        - truncate plugin logfile on load
+    - updated peaks in RamanLines and ASTM-1840 configuration
+- 2023-01-11 4.0.31
+    - axis corner-cases
+        - replaced InterpolatedProcessedReading with ProcessedReading.cropped and 
+          .interpolated
+        - for now, prevent export from trying to mix different x-axes from the same 
+          serial number (ultimately we could extend the export format in different 
+          ways to support this)
+    - GUI
+        - allow visualizing SRM calibration
+        - styled common.msgbox
+        - expand ScrollStealFilter to include focused widgets
+        - fixed bug graphing pixel axis
+    - moved to ctl
+        - Authentication
+        - EEPROMWriter
+        - MeasurementFactory
+    - scripts
+        - retain more metadata in split-spectra
+- 2023-12-14 4.0.30
+    - GUI
+        - added battery to StatusBar
+        - generalized PluginController.display_plugin_warning into GUI.msgbox_with_checkbox
+        - simplified font sizes
+        - added X series png's
+        - fixed Hardware tab device image
+        - optionally Export only displayed traces
+    - moved to ctl
+        - AbsorbanceFeature
+        - Clipboard
+        - Configuration
+        - DetectorTemperatureFeature
+        - EEPROMEditor
+        - ExternalTriggerFeature
+        - FileManager
+        - FocusListener
+        - GuideFeature
+        - HardwareFileOutputManager
+        - LoggingFeature
+        - Marquee
+        - ModelInfo
+        - Multispec
+        - ResourceMonitorFeature
+        - SaveOptions
+        - StatusBarFeature
+        - ThumbnailWidget
+        - TransmissionFeature
+    - scripts
+        - refreshed scripts/split-spectra
+- 2023-12-13 4.0.29
+    - stopped clearing dark/refs when changing interpolation
+    - RamanShiftCorrection tweaks (fixed width unit, obey ROI, show nm hint)
+    - refactoring
+        - moved DarkFeature to ctl
+- 2023-12-11 4.0.28
+    - platforms
+        - updating Raspberry Pi build docs
+        - support both PySide6 and PySide2
+    - GUI 
+        - laser button tooltip fix
+        - fixed markers
+        - added convenience laser button where permanently visible
+        - added interpolation button above graph
+        - restored original ordering of (lock, fullwidth) buttons
+        - fixed multiple Factory items on multiple logins
+- 2023-12-08 4.0.27
+    - locked to Python 3.11 for Tensorflow
+    - default to maximized
+    - restore previous integration time up to 5sec (was 1sec)
+    - plugins
+        - all field types support callbacks
+    - docs
+        - updated Windows docs for 10/11
+        - updated MacOS docs for ARM
+- 2023-11-10 4.0.26
+    - auto-resize pandas table columns
+    - fix ctl issues in Measurement*
+    - move jcamp from pip to PYTHONPATH until feature branch released
 - 2023-11-06 4.0.25
-    - persist after restart custom spectra save location
+    - added PresetFeature
+    - plugins
+        - hide plugin field frame if no fields
+        - deprecate dependencies
+        - support events in functional plugins
+        - increase default plugin Marquee period
+        - provide self.marquee_message for functional plugins
+        - add combobox datatype for plugin fields
+        - allow plugin fields to have stylesheets
+        - auto-resize pandas table columns
+    - file_io
+        - persist custom spectra save location
+        - save as JCAMP-DX
+        - support loading columnar CSV files which don't happen to include 'Integration Time'
+    - refactoring
+        - moved RamanIntensityCorrection, ScanAveragingFeature, BaselineCorrection, BoxcarFeature, IntegrationTimeFeature to ctl
+        - docs and cleanup around ScrollStealFilter and MouseWheelFilter
+        - simplified Configuration.save
+- 2023-10-09 4.0.24
+    - Prod.BurnIn temperature fix
+    - added run_from_root
+    - restored hide_from_console (hide-early doesn't work on W11, hide-late doesn't on W10)
+- 2023-10-06 4.0.23
+    - temporarily changed PluginController autoload from "ctor + 1sec" to "first
+      spectrometer connection" (later rolled-back, as broke ID plugin)
 - 2023-10-06 4.0.22
     - bundle libusb0.dll to Windows install folder :-(
 - 2023-10-06 4.0.21

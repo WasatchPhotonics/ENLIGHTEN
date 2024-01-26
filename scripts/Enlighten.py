@@ -16,15 +16,19 @@ if "macOS" in platform.platform():
 
 os.environ["BLINKA_FT232H"]="1" # used to allow SPI with FT232H
 
-# Required runtime imports for compiled .exe (see qsvg4.dll in InnoSetup)
-from PySide6 import QtGui, QtCore, QtWidgets, QtSvg, QtXml
-from PySide6.QtWidgets import QSplashScreen
-from PySide6.QtGui import QPixmap, QImageReader
-
-from enlighten.ui.BasicWindow import BasicWindow
 from enlighten import common
+from enlighten.ui.BasicWindow import BasicWindow
 from wasatch.DeviceID import DeviceID
 from wasatch   import applog
+
+if common.use_pyside2():
+    from PySide2 import QtGui, QtCore, QtWidgets, QtSvg, QtXml
+    from PySide2.QtWidgets import QSplashScreen
+    from PySide2.QtGui import QPixmap, QImageReader
+else:
+    from PySide6 import QtGui, QtCore, QtWidgets, QtSvg, QtXml
+    from PySide6.QtWidgets import QSplashScreen
+    from PySide6.QtGui import QPixmap, QImageReader
 
 log = logging.getLogger(__name__)
 
@@ -35,13 +39,13 @@ def signal_handler(signal, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 ##
-# This class encapsulates processing of command-line arguments, instantiates a 
+# This class encapsulates processing of command-line arguments, instantiates a
 # Controller then passes control to the Qt framework.
 #
-class EnlightenApplication(object):
+class EnlightenApplication:
 
     def __init__(self,testing=False):
-        self.app = QtWidgets.QApplication(["windows:dpiawareness=1"])
+        self.app = QtWidgets.QApplication()
 
         self.parser = self.create_parser()
         self.controller = None
@@ -59,7 +63,7 @@ class EnlightenApplication(object):
         if self.args is None:
             return
 
-        # As far as I can tell, we've always passed uppercase strings to 
+        # As far as I can tell, we've always passed uppercase strings to
         # logging.setLevel(), though this seems to imply that shouldn't work:
         # https://stackoverflow.com/a/15368084
         self.args.log_level = self.args.log_level.upper()
@@ -70,44 +74,34 @@ class EnlightenApplication(object):
             try:
                 os.mkdir(dir_)
             except:
-                pass 
+                pass
             if os.path.isdir(dir_):
                 self.args.logfile = os.path.join(dir_, "enlighten.log")
 
         return self.args
 
     ## Defines the command-line arguments and their defaults
-    #
     def create_parser(self):
         parser = argparse.ArgumentParser(description="ENLIGHTEN %s" % common.VERSION,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-        
-        # This code was like a spreadsheet when I found it, leaning into that
-        # use :set nowrap in vim
-        # TODO: everything should have a default -- do not rely on empty args
-        #                  | parameter name       | type    | default             | action             | choices                                                           | help                                                                                    |
-        parser.add_argument("--log-level",         type=str, default="info",                            choices=['debug', 'info', 'warning', 'error', 'critical'],          help="logging level")
-        parser.add_argument("--log-append",        type=str, default="LIMIT",                           choices=["False", "True", "LIMIT"],                                 help="append to existing logfile")
-        parser.add_argument("--logfile",           type=str,                                                                                                                help="explicit path for the logfile")
-        parser.add_argument("--max-memory-growth", type=int, default=0,                                                                                                     help="automatically exit after this percent memory growth (0 for never, 100 = doubling)")
-        parser.add_argument("--run-sec",           type=int, default=0,                                                                                                     help="automatically exit after this many seconds (0 for never)")
-        parser.add_argument("--serial-number",     type=str,                                                                                                                help="only connect to specified serial number")
-        parser.add_argument("--set-all-dfu",                                       action="store_true",                                                                     help="set spectrometers to DFU mode as soon as they connect")
-        parser.add_argument("--stylesheet-path",   type=str,                                                                                                                help="path to CSS directory")
-        parser.add_argument("--window-state",      type=str, default="floating",                        choices=["floating", "maximized", "fullscreen", "minimized"],       help="window initial state", )
-        parser.add_argument("--plugin",            type=str,                                                                                                                help="plugin name to start enabled")
+
+        parser.add_argument("--log-level",         type=str, default="info",      help="logging level", choices=['debug', 'info', 'warning', 'error', 'critical'])
+        parser.add_argument("--log-append",        type=str, default="False",     help="append to existing logfile", choices=["False", "True", "LIMIT"])
+        parser.add_argument("--logfile",           type=str,                      help="explicit path for the logfile")
+        parser.add_argument("--max-memory-growth", type=int, default=0,           help="automatically exit after this percent memory growth (0 for never, 100 = doubling)")
+        parser.add_argument("--run-sec",           type=int, default=0,           help="automatically exit after this many seconds (0 for never)")
+        parser.add_argument("--serial-number",     type=str,                      help="only connect to specified serial number")
+        parser.add_argument("--set-all-dfu",       action="store_true",           help="set spectrometers to DFU mode as soon as they connect")
+        parser.add_argument("--stylesheet-path",   type=str,                      help="path to CSS directory")
+        parser.add_argument("--window-state",      type=str, default="maximized", help="window initial state", choices=["normal", "maximized", "fullscreen", "minimized"])
+        parser.add_argument("--plugin",            type=str,                      help="plugin name to start enabled")
 
         return parser
 
-    ##
-    # Spawn a QApplication, instantiate a Controller (which will instantiate
-    # the Form within the QApplication), then call the QApplication's exec()
-    # method (which will tick QWidgets defined by the form in an event loop until 
-    # something generates an exit signal).
     def run(self):
         # instantiate form (a QMainWindow with named "MainWindow")
-        # UI needs to be imported here in order to access qresources for the splash screen
-        self.form = BasicWindow(title="ENLIGHTEN %s" % common.VERSION)
+        # UI needs to be imported here in order to access QResources for the splash screen
+        self.form = BasicWindow(title="ENLIGHTEN™ %s" % common.VERSION)
 
         pixmap = QPixmap(":/application/images/splash.png")
         pixmap = pixmap.scaled(pixmap.width()/2, pixmap.height()/2) # eyeballed, default seemed to take whole screen
@@ -116,16 +110,17 @@ class EnlightenApplication(object):
         self.splash.show()
 
         self.main_logger = applog.MainLogger(
-            self.args.log_level, 
-            logfile=self.args.logfile, 
-            timeout_sec=5, 
-            enable_stdout=not self.testing, 
+            self.args.log_level,
+            logfile=self.args.logfile,
+            timeout_sec=5,
+            enable_stdout=not self.testing,
             append_arg=str(self.args.log_append)
         )
 
-        # This violates convention but Controller has so many imports that it takes a while to import
-        # This needs to occur here because the Qt app needs to be made before the splash screen
-        # So it has to occur in this function after both the app creation and splash screen creation
+        # This violates convention but Controller has so many imports that it 
+        # takes a while to import. This needs to occur here because the Qt app 
+        # needs to be made before the splash screen. So it has to occur in this 
+        # function after both the app creation and splash screen creation.
         from enlighten.Controller import Controller
 
         log.debug("platform = %s", platform.platform())
@@ -145,14 +140,14 @@ class EnlightenApplication(object):
             window_state      = self.args.window_state,
             autoload_plugin   = self.args.plugin)
         # This requires explanation.  This is obviously a Qt "connect" binding,
-        # but Controller is not a Qt widget, and does not inherit from/extend 
+        # but Controller is not a Qt widget, and does not inherit from/extend
         # anything.  What gives?  See Controller.create_signals, which actually
         # adds the controller.control_exit_signal attribute as a QObject with one
-        # "exit" signal, which we here connect to its callback.  
+        # "exit" signal, which we here connect to its callback.
         #
-        # This could also have been achieved by giving the controller a handle to 
-        # this "self" EnlightenApplication instance, so that controller could do 
-        # the closeEvent() stuff internally (which is how we later refactored 
+        # This could also have been achieved by giving the controller a handle to
+        # this "self" EnlightenApplication instance, so that controller could do
+        # the closeEvent() stuff internally (which is how we later refactored
         # ConfirmWidget).
         #####
         # The sim_spec code is used for debugging with the test framework during peculiar issues
@@ -163,16 +158,19 @@ class EnlightenApplication(object):
         # pass off control to Qt to manage its objects until application shutdown
         self.splash.finish(self.controller.form)
         if not self.testing:
-            self.app.exec()
+            if common.use_pyside2():
+                self.app.exec_()
+            else:
+                self.app.exec()
 
         if not self.testing:
             print("back from app.exec")
             print("returning from EnlightenApplication.run with exit_code %d" % self.exit_code)
             return self.controller.exit_code
 
-    ## Catch the exit signal from the control application, and call 
-    #  QApplication Quit. 
-    def closeEvent(self): 
+    ## Catch the exit signal from the control application, and call
+    #  QApplication Quit.
+    def closeEvent(self):
         print("EnlightenApplication.closeEvent: received control_exit_signal")
 
         self.exit_code = self.controller.exit_code
@@ -194,20 +192,20 @@ class EnlightenApplication(object):
         sys.exit(self.exit_code)
 
     def hide_console(self):
-        """ 
+        """
         This isn't needed on Win10 (where pyinstaller's --hide-console hide-early works,
         though not hide-late), but apparently is on Win11 (where hide-early doesn't work;
         not sure about hide-late).
 
         Calling for coverage on Win11.
 
-        @see https://github.com/pyinstaller/pyinstaller/issues/7729#issuecomment-1605503018 
+        @see https://github.com/pyinstaller/pyinstaller/issues/7729#issuecomment-1605503018
         @swee https://github.com/pyinstaller/pyinstaller/pull/7735
         """
         if sys.platform == 'win32':
             import ctypes
             import ctypes.wintypes
-            
+
             # Get console window
             console_window = ctypes.windll.kernel32.GetConsoleWindow()
             if console_window:
@@ -219,7 +217,7 @@ class EnlightenApplication(object):
                 if process_id == console_process_id:
                     # ... and if it is, minimize it
                     ctypes.windll.user32.ShowWindow(console_window, 2)  # SW_SHOWMINIMIZED
-    
+
     def run_from_root(self, pathname):
         """
         ENLIGHTEN loads various settings from its own enlighten/assets/
@@ -253,7 +251,7 @@ def main(argv):
     return ec
 
 if __name__ == "__main__":
-    os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1" 
+    os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
     multiprocessing.freeze_support() # needed on Win32
 
     # deprecated:

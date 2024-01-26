@@ -2,9 +2,16 @@ import datetime
 import logging
 import numpy as np
 
-import PySide6
 import pyqtgraph
-from PySide6 import QtCore, QtWidgets, QtGui
+
+from enlighten import common
+
+if common.use_pyside2():
+    import PySide2
+    from PySide2 import QtCore, QtWidgets, QtGui
+else:
+    import PySide6
+    from PySide6 import QtCore, QtWidgets, QtGui
 
 log = logging.getLogger(__name__)
 

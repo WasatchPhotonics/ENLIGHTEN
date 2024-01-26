@@ -11,7 +11,7 @@ from wasatch.SpectrometerSettings import SpectrometerSettings
 
 log = logging.getLogger(__name__)
 
-class ExportedMeasurement(object):
+class ExportedMeasurement:
     """
     A temporary pre-Measurement object built-up while reading an export file.
     
@@ -24,7 +24,7 @@ class ExportedMeasurement(object):
         self.metadata = {}
         self.processed_reading = ProcessedReading(reading=Reading())
 
-class ExportFileParser(object):
+class ExportFileParser:
     """
     A file parser to deserialize multiple Measurement objects from a column-ordered
     export file.
@@ -50,9 +50,9 @@ class ExportFileParser(object):
 
     @warning this does not currently work with "collated" exports.
     """ 
-    def __init__(self, pathname, save_options, encoding="utf-8"):
+    def __init__(self, pathname, encoding="utf-8"):
+
         self.pathname = pathname
-        self.save_options = save_options
         self.encoding = encoding
 
         self.spectrometers = {}
@@ -192,8 +192,9 @@ class ExportFileParser(object):
                 source_pathname   = self.pathname, 
                 timestamp         = em.timestamp,
                 settings          = em.settings,
-                processed_reading = em.processed_reading,
-                save_options      = self.save_options)
+                processed_reading = em.processed_reading)
+
+            m.metadata = em.metadata
 
             # additional Measurement attributes
             if "Label" in em.metadata:
@@ -455,13 +456,14 @@ class ExportFileParser(object):
             for line in csv_lines:
                 values = [ x.strip() for x in line ]
 
-                if line_count < 25:
-                    log.debug("load_data: [%s] line = %s", state, line)
+                non_empty_values = [ x for x in values if len(str(x)) > 0 ]
+
+                log.debug("load_data: [%s] line = %s", state, line)
                 line_count += 1
 
                 if state == "reading_metadata":
 
-                    if len(values) == 0:
+                    if len(values) == 0 or len(non_empty_values) == 0:
                         state = "looking_for_header"
 
                     else:

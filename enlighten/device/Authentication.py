@@ -1,8 +1,13 @@
-from PySide6 import QtCore, QtGui, QtWidgets
-
 import hashlib
 import logging
 import time
+
+from enlighten import common
+
+if common.use_pyside2():
+    from PySide2 import QtCore, QtGui, QtWidgets
+else:
+    from PySide6 import QtCore, QtGui, QtWidgets
 
 log = logging.getLogger(__name__)
 
@@ -60,28 +65,13 @@ class Authentication(object):
 
     PRODUCTION_DIGEST = '830147906ad1e20efe9a12b5d0b5242f'
 
-    def __init__(self, 
-            gui,
-            marquee,
-            parent,
+    def __init__(self, ctl):
+        self.ctl = ctl
 
-            button_login,
-            combo_view,
+        cfu = ctl.form.ui
 
-            oem_widgets         = None,
-            advanced_widgets    = None,
-            production_widgets  = None):
-
-        self.gui                                = gui
-        self.parent                             = parent
-        self.marquee                            = marquee
-
-        self.button_login                       = button_login
-        self.combo_view                        = combo_view
-
-        self.oem_widgets                        = oem_widgets
-        self.advanced_widgets                   = advanced_widgets
-        self.production_widgets                 = production_widgets
+        self.button_login           = cfu.pushButton_admin_login
+        self.combo_view             = cfu.comboBox_view
 
         self.level = self.BASIC
         self.error_count = 0
@@ -90,19 +80,19 @@ class Authentication(object):
 
         self.button_login.clicked.connect(self.login)
 
-        self.update_widgets()
+        self._update_widgets()
 
     def register_observer(self, callback):
         self.observers.add(callback)
 
     def login(self):
         """
-        The user has clicked "Advanced Features", so display the login pop-up,
-        get their password, compare it to supported values and update features 
-        accordingly.
+        The user has clicked "Advanced Features" or pressed "Ctrl-A," so display
+        the login pop-up, get their password, compare it to supported values and
+        update features accordingly.
         """
         (password, ok) = QtWidgets.QInputDialog.getText(
-            self.parent, 
+            self.ctl.form, 
             "Admin Login", 
             "Password:", 
             QtWidgets.QLineEdit.Password)
@@ -117,25 +107,27 @@ class Authentication(object):
             self.level = self.PRODUCTION
         else:
             self.level = self.BASIC
-            self.marquee.error("invalid password")
+            self.ctl.marquee.error("invalid password")
             time.sleep(self.error_count * 2)
             self.error_count += 1
 
-        self.gui.colorize_button(self.button_login, self.level != self.BASIC)
-        self.update_widgets()
+        self.ctl.gui.colorize_button(self.button_login, self.level != self.BASIC)
+        self._update_widgets()
+
+        # remove Factory from comboBox if it was already there
+        try:
+            self.combo_view.removeItem(self.combo_view.findText("Factory"))
+        except:
+            pass
+
+        # re-add Factory at the bottom if appropriate
         if self.level > self.BASIC:
             self.combo_view.addItem("Factory")
-        else:
-            try:
-                self.combo_view.removeItem(self.combo_view.findText("Factory"))
-            except:
-                log.error("Couldn't remove factory screen on deauth")
-
 
         for callback in self.observers:
             callback()
 
-    def update_auth_widgets(self, widgets, auth):
+    def _update_auth_widget(self, widget, auth):
         """
         If you want a hidden widget to become VISIBLE if the user is logged-in, 
         use the Qt Designer to give the widget a boolean "custom property" called 
@@ -148,17 +140,23 @@ class Authentication(object):
         (Obviously, in addition to the custom property, you must also add such 
         widgets to the constructor lists passed to this object.)
         """
-        if widgets:
-            for widget in widgets:
-                widget.setEnabled(auth)
-                initiallyVisible = widget.property("initiallyVisible")
-                if initiallyVisible is not None and isinstance(initiallyVisible, bool):
-                    widget.setVisible(initiallyVisible or auth)
+        widget.setEnabled(auth)
+        initiallyVisible = widget.property("initiallyVisible")
+        if initiallyVisible is not None and isinstance(initiallyVisible, bool):
+            widget.setVisible(initiallyVisible or auth)
 
-    def update_widgets(self):
-        self.update_auth_widgets(self.advanced_widgets,   self.has_advanced_rights())
-        self.update_auth_widgets(self.oem_widgets,        self.has_oem_rights())
-        self.update_auth_widgets(self.production_widgets, self.has_production_rights())
+    def _update_widgets(self):
+        cfu = self.ctl.form.ui
+        for w in [ cfu.tabWidget_advanced_features ]:
+            self._update_auth_widget(w, self.has_advanced_rights())
+        for w in [ cfu.pushButton_write_eeprom, 
+                   cfu.pushButton_importEEPROM, 
+                   cfu.pushButton_exportEEPROM, 
+                   cfu.pushButton_restore_eeprom, 
+                   cfu.pushButton_reset_fpga ]:
+            self._update_auth_widget(w, self.has_oem_rights())
+        for w in [ ]:
+            self._update_auth_widget(w, self.has_production_rights())
 
     def has_production_rights(self):
         return self.level >= self.PRODUCTION

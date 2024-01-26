@@ -1,0 +1,11 @@
+QPushButton:hover { border: none; }
+QPushButton 
+{
+    border: none;
+    border-radius: 0;
+	background-color: qlineargradient(spread:pad, 
+        x1:0, y1:1, 
+        x2:0, y2:0, 
+        stop:0 rgba(0, 68, 0, 255), 
+        stop:1 rgba(28, 206, 28, 255));
+}

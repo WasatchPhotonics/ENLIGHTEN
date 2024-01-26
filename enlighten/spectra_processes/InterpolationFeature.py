@@ -1,5 +1,3 @@
-from PySide6 import QtCore
-
 import logging
 import numpy as np
 import copy
@@ -8,72 +6,38 @@ from wasatch.ProcessedReading import ProcessedReading
 
 from wasatch import utils as wasatch_utils
 from enlighten.ScrollStealFilter import ScrollStealFilter
+from enlighten import common
+
+if common.use_pyside2():
+    from PySide2 import QtCore
+else:
+    from PySide6 import QtCore
 
 log = logging.getLogger(__name__)
 
-class InterpolatedProcessedReading:
-    def __init__(self):
-        self.wavelengths = None
-        self.wavenumbers = None
-        self.pixels = 0
-        self.processed_reading = ProcessedReading()
-
-    def set_wavelengths(self, a):
-        self.wavelengths = a
-        self.pixels = len(a)
-
-    def set_wavenumbers(self, a):
-        self.wavenumbers = a
-        self.pixels = len(a)
-
 ##
-# I'm not sure we've fully thunk-out all the interpolation use-cases.
+# Encapsulates interpolation of a ProcessedReading.
 #
-# @par Processing Pipeline
-#
-# Currently we interpolate only when we save to disk, and graphing on-screen.
-# We don't interpolate what gets sent to Raman matching algorithms, etc.  
-# With regard to ENLIGHTEN, we don't interpolate from Wasatch.PY to the GUI 
-# (although a limited capability exists within the driver for outside callers).
-# 
-# @par Saved Measurements
-#
-# When saving measurements, we still have a column called "pixel".  However, it's
-# very much a "virtual" or "interpolated" pixel, which still has some value as
-# the "index" of the other axes.  I suppose you could say it's "the pixel on 
-# which the interpolated intensity of the interpolated wavelength would presumably
-# have fallen in a hypothesized ideal unit spectrometer."  
-#
-# @todo we should use a callback to clear spectrometers' dark/ref so the button 
-#       state is updated
-#
+# @see ORDER_OF_OPERATIONS.md
 class InterpolationFeature(object):
-    def __init__(self,
-            config,
-            cb_enabled,
-            dsb_end,
-            dsb_incr,
-            dsb_start,
-            multispec,
-            rb_wavelength,
-            rb_wavenumber,
-            horiz_roi ):
+    def __init__(self, ctl):
+        self.ctl = ctl
 
-        self.config         = config
-        self.cb_enabled     = cb_enabled
-        self.dsb_end        = dsb_end
-        self.dsb_incr       = dsb_incr
-        self.dsb_start      = dsb_start
-        self.multispec      = multispec
-        self.rb_wavelength  = rb_wavelength
-        self.rb_wavenumber  = rb_wavenumber
-        self.horiz_roi      = horiz_roi
+        sfu = self.ctl.form.ui
+        self.bt_toggle      = sfu.pushButton_interp_toggle
+        self.cb_enabled     = sfu.checkBox_save_interpolation_enabled
+        self.dsb_end        = sfu.doubleSpinBox_save_interpolation_end
+        self.dsb_incr       = sfu.doubleSpinBox_save_interpolation_incr
+        self.dsb_start      = sfu.doubleSpinBox_save_interpolation_start
+        self.rb_wavelength  = sfu.radioButton_save_interpolation_wavelength
+        self.rb_wavenumber  = sfu.radioButton_save_interpolation_wavenumber
 
         self.mutex = QtCore.QMutex()
         self.new_axis = None
 
         self.init_from_config()
 
+        self.bt_toggle          .clicked            .connect(self._toggle_callback)
         self.cb_enabled         .stateChanged       .connect(self._update_widgets)
         self.dsb_end            .valueChanged       .connect(self._update_widgets)
         self.dsb_incr           .valueChanged       .connect(self._update_widgets)
@@ -86,15 +50,28 @@ class InterpolationFeature(object):
         self.update_visibility()
 
         # disable scroll stealing
-        for key, item in self.__dict__.items():
-            if key.startswith("dsb_"):
-                item.installEventFilter(ScrollStealFilter(item))
+        for widget in [ self.dsb_end, self.dsb_incr, self.dsb_start ]:
+            widget.installEventFilter(ScrollStealFilter(widget))
 
     def total_pixels(self):
         return 0 if self.new_axis is None else len(self.new_axis) 
 
     def update_visibility(self):
         pass
+
+    def _toggle_callback(self):
+        enabled = not self.cb_enabled.isChecked()
+        self.cb_enabled.setChecked(enabled)
+
+    def __repr__(self):
+        s = "InterpolationFeature<enabled %s, use %s, start %s, end %s, incr %s, axis %s>" % (
+            self.enabled,
+            'wavelengths' if self.use_wavelengths else 'wavenumbers', 
+            self.start,
+            self.end,
+            self.incr,
+            "None" if self.new_axis is None else f"({self.new_axis[0]}, {self.new_axis[-1]})")
+        return s
 
     def _update_widgets(self):
         """
@@ -111,14 +88,23 @@ class InterpolationFeature(object):
         self.end             = self.dsb_end.value()
         self.incr            = self.dsb_incr.value()
 
+        self.ctl.gui.colorize_button(self.bt_toggle, self.enabled)
+        if self.enabled:
+            self.bt_toggle.setToolTip(f"Disable x-axis interpolation")
+        else:
+            self.bt_toggle.setToolTip(f"Enable x-axis interpolation")
+
         # invalidate stored dark/references
-        for spec in self.multispec.get_spectrometers():
-            spec.app_state.clear_dark()
-            spec.app_state.clear_reference()
+        #
+        # MZ: why were we doing this? I don't think we need to do this.
+        #     commenting out for now.
+        # for spec in self.ctl.multispec.get_spectrometers():
+        #     spec.app_state.clear_dark()
+        #     spec.app_state.clear_reference()
 
         s = "interpolation"
         for name in [ "enabled", "use_wavelengths", "use_wavenumbers", "start", "end", "incr" ]:
-            self.config.set(s, name, getattr(self, name))
+            self.ctl.config.set(s, name, getattr(self, name))
 
         self.new_axis = self._generate_axis()
 
@@ -155,95 +141,108 @@ class InterpolationFeature(object):
                 return excitation
         return wasatch_utils.generate_excitation(wavelengths=wavelengths, wavenumbers=wavenumbers)
 
-    def interpolate_processed_reading(self, pr, wavelengths=None, wavenumbers=None, settings=None):
+    def process(self, pr):
+        """ 
+        This does dark and reference as well as processed and raw.
+        """
+
         if self.new_axis is None:
             log.error("new axis not provided, returning none")
             return 
 
         if pr is None:
-            log.error("Interpolation was called without a pr, returning none.")
+            log.error("Interpolation requires a ProcessedReading")
             return 
-
-        if wavelengths is None and settings is not None:
-            wavelengths = settings.wavelengths
-
-        if wavenumbers is None and settings is not None:
-            wavenumbers = settings.wavenumbers
-
-        if wavelengths is None and wavenumbers is None:
-            log.error("Wavelengths and wavenumbers were none, returning none.")
-            return
 
         if not (self.use_wavelengths or self.use_wavenumbers):
-            log.error("Not using wavelengths and not using wavenumbers were none, returning none.")
+            log.error("Using neither wavelengths nor wavenumbers, returning none.")
             return 
 
-        log.debug("interpolating processed reading")
+        wavelengths = pr.get_wavelengths()
+        wavenumbers = pr.get_wavenumbers()
 
-        ipr = InterpolatedProcessedReading()
+        # Log occurances of re-interpolation, but don't prevent or short-circuit
+        # them. Partly, this is so that we can re-interpolate a previously-
+        # interpolated measurements to a new axis (e.g. for loaded spectra). 
+        # However, it should also be the case that re-interpolating a previously-
+        # interpolated measurement to the SAME target x-axis should be virtually
+        # a no-op, as every "new x" value will resolve to an existing datapoint 
+        # and thus require no computations.
+        if pr.interpolated:
+            log.debug("re-interpolating processed reading")
+        else:
+            log.debug("interpolating processed reading")
+
+        interpolated = ProcessedReading()
         old_axis = None
 
         if self.use_wavelengths:
-            ipr.set_wavelengths(self.new_axis)
+            if wavelengths is None:
+                log.error("Missing required wavelengths")
+                return
+
+            interpolated.wavelengths = self.new_axis
             old_axis = wavelengths
 
-            # generate wavenumbers if we can
-            excitation = self.generate_excitation(wavelengths, wavenumbers, settings)
-            if excitation is not None:
-                ipr.set_wavenumbers(wasatch_utils.generate_wavenumbers(
-                    excitation  = excitation, 
-                    wavelengths = ipr.wavelengths))
+            # generate corresponding wavenumbers if we can
+            excitation = self.generate_excitation(wavelengths, wavenumbers, pr.settings)
+            if excitation:
+                interpolated.wavenumbers = wasatch_utils.generate_wavenumbers(excitation=excitation, wavelengths=interpolated.wavelengths)
 
         elif self.use_wavenumbers:
-            ipr.set_wavenumbers(self.new_axis)
+            if wavenumbers is None:
+                log.error("Missing required wavenumbers")
+                return
+
+            interpolated.wavenumbers = self.new_axis
             old_axis = wavenumbers
 
-            # generate wavelengths if we can
-            excitation = self.generate_excitation(wavelengths, wavenumbers, settings)
+            # generate corresponding wavelengths if we can
+            excitation = self.generate_excitation(wavelengths, wavenumbers, pr.settings)
             if excitation is not None:
-                ipr.set_wavelengths(wasatch_utils.generate_wavelengths_from_wavenumbers(
-                    excitation  = excitation, 
-                    wavenumbers = ipr.wavenumbers))
+                interpolated.wavelengths = wasatch_utils.generate_wavelengths_from_wavenumbers(excitation=excitation, wavenumbers=interpolated.wavenumbers)
 
         if old_axis is None:
             log.error("Old axis was none, returning none.")
             return None
 
-        if pr.processed is not None:
-            ipr.processed_reading.processed = np.interp(self.new_axis, old_axis, pr.processed)
-        if pr.raw is not None:
-            ipr.processed_reading.raw = np.interp(self.new_axis, old_axis, pr.raw)
-        if pr.dark is not None:
-            ipr.processed_reading.dark = np.interp(self.new_axis, old_axis, pr.dark)
-        if pr.reference is not None:
-            ipr.processed_reading.reference = np.interp(self.new_axis, old_axis, pr.reference)
+        processed = pr.get_processed()
+        if processed is not None:
+            interpolated.processed = np.interp(self.new_axis, old_axis, processed)
 
-        # The weird case of interpolating a cropped ROI.  Consider that we had
-        # an original spectrum "abcdefghijklmnopqrstuvwxyz".  We then cropped
-        # it to "ghijklmnopqrstu".  We are now interpolating it out to
-        # "ggggggggggggGHIJKLMNOPQRSTUuuuuuuuuuuu".  Even if we've cropped it
-        # down, we're still obliged to interpolate out to the newly defined range,
-        # and the only pixels we have "qualified" as being valid to interpolate
-        # are those within the ROI.
-        roi = settings.eeprom.get_horizontal_roi()
-        log.debug("processed_cropped is %s and settings is %s and roi is %s",
-            pr.processed_cropped is not None,
-            settings is not None,
-            roi is not None)
-        if pr.processed_cropped is not None and settings is not None and roi is not None:
-            log.debug("interpolating cropped spectrum to new axis of %d pixels", len(self.new_axis))
-            old_axis_cropped = self.horiz_roi.crop(old_axis, roi=roi)
-            ipr.processed_reading.processed_cropped = np.interp(self.new_axis, old_axis_cropped, pr.processed_cropped)
+        raw = pr.get_raw()
+        if raw is not None:
+            if len(raw) == len(old_axis):
+                interpolated.raw = np.interp(self.new_axis, old_axis, raw)
+            else:
+                log.error(f"process: len(old_axis) {len(old_axis)} != len(raw) ({len(raw)})")
+                interpolated.raw = None
 
-        return ipr
+        dark = pr.get_dark()
+        if dark is not None:
+            if len(dark) == len(old_axis):
+                interpolated.dark = np.interp(self.new_axis, old_axis, dark)
+            else:
+                log.error(f"process: len(old_axis) {len(old_axis)} != len(dark) ({len(dark)})")
+                interpolated.dark = None
+
+        reference = pr.get_reference()
+        if reference is not None:
+            if len(reference) == len(old_axis):
+                interpolated.reference = np.interp(self.new_axis, old_axis, reference)
+            else:
+                log.error(f"process: len(old_axis) {len(old_axis)} != len(reference) ({len(reference)})")
+                interpolated.dark = None
+
+        pr.interpolated = interpolated
 
     def init_from_config(self):
         log.debug("init_from_config")
         s = "interpolation"
 
-        self.cb_enabled.setChecked(self.config.get_bool(s,"enabled"))
-        self.dsb_end.setValue(self.config.get_float(s, "end"))
-        self.dsb_incr.setValue(self.config.get_float(s, "incr"))
-        self.dsb_start.setValue(self.config.get_float(s, "start"))
-        self.rb_wavelength.setChecked(self.config.get_bool(s, "use_wavelengths"))
-        self.rb_wavenumber.setChecked(self.config.get_bool(s, "use_wavenumbers"))
+        self.cb_enabled    .setChecked (self.ctl.config.get_bool  (s, "enabled"))
+        self.dsb_end       .setValue   (self.ctl.config.get_float (s, "end"))
+        self.dsb_incr      .setValue   (self.ctl.config.get_float (s, "incr"))
+        self.dsb_start     .setValue   (self.ctl.config.get_float (s, "start"))
+        self.rb_wavelength .setChecked (self.ctl.config.get_bool  (s, "use_wavelengths"))
+        self.rb_wavenumber .setChecked (self.ctl.config.get_bool  (s, "use_wavenumbers"))

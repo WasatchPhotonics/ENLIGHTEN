@@ -64,9 +64,8 @@ class AccessoryControlFeature(object):
         self.sb_width_us                .valueChanged   .connect(self.width_callback)
 
         # disable scroll stealing
-        for key, item in self.__dict__.items():
-            if key.startswith("cb_") or key.startswith("sb_"):
-                item.installEventFilter(ScrollStealFilter(item))
+        for widget in [ self.sb_freq_hz, self.sb_width_us ]:
+            widget.installEventFilter(ScrollStealFilter(widget))
 
         self.update_visibility()
 

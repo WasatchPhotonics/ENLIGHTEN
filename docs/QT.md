@@ -3,7 +3,7 @@
 Just starting to take some notes on Qt issues as we migrate to Qt5 and try to 
 clean up some long-standing Qt4 issues.
 
-See also: [README_CSS](CSS.md)
+See also: [CSS notes](CSS.md)
 
 # Re-usable Styling
 

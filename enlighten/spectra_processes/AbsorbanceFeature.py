@@ -7,7 +7,7 @@ class AbsorbanceFeature:
     """
     Computes absorbance using Beer's Law.
 
-    Note that any required vignetting is performed within TransmissionFeature.
+    Note that any required cropping is performed within TransmissionFeature.
 
     @see [Beer-Lambert Law](https://en.wikipedia.org/wiki/Beer%E2%80%93Lambert_law)
     """
@@ -15,14 +15,10 @@ class AbsorbanceFeature:
     ## above this it's likely bad data, based on current model performance 
     MAX_AU = 6.0    
 
-    def __init__(self,
-            marquee,
-            transmission):
+    def __init__(self, ctl):
+        self.ctl = ctl
 
-        self.marquee        = marquee                
-        self.transmission   = transmission
-
-    def process(self, processed_reading, settings, app_state) -> bool:
+    def process(self, processed_reading, settings, app_state):
         """
         Computes absorbance from the current processed spectrum,
         then stores it back into 'processed.'
@@ -32,7 +28,7 @@ class AbsorbanceFeature:
         """
         pr = processed_reading
 
-        if not self.transmission.process(pr, settings, app_state):
+        if not self.ctl.transmission.process(pr, settings, app_state):
             log.error("can't compute absorbance w/o transmission")
             return False
 
@@ -56,7 +52,7 @@ class AbsorbanceFeature:
         pr.set_processed(absorbance)
 
         if saturated:
-            self.marquee.error("absorbance out-of-range")
+            self.ctl.marquee.error("absorbance out-of-range")
             return False # (even though we did update array for graphing)
 
         return True

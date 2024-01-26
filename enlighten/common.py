@@ -1,4 +1,5 @@
 import logging
+import sys
 import os
 
 from enum import IntEnum
@@ -13,10 +14,12 @@ application.
       can be modules (files) within it
 """
 
-VERSION = "4.0.25"
+VERSION = "4.0.35"
 
-""" ENLIGHTEN's application version number (checked by scripts/deploy and bootstrap.bat) """
+ctl = None
+
 class Techniques(IntEnum):
+    """ ENLIGHTEN's application version number (checked by scripts/deploy and bootstrap.bat) """
     NONE                     = 0
     EMISSION                 = 1
     RAMAN                    = 2
@@ -36,21 +39,21 @@ class TechniquesHelper:
         Techniques.COLOR: "Color",
         Techniques.FLUORESCENCE: "Fluorescence",
         Techniques.RELATIVE_IRRADIANCE: "Relative Irradiance",
-        }
+    }
 
     def get_pretty_name(n):
         return TechniquesHelper.pretty_names.get(n, "UNKNOWN")
 
 class Views(IntEnum):
+    """
+    It's important to keep this list in sync with the comboBox_view items.
+    @todo consider auto-populating inside code
+    """
     SCOPE               = 0
     SETTINGS            = 1
     HARDWARE            = 2
     LOG                 = 3
     FACTORY             = 4
-"""
-It's important to keep this list in sync with the comboBox_view items.
-@todo consider auto-populating inside code
-"""
 
 class ViewsHelper:
     pretty_names = {
@@ -146,18 +149,19 @@ def get_default_data_dir():
         return os.path.join(os.path.expanduser("~"), "Documents", "EnlightenSpectra")
     return os.path.join(os.environ["HOME"], "EnlightenSpectra")
 
+def set_controller_instance(inst):
+    global ctl
+    ctl = inst
 
-"""
-Looking for a method to display Marquee messages? 
-(Those non-intrusive messages at the top of Enlighten)
-
-One way is to use self.ctl.marquee.info("Message")
-This assumes your FeatureObject class has an instance of Controller.
-"""
-
-def msgbox(prompt, title="Alert", buttons=0):
+def msgbox(prompt, title="Alert", buttons=None, detail=None):
     """
     Display an interupting message to the user.
+
+    Looking for a method to display Marquee messages? 
+    (Those non-intrusive messages at the top of Enlighten)
+
+    One way is to use self.ctl.marquee.info("Message")
+    This assumes your FeatureObject class has an instance of Controller.
 
     Inspired by VB msgbox: 
     https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/msgbox-function
@@ -165,24 +169,53 @@ def msgbox(prompt, title="Alert", buttons=0):
 
     # doing this import within this method to avoid breaking all dependents of common.py
     # not sure that this would break anything, just to be safe -- move up when confident
-    from PySide6.QtWidgets import QMessageBox
+    if use_pyside2():
+        from PySide2.QtWidgets import QMessageBox
+    else:
+        from PySide6.QtWidgets import QMessageBox
 
     # TODO: see enlighten/ui/BasicWindow.py for an example how to implement this using
     # Enlighten's style. This should always be callable as a single function call without
     # the caller needing to create her own class instance
 
-    warn_msg = QMessageBox()
+    # let's persist these in the logfile too
+    log.debug(f"msgbox: {title}: {prompt}")
 
-    warn_msg.setWindowTitle(title)
-    warn_msg.setText(prompt)
+    mb = QMessageBox(parent=ctl.form) if ctl else QMessageBox()
+    mb.setWindowTitle(title)
+    mb.setText(prompt)
 
-    if buttons == 0:
-        warn_msg.setStandardButtons(QMessageBox.Ok)
-    elif buttons == 1:
-        warn_msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-    elif buttons == 4:
-        warn_msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+    mask = 0
+    buttons = buttons.lower()
+    if "ok"     in buttons: mask |= QMessageBox.Ok
+    if "no"     in buttons: mask |= QMessageBox.No
+    if "yes"    in buttons: mask |= QMessageBox.Yes
+    if "cancel" in buttons: mask |= QMessageBox.Cancel
+    if mask == 0:
+        mask = QMessageBox.Okay
 
-    warn_msg.setIcon(QMessageBox.Warning)
+    mb.setStandardButtons(mask)
+    mb.setIcon(QMessageBox.Warning)
 
-    return warn_msg.exec_() in [QMessageBox.Ok, QMessageBox.Yes]
+    if detail:
+        mb.setDetailedText(detail)
+
+    result = mb.exec_()
+    if result == QMessageBox.Ok: return "Ok"
+    if result == QMessageBox.No: return "No"
+    if result == QMessageBox.Yes: return "Yes"
+    if result == QMessageBox.Cancel: return "Cancel"
+
+def is_rpi():
+    result = False
+    try:
+        # Win32 doesn't have os.uname :-(
+        (sysname, nodename, release, version, machine) = os.uname()
+        result = nodename == "raspberrypi"
+    except:
+        pass
+    return result
+
+def use_pyside2():
+    result = is_rpi() or "USE_PYSIDE_2" in os.environ
+    return result

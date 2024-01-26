@@ -5,13 +5,16 @@ import logging
 import time
 import os
 
-from PySide6 import QtGui, QtWidgets
-
 from .Wrapper import Wrapper
 from .Config  import Config 
-from ..ScrollStealFilter import ScrollStealFilter
 
-from .. import util
+from enlighten.ScrollStealFilter import ScrollStealFilter
+from enlighten import util, common
+
+if common.use_pyside2():
+    from PySide2 import QtGui, QtWidgets
+else:
+    from PySide6 import QtGui, QtWidgets
 
 log = logging.getLogger(__name__)
 
@@ -281,9 +284,8 @@ class Feature(object):
         self.table_results      .cellClicked    .connect(self._table_results_callback)
 
         # disable scroll stealing
-        for key, item in self.__dict__.items():
-            if key.startswith("cb_") or key.startswith("sb_"):
-                item.installEventFilter(ScrollStealFilter(item))
+        for widget in [ self.sb_score_min, self.sb_max_results ]:
+            widget.installEventFilter(ScrollStealFilter(widget))
 
         # validate installation
         self.is_installed = self._check_installed()

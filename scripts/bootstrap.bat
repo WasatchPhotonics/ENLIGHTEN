@@ -131,7 +131,7 @@ echo %date% %time% ======================================================
 REM capture start time
 set TIME_START=%time%
 set PYTHONUTF8=1
-set PYTHONPATH=.;..\Wasatch.PY;..\SPyC_Writer\src;pluginExamples;%CONDA_PREFIX%\lib\site-packages;enlighten\assets\uic_qrc
+set PYTHONPATH=.;..\Wasatch.PY;..\SPyC_Writer\src;..\jcamp;pluginExamples;%CONDA_PREFIX%\lib\site-packages;enlighten\assets\uic_qrc
 echo PYTHONPATH = %PYTHONPATH%
 
 if exist "C:\Program Files (x86)" (
@@ -299,17 +299,6 @@ if "%install_python_deps%" == "1" (
     REM because of this separately install pywin32 since it's only meant for windows
     pip install pywin32 
     if %errorlevel% neq 0 goto script_failure
-
-    python -m pip uninstall pyqt5
-    python -m pip install --upgrade pyqt5
-
-    echo.
-    echo %date% %time% ======================================================
-    echo %date% %time% Installing pyinstaller from pip
-    echo %date% %time% ======================================================
-    echo.
-    pip install pyinstaller
-    if %errorlevel% neq 0 goto script_failure
 )
 
 if "%virtspec%" == "1" (
@@ -377,10 +366,13 @@ if "%pyinstaller%" == "1" (
     echo %date% %time% Running PyInstaller OPTIONAL
     echo %date% %time% ======================================================
     echo.
+    REM hide-early worked on Win10 but not Win11
+    REM hide-late doesn't work on Win10
     pyinstaller ^
         --distpath="scripts/built-dist" ^
         --workpath="scripts/work-path" ^
         --noconfirm ^
+        --python-option "X utf8" ^
         --hide-console hide-early ^
         --clean ^
         --paths="../Wasatch.PY" ^
@@ -409,6 +401,8 @@ if "%innosetup%" == "1" (
         rem caller may set it to lzma/fast for speed
         set "COMPRESSION=lzma/max"
     )
+
+    if not exist "scripts\windows_installer\" mkdir scripts\windows_installer
 
     "%PROGRAM_FILES_X86%\Inno Setup 6\iscc.exe" ^
         /DENLIGHTEN_VERSION=%ENLIGHTEN_VERSION% ^

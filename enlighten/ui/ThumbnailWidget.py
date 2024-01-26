@@ -1,6 +1,4 @@
-from PySide6 import QtGui, QtCore, QtWidgets
 import pyqtgraph
-
 from datetime import datetime
 import logging
 
@@ -9,6 +7,11 @@ from enlighten.ui.ConfirmWidget import ConfirmWidget
 from enlighten import KnowItAll
 from enlighten import common
 from enlighten import util
+
+if common.use_pyside2():
+    from PySide2 import QtGui, QtCore, QtWidgets
+else:
+    from PySide6 import QtGui, QtCore, QtWidgets
 
 log = logging.getLogger(__name__)
 
@@ -41,28 +44,19 @@ class ThumbnailWidget(QtWidgets.QFrame):
         log.debug("blocking deep-copy")
 
     def __init__(self, 
-            colors,
-            graph,
-            gui,
-            is_collapsed,
+            ctl,
             measurement,
-            stylesheets,
-            technique,
-            focus_listener,
-            kia = None):
-
+            is_collapsed,
+            graph):
         super(ThumbnailWidget, self).__init__()
 
-        self.colors         = colors
-        self.graph          = graph 
-        self.gui            = gui
-        self.is_collapsed   = is_collapsed
-        self.kia            = kia
+        self.ctl            = ctl
         self.measurement    = measurement
-        self.stylesheets    = stylesheets
-        self.technique      = technique
-        self.focus_listener = focus_listener
-                           
+        self.is_collapsed   = is_collapsed
+        self.graph          = graph 
+
+        log.debug(f"using graph {graph.name}")
+
         self.is_displayed  = False
         self.selected_color = None
         self.curve = None
@@ -128,7 +122,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
 
         self.body = QtWidgets.QLabel("loading")
         # self.body.setPixmap(":/simulation/images/spectrums/thumbnail_loading.png")
-        self.stylesheets.apply(self.body, "clear_border")
+        self.ctl.stylesheets.apply(self.body, "clear_border")
         self.body.move(12, 33)
         self.body.resize(162, 112)
         self.body.setScaledContents(True)
@@ -164,21 +158,6 @@ class ThumbnailWidget(QtWidgets.QFrame):
         # self.button_edit.setAutoDefault(True) 
 
         ########################################################################
-        # Delete confirmation pop-up
-        ########################################################################
-
-        # Each ThumbnailWidget contains its own ConfirmWidget, which defaults to
-        # invisible, and is only shown when the Trash icon is clicked.  An
-        # alternate implementation would be to create the ConfirmWidget when the
-        # Trash icon is clicked.
-        self.confirm_widget = ConfirmWidget(
-            callback_no     = self.confirm_no_callback,
-            callback_yes    = self.confirm_yes_callback,
-            parent          = self,
-            stylesheets     = self.stylesheets)
-        self.confirm_widget.move(17, 30)
-
-        ########################################################################
         # Tooltip
         ########################################################################
 
@@ -200,16 +179,12 @@ class ThumbnailWidget(QtWidgets.QFrame):
     # ##########################################################################
 
     def should_add_id_button(self):
-        if not self.kia:
-            log.debug("missing kia")
-            return False
-
-        if not self.kia.is_installed:
-            log.debug("kia not installed")
+        if not self.ctl.kia_feature.is_installed:
+            log.debug("KIA not installed")
             return False
 
         # only add "identify" button to Raman measurements
-        return self.technique and "raman" == self.technique.lower()
+        return self.measurement.technique and "raman" == self.measurement.technique.lower()
 
     ##
     # Called by MeasurementFactory to set the rendered thumbnail image
@@ -227,7 +202,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
         policy.setHorizontalPolicy(QtWidgets.QSizePolicy.MinimumExpanding)
 
         le_name = QtWidgets.QLineEdit(self.measurement.label)
-        self.stylesheets.apply(le_name, "clear_border")
+        self.ctl.stylesheets.apply(le_name, "clear_border")
         le_name.setSizePolicy(policy)
         le_name.setMinimumWidth(ThumbnailWidget.MIN_WIDTH)
         le_name.setMaximumWidth(ThumbnailWidget.MAX_WIDTH)
@@ -252,7 +227,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
 
     def set_active(self, flag):
         self.is_displayed = flag
-        self.gui.colorize_button(self.button_display, flag)
+        self.ctl.gui.colorize_button(self.button_display, flag)
 
     def collapse(self):
         self.is_collapsed = True
@@ -317,7 +292,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
         if tooltip is not None:
             button.setToolTip(tooltip)
 
-        self.gui.colorize_button(button, False)
+        self.ctl.gui.colorize_button(button, False)
 
         return button
 
@@ -333,9 +308,8 @@ class ThumbnailWidget(QtWidgets.QFrame):
 
     # the user clicked the "thumbnail" icon, starting an ID operation
     def id_callback(self):
-        if self.kia is not None: 
-            self.kia.enqueue_measurement(self.measurement)
-            self.gui.colorize_button(self.button_id, True)
+        self.ctl.kia_feature.enqueue_measurement(self.measurement)
+        self.ctl.gui.colorize_button(self.button_id, True)
 
     # KIA finished the ID.  For lack of a clear reason to do otherwise, we have
     # the callback come back to the ThumbnailWidget object which originated the 
@@ -349,27 +323,16 @@ class ThumbnailWidget(QtWidgets.QFrame):
         dm = self.measurement.declared_match
         if dm is not None:
             self.button_id.setToolTip("%s (score %.2f)" % (dm, dm.score))
-        self.gui.colorize_button(self.button_id, False)
+        self.ctl.gui.colorize_button(self.button_id, False)
 
     ## Display the ConfirmWidget
     def trash_callback(self):
-        self.confirm_widget.setVisible(True)
-        self.gui.colorize_button(self.button_trash, True)
-
-    ## 
-    # Passed from ConfirmWidget.button_no
-    def confirm_no_callback(self):
-        self.confirm_widget.setVisible(False)
-        self.gui.colorize_button(self.button_trash, False)
-        self.measurement.delete(from_disk=False, update_parent=True)
-
-    ##
-    # Passed from ConfirmWidget.button_yes
-    #
-    # The user does indeed want to delete this Measurement (and the Trash icon
-    # indicates 'from_disk' as well), so pass the message up the chain.
-    def confirm_yes_callback(self):
-        self.measurement.delete(from_disk=True, update_parent=True)
+        self.ctl.gui.colorize_button(self.button_trash, True)
+        response = common.msgbox("Also delete measurement from disk?", buttons="Yes, No, Cancel")
+        self.ctl.gui.colorize_button(self.button_trash, False)
+        if response == "Cancel":
+            return
+        self.measurement.delete(from_disk=(response == "Yes"), update_parent=True)
 
     def display_callback(self):
         if self.is_displayed:
@@ -390,12 +353,12 @@ class ThumbnailWidget(QtWidgets.QFrame):
         log.debug("rename: now editing")
 
         self.le_name.setReadOnly(False)
-        self.stylesheets.apply(self.le_name, "edit_text")
+        self.ctl.stylesheets.apply(self.le_name, "edit_text")
         self.le_name.setFocus()
         self.le_name.selectAll()
-        self.gui.colorize_button(self.button_edit, True)
+        self.ctl.gui.colorize_button(self.button_edit, True)
 
-        self.focus_listener.register(self.le_name, self.rename_complete_callback)
+        self.ctl.focus_listener.register(self.le_name, self.rename_complete_callback)
 
     def rename_complete_callback(self):
         """
@@ -406,15 +369,12 @@ class ThumbnailWidget(QtWidgets.QFrame):
         log.debug("rename_complete: completing")
         self.last_editted = datetime.now()
 
-        # if not self.focus_listener.registered(self.le_name):
-        #     return
+        self.ctl.focus_listener.unregister(self.le_name)
 
-        self.focus_listener.unregister(self.le_name)
-
-        self.stylesheets.apply(self.le_name, "clear_border")
+        self.ctl.stylesheets.apply(self.le_name, "clear_border")
         self.button_edit.setFocus()
         self.le_name.setReadOnly(True)
-        self.gui.colorize_button(self.button_edit, False)
+        self.ctl.gui.colorize_button(self.button_edit, False)
 
         if self.le_name.text() != self.old_name:
             self.measurement.update_label(self.le_name.text(), manual=True)
@@ -445,7 +405,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
 
     def update_kia(self):
         if self.button_id is not None:
-            self.button_id.setEnabled(self.kia and self.kia.is_installed)
+            self.button_id.setEnabled(self.ctl.kia_feature and self.ctl.kia_feature.is_installed)
 
     ## Retain the thumbnail in the session, but remove its graphical trace from 
     # the chart.  This returns a bool so the clickable "toggle trace" button
@@ -475,44 +435,29 @@ class ThumbnailWidget(QtWidgets.QFrame):
         # take axis unit from Graph, then load axis values from Measurement
         if self.graph.current_x_axis == common.Axes.WAVELENGTHS:
             log.debug("axis is wavelengths so getting settings wavelengths")
-            x_axis = self.measurement.settings.wavelengths
+            x_axis = self.measurement.processed_reading.get_wavelengths()
             log.debug(f"wavelengths len is {len(x_axis)}")
         elif self.graph.current_x_axis == common.Axes.WAVENUMBERS:
-            log.debug("axis is waveunmbers so getting settings wavenumbers")
-            x_axis = self.measurement.settings.wavenumbers
-        elif first_pixel is None:
-            log.debug("generating from first pixel")
-            x_axis = list(range(pixels))
+            log.debug("axis is wavenunmbers so getting settings wavenumbers")
+            x_axis = self.measurement.processed_reading.get_wavenumbers()
         else:
-            log.debug("generating from range since all else didn't work")
-            x_axis = list(range(first_pixel, first_pixel + pixels))
+            log.debug("generating from pixels")
+            x_axis = list(range(pixels))
+
         if x_axis is None:
             # maybe from a loaded file with insufficient data?
             log.debug("add_curve_to_graph: somehow have no x-axis?")
             return
 
-        regions = self.measurement.settings.state.detector_regions
-        log.debug(f"add_curve_to_graph: regions = {regions}")
-        if regions:
-            log.debug(f"processing regions")
-            x_axis = regions.chop(x_axis, flatten=True) # which region?
-            log.debug(f"after regions make x_axis {len(x_axis)}")
-
         log.debug("add_curve_to_graph: generated x_axis of %d elements (%.2f to %.2f)", len(x_axis), x_axis[0], x_axis[-1])
+        spectrum = self.measurement.processed_reading.get_processed()
 
-        spectrum = self.measurement.processed_reading.processed
-        if self.measurement.processed_reading.is_cropped():
-            roi = self.measurement.settings.eeprom.get_horizontal_roi()
-            if roi is not None and self.graph is not None and self.graph.horiz_roi is not None:
-                spectrum = self.measurement.processed_reading.processed_cropped
-                x_axis = self.graph.horiz_roi.crop(x_axis, roi=roi)
-
-        # use named color if found in label
         color = self.selected_color
         if color is None:
-            color = self.colors.color_names.search(label)
+            # use named color if found in label
+            color = self.ctl.colors.color_names.search(label)
         if color is None:
-            color = self.colors.get_next_random()
+            color = self.ctl.colors.get_next_random()
         pen = pyqtgraph.mkPen(width=1, color=color)
 
         log.debug("add_curve_to_graph: adding name %s, %d y elements, %d x elements (%.2f to %.2f)",
@@ -552,4 +497,4 @@ class ThumbnailWidget(QtWidgets.QFrame):
                     tt += f"{k}: {s}\n"
         # self.body.setToolTip(tt.strip())
         self.body.setWhatsThis(tt.strip())
-        self.stylesheets.apply(self.body, "tooltip")
+        self.ctl.stylesheets.apply(self.body, "tooltip")

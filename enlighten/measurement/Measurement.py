@@ -1,6 +1,7 @@
 import datetime
 import logging
-import numpy
+import numpy as np
+import jcamp
 import xlwt
 import json
 import copy
@@ -174,7 +175,7 @@ log = logging.getLogger(__name__)
 #
 # @todo more robust / defined behavior with duplicate labels across Measurements
 #       (currently has some graphing glitches when adding / removing traces)
-class Measurement(object):
+class Measurement:
 
     ##
     # These appear in legacy saved spectra files as-written (Dash format), so
@@ -249,11 +250,9 @@ class Measurement(object):
         self.declared_score           = 0
         self.label                    = None
         self.measurement_id           = None
-        self.measurements             = None
         self.processed_reading        = None
         self.renamable_files          = set()
         self.renamed_manually         = False
-        self.save_options             = None
         self.settings                 = None
         self.source_pathname          = None
         self.spec                     = None
@@ -266,26 +265,28 @@ class Measurement(object):
         self.suffix                   = ""
         self.plugin_name              = ""
 
+        # cache of metadata only generated / rendered at save
+        self.metadata                 = {}
+
     ##
     # There are three valid instantiation patterns:
     #
     # - with spec (take latest from that Spectrometer)
     # - with source_pathname (deserializing from disk)
-    def __init__(self,
+    # - with data (for instance, from processed plugin spectra)
+    def __init__(self, 
+            ctl                 = None,
             processed_reading   = None,
-            save_options        = None,
             settings            = None,
             source_pathname     = None,
             timestamp           = None,
             spec                = None,
             measurement         = None,
-            measurements        = None,
             d                   = None):
 
-        self.clear()
+        self.ctl = ctl
 
-        self.save_options       = save_options
-        self.measurements       = measurements
+        self.clear()
         self.roi_active         = False
 
         if spec:
@@ -315,10 +316,11 @@ class Measurement(object):
             self.timestamp          = datetime.datetime.now()
             self.baseline_correction_algo = spec.app_state.baseline_correction_algo
 
-            # do these AFTER we have a processed_reading
-            self.note   = self.expand_template(self.save_options.note())
-            self.prefix = self.expand_template(self.save_options.prefix())
-            self.suffix = self.expand_template(self.save_options.suffix())
+            if self.ctl:
+                # do these AFTER we have a processed_reading
+                self.note   = self.expand_template(self.ctl.save_options.note())
+                self.prefix = self.expand_template(self.ctl.save_options.prefix())
+                self.suffix = self.expand_template(self.ctl.save_options.suffix())
 
         elif source_pathname:
             log.debug("instantiating from source pathname %s", source_pathname)
@@ -331,8 +333,7 @@ class Measurement(object):
             log.debug("instantiating from existing measurement %s", measurement.measurement_id)
             self.settings          = copy.deepcopy(measurement.settings)
             self.processed_reading = copy.deepcopy(measurement.processed_reading)
-            self.measurements      = measurement.measurements
-            self.save_options      = measurement.save_options
+            self.ctl               = measurement.ctl
             self.timestamp         = datetime.datetime.now()
 
         elif d:
@@ -341,6 +342,9 @@ class Measurement(object):
 
         else:
             raise Exception("Measurement requires exactly one of (spec, source_pathname, measurement, dict)")
+
+        if self.ctl.interp.enabled:
+            self.ctl.interp.process(self.processed_reading)
 
         self.generate_id()
         self.generate_label()
@@ -352,8 +356,6 @@ class Measurement(object):
         m = copy.copy(self)
 
         # clean for exporting
-        m.measurements = None
-        m.save_options = None
         m.thumbnail_widget = None
         m.settings = copy.deepcopy(self.settings)
         m.processed_reading = copy.deepcopy(self.processed_reading)
@@ -368,8 +370,8 @@ class Measurement(object):
     # for parsing external formats like SPC.
     def init_from_dict(self, d):
 
-        if "Label" in d:
-            self.label = d["Label"]
+        self.label = d.get("Label", None)
+        self.plugin_name = d.get("Plugin Name", None)
 
         # timestamp
         self.timestamp = datetime.datetime.now()
@@ -385,11 +387,8 @@ class Measurement(object):
         self.settings = SpectrometerSettings(d=wasatch_utils.dict_get_norm(d, "SpectrometerSettings"))
 
         # ProcessedReading
-        self.processed_reading = ProcessedReading(d=wasatch_utils.dict_get_norm(d, ["ProcessedReading", "Spectrum", "Spectra"]))
-
-        # how/where to do this properly?
-        if len(self.processed_reading.processed) < len(self.settings.wavelengths):
-            self.processed_reading.processed_cropped = self.processed_reading.processed
+        pr_d = wasatch_utils.dict_get_norm(d, ["ProcessedReading", "Spectrum", "Spectra"])
+        self.processed_reading = ProcessedReading(d=pr_d)
 
     ##
     # We presumably loaded a measurement from disk, reprocessed it, and are now
@@ -404,9 +403,6 @@ class Measurement(object):
 
     def add_renamable(self, pathname):
         self.renamable_files.add(pathname)
-
-    def set_plugin_name(self, text: str) -> None:
-        self.plugin_name = text
 
     def generate_id(self):
         # It is unlikely that the same serial number will ever generate multiple
@@ -429,13 +425,14 @@ class Measurement(object):
             log.debug(f"generate_label: retaining existing label {self.label}")
             return
 
-        if self.save_options.filename_as_label():
-            # note this will be wrapped with prefix and suffix
-            self.label = self.basename 
-        else:
-            self.label = self.expand_template(self.save_options.label_template())
-            if self.save_options.multipart_suffix:
-                self.label += f" {self.save_options.multipart_suffix}"
+        if self.ctl:
+            if self.ctl.save_options.filename_as_label():
+                # note this will be wrapped with prefix and suffix
+                self.label = self.basename 
+            else:
+                self.label = self.expand_template(self.ctl.save_options.label_template())
+                if self.ctl.save_options.multipart_suffix:
+                    self.label += f" {self.ctl.save_options.multipart_suffix}"
 
     def expand_template(self, template):
         """
@@ -523,14 +520,14 @@ class Measurement(object):
     # Note that this wraps the prefix and suffix around the expanded template.
     # Prefix and Suffix are not retained in manually-renamed measurements (ctrl-E).
     def generate_basename(self):
-        if self.save_options is None:
+        if self.ctl is None or self.ctl.save_options is None:
             return self.measurement_id
         else:
-            if self.renamed_manually and self.save_options.allow_rename_files():
+            if self.renamed_manually and self.ctl.save_options.allow_rename_files():
                 return util.normalize_filename(self.label)
             else:
-                basename = self.expand_template(self.save_options.filename_template())
-                return self.save_options.wrap_name(basename, self.prefix, self.suffix)
+                basename = self.expand_template(self.ctl.save_options.filename_template())
+                return self.ctl.save_options.wrap_name(basename, self.prefix, self.suffix)
 
     def dump(self):
         log.debug("Measurement:")
@@ -544,18 +541,26 @@ class Measurement(object):
 
         pr = self.processed_reading
         if pr is not None:
+            proc = pr.get_processed()
+            raw  = pr.get_raw()
+            dark = pr.get_dark()
+            ref  = pr.get_reference()
+
             log.debug("  processed_reading:")
-            log.debug("    processed_cropped:   %s", pr.processed_cropped[:5] if pr.processed_cropped is not None else None)
-            log.debug("    processed:           %s", pr.processed[:5] if pr.processed is not None else None)
-            log.debug("    raw:                 %s", pr.raw      [:5] if pr.raw       is not None else None)
-            log.debug("    dark:                %s", pr.dark     [:5] if pr.dark      is not None else None)
-            log.debug("    reference:           %s", pr.reference[:5] if pr.reference is not None else None)
+            log.debug("    processed:           %s", proc[:5] if proc is not None else None)
+            log.debug("    raw:                 %s", raw [:5] if raw  is not None else None)
+            log.debug("    dark:                %s", dark[:5] if dark is not None else None)
+            log.debug("    reference:           %s", ref [:5] if ref  is not None else None)
 
     ##
     # Display on the graph, if not already shown.
     def display(self):
         if self.thumbnail_widget is not None:
             self.thumbnail_widget.add_curve_to_graph()
+
+    def is_displayed(self):
+        if self.thumbnail_widget is not None:
+            return self.thumbnail_widget.is_displayed
 
     ##
     # Release any resources associated with this Measurement.  Note that this
@@ -584,8 +589,8 @@ class Measurement(object):
             #
             # MZ: this feels a bit kludgy?
 
-            if self.measurements is not None:
-                self.measurements.delete_measurement(measurement=self)
+            if self.ctl and self.ctl.measurements is not None:
+                self.ctl.measurements.delete_measurement(measurement=self)
                 return
 
         # Take extra care releasing Qt resources associated with the ThumbnailWidget
@@ -629,8 +634,9 @@ class Measurement(object):
         self.label = label
 
         # rename the underlying file(s)
-        if self.save_options.allow_rename_files() or self.save_options.filename_as_label():
-            self.rename_files()
+        if self.ctl:
+            if self.ctl.save_options.allow_rename_files() or self.ctl.save_options.filename_as_label():
+                self.rename_files()
 
         # re-apply trace with new legend
         if was_displayed:
@@ -729,35 +735,45 @@ class Measurement(object):
     ## @todo cloud etc
     def save(self):
         saved = False
-        if self.save_options.save_csv():
+        if not self.ctl:
+            return
+
+        if self.ctl.save_options.save_csv():
             self.save_csv_file()
             saved = True
 
-        if self.save_options.save_text():
+        if self.ctl.save_options.save_text():
             self.save_txt_file()
             saved = True
 
-        if self.save_options.save_excel():
+        if self.ctl.save_options.save_excel():
             self.save_excel_file()
             saved = True
 
-        if self.save_options.save_json():
+        if self.ctl.save_options.save_json():
             self.save_json_file()
             saved = True
 
-        if self.save_options.save_spc():
+        if self.ctl.save_options.save_spc():
             self.save_spc_file()
             saved = True
 
+        if self.ctl.save_options.save_dx():
+            self.save_dx_file()
+            saved = True
+
         if not saved:
-            if self.measurements:
-                self.measurements.marquee.error("No save formats selected -- spectrum not saved to disk")
+            if self.ctl.measurements:
+                self.ctl.measurements.ctl.marquee.error("No save formats selected -- spectrum not saved to disk")
 
     def save_csv_file(self):
-        if self.save_options is not None and self.save_options.save_by_row():
-            self.save_csv_file_by_row()
-        else:
+        if self.ctl is None:
             self.save_csv_file_by_column()
+        else:
+            if self.ctl.save_options is not None and self.ctl.save_options.save_by_row():
+                self.save_csv_file_by_row()
+            else:
+                self.save_csv_file_by_column()
 
     ##
     # This function is provided because legacy Dash and ENLIGHTEN saved row-
@@ -772,7 +788,12 @@ class Measurement(object):
     #
     # @todo replace if/elif with dict of lambdas
     def get_metadata(self, field):
+        orig = field
         field = field.lower()
+
+        # if this field has already been computed, use cached
+        if orig in self.metadata:
+            return self.metadata[orig]
 
         # allow plugins to stomp metadata
         if self.processed_reading.plugin_metadata is not None:
@@ -791,7 +812,7 @@ class Measurement(object):
         if field == "detector":                  return self.settings.eeprom.detector
         if field == "scan averaging":            return self.settings.state.scans_to_average
         if field == "boxcar":                    return self.settings.state.boxcar_half_width
-        if field == "line number":               return self.save_options.line_number if self.save_options is not None else 0
+        if field == "line number":               return self.ctl.save_options.line_number if (self.ctl and self.ctl.save_options) else 0
         if field == "integration time":          return self.settings.state.integration_time_ms
         if field == "timestamp":                 return self.timestamp
         if field == "blank":                     return self.settings.eeprom.serial_number # for Multispec
@@ -809,7 +830,7 @@ class Measurement(object):
         if field == "ccd gain odd":              return self.settings.eeprom.detector_gain_odd
         if field == "high gain mode":            return self.settings.state.high_gain_mode_enabled
         if field == "laser wavelength":          return self.settings.excitation()
-        if field == "laser enable":              return self.settings.state.laser_enabled or self.settings.state.acquisition_laser_trigger_enable
+        if field == "laser enable":              return self.settings.state.laser_enabled 
         if field == "laser temperature":         return self.processed_reading.reading.laser_temperature_degC if self.processed_reading.reading is not None else -99
         if field == "pixel count":               return self.settings.pixels()
         if field == "declared match":            return str(self.declared_match) if self.declared_match is not None else None
@@ -817,7 +838,7 @@ class Measurement(object):
         if field == "roi pixel start":           return self.settings.eeprom.roi_horizontal_start
         if field == "roi pixel end":             return self.settings.eeprom.roi_horizontal_end
         if field == "cropped":                   return self.processed_reading.is_cropped()
-        if field == "interpolated":              return self.save_options.interp.enabled if self.save_options is not None else False
+        if field == "interpolated":              return self.ctl.interp.enabled if self.ctl else False
         if field == "raman intensity corrected": return self.processed_reading.raman_intensity_corrected
         if field == "deconvolved":               return self.processed_reading.deconvolved
         if field == "region":                    return self.settings.state.region
@@ -889,9 +910,15 @@ class Measurement(object):
     # limit the total columns to 255 when saving multiple spectra.
     def save_excel_file(self):
         pr          = self.processed_reading
-        wavelengths = self.settings.wavelengths
-        wavenumbers = self.settings.wavenumbers
-        pixels      = len(pr.raw)
+
+        processed   = pr.get_processed()
+        raw         = pr.get_raw()
+        dark        = pr.get_dark()
+        reference   = pr.get_reference()
+        wavelengths = pr.get_wavelengths()
+        wavenumbers = pr.get_wavenumbers()
+
+        pixels      = len(processed)
 
         wbk = xlwt.Workbook()
         sheet_summary    = wbk.add_sheet('Summary')
@@ -924,21 +951,6 @@ class Measurement(object):
         if pr.reference is not None:
             style = style_f5
 
-        roi = None
-        if self.settings is not None:
-            roi = self.settings.eeprom.get_horizontal_roi()
-        cropped = roi is not None and pr.is_cropped()
-
-        # interpolation
-        interp = self.save_options.interp if self.save_options is not None else None
-        if interp is not None and interp.enabled:
-            ipr = interp.interpolate_processed_reading(pr, wavelengths=wavelengths, wavenumbers=wavenumbers, settings=self.settings)
-            if ipr is not None:
-                wavelengths = ipr.wavelengths
-                wavenumbers = ipr.wavenumbers
-                pixels = ipr.pixels
-                pr = ipr.processed_reading
-
         # spectra (float() calls because library gets confused by Numpy types)
         first_row = 1
         row_count = 0
@@ -947,22 +959,26 @@ class Measurement(object):
                 continue
 
             row = first_row + row_count
-            sheet_spectrum.write        (row, 0, pixel)
-            sheet_spectrum.write        (row, 1, float(wavelengths  [pixel]), style_f2)
-            if wavenumbers is not None:
-                sheet_spectrum.write    (row, 2, float(wavenumbers  [pixel]), style_f2)
-            sheet_spectrum.write        (row, 4, float(pr.raw       [pixel]), style)
-            if pr.dark is not None:
-                sheet_spectrum.write    (row, 5, float(pr.dark      [pixel]), style)
-            if pr.reference is not None:
-                sheet_spectrum.write    (row, 6, float(pr.reference [pixel]), style)
 
-            if not cropped:
-                sheet_spectrum.write    (row, 3, float(pr.processed [pixel]), style)
-            elif interp.enabled:
-                sheet_spectrum.write    (row, 3, float(pr.processed_cropped[pixel]), style)
-            elif roi.contains(pixel):
-                sheet_spectrum.write    (row, 3, float(pr.processed_cropped[pixel - roi.start]), style)
+            sheet_spectrum.write        (row, 0, pixel)
+
+            if wavelengths is not None and self.ctl.save_options.save_wavelength():
+                sheet_spectrum.write    (row, 1, float(wavelengths  [pixel]), style_f2)
+
+            if wavenumbers is not None and self.ctl.save_options.save_wavenumber():
+                sheet_spectrum.write    (row, 2, float(wavenumbers  [pixel]), style_f2)
+
+            if processed is not None:
+                sheet_spectrum.write    (row, 3, float(processed    [pixel]), style)
+
+            if raw is not None and self.ctl.save_options.save_raw():
+                sheet_spectrum.write        (row, 4, float(raw      [pixel]), style)
+
+            if dark is not None and self.ctl.save_options.save_dark():
+                sheet_spectrum.write    (row, 5, float(dark         [pixel]), style)
+
+            if reference is not None and self.ctl.save_options.save_ref():
+                sheet_spectrum.write    (row, 6, float(reference    [pixel]), style)
 
             row_count += 1
 
@@ -1013,7 +1029,7 @@ class Measurement(object):
             log.critical("Problem saving workbook: %s", pathname, exc_info=1)
 
     def generate_today_dir(self):
-        return "." if self.save_options is None else self.save_options.generate_today_dir()
+        return self.ctl.save_options.generate_today_dir() if (self.ctl and self.ctl.save_options) else "."
 
     # ##########################################################################
     # JSON
@@ -1023,39 +1039,42 @@ class Measurement(object):
     # Express the current Measurement as a single JSON-compatible dict.  Use this
     # for both save_json_file and External.Feature.
     def to_dict(self):
-        pr          = self.processed_reading
-        wavelengths = self.settings.wavelengths
-        wavenumbers = self.settings.wavenumbers
-        pixels      = len(pr.processed)
+        pr = self.processed_reading
 
-        m = {                   # m = Measurement
+        m = { # Measurement
             "spectrum": {},
             "metadata": self.get_all_metadata(),
+            "spectrometerSettings": self.settings.to_dict()
         }
 
-        md = m["metadata"]
-        sp = m["spectrum"]      # sp = Spectrum (should have used spectra?)
-
         # interpolation
-        ipr = None
-        interp = self.save_options.interp if self.save_options is not None else None
-        if interp is not None and interp.enabled:
-            ipr = interp.interpolate_processed_reading(pr, wavelengths=wavelengths, wavenumbers=wavenumbers, settings=self.settings)
-            if ipr is not None:
-                pixels = ipr.pixels
-                pr = ipr.processed_reading
+        if self.ctl.interp.enabled:
+            self.ctl.interp.process(pr)
+            # note we don't update active_pixels_horizontal, etc
+            m["spectrometerSettings"]["wavelengths"] = pr.get_wavelengths()
+            m["spectrometerSettings"]["wavenumbers"] = pr.get_wavenumbers()
 
         # same capitalization as CSV per request
-        if self.save_options.save_processed()   and pr.processed is not None: sp["Processed"] = util.clean_list(pr.get_processed())
-        if self.save_options.save_raw()         and pr.raw       is not None: sp["Raw"]       = util.clean_list(pr.raw)
-        if self.save_options.save_dark()        and pr.dark      is not None: sp["Dark"]      = util.clean_list(pr.dark)
-        if self.save_options.save_reference()   and pr.reference is not None: sp["Reference"] = util.clean_list(pr.reference)
+        if self.ctl:
+            if self.ctl.save_options.save_processed():
+                a = pr.get_processed()
+                if a is not None:
+                    m["spectrum"]["Processed"] = util.clean_list(a)
 
-        m["spectrometerSettings"] = self.settings.to_dict()
+            if self.ctl.save_options.save_raw():
+                a = pr.get_raw()
+                if a is not None:
+                    m["spectrum"]["Raw"] = util.clean_list(a)
 
-        if ipr is not None:
-            m["spectrometerSettings"]["wavelengths"] = ipr.wavelengths
-            m["spectrometerSettings"]["wavenumbers"] = ipr.wavenumbers
+            if self.ctl.save_options.save_dark():
+                a = pr.get_dark()
+                if a is not None:
+                    m["spectrum"]["Dark"] = util.clean_list(a)
+
+            if self.ctl.save_options.save_reference():
+                a = pr.get_reference()
+                if a is not None:
+                    m["spectrum"]["Reference"] = util.clean_list(a)
 
         return m
 
@@ -1069,7 +1088,7 @@ class Measurement(object):
 
     def save_spc_file(self, use_basename=False) -> None:
         today_dir = self.generate_today_dir()
-        current_x = self.save_options.multispec.graph.current_x_axis # a round about way to get the x axis, but it works
+        current_x = self.ctl.graph.current_x_axis
         log_text = f"Exported from Wasatch Photonics ENLIGHTEN.\nDevice {self.spec.label}"
         if use_basename:
             pathname = "%s.spc" % self.basename
@@ -1084,7 +1103,7 @@ class Measurement(object):
                                       )
             spc_writer.write_spc_file(pathname,
                                       self.processed_reading.processed,
-                                      numpy.asarray(self.spec.settings.wavelengths),
+                                      np.asarray(self.spec.settings.wavelengths),
                                       )
         elif current_x == common.Axes.WAVENUMBERS:
             spc_writer = SPCFileWriter.SPCFileWriter(SPCFileType.TXVALS,
@@ -1095,7 +1114,7 @@ class Measurement(object):
                                       )
             spc_writer.write_spc_file(pathname,
                                       self.processed_reading.processed,
-                                      numpy.asarray(self.spec.settings.wavenumbers),
+                                      np.asarray(self.spec.settings.wavenumbers),
                                       )
         elif current_x == common.Axes.PIXELS:
             spc_writer = SPCFileWriter.SPCFileWriter(SPCFileType.DEFAULT,
@@ -1132,6 +1151,59 @@ class Measurement(object):
         log.info("saved JSON %s", pathname)
         self.add_renamable(pathname)
 
+    def save_dx_file(self, use_basename=False):
+        if use_basename:
+            pathname = self.basename + ".dx"
+        else:
+            today_dir = self.generate_today_dir()
+            pathname = os.path.join(today_dir, self.generate_basename() + ".dx")
+
+        data = {
+            'title': self.label,
+            'cross reference': self.measurement_id,
+            'owner': "Wasatch Photonics",
+            '$software version': f'ENLIGHTEN {common.VERSION}',
+            'end': ''
+        }
+
+        if self.settings and self.settings.eeprom:
+            data['SPECTROMETER/DATA SYSTEM'] = f"{self.settings.eeprom.serial_number} {self.settings.eeprom.model}"
+
+        current_x = self.ctl.graph.current_x_axis 
+        if current_x == common.Axes.WAVELENGTHS:
+            data['y']        = np.array(self.processed_reading.processed)
+            data['x']        = np.asarray(self.settings.wavelengths)
+            data['xunits']   = 'WAVELENGTH (NM)'
+            data['yunits']   = 'ARBITRARY UNITS'
+            data['data type']= 'INFRARED SPECTRUM'
+        elif current_x == common.Axes.WAVENUMBERS:
+            data['y']        = np.array(self.processed_reading.processed)
+            data['x']        = np.asarray(self.settings.wavenumbers)
+            data['xunits']   = "1/CM"
+            data['yunits']   = "RAMAN INTENSITY"
+            data['data type']= "RAMAN SPECTRUM"
+        else:
+            common.msgbox("unsupported x-axis for JCAMP-DX")
+            return
+            
+        # not sure these should be required?
+        data['maxx'] = np.amax(data['x'])
+        data['minx'] = np.amin(data['x'])
+        data['maxy'] = np.amax(data['y'])
+        data['miny'] = np.amin(data['y'])
+
+        # throw in all our metadata for funz
+        for k, v in self.get_all_metadata().items():
+            k_ = re.sub(r'[^A-Z0-9_]', '_', k.replace("%", "perc").upper())
+            data[f"$enlighten.{k_}"] = v
+
+        jcamp.jcamp_writefile(pathname, data)
+
+        log.info("saved JCAMP-DX %s", pathname)
+        self.add_renamable(pathname)
+
+        return pathname
+
     # ##########################################################################
     # Column-ordered CSV
     # ##########################################################################
@@ -1143,10 +1215,11 @@ class Measurement(object):
     # Note that currently this is NOT writing UTF-8 / Unicode, although KIA-
     # generated labels are Unicode.  (Dieter doesn't seem to like Unicode CSV)
     def save_csv_file_by_column(self, use_basename=False, ext="csv", delim=",", include_header=True, include_metadata=True):
-        pr          = self.processed_reading
-        wavelengths = self.settings.wavelengths
-        wavenumbers = self.settings.wavenumbers
-        pixels      = len(pr.raw)
+        pr = self.processed_reading
+
+        if not self.ctl or not self.ctl.save_options:
+            log.error("Measurement.save* requires SaveOptions")
+            return
 
         today_dir = self.generate_today_dir()
         if use_basename:
@@ -1154,22 +1227,38 @@ class Measurement(object):
         else:
             pathname = os.path.join(today_dir, "%s.%s" % (self.generate_basename(), ext))
 
-        # vignetting
         roi = None
-        if self.settings is not None and self.measurements is not None and self.measurements.horiz_roi.enabled:
-            self.roi_active = True
-            roi = self.settings.eeprom.get_horizontal_roi()
-        cropped = roi is not None and pr.is_cropped()
+        stage = None
+        if pr.interpolated:
+            # If we're saving interpolated data, we don't care what the ROI was,
+            # or how many physical pixels are on the detector. We won't display 
+            # "NA" for any values, because interpolation includes extrapolation 
+            # at the range ends.
+            pass
+        else:
+            # We're not outputting extrapolated data, so we will output as many
+            # rows (pixels) as there are active pixels on the detector. Pixels
+            # outside the ROI will receive "NA" for "processed", but should 
+            # include wavelength/wavenumber axis values, and might as well include
+            # raw, dark and reference.
+            if self.ctl.horiz_roi.enabled:
+                stage = "orig"
+                if self.settings and self.settings.eeprom:
+                    roi = self.settings.eeprom.get_horizontal_roi()
 
-        # interpolation
-        interp = self.save_options.interp if self.save_options is not None else None
-        if interp is not None and interp.enabled:
-            ipr = interp.interpolate_processed_reading(pr, wavelengths=wavelengths, wavenumbers=wavenumbers, settings=self.settings)
-            if ipr is not None:
-                wavelengths = ipr.wavelengths
-                wavenumbers = ipr.wavenumbers
-                pixels = ipr.pixels
-                pr = ipr.processed_reading
+        wavelengths = pr.get_wavelengths(stage)
+        wavenumbers = pr.get_wavenumbers(stage)
+        processed = pr.get_processed(stage)
+        raw = pr.get_raw(stage)
+        dark = pr.get_dark(stage)
+        reference = pr.get_reference(stage)
+
+        if wavelengths is not None:
+            pixels = len(wavelengths)
+        elif wavenumbers is not None:
+            pixels = len(wavenumbers)
+        else:
+            pixels = len(processed)
 
         with open(pathname, "w", newline="", encoding='utf-8') as f:
 
@@ -1200,24 +1289,24 @@ class Measurement(object):
                 out.writerow([])
 
             headers = []
-            if self.save_options is not None:
-                if self.save_options.save_pixel():       headers.append("Pixel")
-                if self.save_options.save_wavelength():  headers.append("Wavelength")
-                if self.save_options.save_wavenumber():  headers.append("Wavenumber")
-                if self.save_options.save_processed():   headers.append("Processed")
-                if self.save_options.save_raw():         headers.append("Raw")
-                if self.save_options.save_dark():        headers.append("Dark")
-                if self.save_options.save_reference():   headers.append("Reference")
-            else:
-                headers.append("Wavenumber")
-                headers.append("Processed")
+            if self.ctl.save_options.save_pixel():       headers.append("Pixel")
+            if self.ctl.save_options.save_wavelength():  headers.append("Wavelength")
+            if self.ctl.save_options.save_wavenumber():  headers.append("Wavenumber")
+            if self.ctl.save_options.save_processed():   headers.append("Processed")
+            if self.ctl.save_options.save_raw():         headers.append("Raw")
+            if self.ctl.save_options.save_dark():        headers.append("Dark")
+            if self.ctl.save_options.save_reference():   headers.append("Reference")
 
             if include_header:
                 out.writerow(headers)
 
-            def formatted(prec, array, pixel):
+            def formatted(prec, array, pixel, obey_roi=False):
                 if array is None:
                     return
+                if roi and obey_roi:
+                    if pixel < roi.start or pixel > roi.end:
+                        return "NA"
+
                 value = array[pixel]
                 return '%.*f' % (prec, value)
 
@@ -1225,38 +1314,16 @@ class Measurement(object):
             precision = 5 if pr.reference is not None else 2
 
             for pixel in range(pixels):
-
                 values = []
-                if self.save_options is not None:
-                    if self.save_options.save_pixel():       values.append(pixel)
-                    if self.save_options.save_wavelength():  values.append(formatted(2,         wavelengths,  pixel))
-                    if self.save_options.save_wavenumber():  values.append(formatted(2,         wavenumbers,  pixel))
-
-                    if self.save_options.save_processed():
-                        if not cropped:
-                            values.append(formatted(precision, pr.processed, pixel))
-                        elif interp.enabled:
-                            values.append(formatted(precision, pr.processed_cropped, pixel))
-                        elif roi.contains(pixel):
-                            values.append(formatted(precision, pr.processed_cropped, pixel - roi.start))
-                        else:
-                            # this is a cropped pixel, so arguably it could be None (,,), @na, -1
-                            # or 0, or various other things, but consensus converged on "NA"
-                            values.append("NA")
-
-                    # Note that we're always output raw/dark/ref (if selected), regardless of ROI (makes sense).
-                    # I'm less sure why we don't interpolate raw/dark/ref, or how this comes out in the file if
-                    # we are interpolating...
-                    if self.save_options.save_raw():         values.append(formatted(precision, pr.raw,       pixel))
-                    if self.save_options.save_dark():        values.append(formatted(precision, pr.dark,      pixel))
-                    if self.save_options.save_reference():   values.append(formatted(precision, pr.reference, pixel))
-                else:
-                    # MZ: I don't remember the use-case for this.  May involve
-                    # this class being imported and used by an outside script?
-                    values.append(formatted(2, wavenumbers,  pixel))
-                    values.append(formatted(precision, pr.processed, pixel))
-
+                if self.ctl.save_options.save_pixel():       values.append(pixel)
+                if self.ctl.save_options.save_wavelength():  values.append(formatted(2,         wavelengths, pixel))
+                if self.ctl.save_options.save_wavenumber():  values.append(formatted(2,         wavenumbers, pixel))
+                if self.ctl.save_options.save_processed():   values.append(formatted(precision, processed,   pixel, obey_roi=True))
+                if self.ctl.save_options.save_raw():         values.append(formatted(precision, raw,         pixel))
+                if self.ctl.save_options.save_dark():        values.append(formatted(precision, dark,        pixel))
+                if self.ctl.save_options.save_reference():   values.append(formatted(precision, reference,   pixel))
                 out.writerow(values)
+
         log.info("saved columnar %s", pathname)
         self.add_renamable(pathname)
 
@@ -1309,13 +1376,13 @@ class Measurement(object):
     # Note that Measurements saved while "appending" are NOT considered renamable
     # at the file level, while Measurements saved to individual files are.
     #
-    # @todo support processed_cropped
+    # @todo support .cropped, .interpolated
     def save_csv_file_by_row(self):
         sn = self.settings.eeprom.serial_number
 
-        if self.save_options.append() and self.save_options.append_pathname is not None and os.path.exists(self.save_options.append_pathname):
+        if self.ctl.save_options.append() and self.ctl.save_options.append_pathname is not None and os.path.exists(self.ctl.save_options.append_pathname):
             # continue appending to the current target
-            pathname = self.save_options.append_pathname
+            pathname = self.ctl.save_options.append_pathname
             log.debug("save_csv_file_by_row: re-using append pathname %s", pathname)
             self.appending = True
         else:
@@ -1325,7 +1392,7 @@ class Measurement(object):
             pathname = os.path.join(today_dir, "%s.csv" % self.generate_basename())
             log.debug("save_csv_file_by_row: creating pathname %s", pathname)
 
-            self.save_options.reset_appendage(pathname)
+            self.ctl.save_options.reset_appendage(pathname)
 
             if os.path.exists(pathname):
                 os.remove(pathname)
@@ -1373,8 +1440,8 @@ class Measurement(object):
             return
 
         # append
-        self.save_options.line_number += 1
-        self.save_options.set_appended_serial(sn)
+        self.ctl.save_options.line_number += 1
+        self.ctl.save_options.set_appended_serial(sn)
 
         log.info("Successfully %s row-ordered %s", verb, pathname)
 
@@ -1393,14 +1460,14 @@ class Measurement(object):
     def write_x_axis_lines(self, csv_writer):
         sn = self.settings.eeprom.serial_number
 
-        if self.save_options.have_appended_serial(sn):
+        if self.ctl.save_options.have_appended_serial(sn):
             return
 
-        if self.save_options.save_pixel():
+        if self.ctl.save_options.save_pixel():
             self.write_row(csv_writer, "pixels")
-        if self.save_options.save_wavelength():
+        if self.ctl.save_options.save_wavelength():
             self.write_row(csv_writer, "wavelengths")
-        if self.save_options.save_wavenumber():
+        if self.ctl.save_options.save_wavenumber():
             self.write_row(csv_writer, "wavenumbers")
 
     ##
@@ -1421,13 +1488,13 @@ class Measurement(object):
     # reference repeatedly during a session. (They're not 'reasonably persistent'
     # as with the x-axis.)
     def write_processed_reading_lines(self, csv_writer):
-        if self.save_options.save_processed():
+        if self.ctl.save_options.save_processed():
             self.write_row(csv_writer, "Processed")
-        if self.save_options.save_raw():
+        if self.ctl.save_options.save_raw():
             self.write_row(csv_writer, "Raw")
-        if self.save_options.save_dark():
+        if self.ctl.save_options.save_dark():
             self.write_row(csv_writer, "Dark")
-        if self.save_options.save_reference():
+        if self.ctl.save_options.save_reference():
             self.write_row(csv_writer, "Reference")
 
     ##
@@ -1565,15 +1632,15 @@ class Measurement(object):
             old_x[0], old_x[-1], new_x[0], new_x[-1]);
 
         if pr.raw is not None and len(pr.raw) > 0:
-            pr.raw = numpy.interp(new_x, old_x, pr.raw)
+            pr.raw = np.interp(new_x, old_x, pr.raw)
 
         if pr.dark is not None and len(pr.dark) > 0:
-            pr.dark = numpy.interp(new_x, old_x, pr.dark)
+            pr.dark = np.interp(new_x, old_x, pr.dark)
 
         if pr.reference is not None and len(pr.reference) > 0:
-            pr.reference = numpy.interp(new_x, old_x, pr.reference)
+            pr.reference = np.interp(new_x, old_x, pr.reference)
 
         if pr.processed is not None and len(pr.processed) > 0:
-            pr.processed = numpy.interp(new_x, old_x, pr.processed)
+            pr.processed = np.interp(new_x, old_x, pr.processed)
 
         log.debug("interpolation complete")

@@ -1,6 +1,11 @@
 import logging
 
-from PySide6 import QtGui, QtCore, QtWidgets
+from enlighten import common
+
+if common.use_pyside2():
+    from PySide2 import QtGui, QtCore, QtWidgets
+else:
+    from PySide6 import QtGui, QtCore, QtWidgets
 
 log = logging.getLogger(__name__)
 

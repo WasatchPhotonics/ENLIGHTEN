@@ -5,6 +5,23 @@ Miscellaneous notes, advice and history on how to maintain and extend ENLIGHTEN.
 If you haven't already, see [Architecture](ARCHITECTURE.md) for an 
 introduction to key classes.
 
+## jcamp_writefile
+
+ENLIGHTEN currently depends on an in-progress pull request on a fork of the main
+jcamp repository:
+
+- https://github.com/nzhagen/jcamp/pull/35
+
+For now, developers are recommended to clone Wasatch's fork of frenchytheasian/jcamp
+(e.g. in in a sibling directory to ENLIGHTEN) and add to your PYTHONPATH:
+
+    $ cd ..   
+    $ git clone git@github.com:WasatchPhotonics/jcamp.git
+    $ export PYTHONPATH=$PYTHONPATH:$PWD/jcamp
+
+This note will be removed when frenchytheasian's pull request is merged into the
+main (nzhagen) jcamp distribution and released over PyPi.
+
 ## Nomenclature
 
 ### Why "enlighten.Authentication.Authentication" vs just "enlighten.Authentication"?
@@ -23,7 +40,7 @@ name the file after the class for consistency.
 - update version number in enlighten/common.py
     - re-run Enlighten.py (forces common.pyc recompile)
 - update CHANGELOG.md 
-- build a Windows installer (see [Windows](BUILD_WIN11.md))
+- build a Windows installer (see [Windows](BUILD_WINDOWS.md))
 - git tag x.y.z
 - git push --tag
 - optionally build [Linux](BUILD_LINUX.md) and [Mac](BUILD_MACOS.md) installers

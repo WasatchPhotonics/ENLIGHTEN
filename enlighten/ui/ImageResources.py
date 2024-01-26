@@ -1,13 +1,18 @@
 import logging
 
-from PySide6 import QtCore
+from enlighten import common
+
+if common.use_pyside2():
+    from PySide2 import QtCore
+else:    
+    from PySide6 import QtCore
 
 log = logging.getLogger(__name__)
 
 ##
 # This requires some explanation.  Device (model) images come from 
-# enlighten/assets/uic_qrc/images/devices. However, they also have to be
-# listed in devices.qrc.  They are then exposed through Qt through
+# enlighten/assets/uic_qrc/images/devices. However, they also have to be listed 
+# in devices.qrc.  They are then exposed through Qt through 
 # QtCore.QDirIterator.Subdirectories, which is iterated in this ctor.
 #
 # The final image is updated in EEPROMEditor.update_from_spec, using a pathname 
@@ -16,11 +21,17 @@ log = logging.getLogger(__name__)
 class ImageResources:
 
     def __init__(self):
+        log.debug("iterating subdirectories")
         self.resources = []
-        it = QtCore.QDirIterator(":", QtCore.QDirIterator.Subdirectories)
+
+        it = QtCore.QDirIterator(":", flags=QtCore.QDirIterator.Subdirectories)
         while it.hasNext():
-            self.resources.append(it.next())
+            pathname = it.next()
+            # log.debug(f"appending {pathname}")
+            self.resources.append(pathname)
+
         self.resources.sort()
+        log.debug(f"found {len(self.resources)} resources")
 
     def contains(self, name):
         if name is None:

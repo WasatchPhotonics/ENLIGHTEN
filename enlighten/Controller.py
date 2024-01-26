@@ -12,11 +12,6 @@ import sys
 import os
 import re
 
-import PySide6
-from PySide6 import QtCore, QtWidgets, QtGui
-from PySide6.QtCore import QObject, QEvent
-from PySide6.QtWidgets import QMessageBox, QVBoxLayout, QWidget, QLabel
-
 from collections import defaultdict
 from threading import Thread
 
@@ -24,10 +19,6 @@ from threading import Thread
 if "macOS" in platform.platform():
     import matplotlib
     import matplotlib.pyplot as plt
-
-from . import util
-from . import common
-from .scope import Graph
 
 import wasatch
 from wasatch import applog
@@ -43,15 +34,29 @@ from wasatch.WasatchBus               import WasatchBus
 from wasatch.BLEDevice                import BLEDevice
 from wasatch.Reading                  import Reading
 
-from enlighten.ui.ThumbnailWidget import ThumbnailWidget
-from .BusinessObjects                 import BusinessObjects
-from enlighten.ui.TimeoutDialog import TimeoutDialog
+from enlighten import util
+from enlighten import common
+
 from enlighten.scope.Spectrometer import Spectrometer
+from enlighten.ui.ThumbnailWidget import ThumbnailWidget
+from enlighten.ui.TimeoutDialog import TimeoutDialog
+from enlighten.BusinessObjects import BusinessObjects
+from enlighten.scope import Graph
+
+if common.use_pyside2():
+    import PySide2
+    from PySide2 import QtCore, QtWidgets, QtGui
+    from PySide2.QtCore import QObject, QEvent
+    from PySide2.QtWidgets import QMessageBox, QVBoxLayout, QWidget, QLabel
+else:
+    import PySide6
+    from PySide6 import QtCore, QtWidgets, QtGui
+    from PySide6.QtCore import QObject, QEvent
+    from PySide6.QtWidgets import QMessageBox, QVBoxLayout, QWidget, QLabel
 
 log = logging.getLogger(__name__)
 
-
-class AcquiredReading(object):
+class AcquiredReading():
     """ Trivial class to eliminate a tuple during memory profiling. """
     def __init__(self, reading=None, progress=0, disconnect=False):
         self.reading    = reading
@@ -80,8 +85,6 @@ class Controller:
     USE_ERROR_DIALOG                = False
     SPEC_ERROR_MAX_RETRY            = 3
     SPEC_RESET_MAX_RETRY            = 3
-
-    URL_HELP = "https://wasatchphotonics.com/software-support/enlighten/"
 
     # ##########################################################################
     # Lifecycle
@@ -150,7 +153,10 @@ class Controller:
         log.info("Stylesheet path %s",       self.stylesheet_path)
         log.info("Python version %s",        util.python_version())
         log.info(f"Operating system {sys.platform} {struct.calcsize('P')*8 } bit")
-        log.info("PySide version %s",        PySide6.__version__)
+        if common.use_pyside2():
+            log.info("PySide version %s",        PySide2.__version__)
+        else:
+            log.info("PySide version %s",        PySide6.__version__)
         log.info("PySide QtCore version %s", QtCore.__version__)
         log.info("QtCore version %s",        QtCore.qVersion())
 
@@ -220,7 +226,7 @@ class Controller:
 
         # instantiate major business objects (require access to populated placeholders)
         self.business_objects.create_rest()
-        self.graph.rehide_curves()
+        self.update_feature_visibility()
 
         # configure acquisition loop
         self.setup_main_event_loops() # MZ: move to end?
@@ -249,8 +255,10 @@ class Controller:
         elif self.window_state == "fullscreen":
             self.form.showFullScreen()
         else:
-            # default to "floating"
             self.form.show()
+
+        # support styling of common.msgbox
+        common.set_controller_instance(self)
 
     def schedule_post_init(self):
         self.post_init_timer = QtCore.QTimer()
@@ -383,26 +391,17 @@ class Controller:
     # Multispec Shortcuts
     # ##########################################################################
 
+    ## @todo DEPRECATE
     def current_spectrometer(self):
-        if self.multispec is None:
-            log.error("current_spectrometer: multispec is None")
-            return None
-        spec = self.multispec.current_spectrometer()
-        if spec is None:
-            log.error("current_spectrometer: spectrometer is None")
-        return spec
+        return self.multispec.current_spectrometer() if self.multispec else None
 
     def settings(self):
         spec = self.current_spectrometer()
-        if spec is None:
-            return None
-        return spec.settings
+        return spec.settings if spec else None
 
     def app_state(self):
         spec = self.current_spectrometer()
-        if spec is None:
-            return None
-        return spec.app_state
+        return spec.app_state if spec else None
 
     # ##########################################################################
     #                                                                          #
@@ -581,7 +580,7 @@ class Controller:
         log.debug("connect_new: instantiating WasatchDeviceWrapper with %s", new_device_id)
         device = WasatchDeviceWrapper(
             device_id = new_device_id,
-            log_level = self.logging_feature.level)
+            log_level = self.log_level)
 
         # flag that an attempt to connect to the device is ongoing
         self.header("connect_new: setting in-process: %s" % new_device_id)
@@ -644,18 +643,38 @@ class Controller:
                 self.multispec.set_gave_up(device_id)
                 self.multispec.remove_in_process(device_id)
 
-    # also called by PageNavigation.set_view_common
     def update_feature_visibility(self):
-        # disable anything that shouldn't be on without a spectrometer
-        # (could grow this considerably)
+        """
+        Something has occurred which prompts us to update any Business Object 
+        whose visibility / exposed features depends on global application state
+        (including whether we're in Expert mode or not).
+
+        This is called by PageNavigation.set_view_common, for instance when
+        changing Operation Mode (Ranam, Non-Raman, Expert) or View (Scope, 
+        Settings, Hardware, Logging, Factory) or Technique (Raman, Emission,
+        Absorbance, Transmission/Reflectance), etc.
+
+        This is also called when connecting / disconnecting spectrometers.
+
+        It also helps to "re-hide" pyqtgraph curves which had been previously
+        hidden, but then erroneously re-show themselves when a curve is removed
+        from the chart.  (I'm assuming that pyqtgraph bug hasn't been fixed?)
+
+        IMHO we should give self.bus_obj an iterable list of all business
+        objects, all of which should extend EnlightenBusinessObject or whatever,
+        with overridable methods update_visibility, post_init (to be fired after
+        all Business Objects are instantiated), etc.
+        """
         for feature in [ self.accessory_control,
+                         self.horiz_roi,
                          self.laser_control,
                          self.raman_mode_feature,
                          self.raman_intensity_correction,
                          self.raman_shift_correction,
                          self.reference_feature,
                          self.baseline_correction,
-                         self.kia_feature]:
+                         self.status_bar,
+                         self.kia_feature ]:
             feature.update_visibility()
 
     # ##########################################################################
@@ -887,7 +906,7 @@ class Controller:
         ########################################################################
 
         # re-hide hidden curves
-        self.rehide_curves()
+        self.update_feature_visibility()
 
         # weight new curve
         self.multispec.check_callback()
@@ -978,25 +997,12 @@ class Controller:
 
         # we've connected to at least one spectrometer, so set logging to 
         # whatever the user selected (we default at DEBUG until connection)
-        logging.getLogger().setLevel(self.logging_feature.level)
+        logging.getLogger().setLevel(self.log_level)
         log.info(f"successfully %s {spec.label}", "initialized" if hotplug else "selected")
 
         # updates from initialization to match time window in spinbox
         # call StripChartFeature getter
         spec.app_state.reset_rolling_data(time_window=sfu.spinBox_strip_window.value(), hotplug=hotplug)
-
-    def rehide_curves(self):
-        """
-        Adding/removing a trace to a graph apparently makes all curves visible,
-        so call this method to allow business objects to re-hide any curves
-        (or other widgets) based on internal business object state.
-        
-        @todo move to Graph and allow other business objects to register as observers
-        @todo Probably need to integrate PluginController into this too.
-        """
-        for feature in [ self.baseline_correction,
-                         self.raman_shift_correction ]:
-            feature.update_visibility()
 
     # ##########################################################################
     # Setup (populate widget placeholders)
@@ -1027,6 +1033,7 @@ class Controller:
         self.thumbnail_render_graph = pyqtgraph.PlotWidget(name="Measurement Thumbnail Renderer")
 
         # this is a fake curve (trace) on the chart
+        # TODO: move to Measurement F
         data = list(range(1024, 1638)) # MZ: ???
         self.thumbnail_render_curve = self.thumbnail_render_graph.plot(
             data,
@@ -1058,14 +1065,8 @@ class Controller:
     def bind_gui_signals(self):
         sfu = self.form.ui
 
-        ########################################################################
         # appropriate for Controller
-        ########################################################################
-
         self.form.exit_signal                       .exit               .connect(self.close)
-
-        sfu.pushButton_help                         .clicked            .connect(self.help_callback)
-        sfu.pushButton_whats_this                   .clicked            .connect(self.whats_this_callback)
 
         ## move to StripChartFeature
         sfu.spinBox_strip_window                    .valueChanged       .connect(self.update_hardware_window)
@@ -1077,13 +1078,21 @@ class Controller:
     def bind_shortcuts(self):
         """ 
         Set up application-wide shortcut keys (called AFTER business object creation). 
+
+        Normally the assignment of widget callbacks are encapsulated within 
+        associated Business Objects (e.g. Ctrl-D within DarkFeature). However,
+        it seems helpful to have all of these consolidated in one place to 
+        ensure uniqueness.
         """
 
         self.shortcuts = {}
 
         def make_shortcut(kseq, callback):
             log.debug(f"setting shortcut from {kseq} to {callback}")
-            shortcut = QtGui.QShortcut(QtGui.QKeySequence(kseq), self.form)
+            if common.use_pyside2():
+                shortcut = QtWidgets.QShortcut(QtGui.QKeySequence(kseq), self.form)
+            else:
+                shortcut = QtGui.QShortcut(QtGui.QKeySequence(kseq), self.form)
             shortcut.activated.connect(callback)
             self.shortcuts[kseq] = shortcut
 
@@ -1112,26 +1121,7 @@ class Controller:
         make_shortcut(QtGui.QKeySequence.MoveToNextWord,     self.cursor.up_callback) # ctrl-right
 
         # Help - this seems a pretty standard convention
-        make_shortcut("F1", self.help_callback)
-
-    # ##########################################################################
-    # GUI utility methods
-    # ##########################################################################
-
-    def help_callback(self):
-        url = Controller.URL_HELP
-        log.debug(f"opening {url}")
-        webbrowser.open(url)
-
-    def whats_this_callback(self):
-        wt = QtWidgets.QWhatsThis
-        enabled = wt.inWhatsThisMode()
-        if enabled:
-            log.debug("leaving whats this mode")
-            wt.leaveWhatsThisMode()
-        else:
-            log.debug("entering whats this mode")
-            wt.enterWhatsThisMode()
+        make_shortcut("F1", self.help.help_callback)
 
     # ##########################################################################
     # save spectra
@@ -1359,7 +1349,7 @@ class Controller:
             return
 
         # we collected the reading (to clear the queue), but don't do anything with it
-        if spec.app_state.paused and not self.batch_collection.running:
+        if spec.app_state.paused and not (self.batch_collection.running or spec.app_state.take_one_request):
             return
 
         if acquired_reading is None or acquired_reading.reading is None:
@@ -1388,7 +1378,8 @@ class Controller:
             # this doesn't have to be done after each keepalive...we could do this at 1Hz or so
             if spec.app_state.missed_reading_count > self.MAX_MISSED_READINGS and \
                     not spec.app_state.spec_timeout_prompt_shown and \
-                    not self.multispec.is_in_reset(spec.device.device_id):
+                    not self.multispec.is_in_reset(spec.device.device_id) and \
+                    spec.app_state.received_reading_at_current_integration_time:
                 log.info("displaying Timeout Warning MessageBox (stay connected, or disconnect)")
                 spec.app_state.spec_timeout_prompt_shown = True
                 dlg = QMessageBox(self.form)
@@ -1409,6 +1400,22 @@ class Controller:
             return
 
         reading = acquired_reading.reading
+
+        # are we waiting on a SPECIFIC reading?
+        if spec.app_state.take_one_request:
+            # is this that reading?
+            if reading.take_one_request:
+                if reading.take_one_request.request_id == spec.app_state.take_one_request.request_id:
+                    log.debug(f"TakeOneRequest matched: {spec.app_state.take_one_request}")
+                else:
+                    log.critical(f"TakeOneRequest mismatch: expected {spec.app_state.take_one_request} but received {reading.take_one_request}...clearing")
+                spec.app_state.take_one_request = None
+            else:
+                log.debug(f"TakeOneRequest missing: ignoring Reading without {spec.app_state.take_one_request}")
+                return
+        else:
+            log.debug("not looking for any particular reading")
+
         self.multispec.spec_most_recent_reads[spec] = reading
         if reading.failure is not None:
             # WasatchDeviceWrapper currently turns these into upstream poison-pills,
@@ -1428,6 +1435,7 @@ class Controller:
         spec.app_state.reading_count += 1
         spec.app_state.missed_reading_count = 0
         spec.app_state.spec_timeout_prompt_shown = False
+        spec.app_state.received_reading_at_current_integration_time = True
 
         if spec.device.is_ble and acquired_reading.progress != 1:
             sfu.readingProgressBar.setValue(acquired_reading.progress*100)
@@ -1448,8 +1456,12 @@ class Controller:
 
         log.debug("attempt_reading(%s): update spectrum data: %s and length (%s)", device_id, str(reading.spectrum[0:5]), str(len(reading.spectrum)))
 
-        # When using BatchCollection's Spectrum LaserMode, the driver may attach
-        # an averaged dark to the Reading.
+        # When using BatchCollection's Spectrum LaserMode, or RamanModeFeature, 
+        # the driver may attach an averaged dark to the laser-illuminated Reading. 
+        # Note that Wasatch.PY is not performing dark subtraction in these cases,
+        # so the current process is to apply the attached dark to the current
+        # application state, such that "normal" dark subtraction will occur within
+        # ENLIGHTEN.
         if reading.dark is not None:
             log.debug("attempt_reading: setting dark from Reading: %s", reading.dark)
             self.dark_feature.store(dark=reading.dark)
@@ -1662,6 +1674,7 @@ class Controller:
 
         self.cursor.update()
 
+    # TODO: can this method be moved into Measurements class?
     def reprocess(self, measurement):
         """
         Called by Measurements.create_from_file if save_options.load_raw.  This
@@ -1727,7 +1740,7 @@ class Controller:
         Of particular note are dark and reference, which can be manually
         passed-in for reprocessed measurements if found in input file. Likewise, we
         pass in the loaded Settings object so that the x-axis can be generated from
-        the correct wavecal, pixel count, as well as the correct vignetting ROI.
+        the correct wavecal, pixel count, as well as the correct cropped ROI.
         
         Keywords to help people find this function:
         - update graphs
@@ -1774,17 +1787,22 @@ class Controller:
         # associate the "at creation" x-axis and some of this other setup?
         #
         # Currently, this is where "recordable_dark" is snapped
-        pr = ProcessedReading(reading)
+        pr = ProcessedReading(reading, settings=settings)
 
-        # saturation check
-        if pr.processed.max() >= 0xfffe:
+        ########################################################################
+        # Saturation Check
+        ########################################################################
+
+        # Test for 0xfffe rather than 0xffff to support older FW clamped to the 
+        # lesser value and reserved 0xffff for "frame markers". Raw should match 
+        # processed at this point, but "raw" is preferred to clarify saturation 
+        # is irrespective of dark correction or any post-processing.
+        if pr.raw.max() >= 0xfffe: 
             # IMX detectors briefly saturate on every change of integration 
             # time...perhaps we should take a couple throwaways in Wasatch.PY?
             if not spec.settings.is_xs():
                 # todo: self.status_indicators.detector_warning("detector saturated")
                 self.marquee.error("detector saturated")
-
-        # post-processing begins here
 
         ########################################################################
         # Dark Correction
@@ -1794,13 +1812,14 @@ class Controller:
             pr.correct_dark(spec.app_state.dark if dark is None else dark)
 
         ########################################################################
-        # Vignetting
+        # Cropping
         ########################################################################
 
         # This should be done before any processing that involves multiple
         # pixels, e.g. offset, boxcar, baseline correction, or Richardson-Lucy.
+        # It should be done BEFORE interpolation.
         log.debug("process_reading: calling horiz_roi.process")
-        self.horiz_roi.process(pr, settings)
+        self.horiz_roi.process(pr)
 
         ########################################################################
         # Reference
@@ -1835,6 +1854,7 @@ class Controller:
             # aren't, really. Expert mode is a union of Raman, NonRaman and other 
             # features (see PageNavigation docs). When the user clicks Expert, 
             # doing_raman() is no longer true, hence the need for doing_expert().
+            # This MUST be done before interpolation.
             if self.page_nav.doing_raman() or self.page_nav.doing_expert():
                 self.raman_intensity_correction.process(pr, spec)
 
@@ -1856,12 +1876,10 @@ class Controller:
             # baseline correction
             ####################################################################
 
-            # Obviously baseline correction would benefit from ROI vignetting,
-            # as would boxcar, Offset, Raman ID etc, so add a
-            # "processed_cropped" attribute for use downstream.
             self.baseline_correction.process(pr, spec)
 
-            # on 2020-05-19 Deiter asked this to be moved before vignetting
+            # on 2020-05-19 Deiter asked this to be moved before cropping
+            # (yet clearly we haven't...)
             if not self.page_nav.using_reference():
                 self.richardson_lucy.process(pr, spec)
 
@@ -1872,8 +1890,15 @@ class Controller:
         # Boxcar Smoothing
         ########################################################################
 
-        # Do this last, so it doesn't screw anything else up.
+        # One could argue whether boxcar should be before or after interpolation
         self.boxcar.process(pr, spec)
+
+        ########################################################################
+        # Interpolation
+        ########################################################################
+
+        if self.interp.enabled:
+            self.interp.process(pr)
 
         ########################################################################
         # Plugins
@@ -1890,7 +1915,7 @@ class Controller:
             self.plugin_controller.process_reading(pr, settings, spec)
 
         ########################################################################
-        # Graph Post-Processed Spectrum
+        # Graph 
         ########################################################################
 
         if spec is None:
@@ -1903,53 +1928,12 @@ class Controller:
         else:
             graphed = False
             if pr.has_processed():
-
-                # @todo needs updated to support DetectorRegions: multiple curves, 
-                #       multiple wavecals...unsure how to handle interpolation.
-                #
-                #       Should we treat each DetectorROI as a separate "spectrometer"
-                #       of sorts?  Probably not.  Should we send the pre-split 
-                #       sub-spectra back as separate ROIs?  Not sure.  They really
-                #       are "one reading"...for now, split the spectra into different
-                #       graphs via plug-in chart?
-                #
-                #       Two questions: (1) what to do about ONE DetectorROI, and 
-                #       (2) what to do about TWO+ DetectorROI.
-                #
-                #       1. Treat as starting with pixel 0.  Use configured full-detector
-                #          wavecal, cropping wavelengths[] array using DetectorROI.x0/x1.
-                #
-                #       2. Each DetectorROI Will need EEPROM storage for:
-                #          numRegions (1 byte)
-                #          y0, y1, x0, x1 (8 bytes)
-                #          wavecal C0-3 (16 bytes) 
-                #          = 2 EEPROM pages (6, 7)?
-                #
-                if self.interp.enabled and not self.graph.in_pixels():
-                    ipr = self.interp.interpolate_processed_reading(pr, settings=settings)
-                    if ipr is not None:
-                        if self.graph.in_wavelengths():
-                            graphed = self.set_curve_data(spec.curve, x=ipr.wavelengths, y=ipr.processed_reading.get_processed(), label="process_reading[interp:nm]")
-                        elif self.graph.in_wavenumbers():
-                            graphed = self.set_curve_data(spec.curve, x=ipr.wavenumbers, y=ipr.processed_reading.get_processed(), label="process_reading[interp:cm]")
-                        else:
-                            log.error("process_reading: impossible graph axis: %s", self.graph.get_x_axis_unit())
-                    else:
-                        self.marquee.error("Interpolation error. Are your interp values right?")
-                        log.error("process_reading: error generating interpolated graph curve")
+                if self.graph.in_wavelengths():
+                    graphed = self.set_curve_data(spec.curve, x=pr.get_wavelengths(), y=pr.get_processed(), label="nm")
+                elif self.graph.in_wavenumbers():
+                    graphed = self.set_curve_data(spec.curve, x=pr.get_wavenumbers(), y=pr.get_processed(), label="cm")
                 else:
-                    cropped = pr.is_cropped()
-                    log.debug(f"process_reading: graphing non-interpolated data (cropped = {cropped})")
-                    x_axis = self.generate_x_axis(settings=spec.settings, cropped=cropped)
-                    if x_axis is None:
-                        # this can happen for instance if we have both Raman and
-                        # non-Raman spectrometers connected, and we switch to
-                        # wavenumber axis
-                        log.error(f"process_reading: unable to generate x-axis of non-interpolated (cropped = {cropped})?")
-                    else:
-                        # this is where most spectra is graphed
-                        log.debug(f"process_reading: x_axis of {len(x_axis)} points (cropped {cropped}) is {x_axis[:3]} .. {x_axis[-3:]}") 
-                        graphed = self.set_curve_data(spec.curve, x=x_axis, y=pr.get_processed(), label="process_reading[non-interp]")
+                    graphed = self.set_curve_data(spec.curve, x=[], y=pr.get_processed(), label="px")
 
             if not graphed:
                 # This can happen in transmission or absorbance mode before a reference
@@ -2021,7 +2005,7 @@ class Controller:
             log.error("set_curve_data[%s]: no y", label)
             return False
 
-        if x is None:
+        if x is None or x == []:
             log.debug("set_curve_data[%s]: no x (y_len = %d, y=%s, curve = %s)", label, len(y), y[:5], str(curve))
             self.graph.set_data(curve=curve, y=y)
             return True
@@ -2327,19 +2311,6 @@ class Controller:
 
         spec.device.change_setting("reset_fpga", None)
 
-    def get_plugin_graph(self) -> Graph:
-        """
-        Check if the current plugin has a graph and return it otherwise return the main graph
-        """
-        module_info = self.plugin_controller.get_current_module_info()
-        if module_info is None:
-            return self.graph
-        config = module_info.config
-        if config.has_other_graph:
-            return self.plugin_controller.graph_plugin
-        else:
-            return self.graph
-
     def update_hardware_window(self):
         for spec in self.multispec.spectrometers.values():
             # call StripChartFeature getter
@@ -2384,7 +2355,7 @@ class Controller:
                                                   dlg_btns)
         # Generate a bool list by comparing the clicked btn against the btn options
         self.dialog_open = False
-        spec.settings.state.ignore_timeouts_until = datetime.datetime(datetime.MAXYEAR,12,1)
+        spec.settings.state.ignore_timeouts_until = datetime.datetime(datetime.MAXYEAR,12,1) # MZ: hrmm
         if selection == [True, False, False]:
             log.info("user clicked 'Okay' to dismiss the dialog with no action")
         elif selection == [False, True, False]:
