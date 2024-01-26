@@ -61,6 +61,7 @@ from enlighten.measurement.SaveOptions import SaveOptions
 from enlighten.scope.GridFeature import GridFeature
 from enlighten.file_io.FileManager import FileManager
 from enlighten.ui.VCRControls import VCRControls
+from enlighten.ui.HelpFeature import HelpFeature
 from enlighten.network.BLEManager import BLEManager
 from enlighten.ui.Clipboard import Clipboard
 from enlighten.data.ModelInfo import ModelInfo
@@ -132,6 +133,7 @@ class BusinessObjects:
         ctl.guide = None
         ctl.hardware_control_feature = None
         ctl.hardware_file_manager = None
+        ctl.help = None
         ctl.high_gain_mode = None
         ctl.horiz_roi = None
         ctl.image_resources = None
@@ -542,6 +544,9 @@ class BusinessObjects:
             cb_enabled                  = sfu.checkBox_region_enabled,
             multispec                   = ctl.multispec,
             spinbox                     = sfu.spinBox_region)
+
+        self.header("instantiating HelpFeature")
+        ctl.help = HelpFeature(ctl)
 
         self.header("done with Business Object creation")
 

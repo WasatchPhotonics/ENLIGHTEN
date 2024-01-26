@@ -86,8 +86,6 @@ class Controller:
     SPEC_ERROR_MAX_RETRY            = 3
     SPEC_RESET_MAX_RETRY            = 3
 
-    URL_HELP = "https://wasatchphotonics.com/software-support/enlighten/"
-
     # ##########################################################################
     # Lifecycle
     # ##########################################################################
@@ -1067,14 +1065,8 @@ class Controller:
     def bind_gui_signals(self):
         sfu = self.form.ui
 
-        ########################################################################
         # appropriate for Controller
-        ########################################################################
-
         self.form.exit_signal                       .exit               .connect(self.close)
-
-        sfu.pushButton_help                         .clicked            .connect(self.help_callback)
-        sfu.pushButton_whats_this                   .clicked            .connect(self.whats_this_callback)
 
         ## move to StripChartFeature
         sfu.spinBox_strip_window                    .valueChanged       .connect(self.update_hardware_window)
@@ -1086,6 +1078,11 @@ class Controller:
     def bind_shortcuts(self):
         """ 
         Set up application-wide shortcut keys (called AFTER business object creation). 
+
+        Normally the assignment of widget callbacks are encapsulated within 
+        associated Business Objects (e.g. Ctrl-D within DarkFeature). However,
+        it seems helpful to have all of these consolidated in one place to 
+        ensure uniqueness.
         """
 
         self.shortcuts = {}
@@ -1124,26 +1121,7 @@ class Controller:
         make_shortcut(QtGui.QKeySequence.MoveToNextWord,     self.cursor.up_callback) # ctrl-right
 
         # Help - this seems a pretty standard convention
-        make_shortcut("F1", self.help_callback)
-
-    # ##########################################################################
-    # GUI utility methods
-    # ##########################################################################
-
-    def help_callback(self):
-        url = Controller.URL_HELP
-        log.debug(f"opening {url}")
-        webbrowser.open(url)
-
-    def whats_this_callback(self):
-        wt = QtWidgets.QWhatsThis
-        enabled = wt.inWhatsThisMode()
-        if enabled:
-            log.debug("leaving whats this mode")
-            wt.leaveWhatsThisMode()
-        else:
-            log.debug("entering whats this mode")
-            wt.enterWhatsThisMode()
+        make_shortcut("F1", self.help.help_callback)
 
     # ##########################################################################
     # save spectra

@@ -7,6 +7,8 @@
         - prompt for confirmation
         - release restriction on LaserControlFeature when invisible
         - better handling of case where laser already firing when Raman Mode engaged
+    - BatchCollection: bugfix
+    - HelpFeature: added shortcuts to tooltip
 - 2023-01-24 4.0.34
     - Refactored RamanModeFeature, VCRControls and TakeOneFeature around TakeOneRequest
     - moved to ctl
