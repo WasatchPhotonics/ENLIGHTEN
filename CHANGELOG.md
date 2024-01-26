@@ -12,7 +12,12 @@
         - disable Guide during BatchCollection
         - enforce 2sec gap between subsequent Batches to allow manual "Stop" and stabilization
         - reset TakeOneFeature before calling TakeOne.complete observers
+        - added --start-batch cmd-line
+    - Plugins
+        - simplified --plugin cmd-line arg
+        - made RamanLines auto-enable
     - HelpFeature: added shortcuts to tooltip
+    - LoggingFeature: utf-8 bugfix
 - 2023-01-24 4.0.34
     - Refactored RamanModeFeature, VCRControls and TakeOneFeature around TakeOneRequest
     - moved to ctl

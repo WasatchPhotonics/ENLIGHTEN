@@ -140,7 +140,7 @@ class EnlightenApplication:
             splash            = self.splash,
             window_state      = self.args.window_state,
             start_batch       = self.args.start_batch,
-            autoload_plugin   = self.args.plugin)
+            plugin            = self.args.plugin)
         # This requires explanation.  This is obviously a Qt "connect" binding,
         # but Controller is not a Qt widget, and does not inherit from/extend
         # anything.  What gives?  See Controller.create_signals, which actually

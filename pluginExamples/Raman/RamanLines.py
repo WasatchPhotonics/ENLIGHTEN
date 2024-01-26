@@ -19,6 +19,7 @@ class RamanLines(EnlightenPluginBase):
         yet added that as a supported plugin input type.
         """
         self.name = "Raman Lines"
+        self.auto_enable = True
         self.samples = self.get_samples()
         for sample in self.samples:
             self.field(name=sample, direction="input", datatype=bool, initial=False)

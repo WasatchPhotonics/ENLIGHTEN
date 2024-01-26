@@ -103,7 +103,7 @@ class Controller:
                 splash            = None,
                 window_state      = None,
                 start_batch       = False,
-                autoload_plugin   = None,
+                plugin            = None
             ):
         """
         All of the parameters are normally parsed from via command-line arguments
@@ -120,7 +120,7 @@ class Controller:
         @param serial_number only connect to this unit if found.
         @param stylesheet_path directory containing enlighten.css and associated styles
         @param set_all_dfu set each ARM spectrometer to DFU mode as they connect
-        @param autoload_plugin auto-connect the named plugin
+        @param plugin     auto-connect the named plugin
         """
 
         self.app                    = app
@@ -134,7 +134,7 @@ class Controller:
         self.set_all_dfu            = set_all_dfu
         self.window_state           = window_state
         self.start_batch            = start_batch
-        self.autoload_plugin        = autoload_plugin
+        self.plugin                 = plugin 
         self.spec_timeout           = 30
         self.splash                 = splash
         self.form                   = form
@@ -241,7 +241,6 @@ class Controller:
         self.bind_shortcuts()
 
         self.page_nav.post_init()
-        self.schedule_post_init()
 
         self.header("Controller ctor done")
         self.other_devices = []
@@ -260,21 +259,6 @@ class Controller:
 
         # support styling of common.msgbox
         common.set_controller_instance(self)
-
-    def schedule_post_init(self):
-        self.post_init_timer = QtCore.QTimer()
-        self.post_init_timer.timeout.connect(self.post_init)
-        self.post_init_timer.setSingleShot(True)
-        self.post_init_timer.start(1000)
-
-    def post_init(self):
-        """
-        Things that should happen outside the constructor, after the GUI is fully
-        instantiated and displayed with all event loops running.
-        """
-        log.debug("performing post-construction initialization")
-        if self.autoload_plugin:
-            self.plugin_controller.autoload(self.autoload_plugin)
 
     def disconnect_device(self, spec=None, closing=False):
         if spec in self.other_devices:
@@ -990,6 +974,15 @@ class Controller:
             log.info("Starting Batch Collection on connect")
             self.vcr_controls.pause()
             self.batch_collection.start_collection()
+
+        ########################################################################
+        # Connect to plugin if requested (first connected spectrometer only)
+        ########################################################################
+
+        if self.plugin:
+            log.info(f"Starting plugin {self.plugin} on connect")
+            self.plugin_controller.autoload(self.plugin)
+            self.plugin = None
 
         ########################################################################
         # done
