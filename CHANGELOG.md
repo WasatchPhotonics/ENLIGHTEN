@@ -2,7 +2,7 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
-- 2023-??-?? 4.0.35
+- 2023-01-26 4.0.35
     - RamanModeFeature 
         - prompt for confirmation
         - release restriction on LaserControlFeature when invisible
