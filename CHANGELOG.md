@@ -7,7 +7,11 @@
         - prompt for confirmation
         - release restriction on LaserControlFeature when invisible
         - better handling of case where laser already firing when Raman Mode engaged
-    - BatchCollection: bugfix
+    - BatchCollection
+        - bugfix (typo)
+        - disable Guide during BatchCollection
+        - enforce 2sec gap between subsequent Batches to allow manual "Stop" and stabilization
+        - reset TakeOneFeature before calling TakeOne.complete observers
     - HelpFeature: added shortcuts to tooltip
 - 2023-01-24 4.0.34
     - Refactored RamanModeFeature, VCRControls and TakeOneFeature around TakeOneRequest

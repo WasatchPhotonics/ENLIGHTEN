@@ -14,7 +14,7 @@ else:
 
 log = logging.getLogger(__name__)
 
-class BatchCollection(object):
+class BatchCollection:
     """
     This class encapsulates batch collection, which is the automated collection
     of a series of 'measurement_count' Step-And-Save events at a period of
@@ -24,8 +24,8 @@ class BatchCollection(object):
     button is clicked, and is implemented as a timed series of clicks to the
     VCRControls' "Step and Save" button.
     
-    It is assumed that the scope will be paused at the beginning of a Batch
-    Collection, and left on pause at the end.
+    VCRControls will be left Paused at the end of a Batch Collection, regardless
+    of initial state.
     
     @par History
     
@@ -350,7 +350,7 @@ class BatchCollection(object):
             if self.laser_mode == "spectrum":
                 take_one_request = TakeOneRequest(take_dark=self.dark_before_batch, enable_laser_before=True, disable_laser_after=True, laser_warmup_ms=self.laser_warmup_ms)
             else:
-                take_one_requst = TakeOneRequest()
+                take_one_request = TakeOneRequest()
 
             log.debug(f"starting laser_mode {self.laser_mode}, so take_one_request {take_one_request}")
             self.ctl.multispec.change_device_setting("take_one_request", take_one_request)
@@ -482,13 +482,17 @@ class BatchCollection(object):
         # compute HOW LONG until the next batch should start (the "when" was 
         # determined in start_batch)
         if now >= self.next_batch_start_time:
-            log.info("starting next batch immediately")
-            self.start_batch()
+            log.debug("can start next batch immediately")
+            
+            # actually schedule this a couple seconds in the future so the 
+            # current VCRControls.step can fully finish
+            sleep_ms = 2000
         else:
             sleep_ms = (self.next_batch_start_time - now).total_seconds() * 1000
-            log.info("starting next batch in %d ms", sleep_ms)
-            self.ctl.marquee.info("next batch @ %s" % self.next_batch_start_time.strftime('%H:%M:%S'), persist=True)
-            self.timer_batch.start(sleep_ms)
+
+        log.info("starting next batch in %d ms", sleep_ms)
+        self.ctl.marquee.info("next batch @ %s" % self.next_batch_start_time.strftime('%H:%M:%S'), persist=True)
+        self.timer_batch.start(sleep_ms)
             
     def vcr_stop(self):
         self.ctl.save_options.multipart_suffix = None

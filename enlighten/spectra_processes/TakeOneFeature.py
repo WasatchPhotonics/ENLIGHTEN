@@ -129,12 +129,12 @@ class TakeOneFeature(object):
             log.debug(f"complete: notifying {self.completion_callback}")
             self.completion_callback()
 
+        log.debug("complete: resetting")
+        self.reset()
+
         if "complete" in self.observers:
             for callback in self.observers["complete"]:
                 callback()
-
-        log.debug("complete: resetting")
-        self.reset()
 
         log.debug("complete: done")
 

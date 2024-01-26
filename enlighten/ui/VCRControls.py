@@ -189,6 +189,7 @@ class VCRControls(object):
         # to be clear, these callbacks indicate the "step" button was clicked/fired, 
         # NOT that it is complete
         for callback in list(self.callbacks["step"]):
+            log.debug(f"step: calling callback {callback}")
             callback()
 
         self.update_visibility()

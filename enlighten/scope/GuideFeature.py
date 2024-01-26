@@ -112,17 +112,22 @@ class GuideFeature:
     # Private methods
     # ##########################################################################
 
-    ## @private
     def _enable_callback(self):
+        """ @private """
         self.enabled = not self.enabled
         self.update_visibility()
 
-    ## @private
     def _reset_timer(self):
+        """ @private """
         self.timer.start(self.POLL_SEC * 1000)
 
-    ## @private
     def _tick(self):
+        """ @private """
+        # don't tip during BatchCollection
+        if self.ctl.BatchCollection.running:
+            log.debug("tick: not during BatchCollection")
+            return self._reset_timer()
+
         # don't stop recent tips with new ones
         now = datetime.datetime.now()
         if self.last_tipped is not None and ((now - self.last_tipped).total_seconds() < self.MIN_DISPLAY_SEC):
