@@ -104,11 +104,12 @@ class RamanLines(EnlightenPluginBase):
             },
 
             "Acetone": {
-                788: 5,
+                788: 4,
                 1067.4: 2,
                 1222.8: 2,
                 1440: 3,    # 1430.5?
-                1727: 2     # 1711?
+                1727: 2,    # 1711?
+                2920: 5     # unverified
             },
 
             "Acetonitrile": {
