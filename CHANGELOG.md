@@ -10,6 +10,8 @@
           HighGainModeFeature, IntegrationTimeFeature, LaserControlFeature, 
           LaserTemperatureFeature, MultiPos, RegionControlFeature and 
           Spectrometer to device
+        - renamed spectra_processes to post_processing
+        - moved DarkFeature, ReferenceFeature, RamanMode to post_processing
 - 2023-01-26 4.0.35
     - RamanModeFeature 
         - prompt for confirmation
