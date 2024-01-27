@@ -1,7 +1,7 @@
 import logging
 
 from enlighten import util
-from enlighten.ScrollStealFilter import ScrollStealFilter
+from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 
 from wasatch import utils as wasatch_utils
 

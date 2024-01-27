@@ -2,7 +2,7 @@ import logging
 import datetime
 import pyqtgraph
 
-from enlighten.ScrollStealFilter import ScrollStealFilter
+from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 
 from enlighten import common
 

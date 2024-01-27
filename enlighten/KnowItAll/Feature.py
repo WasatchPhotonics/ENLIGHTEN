@@ -8,7 +8,7 @@ import os
 from .Wrapper import Wrapper
 from .Config  import Config 
 
-from enlighten.ScrollStealFilter import ScrollStealFilter
+from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from enlighten import util, common
 
 if common.use_pyside2():

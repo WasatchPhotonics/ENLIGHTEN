@@ -25,7 +25,7 @@ from .PluginWorker      import PluginWorker
 from .TableModel        import TableModel
 
 from enlighten import common
-from enlighten.ScrollStealFilter import ScrollStealFilter
+from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from enlighten.scope.Graph import Graph
 
 # this is in ../../pluginExamples

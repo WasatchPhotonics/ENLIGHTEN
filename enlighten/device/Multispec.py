@@ -5,7 +5,7 @@ import logging
 import re
 
 from enlighten.scope.Spectrometer import Spectrometer
-from enlighten.ScrollStealFilter import ScrollStealFilter
+from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 
 from wasatch.DeviceID import DeviceID
 from wasatch.WasatchDeviceWrapper import WasatchDeviceWrapper

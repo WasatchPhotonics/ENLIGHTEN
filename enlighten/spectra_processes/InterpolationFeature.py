@@ -5,7 +5,7 @@ import copy
 from wasatch.ProcessedReading import ProcessedReading
 
 from wasatch import utils as wasatch_utils
-from enlighten.ScrollStealFilter import ScrollStealFilter
+from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from enlighten import common
 
 if common.use_pyside2():

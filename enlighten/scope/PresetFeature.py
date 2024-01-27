@@ -10,7 +10,7 @@ else:
     from PySide6 import QtWidgets
     from PySide6.QtWidgets import QMessageBox
 
-from enlighten.ScrollStealFilter import ScrollStealFilter
+from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 
 log = logging.getLogger(__name__)
 

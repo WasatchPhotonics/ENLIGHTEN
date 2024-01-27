@@ -7,8 +7,8 @@ from enlighten.common import LaserStates
 
 from wasatch.EEPROM import EEPROM
 
-from enlighten.ScrollStealFilter import ScrollStealFilter
-from enlighten.MouseWheelFilter import MouseWheelFilter
+from enlighten.ui.ScrollStealFilter import ScrollStealFilter
+from enlighten.ui.MouseWheelFilter import MouseWheelFilter
 
 if common.use_pyside2():
     from PySide2 import QtWidgets 

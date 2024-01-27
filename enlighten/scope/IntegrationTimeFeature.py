@@ -1,8 +1,8 @@
 import logging
 
 from enlighten import util
-from enlighten.ScrollStealFilter import ScrollStealFilter
-from enlighten.MouseWheelFilter import MouseWheelFilter
+from enlighten.ui.ScrollStealFilter import ScrollStealFilter
+from enlighten.ui.MouseWheelFilter import MouseWheelFilter
 
 from enlighten.common import msgbox
 

@@ -7,7 +7,7 @@ import qimage2ndarray
 
 from enlighten import util
 from enlighten import common
-from enlighten.ScrollStealFilter import ScrollStealFilter
+from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 
 if common.use_pyside2():
     from PySide2 import QtCore, QtWidgets, QtGui

@@ -2,6 +2,8 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2023-??-?? 4.0.36
+    - moved ScrollSteal/MouseWheelFilters to ui
 - 2023-01-26 4.0.35
     - RamanModeFeature 
         - prompt for confirmation

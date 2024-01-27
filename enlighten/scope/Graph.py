@@ -3,7 +3,7 @@ import logging
 import pyqtgraph
 
 from enlighten import common
-from enlighten.ScrollStealFilter import ScrollStealFilter
+from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 
 from wasatch import utils
 

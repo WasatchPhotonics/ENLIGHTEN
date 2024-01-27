@@ -3,7 +3,7 @@ import numpy as np
 import logging
 
 from superman.baseline import BL_CLASSES, AirPLS
-from enlighten.ScrollStealFilter import ScrollStealFilter
+from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 
 from wasatch import utils as wasatch_utils
 

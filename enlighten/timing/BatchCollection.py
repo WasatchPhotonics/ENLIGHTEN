@@ -3,7 +3,7 @@ import logging
 
 from enlighten import util
 from enlighten import common
-from enlighten.ScrollStealFilter import ScrollStealFilter
+from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 
 from wasatch.TakeOneRequest import TakeOneRequest
 
