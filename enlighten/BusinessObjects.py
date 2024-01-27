@@ -11,70 +11,69 @@ else:
 
 log = logging.getLogger(__name__)
 
-from enlighten.file_io.HardwareCaptureControlFeature import HardwareCaptureControlFeature
-from enlighten.scope.RamanShiftCorrectionFeature import RamanShiftCorrectionFeature     # single-point correction
-from enlighten.device.DetectorTemperatureFeature import DetectorTemperatureFeature
-from enlighten.file_io.HardwareFileOutputManager import HardwareFileOutputManager
-from enlighten.post_processing.RamanIntensityCorrection import RamanIntensityCorrection   # SRM
-from enlighten.device.AccessoryControlFeature import AccessoryControlFeature
-from enlighten.device.LaserTemperatureFeature import LaserTemperatureFeature
-from enlighten.device.IntegrationTimeFeature import IntegrationTimeFeature
-from enlighten.device.ExternalTriggerFeature import ExternalTriggerFeature
-from enlighten.ui.ResourceMonitorFeature import ResourceMonitorFeature
-from enlighten.post_processing.InterpolationFeature import InterpolationFeature
-from enlighten.post_processing.ScanAveragingFeature import ScanAveragingFeature
-from enlighten.device.RegionControlFeature import RegionControlFeature
-from enlighten.device.ManufacturingFeature import ManufacturingFeature
-from enlighten.device.LaserControlFeature import LaserControlFeature
-from enlighten.device.HighGainModeFeature import HighGainModeFeature
-from enlighten.post_processing.TransmissionFeature import TransmissionFeature
-from enlighten.measurement.MeasurementFactory import MeasurementFactory
-from enlighten.post_processing.BaselineCorrection import BaselineCorrection
-from enlighten.post_processing.HorizROIFeature import HorizROIFeature
-from enlighten.post_processing.AbsorbanceFeature import AbsorbanceFeature
-from enlighten.ui.StatusBarFeature import StatusBarFeature
-from enlighten.post_processing.RamanModeFeature import RamanModeFeature
-from enlighten.ui.StatusIndicators import StatusIndicators
-from enlighten.post_processing.ReferenceFeature import ReferenceFeature
-from enlighten.measurement.AreaScanFeature import AreaScanFeature
-from enlighten.timing.BatchCollection import BatchCollection
-from enlighten.ui.Authentication import Authentication
-from enlighten.scope.PresetFeature import PresetFeature
-from enlighten.ui.ImageResources import ImageResources
-from enlighten.ui.PageNavigation import PageNavigation
-from enlighten.post_processing.TakeOneFeature import TakeOneFeature
-from enlighten.post_processing.RichardsonLucy import RichardsonLucy
-from enlighten.device.BatteryFeature import BatteryFeature
-from enlighten.file_io.LoggingFeature import LoggingFeature
-from enlighten.ui.FocusListener import FocusListener
-from enlighten.device.GainDBFeature import GainDBFeature
-from enlighten.post_processing.BoxcarFeature import BoxcarFeature
-from enlighten.file_io.Configuration import Configuration
-from enlighten.measurement.Measurements import Measurements
-from enlighten.device.EEPROMEditor import EEPROMEditor
-from enlighten.scope.GuideFeature import GuideFeature
-from enlighten.network.CloudManager import CloudManager
-from enlighten.device.EEPROMWriter import EEPROMWriter
-from enlighten.ui.Stylesheets import Stylesheets
-from enlighten.post_processing.DarkFeature import DarkFeature
-from enlighten.measurement.SaveOptions import SaveOptions
-from enlighten.scope.GridFeature import GridFeature
-from enlighten.file_io.FileManager import FileManager
-from enlighten.ui.VCRControls import VCRControls
-from enlighten.ui.HelpFeature import HelpFeature
-from enlighten.network.BLEManager import BLEManager
-from enlighten.ui.Clipboard import Clipboard
+from enlighten.KnowItAll.Feature import Feature as KIAFeature
+from enlighten.Plugins.PluginController import PluginController
 from enlighten.data.ModelInfo import ModelInfo
+from enlighten.device.AccessoryControlFeature import AccessoryControlFeature
+from enlighten.device.BatteryFeature import BatteryFeature
+from enlighten.device.DetectorTemperatureFeature import DetectorTemperatureFeature
+from enlighten.device.EEPROMEditor import EEPROMEditor
+from enlighten.device.EEPROMWriter import EEPROMWriter
+from enlighten.device.ExternalTriggerFeature import ExternalTriggerFeature
+from enlighten.device.GainDBFeature import GainDBFeature
+from enlighten.device.HighGainModeFeature import HighGainModeFeature
+from enlighten.device.IntegrationTimeFeature import IntegrationTimeFeature
+from enlighten.device.LaserControlFeature import LaserControlFeature
+from enlighten.device.LaserTemperatureFeature import LaserTemperatureFeature
+from enlighten.device.ManufacturingFeature import ManufacturingFeature
 from enlighten.device.Multispec import Multispec
-from enlighten.ui.Marquee import Marquee
-from enlighten.ui.Colors import Colors
-from enlighten.ui.Sounds import Sounds
+from enlighten.device.RegionControlFeature import RegionControlFeature
+from enlighten.file_io.Configuration import Configuration
+from enlighten.file_io.FileManager import FileManager
+from enlighten.file_io.HardwareCaptureControlFeature import HardwareCaptureControlFeature
+from enlighten.file_io.HardwareFileOutputManager import HardwareFileOutputManager
+from enlighten.file_io.LoggingFeature import LoggingFeature
+from enlighten.measurement.AreaScanFeature import AreaScanFeature
+from enlighten.measurement.MeasurementFactory import MeasurementFactory
+from enlighten.measurement.Measurements import Measurements
+from enlighten.measurement.SaveOptions import SaveOptions
+from enlighten.network.BLEManager import BLEManager
+from enlighten.network.CloudManager import CloudManager
+from enlighten.post_processing.AbsorbanceFeature import AbsorbanceFeature
+from enlighten.post_processing.BaselineCorrection import BaselineCorrection
+from enlighten.post_processing.BoxcarFeature import BoxcarFeature
+from enlighten.post_processing.DarkFeature import DarkFeature
+from enlighten.post_processing.HorizROIFeature import HorizROIFeature
+from enlighten.post_processing.InterpolationFeature import InterpolationFeature
+from enlighten.post_processing.RamanIntensityCorrection import RamanIntensityCorrection
+from enlighten.post_processing.RamanModeFeature import RamanModeFeature
+from enlighten.post_processing.ReferenceFeature import ReferenceFeature
+from enlighten.post_processing.RichardsonLucy import RichardsonLucy
+from enlighten.post_processing.ScanAveragingFeature import ScanAveragingFeature
+from enlighten.post_processing.TakeOneFeature import TakeOneFeature
+from enlighten.post_processing.TransmissionFeature import TransmissionFeature
 from enlighten.scope.Cursor import Cursor
 from enlighten.scope.Graph import Graph
+from enlighten.scope.GridFeature import GridFeature
+from enlighten.scope.GuideFeature import GuideFeature
+from enlighten.scope.PresetFeature import PresetFeature
+from enlighten.scope.RamanShiftCorrectionFeature import RamanShiftCorrectionFeature
+from enlighten.timing.BatchCollection import BatchCollection
+from enlighten.ui.Authentication import Authentication
+from enlighten.ui.Clipboard import Clipboard
+from enlighten.ui.Colors import Colors
+from enlighten.ui.FocusListener import FocusListener
 from enlighten.ui.GUI import GUI
-
-from .KnowItAll.Feature               import Feature as KIAFeature
-from .Plugins.PluginController        import PluginController
+from enlighten.ui.HelpFeature import HelpFeature
+from enlighten.ui.ImageResources import ImageResources
+from enlighten.ui.Marquee import Marquee
+from enlighten.ui.PageNavigation import PageNavigation
+from enlighten.ui.ResourceMonitorFeature import ResourceMonitorFeature
+from enlighten.ui.Sounds import Sounds
+from enlighten.ui.StatusBarFeature import StatusBarFeature
+from enlighten.ui.StatusIndicators import StatusIndicators
+from enlighten.ui.Stylesheets import Stylesheets
+from enlighten.ui.VCRControls import VCRControls
 
 class BusinessObjects:
     """
@@ -87,8 +86,8 @@ class BusinessObjects:
     could call update_visibility() etc on all of them.
     """
 
-    def __init__(self, controller):
-        self.controller = controller
+    def __init__(self, ctl):
+        self.ctl = ctl 
         self.clear()
 
     def header(self, s):
@@ -98,12 +97,12 @@ class BusinessObjects:
         log.debug("=" * len(s))
         log.debug("")
 
-        self.controller.splash.showMessage(s, alignment=Qt.AlignHCenter | Qt.AlignBottom, color=QColor("white"))
-        self.controller.app.processEvents()
+        self.ctl.splash.showMessage(s, alignment=Qt.AlignHCenter | Qt.AlignBottom, color=QColor("white"))
+        self.ctl.app.processEvents()
 
     def clear(self):
         """ Ensures objects can check for other's instantiation during start-up """
-        ctl = self.controller
+        ctl = self.ctl
 
         ctl.absorbance = None
         ctl.accessory_control = None
@@ -173,7 +172,7 @@ class BusinessObjects:
         These are things needed early in the Controller's constructor 
         initialization, i.e. before the placeholders are populated.
         """
-        ctl = self.controller
+        ctl = self.ctl
         sfu = ctl.form.ui
 
         self.header("instantiating Configuration")
@@ -206,7 +205,7 @@ class BusinessObjects:
         can assume that the GUI is configured and all widget placeholders have been
         populated.  No spectrometers will have connected at this time.
         """
-        ctl = self.controller
+        ctl = self.ctl
         sfu = ctl.form.ui
 
         self.header("instantiating ResourceMonitorFeature")
@@ -552,11 +551,10 @@ class BusinessObjects:
 
     def destroy(self):
         log.info("destroying business objects")
-        ctl = self.controller
 
         # anything with external processes
-        for feature in [ ctl.kia_feature,
-                         ctl.plugin_controller ]:
+        for feature in [ self.ctl.kia_feature,
+                         self.ctl.plugin_controller ]:
             feature.disconnect()                        
 
         # anything with timers, observers etc
