@@ -4,7 +4,7 @@ from collections import defaultdict
 import logging
 import re
 
-from enlighten.scope.Spectrometer import Spectrometer
+from enlighten.device.Spectrometer import Spectrometer
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 
 from wasatch.DeviceID import DeviceID
@@ -40,7 +40,7 @@ log = logging.getLogger(__name__)
 # callback to get it, but the tear-down process is sufficiently lightweight to
 # just let it ride.
 #
-class Multispec(object):
+class Multispec:
 
     def __init__(self, ctl):
         self.ctl = ctl

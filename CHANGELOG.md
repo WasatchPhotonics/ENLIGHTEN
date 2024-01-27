@@ -5,7 +5,11 @@
 - 2023-??-?? 4.0.36
     - cleanup
         - moved Filters and Authentication to ui
-        - moved SpectrometerApplicationState to device
+        - moved SpectrometerApplicationState, AccessoryControlFeature, 
+          DetectorTemperatureFeature, ExternalTriggerFeature, GainDBFeature, 
+          HighGainModeFeature, IntegrationTimeFeature, LaserControlFeature, 
+          LaserTemperatureFeature, MultiPos, RegionControlFeature and 
+          Spectrometer to device
 - 2023-01-26 4.0.35
     - RamanModeFeature 
         - prompt for confirmation

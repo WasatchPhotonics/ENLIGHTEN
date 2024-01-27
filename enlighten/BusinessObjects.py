@@ -13,20 +13,20 @@ log = logging.getLogger(__name__)
 
 from enlighten.file_io.HardwareCaptureControlFeature import HardwareCaptureControlFeature
 from enlighten.scope.RamanShiftCorrectionFeature import RamanShiftCorrectionFeature     # single-point correction
-from enlighten.scope.DetectorTemperatureFeature import DetectorTemperatureFeature
+from enlighten.device.DetectorTemperatureFeature import DetectorTemperatureFeature
 from enlighten.file_io.HardwareFileOutputManager import HardwareFileOutputManager
 from enlighten.spectra_processes.RamanIntensityCorrection import RamanIntensityCorrection   # SRM
-from enlighten.scope.AccessoryControlFeature import AccessoryControlFeature
-from enlighten.scope.LaserTemperatureFeature import LaserTemperatureFeature
-from enlighten.scope.IntegrationTimeFeature import IntegrationTimeFeature
-from enlighten.scope.ExternalTriggerFeature import ExternalTriggerFeature
+from enlighten.device.AccessoryControlFeature import AccessoryControlFeature
+from enlighten.device.LaserTemperatureFeature import LaserTemperatureFeature
+from enlighten.device.IntegrationTimeFeature import IntegrationTimeFeature
+from enlighten.device.ExternalTriggerFeature import ExternalTriggerFeature
 from enlighten.ui.ResourceMonitorFeature import ResourceMonitorFeature
 from enlighten.spectra_processes.InterpolationFeature import InterpolationFeature
 from enlighten.spectra_processes.ScanAveragingFeature import ScanAveragingFeature
-from enlighten.scope.RegionControlFeature import RegionControlFeature
+from enlighten.device.RegionControlFeature import RegionControlFeature
 from enlighten.device.ManufacturingFeature import ManufacturingFeature
-from enlighten.scope.LaserControlFeature import LaserControlFeature
-from enlighten.scope.HighGainModeFeature import HighGainModeFeature
+from enlighten.device.LaserControlFeature import LaserControlFeature
+from enlighten.device.HighGainModeFeature import HighGainModeFeature
 from enlighten.spectra_processes.TransmissionFeature import TransmissionFeature
 from enlighten.measurement.MeasurementFactory import MeasurementFactory
 from enlighten.spectra_processes.BaselineCorrection import BaselineCorrection
@@ -47,7 +47,7 @@ from enlighten.spectra_processes.RichardsonLucy import RichardsonLucy
 from enlighten.device.BatteryFeature import BatteryFeature
 from enlighten.file_io.LoggingFeature import LoggingFeature
 from enlighten.ui.FocusListener import FocusListener
-from enlighten.scope.GainDBFeature import GainDBFeature
+from enlighten.device.GainDBFeature import GainDBFeature
 from enlighten.spectra_processes.BoxcarFeature import BoxcarFeature
 from enlighten.file_io.Configuration import Configuration
 from enlighten.measurement.Measurements import Measurements

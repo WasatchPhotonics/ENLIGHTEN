@@ -37,7 +37,7 @@ from wasatch.Reading                  import Reading
 from enlighten import util
 from enlighten import common
 
-from enlighten.scope.Spectrometer import Spectrometer
+from enlighten.device.Spectrometer import Spectrometer
 from enlighten.ui.ThumbnailWidget import ThumbnailWidget
 from enlighten.ui.TimeoutDialog import TimeoutDialog
 from enlighten.BusinessObjects import BusinessObjects
