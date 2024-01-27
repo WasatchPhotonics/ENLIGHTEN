@@ -4,7 +4,7 @@
 
 - 2023-??-?? 4.0.36
     - cleanup
-        - moved Filters to ui
+        - moved Filters and Authentication to ui
         - moved SpectrometerApplicationState to device
 - 2023-01-26 4.0.35
     - RamanModeFeature 

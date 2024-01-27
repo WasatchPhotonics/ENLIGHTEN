@@ -38,7 +38,7 @@ from enlighten.ui.StatusIndicators import StatusIndicators
 from enlighten.scope.ReferenceFeature import ReferenceFeature
 from enlighten.measurement.AreaScanFeature import AreaScanFeature
 from enlighten.timing.BatchCollection import BatchCollection
-from enlighten.device.Authentication import Authentication
+from enlighten.ui.Authentication import Authentication
 from enlighten.scope.PresetFeature import PresetFeature
 from enlighten.ui.ImageResources import ImageResources
 from enlighten.ui.PageNavigation import PageNavigation
