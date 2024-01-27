@@ -33,7 +33,7 @@ log = logging.getLogger(__name__)
 ##
 # This is a Factory used by Measurements to create Measurement objects, each 
 # coupled to a ThumbnailWidget.
-class MeasurementFactory(object):
+class MeasurementFactory:
 
     def clear(self):
         pass

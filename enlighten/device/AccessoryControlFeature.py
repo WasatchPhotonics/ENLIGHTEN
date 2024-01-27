@@ -4,7 +4,7 @@ from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 
 log = logging.getLogger(__name__)
 
-class AccessoryControlFeature(object):
+class AccessoryControlFeature:
     """
     Support for the Gen 1.5 OEM External Accessory Connector.
     

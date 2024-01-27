@@ -3,7 +3,7 @@ import logging
 log = logging.getLogger(__name__)
 
 ## A place to put manufacturing bits that don't fit elsewhere.
-class ManufacturingFeature(object):
+class ManufacturingFeature:
 
     def __init__(self,
             bt_dfu,

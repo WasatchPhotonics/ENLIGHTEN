@@ -8,7 +8,7 @@ from enlighten.common import msgbox
 
 log = logging.getLogger(__name__)
 
-class IntegrationTimeFeature(object):
+class IntegrationTimeFeature:
 
     # integration time slider steps in 100ms increments, and only goes up to 5sec
     MILLISEC_TO_TENTHS = 0.01

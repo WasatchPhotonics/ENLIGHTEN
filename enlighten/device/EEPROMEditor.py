@@ -17,7 +17,7 @@ else:
 
 log = logging.getLogger(__name__)
 
-class EEPROMEditor(object):
+class EEPROMEditor:
     """
     Unlike most business objects, just pass in self.form.ui to avoid a REALLY long list of widgets
     

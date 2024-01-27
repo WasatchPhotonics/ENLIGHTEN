@@ -5,7 +5,7 @@ from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 
 log = logging.getLogger(__name__)
 
-class ScanAveragingFeature(object):
+class ScanAveragingFeature:
     def __init__(self, ctl):
         self.ctl = ctl
 

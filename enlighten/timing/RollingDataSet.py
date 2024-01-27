@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 #       can base an LED's color on "all_within(-55C, 1C, window=10sec)" (more-or-less).
 #       We need to be able to discriminate between the graph window size and the 
 #       analytical / status window size.
-class RollingDataSet(object):
+class RollingDataSet:
     def __init__(self, size_seconds):
         self.data = deque()
         self.window_limit = timedelta(minutes=0, seconds=size_seconds, milliseconds=0)

@@ -11,7 +11,7 @@ from wasatch.Reading              import Reading
 
 log = logging.getLogger(__name__)
 
-class TextFileParser(object):
+class TextFileParser:
     """
     A file parser to deserialize one Measurement from a column-ordered CSV file
     with no header data.  Infers unit of x-axis from current graph settings.

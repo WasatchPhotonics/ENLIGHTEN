@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 # Encapsulates interpolation of a ProcessedReading.
 #
 # @see ORDER_OF_OPERATIONS.md
-class InterpolationFeature(object):
+class InterpolationFeature:
     def __init__(self, ctl):
         self.ctl = ctl
 

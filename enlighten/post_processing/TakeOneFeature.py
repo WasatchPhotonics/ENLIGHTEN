@@ -7,7 +7,7 @@ log = logging.getLogger(__name__)
 # Encapsulates the collection of one averaged spectrum (optionally saved), either
 # from one spectrometer or all.
 #
-class TakeOneFeature(object):
+class TakeOneFeature:
 
     def __init__(self, ctl):
         self.ctl = ctl

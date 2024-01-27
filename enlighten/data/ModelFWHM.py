@@ -54,7 +54,7 @@ TABLE = """
     WP-633-ER-R-50      11.8       11.8      13.5       13.5
 """
 
-class ModelFWHM(object):
+class ModelFWHM:
 
     def __init__(self):
         self._parse_table()

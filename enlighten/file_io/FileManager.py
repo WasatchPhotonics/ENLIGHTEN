@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 
 ##
 # Encapsulate operations managing files, directory trees etc.
-class FileManager(object):
+class FileManager:
     
     FILTER = "CSV (*.csv);;JSON (*.json);;SPC (*.spc);;ASC (*.asc)"
 

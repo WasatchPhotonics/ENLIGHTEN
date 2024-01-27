@@ -7,7 +7,7 @@ from wasatch import utils as wasatch_utils
 
 log = logging.getLogger(__name__)
 
-class BoxcarFeature(object):
+class BoxcarFeature:
     """ Encapsulate the high-frequency noise smoothing "boxcar" filter run at the end of post-processing. """
     def __init__(self, ctl):
         self.ctl = ctl

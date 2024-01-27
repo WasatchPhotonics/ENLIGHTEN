@@ -23,7 +23,7 @@ log = logging.getLogger(__name__)
 # provide a simple way to access the varied name types.
 #
 # @public
-class AliasedName(object):
+class AliasedName:
     def __init__(self):
         self.orig = None
         self.preferred = None
@@ -38,7 +38,7 @@ class AliasedName(object):
 # into.
 #
 # @public
-class DeclaredMatch(object):
+class DeclaredMatch:
     def __init__(self, aliased_name=None, score=0.0, hazard=False, benign=False):
         self.aliased_name   = aliased_name
         self.score          = score
@@ -126,7 +126,7 @@ class DeclaredMatch(object):
 #
 # This is probably overcomplicating things, but down the rabbit-hole I went.
 #
-class Feature(object):
+class Feature:
 
     # ##########################################################################
     # Constants

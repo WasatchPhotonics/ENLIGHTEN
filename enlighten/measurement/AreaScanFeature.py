@@ -16,7 +16,7 @@ else:
 
 log = logging.getLogger(__name__)
 
-class AreaScanFeature(object):
+class AreaScanFeature:
     """
     Implements a 2D "area scan," displaying the full detector rows and columns
     rather than the usual 1D vertically-binned spectrum.

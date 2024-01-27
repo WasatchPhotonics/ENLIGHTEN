@@ -1,6 +1,6 @@
 ##
 # Used for spectrometers with articulated optics.
-class MultiPos(object):
+class MultiPos:
     
     def __init__(self, 
             multispec,

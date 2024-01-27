@@ -13,7 +13,7 @@ else:
 
 log = logging.getLogger(__name__)
 
-class Tip(object):
+class Tip:
     def __init__(self,
             msg,
             persist=False,

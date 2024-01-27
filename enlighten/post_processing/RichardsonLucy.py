@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 # settings.
 #
 # @see https://en.wikipedia.org/wiki/Richardson%E2%80%93Lucy_deconvolution
-class RichardsonLucy(object):
+class RichardsonLucy:
 
     ##
     # @param iterations how many Richardson-Lucy iterations to run

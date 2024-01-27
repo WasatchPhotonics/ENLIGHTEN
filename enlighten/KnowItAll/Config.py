@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 # apostrophes, backticks, Greek, TM symbols and who-knows-what-else, so hopefully
 # the JSON module does a good job of quoting unicode.
 #
-class Config(object):
+class Config:
     def __init__(self, pathname=None):
         self.pathname = pathname
 

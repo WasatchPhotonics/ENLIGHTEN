@@ -11,7 +11,7 @@ else:
 
 log = logging.getLogger(__name__)
 
-class Colors(object):
+class Colors:
     """
     Encapsulate access to stateful / dynamic color information.
     

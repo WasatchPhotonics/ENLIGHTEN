@@ -11,7 +11,7 @@ else:
 
 log = logging.getLogger(__name__)
 
-class Authentication(object):
+class Authentication:
     """
     This class encapsulates the process of "logging-in" to ENLIGHTEN and enabling
     or displaying GUI widgets which should only be exposed to certain user classes.

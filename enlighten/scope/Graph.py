@@ -39,7 +39,7 @@ log = logging.getLogger(__name__)
 #   change Multispec selected spectrometer (or select a ThumbnailWidget, if that
 #   was useful) by clicking a curve on-screen
 #
-class Graph(object):
+class Graph:
 
     ##
     # This can be constructed in two ways. By default, the Graph populates its

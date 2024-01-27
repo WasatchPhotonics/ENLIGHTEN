@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 # This feature cannot be enabled at startup for safety reasons.
 #
 # @todo consider if and where we should disable the laser if battery too low
-class RamanModeFeature(object):
+class RamanModeFeature:
 
     LASER_WARMUP_MS = 5000
     SECTION = "Raman Mode"

@@ -16,7 +16,7 @@ from .. import common
 log = logging.getLogger(__name__)
 
 ## Arguments passed to continuous_poll() when spawning the subprocess.
-class SubprocessArgs(object):
+class SubprocessArgs:
     def __init__(self, 
           executable_pathname,
           library_pathname,
@@ -32,7 +32,7 @@ class SubprocessArgs(object):
         self.q_parent            = q_parent
 
 ## An inbound request being passed from Wrapper to the subprocess for writing to KIAConsole.
-class MatchRequest(object):
+class MatchRequest:
     def __init__(self, x, y, max_results=20, min_score=0.80, measurement_id=None):
         self.x = x
         self.y = y
@@ -44,7 +44,7 @@ class MatchRequest(object):
 #  Note that this is essentially just a list of the matches passed back from 
 #  KIAConsole...it does NOT attempt to declare a "winner" (such higher-level 
 #  processing is left to KnowItAll.Feature).
-class MatchResponse(object):
+class MatchResponse:
     def __init__(self, request, disconnect=False):
         self.disconnect = disconnect
 
@@ -59,7 +59,7 @@ class MatchResponse(object):
         self.expired = False
 
 ## One entry of many representing a compound potentially matched by KIAConsole within a larger MatchResult.
-class MatchResultEntry(object):
+class MatchResultEntry:
     def __init__(self, compound_name, score):
         self.compound_name = compound_name
         self.score         = score
@@ -91,7 +91,7 @@ class MatchResultEntry(object):
 # @todo support authentication (look for "expected" within match results)
 # @todo support good/bad (look for known-good and known-bad results, returning binary indicator)
 #
-class Wrapper(object):
+class Wrapper:
 
     # ##########################################################################
     # Constants

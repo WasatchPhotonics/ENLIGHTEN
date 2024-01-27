@@ -8,7 +8,7 @@ log = logging.getLogger(__name__)
 #
 # @todo it would seem slightly more efficient if we actually disconnected the
 #       signal in unregister(), and reconnect in register
-class FocusListener(object):
+class FocusListener:
 
     def __init__(self, ctl):
         self.callbacks = {}

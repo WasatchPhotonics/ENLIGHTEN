@@ -22,7 +22,7 @@ log = logging.getLogger(__name__)
 #
 # Also provides the "skinning / themes" feature (dark/light-mode etc).
 #
-class GUI(object):
+class GUI:
 
     SECTION = "graphs"
 

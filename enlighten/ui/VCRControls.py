@@ -22,7 +22,7 @@ log = logging.getLogger(__name__)
 # from a given "position" can be shown at one time; the buttons within a position 
 # are mutually exclusive. 
 #
-class VCRControls(object):
+class VCRControls:
 
     def __init__(self, ctl):
         self.ctl = ctl

@@ -11,7 +11,7 @@ else:
 
 log = logging.getLogger(__name__)
 
-class EEPROMWriter(object):
+class EEPROMWriter:
     """
     Encapsulate reflashing the EEPROM to the device.
     """

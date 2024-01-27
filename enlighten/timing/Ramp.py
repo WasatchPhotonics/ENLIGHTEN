@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 ##
 # Provides a generic ramp that ticks a callback with ascending/descending value
 # at a specified rate.
-class Ramp(object):
+class Ramp:
 
     def __init__(self, callback, name="unknown"):
 

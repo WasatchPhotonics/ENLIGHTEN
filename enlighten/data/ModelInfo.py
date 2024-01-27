@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 ## 
 # Convenience class providing access to pre-built subtypes of WpModelInfo, plus
 # ModelFWHM.
-class ModelInfo(object):
+class ModelInfo:
     def __init__(self, ctl):
         self.ctl = ctl
 
@@ -115,7 +115,7 @@ class ModelInfo(object):
 #
 # FWHM is not addressed in these classes, because it varies so much by sub-configuration
 # (slit, detector etc).  That is handled separately in ModelFWHM.
-class WpModelInfo(object):
+class WpModelInfo:
 
     def __init__(self, 
             name=None, 

@@ -3,7 +3,7 @@ import re
 
 log = logging.getLogger(__name__)
 
-class ColorNames(object):
+class ColorNames:
     """
     These are colors we can reference by name in .ini files or elsewhere.
     

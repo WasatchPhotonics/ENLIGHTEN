@@ -3,7 +3,7 @@ import numpy as np
 
 log = logging.getLogger(__name__)
 
-class RamanIntensityCorrection(object):
+class RamanIntensityCorrection:
     """
     Note this is NOT the same as RamanShiftCorrectionFeature!  
     

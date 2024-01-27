@@ -26,7 +26,7 @@ the detector, etc).
 #                                                                              #
 # ##############################################################################
 
-class EmissionLamps(object):
+class EmissionLamps:
     """ convenience class: instantiate one of these to get access to each EmissionLamp """
     def __init__(self,
             model_info):
@@ -45,7 +45,7 @@ class EmissionLamps(object):
 #                                                                              #
 # ##############################################################################
 
-class EmissionLamp(object):
+class EmissionLamp:
     """
     Encapsulates static product data about a gas emission lamp for use by the
     Wavecal business object. 

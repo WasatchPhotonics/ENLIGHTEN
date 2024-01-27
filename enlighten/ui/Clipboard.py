@@ -2,7 +2,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
-class Clipboard(object):
+class Clipboard:
     """
     This class encapsulates access to the host OS (Windows) copy-paste clipboard, 
     allowing tabular data to be copied from ENLIGHTEN and pasted into other 

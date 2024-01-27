@@ -16,7 +16,7 @@ except ImportError:
 # Encapsulates ENLIGHTEN's limited audio capabilities.
 #
 # @note At this time, we only support sound on Windows 
-class Sounds(object):
+class Sounds:
 
     ##
     # This prevents uncollectable garbage
@@ -140,7 +140,7 @@ class Sounds(object):
 #
 # This has a parent-reference to Sounds so that an individual sounds will know 
 # if the overall sound-system is enabled.
-class Sound(object):
+class Sound:
     def __del__(self):
         del self.parent
         del self.pathname

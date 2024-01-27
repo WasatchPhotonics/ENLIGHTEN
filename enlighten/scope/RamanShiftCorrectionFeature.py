@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 
 ##
 # An ASTMCompound is a set of ASTMPeaks with one "primary" peak wavenumber
-class ASTMCompound(object):
+class ASTMCompound:
     def __init__(self, name):
         self.name = name
         self.peaks = []         # list of ASTMPeak
@@ -31,7 +31,7 @@ class ASTMCompound(object):
 ##
 # One peak of an ASTMCompound.  Intensity is a relative value from 1-5 (5 being 
 # the "primary" peak).
-class ASTMPeak(object):
+class ASTMPeak:
     def __init__(self, wavenumber, intensity, primary=False):
         self.wavenumber = wavenumber
         self.intensity = intensity
@@ -78,7 +78,7 @@ class ASTMPeak(object):
 #   - update "session" wavenumber_correction
 # - otherwise, display error message "can't match ASTM compound <name>"
 
-class RamanShiftCorrectionFeature(object):
+class RamanShiftCorrectionFeature:
 
     ## This file is installed as part of the ENLIGHTEN distribution and contains
     #  our supported compounds and their peaks

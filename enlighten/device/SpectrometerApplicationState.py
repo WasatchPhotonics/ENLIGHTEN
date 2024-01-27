@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 # temperatures).
 #
 # @todo consider moving to enlighten.device
-class SpectrometerApplicationState(object):
+class SpectrometerApplicationState:
 
     def clear(self):
         self.device_id = None
