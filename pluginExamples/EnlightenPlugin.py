@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 
 from enlighten import common
 
-from enlighten.scope.Spectrometer import Spectrometer
+from enlighten.device.Spectrometer import Spectrometer
 from wasatch.ProcessedReading import ProcessedReading
 from wasatch.SpectrometerSettings import SpectrometerSettings
 

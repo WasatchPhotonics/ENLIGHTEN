@@ -1,9 +1,6 @@
 import logging
 
-from .common import LaserStates
-
-from wasatch.ProcessedReading import ProcessedReading
-
+from enlighten.common import LaserStates
 from enlighten.timing.RollingDataSet import RollingDataSet
 
 log = logging.getLogger(__name__)
