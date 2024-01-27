@@ -19,6 +19,6 @@ Insight spectrometers to generally work with Enlighten.
   fork with the branch that contains the modifications for Ocean spectrometers
 - set your PYTHONPATH with the following command:
 
-    C:> set PYTHONPATH=.;..\Wasatch.PY;.\pluginExamples;..\python-seabreeze;..\python-seabreeze\src
+    C:> set PYTHONPATH=.;..\Wasatch.PY;.\plugins;..\python-seabreeze;..\python-seabreeze\src
 
 - run enlighten from source as you normally would

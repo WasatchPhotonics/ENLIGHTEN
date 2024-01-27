@@ -43,7 +43,7 @@ dependencies and package requirements.
 
 This includes adding to your PYTHONPATH:
 
-    $ set PYTHONPATH=..\Wasatch.PY;pluginExamples;.;enlighten\assets\uic_qrc
+    $ set PYTHONPATH=..\Wasatch.PY;plugins;.;enlighten\assets\uic_qrc
 
 *Note:* when setting environment variables like PYTHONPATH under Windows, 
 _do not_ quote them (e.g., do *not* type: set PYTHONPATH="..\Wasatch.PY")

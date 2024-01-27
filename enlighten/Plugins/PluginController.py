@@ -28,7 +28,7 @@ from enlighten import common
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from enlighten.scope.Graph import Graph
 
-# this is in ../../pluginExamples
+# this is in ../../plugins
 from EnlightenPlugin import *
 
 from wasatch import utils as wasatch_utils
@@ -237,7 +237,7 @@ class PluginController:
 
         # configure our search directories
         self.plugin_dirs = [
-            "pluginExamples",                                       # (for developers running from source)
+            "plugins",                                              # (for developers running from source)
             os.path.join(common.get_default_data_dir(), "plugins")  # (installed EnlightenSpectra/plugins)
         ]
         self.initialize_python_path()
@@ -269,7 +269,7 @@ class PluginController:
         os.mkdir(plugin_dst)
 
         cwd = os.getcwd()
-        plugin_src = os.path.join(cwd, "pluginExamples")
+        plugin_src = os.path.join(cwd, "plugins")
 
         if os.path.exists(plugin_src):
             plugin_src_items = os.listdir(plugin_src)

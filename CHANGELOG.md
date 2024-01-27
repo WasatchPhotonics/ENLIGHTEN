@@ -12,6 +12,7 @@
           Spectrometer to device
         - renamed spectra_processes to post_processing
         - moved DarkFeature, ReferenceFeature, RamanMode to post_processing
+        - renamed pluginExamples to plugins
 - 2023-01-26 4.0.35
     - RamanModeFeature 
         - prompt for confirmation

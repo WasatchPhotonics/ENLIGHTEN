@@ -113,7 +113,7 @@ Run demo:
 
     $ cd enlighten
     $ conda activate conda_enlighten3
-    $ export PYTHONPATH="../spyc_writer/src:../Wasatch.PY:pluginExamples:.:enlighten/assets/uic_qrc"
+    $ export PYTHONPATH="../spyc_writer/src:../Wasatch.PY:plugins:.:enlighten/assets/uic_qrc"
 
 ## Install pip dependencies (inside activated environment)
 

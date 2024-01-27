@@ -17,7 +17,7 @@ set PATH=C:\Windows\Microsoft.NET\Framework64\v4.0.30319;%PATH%
 set PATH=C:\Program Files\Microsoft\R Client\R_SERVER\bin\x64;%PATH%
 set PATH=C:\Program Files (x86)\SEGGER\JLink;%PATH%
 
-set PYTHONPATH=.;z:\work\code\Wasatch.PY;.\pluginExamples
+set PYTHONPATH=.;z:\work\code\Wasatch.PY;.\plugins
 set QT_PLUGIN_PATH=%HOME%\Miniconda3\envs\conda_enlighten3\Lib\site-packages\PyQt5\Qt\plugins
 set QT_QPA_PLATFORM_PLUGIN_PATH=%HOME%\Miniconda3\envs\conda_enlighten3\Lib\site-packages\PyQt5\Qt\plugins
 set R_LIBS_USER=Z:\Documents\R\win-library\3.3

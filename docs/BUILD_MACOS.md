@@ -10,7 +10,7 @@ a list of the homebrew and pip packages I had installed.  I'm afraid I have not
 yet generated a "minimal" set of what is required to run ENLIGHTEN, but this set
 seems to work.
 
-    $ export PYTHONPATH=.:pluginExamples:enlighten/assets/uic_qrc:../Wasatch.PY:../spyc_writer/src:../jcamp
+    $ export PYTHONPATH=.:plugins:enlighten/assets/uic_qrc:../Wasatch.PY:../spyc_writer/src:../jcamp
     $ pip install -r requirements.txt
     $ scripts/rebuild_resources.sh 
     $ python scripts/Enlighten.py --log-level debug 1>enlighten.out 2>enlighten.err
@@ -179,7 +179,7 @@ installed when it worked...
     /Users/mzieg/bin:/Users/mzieg/work/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/opt/mysql@5.6/bin:/usr/local/share/dotnet
 
     mzieg-macbook.local [~/work/code/enlighten] mzieg $ echo $PYTHONPATH
-    .:pluginExamples:enlighten/assets/uic_qrc:../Wasatch.PY:../spyc_writer/src:../jcamp
+    .:plugins:enlighten/assets/uic_qrc:../Wasatch.PY:../spyc_writer/src:../jcamp
 
     mzieg-macbook.local [~/work/code/enlighten] mzieg $ which python
     python: aliased to python3.10

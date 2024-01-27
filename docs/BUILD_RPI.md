@@ -123,7 +123,7 @@ Example (both starting from ~/work/code/ENLIGHTEN):
 # Test
 
     $ cd work/code/ENLIGHTEN
-    $ export PYTHONPATH=".:pluginExamples:../Wasatch.PY:enlighten/assets/uic_qrc"
+    $ export PYTHONPATH=".:plugins:../Wasatch.PY:enlighten/assets/uic_qrc"
     $ python scripts/Enlighten.py
 
 # Building an Installer
@@ -135,7 +135,7 @@ I had to do this to add pyinstaller to my PATH:
 (as above)
 
     $ cd work/code/ENLIGHTEN
-    $ export PYTHONPATH=".:pluginExamples:../Wasatch.PY:enlighten/assets/uic_qrc"
+    $ export PYTHONPATH=".:plugins:../Wasatch.PY:enlighten/assets/uic_qrc"
     $ python scripts/Enlighten.py
 
 (then)

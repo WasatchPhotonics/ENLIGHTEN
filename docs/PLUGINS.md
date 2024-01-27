@@ -72,7 +72,7 @@ especially:
 
 - EnlightenPlugin.EnlightenPluginBase
 
-EnlightenPlugin is a single Python file stored in pluginExamples in the source distribution, and installed to EnlightenSpectra/plugins on Windows.
+EnlightenPlugin is a single Python file stored in plugins in the source distribution, and installed to EnlightenSpectra/plugins on Windows.
 
 ## Internal
 

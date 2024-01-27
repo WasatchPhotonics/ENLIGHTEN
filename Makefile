@@ -96,7 +96,7 @@ linux-installer-base:
         --clean \
         --windowed \
         --paths="../Wasatch.PY" \
-        --paths="pluginExamples" \
+        --paths="plugins" \
         --hidden-import="scipy._lib.messagestream" \
         --hidden-import="scipy.special.cython_special" \
         --icon "../enlighten/assets/uic_qrc/images/EnlightenIcon.ico" \
