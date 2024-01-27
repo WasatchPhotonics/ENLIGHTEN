@@ -4,7 +4,7 @@ import copy
 
 import pyqtgraph
 
-from enlighten.SpectrometerApplicationState import SpectrometerApplicationState
+from enlighten.device.SpectrometerApplicationState import SpectrometerApplicationState
 from enlighten.ui.Colors import Colors
 from enlighten.scope.Cursor import AxisConverter
 from enlighten import common
