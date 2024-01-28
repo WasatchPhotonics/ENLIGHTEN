@@ -282,7 +282,7 @@ class Controller:
         for feature in [ self.laser_control,
                          self.accessory_control,
                          self.area_scan,
-                         self.raman_mode_feature ]:
+                         self.auto_raman ]:
             feature.disconnect()
 
         if spec.settings.is_gen15():
@@ -653,7 +653,7 @@ class Controller:
         for feature in [ self.accessory_control,
                          self.horiz_roi,
                          self.laser_control,
-                         self.raman_mode_feature,
+                         self.auto_raman,
                          self.raman_intensity_correction,
                          self.raman_shift_correction,
                          self.reference_feature,
@@ -939,6 +939,7 @@ class Controller:
 
         for feature in [ self.accessory_control,
                          self.area_scan,
+                         self.auto_raman,
                          self.boxcar,
                          self.dark_feature,
                          self.external_trigger,
@@ -948,7 +949,6 @@ class Controller:
                          self.laser_control,
                          self.raman_shift_correction,
                          self.raman_intensity_correction,
-                         self.raman_mode_feature,
                          self.reference_feature,
                          self.richardson_lucy,
                          self.status_indicators,
@@ -1449,7 +1449,7 @@ class Controller:
 
         log.debug("attempt_reading(%s): update spectrum data: %s and length (%s)", device_id, str(reading.spectrum[0:5]), str(len(reading.spectrum)))
 
-        # When using BatchCollection's Spectrum LaserMode, or RamanModeFeature, 
+        # When using BatchCollection's Spectrum LaserMode, or AutoRaman, 
         # the driver may attach an averaged dark to the laser-illuminated Reading. 
         # Note that Wasatch.PY is not performing dark subtraction in these cases,
         # so the current process is to apply the attached dark to the current
@@ -1843,12 +1843,8 @@ class Controller:
             # Raman intensity correction
             ####################################################################
 
-            # Raman, Non-Raman, and Expert appear mutually exclusive in UI. They 
-            # aren't, really. Expert mode is a union of Raman, NonRaman and other 
-            # features (see PageNavigation docs). When the user clicks Expert, 
-            # doing_raman() is no longer true, hence the need for doing_expert().
             # This MUST be done before interpolation.
-            if self.page_nav.doing_raman() or self.page_nav.doing_expert():
+            if self.page_nav.doing_raman():
                 self.raman_intensity_correction.process(pr, spec)
 
             # Dieter goes back and forth on the order of these next two:

@@ -3,6 +3,9 @@
 ## 4.0 GUI and Plugin Refactoring
 
 - 2023-??-?? 4.0.36
+    - Expert mode
+        - ensured all Raman features available in Expert mode
+    - renamed RamanModeFeature to AutoRaman
     - cleanup
         - moved Filters and Authentication to ui
         - moved SpectrometerApplicationState, AccessoryControlFeature, 

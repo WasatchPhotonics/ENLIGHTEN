@@ -15279,7 +15279,7 @@ p, li { white-space: pre-wrap; }
                          </layout>
                         </item>
                         <item>
-                         <widget class="QCheckBox" name="checkBox_raman_mode_enable">
+                         <widget class="QCheckBox" name="checkBox_auto_raman_enable">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                             <horstretch>0</horstretch>
@@ -15287,10 +15287,10 @@ p, li { white-space: pre-wrap; }
                            </sizepolicy>
                           </property>
                           <property name="toolTip">
-                           <string>automatically fire laser during integration</string>
+                           <string>automatically take an averaged dark, then enable the laser and take an averaged Raman sample</string>
                           </property>
                           <property name="text">
-                           <string>Raman Mode</string>
+                           <string>Auto-Raman Mode</string>
                           </property>
                          </widget>
                         </item>

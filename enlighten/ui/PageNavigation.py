@@ -310,7 +310,7 @@ class PageNavigation:
     def using_reference         (self): return self.current_technique in [ common.Techniques.REFLECTANCE_TRANSMISSION, common.Techniques.ABSORBANCE ]
 
     def doing_raman(self):
-        return self.operation_mode == common.OperationModes.RAMAN
+        return self.operation_mode in [common.OperationModes.RAMAN, common.OperationModes.EXPERT ]
 
     def doing_expert(self):
         return self.operation_mode == common.OperationModes.EXPERT

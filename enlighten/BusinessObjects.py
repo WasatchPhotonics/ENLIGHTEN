@@ -46,7 +46,7 @@ from enlighten.post_processing.DarkFeature import DarkFeature
 from enlighten.post_processing.HorizROIFeature import HorizROIFeature
 from enlighten.post_processing.InterpolationFeature import InterpolationFeature
 from enlighten.post_processing.RamanIntensityCorrection import RamanIntensityCorrection
-from enlighten.post_processing.RamanModeFeature import RamanModeFeature
+from enlighten.post_processing.AutoRamanFeature import AutoRamanFeature
 from enlighten.post_processing.ReferenceFeature import ReferenceFeature
 from enlighten.post_processing.RichardsonLucy import RichardsonLucy
 from enlighten.post_processing.ScanAveragingFeature import ScanAveragingFeature
@@ -108,6 +108,7 @@ class BusinessObjects:
         ctl.accessory_control = None
         ctl.area_scan = None
         ctl.authentication = None
+        ctl.auto_raman = None
         ctl.baseline_correction = None
         ctl.batch_collection = None
         ctl.battery_feature = None
@@ -151,7 +152,6 @@ class BusinessObjects:
         ctl.page_nav = None
         ctl.plugin_controller = None
         ctl.raman_intensity_correction = None
-        ctl.raman_mode_feature = None
         ctl.raman_shift_correction = None
         ctl.reference_feature = None
         ctl.region_control = None
@@ -377,8 +377,8 @@ class BusinessObjects:
             progress_bar                = sfu.readingProgressBar,
             multispec                   = ctl.multispec)
 
-        self.header("instantiating RamanModeFeature")
-        ctl.raman_mode_feature = RamanModeFeature(ctl)
+        self.header("instantiating AutoRamanFeature")
+        ctl.auto_raman = AutoRamanFeature(ctl)
 
         # TODO: refactor like PluginController
         self.header("instantiating KIAFeature")

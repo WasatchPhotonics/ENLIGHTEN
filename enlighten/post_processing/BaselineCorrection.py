@@ -202,7 +202,7 @@ class BaselineCorrection:
     def update_visibility(self):
         spec = self.ctl.multispec.current_spectrometer()
 
-        self.allowed = self.ctl.page_nav.doing_raman() or self.ctl.page_nav.doing_expert()
+        self.allowed = self.ctl.page_nav.doing_raman()
         if not self.allowed:
             self.enabled = False
             self.show_curve = False

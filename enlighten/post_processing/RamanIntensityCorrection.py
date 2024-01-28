@@ -62,8 +62,8 @@ class RamanIntensityCorrection:
             return set(False, "Raman Intensity Correction requires an SRM calibration")
         elif spec.app_state.dark is None:
             return set(False, "Raman Intensity Correction requires a dark measurement")
-        elif not (self.ctl.page_nav.doing_raman() or self.ctl.page_nav.doing_expert()):
-            return set(False, "Raman Intensity Correction is only valid for Raman and Expert Mode")
+        elif not self.ctl.page_nav.doing_raman():
+            return set(False, "Raman Intensity Correction is only valid for Raman")
         else:
             return set(True, "Raman Intensity Correction optimizes peak intensity using SRM calibration")
 

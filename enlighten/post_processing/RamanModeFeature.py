@@ -5,18 +5,19 @@ from wasatch.TakeOneRequest import TakeOneRequest
 
 log = logging.getLogger(__name__)
 
-##
-# This class encapsulates the "Raman Mode" features intended for the new 
-# ramanMicro (SiG) spectrometers.  Note that HW features are developmental, so
-# some are currently implemented in software; this may change as FW develops.
-#
-# If and when other spectrometers receive a Laser Watchdog feature, we may break
-# that and other portions out into other classes.
-#
-# This feature cannot be enabled at startup for safety reasons.
-#
-# @todo consider if and where we should disable the laser if battery too low
-class RamanModeFeature:
+class AutoRamanFeature:
+    """
+    This is a brand-new feature, yet is poorly named so needs reconsideration.
+
+    This is NOT the big red "pill" button at the top of the screen, saying 
+    (Raman | Non-Raman | Expert).  However, that Raman button is also called
+    "Raman Mode," hence the need to rename.
+
+    This feature adds a checkbox on the Laser Control widget called "Raman Mode"
+    which turns the standard VCRControls Step and StepAndSave buttons into auto-
+    nomous atomic Raman collections (averaged dark, laser warmup, averaged sample,
+    laser disable).
+    """
 
     LASER_WARMUP_MS = 5000
     SECTION = "Raman Mode"
@@ -27,7 +28,7 @@ class RamanModeFeature:
         sfu = self.ctl.form.ui
 
         self.bt_laser  = sfu.pushButton_laser_toggle
-        self.cb_enable = sfu.checkBox_raman_mode_enable
+        self.cb_enable = sfu.checkBox_auto_raman_enable
 
         self.enabled = False
         self.visible = False
@@ -119,7 +120,7 @@ class RamanModeFeature:
 
     def confirm(self):
         log.debug("confirm: start")
-        option = "suppress_raman_mode_warning"
+        option = "suppress_auto_raman_warning"
 
         if self.ctl.config.get(self.SECTION, option, default=False):
             log.debug("confirm: user already confirmed and disabled future warnings")
@@ -127,8 +128,8 @@ class RamanModeFeature:
 
         # Prompt the user. Make it scary.
         result = self.ctl.gui.msgbox_with_checkbox(
-            title="Raman Mode Warning", 
-            text="Raman Mode will AUTOMATICALLY FIRE THE LASER when taking measurements " + \
+            title="Auto-Raman Warning", 
+            text="Auto-Raman will AUTOMATICALLY FIRE THE LASER when taking measurements " + \
                  "using the ⏯ button. Be aware that the laser will automtically enable " + \
                  "and disable when taking spectra while this mode is enabled.",
             checkbox_text="Don't show again")
