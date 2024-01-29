@@ -60,35 +60,35 @@ class SaveOptions():
         self.clear()
 
         self.ctl = ctl
-        sfu = ctl.form.ui
+        cfu = ctl.form.ui
 
-        self.bt_location          = sfu.pushButton_scope_setup_change_save_location
-        self.cb_all               = sfu.checkBox_save_all
-        self.cb_allow_rename      = sfu.checkBox_allow_rename_files
-        self.cb_append            = sfu.checkBox_save_data_append
-        self.cb_collated          = sfu.checkBox_save_collated
-        self.cb_csv               = sfu.checkBox_save_csv
-        self.cb_spc               = sfu.checkBox_save_spc
-        self.cb_dark              = sfu.checkBox_save_dark
-        self.cb_excel             = sfu.checkBox_save_excel
-        self.cb_filename_as_label = sfu.checkBox_save_filename_as_label
-        self.cb_json              = sfu.checkBox_save_json
-        self.cb_dx                = sfu.checkBox_save_dx
-        self.cb_load_raw          = sfu.checkBox_load_raw
-        self.cb_pixel             = sfu.checkBox_save_pixel
-        self.cb_raw               = sfu.checkBox_save_raw
-        self.cb_reference         = sfu.checkBox_save_reference
-        self.cb_text              = sfu.checkBox_save_text
-        self.cb_wavelength        = sfu.checkBox_save_wavelength
-        self.cb_wavenumber        = sfu.checkBox_save_wavenumber
-        self.lb_location          = sfu.label_scope_setup_save_location
-        self.le_label_template    = sfu.lineEdit_save_label_template
-        self.le_filename_template = sfu.lineEdit_save_filename_template
-        self.le_note              = sfu.lineEdit_scope_capture_save_note
-        self.le_prefix            = sfu.lineEdit_scope_capture_save_prefix
-        self.le_suffix            = sfu.lineEdit_scope_capture_save_suffix
-        self.rb_by_col            = sfu.radioButton_save_by_column
-        self.rb_by_row            = sfu.radioButton_save_by_row
+        self.bt_location          = cfu.pushButton_scope_setup_change_save_location
+        self.cb_all               = cfu.checkBox_save_all
+        self.cb_allow_rename      = cfu.checkBox_allow_rename_files
+        self.cb_append            = cfu.checkBox_save_data_append
+        self.cb_collated          = cfu.checkBox_save_collated
+        self.cb_csv               = cfu.checkBox_save_csv
+        self.cb_spc               = cfu.checkBox_save_spc
+        self.cb_dark              = cfu.checkBox_save_dark
+        self.cb_excel             = cfu.checkBox_save_excel
+        self.cb_filename_as_label = cfu.checkBox_save_filename_as_label
+        self.cb_json              = cfu.checkBox_save_json
+        self.cb_dx                = cfu.checkBox_save_dx
+        self.cb_load_raw          = cfu.checkBox_load_raw
+        self.cb_pixel             = cfu.checkBox_save_pixel
+        self.cb_raw               = cfu.checkBox_save_raw
+        self.cb_reference         = cfu.checkBox_save_reference
+        self.cb_text              = cfu.checkBox_save_text
+        self.cb_wavelength        = cfu.checkBox_save_wavelength
+        self.cb_wavenumber        = cfu.checkBox_save_wavenumber
+        self.lb_location          = cfu.label_scope_setup_save_location
+        self.le_label_template    = cfu.lineEdit_save_label_template
+        self.le_filename_template = cfu.lineEdit_save_filename_template
+        self.le_note              = cfu.lineEdit_scope_capture_save_note
+        self.le_prefix            = cfu.lineEdit_scope_capture_save_prefix
+        self.le_suffix            = cfu.lineEdit_scope_capture_save_suffix
+        self.rb_by_col            = cfu.radioButton_save_by_column
+        self.rb_by_row            = cfu.radioButton_save_by_row
 
         # used for plugins indicating to save
         self.save_with_raw = False

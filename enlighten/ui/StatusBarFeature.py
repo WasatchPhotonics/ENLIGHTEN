@@ -29,17 +29,17 @@ class StatusBarFeature:
     def __init__(self, ctl):
         self.ctl = ctl
 
-        sfu = ctl.form.ui
+        cfu = ctl.form.ui
         self.widgets = {}
         self.menu_order = []
-        for trio in [ [ "Min",                  sfu.label_StatusBar_min_name,     sfu.label_StatusBar_min_value ],
-                      [ "Max",                  sfu.label_StatusBar_max_name,     sfu.label_StatusBar_max_value ],
-                      [ "Mean",                 sfu.label_StatusBar_mean_name,    sfu.label_StatusBar_mean_value ],
-                      [ "Area",                 sfu.label_StatusBar_area_name,    sfu.label_StatusBar_area_value ],
-                      [ "Detector Temperature", sfu.label_StatusBar_temp_name,    sfu.label_StatusBar_temp_value ],
-                      [ "Cursor Intensity",     sfu.label_StatusBar_cursor_name,  sfu.label_StatusBar_cursor_value ],
-                      [ "Spectrum Count",       sfu.label_StatusBar_count_name,   sfu.label_StatusBar_count_value ],
-                      [ "Battery",              sfu.label_StatusBar_battery_name, sfu.label_StatusBar_battery_value ] ]:
+        for trio in [ [ "Min",                  cfu.label_StatusBar_min_name,     cfu.label_StatusBar_min_value ],
+                      [ "Max",                  cfu.label_StatusBar_max_name,     cfu.label_StatusBar_max_value ],
+                      [ "Mean",                 cfu.label_StatusBar_mean_name,    cfu.label_StatusBar_mean_value ],
+                      [ "Area",                 cfu.label_StatusBar_area_name,    cfu.label_StatusBar_area_value ],
+                      [ "Detector Temperature", cfu.label_StatusBar_temp_name,    cfu.label_StatusBar_temp_value ],
+                      [ "Cursor Intensity",     cfu.label_StatusBar_cursor_name,  cfu.label_StatusBar_cursor_value ],
+                      [ "Spectrum Count",       cfu.label_StatusBar_count_name,   cfu.label_StatusBar_count_value ],
+                      [ "Battery",              cfu.label_StatusBar_battery_name, cfu.label_StatusBar_battery_value ] ]:
             (name, label, value) = trio
             self.menu_order.append(name)
             self.widgets[name] = (label, value)

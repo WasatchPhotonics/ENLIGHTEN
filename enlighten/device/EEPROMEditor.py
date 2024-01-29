@@ -45,11 +45,11 @@ class EEPROMEditor:
     """
     def __init__(self, ctl):
         self.ctl = ctl
-        sfu = ctl.form.ui
+        cfu = ctl.form.ui
 
-        self.lb_digest                       = sfu.label_eeprom_digest
-        self.lb_product_image                = sfu.label_product_image
-        self.lb_serial                       = sfu.label_serial
+        self.lb_digest                       = cfu.label_eeprom_digest
+        self.lb_product_image                = cfu.label_product_image
+        self.lb_serial                       = cfu.label_serial
 
         self.updated_from_eeprom = False
 
@@ -62,10 +62,10 @@ class EEPROMEditor:
         # mapping from eeprom.subformat to which widget should be visible
         self.subformat_frames = [
             None, # TODO: user_data_2 and user_data_3
-            sfu.frame_eeprom_sub_1,
-            sfu.frame_eeprom_sub_2,
-            sfu.frame_eeprom_sub_3,
-            sfu.frame_eeprom_sub_4
+            cfu.frame_eeprom_sub_1,
+            cfu.frame_eeprom_sub_2,
+            cfu.frame_eeprom_sub_3,
+            cfu.frame_eeprom_sub_4
         ]
 
         # Start with a blank EEPROM.  We need this as a verification during the
@@ -119,142 +119,142 @@ class EEPROMEditor:
         (at this point in program flow) read from the EEPROM object or updated to 
         the widgets, until update_from_spec is called.
         """
-        sfu = self.ctl.form.ui
+        cfu = self.ctl.form.ui
 
         # Type                    Widget                                      EEPROM field                     
-        self.bind_checkBox        (sfu.checkBox_ee_has_battery,               "has_battery")
-        self.bind_checkBox        (sfu.checkBox_ee_has_cooling,               "has_cooling")
-        self.bind_checkBox        (sfu.checkBox_ee_has_laser,                 "has_laser")
-        self.bind_checkBox        (sfu.checkBox_ee_invert_x_axis,             "invert_x_axis")
-        self.bind_checkBox        (sfu.checkBox_ee_bin_2x2,                   "bin_2x2")
-        self.bind_checkBox        (sfu.checkBox_ee_gen15,                     "gen15")
-        self.bind_checkBox        (sfu.checkBox_ee_cutoff_filter_installed,   "cutoff_filter_installed")
-        self.bind_checkBox        (sfu.checkBox_ee_hardware_even_odd,         "hardware_even_odd")
-        self.bind_checkBox        (sfu.checkBox_ee_sig_laser_tec,             "sig_laser_tec")
-        self.bind_checkBox        (sfu.checkBox_ee_has_interlock_feedback,    "has_interlock_feedback")
-        self.bind_checkBox        (sfu.checkBox_ee_has_shutter,               "has_shutter")
+        self.bind_checkBox        (cfu.checkBox_ee_has_battery,               "has_battery")
+        self.bind_checkBox        (cfu.checkBox_ee_has_cooling,               "has_cooling")
+        self.bind_checkBox        (cfu.checkBox_ee_has_laser,                 "has_laser")
+        self.bind_checkBox        (cfu.checkBox_ee_invert_x_axis,             "invert_x_axis")
+        self.bind_checkBox        (cfu.checkBox_ee_bin_2x2,                   "bin_2x2")
+        self.bind_checkBox        (cfu.checkBox_ee_gen15,                     "gen15")
+        self.bind_checkBox        (cfu.checkBox_ee_cutoff_filter_installed,   "cutoff_filter_installed")
+        self.bind_checkBox        (cfu.checkBox_ee_hardware_even_odd,         "hardware_even_odd")
+        self.bind_checkBox        (cfu.checkBox_ee_sig_laser_tec,             "sig_laser_tec")
+        self.bind_checkBox        (cfu.checkBox_ee_has_interlock_feedback,    "has_interlock_feedback")
+        self.bind_checkBox        (cfu.checkBox_ee_has_shutter,               "has_shutter")
 
         # To be clear: we're editing the float version of excitation_nm.  Edits 
         # are automatically rounded and re-saved to the integral version.  We 
         # only "expose" one version (floating-point) to the user through 
         # ENLIGHTEN, although they can see both in the raw EEPROM (but not via 
         # ENLIGHTEN's EEPROM editor).
-        self.bind_doubleSpinBox   (sfu.doubleSpinBox_ee_excitation_nm_float,  "excitation_nm_float")
-        self.bind_doubleSpinBox   (sfu.doubleSpinBox_ee_max_laser_power_mW,   "max_laser_power_mW")
-        self.bind_doubleSpinBox   (sfu.doubleSpinBox_ee_min_laser_power_mW,   "min_laser_power_mW")
-        self.bind_doubleSpinBox   (sfu.doubleSpinBox_ee_detector_gain,        "detector_gain")
-        self.bind_doubleSpinBox   (sfu.doubleSpinBox_ee_detector_gain_odd,    "detector_gain_odd")
-        self.bind_doubleSpinBox   (sfu.doubleSpinBox_ee_spline_min,           "spline_min")
-        self.bind_doubleSpinBox   (sfu.doubleSpinBox_ee_spline_max,           "spline_max")
-        self.bind_doubleSpinBox   (sfu.doubleSpinBox_ee_avg_resolution,       "avg_resolution")
+        self.bind_doubleSpinBox   (cfu.doubleSpinBox_ee_excitation_nm_float,  "excitation_nm_float")
+        self.bind_doubleSpinBox   (cfu.doubleSpinBox_ee_max_laser_power_mW,   "max_laser_power_mW")
+        self.bind_doubleSpinBox   (cfu.doubleSpinBox_ee_min_laser_power_mW,   "min_laser_power_mW")
+        self.bind_doubleSpinBox   (cfu.doubleSpinBox_ee_detector_gain,        "detector_gain")
+        self.bind_doubleSpinBox   (cfu.doubleSpinBox_ee_detector_gain_odd,    "detector_gain_odd")
+        self.bind_doubleSpinBox   (cfu.doubleSpinBox_ee_spline_min,           "spline_min")
+        self.bind_doubleSpinBox   (cfu.doubleSpinBox_ee_spline_max,           "spline_max")
+        self.bind_doubleSpinBox   (cfu.doubleSpinBox_ee_avg_resolution,       "avg_resolution")
 
-        self.bind_lineEdit        (sfu.lineEdit_ee_adc_to_degC_coeff_0,       "adc_to_degC_coeffs", 0)
-        self.bind_lineEdit        (sfu.lineEdit_ee_adc_to_degC_coeff_1,       "adc_to_degC_coeffs", 1)
-        self.bind_lineEdit        (sfu.lineEdit_ee_adc_to_degC_coeff_2,       "adc_to_degC_coeffs", 2)
-        self.bind_lineEdit        (sfu.lineEdit_ee_calibrated_by,             "calibrated_by")
-        self.bind_lineEdit        (sfu.lineEdit_ee_calibration_date,          "calibration_date")
-        self.bind_lineEdit        (sfu.lineEdit_ee_degC_to_dac_coeff_0,       "degC_to_dac_coeffs", 0)
-        self.bind_lineEdit        (sfu.lineEdit_ee_degC_to_dac_coeff_1,       "degC_to_dac_coeffs", 1)
-        self.bind_lineEdit        (sfu.lineEdit_ee_degC_to_dac_coeff_2,       "degC_to_dac_coeffs", 2)
-        self.bind_lineEdit        (sfu.lineEdit_ee_detector,                  "detector")
-        self.bind_lineEdit        (sfu.lineEdit_ee_laser_power_coeff_0,       "laser_power_coeffs", 0)
-        self.bind_lineEdit        (sfu.lineEdit_ee_laser_power_coeff_1,       "laser_power_coeffs", 1)
-        self.bind_lineEdit        (sfu.lineEdit_ee_laser_power_coeff_2,       "laser_power_coeffs", 2)
-        self.bind_lineEdit        (sfu.lineEdit_ee_laser_power_coeff_3,       "laser_power_coeffs", 3)
-        self.bind_lineEdit        (sfu.lineEdit_ee_linearity_coeff_0,         "linearity_coeffs", 0)
-        self.bind_lineEdit        (sfu.lineEdit_ee_linearity_coeff_1,         "linearity_coeffs", 1)
-        self.bind_lineEdit        (sfu.lineEdit_ee_linearity_coeff_2,         "linearity_coeffs", 2)
-        self.bind_lineEdit        (sfu.lineEdit_ee_linearity_coeff_3,         "linearity_coeffs", 3)
-        self.bind_lineEdit        (sfu.lineEdit_ee_linearity_coeff_4,         "linearity_coeffs", 4)
-        self.bind_lineEdit        (sfu.lineEdit_ee_model,                     "model")
-        self.bind_lineEdit        (sfu.lineEdit_ee_serial_number,             "serial_number")
-        self.bind_lineEdit        (sfu.lineEdit_ee_user_text,                 "user_text")
-        self.bind_lineEdit        (sfu.lineEdit_ee_wavelength_coeff_0,        "wavelength_coeffs", 0)
-        self.bind_lineEdit        (sfu.lineEdit_ee_wavelength_coeff_1,        "wavelength_coeffs", 1)
-        self.bind_lineEdit        (sfu.lineEdit_ee_wavelength_coeff_2,        "wavelength_coeffs", 2)
-        self.bind_lineEdit        (sfu.lineEdit_ee_wavelength_coeff_3,        "wavelength_coeffs", 3)
-        self.bind_lineEdit        (sfu.lineEdit_ee_wavelength_coeff_4,        "wavelength_coeffs", 4)
-        self.bind_lineEdit        (sfu.lineEdit_ee_product_config,            "product_configuration")
-        self.bind_lineEdit        (sfu.lineEdit_ee_raman_intensity_coeff_0,   "raman_intensity_coeffs", 0)
-        self.bind_lineEdit        (sfu.lineEdit_ee_raman_intensity_coeff_1,   "raman_intensity_coeffs", 1)
-        self.bind_lineEdit        (sfu.lineEdit_ee_raman_intensity_coeff_2,   "raman_intensity_coeffs", 2)
-        self.bind_lineEdit        (sfu.lineEdit_ee_raman_intensity_coeff_3,   "raman_intensity_coeffs", 3)
-        self.bind_lineEdit        (sfu.lineEdit_ee_raman_intensity_coeff_4,   "raman_intensity_coeffs", 4)
-        self.bind_lineEdit        (sfu.lineEdit_ee_raman_intensity_coeff_5,   "raman_intensity_coeffs", 5)
-        self.bind_lineEdit        (sfu.lineEdit_ee_raman_intensity_coeff_6,   "raman_intensity_coeffs", 6)
-        self.bind_lineEdit        (sfu.lineEdit_ee_raman_intensity_coeff_7,   "raman_intensity_coeffs", 7)
-        self.bind_lineEdit        (sfu.lineEdit_ee_spline_wl_0,               "spline_wavelengths", 0)
-        self.bind_lineEdit        (sfu.lineEdit_ee_spline_wl_1,               "spline_wavelengths", 1)
-        self.bind_lineEdit        (sfu.lineEdit_ee_spline_wl_2,               "spline_wavelengths", 2)
-        self.bind_lineEdit        (sfu.lineEdit_ee_spline_wl_3,               "spline_wavelengths", 3)
-        self.bind_lineEdit        (sfu.lineEdit_ee_spline_wl_4,               "spline_wavelengths", 4)
-        self.bind_lineEdit        (sfu.lineEdit_ee_spline_wl_5,               "spline_wavelengths", 5)
-        self.bind_lineEdit        (sfu.lineEdit_ee_spline_wl_6,               "spline_wavelengths", 6)
-        self.bind_lineEdit        (sfu.lineEdit_ee_spline_wl_7,               "spline_wavelengths", 7)
-        self.bind_lineEdit        (sfu.lineEdit_ee_spline_wl_8,               "spline_wavelengths", 8)
-        self.bind_lineEdit        (sfu.lineEdit_ee_spline_wl_9,               "spline_wavelengths", 9)
-        self.bind_lineEdit        (sfu.lineEdit_ee_spline_wl_10,              "spline_wavelengths", 10)
-        self.bind_lineEdit        (sfu.lineEdit_ee_spline_wl_11,              "spline_wavelengths", 11)
-        self.bind_lineEdit        (sfu.lineEdit_ee_spline_wl_12,              "spline_wavelengths", 12)
-        self.bind_lineEdit        (sfu.lineEdit_ee_spline_wl_13,              "spline_wavelengths", 13)
+        self.bind_lineEdit        (cfu.lineEdit_ee_adc_to_degC_coeff_0,       "adc_to_degC_coeffs", 0)
+        self.bind_lineEdit        (cfu.lineEdit_ee_adc_to_degC_coeff_1,       "adc_to_degC_coeffs", 1)
+        self.bind_lineEdit        (cfu.lineEdit_ee_adc_to_degC_coeff_2,       "adc_to_degC_coeffs", 2)
+        self.bind_lineEdit        (cfu.lineEdit_ee_calibrated_by,             "calibrated_by")
+        self.bind_lineEdit        (cfu.lineEdit_ee_calibration_date,          "calibration_date")
+        self.bind_lineEdit        (cfu.lineEdit_ee_degC_to_dac_coeff_0,       "degC_to_dac_coeffs", 0)
+        self.bind_lineEdit        (cfu.lineEdit_ee_degC_to_dac_coeff_1,       "degC_to_dac_coeffs", 1)
+        self.bind_lineEdit        (cfu.lineEdit_ee_degC_to_dac_coeff_2,       "degC_to_dac_coeffs", 2)
+        self.bind_lineEdit        (cfu.lineEdit_ee_detector,                  "detector")
+        self.bind_lineEdit        (cfu.lineEdit_ee_laser_power_coeff_0,       "laser_power_coeffs", 0)
+        self.bind_lineEdit        (cfu.lineEdit_ee_laser_power_coeff_1,       "laser_power_coeffs", 1)
+        self.bind_lineEdit        (cfu.lineEdit_ee_laser_power_coeff_2,       "laser_power_coeffs", 2)
+        self.bind_lineEdit        (cfu.lineEdit_ee_laser_power_coeff_3,       "laser_power_coeffs", 3)
+        self.bind_lineEdit        (cfu.lineEdit_ee_linearity_coeff_0,         "linearity_coeffs", 0)
+        self.bind_lineEdit        (cfu.lineEdit_ee_linearity_coeff_1,         "linearity_coeffs", 1)
+        self.bind_lineEdit        (cfu.lineEdit_ee_linearity_coeff_2,         "linearity_coeffs", 2)
+        self.bind_lineEdit        (cfu.lineEdit_ee_linearity_coeff_3,         "linearity_coeffs", 3)
+        self.bind_lineEdit        (cfu.lineEdit_ee_linearity_coeff_4,         "linearity_coeffs", 4)
+        self.bind_lineEdit        (cfu.lineEdit_ee_model,                     "model")
+        self.bind_lineEdit        (cfu.lineEdit_ee_serial_number,             "serial_number")
+        self.bind_lineEdit        (cfu.lineEdit_ee_user_text,                 "user_text")
+        self.bind_lineEdit        (cfu.lineEdit_ee_wavelength_coeff_0,        "wavelength_coeffs", 0)
+        self.bind_lineEdit        (cfu.lineEdit_ee_wavelength_coeff_1,        "wavelength_coeffs", 1)
+        self.bind_lineEdit        (cfu.lineEdit_ee_wavelength_coeff_2,        "wavelength_coeffs", 2)
+        self.bind_lineEdit        (cfu.lineEdit_ee_wavelength_coeff_3,        "wavelength_coeffs", 3)
+        self.bind_lineEdit        (cfu.lineEdit_ee_wavelength_coeff_4,        "wavelength_coeffs", 4)
+        self.bind_lineEdit        (cfu.lineEdit_ee_product_config,            "product_configuration")
+        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_0,   "raman_intensity_coeffs", 0)
+        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_1,   "raman_intensity_coeffs", 1)
+        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_2,   "raman_intensity_coeffs", 2)
+        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_3,   "raman_intensity_coeffs", 3)
+        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_4,   "raman_intensity_coeffs", 4)
+        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_5,   "raman_intensity_coeffs", 5)
+        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_6,   "raman_intensity_coeffs", 6)
+        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_7,   "raman_intensity_coeffs", 7)
+        self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_0,               "spline_wavelengths", 0)
+        self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_1,               "spline_wavelengths", 1)
+        self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_2,               "spline_wavelengths", 2)
+        self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_3,               "spline_wavelengths", 3)
+        self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_4,               "spline_wavelengths", 4)
+        self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_5,               "spline_wavelengths", 5)
+        self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_6,               "spline_wavelengths", 6)
+        self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_7,               "spline_wavelengths", 7)
+        self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_8,               "spline_wavelengths", 8)
+        self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_9,               "spline_wavelengths", 9)
+        self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_10,              "spline_wavelengths", 10)
+        self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_11,              "spline_wavelengths", 11)
+        self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_12,              "spline_wavelengths", 12)
+        self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_13,              "spline_wavelengths", 13)
 
         for region in range(2, 5):
             for i in range(4):
-                self.bind_lineEdit(getattr(sfu, f"lineEdit_ee_regions_{region}_coeff_{i}"), f"roi_wavecal_region_{region}_coeffs", i)
+                self.bind_lineEdit(getattr(cfu, f"lineEdit_ee_regions_{region}_coeff_{i}"), f"roi_wavecal_region_{region}_coeffs", i)
 
-        self.bind_spinBox         (sfu.spinBox_ee_active_pixels_horizontal,   "active_pixels_horizontal")
-        self.bind_spinBox         (sfu.spinBox_ee_active_pixels_vertical,     "active_pixels_vertical")
-        self.bind_spinBox         (sfu.spinBox_ee_actual_horizontal_pixels,   "actual_horizontal")
+        self.bind_spinBox         (cfu.spinBox_ee_active_pixels_horizontal,   "active_pixels_horizontal")
+        self.bind_spinBox         (cfu.spinBox_ee_active_pixels_vertical,     "active_pixels_vertical")
+        self.bind_spinBox         (cfu.spinBox_ee_actual_horizontal_pixels,   "actual_horizontal")
         for i in range(15):
-            self.bind_spinBox(getattr(sfu, f"spinBox_ee_bad_pixel_{i}"), "bad_pixels", i)
-        self.bind_spinBox         (sfu.spinBox_ee_baud_rate,                  "baud_rate")
-        self.bind_spinBox         (sfu.spinBox_ee_detector_offset,            "detector_offset")
-        self.bind_spinBox         (sfu.spinBox_ee_detector_offset_odd,        "detector_offset_odd")
-        self.bind_spinBox         (sfu.spinBox_ee_max_integration_time_ms,    "max_integration_time_ms")
-        self.bind_spinBox         (sfu.spinBox_ee_max_temp_degC,              "max_temp_degC")
-        self.bind_spinBox         (sfu.spinBox_ee_min_integration_time_ms,    "min_integration_time_ms")
-        self.bind_spinBox         (sfu.spinBox_ee_min_temp_degC,              "min_temp_degC")
-        self.bind_spinBox         (sfu.spinBox_ee_roi_horizontal_end,         "roi_horizontal_end")
-        self.bind_spinBox         (sfu.spinBox_ee_roi_horizontal_start,       "roi_horizontal_start")
-        self.bind_spinBox         (sfu.spinBox_ee_roi_vertical_region_1_end,  "roi_vertical_region_1_end")
-        self.bind_spinBox         (sfu.spinBox_ee_roi_vertical_region_1_start,"roi_vertical_region_1_start")
-        self.bind_spinBox         (sfu.spinBox_ee_roi_vertical_region_2_end,  "roi_vertical_region_2_end")
-        self.bind_spinBox         (sfu.spinBox_ee_roi_vertical_region_2_start,"roi_vertical_region_2_start")
-        self.bind_spinBox         (sfu.spinBox_ee_roi_vertical_region_3_end,  "roi_vertical_region_3_end")
-        self.bind_spinBox         (sfu.spinBox_ee_roi_vertical_region_3_start,"roi_vertical_region_3_start")
-        self.bind_spinBox         (sfu.spinBox_ee_slit_size_um,               "slit_size_um")
-        self.bind_spinBox         (sfu.spinBox_ee_startup_integration_time_ms,"startup_integration_time_ms")
-        self.bind_spinBox         (sfu.spinBox_ee_startup_temp_degC,          "startup_temp_degC")
-        self.bind_spinBox         (sfu.spinBox_ee_startup_triggering_scheme,  "startup_triggering_scheme")
-        self.bind_spinBox         (sfu.spinBox_ee_thermistor_beta,            "tec_beta")
-        self.bind_spinBox         (sfu.spinBox_ee_thermistor_resistance_298K, "tec_r298")
-        self.bind_spinBox         (sfu.spinBox_ee_raman_intensity_calibration_order, "raman_intensity_calibration_order")
-        self.bind_spinBox         (sfu.spinBox_ee_subformat,                  "subformat")
-        self.bind_spinBox         (sfu.spinBox_ee_spline_points,              "spline_points")
-        self.bind_spinBox         (sfu.spinBox_ee_laser_warmup_sec,           "laser_warmup_sec")
-        self.bind_spinBox         (sfu.spinBox_ee_untethered_library_type,    "untethered_library_type")
-        self.bind_spinBox         (sfu.spinBox_ee_untethered_library_id,      "untethered_library_id")
-        self.bind_spinBox         (sfu.spinBox_ee_untethered_scans_to_average,"untethered_scans_to_average")
-        self.bind_spinBox         (sfu.spinBox_ee_untethered_min_ramp_pixels, "untethered_min_ramp_pixels")
-        self.bind_spinBox         (sfu.spinBox_ee_untethered_min_peak_height, "untethered_min_peak_height")
-        self.bind_spinBox         (sfu.spinBox_ee_untethered_match_threshold, "untethered_match_threshold")
-        self.bind_spinBox         (sfu.spinBox_ee_untethered_library_count,   "untethered_library_count")
-        self.bind_spinBox         (sfu.spinBox_ee_regions_count,              "region_count")
-        self.bind_spinBox         (sfu.spinBox_ee_regions_4_vertical_start,   "roi_vertical_region_4_start")
-        self.bind_spinBox         (sfu.spinBox_ee_regions_4_vertical_end,     "roi_vertical_region_4_end")
-        self.bind_spinBox         (sfu.spinBox_ee_laser_watchdog_sec,         "laser_watchdog_sec")
-        self.bind_spinBox         (sfu.spinBox_ee_light_source_type,          "light_source_type")
+            self.bind_spinBox(getattr(cfu, f"spinBox_ee_bad_pixel_{i}"), "bad_pixels", i)
+        self.bind_spinBox         (cfu.spinBox_ee_baud_rate,                  "baud_rate")
+        self.bind_spinBox         (cfu.spinBox_ee_detector_offset,            "detector_offset")
+        self.bind_spinBox         (cfu.spinBox_ee_detector_offset_odd,        "detector_offset_odd")
+        self.bind_spinBox         (cfu.spinBox_ee_max_integration_time_ms,    "max_integration_time_ms")
+        self.bind_spinBox         (cfu.spinBox_ee_max_temp_degC,              "max_temp_degC")
+        self.bind_spinBox         (cfu.spinBox_ee_min_integration_time_ms,    "min_integration_time_ms")
+        self.bind_spinBox         (cfu.spinBox_ee_min_temp_degC,              "min_temp_degC")
+        self.bind_spinBox         (cfu.spinBox_ee_roi_horizontal_end,         "roi_horizontal_end")
+        self.bind_spinBox         (cfu.spinBox_ee_roi_horizontal_start,       "roi_horizontal_start")
+        self.bind_spinBox         (cfu.spinBox_ee_roi_vertical_region_1_end,  "roi_vertical_region_1_end")
+        self.bind_spinBox         (cfu.spinBox_ee_roi_vertical_region_1_start,"roi_vertical_region_1_start")
+        self.bind_spinBox         (cfu.spinBox_ee_roi_vertical_region_2_end,  "roi_vertical_region_2_end")
+        self.bind_spinBox         (cfu.spinBox_ee_roi_vertical_region_2_start,"roi_vertical_region_2_start")
+        self.bind_spinBox         (cfu.spinBox_ee_roi_vertical_region_3_end,  "roi_vertical_region_3_end")
+        self.bind_spinBox         (cfu.spinBox_ee_roi_vertical_region_3_start,"roi_vertical_region_3_start")
+        self.bind_spinBox         (cfu.spinBox_ee_slit_size_um,               "slit_size_um")
+        self.bind_spinBox         (cfu.spinBox_ee_startup_integration_time_ms,"startup_integration_time_ms")
+        self.bind_spinBox         (cfu.spinBox_ee_startup_temp_degC,          "startup_temp_degC")
+        self.bind_spinBox         (cfu.spinBox_ee_startup_triggering_scheme,  "startup_triggering_scheme")
+        self.bind_spinBox         (cfu.spinBox_ee_thermistor_beta,            "tec_beta")
+        self.bind_spinBox         (cfu.spinBox_ee_thermistor_resistance_298K, "tec_r298")
+        self.bind_spinBox         (cfu.spinBox_ee_raman_intensity_calibration_order, "raman_intensity_calibration_order")
+        self.bind_spinBox         (cfu.spinBox_ee_subformat,                  "subformat")
+        self.bind_spinBox         (cfu.spinBox_ee_spline_points,              "spline_points")
+        self.bind_spinBox         (cfu.spinBox_ee_laser_warmup_sec,           "laser_warmup_sec")
+        self.bind_spinBox         (cfu.spinBox_ee_untethered_library_type,    "untethered_library_type")
+        self.bind_spinBox         (cfu.spinBox_ee_untethered_library_id,      "untethered_library_id")
+        self.bind_spinBox         (cfu.spinBox_ee_untethered_scans_to_average,"untethered_scans_to_average")
+        self.bind_spinBox         (cfu.spinBox_ee_untethered_min_ramp_pixels, "untethered_min_ramp_pixels")
+        self.bind_spinBox         (cfu.spinBox_ee_untethered_min_peak_height, "untethered_min_peak_height")
+        self.bind_spinBox         (cfu.spinBox_ee_untethered_match_threshold, "untethered_match_threshold")
+        self.bind_spinBox         (cfu.spinBox_ee_untethered_library_count,   "untethered_library_count")
+        self.bind_spinBox         (cfu.spinBox_ee_regions_count,              "region_count")
+        self.bind_spinBox         (cfu.spinBox_ee_regions_4_vertical_start,   "roi_vertical_region_4_start")
+        self.bind_spinBox         (cfu.spinBox_ee_regions_4_vertical_end,     "roi_vertical_region_4_end")
+        self.bind_spinBox         (cfu.spinBox_ee_laser_watchdog_sec,         "laser_watchdog_sec")
+        self.bind_spinBox         (cfu.spinBox_ee_light_source_type,          "light_source_type")
         for region in range(2, 5):
             for node in ("start", "end"):
-                self.bind_spinBox(getattr(sfu, f"spinBox_ee_regions_{region}_horiz_{node}"), f"roi_horiz_region_{region}_{node}")
+                self.bind_spinBox(getattr(cfu, f"spinBox_ee_regions_{region}_horiz_{node}"), f"roi_horiz_region_{region}_{node}")
 
-        sfu.spinBox_ee_raman_intensity_calibration_order.setMaximum(EEPROM.MAX_RAMAN_INTENSITY_CALIBRATION_ORDER)
+        cfu.spinBox_ee_raman_intensity_calibration_order.setMaximum(EEPROM.MAX_RAMAN_INTENSITY_CALIBRATION_ORDER)
 
-        self.lb_gain_hex = sfu.label_ee_detector_gain_hex
+        self.lb_gain_hex = cfu.label_ee_detector_gain_hex
 
-        sfu.pushButton_eeprom_clipboard.clicked.connect(self.copy_to_clipboard)
-        sfu.pushButton_importEEPROM.clicked.connect(self.import_eeprom)
-        sfu.pushButton_exportEEPROM.clicked.connect(self.export_eeprom)
+        cfu.pushButton_eeprom_clipboard.clicked.connect(self.copy_to_clipboard)
+        cfu.pushButton_importEEPROM.clicked.connect(self.import_eeprom)
+        cfu.pushButton_exportEEPROM.clicked.connect(self.export_eeprom)
 
         self.update_authentication()
 
@@ -583,16 +583,16 @@ class EEPROMEditor:
             return
 
         fpga = spec.settings.fpga_options
-        sfu = self.ctl.form.ui
+        cfu = self.ctl.form.ui
 
-        sfu.label_fpga_integration_time_resolution  .setText(fpga.stringify_resolution())
-        sfu.label_fpga_data_header                  .setText(fpga.stringify_header())
-        sfu.label_fpga_has_cf_select                .setText(str(fpga.has_cf_select))
-        sfu.label_fpga_laser_type                   .setText(fpga.stringify_laser_type())
-        sfu.label_fpga_laser_control                .setText(fpga.stringify_laser_control())
-        sfu.label_has_area_scan                     .setText(str(fpga.has_area_scan))
-        sfu.label_has_actual_integration_time       .setText(str(fpga.has_actual_integ_time))
-        sfu.label_has_horizontal_binning            .setText(str(fpga.has_horiz_binning))
+        cfu.label_fpga_integration_time_resolution  .setText(fpga.stringify_resolution())
+        cfu.label_fpga_data_header                  .setText(fpga.stringify_header())
+        cfu.label_fpga_has_cf_select                .setText(str(fpga.has_cf_select))
+        cfu.label_fpga_laser_type                   .setText(fpga.stringify_laser_type())
+        cfu.label_fpga_laser_control                .setText(fpga.stringify_laser_control())
+        cfu.label_has_area_scan                     .setText(str(fpga.has_area_scan))
+        cfu.label_has_actual_integration_time       .setText(str(fpga.has_actual_integ_time))
+        cfu.label_has_horizontal_binning            .setText(str(fpga.has_horiz_binning))
 
     def update_from_spec(self):
         """

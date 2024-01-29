@@ -130,15 +130,15 @@ class PageNavigation:
 
     def __init__(self, ctl):
         self.ctl = ctl
-        sfu = ctl.form.ui
+        cfu = ctl.form.ui
 
                                 
-        self.button_raman       = sfu.pushButton_raman
-        self.button_non_raman   = sfu.pushButton_non_raman
-        self.button_expert      = sfu.pushButton_expert
-        self.combo_view         = sfu.comboBox_view
-        self.stack_main         = sfu.stackedWidget_low
-        self.combo_technique    = sfu.technique_comboBox
+        self.button_raman       = cfu.pushButton_raman
+        self.button_non_raman   = cfu.pushButton_non_raman
+        self.button_expert      = cfu.pushButton_expert
+        self.combo_view         = cfu.comboBox_view
+        self.stack_main         = cfu.stackedWidget_low
+        self.combo_technique    = cfu.technique_comboBox
 
         # self-register
         self.ctl.logging_feature.page_nav = self
@@ -394,7 +394,7 @@ class PageNavigation:
         is_ingaas = False
         has_cooling = False
         flag = self.doing_expert()
-        sfu = self.ctl.form.ui
+        cfu = self.ctl.form.ui
 
         spec = self.ctl.multispec.current_spectrometer() if self.ctl.multispec else None
         if spec is None:
@@ -405,11 +405,11 @@ class PageNavigation:
 
         # todo: migrate all of these to register_observer("doing_expert") in 
         # their respective owning Business Objects
-        sfu.frame_post_processing.setVisible(flag)
-        sfu.frame_baseline_correction.setVisible(flag)
-        sfu.frame_tec_control.setVisible(flag and has_cooling)
-        sfu.frame_area_scan_widget.setVisible(flag and not is_ingaas)
-        sfu.frame_region_control.setVisible(False) # spec.settings.is_imx()
+        cfu.frame_post_processing.setVisible(flag)
+        cfu.frame_baseline_correction.setVisible(flag)
+        cfu.frame_tec_control.setVisible(flag and has_cooling)
+        cfu.frame_area_scan_widget.setVisible(flag and not is_ingaas)
+        cfu.frame_region_control.setVisible(False) # spec.settings.is_imx()
 
     def set_operation_mode_common(self, mode):
         # cache the newly-set operation mode for the current view, so the

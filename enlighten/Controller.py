@@ -167,15 +167,15 @@ class Controller:
         ########################################################################
 
         # hide these immediately (KIA shouldn't be visible in Scope)
-        sfu = self.form.ui
-        for widget in [ sfu.frame_kia_outer,
-                        sfu.frame_id_results_white,
-                        sfu.tabWidget_advanced_features
+        cfu = self.form.ui
+        for widget in [ cfu.frame_kia_outer,
+                        cfu.frame_id_results_white,
+                        cfu.tabWidget_advanced_features
                       ]:
             widget.setVisible(False)
 
         # @todo this shouldn't go here
-        sfu.pushButton_reset_fpga.clicked.connect(self.perform_fpga_reset)
+        cfu.pushButton_reset_fpga.clicked.connect(self.perform_fpga_reset)
 
         ########################################################################
         # Create startup Business Objects
@@ -204,7 +204,7 @@ class Controller:
         # versions
         # ######################################################################
 
-        sfu.label_python_version.setText(util.python_version())
+        cfu.label_python_version.setText(util.python_version())
 
         ########################################################################
         # Populate Placeholders
@@ -686,7 +686,7 @@ class Controller:
         - leave rest in initialize_gui_from_current_device()
         - have hotplug function call initialize_gui() at end
         """
-        sfu = self.form.ui
+        cfu = self.form.ui
 
         if self.shutting_down:
             log.debug("initialize_new_device: shutting down")
@@ -754,9 +754,9 @@ class Controller:
                 log.debug(f"calling save_config with: {device.settings.eeprom}")
                 device.change_setting("save_config", device.settings.eeprom)
 
-            sfu.label_detector_serial.setText(device.settings.eeprom.detector_serial_number)
+            cfu.label_detector_serial.setText(device.settings.eeprom.detector_serial_number)
         else:
-            sfu.label_detector_serial.setText("")
+            cfu.label_detector_serial.setText("")
 
         ########################################################################
         # update Multispec
@@ -814,8 +814,8 @@ class Controller:
         # display firmware
         ########################################################################
 
-        sfu.label_microcontroller_firmware_version.setText(spec.settings.microcontroller_firmware_version)
-        sfu.label_fpga_firmware_version.setText(spec.settings.fpga_firmware_version)
+        cfu.label_microcontroller_firmware_version.setText(spec.settings.microcontroller_firmware_version)
+        cfu.label_fpga_firmware_version.setText(spec.settings.fpga_firmware_version)
 
         ########################################################################
         # update EEPROM Editor
@@ -991,11 +991,11 @@ class Controller:
         # we've connected to at least one spectrometer, so set logging to 
         # whatever the user selected (we default at DEBUG until connection)
         logging.getLogger().setLevel(self.log_level)
-        log.info(f"successfully %s {spec.label}", "initialized" if hotplug else "selected")
+        log.info(f"succesfully %s {spec.label}", "initialized" if hotplug else "selected")
 
         # updates from initialization to match time window in spinbox
         # call StripChartFeature getter
-        spec.app_state.reset_rolling_data(time_window=sfu.spinBox_strip_window.value(), hotplug=hotplug)
+        spec.app_state.reset_rolling_data(time_window=cfu.spinBox_strip_window.value(), hotplug=hotplug)
 
     # ##########################################################################
     # Setup (populate widget placeholders)
@@ -1013,14 +1013,14 @@ class Controller:
         This could probably be moved into MeasurementFactory, the sole user of
         these widgets.
         """
-        sfu = self.form.ui
+        cfu = self.form.ui
 
         log.debug("Placeholder scope capture save")
 
         # This layout isn't used anywhere else.  In fact, it's not even visible
         # in the Designer Object Inspector, although you can see it in the .ui.
         # It seems to be under page_scope_capture_save_design though.
-        layout = sfu.verticalLayout_scope_capture_save_design
+        layout = cfu.verticalLayout_scope_capture_save_design
 
         # this is a fake graph (chart)
         self.thumbnail_render_graph = pyqtgraph.PlotWidget(name="Measurement Thumbnail Renderer")
@@ -1049,24 +1049,24 @@ class Controller:
         # rendered ThumbnailWidgets will be shown).  In other words, you'll never
         # see any of the above bits on the runtime GUI, as the following line
         # hides them.
-        sfu.stackedWidget_scope_capture_save.setCurrentIndex(1)
+        cfu.stackedWidget_scope_capture_save.setCurrentIndex(1)
 
     # ##########################################################################
     # GUI setup (bindings)
     # ##########################################################################
 
     def bind_gui_signals(self):
-        sfu = self.form.ui
+        cfu = self.form.ui
 
         # appropriate for Controller
         self.form.exit_signal                       .exit               .connect(self.close)
 
         ## move to StripChartFeature
-        sfu.spinBox_strip_window                    .valueChanged       .connect(self.update_hardware_window)
+        cfu.spinBox_strip_window                    .valueChanged       .connect(self.update_hardware_window)
         
         # OEM tab
-        sfu.checkBox_swap_alternating_pixels        .stateChanged       .connect(self.swap_alternating_pixels_callback)
-        sfu.checkBox_graph_alternating_pixels       .stateChanged       .connect(self.graph_alternating_pixels_callback)
+        cfu.checkBox_swap_alternating_pixels        .stateChanged       .connect(self.swap_alternating_pixels_callback)
+        cfu.checkBox_graph_alternating_pixels       .stateChanged       .connect(self.graph_alternating_pixels_callback)
 
     def bind_shortcuts(self):
         """ 
@@ -1152,7 +1152,7 @@ class Controller:
                       via the EEPROMEditor and .ini files to be pushed down.  So
                       the EEPROMEditor sends the "force" parameter.
         """
-        sfu = self.form.ui
+        cfu = self.form.ui
         spec = self.current_spectrometer()
         if spec is None:
             return
@@ -1163,10 +1163,10 @@ class Controller:
         # FROM the EEPROM object, and any changes to the EEPROMEditor fields
         # updated to the EEPROM object as a matter of course.)
         ee = self.settings().eeprom
-        ee.detector_gain       = sfu.doubleSpinBox_ee_detector_gain      .value()
-        ee.detector_gain_odd   = sfu.doubleSpinBox_ee_detector_gain_odd  .value()
-        ee.detector_offset     = sfu.      spinBox_ee_detector_offset    .value()
-        ee.detector_offset_odd = sfu.      spinBox_ee_detector_offset_odd.value()
+        ee.detector_gain       = cfu.doubleSpinBox_ee_detector_gain      .value()
+        ee.detector_gain_odd   = cfu.doubleSpinBox_ee_detector_gain_odd  .value()
+        ee.detector_offset     = cfu.      spinBox_ee_detector_offset    .value()
+        ee.detector_offset_odd = cfu.      spinBox_ee_detector_offset_odd.value()
 
         if force:
             # send the new values to the FPGA via opcodes
@@ -1177,21 +1177,21 @@ class Controller:
 
     def swap_alternating_pixels_callback(self):
         """ Doesn't seem any point in tracking state on this? """
-        sfu = self.form.ui
+        cfu = self.form.ui
         spec = self.current_spectrometer()
         if spec is None:
             return
 
-        enabled = sfu.checkBox_swap_alternating_pixels.isChecked()
+        enabled = cfu.checkBox_swap_alternating_pixels.isChecked()
         spec.change_device_setting("swap_alternating_pixels", enabled)
 
     def graph_alternating_pixels_callback(self):
-        sfu = self.form.ui
+        cfu = self.form.ui
         spec = self.current_spectrometer()
         if spec is None:
             return
 
-        enabled = sfu.checkBox_graph_alternating_pixels.isChecked()
+        enabled = cfu.checkBox_graph_alternating_pixels.isChecked()
 
         self.settings().state.graph_alternating_pixels = enabled
         spec.change_device_setting("graph_alternating_pixels", enabled)
@@ -1327,7 +1327,7 @@ class Controller:
         Attempt to acquire a reading from the subprocess response queue,
         process and render data in the GUI.
         """
-        sfu = self.form.ui
+        cfu = self.form.ui
         if spec is None:
             return
 
@@ -1431,11 +1431,11 @@ class Controller:
         spec.app_state.received_reading_at_current_integration_time = True
 
         if spec.device.is_ble and acquired_reading.progress != 1:
-            sfu.readingProgressBar.setValue(acquired_reading.progress*100)
+            cfu.readingProgressBar.setValue(acquired_reading.progress*100)
             # got an incomplete ble reading so stop proceeding for now
             return
         elif spec.device.is_ble:
-            sfu.readingProgressBar.setValue(100)
+            cfu.readingProgressBar.setValue(100)
 
         # @todo need to update DetectorRegions so this will pass (use total_pixels)
 
@@ -1471,9 +1471,9 @@ class Controller:
             # @todo move to AmbientTemperatureFeature
             # display ambient temperature on Hardware Setup
             if spec.settings.is_gen15() and reading.ambient_temperature_degC is not None:
-                sfu.label_ambient_temperature.setText("%.2f°C" % reading.ambient_temperature_degC)
+                cfu.label_ambient_temperature.setText("%.2f°C" % reading.ambient_temperature_degC)
             else:
-                sfu.label_ambient_temperature.setText("unknown")
+                cfu.label_ambient_temperature.setText("unknown")
 
             # update laser status 
             if spec.settings.is_xs():
@@ -1603,7 +1603,7 @@ class Controller:
         
         @param msg - presumably a StatusMessage from a spectrometer process
         """
-        sfu = self.form.ui
+        cfu = self.form.ui
 
         if msg is None:
             return
@@ -1642,7 +1642,7 @@ class Controller:
 
     # called by attempt_reading
     def update_scope_graphs(self, reading=None):
-        sfu = self.form.ui
+        cfu = self.form.ui
         app_state = self.app_state()
 
         # log.debug("update_scope_graphs: reading %d", reading.session_count)
@@ -1741,7 +1741,7 @@ class Controller:
         - post-process
         - apply business logic
         """
-        sfu = self.form.ui
+        cfu = self.form.ui
 
         if settings is None:
             # we are NOT reprocessing
@@ -2050,7 +2050,7 @@ class Controller:
         
         called from initialize_new_device
         """
-        sfu = self.form.ui
+        cfu = self.form.ui
         spec = self.current_spectrometer()
 
         # avoid corrupted data on unprogrammed EEPROMs
@@ -2091,9 +2091,9 @@ class Controller:
 
         #                         Key GUI_Widget                                     INI_file_key
         # SpectrometerState (control widgets)
-        self.update_spinBox      (sn, sfu.spinBox_integration_time_ms,               "integration_time_ms")
-        self.update_spinBox      (sn, sfu.spinBox_boxcar_half_width,                 "boxcar_half_width")
-        self.update_spinBox      (sn, sfu.spinBox_detector_setpoint_degC,            "detector_tec_setpoint_degC")
+        self.update_spinBox      (sn, cfu.spinBox_integration_time_ms,               "integration_time_ms")
+        self.update_spinBox      (sn, cfu.spinBox_boxcar_half_width,                 "boxcar_half_width")
+        self.update_spinBox      (sn, cfu.spinBox_detector_setpoint_degC,            "detector_tec_setpoint_degC")
 
         # EEPROM
         #
@@ -2101,32 +2101,32 @@ class Controller:
         #
         # self.eeprom_editor.update_from_config(sn, ini="adc_to_degC_coeff_0", attr="adc_to_degC_coeffs", index=0)
         #
-        self.update_checkBox     (sn, sfu.checkBox_ee_has_laser,                     "has_laser")
-        self.update_lineEdit     (sn, sfu.lineEdit_ee_adc_to_degC_coeff_0,           "adc_to_degC_coeff_0")
-        self.update_lineEdit     (sn, sfu.lineEdit_ee_adc_to_degC_coeff_1,           "adc_to_degC_coeff_1")
-        self.update_lineEdit     (sn, sfu.lineEdit_ee_adc_to_degC_coeff_2,           "adc_to_degC_coeff_2")
-        self.update_lineEdit     (sn, sfu.lineEdit_ee_degC_to_dac_coeff_0,           "degC_to_dac_coeff_0")
-        self.update_lineEdit     (sn, sfu.lineEdit_ee_degC_to_dac_coeff_1,           "degC_to_dac_coeff_1")
-        self.update_lineEdit     (sn, sfu.lineEdit_ee_degC_to_dac_coeff_2,           "degC_to_dac_coeff_2")
-        self.update_lineEdit     (sn, sfu.lineEdit_ee_wavelength_coeff_0,            "wavelength_coeff_0")
-        self.update_lineEdit     (sn, sfu.lineEdit_ee_wavelength_coeff_1,            "wavelength_coeff_1")
-        self.update_lineEdit     (sn, sfu.lineEdit_ee_wavelength_coeff_2,            "wavelength_coeff_2")
-        self.update_lineEdit     (sn, sfu.lineEdit_ee_wavelength_coeff_3,            "wavelength_coeff_3")
-        self.update_spinBox      (sn, sfu.spinBox_ee_max_temp_degC,                  "detector_tec_max_degC")
-        self.update_spinBox      (sn, sfu.spinBox_ee_min_temp_degC,                  "detector_tec_min_degC")
-        self.update_spinBox      (sn, sfu.spinBox_ee_slit_size_um,                   "slit_size_um")
-        self.update_doubleSpinBox(sn, sfu.doubleSpinBox_ee_excitation_nm_float,      "excitation_nm")
+        self.update_checkBox     (sn, cfu.checkBox_ee_has_laser,                     "has_laser")
+        self.update_lineEdit     (sn, cfu.lineEdit_ee_adc_to_degC_coeff_0,           "adc_to_degC_coeff_0")
+        self.update_lineEdit     (sn, cfu.lineEdit_ee_adc_to_degC_coeff_1,           "adc_to_degC_coeff_1")
+        self.update_lineEdit     (sn, cfu.lineEdit_ee_adc_to_degC_coeff_2,           "adc_to_degC_coeff_2")
+        self.update_lineEdit     (sn, cfu.lineEdit_ee_degC_to_dac_coeff_0,           "degC_to_dac_coeff_0")
+        self.update_lineEdit     (sn, cfu.lineEdit_ee_degC_to_dac_coeff_1,           "degC_to_dac_coeff_1")
+        self.update_lineEdit     (sn, cfu.lineEdit_ee_degC_to_dac_coeff_2,           "degC_to_dac_coeff_2")
+        self.update_lineEdit     (sn, cfu.lineEdit_ee_wavelength_coeff_0,            "wavelength_coeff_0")
+        self.update_lineEdit     (sn, cfu.lineEdit_ee_wavelength_coeff_1,            "wavelength_coeff_1")
+        self.update_lineEdit     (sn, cfu.lineEdit_ee_wavelength_coeff_2,            "wavelength_coeff_2")
+        self.update_lineEdit     (sn, cfu.lineEdit_ee_wavelength_coeff_3,            "wavelength_coeff_3")
+        self.update_spinBox      (sn, cfu.spinBox_ee_max_temp_degC,                  "detector_tec_max_degC")
+        self.update_spinBox      (sn, cfu.spinBox_ee_min_temp_degC,                  "detector_tec_min_degC")
+        self.update_spinBox      (sn, cfu.spinBox_ee_slit_size_um,                   "slit_size_um")
+        self.update_doubleSpinBox(sn, cfu.doubleSpinBox_ee_excitation_nm_float,      "excitation_nm")
 
         # note: because these will change the EEPROMEditor values, and the EEPROMEditor already has
         # a callback to update_gain_and_offset(force=True), INI changes should be sent downstream
-        self.update_doubleSpinBox(sn, sfu.doubleSpinBox_ee_detector_gain,            "ccd_gain")
-        self.update_spinBox      (sn, sfu.spinBox_ee_detector_offset,                "ccd_offset")
-        self.update_doubleSpinBox(sn, sfu.doubleSpinBox_ee_detector_gain_odd,        "ccd_gain_odd")
-        self.update_spinBox      (sn, sfu.spinBox_ee_detector_offset_odd,            "ccd_offset_odd")
+        self.update_doubleSpinBox(sn, cfu.doubleSpinBox_ee_detector_gain,            "ccd_gain")
+        self.update_spinBox      (sn, cfu.spinBox_ee_detector_offset,                "ccd_offset")
+        self.update_doubleSpinBox(sn, cfu.doubleSpinBox_ee_detector_gain_odd,        "ccd_gain_odd")
+        self.update_spinBox      (sn, cfu.spinBox_ee_detector_offset_odd,            "ccd_offset_odd")
 
         # this one is left for compatibility: if found in .ini file, will update
         # appropriate EEPROM field and send downstream
-        self.update_checkBox     (sn, sfu.checkBox_ee_invert_x_axis,                 "invert_x_axis")
+        self.update_checkBox     (sn, cfu.checkBox_ee_invert_x_axis,                 "invert_x_axis")
 
         # let .ini overrides imply TEC presence
         if not spec.settings.eeprom.has_cooling:
@@ -2213,23 +2213,23 @@ class Controller:
         passed; then recompute wavelengths and wavenumbers no matter what, and 
         sync excitations.
         """
-        sfu = self.form.ui
+        cfu = self.form.ui
         spec = self.current_spectrometer()
         ee = spec.settings.eeprom
 
         spec.settings.update_wavecal(coeffs)
 
         if ee.wavelength_coeffs:
-            sfu.lineEdit_ee_wavelength_coeff_0.setText(str(ee.wavelength_coeffs[0]))
-            sfu.lineEdit_ee_wavelength_coeff_1.setText(str(ee.wavelength_coeffs[1]))
-            sfu.lineEdit_ee_wavelength_coeff_2.setText(str(ee.wavelength_coeffs[2]))
-            sfu.lineEdit_ee_wavelength_coeff_3.setText(str(ee.wavelength_coeffs[3]))
+            cfu.lineEdit_ee_wavelength_coeff_0.setText(str(ee.wavelength_coeffs[0]))
+            cfu.lineEdit_ee_wavelength_coeff_1.setText(str(ee.wavelength_coeffs[1]))
+            cfu.lineEdit_ee_wavelength_coeff_2.setText(str(ee.wavelength_coeffs[2]))
+            cfu.lineEdit_ee_wavelength_coeff_3.setText(str(ee.wavelength_coeffs[3]))
             if len(ee.wavelength_coeffs) > 4:
-                sfu.lineEdit_ee_wavelength_coeff_4.setText(str(ee.wavelength_coeffs[4]))
+                cfu.lineEdit_ee_wavelength_coeff_4.setText(str(ee.wavelength_coeffs[4]))
 
         # sync scope excitation widget from EEPROMEditor's
         # @todo LaserControlFeature
-        sfu.doubleSpinBox_excitation_nm.setValue(ee.excitation_nm_float)
+        cfu.doubleSpinBox_excitation_nm.setValue(ee.excitation_nm_float)
 
     def generate_x_axis(self, spec=None, settings=None, unit=None, cropped=True):
         """

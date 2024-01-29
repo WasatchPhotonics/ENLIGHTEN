@@ -11,9 +11,9 @@ class ExternalTriggerFeature:
     
     def __init__(self, ctl):
         self.ctl = ctl
-        sfu = ctl.form.ui
+        cfu = ctl.form.ui
 
-        self.cb_enabled = sfu.checkBox_external_trigger_enabled
+        self.cb_enabled = cfu.checkBox_external_trigger_enabled
 
         self.enabled = False
 

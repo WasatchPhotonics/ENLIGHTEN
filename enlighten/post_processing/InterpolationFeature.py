@@ -23,14 +23,14 @@ class InterpolationFeature:
     def __init__(self, ctl):
         self.ctl = ctl
 
-        sfu = self.ctl.form.ui
-        self.bt_toggle      = sfu.pushButton_interp_toggle
-        self.cb_enabled     = sfu.checkBox_save_interpolation_enabled
-        self.dsb_end        = sfu.doubleSpinBox_save_interpolation_end
-        self.dsb_incr       = sfu.doubleSpinBox_save_interpolation_incr
-        self.dsb_start      = sfu.doubleSpinBox_save_interpolation_start
-        self.rb_wavelength  = sfu.radioButton_save_interpolation_wavelength
-        self.rb_wavenumber  = sfu.radioButton_save_interpolation_wavenumber
+        cfu = self.ctl.form.ui
+        self.bt_toggle      = cfu.pushButton_interp_toggle
+        self.cb_enabled     = cfu.checkBox_save_interpolation_enabled
+        self.dsb_end        = cfu.doubleSpinBox_save_interpolation_end
+        self.dsb_incr       = cfu.doubleSpinBox_save_interpolation_incr
+        self.dsb_start      = cfu.doubleSpinBox_save_interpolation_start
+        self.rb_wavelength  = cfu.radioButton_save_interpolation_wavelength
+        self.rb_wavenumber  = cfu.radioButton_save_interpolation_wavenumber
 
         self.mutex = QtCore.QMutex()
         self.new_axis = None

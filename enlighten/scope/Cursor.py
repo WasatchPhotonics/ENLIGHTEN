@@ -71,9 +71,9 @@ class Cursor:
     def __init__(self, ctl):
         self.ctl = ctl
 
-        sfu = self.ctl.form.ui
-        self.cb_enable = sfu.checkBox_cursor_scope_enabled
-        self.ds_value  = sfu.doubleSpinBox_cursor_scope
+        cfu = self.ctl.form.ui
+        self.cb_enable = cfu.checkBox_cursor_scope_enabled
+        self.ds_value  = cfu.doubleSpinBox_cursor_scope
 
         self.current_percent = None
         self.center()
@@ -93,8 +93,8 @@ class Cursor:
         self.cb_enable           .stateChanged           .connect(self.enable_callback)
         self.ds_value            .valueChanged           .connect(self.cursor.setValue)
         self.ds_value                                    .installEventFilter(ScrollStealFilter(self.ds_value))
-        sfu.pushButton_cursor_up .clicked                .connect(self.up_callback)
-        sfu.pushButton_cursor_dn .clicked                .connect(self.dn_callback)
+        cfu.pushButton_cursor_up .clicked                .connect(self.up_callback)
+        cfu.pushButton_cursor_dn .clicked                .connect(self.dn_callback)
 
         self.cb_enable.setChecked(False)
 
@@ -202,13 +202,13 @@ class Cursor:
             log.error("Error updating cursor", exc_info=1)
 
     def enable_callback(self):
-        sfu = self.ctl.form.ui
+        cfu = self.ctl.form.ui
         enabled = self.cb_enable.isChecked()
         log.debug("enable_callback: enabled = %s", enabled)
 
         self.ds_value       .setEnabled(enabled)
-        sfu.pushButton_cursor_up.setEnabled(enabled)
-        sfu.pushButton_cursor_dn.setEnabled(enabled)
+        cfu.pushButton_cursor_up.setEnabled(enabled)
+        cfu.pushButton_cursor_dn.setEnabled(enabled)
         self.cursor         .setVisible(enabled)
 
         if enabled and self.is_outside_range():

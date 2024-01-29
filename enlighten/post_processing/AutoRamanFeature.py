@@ -25,10 +25,10 @@ class AutoRamanFeature:
 
     def __init__(self, ctl):
         self.ctl = ctl
-        sfu = self.ctl.form.ui
+        cfu = self.ctl.form.ui
 
-        self.bt_laser  = sfu.pushButton_laser_toggle
-        self.cb_enable = sfu.checkBox_auto_raman_enable
+        self.bt_laser  = cfu.pushButton_laser_toggle
+        self.cb_enable = cfu.checkBox_auto_raman_enable
 
         self.enabled = False
         self.visible = False

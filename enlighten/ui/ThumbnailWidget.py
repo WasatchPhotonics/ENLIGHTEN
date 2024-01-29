@@ -386,8 +386,8 @@ class ThumbnailWidget(QtWidgets.QFrame):
             self.collapse()
 
     def toggle_thumbnail_expand_callback(self, thumbnail):
-        sfu = self.form.ui
-        layout = sfu.verticalLayout_scope_capture_save
+        cfu = self.form.ui
+        layout = cfu.verticalLayout_scope_capture_save
         if layout.is_collapsed:
             if thumbnail.is_collapsed:
                 thumbnail.expand()

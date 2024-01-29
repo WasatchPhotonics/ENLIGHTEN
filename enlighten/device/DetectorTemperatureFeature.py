@@ -20,21 +20,21 @@ class DetectorTemperatureFeature:
 
     def __init__(self, ctl):
         self.ctl = ctl
-        sfu = ctl.form.ui
+        cfu = ctl.form.ui
 
         self.curve                 = None
         self.name                  = "Detector_TEC_Temperature"
         self.output_to_file        = False
 
-        self.cb_enabled     = sfu.checkBox_tec_enabled
-        self.lb_degC        = sfu.label_hardware_capture_details_detector_temperature
-        self.lb_raw         = sfu.label_ccd_temperature_raw
-        self.slider         = sfu.verticalSlider_detector_setpoint_degC
-        self.spinbox        = sfu.spinBox_detector_setpoint_degC
-        self.button_up      = sfu.temperatureWidget_pushButton_detector_setpoint_up
-        self.button_dn      = sfu.temperatureWidget_pushButton_detector_setpoint_dn
-        self.clear_btn      = sfu.detector_temp_pushButton
-        self.copy_btn       = sfu.pushButton_detector_tec_copy
+        self.cb_enabled     = cfu.checkBox_tec_enabled
+        self.lb_degC        = cfu.label_hardware_capture_details_detector_temperature
+        self.lb_raw         = cfu.label_ccd_temperature_raw
+        self.slider         = cfu.verticalSlider_detector_setpoint_degC
+        self.spinbox        = cfu.spinBox_detector_setpoint_degC
+        self.button_up      = cfu.temperatureWidget_pushButton_detector_setpoint_up
+        self.button_dn      = cfu.temperatureWidget_pushButton_detector_setpoint_dn
+        self.clear_btn      = cfu.detector_temp_pushButton
+        self.copy_btn       = cfu.pushButton_detector_tec_copy
 
         self.cb_enabled     .stateChanged       .connect(self.enabled_callback)
         self.spinbox        .valueChanged       .connect(self.slider.setValue)
@@ -211,14 +211,14 @@ class DetectorTemperatureFeature:
     # ##########################################################################
 
     def populate_placeholder(self):
-        sfu = self.ctl.form.ui
+        cfu = self.ctl.form.ui
 
-        sfu.tec_temperature_graph = pyqtgraph.PlotWidget(name="TEC Temperature")
-        sfu.tec_temperature_graph.setLabel(axis="bottom", text="seconds ago")
-        sfu.tec_temperature_graph.setLabel(axis="left", text="Celsius")
-        sfu.tec_temperature_graph.invertX(True)
-        sfu.stackedWidget_detector_temperature.addWidget(sfu.tec_temperature_graph)
-        sfu.stackedWidget_detector_temperature.setCurrentIndex(1)
+        cfu.tec_temperature_graph = pyqtgraph.PlotWidget(name="TEC Temperature")
+        cfu.tec_temperature_graph.setLabel(axis="bottom", text="seconds ago")
+        cfu.tec_temperature_graph.setLabel(axis="left", text="Celsius")
+        cfu.tec_temperature_graph.invertX(True)
+        cfu.stackedWidget_detector_temperature.addWidget(cfu.tec_temperature_graph)
+        cfu.stackedWidget_detector_temperature.setCurrentIndex(1)
 
     def add_spec_curve(self, spec):
         if self.ctl.multispec.check_hardware_curve_present(self.name, spec.device_id):

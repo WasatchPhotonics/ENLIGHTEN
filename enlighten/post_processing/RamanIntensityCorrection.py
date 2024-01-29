@@ -13,10 +13,10 @@ class RamanIntensityCorrection:
     
     def __init__(self, ctl):
         self.ctl = ctl
-        sfu = ctl.form.ui
+        cfu = ctl.form.ui
         
-        self.cb_enable      = sfu.checkBox_raman_intensity_correction
-        self.cb_show_curve  = sfu.checkBox_show_srm
+        self.cb_enable      = cfu.checkBox_raman_intensity_correction
+        self.cb_show_curve  = cfu.checkBox_show_srm
 
         self.supported           = False # show the checkbox because we have an SRM calibration
         self.allowed             = False # enable the checkbox because we're in Raman mode and we've taken a dark

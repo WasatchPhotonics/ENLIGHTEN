@@ -23,15 +23,15 @@ class DarkFeature:
         """
         self.ctl = ctl
 
-        sfu = ctl.form.ui
-        self.button_toggle = sfu.pushButton_scope_toggle_dark
+        cfu = ctl.form.ui
+        self.button_toggle = cfu.pushButton_scope_toggle_dark
 
         self.populate_placeholder_scope_setup()
 
         self.button_toggle              .clicked    .connect(self.toggle)
-        sfu.pushButton_dark_clear       .clicked    .connect(self.clear_callback)
-        sfu.pushButton_dark_load        .clicked    .connect(self.load_callback)
-        sfu.pushButton_dark_store       .clicked    .connect(self.store_callback)
+        cfu.pushButton_dark_clear       .clicked    .connect(self.clear_callback)
+        cfu.pushButton_dark_load        .clicked    .connect(self.load_callback)
+        cfu.pushButton_dark_store       .clicked    .connect(self.store_callback)
 
     # ##########################################################################
     # public methods

@@ -12,10 +12,10 @@ class BoxcarFeature:
     def __init__(self, ctl):
         self.ctl = ctl
 
-        sfu = ctl.form.ui
-        self.bt_dn      = sfu.pushButton_boxcar_half_width_dn
-        self.bt_up      = sfu.pushButton_boxcar_half_width_up
-        self.spinbox    = sfu.spinBox_boxcar_half_width
+        cfu = ctl.form.ui
+        self.bt_dn      = cfu.pushButton_boxcar_half_width_dn
+        self.bt_up      = cfu.pushButton_boxcar_half_width_up
+        self.spinbox    = cfu.spinBox_boxcar_half_width
 
         self.bt_dn      .clicked        .connect(self.dn_callback)
         self.bt_up      .clicked        .connect(self.up_callback)

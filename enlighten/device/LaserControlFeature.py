@@ -35,30 +35,30 @@ class LaserControlFeature:
         self.locked = False
         self.restrictions = set()
 
-        sfu = self.ctl.form.ui
+        cfu = self.ctl.form.ui
 
-        sfu.pushButton_laser_power_dn   .clicked            .connect(self.dn_callback)
-        sfu.pushButton_laser_power_up   .clicked            .connect(self.up_callback)
-        sfu.pushButton_laser_toggle     .clicked            .connect(self.toggle_callback)
-        sfu.pushButton_laser_convenience.clicked            .connect(self.toggle_callback)
-        sfu.verticalSlider_laser_power  .sliderPressed      .connect(self.slider_power_press_callback)
-        sfu.verticalSlider_laser_power  .sliderMoved        .connect(sfu.doubleSpinBox_laser_power.setValue)
-        sfu.verticalSlider_laser_power  .sliderReleased     .connect(self.slider_power_callback)
-        sfu.doubleSpinBox_excitation_nm .valueChanged       .connect(self.excitation_callback)
-        sfu.doubleSpinBox_laser_power   .valueChanged       .connect(sfu.verticalSlider_laser_power.setValue)
-        sfu.doubleSpinBox_laser_power   .valueChanged       .connect(self.set_laser_power_callback)
-        sfu.spinBox_laser_watchdog_sec  .valueChanged       .connect(self.set_watchdog_callback)
-        sfu.checkBox_laser_watchdog     .clicked            .connect(self.set_watchdog_enable_callback)
-        sfu.comboBox_laser_power_unit   .currentIndexChanged.connect(self.update_visibility)
+        cfu.pushButton_laser_power_dn   .clicked            .connect(self.dn_callback)
+        cfu.pushButton_laser_power_up   .clicked            .connect(self.up_callback)
+        cfu.pushButton_laser_toggle     .clicked            .connect(self.toggle_callback)
+        cfu.pushButton_laser_convenience.clicked            .connect(self.toggle_callback)
+        cfu.verticalSlider_laser_power  .sliderPressed      .connect(self.slider_power_press_callback)
+        cfu.verticalSlider_laser_power  .sliderMoved        .connect(cfu.doubleSpinBox_laser_power.setValue)
+        cfu.verticalSlider_laser_power  .sliderReleased     .connect(self.slider_power_callback)
+        cfu.doubleSpinBox_excitation_nm .valueChanged       .connect(self.excitation_callback)
+        cfu.doubleSpinBox_laser_power   .valueChanged       .connect(cfu.verticalSlider_laser_power.setValue)
+        cfu.doubleSpinBox_laser_power   .valueChanged       .connect(self.set_laser_power_callback)
+        cfu.spinBox_laser_watchdog_sec  .valueChanged       .connect(self.set_watchdog_callback)
+        cfu.checkBox_laser_watchdog     .clicked            .connect(self.set_watchdog_enable_callback)
+        cfu.comboBox_laser_power_unit   .currentIndexChanged.connect(self.update_visibility)
 
 
-        for widget in [ sfu.verticalSlider_laser_power ]:
+        for widget in [ cfu.verticalSlider_laser_power ]:
             widget.installEventFilter(MouseWheelFilter(widget))
 
-        for widget in [ sfu.doubleSpinBox_excitation_nm,
-                        sfu.doubleSpinBox_laser_power,
-                        sfu.spinBox_laser_watchdog_sec,
-                        sfu.comboBox_laser_power_unit ]:
+        for widget in [ cfu.doubleSpinBox_excitation_nm,
+                        cfu.doubleSpinBox_laser_power,
+                        cfu.spinBox_laser_watchdog_sec,
+                        cfu.comboBox_laser_power_unit ]:
             widget.installEventFilter(ScrollStealFilter(widget))
 
     # ##########################################################################
@@ -102,20 +102,20 @@ class LaserControlFeature:
     def update_visibility(self, init=False):
         log.debug(f"update_visibility(init={init})")
         spec = self.ctl.multispec.current_spectrometer()
-        sfu = self.ctl.form.ui
+        cfu = self.ctl.form.ui
 
         if spec is None:
-            sfu.label_laser_watchdog_sec.setVisible(False)
+            cfu.label_laser_watchdog_sec.setVisible(False)
             return
 
         settings = spec.settings
         has_laser = settings.eeprom.has_laser
         doing_expert = self.ctl.page_nav.doing_expert()
         is_ilc = any([component in settings.full_model().upper() for component in ["-ILC", "-IL-IC"]])
-        combo_unit = sfu.comboBox_laser_power_unit
+        combo_unit = cfu.comboBox_laser_power_unit
 
-        for widget in [ sfu.frame_lightSourceControl,
-                   sfu.pushButton_laser_convenience ]:
+        for widget in [ cfu.frame_lightSourceControl,
+                   cfu.pushButton_laser_convenience ]:
             widget.setVisible(has_laser)
         if not has_laser:
             return
@@ -142,22 +142,22 @@ class LaserControlFeature:
                 else:
                     self.configure_laser_power_controls_percent()
 
-        sfu.doubleSpinBox_excitation_nm.setVisible(doing_expert)
-        sfu.label_lightSourceWidget_excitation_nm.setVisible(doing_expert)
+        cfu.doubleSpinBox_excitation_nm.setVisible(doing_expert)
+        cfu.label_lightSourceWidget_excitation_nm.setVisible(doing_expert)
 
         self.configure_watchdog()
 
         if self.locked:
             # let them turn the laser on/off, nothing else
-            for w in [ sfu.doubleSpinBox_excitation_nm,
-                       sfu.pushButton_laser_power_dn,
-                       sfu.pushButton_laser_power_up,
-                       sfu.verticalSlider_laser_power,
-                       sfu.doubleSpinBox_excitation_nm,
-                       sfu.doubleSpinBox_laser_power,
-                       sfu.spinBox_laser_watchdog_sec,
-                       sfu.checkBox_laser_watchdog,
-                       sfu.comboBox_laser_power_unit ]:
+            for w in [ cfu.doubleSpinBox_excitation_nm,
+                       cfu.pushButton_laser_power_dn,
+                       cfu.pushButton_laser_power_up,
+                       cfu.verticalSlider_laser_power,
+                       cfu.doubleSpinBox_excitation_nm,
+                       cfu.doubleSpinBox_laser_power,
+                       cfu.spinBox_laser_watchdog_sec,
+                       cfu.checkBox_laser_watchdog,
+                       cfu.comboBox_laser_power_unit ]:
                 w.setEnabled(False)
 
         self.refresh_laser_buttons()
@@ -296,18 +296,18 @@ class LaserControlFeature:
 
     def refresh_laser_buttons(self, force_on=False):
         spec = self.ctl.multispec.current_spectrometer()
-        sfu = self.ctl.form.ui
+        cfu = self.ctl.form.ui
 
         enabled = force_on or (spec and spec.settings.state.laser_enabled)
         allowed = 0 == len(self.restrictions)
         why_not = ", ".join(self.restrictions)
 
         if enabled:
-            sfu.pushButton_laser_toggle.setText(self.BTN_OFF_TEXT)
+            cfu.pushButton_laser_toggle.setText(self.BTN_OFF_TEXT)
         else:
-            sfu.pushButton_laser_toggle.setText(self.BTN_ON_TEXT)
+            cfu.pushButton_laser_toggle.setText(self.BTN_ON_TEXT)
 
-        for b in [ sfu.pushButton_laser_toggle, sfu.pushButton_laser_convenience ]:
+        for b in [ cfu.pushButton_laser_toggle, cfu.pushButton_laser_convenience ]:
             b.setEnabled(allowed)
             b.setToolTip("Toggle laser (ctrl-L)" if allowed else f"Disabled ({why_not})")
             self.ctl.gui.colorize_button(b, enabled)
@@ -622,7 +622,7 @@ class LaserControlFeature:
 
     # gets called by BatteryFeature when a new battery reading is received
     def battery_callback(self, perc, charging):
-        sfu = self.ctl.form.ui
+        cfu = self.ctl.form.ui
         enough_for_laser = perc >= self.MIN_BATTERY_PERC
         log.debug("enough_for_laser = %s (%.2f%%)" % (enough_for_laser, perc))
 

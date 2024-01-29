@@ -173,7 +173,6 @@ class BusinessObjects:
         initialization, i.e. before the placeholders are populated.
         """
         ctl = self.ctl
-        sfu = ctl.form.ui
 
         self.header("instantiating Configuration")
         ctl.config = Configuration(ctl)
@@ -206,7 +205,7 @@ class BusinessObjects:
         populated.  No spectrometers will have connected at this time.
         """
         ctl = self.ctl
-        sfu = ctl.form.ui
+        cfu = ctl.form.ui
 
         self.header("instantiating ResourceMonitorFeature")
         ctl.resource_monitor = ResourceMonitorFeature(ctl)
@@ -297,17 +296,17 @@ class BusinessObjects:
 
         self.header("instantiating LaserTemperatureFeature")
         ctl.laser_temperature = LaserTemperatureFeature(
-            sfu                         = sfu,
+            cfu                         = cfu,
             graph                       = ctl.graph,
             multispec                   = ctl.multispec,
-            lb_degC                     = sfu.label_hardware_capture_details_laser_temperature,
+            lb_degC                     = cfu.label_hardware_capture_details_laser_temperature,
             make_pen                    = ctl.gui.make_pen,
             clipboard                   = ctl.clipboard,
             hardware_file_manager       = ctl.hardware_file_manager)
 
         self.header("instantiating Sounds")
         ctl.sounds = Sounds(
-            checkbox                    = sfu.checkBox_sound_enable,
+            checkbox                    = cfu.checkBox_sound_enable,
             config                      = ctl.config,
             path                        = "enlighten/assets/example_data/sounds")
 
@@ -319,8 +318,8 @@ class BusinessObjects:
 
         self.header("instantiating CloudManager")
         ctl.cloud_manager = CloudManager(
-            cb_enabled                  = sfu.checkBox_cloud_config_download_enabled,
-            restore_button              = sfu.pushButton_restore_eeprom,
+            cb_enabled                  = cfu.checkBox_cloud_config_download_enabled,
+            restore_button              = cfu.pushButton_restore_eeprom,
 
             config                      = ctl.config,
             eeprom_editor               = ctl.eeprom_editor)
@@ -347,13 +346,13 @@ class BusinessObjects:
             save_options                = ctl.save_options,
             set_curve_data              = ctl.set_curve_data,
                                         
-            button_clear                = sfu.pushButton_reference_clear,
-            button_load                 = sfu.pushButton_reference_load,
-            button_store                = sfu.pushButton_reference_store,
-            button_toggle               = sfu.pushButton_scope_toggle_reference,
-            frame_setup                 = sfu.frame_scopeSetup_spectra_reference_white,
-            lb_timestamp                = sfu.label_reference_timestamp,
-            stacked_widget              = sfu.stackedWidget_scope_setup_reference_spectrum,
+            button_clear                = cfu.pushButton_reference_clear,
+            button_load                 = cfu.pushButton_reference_load,
+            button_store                = cfu.pushButton_reference_store,
+            button_toggle               = cfu.pushButton_scope_toggle_reference,
+            frame_setup                 = cfu.frame_scopeSetup_spectra_reference_white,
+            lb_timestamp                = cfu.label_reference_timestamp,
+            stacked_widget              = cfu.stackedWidget_scope_setup_reference_spectrum,
             gui_make_pen                = ctl.gui.make_pen)
 
         self.header("instantiating BatchCollection")
@@ -371,10 +370,10 @@ class BusinessObjects:
         self.header("instantiating BLEManager")
         ctl.ble_manager = BLEManager(
             marquee                     = ctl.marquee,
-            ble_button                  = sfu.pushButton_bleScan,
+            ble_button                  = cfu.pushButton_bleScan,
             controller_connect          = ctl.connect_new,
             controller_disconnect       = ctl.disconnect_device,
-            progress_bar                = sfu.readingProgressBar,
+            progress_bar                = cfu.readingProgressBar,
             multispec                   = ctl.multispec)
 
         self.header("instantiating AutoRamanFeature")
@@ -384,46 +383,46 @@ class BusinessObjects:
         self.header("instantiating KIAFeature")
         ctl.kia_feature = KIAFeature(
             baseline_correction         = ctl.baseline_correction,
-            bt_alias                    = sfu.pushButton_id_results_make_alias,
-            bt_benign                   = sfu.pushButton_id_results_flag_benign,
-            bt_clear                    = sfu.pushButton_id_results_clear,
-            bt_hazard                   = sfu.pushButton_id_results_flag_hazard,
-            bt_id                       = sfu.pushButton_scope_id,
-            bt_reset                    = sfu.pushButton_id_results_reset,
-            bt_suppress                 = sfu.pushButton_id_results_suppress,
-            cb_all                      = sfu.checkBox_kia_display_all_results,
-            cb_enabled                  = sfu.checkBox_kia_enabled,
-            cb_hazard                   = sfu.checkBox_kia_alarm_low_scoring_hazards,
+            bt_alias                    = cfu.pushButton_id_results_make_alias,
+            bt_benign                   = cfu.pushButton_id_results_flag_benign,
+            bt_clear                    = cfu.pushButton_id_results_clear,
+            bt_hazard                   = cfu.pushButton_id_results_flag_hazard,
+            bt_id                       = cfu.pushButton_scope_id,
+            bt_reset                    = cfu.pushButton_id_results_reset,
+            bt_suppress                 = cfu.pushButton_id_results_suppress,
+            cb_all                      = cfu.checkBox_kia_display_all_results,
+            cb_enabled                  = cfu.checkBox_kia_enabled,
+            cb_hazard                   = cfu.checkBox_kia_alarm_low_scoring_hazards,
             colors                      = ctl.colors,
             page_nav                    = ctl.page_nav,
             file_manager                = ctl.file_manager,
-            frame_results               = sfu.frame_id_results_white,
-            frame_side                  = sfu.frame_kia_outer,
+            frame_results               = cfu.frame_id_results_white,
+            frame_side                  = cfu.frame_kia_outer,
             generate_x_axis             = ctl.generate_x_axis,
             get_last_processed_reading  = ctl.get_last_processed_reading,
             guide                       = ctl.guide,
-            lb_logo                     = sfu.label_kia_logo,
-            lb_name                     = sfu.label_kia_compound_name,
-            lb_path                     = sfu.label_kia_install_path,
-            lb_processing               = sfu.label_kia_processing,
-            lb_score                    = sfu.label_kia_score,
+            lb_logo                     = cfu.label_kia_logo,
+            lb_name                     = cfu.label_kia_compound_name,
+            lb_path                     = cfu.label_kia_install_path,
+            lb_processing               = cfu.label_kia_processing,
+            lb_score                    = cfu.label_kia_score,
             logging_feature             = ctl.logging_feature,
             marquee                     = ctl.marquee,
             measurements                = ctl.measurements,
             multispec                   = ctl.multispec,
             raman_intensity_correction  = ctl.raman_intensity_correction,
-            sb_score_min                = sfu.spinBox_kia_score_min,
-            sb_max_results              = sfu.spinBox_kia_max_results,
+            sb_score_min                = cfu.spinBox_kia_score_min,
+            sb_max_results              = cfu.spinBox_kia_max_results,
             sounds                      = ctl.sounds,
             stylesheets                 = ctl.stylesheets,
-            table_recent                = sfu.tableWidget_id_match_recent,
-            table_results               = sfu.tableWidget_id_match_results,
+            table_recent                = cfu.tableWidget_id_match_recent,
+            table_results               = cfu.tableWidget_id_match_results,
             vcr_controls                = ctl.vcr_controls,
             horiz_roi                   = ctl.horiz_roi)
 
         self.header("instantiating RichardsonLucy")
         ctl.richardson_lucy = RichardsonLucy(
-            cb_enable                   = sfu.checkBox_richardson_lucy,
+            cb_enable                   = cfu.checkBox_richardson_lucy,
             config                      = ctl.config,
             graph                       = ctl.graph,
             multispec                   = ctl.multispec,
@@ -431,12 +430,12 @@ class BusinessObjects:
 
         self.header("instantiating ManufacturingFeature")
         ctl.mfg = ManufacturingFeature(
-            bt_dfu                      = sfu.pushButton_mfg_dfu,
+            bt_dfu                      = cfu.pushButton_mfg_dfu,
             multispec                   = ctl.multispec)
 
         self.header("instantiating HardwareCaptureControlFeature")
         ctl.hardware_control_feature = HardwareCaptureControlFeature(
-            sfu                         = sfu,
+            cfu                         = cfu,
             graph                       = ctl.graph,
             laser_feature               = ctl.laser_temperature,
             detector_feature            = ctl.detector_temperature)
@@ -460,23 +459,23 @@ class BusinessObjects:
             measurements_clipboard      = ctl.measurements,
             horiz_roi                   = ctl.horiz_roi,
 
-            button_process              = sfu.pushButton_plugin_process,
-            cb_connected                = sfu.checkBox_plugin_connected,
-            cb_enabled                  = sfu.checkBox_plugin_enabled,
-            combo_graph_pos             = sfu.comboBox_plugin_graph_pos,
-            combo_module                = sfu.comboBox_plugin_module,
-            frame_control               = sfu.frame_plugin_control,
-            frame_fields                = sfu.frame_plugin_fields,
-            layout_graphs               = sfu.layout_scope_capture_graphs,
-            lb_graph_pos                = sfu.label_plugin_graph_pos,
-            lb_title                    = sfu.label_plugin_title,
-            lb_widget                   = sfu.label_plugin_widget,
-            vlayout_fields              = sfu.verticalLayout_plugin_fields,
+            button_process              = cfu.pushButton_plugin_process,
+            cb_connected                = cfu.checkBox_plugin_connected,
+            cb_enabled                  = cfu.checkBox_plugin_enabled,
+            combo_graph_pos             = cfu.comboBox_plugin_graph_pos,
+            combo_module                = cfu.comboBox_plugin_module,
+            frame_control               = cfu.frame_plugin_control,
+            frame_fields                = cfu.frame_plugin_fields,
+            layout_graphs               = cfu.layout_scope_capture_graphs,
+            lb_graph_pos                = cfu.label_plugin_graph_pos,
+            lb_title                    = cfu.label_plugin_title,
+            lb_widget                   = cfu.label_plugin_widget,
+            vlayout_fields              = cfu.verticalLayout_plugin_fields,
             measurements                = ctl.measurements)
 
         self.header("instantiating GridFeature")
         ctl.grid = GridFeature(
-            button                      = sfu.pushButton_graphGrid,
+            button                      = cfu.pushButton_graphGrid,
             gui                         = ctl.gui,
             stylesheets                 = ctl.stylesheets,
             plots                       = {
@@ -487,32 +486,32 @@ class BusinessObjects:
 
         self.header("instantiating AreaScanFeature")
         ctl.area_scan = AreaScanFeature(
-            bt_save                     = sfu.pushButton_area_scan_save,
-            cb_enable                   = sfu.checkBox_area_scan_enable,
-            cb_fast                     = sfu.checkBox_area_scan_fast,
-            frame_image                 = sfu.frame_area_scan_image,
-            frame_live                  = sfu.frame_area_scan_live,
-            graphics_view               = sfu.graphicsView_area_scan,
+            bt_save                     = cfu.pushButton_area_scan_save,
+            cb_enable                   = cfu.checkBox_area_scan_enable,
+            cb_fast                     = cfu.checkBox_area_scan_fast,
+            frame_image                 = cfu.frame_area_scan_image,
+            frame_live                  = cfu.frame_area_scan_live,
+            graphics_view               = cfu.graphicsView_area_scan,
             gui                         = ctl.gui,
-            layout_live                 = sfu.layout_area_scan_live,
-            lb_current                  = sfu.label_area_scan_current_line,
-            lb_frame_count              = sfu.label_area_scan_frame_count,
+            layout_live                 = cfu.layout_area_scan_live,
+            lb_current                  = cfu.label_area_scan_current_line,
+            lb_frame_count              = cfu.label_area_scan_frame_count,
             marquee                     = ctl.marquee,
             multispec                   = ctl.multispec,
-            progress_bar                = sfu.progressBar_area_scan,
+            progress_bar                = cfu.progressBar_area_scan,
             save_options                = ctl.save_options,
-            sb_start                    = sfu.spinBox_area_scan_start_line,
-            sb_stop                     = sfu.spinBox_area_scan_stop_line,
-            sb_delay_ms                 = sfu.spinBox_area_scan_delay_ms,
+            sb_start                    = cfu.spinBox_area_scan_start_line,
+            sb_stop                     = cfu.spinBox_area_scan_stop_line,
+            sb_delay_ms                 = cfu.spinBox_area_scan_delay_ms,
             set_curve_data              = ctl.set_curve_data)
 
         self.header("instantiating RamanShiftCorrectionFeature")
         ctl.raman_shift_correction = RamanShiftCorrectionFeature(
-            button                      = sfu.pushButton_ramanCorrection,
-            cb_visible                  = sfu.checkBox_ramanCorrection_visible,
-            combo                       = sfu.comboBox_ramanCorrection_compoundName,
+            button                      = cfu.pushButton_ramanCorrection,
+            cb_visible                  = cfu.checkBox_ramanCorrection_visible,
+            combo                       = cfu.comboBox_ramanCorrection_compoundName,
             config                      = ctl.config,
-            frame                       = sfu.frame_ramanCorrection_white,
+            frame                       = cfu.frame_ramanCorrection_white,
             graph                       = ctl.graph,
             gui                         = ctl.gui,
             marquee                     = ctl.marquee,
@@ -521,28 +520,28 @@ class BusinessObjects:
 
         self.header("instantiating AccessoryControlFeature")
         ctl.accessory_control = AccessoryControlFeature(
-            cb_display                  = sfu.checkBox_accessory_cont_strobe_display,
-            cb_enable                   = sfu.checkBox_accessory_cont_strobe_enable,
-            cb_fan                      = sfu.checkBox_accessory_fan,
-            cb_lamp                     = sfu.checkBox_accessory_lamp,
-            cb_shutter                  = sfu.checkBox_accessory_shutter,
-            frame_cont_strobe           = sfu.frame_accessory_cont_strobe,
-            frame_widget                = sfu.frame_accessory_widget,
+            cb_display                  = cfu.checkBox_accessory_cont_strobe_display,
+            cb_enable                   = cfu.checkBox_accessory_cont_strobe_enable,
+            cb_fan                      = cfu.checkBox_accessory_fan,
+            cb_lamp                     = cfu.checkBox_accessory_lamp,
+            cb_shutter                  = cfu.checkBox_accessory_shutter,
+            frame_cont_strobe           = cfu.frame_accessory_cont_strobe,
+            frame_widget                = cfu.frame_accessory_widget,
             multispec                   = ctl.multispec,
-            sb_freq_hz                  = sfu.spinBox_accessory_cont_strobe_freq_hz,
-            sb_width_us                 = sfu.spinBox_accessory_cont_strobe_width_us)
+            sb_freq_hz                  = cfu.spinBox_accessory_cont_strobe_freq_hz,
+            sb_width_us                 = cfu.spinBox_accessory_cont_strobe_width_us)
 
         self.header("instantiating HighGainModeFeature")
         ctl.high_gain_mode = HighGainModeFeature(
-            cb_enabled                  = sfu.checkBox_high_gain_mode_enabled,
+            cb_enabled                  = cfu.checkBox_high_gain_mode_enabled,
             config                      = ctl.config,
             multispec                   = ctl.multispec)
 
         self.header("instantiating RegionControlFeature")
         ctl.region_control = RegionControlFeature(
-            cb_enabled                  = sfu.checkBox_region_enabled,
+            cb_enabled                  = cfu.checkBox_region_enabled,
             multispec                   = ctl.multispec,
-            spinbox                     = sfu.spinBox_region)
+            spinbox                     = cfu.spinBox_region)
 
         self.header("instantiating HelpFeature")
         ctl.help = HelpFeature(ctl)

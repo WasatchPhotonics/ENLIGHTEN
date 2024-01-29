@@ -40,7 +40,7 @@ class Measurements:
 
         self.ctl = ctl
 
-        sfu = self.ctl.form.ui
+        cfu = self.ctl.form.ui
 
         self.measurements = []
 
@@ -53,17 +53,17 @@ class Measurements:
         }
 
         # binding
-        sfu.pushButton_erase_captures      .clicked    .connect(self.erase_all_callback)
-        sfu.pushButton_export_session      .clicked    .connect(self.export_callback)
-        sfu.pushButton_scope_capture_load  .clicked    .connect(self.load_callback)
-        sfu.pushButton_resize_captures     .clicked    .connect(self.resize_callback)
-        sfu.pushButton_resort_captures     .clicked    .connect(self.resort_callback)
+        cfu.pushButton_erase_captures      .clicked    .connect(self.erase_all_callback)
+        cfu.pushButton_export_session      .clicked    .connect(self.export_callback)
+        cfu.pushButton_scope_capture_load  .clicked    .connect(self.load_callback)
+        cfu.pushButton_resize_captures     .clicked    .connect(self.resize_callback)
+        cfu.pushButton_resort_captures     .clicked    .connect(self.resort_callback)
 
         # Drop an expanding spacer into the layout, which will force all 
         # ThumbnailWidgets to hold a fixed size and align at one end.  (Could 
         # this not be done in Designer?)
         spacer = QtWidgets.QSpacerItem(20, 1024, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        sfu.verticalLayout_scope_capture_save.addItem(spacer)
+        cfu.verticalLayout_scope_capture_save.addItem(spacer)
 
         self.update_count()
 
@@ -103,14 +103,14 @@ class Measurements:
         self.is_collapsed = not self.is_collapsed
         self.update_buttons()
 
-    ## Essentially, sfu.verticalLayout_scope_capture_save.reverse()
+    ## Essentially, cfu.verticalLayout_scope_capture_save.reverse()
     def resort_callback(self):
-        sfu = self.ctl.form.ui
+        cfu = self.ctl.form.ui
         log.debug("re-sorting captures (insert_top was %s)", self.insert_top)
         items = []
         while True:
             try:
-                item = sfu.verticalLayout_scope_capture_save.takeAt(0)
+                item = cfu.verticalLayout_scope_capture_save.takeAt(0)
                 if item is None:
                     break
                 items.append(item)
@@ -119,7 +119,7 @@ class Measurements:
                 break
 
         for item in items:
-            sfu.verticalLayout_scope_capture_save.insertItem(0, item)
+            cfu.verticalLayout_scope_capture_save.insertItem(0, item)
 
         self.insert_top = not self.insert_top
         self.update_buttons()
@@ -228,7 +228,7 @@ class Measurements:
     # Add the new measurement to our on-screen list.  Kick-off old measurement
     # if necessary.
     def add(self, measurement):
-        sfu = self.ctl.form.ui
+        cfu = self.ctl.form.ui
         if measurement.thumbnail_widget is None:
             log.error("unable to add Measurement w/o ThumbnailWidget")
             return
@@ -241,9 +241,9 @@ class Measurements:
         # add to layout
         log.debug("adding ThumbnailWidget to layout")
         if self.insert_top:
-            sfu.verticalLayout_scope_capture_save.insertWidget( 0, measurement.thumbnail_widget)
+            cfu.verticalLayout_scope_capture_save.insertWidget( 0, measurement.thumbnail_widget)
         else:
-            sfu.verticalLayout_scope_capture_save.insertWidget(-1, measurement.thumbnail_widget)
+            cfu.verticalLayout_scope_capture_save.insertWidget(-1, measurement.thumbnail_widget)
 
         self.measurements.append(measurement)
         self.update_count()
@@ -299,18 +299,18 @@ class Measurements:
     ##
     # Update the "X spectra" label on the GUI, and dis/enable buttons
     def update_count(self):
-        sfu = self.ctl.form.ui
+        cfu = self.ctl.form.ui
 
         # update the text counter
         count = self.count()
-        sfu.label_session_count.setText(util.pluralize_spectra(count))
+        cfu.label_session_count.setText(util.pluralize_spectra(count))
 
         # update buttons
         enabled = count > 0
-        for b in [ sfu.pushButton_erase_captures,
-                   sfu.pushButton_export_session,
-                   sfu.pushButton_resize_captures,
-                   sfu.pushButton_resort_captures ]:
+        for b in [ cfu.pushButton_erase_captures,
+                   cfu.pushButton_export_session,
+                   cfu.pushButton_resize_captures,
+                   cfu.pushButton_resort_captures ]:
             b.setEnabled(enabled)
 
     # Think this is internal-only

@@ -10,13 +10,13 @@ class HardwareFileOutputManager:
 
     def __init__(self, ctl):
         self.ctl = ctl
-        sfu = ctl.form.ui
+        cfu = ctl.form.ui
 
         self.features = []
         self.file_map = {}
 
-        self.cb_output = sfu.checkBox_feature_file_capture
-        self.spin_timeout = sfu.spinBox_hardware_capture_timeout
+        self.cb_output = cfu.checkBox_feature_file_capture
+        self.spin_timeout = cfu.spinBox_hardware_capture_timeout
 
         self.output_timeout = None
         

@@ -3,9 +3,11 @@
 ## 4.0 GUI and Plugin Refactoring
 
 - 2023-??-?? 4.0.36
-    - Expert mode
+    - Raman
         - ensured all Raman features available in Expert mode
-    - renamed RamanModeFeature to AutoRaman
+        - renamed RamanModeFeature to AutoRaman
+        * moving Raman Intensity Correction (SRM) to Raman view
+        * disable Laser Watchdog unless non-TEC SML
     - cleanup
         - moved Filters and Authentication to ui
         - moved SpectrometerApplicationState, AccessoryControlFeature, 
@@ -16,6 +18,7 @@
         - renamed spectra_processes to post_processing
         - moved DarkFeature, ReferenceFeature, RamanMode to post_processing
         - renamed pluginExamples to plugins
+        - renamed sfu to cfu
 - 2023-01-26 4.0.35
     - RamanModeFeature 
         - prompt for confirmation

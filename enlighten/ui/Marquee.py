@@ -29,17 +29,17 @@ class Marquee:
 
     def __init__(self, ctl):
         self.ctl = ctl
-        sfu = ctl.form.ui
+        cfu = ctl.form.ui
 
-        self.frame       = sfu.frame_drawer_white
-        self.inner       = sfu.frame_drawer_black
-        self.label       = sfu.label_drawer
+        self.frame       = cfu.frame_drawer_white
+        self.inner       = cfu.frame_drawer_black
+        self.label       = cfu.label_drawer
 
         self.height = Marquee.ORIG_HEIGHT
 
         self.hide()
 
-        sfu.pushButton_marquee_close.clicked.connect(self.close_callback)
+        cfu.pushButton_marquee_close.clicked.connect(self.close_callback)
 
         ########################################################################
         # for pop-ups

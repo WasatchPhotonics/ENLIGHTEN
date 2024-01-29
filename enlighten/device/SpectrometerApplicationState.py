@@ -108,8 +108,8 @@ class SpectrometerApplicationState:
         self.reference_is_dark_corrected = False
         self.reference_excitation = None
 
-    ## @todo remove sfu (add setters for secondary adc windows)
-    def reset_rolling_data(self, sfu=None, time_window=3, hotplug=True):
+    ## @todo remove cfu (add setters for secondary adc windows)
+    def reset_rolling_data(self, cfu=None, time_window=3, hotplug=True):
         # 1. raw data (all recent measurements, updated at a FAST rate)
         # 2. smoothed (use to display on-screen label at a MEDIUM rate)
         # 3. historical (on-screen graph trendline, updated at a SLOW rate)
@@ -124,10 +124,10 @@ class SpectrometerApplicationState:
         self.detector_temperature_degC_latest = None
 
         windows = (2, 2, 500)
-        if sfu is not None:
-            windows = (sfu.spinBox_secondary_adc_rolling_window_fast.value(),
-                       sfu.spinBox_secondary_adc_rolling_window_medium.value(),
-                       sfu.spinBox_secondary_adc_rolling_graph.value()) 
+        if cfu is not None:
+            windows = (cfu.spinBox_secondary_adc_rolling_window_fast.value(),
+                       cfu.spinBox_secondary_adc_rolling_window_medium.value(),
+                       cfu.spinBox_secondary_adc_rolling_graph.value()) 
 
         self.secondary_adc_data_fast   = RollingDataSet(windows[0])
         self.secondary_adc_data_medium = RollingDataSet(windows[1])

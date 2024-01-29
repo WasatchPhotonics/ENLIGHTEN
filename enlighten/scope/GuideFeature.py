@@ -31,9 +31,9 @@ class GuideFeature:
 
     def __init__(self, ctl):
         self.ctl = ctl
-        sfu = ctl.form.ui
+        cfu = ctl.form.ui
 
-        self.bt_enable = sfu.pushButton_guide
+        self.bt_enable = cfu.pushButton_guide
 
         self.queue = multiprocessing.Queue()
         self.last_tipped = None

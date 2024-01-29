@@ -24,11 +24,11 @@ class LoggingFeature:
 
     def __init__(self, ctl):
         self.ctl = ctl
-        sfu = ctl.form.ui
+        cfu = ctl.form.ui
 
-        self.cb_paused  = sfu.checkBox_logging_pause
-        self.cb_verbose = sfu.checkBox_verbose_logging
-        self.te_log     = sfu.textEdit_log
+        self.cb_paused  = cfu.checkBox_logging_pause
+        self.cb_verbose = cfu.checkBox_verbose_logging
+        self.te_log     = cfu.textEdit_log
 
         self.cb_verbose.setVisible(True) # MZ: when would this be False?
 
@@ -38,7 +38,7 @@ class LoggingFeature:
         self.timer.start(LoggingFeature.TIMER_SLEEP_MS)
 
         self.cb_verbose                         .stateChanged   .connect(self.verbose_callback)
-        sfu.pushButton_copy_log_to_clipboard    .clicked        .connect(self.copy_to_clipboard)
+        cfu.pushButton_copy_log_to_clipboard    .clicked        .connect(self.copy_to_clipboard)
 
         # if verbose logging was specified at the command-line OR 
         # previously set via .ini, use that
