@@ -12,13 +12,23 @@ import logging
 
 log = logging.getLogger(__name__)
 
-##
-# Encapsulate access to the "message display area" atop the right-hand side of 
-# the Scope Capture screen.  Messages are normally flashed for 3sec and then 
-# removed.  If 'persist' is set, message will remain until overwritten.
-#
-# Also provides a button-less notification box that auto-fades over 2sec.
 class Marquee:
+    """
+    Encapsulate access to the "message display area" visible along the top of the 
+    ENLIGHTEN display.
+
+    Messages are normally shown for 3sec and then removed.  If 'persist' is set, 
+    message will remain until overwritten.
+    
+    Also provides a button-less "toast" notification that auto-fades over 2sec.
+
+    TODO:
+
+    - consider restoring some level of animation (just not moving buttons, like
+      we used to)
+    - consider adding a "stronger" close-box with "never show again", perhaps
+      via QToolButton with DelayedPopup.
+    """
     
     ORIG_HEIGHT = 36
 
