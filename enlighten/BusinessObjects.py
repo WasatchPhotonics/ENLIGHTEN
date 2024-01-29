@@ -288,11 +288,11 @@ class BusinessObjects:
         self.header("instantiating EEPROMEditor")
         ctl.eeprom_editor = EEPROMEditor(ctl)
 
-        self.header("instantiating RamanIntensityCorrection")
-        ctl.raman_intensity_correction = RamanIntensityCorrection(ctl)
-
         self.header("instantiating LaserControlFeature")
         ctl.laser_control = LaserControlFeature(ctl)
+
+        self.header("instantiating RamanIntensityCorrection")
+        ctl.raman_intensity_correction = RamanIntensityCorrection(ctl)
 
         self.header("instantiating LaserTemperatureFeature")
         ctl.laser_temperature = LaserTemperatureFeature(
@@ -557,8 +557,8 @@ class BusinessObjects:
             feature.disconnect()                        
 
         # anything with timers, observers etc
-        for feature in [ ctl.marquee, 
-                         ctl.guide ]:
+        for feature in [ self.ctl.marquee, 
+                         self.ctl.guide ]:
             feature.stop()
 
         log.info("done destroying business objects")
