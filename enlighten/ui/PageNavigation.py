@@ -140,13 +140,12 @@ class PageNavigation:
         self.stack_main         = cfu.stackedWidget_low
         self.combo_technique    = cfu.technique_comboBox
 
-        # self-register
-        self.ctl.logging_feature.page_nav = self
-
         self.operation_mode = common.OperationModes.RAMAN
         self.current_view = -1 
         self.has_used_raman = False
         self.current_technique = self.combo_technique.currentIndex()
+
+        self.observers = {}
 
         self.combo_technique.installEventFilter(ScrollStealFilter(self.combo_technique))
 
@@ -166,6 +165,11 @@ class PageNavigation:
         self.ctl.form.ui.frame_FactoryMode_Options.hide()
         self.ctl.form.ui.frame_transmission_options.hide()        # todo move to TransmissionFeature
         self.set_operation_mode_non_raman()
+
+    def register_observer(self, event, callback):
+        if event not in self.observers:
+            self.observers[event] = set()
+        self.observers[event].add(callback)
 
     # ##########################################################################
     # activity introspection
@@ -290,7 +294,13 @@ class PageNavigation:
     def set_view_common(self):
         self.update_view_shortcut()
         self.ctl.graph.reset_axes()
+
+        # if everyone registered as observers, we could drop this...
         self.ctl.update_feature_visibility()
+
+        if "view" in self.observers:
+            for callback in self.observers["view"]:
+                callback()
 
     # ##########################################################################
     # Page Navigation: Operation Mode
