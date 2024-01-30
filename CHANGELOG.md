@@ -6,8 +6,8 @@
     - Raman
         - ensured all Raman features available in Expert mode
         - renamed RamanModeFeature to AutoRaman
-        * moving Raman Intensity Correction (SRM) to Raman view
-        * disable Laser Watchdog unless non-TEC SML
+        - moving Raman Intensity Correction to its own widget visible in Raman view
+        - don't force Laser Watchdog unless XS SML w/o TEC (but support for any XS)
     - cleanup
         - moved Filters and Authentication to ui
         - moved SpectrometerApplicationState, AccessoryControlFeature, 
@@ -19,6 +19,9 @@
         - moved DarkFeature, ReferenceFeature, RamanMode to post_processing
         - renamed pluginExamples to plugins
         - renamed sfu to cfu
+    - GUI
+        - Guide tweaks
+        - common.msgbox tweaks
 - 2023-01-26 4.0.35
     - RamanModeFeature 
         - prompt for confirmation
