@@ -33,6 +33,8 @@ class DarkFeature:
         cfu.pushButton_dark_load        .clicked    .connect(self.load_callback)
         cfu.pushButton_dark_store       .clicked    .connect(self.store_callback)
 
+        self.ctl.laser_control.register_observer("enabled", self.laser_control_enabled)
+
     # ##########################################################################
     # public methods
     # ##########################################################################
@@ -138,6 +140,16 @@ class DarkFeature:
     def store_callback(self): self.store()
     def clear_callback(self): self.clear()
     def load_callback (self): self.load()
+
+    def laser_control_enabled(self):
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+
+        if spec.app_state.has_dark():
+            self.ctl.guide.clear(token="take_dark")
+        else:
+            self.ctl.guide.suggest("Raman signal is improved if you take a dark measurement before firing the laser", token="take_dark")
 
     # ##########################################################################
     # private methods
