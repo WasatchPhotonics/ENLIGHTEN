@@ -55,7 +55,6 @@ from enlighten.post_processing.TransmissionFeature import TransmissionFeature
 from enlighten.scope.Cursor import Cursor
 from enlighten.scope.Graph import Graph
 from enlighten.scope.GridFeature import GridFeature
-from enlighten.scope.GuideFeature import GuideFeature
 from enlighten.scope.PresetFeature import PresetFeature
 from enlighten.scope.RamanShiftCorrectionFeature import RamanShiftCorrectionFeature
 from enlighten.timing.BatchCollection import BatchCollection
@@ -64,6 +63,7 @@ from enlighten.ui.Clipboard import Clipboard
 from enlighten.ui.Colors import Colors
 from enlighten.ui.FocusListener import FocusListener
 from enlighten.ui.GUI import GUI
+from enlighten.ui.GuideFeature import GuideFeature
 from enlighten.ui.HelpFeature import HelpFeature
 from enlighten.ui.ImageResources import ImageResources
 from enlighten.ui.Marquee import Marquee
