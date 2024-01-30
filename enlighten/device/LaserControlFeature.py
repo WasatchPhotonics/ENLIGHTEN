@@ -31,9 +31,9 @@ class LaserControlFeature:
         self.ctl.battery_feature.register_observer(self.battery_callback)
 
         self.slider_stop_usb = False
-        self.displayed_srm_tip = False
         self.locked = False
         self.restrictions = set()
+        self.observers = { "enabled": set(), "disabled": set() }
 
         cfu = self.ctl.form.ui
 
@@ -51,7 +51,6 @@ class LaserControlFeature:
         cfu.checkBox_laser_watchdog     .clicked            .connect(self.set_watchdog_enable_callback)
         cfu.comboBox_laser_power_unit   .currentIndexChanged.connect(self.update_visibility)
 
-
         for widget in [ cfu.verticalSlider_laser_power ]:
             widget.installEventFilter(MouseWheelFilter(widget))
 
@@ -64,6 +63,12 @@ class LaserControlFeature:
     # ##########################################################################
     # Public Methods
     # ##########################################################################
+
+    def register_observer(self, event, callback):
+        if event not in self.observers:
+            log.error(f"register_observer: unsupported event {event}")
+            return
+        self.observers[event].add(callback)
 
     def set_locked(self, flag):
         self.locked = flag
@@ -190,14 +195,6 @@ class LaserControlFeature:
         if spec is None:
             return
 
-        if not self.ctl.raman_intensity_correction.enabled and \
-                self.ctl.raman_intensity_correction.is_supported() and \
-                self.ctl.page_nav.doing_raman() and \
-                not self.displayed_srm_tip and \
-                flag:
-            self.ctl.guide.suggest("Tip: Raman response is more consistent when using Raman Intensity Correction", token="enable_raman_intensity_correction")
-            self.displayed_srm_tip = True
-
         if use_multispec:
             self.ctl.multispec.set_state("laser_enabled", flag)
             self.ctl.multispec.change_device_setting("laser_enable", flag)
@@ -212,6 +209,11 @@ class LaserControlFeature:
             self.refresh_laser_buttons()
 
         self.ctl.status_indicators.update_visibility()
+
+        event = "enabled" if flag else "disabled"
+        for callback in self.observers[event]:
+            log.debug(f"set_laser_enable: calling {event} callback {callback}")
+            callback()
 
     def process_reading(self, reading):
         spec = self.ctl.multispec.current_spectrometer()
@@ -387,27 +389,45 @@ class LaserControlFeature:
 
         log.debug("configure_laser_power_controls_mW: value %s, suffix %s", value, spinbox.suffix())
 
+    def set_visible(self, flag):
+        cfu = self.ctl.form.ui
+
+        for widget in [ cfu.label_laser_watchdog_sec,
+                        cfu.spinBox_laser_watchdog_sec,
+                        cfu.checkBox_laser_watchdog ]:
+            widget.setVisible(flag)
+
     def configure_watchdog(self, init=False):
         log.debug(f"configure_watchdog(init {init})")
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
 
-        has_laser = spec.settings.eeprom.has_laser
-        is_xs = spec.settings.is_xs()
-        lb_watchdog = self.ctl.form.ui.label_laser_watchdog_sec
-        sb_watchdog = self.ctl.form.ui.spinBox_laser_watchdog_sec
-        cb_watchdog = self.ctl.form.ui.checkBox_laser_watchdog
+        settings = spec.settings
+        cfu = self.ctl.form.ui
 
-        if not (is_xs and has_laser):
-            sb_watchdog.setVisible(False)
-            lb_watchdog.setVisible(False)
-            cb_watchdog.setVisible(False)
+        reason = None
+        if not settings.eeprom.has_laser:
+            reason = "requires laser"
+        elif not settings.is_xs():
+            reason = "only applies to XS"
+
+        # The following are reasons why we don't NEED to use the laser watchdog,
+        # but that's not necessarily reasons to hide / disable the feature.  For
+        # now, let's "allow" the user to use the laser watchdog from such units,
+        # but just not REQUIRE it (they can default it to zero in the EEPROM).
+        #
+        # elif settings.eeprom.sig_laser_tec:
+        #   reason = "isn't needed with a laser TEC"
+        # elif settings.eeprom.has_mml():
+        #     reason = "isn't needed for MML"
+
+        if reason:
+            log.debug(f"laser watchdog inapplicable because {reason}")
+            self.set_visible(False)
             return
 
-        sb_watchdog.setVisible(True)
-        lb_watchdog.setVisible(True)
-        cb_watchdog.setVisible(True)
+        self.set_visible(True)
         
         sec = spec.settings.eeprom.laser_watchdog_sec
 
@@ -419,20 +439,23 @@ class LaserControlFeature:
             spec.app_state.laser_watchdog_disabled = True
             log.debug("watchdog was disabled in the EEPROM")
 
-            # Nonetheless, ignore the disabled state and re-enable the
-            # watchdog at runtime.  This is for safety and avoid product 
-            # damage.  If the user wants to change it back to zero in 
-            # ENLIGHTEN, they can (and we won't nag them about it), but
-            # they have to explicitly choose "unsafe / destructive" every
-            # session.
-            sec = EEPROM.DEFAULT_LASER_WATCHDOG_SEC
-            log.debug(f"declining to disable laser watchdog at connection, defaulting to {sec} sec")
-            spec.settings.state.laser_watchdog_sec = sec
-        
-            # TODO: hide watchdog config and show "No watchdog msg"
+            if settings.eeprom.sig_laser_tec:
+                log.debug("allowing watchdog to be disabled in EEPROM since laser TEC present")
+            elif settings.eeprom.has_mml():
+                log.debug("allowing laser watchdog to be disabled in EEPROM since MML")
+            else:
+                # Ignore the disabled state and re-enable the
+                # watchdog at runtime.  This is for safety and avoid product 
+                # damage.  If the user wants to change it back to zero in 
+                # ENLIGHTEN, they can (and we won't nag them about it), but
+                # they have to explicitly choose "unsafe / destructive" every
+                # session. This should only come up for SML units w/o a TEC.
+                sec = EEPROM.DEFAULT_LASER_WATCHDOG_SEC
+                log.debug(f"declining to disable laser watchdog at connection, defaulting to {sec} sec")
+                spec.settings.state.laser_watchdog_sec = sec
         
         else:
-            sb_watchdog.setValue(sec)
+            cfu.spinBox_laser_watchdog_sec.setValue(sec)
 
     # ##########################################################################
     # Callbacks
@@ -531,7 +554,6 @@ class LaserControlFeature:
 
         self.refresh_watchdog_tooltip()
 
-    ## @todo consider making this a generic utility method (compare with EEPROMWriter)
     def confirm_disable(self) -> bool:
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
@@ -545,24 +567,28 @@ class LaserControlFeature:
         if spec.app_state.laser_watchdog_disabled:
             return True
 
-        label = spec.label
+        # If this is an MML or has a laser TEC, then they don't really need
+        # the watchdog, so let them disable it freely without annoying
+        # confirmations.
+        if spec.settings.eeprom.sig_laser_tec:
+            log.debug("skipping confirmation because have laser TEC")
+            return True
+        if spec.settings.eeprom.has_mml():
+            log.debug("skipping confirmation because have MML")
+            return True
 
         log.debug("prompting user to confirm their decision to disable the laser watchdog")
-        box = QtWidgets.QMessageBox()
-        box.setIcon(QtWidgets.QMessageBox.Warning)
-        box.setWindowTitle(label)
-        box.setText("Are you sure you wish to disable the laser watchdog? " +
-            "Running the laser without watchdog could damage the instrument, risk human injury " +
-            "and may void your warranty.")
-        box.setInformativeText("Disabling watchdog may void warranty.")
-        box.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel)
 
-        retval = box.exec_()
-
-        if retval != QtWidgets.QMessageBox.Yes:
-            log.debug("user declined to disable laser watchdog on %s", label)
+        msg = "Are you sure you wish to disable the laser watchdog? Running the " \
+            + "laser without watchdog could damage the instrument, risk human " \
+            + "injury and may void your warranty."
+        response = common.msgbox(msg, buttons="yes|cancel", informative_text="Disabling watchdog may void warranty.")
+        if response is None or response != "Yes":
+            log.debug("user reconsidered disabling laser watchdog")
             self.ctl.marquee.clear(token="laser_watchdog")
             return False
+
+        log.debug("user explicitly confirmed they wish to disable the laser watchdog")
         return True
 
     ##
