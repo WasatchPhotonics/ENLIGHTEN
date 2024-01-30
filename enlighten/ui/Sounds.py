@@ -31,7 +31,6 @@ class Sounds:
         cfu = ctl.form.ui
 
         self.cb_enable = cfu.checkBox_sound_enable
-        self.config   = config
 
         self.sounds = {}
         self.enabled = False
