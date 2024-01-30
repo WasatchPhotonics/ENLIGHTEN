@@ -956,7 +956,7 @@ class PluginController:
         plugin_fields = { pfw.field_name: pfw.field_value for pfw in self.plugin_field_widgets }
         if type(config.fields) == dict:
             plugin_fields["active_page"] = self.widget_selector.currentText()
-        log.debug("get_current_settings: plugin_fields = {plugin_fields}")
+        log.debug(f"get_current_settings: plugin_fields = {plugin_fields}")
         return plugin_fields
 
     ##
@@ -1002,16 +1002,12 @@ class PluginController:
                 log.info("ignoring reading (plugin blocked on request_id %d)", self.blocking_request.request_id)
                 return False
 
-            # Note that here we make a deepcopy of the processed_reading, meaning 
-            # that when we later get the response back, we no longer have a 
-            # handle to the "original" processed_reading.  That makes it hard to 
-            # pass-back "Measurement Metadata" in the response, and have a chance
-            # of actually saving plugin-added metadata or columns in the final 
-            # saved Measurement.
-
             log.debug("instantiating EnlightenPluginRequest")
             plugin_fields = self.get_current_settings()
+
             self.mut.lock() # avoid duplicate request_ids
+            # Send copies of SpectrometerSettings and the ProcessedReading,
+            # to reduce opportunities for plugin bugs to screw-up ENLIGHTEN.
             request = EnlightenPluginRequest(
                 request_id          = self.next_request_id,
                 spec                = spec,
