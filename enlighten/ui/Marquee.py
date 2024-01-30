@@ -76,6 +76,7 @@ class Marquee:
         self.last_token = None
 
         self.link = None
+        self.showing_something = False
 
         # Shouldn't need this, but getting around a "ShellExecute error 5"
         self.label.setOpenExternalLinks(False)
@@ -154,38 +155,28 @@ class Marquee:
 
         self.show_immediate(benign)
 
-    ##
-    # Clear any non-persistant messages.  If token is provided and matches last message,
-    # clears even persistent message.
-    #
-    # @public
     def clear(self, token=None, force=False):
-        if force or not self.persist or (token is not None and token == self.last_token):
-            self.schedule_clear()
+        if force or not self.persist or (token and token == self.last_token):
+            self.schedule_clear(immediate=True)
 
-    ## 
-    # @private
     def show(self):
-        # set box opacity to 1
         op = QtWidgets.QGraphicsOpacityEffect(self.frame)
         op.setOpacity(1)
         self.frame.setGraphicsEffect(op)
         self.frame.setAutoFillBackground(True)
+        self.showing_something = True
 
-    ## 
-    # @private
     def hide(self):
         self.label.clear()
         
-        # set box opacity to 0
         op = QtWidgets.QGraphicsOpacityEffect(self.frame)
         op.setOpacity(0)
         self.frame.setGraphicsEffect(op)
         self.frame.setAutoFillBackground(True)
+        self.showing_something = False
 
-    ##
-    # Deliberately does not interact with Toast.
     def reset_timers(self):
+        """ Deliberately does not interact with Toast """
         self.clear_timer.stop()
 
     def schedule_clear(self, immediate=False):
@@ -194,7 +185,8 @@ class Marquee:
         if immediate:
             self.hide()
         elif not self.persist:
-            self.clear_timer.start(self.DRAWER_DURATION_MS + self.extra_ms)
+            when_ms = self.DRAWER_DURATION_MS + self.extra_ms
+            self.clear_timer.start(when_ms)
 
     def close_callback(self):
         self.schedule_clear(immediate=True)
