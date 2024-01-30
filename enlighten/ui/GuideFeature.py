@@ -17,17 +17,27 @@ class Tip:
     def __init__(self,
             msg,
             persist=False,
+            period_sec=None,
             token=None,
             link=None):
+
         self.msg = msg
         self.persist = persist
+        self.period_sec = period_sec
         self.token = token
         self.link = link 
 
+    def __repr__(self):
+        return f"Tip <token {self.token}, persist {self.persist}, msg {self.msg}, link {self.link}>"
+
 class GuideFeature:
+    """
+    This is an experimental feature allowing ENLIGHTEN Business Objects to 
+    recommend "tips" that might be suggested to the user through the Marquee.
+    """
 
     MIN_DISPLAY_SEC = 8 
-    POLL_SEC = 1
+    POLL_SEC = 3
 
     def __init__(self, ctl):
         self.ctl = ctl
@@ -35,15 +45,16 @@ class GuideFeature:
 
         self.bt_enable = cfu.pushButton_guide
 
-        self.queue = multiprocessing.Queue()
+        self.queue = []
         self.last_tipped = None
         self.current_tip = None
+        self.shown = set()
 
         self.timer = QtCore.QTimer()
         self.timer.setSingleShot(True)
         self.timer.timeout.connect(self._tick)
 
-        self.bt_enable          .clicked        .connect(self._enable_callback)
+        self.bt_enable.clicked.connect(self._enable_callback)
 
         self.enabled = True
         self.update_visibility()
@@ -62,63 +73,46 @@ class GuideFeature:
     def stop(self):
         self.timer.stop()
         
-    def suggest(self, msg, persist=True, token=None, link=None):
-        if self.current_tip is not None:
-            if self.current_tip.msg == msg:
-                log.debug("ignoring repeat tip: %s", msg)
-                return
+    def suggest(self, msg, persist=False, period_sec=10, token=None, link=None):
+        if self.current_tip and self.current_tip.msg == msg:
+            log.debug(f"ignoring repeat tip {msg}")
+            return
 
-        queued = self.copy_queue()
-        for tip in queued:
+        if msg in self.shown:
+            log.debug(f"ignoring previously-shown tip: {msg}")
+            self.shown.add(msg)
+            return
+
+        for tip in self.queue:
             if tip.msg == msg:
-                log.debug("ignoring duplicate queued tip: %s", msg)
+                log.debug(f"ignoring duplicate queued tip: {msg}")
                 return
 
-        tip = Tip(msg=msg, persist=persist, token=token, link=link)
-        log.debug("queued %s", msg)
-        self.queue.put(tip)
+        tip = Tip(msg=f"💡 {msg}", persist=persist, token=token, period_sec=period_sec, link=link)
+        log.debug(f"suggest: queued {msg}")
+        self.queue.append(tip)
 
-    ##
-    # Clear the given token, both from the current Marquee display and also from
-    # any queued tips
-    # @public
-    def clear(self, token):
-        self.ctl.marquee.clear(token)
-        self.copy_queue(drop_token=token)
+    def clear(self, token=None):
+        if token:
+            log.debug(f"clearing token {token} from the Marquee")
+            self.ctl.marquee.clear(token)
 
-    ##
-    # returns a copy of the current queue contents as a list
-    # @param drop_token if provided, removes matching tips from queue during copy
-    def copy_queue(self, drop_token=None):
-        requeue = []
-        while True:
-            tip = None
-            try:
-                tip = self.queue.get_nowait()
-            except:
-                pass
-            if tip is None:
-                break
-
-            if tip.token != drop_token:
-                requeue.append(tip)
-        
-        for tip in requeue:
-            self.queue.put(tip)
-
-        return requeue
+        new_queue = []
+        if token:
+            for tip in self.queue:
+                if token != tip.token:
+                    new_queue.append(tip)
+        self.queue = new_queue
         
     # ##########################################################################
     # Private methods
     # ##########################################################################
 
     def _enable_callback(self):
-        """ @private """
         self.enabled = not self.enabled
         self.update_visibility()
 
     def _reset_timer(self):
-        """ @private """
         self.timer.start(self.POLL_SEC * 1000)
 
     def _tick(self):
@@ -134,17 +128,24 @@ class GuideFeature:
             log.debug("tick: not time")
             return self._reset_timer()
 
+        # don't stomp other Marquee messages (Guide tips are lowest-priority)
+        if self.ctl.marquee.showing_something:
+            log.debug("tick: waiting for Marquee to clear")
+            return self._reset_timer()
+
         # anything in the tip jar?
         tip = None
-        try:
-            tip = self.queue.get_nowait()
-        except:
-            pass
+        if len(self.queue):
+            try:
+                tip = self.queue.pop(0)
+            except:
+                pass
         if tip is None:
             log.debug("tick: none found")
             return self._reset_timer()
 
+        log.debug(f"dequeued tip {tip}")
         self.current_tip = tip
         self.last_tipped = datetime.datetime.now()
-        self.ctl.marquee.info(tip.msg, token=tip.token, persist=tip.persist, link=tip.link)
+        self.ctl.marquee.info(tip.msg, token=tip.token, persist=tip.persist, period_sec=tip.period_sec, link=tip.link)
         self._reset_timer()
