@@ -142,6 +142,7 @@ class BusinessObjects:
         ctl.interp = None
         ctl.kia_feature = None
         ctl.laser_control = None
+        ctl.laser_watchdog = None
         ctl.laser_temperature = None
         ctl.logging_feature = None
         ctl.marquee = None
@@ -309,10 +310,7 @@ class BusinessObjects:
             hardware_file_manager       = ctl.hardware_file_manager)
 
         self.header("instantiating Sounds")
-        ctl.sounds = Sounds(
-            checkbox                    = cfu.checkBox_sound_enable,
-            config                      = ctl.config,
-            path                        = "enlighten/assets/example_data/sounds")
+        ctl.sounds = Sounds(ctl)
 
         self.header("instantiating ScanAveragingFeature")
         ctl.scan_averaging = ScanAveragingFeature(ctl)
@@ -321,15 +319,12 @@ class BusinessObjects:
         ctl.take_one = TakeOneFeature(ctl)
 
         self.header("instantiating CloudManager")
-        ctl.cloud_manager = CloudManager(
-            cb_enabled                  = cfu.checkBox_cloud_config_download_enabled,
-            restore_button              = cfu.pushButton_restore_eeprom,
-
-            config                      = ctl.config,
-            eeprom_editor               = ctl.eeprom_editor)
+        ctl.cloud_manager = CloudManager(ctl)
 
         self.header("instantiating VCRControls")
         ctl.vcr_controls = VCRControls(ctl)
+
+        # need a more general way of handling these
         ctl.vcr_controls.register_observer("save", ctl.save_current_spectra)
         ctl.scan_averaging.complete_registrations()
 
@@ -425,17 +420,10 @@ class BusinessObjects:
             horiz_roi                   = ctl.horiz_roi)
 
         self.header("instantiating RichardsonLucy")
-        ctl.richardson_lucy = RichardsonLucy(
-            cb_enable                   = cfu.checkBox_richardson_lucy,
-            config                      = ctl.config,
-            graph                       = ctl.graph,
-            multispec                   = ctl.multispec,
-            horiz_roi                   = ctl.horiz_roi)
+        ctl.richardson_lucy = RichardsonLucy(ctl)
 
         self.header("instantiating ManufacturingFeature")
-        ctl.mfg = ManufacturingFeature(
-            bt_dfu                      = cfu.pushButton_mfg_dfu,
-            multispec                   = ctl.multispec)
+        ctl.mfg = ManufacturingFeature(ctl)
 
         self.header("instantiating HardwareCaptureControlFeature")
         ctl.hardware_control_feature = HardwareCaptureControlFeature(
@@ -482,10 +470,8 @@ class BusinessObjects:
             button                      = cfu.pushButton_graphGrid,
             gui                         = ctl.gui,
             stylesheets                 = ctl.stylesheets,
-            plots                       = {
-                                            "scope graph" : [ctl.graph, "plot"],
-                                            "plugin graph": [ctl.plugin_controller, "graph_plugin", "plot"],
-                                          })
+            plots                       = { "scope graph" : [ctl.graph, "plot"],
+                                            "plugin graph": [ctl.plugin_controller, "graph_plugin", "plot"] })
         ctl.plugin_controller.grid = ctl.grid
 
         self.header("instantiating AreaScanFeature")
@@ -536,10 +522,7 @@ class BusinessObjects:
             sb_width_us                 = cfu.spinBox_accessory_cont_strobe_width_us)
 
         self.header("instantiating HighGainModeFeature")
-        ctl.high_gain_mode = HighGainModeFeature(
-            cb_enabled                  = cfu.checkBox_high_gain_mode_enabled,
-            config                      = ctl.config,
-            multispec                   = ctl.multispec)
+        ctl.high_gain_mode = HighGainModeFeature(ctl)
 
         self.header("instantiating RegionControlFeature")
         ctl.region_control = RegionControlFeature(

@@ -2,13 +2,16 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
-- 2023-??-?? 4.0.36
+- 2023-01-30 4.0.36
     - Raman
         - ensured all Raman features available in Expert mode
         - renamed RamanModeFeature to AutoRaman
         - moving Raman Intensity Correction to its own widget visible in Raman view
     - extracted LaserWatchdogFeature
         - don't force Laser Watchdog unless XS SML w/o TEC (but support for any XS)
+    - GUI
+        - Guide tweaks
+        - common.msgbox tweaks
     - cleanup
         - moved Filters and Authentication to ui
         - moved SpectrometerApplicationState, AccessoryControlFeature, 
@@ -20,9 +23,12 @@
         - moved DarkFeature, ReferenceFeature, RamanMode to post_processing
         - renamed pluginExamples to plugins
         - renamed sfu to cfu
-    - GUI
-        - Guide tweaks
-        - common.msgbox tweaks
+    - moved to ctl
+        - HighGainModeFeature
+        - ManufacturingFeature
+        - CloudManager
+        - RichardsonLucy
+        - Sounds
 - 2023-01-26 4.0.35
     - RamanModeFeature 
         - prompt for confirmation
