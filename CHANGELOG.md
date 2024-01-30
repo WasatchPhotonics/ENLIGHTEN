@@ -7,6 +7,7 @@
         - ensured all Raman features available in Expert mode
         - renamed RamanModeFeature to AutoRaman
         - moving Raman Intensity Correction to its own widget visible in Raman view
+    - extracted LaserWatchdogFeature
         - don't force Laser Watchdog unless XS SML w/o TEC (but support for any XS)
     - cleanup
         - moved Filters and Authentication to ui

@@ -24,6 +24,7 @@ from enlighten.device.GainDBFeature import GainDBFeature
 from enlighten.device.HighGainModeFeature import HighGainModeFeature
 from enlighten.device.IntegrationTimeFeature import IntegrationTimeFeature
 from enlighten.device.LaserControlFeature import LaserControlFeature
+from enlighten.device.LaserWatchdogFeature import LaserWatchdogFeature
 from enlighten.device.LaserTemperatureFeature import LaserTemperatureFeature
 from enlighten.device.ManufacturingFeature import ManufacturingFeature
 from enlighten.device.Multispec import Multispec
@@ -290,6 +291,9 @@ class BusinessObjects:
 
         self.header("instantiating LaserControlFeature")
         ctl.laser_control = LaserControlFeature(ctl)
+
+        self.header("instantiating LaserWatchdogFeature")
+        ctl.laser_watchdog = LaserWatchdogFeature(ctl)
 
         self.header("instantiating RamanIntensityCorrection")
         ctl.raman_intensity_correction = RamanIntensityCorrection(ctl)

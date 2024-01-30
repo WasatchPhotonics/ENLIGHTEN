@@ -7,21 +7,15 @@ log = logging.getLogger(__name__)
 
 class AutoRamanFeature:
     """
-    This is a brand-new feature, yet is poorly named so needs reconsideration.
-
-    This is NOT the big red "pill" button at the top of the screen, saying 
-    (Raman | Non-Raman | Expert).  However, that Raman button is also called
-    "Raman Mode," hence the need to rename.
-
-    This feature adds a checkbox on the Laser Control widget called "Raman Mode"
+    This feature adds a checkbox on the Laser Control widget called "Auto-Raman"
     which turns the standard VCRControls Step and StepAndSave buttons into auto-
     nomous atomic Raman collections (averaged dark, laser warmup, averaged sample,
     laser disable).
     """
 
     LASER_WARMUP_MS = 5000
-    SECTION = "Raman Mode"
-    LASER_CONTROL_DISABLE_REASON = "Raman Mode enabled"
+    SECTION = "Auto-Raman"
+    LASER_CONTROL_DISABLE_REASON = "Auto-Raman enabled"
 
     def __init__(self, ctl):
         self.ctl = ctl
@@ -66,7 +60,6 @@ class AutoRamanFeature:
                            self.ctl.vcr_controls.is_paused() and \
                            spec.settings.eeprom.has_laser
 
-        # log.debug("visible = %s", self.visible)
         self.cb_enable.setVisible(self.visible)
 
         if not self.visible:

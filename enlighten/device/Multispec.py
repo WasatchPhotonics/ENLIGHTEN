@@ -59,7 +59,7 @@ class Multispec:
         # which can therefore be "locked" in Multispec.  There is currently NO
         # CONNECTION in code between the widgets which "visually suggest they can
         # be locked" (via this list), and those which actually can be.
-        self.lockable_widgets      = [ cfu.lightSourceWidget_shaded,
+        self.lockable_widgets      = [ cfu.lightSourceWidget_shaded,    # includes LaserWatchdog
                                        cfu.detectorControlWidget_shaded,
                                        cfu.displayAxisWidget_shaded,
                                        cfu.scanAveragingWidget_shaded,

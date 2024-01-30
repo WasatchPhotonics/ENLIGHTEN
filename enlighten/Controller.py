@@ -653,6 +653,7 @@ class Controller:
         for feature in [ self.accessory_control,
                          self.horiz_roi,
                          self.laser_control,
+                         self.laser_watchdog,
                          self.auto_raman,
                          self.raman_intensity_correction,
                          self.raman_shift_correction,
@@ -934,6 +935,7 @@ class Controller:
             self.cursor.center()
             for feature in [ self.accessory_control,
                              self.laser_control,
+                             self.laser_watchdog,
                              self.horiz_roi ]:
                 feature.init_hotplug()
 
@@ -947,6 +949,7 @@ class Controller:
                          self.graph,
                          self.high_gain_mode,
                          self.laser_control,
+                         self.laser_watchdog,
                          self.raman_shift_correction,
                          self.raman_intensity_correction,
                          self.reference_feature,
