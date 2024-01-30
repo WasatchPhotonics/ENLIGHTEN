@@ -198,7 +198,6 @@ class LaserControlFeature:
             spec.change_device_setting("laser_enable", flag)
 
         spec.app_state.laser_state = LaserStates.REQUESTED if flag else LaserStates.DISABLED
-        log.debug(f"set_laser_enable: spec.settings.state.laser_enabled = {spec.settings.state.laser_enabled}, spec.app_state.laser_state = {spec.app_state.laser_state}")
 
         if self.ctl.multispec.is_current_spectrometer(spec):
             self.refresh_laser_buttons()
