@@ -149,6 +149,10 @@ class LaserWatchdogFeature:
             self.lb_sec.setVisible(True)
             self.set_sec()
 
+            # requirement: if enabling watchdog in the middle of a laser event, disable laser
+            log.debug(f"enable_callback({state}): enabled watchdog, so disabling laser")
+            self.ctl.laser_control.set_laser_enable(False)
+
     def sec_callback(self):
         """ called when spinbox value changes """
         spec = self.ctl.multispec.current_spectrometer()
