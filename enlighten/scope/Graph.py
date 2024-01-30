@@ -62,20 +62,20 @@ class Graph:
         self.plot                       = plot
 
         # for now, retain legacy widget aliases
-        sfu = ctl.form.ui
-        self.button_copy                = sfu.pushButton_copy_to_clipboard
-        self.button_invert              = sfu.pushButton_invert_x_axis
-        self.button_lock_axes           = sfu.pushButton_lock_axes
-        self.button_zoom                = sfu.pushButton_zoom_graph
-        self.cb_marker                  = sfu.checkBox_graph_marker
-        self.combo_axis                 = sfu.displayAxis_comboBox_axis
+        cfu = ctl.form.ui
+        self.button_copy                = cfu.pushButton_copy_to_clipboard
+        self.button_invert              = cfu.pushButton_invert_x_axis
+        self.button_lock_axes           = cfu.pushButton_lock_axes
+        self.button_zoom                = cfu.pushButton_zoom_graph
+        self.cb_marker                  = cfu.checkBox_graph_marker
+        self.combo_axis                 = cfu.displayAxis_comboBox_axis
 
         # these are the "main graph" widgets we will populate IFF no ready-made 
         # plot was provided (e.g. by PluginController)
-        self.layout                     = sfu.layout_scope_capture_graphs
-        self.stacked_widget             = sfu.stackedWidget_scope_setup_live_spectrum
+        self.layout                     = cfu.layout_scope_capture_graphs
+        self.stacked_widget             = cfu.stackedWidget_scope_setup_live_spectrum
 
-        self.hide_when_zoomed           = [ sfu.frame_new_save_col_holder, sfu.controlWidget ]
+        self.hide_when_zoomed           = [ cfu.frame_new_save_col_holder, cfu.controlWidget ]
 
         self.current_x_axis = self.combo_axis.currentIndex()
         self.current_y_axis = common.Axes.COUNTS

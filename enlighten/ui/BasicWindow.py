@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 
 class BasicWindow(QtWidgets.QMainWindow):
     """
-    In the Controller, you will see myriad references to "self.form" and "sfu" --
+    The codebase contains myriad references to "Controller.form" and "cfu" --
     those refer to an object of this class (and its .ui attribute).
     """
 
@@ -27,7 +27,7 @@ class BasicWindow(QtWidgets.QMainWindow):
 
         self.prompt_on_exit = True
 
-        # the all-important "sfu"
+        # the all-important "cfu"
         self.ui = enlighten_layout.Ui_MainWindow()
         self.ui.setupUi(self)
 

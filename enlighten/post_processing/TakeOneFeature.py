@@ -60,11 +60,8 @@ class TakeOneFeature:
             for callback in self.observers["start"]:
                 callback()
 
-        # log.debug("unpausing")
-        # self.pause(False)
-
-        if self.ctl.raman_mode_feature.enabled:
-            take_one_request = self.ctl.raman_mode_feature.generate_take_one_request()
+        if self.ctl.auto_raman.enabled:
+            take_one_request = self.ctl.auto_raman.generate_take_one_request()
         else:
             take_one_request = TakeOneRequest()
 

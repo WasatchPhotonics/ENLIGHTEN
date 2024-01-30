@@ -12,13 +12,23 @@ import logging
 
 log = logging.getLogger(__name__)
 
-##
-# Encapsulate access to the "message display area" atop the right-hand side of 
-# the Scope Capture screen.  Messages are normally flashed for 3sec and then 
-# removed.  If 'persist' is set, message will remain until overwritten.
-#
-# Also provides a button-less notification box that auto-fades over 2sec.
 class Marquee:
+    """
+    Encapsulate access to the "message display area" visible along the top of the 
+    ENLIGHTEN display.
+
+    Messages are normally shown for 3sec and then removed.  If 'persist' is set, 
+    message will remain until overwritten.
+    
+    Also provides a button-less "toast" notification that auto-fades over 2sec.
+
+    TODO:
+
+    - consider restoring some level of animation (just not moving buttons, like
+      we used to)
+    - consider adding a "stronger" close-box with "never show again", perhaps
+      via QToolButton with DelayedPopup.
+    """
     
     ORIG_HEIGHT = 36
 
@@ -29,17 +39,17 @@ class Marquee:
 
     def __init__(self, ctl):
         self.ctl = ctl
-        sfu = ctl.form.ui
+        cfu = ctl.form.ui
 
-        self.frame       = sfu.frame_drawer_white
-        self.inner       = sfu.frame_drawer_black
-        self.label       = sfu.label_drawer
+        self.frame       = cfu.frame_drawer_white
+        self.inner       = cfu.frame_drawer_black
+        self.label       = cfu.label_drawer
 
         self.height = Marquee.ORIG_HEIGHT
 
         self.hide()
 
-        sfu.pushButton_marquee_close.clicked.connect(self.close_callback)
+        cfu.pushButton_marquee_close.clicked.connect(self.close_callback)
 
         ########################################################################
         # for pop-ups
@@ -66,6 +76,7 @@ class Marquee:
         self.last_token = None
 
         self.link = None
+        self.showing_something = False
 
         # Shouldn't need this, but getting around a "ShellExecute error 5"
         self.label.setOpenExternalLinks(False)
@@ -144,38 +155,28 @@ class Marquee:
 
         self.show_immediate(benign)
 
-    ##
-    # Clear any non-persistant messages.  If token is provided and matches last message,
-    # clears even persistent message.
-    #
-    # @public
     def clear(self, token=None, force=False):
-        if force or not self.persist or (token is not None and token == self.last_token):
-            self.schedule_clear()
+        if force or not self.persist or (token and token == self.last_token):
+            self.schedule_clear(immediate=True)
 
-    ## 
-    # @private
     def show(self):
-        # set box opacity to 1
         op = QtWidgets.QGraphicsOpacityEffect(self.frame)
         op.setOpacity(1)
         self.frame.setGraphicsEffect(op)
         self.frame.setAutoFillBackground(True)
+        self.showing_something = True
 
-    ## 
-    # @private
     def hide(self):
         self.label.clear()
         
-        # set box opacity to 0
         op = QtWidgets.QGraphicsOpacityEffect(self.frame)
         op.setOpacity(0)
         self.frame.setGraphicsEffect(op)
         self.frame.setAutoFillBackground(True)
+        self.showing_something = False
 
-    ##
-    # Deliberately does not interact with Toast.
     def reset_timers(self):
+        """ Deliberately does not interact with Toast """
         self.clear_timer.stop()
 
     def schedule_clear(self, immediate=False):
@@ -184,7 +185,8 @@ class Marquee:
         if immediate:
             self.hide()
         elif not self.persist:
-            self.clear_timer.start(self.DRAWER_DURATION_MS + self.extra_ms)
+            when_ms = self.DRAWER_DURATION_MS + self.extra_ms
+            self.clear_timer.start(when_ms)
 
     def close_callback(self):
         self.schedule_clear(immediate=True)

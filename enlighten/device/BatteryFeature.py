@@ -81,11 +81,11 @@ class BatteryFeature:
 
     def populate_placeholder(self):
         log.debug(f"adding battery graph")
-        sfu = self.ctl.form.ui
-        sfu.battery_graph = pyqtgraph.PlotWidget(name="Battery Data")
-        sfu.battery_graph.invertX(True)
-        sfu.stackedWidget_battery.addWidget(sfu.battery_graph)
-        sfu.stackedWidget_battery.setCurrentIndex(1)
+        cfu = self.ctl.form.ui
+        cfu.battery_graph = pyqtgraph.PlotWidget(name="Battery Data")
+        cfu.battery_graph.invertX(True)
+        cfu.stackedWidget_battery.addWidget(cfu.battery_graph)
+        cfu.stackedWidget_battery.setCurrentIndex(1)
 
     def add_spec_curve(self, spec):
         if self.ctl.multispec.check_hardware_curve_present(self.name, spec.device_id):

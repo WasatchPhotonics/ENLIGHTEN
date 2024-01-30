@@ -131,22 +131,22 @@ class BatchCollection:
     """
     def __init__(self, ctl):
         self.ctl = ctl
-        sfu = ctl.form.ui
+        cfu = ctl.form.ui
 
-        self.cb_enabled                     = sfu.checkBox_BatchCollection_enabled
-        self.cb_dark_before_batch           = sfu.checkBox_BatchCollection_dark_before_batch
-        self.cb_clear_before_batch          = sfu.checkBox_BatchCollection_clear_before_batch
-        self.cb_export_after_batch          = sfu.checkBox_BatchCollection_export_after_batch
-        self.lb_explain                     = sfu.label_BatchCollection_explain
-        self.rb_laser_manual                = sfu.radioButton_BatchCollection_laser_manual
-        self.rb_laser_spectrum              = sfu.radioButton_BatchCollection_laser_spectrum
-        self.rb_laser_batch                 = sfu.radioButton_BatchCollection_laser_batch
-        self.spinbox_measurement_count      = sfu.spinBox_BatchCollection_measurement_count
-        self.spinbox_measurement_period_ms  = sfu.spinBox_BatchCollection_measurement_period_ms
-        self.spinbox_batch_count            = sfu.spinBox_BatchCollection_batch_count
-        self.spinbox_batch_period_sec       = sfu.spinBox_BatchCollection_batch_period_sec
-        self.spinbox_laser_warmup_ms        = sfu.spinBox_BatchCollection_laser_warmup_ms
-        self.spinbox_collection_timeout     = sfu.spinBox_BatchCollection_collection_timeout
+        self.cb_enabled                     = cfu.checkBox_BatchCollection_enabled
+        self.cb_dark_before_batch           = cfu.checkBox_BatchCollection_dark_before_batch
+        self.cb_clear_before_batch          = cfu.checkBox_BatchCollection_clear_before_batch
+        self.cb_export_after_batch          = cfu.checkBox_BatchCollection_export_after_batch
+        self.lb_explain                     = cfu.label_BatchCollection_explain
+        self.rb_laser_manual                = cfu.radioButton_BatchCollection_laser_manual
+        self.rb_laser_spectrum              = cfu.radioButton_BatchCollection_laser_spectrum
+        self.rb_laser_batch                 = cfu.radioButton_BatchCollection_laser_batch
+        self.spinbox_measurement_count      = cfu.spinBox_BatchCollection_measurement_count
+        self.spinbox_measurement_period_ms  = cfu.spinBox_BatchCollection_measurement_period_ms
+        self.spinbox_batch_count            = cfu.spinBox_BatchCollection_batch_count
+        self.spinbox_batch_period_sec       = cfu.spinBox_BatchCollection_batch_period_sec
+        self.spinbox_laser_warmup_ms        = cfu.spinBox_BatchCollection_laser_warmup_ms
+        self.spinbox_collection_timeout     = cfu.spinBox_BatchCollection_collection_timeout
 
         # if true, save each measurement for each spectrometer (when timing is
         # disabled and we're just counting down measurements)

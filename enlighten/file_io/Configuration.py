@@ -85,8 +85,8 @@ class Configuration:
 
         self.ctl = ctl
 
-        sfu = ctl.form.ui
-        self.lb_save_result = sfu.label_save_ini_result
+        cfu = ctl.form.ui
+        self.lb_save_result = cfu.label_save_ini_result
 
         # not using Colors.color_names because not yet constructed
         self.color_names = ColorNames()
@@ -106,7 +106,7 @@ class Configuration:
         except:
             log.error("encountered exception during Configuration.reload", exc_info=1)
 
-        sfu.pushButton_save_ini.clicked.connect(self.save_callback)
+        cfu.pushButton_save_ini.clicked.connect(self.save_callback)
 
     def reload(self):
         """

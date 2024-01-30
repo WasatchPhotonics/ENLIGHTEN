@@ -26,15 +26,15 @@ class VCRControls:
 
     def __init__(self, ctl):
         self.ctl = ctl
-        sfu = ctl.form.ui
+        cfu = ctl.form.ui
 
-        self.bt_pause            = sfu.pushButton_scope_capture_pause
-        self.bt_play             = sfu.pushButton_scope_capture_play
-        self.bt_save             = sfu.pushButton_scope_capture_save
-        self.bt_start_collection = sfu.pushButton_scope_capture_start_collection
-        self.bt_step             = sfu.pushButton_scope_capture_step
-        self.bt_step_save        = sfu.pushButton_scope_capture_step_save
-        self.bt_stop             = sfu.pushButton_scope_capture_stop
+        self.bt_pause            = cfu.pushButton_scope_capture_pause
+        self.bt_play             = cfu.pushButton_scope_capture_play
+        self.bt_save             = cfu.pushButton_scope_capture_save
+        self.bt_start_collection = cfu.pushButton_scope_capture_start_collection
+        self.bt_step             = cfu.pushButton_scope_capture_step
+        self.bt_step_save        = cfu.pushButton_scope_capture_step_save
+        self.bt_stop             = cfu.pushButton_scope_capture_stop
 
         self.paused = False     # external callers should use is_paused()
 

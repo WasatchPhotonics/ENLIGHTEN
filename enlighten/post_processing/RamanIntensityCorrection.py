@@ -5,23 +5,43 @@ log = logging.getLogger(__name__)
 
 class RamanIntensityCorrection:
     """
-    Note this is NOT the same as RamanShiftCorrectionFeature!  
-    
-    RamanIntensityCorrection uses an EEPROM calibration to correct 
-    intensity (y-axis) on Raman spectra.
+    RamanIntensityCorrection uses an EEPROM-stored calibration, generated in the
+    factory with NIST SRM standards, to correct intensity (y-axis) on Raman 
+    spectra. This is sometimes just called "SRM correction" or just "SRM."
+
+    (Note this is NOT the same as RamanShiftCorrectionFeature, which corrects
+    the x-axis rather than the y-axis.)
+
+    Key terms:
+
+    - supported: an SRM calibration is found on the current spectrometer's EEPROM,
+        and we're in the Raman or Expert view. "Supported" determines whether the
+        widget is even visible in ENLIGHTEN.
+
+    - allowed: given that RamanIntensityCorrection is SUPPORTED, this determines
+        whether ENLIGHTEN business logic "allows" SRM to be applied. Currently
+        that means that we must have a dark measurement.
+
+    - enabled: whether we are actively applying SRM to new measurements.
+
+    - enabled_when_allowed: whether the user has previously checked "enable", but
+        we had to disallow for some reason (like the dark was cleared). This 
+        setting is used to automatically re-enable the feature when "supported"
+        and "allowed" become true (such as a new dark was successfully stored).
     """
     
     def __init__(self, ctl):
         self.ctl = ctl
-        sfu = ctl.form.ui
+        cfu = ctl.form.ui
         
-        self.cb_enable      = sfu.checkBox_raman_intensity_correction
-        self.cb_show_curve  = sfu.checkBox_show_srm
+        self.cb_enable      = cfu.checkBox_raman_intensity_correction
+        self.cb_show_curve  = cfu.checkBox_show_srm
+        self.frame          = cfu.frame_srm
 
-        self.supported           = False # show the checkbox because we have an SRM calibration
-        self.allowed             = False # enable the checkbox because we're in Raman mode and we've taken a dark
-        self.enabled             = False # checkbox is checked
-        self.enable_when_allowed = False # checkbox was checked before we went unallowed / invisible for some reason
+        self.supported           = False
+        self.allowed             = False
+        self.enabled             = False
+        self.enable_when_allowed = False
         self.show_curve          = False
         
         self.curve = self.ctl.graph.add_curve("SRM", rehide=False, in_legend=False)
@@ -33,23 +53,42 @@ class RamanIntensityCorrection:
         self.sync_gui()
 
         self.ctl.presets.register(self, "enabled", getter=self.get_enabled, setter=self.set_enabled)
+        self.ctl.page_nav.register_observer("view", self.update_visibility)
+        self.ctl.laser_control.register_observer("enabled", self.laser_enabled_callback)
 
-    ##
-    # Whether Raman Intensity Correction is supported with the current spectrometer.
-    # This decides whether the "[ ] enable" checkbox is visible.
     def is_supported(self):
+        """
+        Whether Raman Intensity Correction is supported with the current 
+        spectrometer, view and technique. This decides whether the widget is even
+        visible.
+
+        NOTE: Arguably we could include a check for eeprom.has_horizontal_roi here,
+        and even ctl.horiz_roi.enabled.
+        """
         spec = self.ctl.multispec.current_spectrometer()
-        if spec is not None:
-            self.supported = spec.settings.eeprom.has_raman_intensity_calibration() 
-        else:
+        if spec is None:
+            log.debug("not supported because no spec")
             self.supported = False
+        elif not spec.settings.eeprom.has_raman_intensity_calibration():
+            log.debug("not supported because no calibration")
+            self.supported = False
+        elif not self.ctl.page_nav.doing_raman():
+            log.debug("not supported because not doing Raman")
+            self.supported = False
+        else:
+            log.debug("supported because doing Raman and have calibration")
+            self.supported = True
+
         return self.supported
 
-    ##
-    # Whether application logic will allow us to enable the feature.
-    # This decides whether the "[ ] enable" checkbox is enabled.
     def is_allowed(self):
+        """
+        Whether application logic will allow us to enable the feature.
+        This decides whether the "[ ] enable" checkbox is clickable.
+        """
+
         def set(flag, tt):
+            log.debug(f"is_allowed: flag {flag}, tt {tt}")
             self.cb_enable.setEnabled(flag)
             self.cb_enable.setToolTip(tt)
             self.allowed = flag
@@ -59,23 +98,24 @@ class RamanIntensityCorrection:
         if spec is None:
             return set(False, "Raman Intensity Correction requires a spectrometer")
         elif not self.is_supported():
-            return set(False, "Raman Intensity Correction requires an SRM calibration")
+            return set(False, "Raman Intensity Correction requires an SRM calibration and Raman technique")
         elif spec.app_state.dark is None:
             return set(False, "Raman Intensity Correction requires a dark measurement")
-        elif not (self.ctl.page_nav.doing_raman() or self.ctl.page_nav.doing_expert()):
-            return set(False, "Raman Intensity Correction is only valid for Raman and Expert Mode")
         else:
-            return set(True, "Raman Intensity Correction optimizes peak intensity using SRM calibration")
+            return set(True, "Apply NIST SRM-calibrated Raman Intensity Correction")
 
     def update_visibility(self):
-        self.cb_enable.setEnabled(self.is_allowed())
+        supported = self.is_supported()
+        self.frame.setVisible(supported)
 
-        if self.supported:
-            log.debug(f"update_visibility: show = {self.show_curve}")
+        if supported:
             self.curve.setVisible(self.show_curve)
 
-            if self.allowed and self.enable_when_allowed:
-                self.cb_enable.setChecked(True)
+            allowed = self.is_allowed()
+            self.cb_enable.setEnabled(allowed)
+
+            if allowed:
+                self.cb_enable.setChecked(self.enable_when_allowed)
         else:
             self.enabled = False
             self.cb_enable.setChecked(False)
@@ -83,6 +123,19 @@ class RamanIntensityCorrection:
 
         self.sync_gui()
         
+    def laser_enabled_callback(self):            
+        log.debug("laser_enabled_callback: start")
+        if self.is_allowed():
+            log.debug("laser_enabled_callback: apparently we're allowed")
+            if not self.enabled:
+                log.debug("laser_enabled_callback: trying to suggest tip")
+                self.ctl.guide.suggest("Tip: enable Raman Intensity Correction for most accurate Raman intensity", token="enable_raman_intensity_correction")
+            else:
+                log.debug("laser_enabled_callback: not tipping because enabled {self.enabled}")
+        else:
+            log.debug("laser_enabled_callback: apparently we're NOT allowed")
+        log.debug("laser_enabled_callback: done")
+
     def show_callback(self):
         self.show_curve = self.cb_show_curve.isChecked()
         log.debug(f"show_callback: show_curve now {self.show_curve}")
@@ -95,6 +148,8 @@ class RamanIntensityCorrection:
 
         if self.enabled:
             self.ctl.guide.clear(token="enable_raman_intensity_correction")
+            if not self.ctl.horiz_roi.enabled:
+                self.ctl.guide.suggest("Tip: Raman Intensity Correction should only be used with Horizontal ROI enabled", token="srm_roi")
 
         self.ctl.dark_feature.update_enable()
 

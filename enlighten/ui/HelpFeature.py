@@ -53,7 +53,6 @@ class HelpFeature:
                 Ctrl-Left  move cursor
                 Ctrl-Right move cursor"""
         tt = re.sub(r"([\n\r]+) *", r"\1", tt)
-        log.debug(f"tt now {tt}")
 
         self.bt_help.setToolTip(tt)
 

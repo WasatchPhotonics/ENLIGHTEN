@@ -80,7 +80,7 @@ class ReferenceFeature:
             return
 
         # hide reference widgets in non-referenced mode (basically, Raman)
-        if self.page_nav.doing_raman():
+        if self.page_nav.doing_raman() and not self.page_nav.doing_expert():
             [ widget.setVisible(False) for widget in self.visibility_widgets ]
             return
 

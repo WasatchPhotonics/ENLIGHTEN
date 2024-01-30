@@ -363,7 +363,7 @@ class Feature:
         results = False
         button = False
 
-        if self.is_installed and (self.page_nav.doing_raman() or self.page_nav.is_expert()):
+        if self.is_installed and self.page_nav.doing_raman():
             side = True
             button = True
             results = self.display_all
@@ -389,7 +389,7 @@ class Feature:
     def _queue_tip(self):
         # only generate tips while we're on Raman Scope Capture
         if not (self.page_nav.doing_raman() and self.page_nav.doing_scope()):
-            log.debug("not tipping because not raman")
+            log.debug("not tipping because not raman scope")
             return
 
         spec = self.multispec.current_spectrometer()

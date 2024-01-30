@@ -17,9 +17,10 @@ else:
 
 log = logging.getLogger(__name__)
 
-##
-# Encapsulate laser control from the application side.
 class LaserControlFeature:
+    """
+    Encapsulate laser control from the application side.
+    """
 
     MIN_BATTERY_PERC = 5
     BTN_OFF_TEXT = "Turn Laser Off"
@@ -31,39 +32,41 @@ class LaserControlFeature:
         self.ctl.battery_feature.register_observer(self.battery_callback)
 
         self.slider_stop_usb = False
-        self.displayed_srm_tip = False
         self.locked = False
         self.restrictions = set()
+        self.observers = { "enabled": set(), "disabled": set() }
 
-        sfu = self.ctl.form.ui
+        cfu = self.ctl.form.ui
 
-        sfu.pushButton_laser_power_dn   .clicked            .connect(self.dn_callback)
-        sfu.pushButton_laser_power_up   .clicked            .connect(self.up_callback)
-        sfu.pushButton_laser_toggle     .clicked            .connect(self.toggle_callback)
-        sfu.pushButton_laser_convenience.clicked            .connect(self.toggle_callback)
-        sfu.verticalSlider_laser_power  .sliderPressed      .connect(self.slider_power_press_callback)
-        sfu.verticalSlider_laser_power  .sliderMoved        .connect(sfu.doubleSpinBox_laser_power.setValue)
-        sfu.verticalSlider_laser_power  .sliderReleased     .connect(self.slider_power_callback)
-        sfu.doubleSpinBox_excitation_nm .valueChanged       .connect(self.excitation_callback)
-        sfu.doubleSpinBox_laser_power   .valueChanged       .connect(sfu.verticalSlider_laser_power.setValue)
-        sfu.doubleSpinBox_laser_power   .valueChanged       .connect(self.set_laser_power_callback)
-        sfu.spinBox_laser_watchdog_sec  .valueChanged       .connect(self.set_watchdog_callback)
-        sfu.checkBox_laser_watchdog     .clicked            .connect(self.set_watchdog_enable_callback)
-        sfu.comboBox_laser_power_unit   .currentIndexChanged.connect(self.update_visibility)
+        cfu.pushButton_laser_power_dn   .clicked            .connect(self.dn_callback)
+        cfu.pushButton_laser_power_up   .clicked            .connect(self.up_callback)
+        cfu.pushButton_laser_toggle     .clicked            .connect(self.toggle_callback)
+        cfu.pushButton_laser_convenience.clicked            .connect(self.toggle_callback)
+        cfu.verticalSlider_laser_power  .sliderPressed      .connect(self.slider_power_press_callback)
+        cfu.verticalSlider_laser_power  .sliderMoved        .connect(cfu.doubleSpinBox_laser_power.setValue)
+        cfu.verticalSlider_laser_power  .sliderReleased     .connect(self.slider_power_callback)
+        cfu.doubleSpinBox_excitation_nm .valueChanged       .connect(self.excitation_callback)
+        cfu.doubleSpinBox_laser_power   .valueChanged       .connect(cfu.verticalSlider_laser_power.setValue)
+        cfu.doubleSpinBox_laser_power   .valueChanged       .connect(self.set_laser_power_callback)
+        cfu.comboBox_laser_power_unit   .currentIndexChanged.connect(self.update_visibility)
 
-
-        for widget in [ sfu.verticalSlider_laser_power ]:
+        for widget in [ cfu.verticalSlider_laser_power ]:
             widget.installEventFilter(MouseWheelFilter(widget))
 
-        for widget in [ sfu.doubleSpinBox_excitation_nm,
-                        sfu.doubleSpinBox_laser_power,
-                        sfu.spinBox_laser_watchdog_sec,
-                        sfu.comboBox_laser_power_unit ]:
+        for widget in [ cfu.doubleSpinBox_excitation_nm,
+                        cfu.doubleSpinBox_laser_power,
+                        cfu.comboBox_laser_power_unit ]:
             widget.installEventFilter(ScrollStealFilter(widget))
 
     # ##########################################################################
     # Public Methods
     # ##########################################################################
+
+    def register_observer(self, event, callback):
+        if event not in self.observers:
+            log.error(f"register_observer: unsupported event {event}")
+            return
+        self.observers[event].add(callback)
 
     def set_locked(self, flag):
         self.locked = flag
@@ -92,7 +95,6 @@ class LaserControlFeature:
         state.use_mW = settings.eeprom.has_laser_power_calibration() and settings.is_mml()
 
         self.set_laser_enable(False)
-        self.configure_watchdog(init=True)
         
         spec.change_device_setting("laser_power_high_resolution", True)
 
@@ -102,20 +104,19 @@ class LaserControlFeature:
     def update_visibility(self, init=False):
         log.debug(f"update_visibility(init={init})")
         spec = self.ctl.multispec.current_spectrometer()
-        sfu = self.ctl.form.ui
-
+        cfu = self.ctl.form.ui
+        
         if spec is None:
-            sfu.label_laser_watchdog_sec.setVisible(False)
             return
 
         settings = spec.settings
         has_laser = settings.eeprom.has_laser
         doing_expert = self.ctl.page_nav.doing_expert()
         is_ilc = any([component in settings.full_model().upper() for component in ["-ILC", "-IL-IC"]])
-        combo_unit = sfu.comboBox_laser_power_unit
+        combo_unit = cfu.comboBox_laser_power_unit
 
-        for widget in [ sfu.frame_lightSourceControl,
-                   sfu.pushButton_laser_convenience ]:
+        for widget in [ cfu.frame_lightSourceControl,
+                        cfu.pushButton_laser_convenience ]:
             widget.setVisible(has_laser)
         if not has_laser:
             return
@@ -142,22 +143,21 @@ class LaserControlFeature:
                 else:
                     self.configure_laser_power_controls_percent()
 
-        sfu.doubleSpinBox_excitation_nm.setVisible(doing_expert)
-        sfu.label_lightSourceWidget_excitation_nm.setVisible(doing_expert)
+        cfu.doubleSpinBox_excitation_nm.setVisible(doing_expert)
+        cfu.label_lightSourceWidget_excitation_nm.setVisible(doing_expert)
 
-        self.configure_watchdog()
 
         if self.locked:
-            # let them turn the laser on/off, nothing else
-            for w in [ sfu.doubleSpinBox_excitation_nm,
-                       sfu.pushButton_laser_power_dn,
-                       sfu.pushButton_laser_power_up,
-                       sfu.verticalSlider_laser_power,
-                       sfu.doubleSpinBox_excitation_nm,
-                       sfu.doubleSpinBox_laser_power,
-                       sfu.spinBox_laser_watchdog_sec,
-                       sfu.checkBox_laser_watchdog,
-                       sfu.comboBox_laser_power_unit ]:
+            # let them turn the laser on/off, nothing else (including watchdog)
+            for w in [ cfu.doubleSpinBox_excitation_nm,
+                       cfu.pushButton_laser_power_dn,
+                       cfu.pushButton_laser_power_up,
+                       cfu.verticalSlider_laser_power,
+                       cfu.doubleSpinBox_excitation_nm,
+                       cfu.doubleSpinBox_laser_power,
+                       cfu.spinBox_laser_watchdog_sec,
+                       cfu.checkBox_laser_watchdog,
+                       cfu.comboBox_laser_power_unit ]:
                 w.setEnabled(False)
 
         self.refresh_laser_buttons()
@@ -190,14 +190,6 @@ class LaserControlFeature:
         if spec is None:
             return
 
-        if not self.ctl.raman_intensity_correction.enabled and \
-                self.ctl.raman_intensity_correction.is_supported() and \
-                self.ctl.page_nav.doing_raman() and \
-                not self.displayed_srm_tip and \
-                flag:
-            self.ctl.guide.suggest("Tip: Raman response is more consistent when using Raman Intensity Correction", token="enable_raman_intensity_correction")
-            self.displayed_srm_tip = True
-
         if use_multispec:
             self.ctl.multispec.set_state("laser_enabled", flag)
             self.ctl.multispec.change_device_setting("laser_enable", flag)
@@ -206,12 +198,16 @@ class LaserControlFeature:
             spec.change_device_setting("laser_enable", flag)
 
         spec.app_state.laser_state = LaserStates.REQUESTED if flag else LaserStates.DISABLED
-        log.debug(f"set_laser_enable: spec.settings.state.laser_enabled = {spec.settings.state.laser_enabled}, spec.app_state.laser_state = {spec.app_state.laser_state}")
 
         if self.ctl.multispec.is_current_spectrometer(spec):
             self.refresh_laser_buttons()
 
         self.ctl.status_indicators.update_visibility()
+
+        event = "enabled" if flag else "disabled"
+        for callback in self.observers[event]:
+            log.debug(f"set_laser_enable: calling {event} callback {callback}")
+            callback()
 
     def process_reading(self, reading):
         spec = self.ctl.multispec.current_spectrometer()
@@ -296,35 +292,21 @@ class LaserControlFeature:
 
     def refresh_laser_buttons(self, force_on=False):
         spec = self.ctl.multispec.current_spectrometer()
-        sfu = self.ctl.form.ui
+        cfu = self.ctl.form.ui
 
         enabled = force_on or (spec and spec.settings.state.laser_enabled)
         allowed = 0 == len(self.restrictions)
         why_not = ", ".join(self.restrictions)
 
         if enabled:
-            sfu.pushButton_laser_toggle.setText(self.BTN_OFF_TEXT)
+            cfu.pushButton_laser_toggle.setText(self.BTN_OFF_TEXT)
         else:
-            sfu.pushButton_laser_toggle.setText(self.BTN_ON_TEXT)
+            cfu.pushButton_laser_toggle.setText(self.BTN_ON_TEXT)
 
-        for b in [ sfu.pushButton_laser_toggle, sfu.pushButton_laser_convenience ]:
+        for b in [ cfu.pushButton_laser_toggle, cfu.pushButton_laser_convenience ]:
             b.setEnabled(allowed)
             b.setToolTip("Toggle laser (ctrl-L)" if allowed else f"Disabled ({why_not})")
             self.ctl.gui.colorize_button(b, enabled)
-
-        self.refresh_watchdog_tooltip()
-
-    def refresh_watchdog_tooltip(self):
-        spec = self.ctl.multispec.current_spectrometer()
-        if spec is None:
-            return
-
-        watchdog_sec = spec.settings.state.laser_watchdog_sec
-        sb = self.ctl.form.ui.spinBox_laser_watchdog_sec
-        if self.ctl.form.ui.checkBox_laser_watchdog.isChecked():
-            sb.setToolTip(f"Laser will automatically stop firing after {watchdog_sec} seconds")
-        else:
-            sb.setToolTip("Laser watchdog disabled")
 
     def configure_laser_power_controls_percent(self):
         spec = self.ctl.multispec.current_spectrometer()
@@ -387,53 +369,6 @@ class LaserControlFeature:
 
         log.debug("configure_laser_power_controls_mW: value %s, suffix %s", value, spinbox.suffix())
 
-    def configure_watchdog(self, init=False):
-        log.debug(f"configure_watchdog(init {init})")
-        spec = self.ctl.multispec.current_spectrometer()
-        if spec is None:
-            return
-
-        has_laser = spec.settings.eeprom.has_laser
-        is_xs = spec.settings.is_xs()
-        lb_watchdog = self.ctl.form.ui.label_laser_watchdog_sec
-        sb_watchdog = self.ctl.form.ui.spinBox_laser_watchdog_sec
-        cb_watchdog = self.ctl.form.ui.checkBox_laser_watchdog
-
-        if not (is_xs and has_laser):
-            sb_watchdog.setVisible(False)
-            lb_watchdog.setVisible(False)
-            cb_watchdog.setVisible(False)
-            return
-
-        sb_watchdog.setVisible(True)
-        lb_watchdog.setVisible(True)
-        cb_watchdog.setVisible(True)
-        
-        sec = spec.settings.eeprom.laser_watchdog_sec
-
-        if init and sec <= 0:
-            # Acknowledge that the watchdog was disabled in the EEPROM.
-            # We use this to disable annoying pop-up messages warning
-            # the user about disabling the watchdog.  It's also possible
-            # this is an older model that doesn't HAVE a watchdog.
-            spec.app_state.laser_watchdog_disabled = True
-            log.debug("watchdog was disabled in the EEPROM")
-
-            # Nonetheless, ignore the disabled state and re-enable the
-            # watchdog at runtime.  This is for safety and avoid product 
-            # damage.  If the user wants to change it back to zero in 
-            # ENLIGHTEN, they can (and we won't nag them about it), but
-            # they have to explicitly choose "unsafe / destructive" every
-            # session.
-            sec = EEPROM.DEFAULT_LASER_WATCHDOG_SEC
-            log.debug(f"declining to disable laser watchdog at connection, defaulting to {sec} sec")
-            spec.settings.state.laser_watchdog_sec = sec
-        
-            # TODO: hide watchdog config and show "No watchdog msg"
-        
-        else:
-            sb_watchdog.setValue(sec)
-
     # ##########################################################################
     # Callbacks
     # ##########################################################################
@@ -471,99 +406,6 @@ class LaserControlFeature:
         value = self.ctl.form.ui.doubleSpinBox_laser_power.value()
         self.ctl.multispec.set_state("laser_power", value)
         self.ctl.multispec.change_device_setting(setting, value)
-
-    def set_watchdog_time(self, sec):
-        # maintain application state
-        self.ctl.multispec.set_state("laser_watchdog_sec", sec)
-        # set the spectrometer's watchdog time
-        self.ctl.multispec.change_device_setting("laser_watchdog_sec", sec)
-
-    # called when watchdog is checked ON or OFF
-    def set_watchdog_enable_callback(self, state):
-        lb_watchdog = self.ctl.form.ui.label_laser_watchdog_sec
-        sb_watchdog = self.ctl.form.ui.spinBox_laser_watchdog_sec
-        cb_watchdog = self.ctl.form.ui.checkBox_laser_watchdog
-        if not state:
-
-            log.debug("User initiated watchdog disable")
-
-            if self.confirm_disable():
-
-                log.debug("User confirmed watchdog disable")
-
-                # disable the watchdog
-                self.set_watchdog_time(0)
-                sb_watchdog.setVisible(False)
-                lb_watchdog.setVisible(False)
-            else:
-
-                log.debug("User cancelled watchdog disable")
-
-                # undo unchecking
-                cb_watchdog.setChecked(True)
-        else:
-
-            log.debug("User enabled watchdog")
-
-            # set the watchdog to the spinbox value
-            sb_watchdog.setVisible(True)
-            lb_watchdog.setVisible(True)
-            self.set_watchdog_callback()
-
-    # called when watchdog interval (sec) is changed
-    def set_watchdog_callback(self):
-        spec = self.ctl.multispec.current_spectrometer()
-        if spec is None:
-            return
-
-        sec = self.ctl.form.ui.spinBox_laser_watchdog_sec.value()
-        log.debug(f"set_watchdog_callback: asked to set watchdog to {sec} seconds")
-
-        # not possible with spinbox min = 3
-        if sec < 3:
-            log.critical("Watchdog spinbox set below desired minimum (<3)")
-            return
-
-        self.set_watchdog_time(sec)
-
-        if spec.settings.state.laser_enabled:
-            self.set_laser_enable(False)
-
-        self.refresh_watchdog_tooltip()
-
-    ## @todo consider making this a generic utility method (compare with EEPROMWriter)
-    def confirm_disable(self) -> bool:
-        spec = self.ctl.multispec.current_spectrometer()
-        if spec is None:
-            return False
-
-        # If the user disabled the watchdog in the EEPROM, assume they
-        # know what they're doing and don't nag them.  Also, it could be
-        # an older spectrometer that didn't HAVE a watchdog and therefore
-        # the value "defaults" to zero — we don't want to annoy those users
-        # every connection either.
-        if spec.app_state.laser_watchdog_disabled:
-            return True
-
-        label = spec.label
-
-        log.debug("prompting user to confirm their decision to disable the laser watchdog")
-        box = QtWidgets.QMessageBox()
-        box.setIcon(QtWidgets.QMessageBox.Warning)
-        box.setWindowTitle(label)
-        box.setText("Are you sure you wish to disable the laser watchdog? " +
-            "Running the laser without watchdog could damage the instrument, risk human injury " +
-            "and may void your warranty.")
-        box.setInformativeText("Disabling watchdog may void warranty.")
-        box.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel)
-
-        retval = box.exec_()
-
-        if retval != QtWidgets.QMessageBox.Yes:
-            log.debug("user declined to disable laser watchdog on %s", label)
-            self.ctl.marquee.clear(token="laser_watchdog")
-            return False
-        return True
 
     ##
     # This is a little convoluted because "laser enabled" was implemented
@@ -622,7 +464,7 @@ class LaserControlFeature:
 
     # gets called by BatteryFeature when a new battery reading is received
     def battery_callback(self, perc, charging):
-        sfu = self.ctl.form.ui
+        cfu = self.ctl.form.ui
         enough_for_laser = perc >= self.MIN_BATTERY_PERC
         log.debug("enough_for_laser = %s (%.2f%%)" % (enough_for_laser, perc))
 

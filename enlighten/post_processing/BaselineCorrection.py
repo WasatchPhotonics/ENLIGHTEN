@@ -61,10 +61,10 @@ class BaselineCorrection:
     def __init__(self, ctl):
         self.ctl = ctl
 
-        sfu = ctl.form.ui
-        self.cb_enabled     = sfu.checkBox_baselineCorrection_enable
-        self.cb_show_curve  = sfu.checkBox_baselineCorrection_show
-        self.combo_algo     = sfu.comboBox_baselineCorrection_algo
+        cfu = ctl.form.ui
+        self.cb_enabled     = cfu.checkBox_baselineCorrection_enable
+        self.cb_show_curve  = cfu.checkBox_baselineCorrection_show
+        self.combo_algo     = cfu.comboBox_baselineCorrection_algo
 
         self.current_algo_name = BaselineCorrection.DEFAULT_ALGO_NAME
         self.enabled = False
@@ -202,7 +202,7 @@ class BaselineCorrection:
     def update_visibility(self):
         spec = self.ctl.multispec.current_spectrometer()
 
-        self.allowed = self.ctl.page_nav.doing_raman() or self.ctl.page_nav.doing_expert()
+        self.allowed = self.ctl.page_nav.doing_raman()
         if not self.allowed:
             self.enabled = False
             self.show_curve = False

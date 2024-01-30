@@ -9,11 +9,11 @@ class ScanAveragingFeature:
     def __init__(self, ctl):
         self.ctl = ctl
 
-        sfu = ctl.form.ui
-        self.bt_dn      = sfu.pushButton_scan_averaging_dn
-        self.bt_up      = sfu.pushButton_scan_averaging_up
-        self.spinbox    = sfu.spinBox_scan_averaging
-        self.label      = sfu.label_scan_averaging
+        cfu = ctl.form.ui
+        self.bt_dn      = cfu.pushButton_scan_averaging_dn
+        self.bt_up      = cfu.pushButton_scan_averaging_up
+        self.spinbox    = cfu.spinBox_scan_averaging
+        self.label      = cfu.label_scan_averaging
 
         self.spinbox    .valueChanged   .connect(self.update_from_gui)
         self.spinbox                    .installEventFilter(ScrollStealFilter(self.spinbox))

@@ -10,10 +10,10 @@ class TransmissionFeature:
     
     def __init__(self, ctl):
         self.ctl = ctl
-        sfu = ctl.form.ui
+        cfu = ctl.form.ui
 
-        self.cb_max_enable  = sfu.checkBox_enable_max_transmission
-        self.sb_max_perc    = sfu.spinBox_max_transmission_perc
+        self.cb_max_enable  = cfu.checkBox_enable_max_transmission
+        self.sb_max_perc    = cfu.spinBox_max_transmission_perc
 
         self.update_from_gui()
 

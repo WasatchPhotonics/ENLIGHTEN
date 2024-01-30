@@ -18,11 +18,11 @@ class IntegrationTimeFeature:
     def __init__(self, ctl):
         self.ctl = ctl
 
-        sfu = ctl.form.ui
-        self.bt_dn = sfu.pushButton_integration_time_ms_dn
-        self.bt_up = sfu.pushButton_integration_time_ms_up
-        self.slider = sfu.slider_integration_time_ms
-        self.spinbox = sfu.spinBox_integration_time_ms
+        cfu = ctl.form.ui
+        self.bt_dn = cfu.pushButton_integration_time_ms_dn
+        self.bt_up = cfu.pushButton_integration_time_ms_up
+        self.slider = cfu.slider_integration_time_ms
+        self.spinbox = cfu.spinBox_integration_time_ms
 
         # bindings
         self.slider.valueChanged.connect(self.slider_callback)

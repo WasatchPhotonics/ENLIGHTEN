@@ -12,10 +12,10 @@ class ResourceMonitorFeature:
 
     def __init__(self, ctl):
         self.ctl = ctl
-        sfu = ctl.form.ui
+        cfu = ctl.form.ui
 
-        self.lb_growth       = sfu.label_process_growth_mb
-        self.lb_size         = sfu.label_process_size_mb
+        self.lb_growth       = cfu.label_process_growth_mb
+        self.lb_size         = cfu.label_process_size_mb
 
         self.process_id = os.getpid()
 

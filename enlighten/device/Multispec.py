@@ -44,27 +44,27 @@ class Multispec:
 
     def __init__(self, ctl):
         self.ctl = ctl
-        sfu = ctl.form.ui
+        cfu = ctl.form.ui
 
-        self.button_lock           = sfu.pushButton_multiSpec_lock
-        self.check_autocolor       = sfu.checkBox_multiSpec_autocolor
-        self.check_hide_others     = sfu.checkBox_multiSpec_hide_others
-        self.combo_spectrometer    = sfu.comboBox_multiSpec
-        self.frame_widget          = sfu.frame_multiSpecWidget
-        self.layout_colors         = sfu.horizontalLayout_multiSpec_colors
-        self.eject_button          = sfu.pushButton_eject
+        self.button_lock           = cfu.pushButton_multiSpec_lock
+        self.check_autocolor       = cfu.checkBox_multiSpec_autocolor
+        self.check_hide_others     = cfu.checkBox_multiSpec_hide_others
+        self.combo_spectrometer    = cfu.comboBox_multiSpec
+        self.frame_widget          = cfu.frame_multiSpecWidget
+        self.layout_colors         = cfu.horizontalLayout_multiSpec_colors
+        self.eject_button          = cfu.pushButton_eject
 
         # Essentially, these are widgets corresponding to SpectrometerState fields,
         # SpectrometerApplicationState fields, or change_device_setting() keys
         # which can therefore be "locked" in Multispec.  There is currently NO
         # CONNECTION in code between the widgets which "visually suggest they can
         # be locked" (via this list), and those which actually can be.
-        self.lockable_widgets      = [ sfu.lightSourceWidget_shaded,
-                                       sfu.detectorControlWidget_shaded,
-                                       sfu.displayAxisWidget_shaded,
-                                       sfu.scanAveragingWidget_shaded,
-                                       sfu.boxcarWidget_shaded,
-                                       sfu.temperatureWidget_shaded ]
+        self.lockable_widgets      = [ cfu.lightSourceWidget_shaded,    # includes LaserWatchdog
+                                       cfu.detectorControlWidget_shaded,
+                                       cfu.displayAxisWidget_shaded,
+                                       cfu.scanAveragingWidget_shaded,
+                                       cfu.boxcarWidget_shaded,
+                                       cfu.temperatureWidget_shaded ]
         self.device_id = None
         self.ejected = set()
         self.strip_features = []

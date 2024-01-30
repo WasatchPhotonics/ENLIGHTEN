@@ -2,23 +2,23 @@
 class HardwareCaptureControlFeature:
 
     def __init__(self,
-                 sfu,
+                 cfu,
                  graph,
                  laser_feature,
                  detector_feature):
-        self.sfu = sfu
+        self.cfu = cfu
         self.graph = graph
         self.laser_feature = laser_feature
         self.detector_feature = detector_feature
 
-        self.cb_laser = self.sfu.checkBox_laser_tec_temp
-        self.cb_detector = self.sfu.checkBox_detector_tec_temp
-        self.cb_live     = self.sfu.checkBox_hardware_live
+        self.cb_laser = self.cfu.checkBox_laser_tec_temp
+        self.cb_detector = self.cfu.checkBox_detector_tec_temp
+        self.cb_live     = self.cfu.checkBox_hardware_live
 
         self.cb_chart_map = {
-            self.cb_laser: self.sfu.frame_hardware_capture_temperatures_laser,
-            self.cb_detector: self.sfu.frame_hardware_capture_temperatures_detector,
-            self.cb_live: self.sfu.frame_area_scan_live,
+            self.cb_laser: self.cfu.frame_hardware_capture_temperatures_laser,
+            self.cb_detector: self.cfu.frame_hardware_capture_temperatures_detector,
+            self.cb_live: self.cfu.frame_area_scan_live,
             }
 
         self.cb_laser.setChecked(False)

@@ -7,7 +7,7 @@ log = logging.getLogger(__name__)
 class LaserTemperatureFeature:
 
     def __init__(self,
-             sfu,
+             cfu,
              graph,
              multispec,
              lb_degC,
@@ -15,7 +15,7 @@ class LaserTemperatureFeature:
              clipboard,
              hardware_file_manager):
 
-        self.sfu                   = sfu
+        self.cfu                   = cfu
         self.curve                 = None
         self.name                  = "Laser_TEC_Temperature"
         self.graph                 = graph
@@ -30,8 +30,8 @@ class LaserTemperatureFeature:
         self.multispec.register_strip_feature(self)
         self.hardware_file_manager.register_feature(self)
 
-        sfu.pushButton_clear_laser_temperature_data .clicked    .connect(self.clear_data)
-        sfu.pushButton_copy_laser_temperature_data  .clicked    .connect(self.copy_data)
+        cfu.pushButton_clear_laser_temperature_data .clicked    .connect(self.clear_data)
+        cfu.pushButton_copy_laser_temperature_data  .clicked    .connect(self.copy_data)
 
     def process_reading(self, spec, reading):
         current_spec = self.multispec.current_spectrometer()
@@ -76,15 +76,15 @@ class LaserTemperatureFeature:
             self.lb_degC.setText("%.2f °C" % degC)
 
     def populate_placeholder(self):
-        self.sfu.laser_temperature_graph = pyqtgraph.PlotWidget(name="Laser temperature")
-        self.sfu.laser_temperature_graph.invertX(True)
-        self.sfu.stackedWidget_laser_temperature.addWidget(self.sfu.laser_temperature_graph)
-        self.sfu.stackedWidget_laser_temperature.setCurrentIndex(1)
+        self.cfu.laser_temperature_graph = pyqtgraph.PlotWidget(name="Laser temperature")
+        self.cfu.laser_temperature_graph.invertX(True)
+        self.cfu.stackedWidget_laser_temperature.addWidget(self.cfu.laser_temperature_graph)
+        self.cfu.stackedWidget_laser_temperature.setCurrentIndex(1)
 
     def add_spec_curve(self, spec):
         if self.multispec.check_hardware_curve_present(self.name, spec.device_id):
             return
-        curve = self.sfu.laser_temperature_graph.plot([], pen=spec.curve.opts['pen'],name=str(spec.label))
+        curve = self.cfu.laser_temperature_graph.plot([], pen=spec.curve.opts['pen'],name=str(spec.label))
         self.multispec.register_hardware_feature_curve(self.name, spec.device_id, curve) 
     
     def remove_spec_curve(self, spec):
@@ -92,9 +92,9 @@ class LaserTemperatureFeature:
         if cur_curve is None:
             return
         # remove current curve from graph
-        for curve in self.sfu.laser_temperature_graph.listDataItems():
+        for curve in self.cfu.laser_temperature_graph.listDataItems():
             if curve.name() == cur_curve.name():
-                self.sfu.laser_temperature_graph.removeItem(curve)
+                self.cfu.laser_temperature_graph.removeItem(curve)
         self.multispec.remove_hardware_curve(self.name, spec.device_id)
         if self.multispec.get_spectrometers() == []:
             self.lb_degC.setText("0.0 °C")

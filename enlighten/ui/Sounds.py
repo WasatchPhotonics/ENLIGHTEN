@@ -12,27 +12,25 @@ except ImportError:
     print("winsound library not found - audio disabled")
     HAVE_SOUND = False
 
-##
-# Encapsulates ENLIGHTEN's limited audio capabilities.
-#
-# @note At this time, we only support sound on Windows 
 class Sounds:
+    """
+    Encapsulates ENLIGHTEN's limited audio capabilities.
+    
+    @note At this time, we only support sound on Windows 
+    """
 
-    ##
-    # This prevents uncollectable garbage
+    PATH = "enlighten/assets/example_data/sounds"
+
     def clear(self):
         for name in self.sounds:
             self.sounds[name].parent = None
         self.sounds = None
     
-    def __init__(self, 
-            checkbox,
-            config,
-            path):
+    def __init__(self, ctl):
+        self.ctl = ctl
+        cfu = ctl.form.ui
 
-        self.checkbox = checkbox
-        self.config   = config
-        self.path     = path
+        self.cb_enable = cfu.checkBox_sound_enable
 
         self.sounds = {}
         self.enabled = False
@@ -44,13 +42,11 @@ class Sounds:
         self.min_interval_sec = 3
 
         # find all supported audio files
-        log.debug("searching for sounds in %s", path)
-        for root, dirs, files in os.walk(path):
+        log.debug("searching for sounds in %s", self.PATH)
+        for root, dirs, files in os.walk(self.PATH):
             for filename in files:
                 name, ext = os.path.splitext(filename)
                 ext = ext[1:] # trim period
-                # log.debug("examining %s [%s]", name, ext)
-                # MZ: had trouble with ethanol.aiff and .mp3
                 if ext in ["wav", "flac", "m4a", "mp3", "aiff"]:
                     pathname = os.path.join(root, filename)
                     name = name.lower()
@@ -58,14 +54,14 @@ class Sounds:
                     # log.debug("found %s -> %s", name, pathname)
 
         # bindings
-        checkbox.stateChanged.connect(self.checkbox_callback)
+        self.cb_enable.stateChanged.connect(self.enable_callback)
 
         # initialization
-        checkbox.setChecked(self.config.get("sound", "enable").lower() == "true")
+        self.cb_enable.setChecked(self.ctl.config.get_bool("sound", "enable"))
 
-    def checkbox_callback(self):
-        self.enabled = self.checkbox.isChecked()
-        self.config.set("sound", "enable", self.enabled)
+    def enable_callback(self):
+        self.enabled = self.cb_enable.isChecked()
+        self.ctl.config.set("sound", "enable", self.enabled)
 
     def is_enabled(self):
         return HAVE_SOUND and self.enabled
@@ -77,7 +73,7 @@ class Sounds:
 
     def getNames(self):
         names = list(self.sounds.keys())
-        names.extend(["asterisk", "question", "exclamation"])
+        names.extend(["asterisk", "question", "exclamation"]) # Windows built-ins
         return list(sorted(set(names)))
 
     def stop(self):

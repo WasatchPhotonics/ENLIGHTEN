@@ -153,15 +153,10 @@ def set_controller_instance(inst):
     global ctl
     ctl = inst
 
-def msgbox(prompt, title="Alert", buttons=None, detail=None):
+def msgbox(prompt, title="Alert", buttons=None, detail=None, informative_text=None):
     """
-    Display an interupting message to the user.
-
-    Looking for a method to display Marquee messages? 
-    (Those non-intrusive messages at the top of Enlighten)
-
-    One way is to use self.ctl.marquee.info("Message")
-    This assumes your FeatureObject class has an instance of Controller.
+    Display an interupting message to the user.  In common rather than GUI so it can
+    be used before Controller / Business Objects fully instantiated.
 
     Inspired by VB msgbox: 
     https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/msgbox-function
@@ -199,12 +194,18 @@ def msgbox(prompt, title="Alert", buttons=None, detail=None):
 
     if detail:
         mb.setDetailedText(detail)
+    if informative_text:
+        mb.setInformativeText(informative_text)
 
+    retval = None
     result = mb.exec_()
-    if result == QMessageBox.Ok: return "Ok"
-    if result == QMessageBox.No: return "No"
-    if result == QMessageBox.Yes: return "Yes"
-    if result == QMessageBox.Cancel: return "Cancel"
+    if result == QMessageBox.Ok:     retval = "Ok"
+    if result == QMessageBox.No:     retval = "No"
+    if result == QMessageBox.Yes:    retval = "Yes"
+    if result == QMessageBox.Cancel: retval = "Cancel"
+
+    log.debug(f"msgbox: retval {retval}, result {result}")
+    return retval 
 
 def is_rpi():
     result = False

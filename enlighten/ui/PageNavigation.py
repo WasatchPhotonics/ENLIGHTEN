@@ -130,23 +130,22 @@ class PageNavigation:
 
     def __init__(self, ctl):
         self.ctl = ctl
-        sfu = ctl.form.ui
+        cfu = ctl.form.ui
 
                                 
-        self.button_raman       = sfu.pushButton_raman
-        self.button_non_raman   = sfu.pushButton_non_raman
-        self.button_expert      = sfu.pushButton_expert
-        self.combo_view         = sfu.comboBox_view
-        self.stack_main         = sfu.stackedWidget_low
-        self.combo_technique    = sfu.technique_comboBox
-
-        # self-register
-        self.ctl.logging_feature.page_nav = self
+        self.button_raman       = cfu.pushButton_raman
+        self.button_non_raman   = cfu.pushButton_non_raman
+        self.button_expert      = cfu.pushButton_expert
+        self.combo_view         = cfu.comboBox_view
+        self.stack_main         = cfu.stackedWidget_low
+        self.combo_technique    = cfu.technique_comboBox
 
         self.operation_mode = common.OperationModes.RAMAN
         self.current_view = -1 
         self.has_used_raman = False
         self.current_technique = self.combo_technique.currentIndex()
+
+        self.observers = {}
 
         self.combo_technique.installEventFilter(ScrollStealFilter(self.combo_technique))
 
@@ -166,6 +165,11 @@ class PageNavigation:
         self.ctl.form.ui.frame_FactoryMode_Options.hide()
         self.ctl.form.ui.frame_transmission_options.hide()        # todo move to TransmissionFeature
         self.set_operation_mode_non_raman()
+
+    def register_observer(self, event, callback):
+        if event not in self.observers:
+            self.observers[event] = set()
+        self.observers[event].add(callback)
 
     # ##########################################################################
     # activity introspection
@@ -290,7 +294,13 @@ class PageNavigation:
     def set_view_common(self):
         self.update_view_shortcut()
         self.ctl.graph.reset_axes()
+
+        # if everyone registered as observers, we could drop this...
         self.ctl.update_feature_visibility()
+
+        if "view" in self.observers:
+            for callback in self.observers["view"]:
+                callback()
 
     # ##########################################################################
     # Page Navigation: Operation Mode
@@ -310,7 +320,7 @@ class PageNavigation:
     def using_reference         (self): return self.current_technique in [ common.Techniques.REFLECTANCE_TRANSMISSION, common.Techniques.ABSORBANCE ]
 
     def doing_raman(self):
-        return self.operation_mode == common.OperationModes.RAMAN
+        return self.operation_mode in [common.OperationModes.RAMAN, common.OperationModes.EXPERT ]
 
     def doing_expert(self):
         return self.operation_mode == common.OperationModes.EXPERT
@@ -394,7 +404,7 @@ class PageNavigation:
         is_ingaas = False
         has_cooling = False
         flag = self.doing_expert()
-        sfu = self.ctl.form.ui
+        cfu = self.ctl.form.ui
 
         spec = self.ctl.multispec.current_spectrometer() if self.ctl.multispec else None
         if spec is None:
@@ -405,11 +415,11 @@ class PageNavigation:
 
         # todo: migrate all of these to register_observer("doing_expert") in 
         # their respective owning Business Objects
-        sfu.frame_post_processing.setVisible(flag)
-        sfu.frame_baseline_correction.setVisible(flag)
-        sfu.frame_tec_control.setVisible(flag and has_cooling)
-        sfu.frame_area_scan_widget.setVisible(flag and not is_ingaas)
-        sfu.frame_region_control.setVisible(False) # spec.settings.is_imx()
+        cfu.frame_post_processing.setVisible(flag)
+        cfu.frame_baseline_correction.setVisible(flag)
+        cfu.frame_tec_control.setVisible(flag and has_cooling)
+        cfu.frame_area_scan_widget.setVisible(flag and not is_ingaas)
+        cfu.frame_region_control.setVisible(False) # spec.settings.is_imx()
 
     def set_operation_mode_common(self, mode):
         # cache the newly-set operation mode for the current view, so the

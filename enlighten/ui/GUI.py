@@ -77,14 +77,14 @@ class GUI:
         self.update_theme()
 
     def update_theme(self):
-        sfu = self.ctl.form.ui
+        cfu = self.ctl.form.ui
 
         self.ctl.stylesheets.set_theme(self.theme)
 
         if self.theme.startswith("dark"):
-            self.ctl.form.ui.pushButton_dark_mode.setToolTip("Seek the light!")
+            cfu.pushButton_dark_mode.setToolTip("Seek the light!")
         else:
-            self.ctl.form.ui.pushButton_dark_mode.setToolTip("Embrace the dark!")
+            cfu.pushButton_dark_mode.setToolTip("Embrace the dark!")
 
         path = ":/application/images/enlightenLOGO"
         if not self.theme.startswith("dark"):
@@ -92,7 +92,7 @@ class GUI:
         path += ".png"
 
         pixmap = QtGui.QPixmap(path)
-        sfu.label_application_logo.setPixmap(pixmap)
+        cfu.label_application_logo.setPixmap(pixmap)
 
     def colorize_button(self, button, flag):
         if button is None:

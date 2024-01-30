@@ -2,7 +2,6 @@ import os
 import json
 import socket
 import logging
-#import urllib.request
 
 from typing import Optional
 from decimal import Decimal
@@ -49,22 +48,18 @@ class CloudManager:
 
     All internet access is opt-in, so unless the user has manually checked the 
     "Enable Cloud Access" options in Setup, all internet access will be blocked.
+
+    @todo this whole class needs reviewed.
     """
 
     CONFIG_SECTION = "Cloud"
 
-    def __init__(self, 
-                 cb_enabled: QCheckBox,
-                 restore_button: QPushButton, 
+    def __init__(self, ctl):
+        self.ctl = ctl
+        cfu = ctl.form.ui
 
-                 config: Configuration,
-                 eeprom_editor: EEPROMEditor) -> None:
-
-        self.cb_enabled = cb_enabled
-        self.restore_button = restore_button
-
-        self.config = config
-        self.eeprom_editor = eeprom_editor
+        self.cb_enabled = cfu.checkBox_cloud_config_download_enabled
+        self.bt_restore = cfu.pushButton_restore_eeprom
 
         self.session = None
         self.dynamo_resource = None
@@ -75,18 +70,19 @@ class CloudManager:
 
         self.init_from_config()
 
-        self.result_message = QMessageBox(self.restore_button)
+        # @todo move to common.msgbox
+        self.result_message = QMessageBox(self.bt_restore)
         self.result_message.setWindowTitle("Restore EEPROM Result")
         self.result_message.setStandardButtons(QMessageBox.Ok)
 
-        self.restore_button.clicked      .connect(self.perform_restore)
+        self.bt_restore    .clicked      .connect(self.restore_callback)
         self.cb_enabled    .stateChanged .connect(self.enable_callback)
 
     def init_from_config(self):
-        self.cb_enabled.setChecked(self.config.get_bool(self.CONFIG_SECTION, "enabled"))
+        self.cb_enabled.setChecked(self.ctl.config.get_bool(self.CONFIG_SECTION, "enabled"))
 
     def save_config(self):
-        self.config.set(self.CONFIG_SECTION, "enabled", self.enabled())
+        self.ctl.config.set(self.CONFIG_SECTION, "enabled", self.enabled())
 
     def enabled(self) -> bool:
         if DISABLED or not self.cb_enabled.isChecked():
@@ -95,7 +91,7 @@ class CloudManager:
         return True
 
     def enable_callback(self):
-        self.config.set(self.CONFIG_SECTION, "enabled", self.cb_enabled.isChecked())
+        self.ctl.config.set(self.CONFIG_SECTION, "enabled", self.cb_enabled.isChecked())
         self.save_config()
 
     def get_andor_eeprom(self, detector_serial: str) -> dict:
@@ -121,9 +117,10 @@ class CloudManager:
         util.normalize_decimal(dict_response)
         return dict_response
 
-    def perform_restore(self) -> None:
+    def restore_callback(self):
         if not self.enabled():
             return 
+
         serial_number = self.prompt_for_serial()
         if self.session is None or self.dynamo_resource is None:
             self.setup_connection()
@@ -131,7 +128,7 @@ class CloudManager:
             local_file, download_result = self.attempt_download(serial_number)
             if download_result:
                 log.debug(f"succeeded in downloading cloud file {serial_number}")
-                import_result = self.eeprom_editor.import_eeprom(file_name=local_file)
+                import_result = self.ctl.eeprom_editor.import_eeprom(file_name=local_file)
                 if not import_result:
                     log.error("Error in eeprom editor import")
                     self.result_message.setText("EEPROM Writing Error.")
@@ -197,7 +194,7 @@ class CloudManager:
             response = self.eeprom_table.get_item(Key={"serialNumber": serial_number})
             eeprom_response = response["Item"]
             # default is required, see function definition
-            eeprom = self.eeprom_editor.parse_wpsc_report(dict(eeprom_response))
+            eeprom = self.ctl.eeprom_editor.parse_wpsc_report(dict(eeprom_response))
             json_response = json.dumps(eeprom, default=handle_decimal_type)
             with open(local_file, 'w') as f:
                 f.write(str(json_response))
@@ -210,7 +207,7 @@ class CloudManager:
         return (local_file, True)
 
     def prompt_for_serial(self) -> Optional[str]:
-        text, ok = QInputDialog().getText(self.restore_button, 
+        text, ok = QInputDialog().getText(self.cb_restore, 
                                           "Enter Spectrometer Serial Number",
                                           "Serial Number",
                                           QLineEdit.Normal)

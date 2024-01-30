@@ -16,24 +16,20 @@ log = logging.getLogger(__name__)
 # @see https://en.wikipedia.org/wiki/Richardson%E2%80%93Lucy_deconvolution
 class RichardsonLucy:
 
+    SECTION = "RichardsonLucy"
+
     ##
     # @param iterations how many Richardson-Lucy iterations to run
     # @param downgrade how much to downgrade the spectrometer's spec'd (claimed) resolution
     # 
     # Last updated from "Turn Raman Sample Library into KIA Input Files WP-00413.Rmd" received
     # 30-Sep-2019 from Dieter.
-    def __init__(self, 
-            cb_enable,
-            config,
-            graph,
-            multispec,
-            horiz_roi):
 
-        self.cb_enable = cb_enable
-        self.config    = config
-        self.graph     = graph
-        self.multispec = multispec
-        self.horiz_roi = horiz_roi
+    def __init__(self, ctl):
+        self.ctl = ctl
+        cfu = ctl.form.ui
+
+        self.cb_enable = cfu.checkBox_richardson_lucy
 
         self.reset()
 
@@ -41,6 +37,7 @@ class RichardsonLucy:
         self.update_from_gui()
 
         self.cb_enable.toggled.connect(self.update_from_gui)
+        self.cb_enable.setToolTip("apply Richardson-Lucy focal deconvolution")
 
         # ModelInfo may not have "ideal" FHWM for each unit (nm, cm-1, px etc)
         # for each spectrometer, so if we change the x-axis unit, determine if
@@ -50,29 +47,26 @@ class RichardsonLucy:
         # Whether we are graphing in wavelengths or wavenumbers, we should be able
         # to perform the deconvolution in whatever axis matches the configured 
         # ideal resolution.  Not sure what I was thinking here.
-        self.graph.register_observer("change_axis", self.change_axis_callback)
+        self.ctl.graph.register_observer("change_axis", self.change_axis_callback)
 
         # If the user dis/enables or changes cropping, re-generate guassian.  
         # (Alternative design would be to include ROI tuple in the cache key.)
-        self.horiz_roi.register_observer(self.reset)
-
-        self.cb_enable.setToolTip("apply Richardson-Lucy focal deconvolution")
+        self.ctl.horiz_roi.register_observer(self.reset)
 
     def update_from_config(self):
-        s = "deconvolution"
-        self.iterations = self.config.get_int  ("deconvolution", "iterations", default=5)
-        self.downgrade  = self.config.get_float("deconvolution", "downgrade",  default=1.0)
+        # when are these actually set?
+        self.iterations = self.ctl.config.get_int  (self.SECTION, "iterations", default=5)
+        self.downgrade  = self.ctl.config.get_float(self.SECTION, "downgrade",  default=1.0)
 
     def update_from_gui(self):
         self.enabled = self.cb_enable.isChecked()
 
     def change_axis_callback(self, old_axis, new_axis):
-        """ The user changed the current x-axis on the Graph """
         self.update_visibility()
 
     def update_visibility(self, spec=None):
         if spec is None:
-            spec = self.multispec.current_spectrometer()
+            spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
 
@@ -150,7 +144,7 @@ class RichardsonLucy:
         if spec is None:
             return
 
-        x_axis = self.graph.generate_x_axis(unit=unit, cropped=True)
+        x_axis = self.ctl.graph.generate_x_axis(unit=unit, cropped=True)
         if x_axis is None:
             log.debug("no x-axis")
             return 
