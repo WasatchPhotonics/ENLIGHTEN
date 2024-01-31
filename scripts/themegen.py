@@ -158,7 +158,7 @@ def get_rgba(line):
 
 def process_color(line, target_hsl):
     """
-    given the string line which may contain a color literal, such as #FFFFFF,
+    given the string line which may contain a color literal, such as \#FFFFFF,
     replace the first occurence with the color transformed towards the target hue
     """
 

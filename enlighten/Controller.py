@@ -106,21 +106,8 @@ class Controller:
                 plugin            = None
             ):
         """
-        All of the parameters are normally parsed from via command-line arguments
-        in Enlighten.py.  Typically the only argument that changes in normal
-        operation is log_level.
-        
-        @param app        the running QApplication, to which the Controller
-                          will add the BasicWindow form
-        @param log_level  string in ["debug", "info", "warning", "error", "critical"]
-                          (https://docs.python.org/2/library/logging.html#logging-levels)
-        @param max_memory_growth how much process RAM usage is allowed to increase
-                          as a percentage before ENLIGHTEN automatically shuts down
-        @param run_sec    automatically exit after this many seconds
-        @param serial_number only connect to this unit if found.
-        @param stylesheet_path directory containing enlighten.css and associated styles
-        @param set_all_dfu set each ARM spectrometer to DFU mode as they connect
-        @param plugin     auto-connect the named plugin
+        All of the parameters are normally set via command-line arguments
+        in Enlighten.py.  
         """
 
         self.app                    = app
@@ -465,15 +452,15 @@ class Controller:
 
     def connect_new(self, other_device=None):
         """
-        # If there are any visible spectrometers that ENLIGHTEN has not yet
-        # connected to, try to connect to them.  Only connect one device per pass;
-        # let bus_listener kick-off and call connect_new() again if more remain.
-        #
-        # Note that this method gets called whether there are any spectrometers
-        # on the bus or not, and whether any or all of them have already connected
-        # or not.
-        #
-        # @param other_device: can be a BLEDevice from BLEManager
+        If there are any visible spectrometers that ENLIGHTEN has not yet
+        connected to, try to connect to them.  Only connect one device per pass;
+        let bus_listener kick-off and call connect_new() again if more remain.
+        
+        Note that this method gets called whether there are any spectrometers
+        on the bus or not, and whether any or all of them have already connected
+        or not.
+        
+        @param other_device: can be a BLEDevice from BLEManager
         """
         # do we see any spectrometers on the bus?  (WasatchBus will pre-filter to
         # only valid spectrometer devices)
@@ -1980,14 +1967,14 @@ class Controller:
 
     def set_curve_data(self, curve, y, x=None, label=None) -> bool:
         """
-        # Lightweight wrapper over pyqtgraph.PlotCurveItem.setData.
-        #
-        # Checks for case where x[0] is higher than x[1] (happens with a default
-        # wavecal of [0, 1, 0, 0] and positive excitation in wavenumber space).
-        # Also traps for unequal array lengths, etc.
-        #
-        # @todo merge into Graph.set_data (calling it is a start)
-        # @returns True if graph was updated
+        Lightweight wrapper over pyqtgraph.PlotCurveItem.setData.
+        
+        Checks for case where x[0] is higher than x[1] (happens with a default
+        wavecal of [0, 1, 0, 0] and positive excitation in wavenumber space).
+        Also traps for unequal array lengths, etc.
+        
+        @todo merge into Graph.set_data (calling it is a start)
+        @returns True if graph was updated
         """
         if curve is None:
             log.error("set_curve_data[%s]: no curve", label)

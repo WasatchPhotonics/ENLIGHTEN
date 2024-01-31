@@ -202,7 +202,7 @@ class EnlightenApplication:
         Calling for coverage on Win11.
 
         @see https://github.com/pyinstaller/pyinstaller/issues/7729#issuecomment-1605503018
-        @swee https://github.com/pyinstaller/pyinstaller/pull/7735
+        @see https://github.com/pyinstaller/pyinstaller/pull/7735
         """
         if sys.platform == 'win32':
             import ctypes

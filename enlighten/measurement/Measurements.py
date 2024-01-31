@@ -581,7 +581,7 @@ class Measurements:
     #
     # @todo getting interpolation working here requires some thought.
     #
-    # @para Collated
+    # @par Collated
     #
     # If SaveOptions.save_collated(), then the columns are grouped by each 
     # "subspectrum" (processed, raw, dark, reference etc). This changes the basic

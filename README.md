@@ -67,6 +67,5 @@ extend ENLIGHTEN in countless ways we never imagined.
 - Technical Notes
     - [Qt](docs/QT.md)
     - [CSS](docs/CSS.md)
-- [Backlog](docs/BACKLOG.md)
 - [History](docs/HISTORY.md)
 - [Changelog](CHANGELOG.md)

@@ -70,7 +70,7 @@ class ASTMPeak:
 # emission lamp as well.  (If the emission peaks were bang-on but the Raman peaks
 # were off, then presumably the excitation is what really needs corrected.)
 #
-# @para Workflow
+# @par Workflow
 #
 # - user clicks button
 # - if peaks matched within threshold
