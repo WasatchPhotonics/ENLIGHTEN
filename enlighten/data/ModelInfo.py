@@ -1,5 +1,4 @@
 import re
-import numpy as np
 import logging
 
 from .ModelFWHM import ModelFWHM

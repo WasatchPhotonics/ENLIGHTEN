@@ -1,9 +1,7 @@
 import os
 import re
-import shutil
 import logging
 import textwrap
-import threading
 import configparser
 
 from enlighten.data.ColorNames import ColorNames
@@ -130,7 +128,7 @@ class Configuration:
         try:
             log.info("creating configuration directory: %s", self.directory)
             os.makedirs(self.directory)
-        except Exception as exc:
+        except Exception:
             log.critical("failed to create config directory", exc_info=1)
 
     def stub_test(self):
@@ -141,7 +139,7 @@ class Configuration:
         try:
             log.info(f"creating test directory: {self.test_dir}")
             os.makedirs(self.test_dir)
-        except Exception as exc:
+        except Exception:
             log.critical("failed to create test directory", exc_info=1)
 
     def stub_missing(self):
@@ -265,7 +263,7 @@ class Configuration:
 
     def get_sections(self):
         keys = []
-        for k, v in self.config.items():
+        for k, _ in self.config.items():
             keys.append(k)
         return keys
 
@@ -274,7 +272,7 @@ class Configuration:
             return
 
         keys = []
-        for k, v in self.config[section].items():
+        for k, _ in self.config[section].items():
             keys.append(k)
         return keys
 
@@ -468,7 +466,6 @@ class Configuration:
         if self.multispec is not None:
             for spec in self.multispec.get_spectrometers():
                 if spec.device:
-                    settings = spec.settings
                     eeprom = spec.settings.eeprom
                     state = spec.settings.state
                     sn = spec.settings.eeprom.serial_number

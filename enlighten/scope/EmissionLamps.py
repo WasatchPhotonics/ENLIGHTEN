@@ -99,10 +99,8 @@ class EmissionLamp:
                 self.set_visible(name, wavelength)
     
     def set_visible(self, name, wavelength):
-        model = self.model_info.get_by_name(name)
         if not name in self.visible:
             self.visible[name] = []
-        #log.debug("EmissionLamp.set_visible: %s %.2f is visible to %s", self.element, wavelength, model.name)
         self.visible[name].append(wavelength)
 
     def get_intensity(self, wavelength):

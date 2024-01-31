@@ -1,22 +1,20 @@
-import os
 import time
 import asyncio
 import logging
 from queue import Queue
 
-from bleak import discover, BleakClient, BleakScanner
-from bleak.exc import BleakError
+from bleak import discover
 from threading import Thread
 
 from enlighten import common
 from wasatch.DeviceID import DeviceID
 
 if common.use_pyside2():
-    from PySide2 import QtCore, QtWidgets, QtGui
-    from PySide2.QtWidgets import QApplication, QDialog, QMainWindow, QPushButton, QVBoxLayout, QLabel
+    from PySide2 import QtCore, QtGui
+    from PySide2.QtWidgets import QDialog, QPushButton, QVBoxLayout, QLabel
 else:
-    from PySide6 import QtCore, QtWidgets, QtGui
-    from PySide6.QtWidgets import QApplication, QDialog, QMainWindow, QPushButton, QVBoxLayout, QLabel
+    from PySide6 import QtCore, QtGui
+    from PySide6.QtWidgets import QDialog, QPushButton, QVBoxLayout, QLabel
 
 log = logging.getLogger(__name__)
 

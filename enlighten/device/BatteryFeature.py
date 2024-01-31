@@ -11,12 +11,13 @@ class BatteryFeature:
     """
     def __init__(self, ctl):
         self.ctl = ctl
+        cfu = ctl.form.ui
 
         self.curve                 = None
         self.name                  = "Battery"
         self.output_to_file        = False
 
-        self.lb_perc = ctl.form.ui.label_hardware_capture_details_battery
+        self.lb_perc = cfu.label_hardware_capture_details_battery
 
         self.populate_placeholder()
         ctl.multispec.register_strip_feature(self)
@@ -24,8 +25,8 @@ class BatteryFeature:
 
         self.observers = set()
 
-        ctl.form.ui.pushButton_battery_clear_history.clicked.connect(self.clear_data)
-        ctl.form.ui.pushButton_battery_copy_history.clicked.connect(self.copy_data) 
+        cfu.pushButton_battery_clear_history.clicked.connect(self.clear_data)
+        cfu.pushButton_battery_copy_history.clicked.connect(self.copy_data) 
 
     def register_observer(self, callback):
         self.observers.add(callback)
@@ -49,7 +50,6 @@ class BatteryFeature:
         app_state = spec.app_state
         rds = app_state.battery_data
 
-        raw = reading.battery_raw
         perc = reading.battery_percentage
         is_charging = reading.battery_charging
         charging_label = 'charging' if is_charging else 'discharging'
@@ -60,8 +60,9 @@ class BatteryFeature:
         if self.output_to_file:
             self.ctl.hardware_file_manager.write_line(self.name,f"{self.name},{spec.label},{current_time}, {perc}, {charging_label}")
 
-        self.ctl.form.ui.label_battery_raw.setText("0x%06x" % reading.battery_raw)
-        self.ctl.form.ui.label_battery_parsed.setText(f"Battery ({perc:.2f}%, {charging_label})")
+        cfu = self.ctl.form.ui
+        cfu.label_battery_raw.setText("0x%06x" % reading.battery_raw)
+        cfu.label_battery_parsed.setText(f"Battery ({perc:.2f}%, {charging_label})")
         if spec == current_spec:
             self.lb_perc.setText(f"{perc:.2f} %")
             
@@ -159,5 +160,5 @@ class BatteryFeature:
         if spec.app_state.battery_data.empty():
             return None
 
-        (time, perc) = spec.app_state.battery_data.latest()
+        (_, perc) = spec.app_state.battery_data.latest()
         return perc

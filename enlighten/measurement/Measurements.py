@@ -1,6 +1,5 @@
 import datetime
 import logging
-import copy
 import json
 import csv
 import os
@@ -16,9 +15,9 @@ from enlighten.common import msgbox
 from enlighten.measurement.Measurement import Measurement
 
 if common.use_pyside2():
-    from PySide2 import QtGui, QtWidgets
+    from PySide2 import QtWidgets
 else:
-    from PySide6 import QtGui, QtWidgets
+    from PySide6 import QtWidgets
 
 log = logging.getLogger(__name__)
 
@@ -494,7 +493,7 @@ class Measurements:
             self.ctl.marquee.info("exported %d spectra" % len(export_measurements))
             log.info("exported %d measurements in %s order to %s", self.count(), order, pathname)
 
-        except Exception as exc:
+        except Exception:
             log.critical("exception exporting session", exc_info=1)
             # we could optionally unlink pathname here; leaving for troubleshooting
 
@@ -608,7 +607,6 @@ class Measurements:
 
         # count spectrometers (S1, S2)
         settingss = self._get_spectrometer_settings()
-        spectrometer_count = len(settingss)
 
         # count x-axis headers (px, wl)
         x_headers = []

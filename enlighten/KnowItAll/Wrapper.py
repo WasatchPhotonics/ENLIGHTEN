@@ -1,7 +1,5 @@
 import os
-import sys
 import time
-import pexpect 
 import logging
 import datetime
 import threading
@@ -9,21 +7,19 @@ from queue import Queue
 
 from pexpect.popen_spawn import PopenSpawn 
 
-from wasatch import applog
-
-from .. import common
+from enlighten import common
 
 log = logging.getLogger(__name__)
 
 ## Arguments passed to continuous_poll() when spawning the subprocess.
 class SubprocessArgs:
     def __init__(self, 
-          executable_pathname,
-          library_pathname,
-          log_level, 
-          log_queue, 
-          q_child,
-          q_parent):
+            executable_pathname,
+            library_pathname,
+            log_level, 
+            log_queue, 
+            q_child,
+            q_parent):
         self.executable_pathname = executable_pathname
         self.library_pathname    = library_pathname
         self.log_level           = log_level
@@ -232,11 +228,11 @@ class Wrapper:
         try:
             self.poller.join()
             log.debug("disconnect: joined poller")
-        except AssertionError as exc:
+        except AssertionError:
             log.warn("disconnect: Poller never successfully connected?", exc_info=1)
-        except NameError as exc:
+        except NameError:
             log.warn("disconnect: Poller previously disconnected?", exc_info=1)
-        except Exception as exc:
+        except Exception:
             log.critical("disconnect: Cannot join poller", exc_info=1)
 
         log.debug("disconnect: resetting")
@@ -458,14 +454,14 @@ class Wrapper:
                     log.debug("continuous_poll: waiting for: %s", pattern)
                     child.expect(pattern, timeout=timeout_sec)
 
-                    compound_name =       child.match.group(1).strip()
-                    score         = float(child.match.group(2))
-                    license       =       child.match.group(3)
+                    compound_name  =       child.match.group(1).strip()
+                    score          = float(child.match.group(2))
+                    license_status =       child.match.group(3)
 
                     results.append(MatchResultEntry(compound_name, score))
                     read_count += 1
 
-                    if license.lower() == "expired" or compound_name == "(null)":
+                    if license_status.lower() == "expired" or compound_name == "(null)":
                         response.expired = True
             except:
                 log.error("continuous_poll: failed to find match result %d of %d", read_count, match_count, exc_info=1)

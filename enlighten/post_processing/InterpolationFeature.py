@@ -1,6 +1,5 @@
 import logging
 import numpy as np
-import copy
 
 from wasatch.ProcessedReading import ProcessedReading
 

@@ -366,7 +366,6 @@ class ExportFileParser:
         if self.format == 1:
             # instantiate ExportedMeasurements from header fields
             self.skip_fields = 0
-            exported_measurement = None
 
             # iterate over values
             for value in values:
@@ -386,7 +385,7 @@ class ExportFileParser:
             # in format 2, ExportedMeasurements have already been instantiated by process_first_metadata
             values = values[self.skip_fields:] # toss the leading px/nm/cm fields
             for em in self.exported_measurements:
-                for i in range(em.header_count):
+                for _ in range(em.header_count):
                     if len(values):
                         header = values.pop(0)
                         em.headers.append(header)

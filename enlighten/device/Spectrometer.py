@@ -315,18 +315,18 @@ class Spectrometer:
         pass
     
     def left_region_changed_callback(self):
-        (start, end) = self.roi_region_left.getRegion()
+        (_, end) = self.roi_region_left.getRegion()
 
         pixel = self.get_new_pixel(end)
         if pixel is None:
             return
     
-        log.debug(f"left_region_changed_callback: MZ: setting roi_horizontal_start to pixel {pixel} based on region end {end}")
+        log.debug(f"left_region_changed_callback: setting roi_horizontal_start to pixel {pixel} based on region end {end}")
         self.settings.eeprom.roi_horizontal_start = pixel
         self.ctl.horiz_roi.update_regions(self)
 
     def right_region_changed_callback(self):
-        (start, end) = self.roi_region_right.getRegion()
+        (start, _) = self.roi_region_right.getRegion()
 
         pixel = self.get_new_pixel(start)
         if pixel is None:

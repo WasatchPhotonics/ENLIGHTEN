@@ -9,18 +9,13 @@ from decimal import Decimal
 import boto3
 from botocore.config import Config
 
-from enlighten.device.EEPROMEditor import EEPROMEditor
-from enlighten.file_io.Configuration import Configuration
-
 from enlighten import common
 from enlighten import util
 
 if common.use_pyside2():
-    from PySide2 import QtCore, QtWidgets, QtGui
-    from PySide2.QtWidgets import QInputDialog, QLineEdit, QMessageBox, QPushButton, QCheckBox
+    from PySide2.QtWidgets import QInputDialog, QLineEdit, QMessageBox
 else:
-    from PySide6 import QtCore, QtWidgets, QtGui
-    from PySide6.QtWidgets import QInputDialog, QLineEdit, QMessageBox, QPushButton, QCheckBox
+    from PySide6.QtWidgets import QInputDialog, QLineEdit, QMessageBox
 
 log = logging.getLogger(__name__)
 
@@ -157,7 +152,7 @@ class CloudManager:
             socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect(("8.8.8.8", 53))
             log.info("internet is available")
             return True
-        except socket.error as ex:
+        except socket.error:
             log.error("internet is not available")
             return False
 

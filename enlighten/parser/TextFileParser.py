@@ -1,7 +1,5 @@
 import datetime
 import logging
-import csv
-import re
 
 from enlighten.measurement.Measurement import Measurement
 

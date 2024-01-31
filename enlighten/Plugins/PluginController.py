@@ -1,18 +1,11 @@
-import re
 import os
 import sys
-import time
 import copy
 import shutil
-import pickle
 import logging
-import platform
-import tokenize
-import threading
 import pyqtgraph
 import traceback
 import numpy as np
-import importlib.util
 
 from time import sleep
 from queue import Queue
@@ -31,15 +24,11 @@ from enlighten.scope.Graph import Graph
 # this is in ../../plugins
 from EnlightenPlugin import *
 
-from wasatch import utils as wasatch_utils
-
 if common.use_pyside2():
-    from PySide2 import QtGui, QtWidgets, QtCore
-    from PySide2.QtWidgets import QMessageBox, QCheckBox
+    from PySide2 import QtWidgets, QtCore
     from PySide2.QtCore import Qt
 else:
-    from PySide6 import QtGui, QtWidgets, QtCore
-    from PySide6.QtWidgets import QMessageBox, QCheckBox
+    from PySide6 import QtWidgets, QtCore
     from PySide6.QtCore import Qt
 
 log = logging.getLogger(__name__)

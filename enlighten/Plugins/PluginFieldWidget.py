@@ -3,11 +3,9 @@ import logging
 from enlighten import common
 
 if common.use_pyside2():
-    from PySide2 import QtGui, QtWidgets, QtCore
-    from PySide2.QtCore import Qt
+    from PySide2 import QtWidgets
 else:
-    from PySide6 import QtGui, QtWidgets, QtCore
-    from PySide6.QtCore import Qt
+    from PySide6 import QtWidgets
 
 from wasatch import utils as wasatch_utils
 
@@ -79,7 +77,7 @@ class PluginFieldWidget(QtWidgets.QWidget):
                 configure_widget["output"](self.field_widget)
             else:
                 configure_widget[config.datatype](self.field_widget)
-        except Exception as e:
+        except Exception:
             log.error(f"Error, plugin {config.name} does not have a valid data type for connection.", exc_info=1)
             return
 

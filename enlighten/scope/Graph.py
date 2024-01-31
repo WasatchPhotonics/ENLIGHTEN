@@ -5,14 +5,10 @@ import pyqtgraph
 from enlighten import common
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 
-from wasatch import utils
-
 if common.use_pyside2():
-    import PySide2
-    from PySide2 import QtCore, QtWidgets, QtGui
+    from PySide2 import QtWidgets
 else:
-    import PySide6
-    from PySide6 import QtCore, QtWidgets, QtGui
+    from PySide6 import QtWidgets
 
 log = logging.getLogger(__name__)
 

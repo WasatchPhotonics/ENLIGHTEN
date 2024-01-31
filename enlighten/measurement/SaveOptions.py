@@ -194,7 +194,6 @@ class SaveOptions():
     # - user selects a different spectrometer (might have different capabilities)
     # - user takes or clears a dark or reference
     def update_widgets(self):
-        spec = self.ctl.multispec.current_spectrometer()
 
         ########################################################################
         # decide which widgets should be ENABLED (not checked)
