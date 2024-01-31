@@ -862,7 +862,7 @@ class Controller:
         self.scan_averaging.initialize()
 
         # tell all drivers to adjust their timeouts accordingly
-        self.multispec.change_device_setting("num_connected_devices", self.multispec.count(), all=True)
+        self.multispec.change_device_setting("num_connected_devices", self.multispec.count(), all_=True)
 
         ########################################################################
         # finish initializing the GUI
