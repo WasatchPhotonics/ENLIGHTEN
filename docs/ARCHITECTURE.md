@@ -4,322 +4,212 @@ Click individual classes in the following diagram to access their individual
 documentation pages.
 
 \dot
-    /* TODO: make more UML-like (has-a, made-of etc?) */
-    digraph enlighten_2_0 {
-        label = "ENLIGHTEN 2.6.x"
+    digraph enlighten_4_1 {
+        label = "ENLIGHTEN 4.1.0"
         node [shape=box, style=filled, fontname=Helvetica, fontsize=10, fillcolor=white, height=.25 ]
-        compound = true     /* lets nodes point to clusters */
         style = filled
         fillcolor = white
 
-        subgraph cluster_util
-        {
-            label = "utilities"
+        layout = twopi 
+        overlap_scaling = 4
+        overlap = prism
 
-            Authentication                  [ URL="\ref enlighten.Authentication.Authentication" ]
-            Colors                          [ URL="\ref enlighten.Colors.Colors" ]
-            Configuration                   [ URL="\ref enlighten.Configuration.Configuration" ]
-            RollingDataSet                  [ URL="\ref enlighten.RollingDataSet.RollingDataSet" ]
-            SaveOptions                     [ URL="\ref enlighten.SaveOptions.SaveOptions" ]
+        /********************************* main *********************************/
 
-            common                          [ URL="\ref enlighten.common" ]
-            util                            [ URL="\ref enlighten.util" ]
-            ColorNames                      [ URL="\ref enlighten.ColorNames.ColorNames" ]
-            FileManager                     [ URL="\ref enlighten.FileManager.FileManager" ]
-            Ramp                            [ URL="\ref enlighten.Ramp.Ramp" ]
+        enlighten_py           [ fillcolor="aquamarine" label="scripts/Enlighten.py" ]
+        EnlightenApplication   [ fillcolor="aquamarine" URL="\ref scripts.Enlighten.EnlightenApplication" ]
+        Controller             [ fillcolor="aquamarine" URL="\ref enlighten.Controller.Controller" ]
+        BusinessObjects        [ fillcolor="aquamarine" URL="\ref enlighten.BusinessObjects.BusinessObjects" ]
+        common                 [ URL="\ref enlighten.common" ]
+        util                   [ URL="\ref enlighten.util" ]
 
-            Colors                          -> ColorNames
-            Configuration                   -> ColorNames
+        enlighten_py -> EnlightenApplication -> Controller -> BusinessObjects
 
-            { rank=same util common ColorNames FileManager Ramp }
-        }
+        /********************************** ui **********************************/
 
-        enlighten_py                        [ group=1 fillcolor="aquamarine" fontsize="14" label="scripts/Enlighten.py" ]
-        EnlightenApplication                [ group=1 fillcolor="aquamarine" fontsize="18" URL="\ref scripts.Enlighten.EnlightenApplication" ]
-        Controller                          [ group=1 fillcolor="aquamarine" fontsize="24" URL="\ref enlighten.Controller.Controller" ]
-
-        enlighten_py -> EnlightenApplication -> Controller
-
-        subgraph cluster_gui
-        {
-            label = "GUI"
-            style = filled
-
-            Clipboard                       [ URL="\ref enlighten.Clipboard.Clipboard" ]
-            GUI                             [ URL="\ref enlighten.GUI.GUI" ]
-            GraphClass                      [ label="Graph" URL="\ref enlighten.Graph.Graph" ]
-            GuideFeature                    [ URL="\ref enlighten.GuideFeature.GuideFeature" ]
-            ImageResources                  [ URL="\ref enlighten.ImageResources.ImageResources" ]
-            LoggingFeature                  [ URL="\ref enlighten.LoggingFeature.LoggingFeature" ]
-            Marquee                         [ URL="\ref enlighten.Marquee.Marquee" ]
-            PageNavigation                  [ URL="\ref enlighten.PageNavigation.PageNavigation" ]
-            StatusBarFeature                [ URL="\ref enlighten.StatusBarFeature.StatusBarFeature" ]
-            StatusIndicators                [ URL="\ref enlighten.StatusIndicators.StatusIndicators" ]
-            Stylesheets                     [ URL="\ref enlighten.Stylesheets.Stylesheets" ]
-            VCRControls                     [ URL="\ref enlighten.VCRControls.VCRControls" ]
-
-            Cursor                          [ URL="\ref enlighten.Cursor.Cursor" ]
-            Sounds                          [ URL="\ref enlighten.Sounds.Sounds" ]
-
-            GraphClass -> Cursor
-            VCRControls -> TakeOneFeature
-            GUI -> Stylesheets
-
-            subgraph cluster_views
-            {
-                label = "views"
-                style = filled
-
-                BasicWindow                 [ URL="\ref enlighten.BasicWindow.BasicWindow" ]
-                BasicDialog                 [ URL="\ref enlighten.BasicDialog.BasicDialog" ]
-            }
-
-            { rank=same Cursor Sounds BasicDialog BasicWindow }
-        }
-
-        BasicDialog-> Controller [ dir=back ltail=cluster_gui  ]
-        ColorNames -> Controller [ dir=back ltail=cluster_util ]
-
-        subgraph cluster_devices
-        {
-            label = "devices"
-            style = filled
-
-            Multispec                       [ URL="\ref enlighten.Multispec.Multispec" ]
-            Spectrometer                    [ URL="\ref enlighten.Spectrometer.Spectrometer" ]
-            SpectrometerApplicationState    [ URL="\ref enlighten.SpectrometerApplicationState.SpectrometerApplicationState" ]
-            ModelInfo                       [ URL="\ref enlighten.ModelInfo.ModelInfo" ]
-            ModelFWHM                       [ URL="\ref enlighten.ModelFWHM.ModelFWHM" ]
-
-            Multispec -> Spectrometer
-            Spectrometer -> SpectrometerApplicationState
-        }
-        Controller -> Multispec
-
-        subgraph cluster_plugin_system
-        {
-            label = "Plugin Architecture"
-            style = filled
-
-            subgraph cluster_plugin_external
-            {
-                label = "EnlightenPlugin"
-                style = filled
-
-                EnlightenPluginBase             [ URL="\ref EnlightenPlugin.EnlightenPluginBase" ]
-                EnlightenPluginConfiguration    [ URL="\ref EnlightenPlugin.EnlightenPluginConfiguration" ]
-                EnlightenPluginDependency       [ URL="\ref EnlightenPlugin.EnlightenPluginDependency" ]
-                EnlightenPluginField            [ URL="\ref EnlightenPlugin.EnlightenPluginField" ]
-                EnlightenApplicationInfo        [ URL="\ref EnlightenPlugin.EnlightenApplicationInfo" ]
-
-                EnlightenApplicationInfo -> EnlightenPluginBase
-                EnlightenPluginBase -> EnlightenPluginConfiguration 
-                EnlightenPluginConfiguration -> { EnlightenPluginField, EnlightenPluginDependency }
-            }
-
-            EnlightenPluginRequest          [ URL="\ref EnlightenPlugin.EnlightenPluginRequest" ]
-            EnlightenPluginResponse         [ URL="\ref EnlightenPlugin.EnlightenPluginResponse" ]
-
-            subgraph cluster_plugin_internal
-            {
-                {
-                    rank = same
-                    PluginController                [ URL="\ref enlighten.Plugins.PluginController.PluginController" ]
-                    PluginWorker                    [ URL="\ref enlighten.Plugins.PluginWorker.PluginWorker" ]
-                }
-                PluginFieldWidget               [ URL="\ref enlighten.Plugins.PluginFieldWidget.PluginFieldWidget" ]
-                PluginGraphSeries               [ URL="\ref enlighten.Plugins.PluginGraphSeries.PluginGraphSeries" ]
-                PluginModuleInfo                [ URL="\ref enlighten.Plugins.PluginModuleInfo.PluginModuleInfo" ]
-                PluginValidator                 [ URL="\ref enlighten.Plugins.PluginValidator.PluginValidator" ]
-                TableModel                      [ URL="\ref enlighten.Plugins.TableModel.TableModel" ]
-                EnlightenApplicationInfoReal    [ URL="\ref enlighten.Plugins.EnlightenApplicationInfoReal.EnlightenApplicationInfoReal" ]
-
-
-                edge [style="invis"] PluginFieldWidget -> PluginGraphSeries -> PluginModuleInfo -> PluginValidator -> TableModel
-            }
-
-            EnlightenApplicationInfoReal -> EnlightenApplicationInfo
-
-        }
-        Controller -> PluginController -> PluginWorker -> EnlightenPluginRequest -> EnlightenPluginBase
-        PluginController -> { PluginModuleInfo, PluginFieldWidget, PluginGraphSeries, TableModel, PluginValidator, EnlightenApplicationInfoReal }
-        EnlightenPluginResponse -> EnlightenPluginBase [dir=back]
-        PluginWorker -> EnlightenPluginResponse [dir=back]
+        Authentication         [ URL="\ref enlighten.ui.Authentication.Authentication" ]
+        BasicDialog            [ URL="\ref enlighten.ui.BasicDialog.BasicDialog" ]
+        BasicWindow            [ URL="\ref enlighten.ui.BasicWindow.BasicWindow" ]
+        Clipboard              [ URL="\ref enlighten.ui.Clipboard.Clipboard" ]
+        Colors                 [ URL="\ref enlighten.ui.Colors.Colors" ]
+        ConfirmWidget          [ URL="\ref enlighten.ui.ConfirmWidget.ConfirmWidget" ]
+        FocusListener          [ URL="\ref enlighten.ui.FocusListener.FocusListener" ]
+        GUI                    [ URL="\ref enlighten.ui.GUI.GUI" ]
+        GuideFeature           [ URL="\ref enlighten.ui.GuideFeature.GuideFeature" ]
+        HelpFeature            [ URL="\ref enlighten.ui.HelpFeature.HelpFeature" ]
+        ImageResources         [ URL="\ref enlighten.ui.ImageResources.ImageResources" ]
+        Marquee                [ URL="\ref enlighten.ui.Marquee.Marquee" ]
+        MouseWheelFilter       [ URL="\ref enlighten.ui.MouseWheelFilter.MouseWheelFilter" ]
+        PageNavigation         [ URL="\ref enlighten.ui.PageNavigation.PageNavigation" ]
+        ResourceMonitorFeature [ URL="\ref enlighten.ui.ResourceMonitorFeature.ResourceMonitorFeature" ]
+        ScrollStealFilter      [ URL="\ref enlighten.ui.ScrollStealFilter.ScrollStealFilter" ]
+        Sounds                 [ URL="\ref enlighten.ui.Sounds.Sounds" ]
+        StatusBarFeature       [ URL="\ref enlighten.ui.StatusBarFeature.StatusBarFeature" ]
+        StatusIndicators       [ URL="\ref enlighten.ui.StatusIndicators.StatusIndicators" ]
+        Stylesheets            [ URL="\ref enlighten.ui.Stylesheets.Stylesheets" ]
+        ThumbnailWidget        [ URL="\ref enlighten.ui.ThumbnailWidget.ThumbnailWidget" ]
+        TimeoutDialog          [ URL="\ref enlighten.ui.TimeoutDialog.TimeoutDialog" ]
+        VCRControls            [ URL="\ref enlighten.ui.VCRControls.VCRControls" ]
         
-        subgraph cluster_measurements
-        {
-            label = "measurements"
-            style = filled
+        qt_helpers -> { FocusListener MouseWheelFilter ScrollStealFilter ImageResources Stylesheets BasicWindow BasicDialog Colors }
+        Controller -> ui -> { qt_helpers Authentication Clipboard ConfirmWidget GUI GuideFeature HelpFeature Marquee PageNavigation ResourceMonitorFeature Sounds StatusBarFeature StatusIndicators ThumbnailWidget TimeoutDialog VCRControls }
 
-            subgraph cluster_file_parsers
-            {
-                label = "file parsers"
-                style = filled
+        /**************************** post_processing ***************************/
 
-                ColumnFileParser            [ URL="\ref enlighten.ColumnFileParser.ColumnFileParser" ]
+        AbsorbanceFeature          [ URL="\ref enlighten.post_processing.AbsorbanceFeature.AbsorbanceFeature" ]
+        AutoRamanFeature           [ URL="\ref enlighten.post_processing.AutoRamanFeature.AutoRamanFeature" ]
+        BaselineCorrection         [ URL="\ref enlighten.post_processing.BaselineCorrection.BaselineCorrection" ]
+        BoxcarFeature              [ URL="\ref enlighten.post_processing.BoxcarFeature.BoxcarFeature" ]
+        DarkFeature                [ URL="\ref enlighten.post_processing.DarkFeature.DarkFeature" ]
+        DespikingFeature           [ URL="\ref enlighten.post_processing.DespikingFeature.DespikingFeature" ]
+        HorizROIFeature            [ URL="\ref enlighten.post_processing.HorizROIFeature.HorizROIFeature" ]
+        InterpolationFeature       [ URL="\ref enlighten.post_processing.InterpolationFeature.InterpolationFeature" ]
+        RamanIntensityCorrection   [ URL="\ref enlighten.post_processing.RamanIntensityCorrection.RamanIntensityCorrection" ]
+        ReferenceFeature           [ URL="\ref enlighten.post_processing.ReferenceFeature.ReferenceFeature" ]
+        RichardsonLucy             [ URL="\ref enlighten.post_processing.RichardsonLucy.RichardsonLucy" ]
+        ScanAveragingFeature       [ URL="\ref enlighten.post_processing.ScanAveragingFeature.ScanAveragingFeature" ]
+        TakeOneFeature             [ URL="\ref enlighten.post_processing.TakeOneFeature.TakeOneFeature" ]
+        TransmissionFeature        [ URL="\ref enlighten.post_processing.TransmissionFeature.TransmissionFeature" ]
 
-                DashFileParser              [ URL="\ref enlighten.DashFileParser.DashFileParser" ]
-                DashMeasurement             [ URL="\ref enlighten.DashFileParser.DashMeasurement" ]
-                DashSpectrometer            [ URL="\ref enlighten.DashFileParser.DashSpectrometer" ]
-                DashFileParser -> { DashMeasurement DashSpectrometer }
+        Controller -> post_processing -> { AbsorbanceFeature AutoRamanFeature BaselineCorrection BoxcarFeature DarkFeature DespikingFeature HorizROIFeature InterpolationFeature RamanIntensityCorrection ReferenceFeature RichardsonLucy ScanAveragingFeature TakeOneFeature TransmissionFeature }
 
-                ExportFileParser            [ URL="\ref enlighten.ExportFileParser.ExportFileParser" ]
-                ExportedMeasurement         [ URL="\ref enlighten.ExportFileParser.ExportedMeasurement" ]
-                ExportFileParser -> ExportedMeasurement
+        /****************************** KnowItAll *****************************/
 
-                SPCFileParser               [ URL="\ref enlighten.SPCFileParser.SPCFileParser" ]
-            }
+        KIAConfig   [ label="Config" URL="\ref enlighten.KnowItAll.Config.Config" ]
+        KIAFeature  [ label="Feature" URL="\ref enlighten.KnowItAll.Feature.Feature" ]
+        KIAWrapper  [ label="Wrapper" URL="\ref enlighten.KnowItAll.Wrapper.Wrapper" ]
 
-            Measurement                     [ URL="\ref enlighten.Measurement.Measurement" ]
-            ProcessedReading                [ URL="\ref wasatch.ProcessedReading.ProcessedReading" ]
-            MeasurementFactory              [ URL="\ref enlighten.MeasurementFactory.MeasurementFactory" ]
-            Measurements                    [ URL="\ref enlighten.Measurements.Measurements" ]
-            ThumbnailWidget                 [ URL="\ref enlighten.ThumbnailWidget.ThumbnailWidget" ]
-            ConfirmWidget                   [ URL="\ref enlighten.ConfirmWidget.ConfirmWidget" ]
-            FocusListener                   [ URL="\ref enlighten.FocusListener.FocusListener" ]
+        Controller -> KIAFeature -> { KIAConfig KIAWrapper }
 
-            Measurements -> MeasurementFactory -> Measurement -> { ThumbnailWidget ProcessedReading }
-            Measurements -> Measurement
-            MeasurementFactory -> { DashFileParser ColumnFileParser ExportFileParser SPCFileParser }
-            ThumbnailWidget -> ConfirmWidget
-            ThumbnailWidget -> FocusListener
+        /***************************** measurement ****************************/
 
-            FileManager -> Measurements [dir=back]
-        }
-        Controller -> Measurements
+        AreaScanFeature    [ URL="\ref enlighten.measurement.AreaScanFeature.AreaScanFeature" ]
+        Measurement        [ URL="\ref enlighten.measurement.Measurement.Measurement" ]
+        MeasurementFactory [ URL="\ref enlighten.measurement.MeasurementFactory.MeasurementFactory" ]
+        Measurements       [ URL="\ref enlighten.measurement.Measurements.Measurements" ]
+        SaveOptions        [ URL="\ref enlighten.measurement.SaveOptions.SaveOptions" ]
 
-        subgraph cluster_driver
-        {
-            label = "Wasatch.PY"
-            style = filled
-            fillcolor = lightgray
-            node [style=filled, fillcolor=white]
+        Controller -> measurement -> { Measurement Measurements MeasurementFactory SaveOptions AreaScanFeature } 
 
-            WasatchDeviceWrapper            [ URL="\ref wasatch.WasatchDeviceWrapper.WasatchDeviceWrapper" ]
-            WrapperWorker                   [ URL="\ref wasatch.WrapperWorker" ]
-            WasatchDevice                   [ URL="\ref wasatch.WasatchDevice.WasatchDevice" ]
-            FeatureIdentificationDevice     [ URL="\ref wasatch.FeatureIdentificationDevice.FeatureIdentificationDevice" ]
-            SpectrometerSettings            [ URL="\ref wasatch.SpectrometerSettings.SpectrometerSettings" ]
-            SpectrometerState               [ URL="\ref wasatch.SpectrometerState.SpectrometerState" ]
-            EEPROM                          [ URL="\ref wasatch.EEPROM.EEPROM" ]
-            FPGAOptions                     [ URL="\ref wasatch.FPGAOptions.FPGAOptions" ]
-            Reading                         [ URL="\ref wasatch.Reading.Reading" ]
-            WasatchBus                      [ URL="\ref wasatch.WasatchBus.WasatchBus" ]
-            USBBus                          [ URL="\ref wasatch.WasatchBus.USBBus" ]
-            DeviceFinderUSB                 [ URL="\ref wasatch.DeviceFinderUSB.DeviceFinderUSB" ]
-            DeviceID                        [ URL="\ref wasatch.DeviceID.DeviceID" ]
-            BalanceAcquisition              [ URL="\ref wasatch.BalanceAcquisition.BalanceAcquisition" ]
-            StatusMessage                   [ URL="\ref wasatch.StatusMessage.StatusMessage" ]
+        /******************************* plugins ******************************/
 
-            WasatchDeviceWrapper -> WrapperWorker -> WasatchDevice -> { FeatureIdentificationDevice }
-            FeatureIdentificationDevice -> SpectrometerSettings -> { EEPROM FPGAOptions SpectrometerState }
-            WasatchBus -> { USBBus }
-            USBBus -> DeviceFinderUSB -> DeviceID
-            FileBus -> DeviceID
-            WasatchDevice -> { DeviceID Reading Overrides BalanceAcquisition }
+        EnlightenApplicationInfoReal [ URL="\ref enlighten.Plugins.EnlightenApplicationInfoReal.EnlightenApplicationInfoReal" ]
+        PluginController             [ URL="\ref enlighten.Plugins.PluginController.PluginController" ]
+        PluginFieldWidget            [ URL="\ref enlighten.Plugins.PluginFieldWidget.PluginFieldWidget" ]
+        PluginGraphSeries            [ URL="\ref enlighten.Plugins.PluginGraphSeries.PluginGraphSeries" ]
+        PluginModuleInfo             [ URL="\ref enlighten.Plugins.PluginModuleInfo.PluginModuleInfo" ]
+        PluginValidator              [ URL="\ref enlighten.Plugins.PluginValidator.PluginValidator" ]
+        PluginWorker                 [ URL="\ref enlighten.Plugins.PluginWorker.PluginWorker" ]
+        TableModel                   [ URL="\ref enlighten.Plugins.TableModel.TableModel" ]
 
-            { rank=same USBBus FileBus }
-        }
-        Controller -> WasatchBus
+        Controller -> PluginController -> { PluginFieldWidget PluginGraphSeries PluginModuleInfo PluginValidator PluginWorker TableModel EnlightenApplicationInfoReal }
+
+        /******************************* network ******************************/
+
+        BLEManager    [ URL="\ref enlighten.network.BLEManager.BLEManager" ]    
+        CloudManager  [ URL="\ref enlighten.network.CloudManager.CloudManager" ]
+        UpdateChecker [ URL="\ref enlighten.network.UpdateChecker.UpdateChecker" ]
+        awsConnect    [ URL="\ref enlighten.network.awsConnect" ]
+
+        Controller -> network -> { BLEManager CloudManager UpdateChecker awsConnect }
+
+        /****************************** file_io *******************************/
+
+        Configuration                   [ URL="\ref enlighten.file_io.Configuration.Configuration" ]
+        FileManager                     [ URL="\ref enlighten.file_io.FileManager.FileManager" ]
+        HardwareCaptureControlFeature   [ URL="\ref enlighten.file_io.HardwareCaptureControlFeature.HardwareCaptureControlFeature" ]
+        HardwareFileOutputManager       [ URL="\ref enlighten.file_io.HardwareFileOutputManager.HardwareFileOutputManager" ]
+        LoggingFeature                  [ URL="\ref enlighten.file_io.LoggingFeature.LoggingFeature" ]                  
+
+        Controller -> file_io -> { Configuration FileManager HardwareCaptureControlFeature HardwareFileOutputManager LoggingFeature }
+
+        /******************************* scope ********************************/
+
+        Cursor                      [ URL="\ref enlighten.scope.Cursor.Cursor" ]
+        EmissionLamps               [ URL="\ref enlighten.scope.EmissionLamps.EmissionLamps" ]
+        GraphClass                  [ label="Graph" URL="\ref enlighten.scope.Graph.Graph" ]
+        GridFeature                 [ URL="\ref enlighten.scope.GridFeature.GridFeature" ]
+        PresetFeature               [ URL="\ref enlighten.scope.PresetFeature.PresetFeature" ]
+        RamanShiftCorrectionFeature [ URL="\ref enlighten.scope.RamanShiftCorrectionFeature.RamanShiftCorrectionFeature" ]
+
+        Controller -> scope -> { Cursor EmissionLamps GraphClass GridFeature PresetFeature RamanShiftCorrectionFeature }
+
+        /******************************* parser *******************************/
+
+        ColumnFileParser [ URL="\ref enlighten.parser.ColumnFileParser.ColumnFileParser" ] 
+        DashFileParser   [ URL="\ref enlighten.parser.DashFileParser.DashFileParser" ]
+        ExportFileParser [ URL="\ref enlighten.parser.ExportFileParser.ExportFileParser" ]
+        SPCFileParser    [ URL="\ref enlighten.parser.SPCFileParser.SPCFileParser" ]
+        TextFileParser   [ URL="\ref enlighten.parser.TextFileParser.TextFileParser" ]
+
+        MeasurementFactory -> parser -> { ColumnFileParser DashFileParser ExportFileParser SPCFileParser TextFileParser }
+
+        /******************************* timing *******************************/
+
+        BatchCollection [ URL="\ref enlighten.timing.BatchCollection.BatchCollection" ]
+        Ramp            [ URL="\ref enlighten.timing.Ramp.Ramp" ]
+        RollingDataSet  [ URL="\ref enlighten.timing.RollingDataSet.RollingDataSet" ]
+
+        Controller -> timing -> { BatchCollection Ramp RollingDataSet }
+
+        /******************************* device *******************************/
+
+        AccessoryControlFeature      [ URL="\ref enlighten.device.AccessoryControlFeature.AccessoryControlFeature" ]
+        BatteryFeature               [ URL="\ref enlighten.device.BatteryFeature.BatteryFeature" ]
+        DetectorTemperatureFeature   [ URL="\ref enlighten.device.DetectorTemperatureFeature.DetectorTemperatureFeature" ]
+        EEPROMEditor                 [ URL="\ref enlighten.device.EEPROMEditor.EEPROMEditor" ]
+        EEPROMWriter                 [ URL="\ref enlighten.device.EEPROMWriter.EEPROMWriter" ]
+        ExternalTriggerFeature       [ URL="\ref enlighten.device.ExternalTriggerFeature.ExternalTriggerFeature" ]
+        GainDBFeature                [ URL="\ref enlighten.device.GainDBFeature.GainDBFeature" ]
+        HighGainModeFeature          [ URL="\ref enlighten.device.HighGainModeFeature.HighGainModeFeature" ]
+        IntegrationTimeFeature       [ URL="\ref enlighten.device.IntegrationTimeFeature.IntegrationTimeFeature" ]
+        LaserControlFeature          [ URL="\ref enlighten.device.LaserControlFeature.LaserControlFeature" ]
+        LaserTemperatureFeature      [ URL="\ref enlighten.device.LaserTemperatureFeature.LaserTemperatureFeature" ]
+        LaserWatchdogFeature         [ URL="\ref enlighten.device.LaserWatchdogFeature.LaserWatchdogFeature" ]
+        ManufacturingFeature         [ URL="\ref enlighten.device.ManufacturingFeature.ManufacturingFeature" ]
+        MultiPos                     [ URL="\ref enlighten.device.MultiPos.MultiPos" ]
+        Multispec                    [ URL="\ref enlighten.device.Multispec.Multispec" ]
+        RegionControlFeature         [ URL="\ref enlighten.device.RegionControlFeature.RegionControlFeature" ]
+        Spectrometer                 [ URL="\ref enlighten.device.Spectrometer.Spectrometer" ]
+        SpectrometerApplicationState [ URL="\ref enlighten.device.SpectrometerApplicationState.SpectrometerApplicationState" ]
+
+        EEPROMEditor -> EEPROMWriter
+        LaserControlFeature -> LaserWatchdogFeature
+        Multispec -> Spectrometer -> SpectrometerApplicationState
+        Controller -> device -> { AccessoryControlFeature BatteryFeature DetectorTemperatureFeature EEPROMEditor ExternalTriggerFeature GainDBFeature HighGainModeFeature IntegrationTimeFeature LaserControlFeature LaserTemperatureFeature ManufacturingFeature MultiPos Multispec RegionControlFeature }
+
+        /******************************* data *********************************/
+
+        ColorNames [ URL="\ref enlighten.data.ColorNames.ColorNames" ]
+        ModelFWHM  [ URL="\ref enlighten.data.ModelFWHM.ModelFWHM" ]                               
+        ModelInfo  [ URL="\ref enlighten.data.ModelInfo.ModelInfo" ]
+
+        Controller -> data -> { ColorNames ModelFWHM ModelInfo }
+
+        /******************************* wasatch ******************************/
+
+        WasatchDeviceWrapper            [ URL="\ref wasatch.WasatchDeviceWrapper.WasatchDeviceWrapper" ]
+        WrapperWorker                   [ URL="\ref wasatch.WrapperWorker" ]
+        WasatchDevice                   [ URL="\ref wasatch.WasatchDevice.WasatchDevice" ]
+        FeatureIdentificationDevice     [ URL="\ref wasatch.FeatureIdentificationDevice.FeatureIdentificationDevice" ]
+        SpectrometerSettings            [ URL="\ref wasatch.SpectrometerSettings.SpectrometerSettings" ]
+        SpectrometerState               [ URL="\ref wasatch.SpectrometerState.SpectrometerState" ]
+        EEPROM                          [ URL="\ref wasatch.EEPROM.EEPROM" ]
+        FPGAOptions                     [ URL="\ref wasatch.FPGAOptions.FPGAOptions" ]
+        Reading                         [ URL="\ref wasatch.Reading.Reading" ]
+        WasatchBus                      [ URL="\ref wasatch.WasatchBus.WasatchBus" ]
+        USBBus                          [ URL="\ref wasatch.WasatchBus.USBBus" ]
+        DeviceFinderUSB                 [ URL="\ref wasatch.DeviceFinderUSB.DeviceFinderUSB" ]
+        DeviceID                        [ URL="\ref wasatch.DeviceID.DeviceID" ]
+        BalanceAcquisition              [ URL="\ref wasatch.BalanceAcquisition.BalanceAcquisition" ]
+        StatusMessage                   [ URL="\ref wasatch.StatusMessage.StatusMessage" ]
+        ProcessedReading                [ URL="\ref wasatch.ProcessedReading.ProcessedReading" ]
+
         ProcessedReading -> Reading
-        Spectrometer -> WasatchDeviceWrapper
-        Measurement -> SpectrometerSettings
-
-        subgraph cluster_features
-        {
-            label = "Feature Business Objects"
-            style = filled
-
-            subgraph cluster_features_post_processing
-            {
-                label = "Post-Processing"
-                color = white
-                style = filled
-                
-                AbsorbanceFeature               [ URL="\ref enlighten.AbsorbanceFeature.AbsorbanceFeature" ]
-                BaselineCorrection              [ URL="\ref enlighten.BaselineCorrection.BaselineCorrection" ]
-                BoxcarFeature                   [ URL="\ref enlighten.BoxcarFeature.BoxcarFeature" ]
-                DarkFeature                     [ URL="\ref enlighten.DarkFeature.DarkFeature" ]
-                RamanShiftCorrectionFeature     [ URL="\ref enlighten.RamanShiftCorrectionFeature.RamanShiftCorrectionFeature" ]
-                RamanIntensityCorrection        [ URL="\ref enlighten.RamanIntensityCorrection.RamanIntensityCorrection" ]
-                ReferenceFeature                [ URL="\ref enlighten.ReferenceFeature.ReferenceFeature" ]
-                RichardsonLucy                  [ URL="\ref enlighten.RichardsonLucy.RichardsonLucy" ]
-                ScanAveragingFeature            [ URL="\ref enlighten.ScanAveragingFeature.ScanAveragingFeature" ]
-                TransmissionFeature             [ URL="\ref enlighten.TransmissionFeature.TransmissionFeature" ]
-                VignetteROIFeature              [ URL="\ref enlighten.VignetteROIFeature.VignetteROIFeature" ]
-
-                Superman                        [ URL="https://github.com/all-umass/superman/" fillcolor=lightgray ]
-                BaselineCorrection -> Superman
-
-                AbsorbanceFeature -> TransmissionFeature -> ReferenceFeature
-
-                edge [style="invis"] DarkFeature -> ScanAveragingFeature -> BoxcarFeature -> RamanCorrectionFeature -> RamanIntensityCorrection -> RichardsonLucy -> VignetteROIFeature
-            }
-
-            subgraph cluster_feature_device_control
-            {
-                label = "Device Control"
-                color = white
-                style = filled
-
-                AccessoryControlFeature         [ URL="\ref enlighten.AccessoryControlFeature.AccessoryControlFeature" ]
-                BatteryFeature                  [ URL="\ref enlighten.BatteryFeature.BatteryFeature" ]
-                DetectorTemperatureFeature      [ URL="\ref enlighten.DetectorTemperatureFeature.DetectorTemperatureFeature" ]
-                EEPROMEditor                    [ URL="\ref enlighten.EEPROMEditor.EEPROMEditor" ]
-                EEPROMWriter                    [ URL="\ref enlighten.EEPROMWriter.EEPROMWriter" ]
-                ExternalTriggerFeature          [ URL="\ref enlighten.ExternalTriggerFeature.ExternalTriggerFeature" ]
-                GainDBFeature                   [ URL="\ref enlighten.GainDBFeature.GainDBFeature" ]
-                IntegrationTimeFeature          [ URL="\ref enlighten.IntegrationTimeFeature.IntegrationTimeFeature" ]
-                LaserControlFeature             [ URL="\ref enlighten.LaserControlFeature.LaserControlFeature" ]
-                LaserTemperatureFeature         [ URL="\ref enlighten.LaserTemperatureFeature.LaserTemperatureFeature" ]
-                MultiPos                        [ URL="\ref enlighten.MultiPos.MultiPos" ]
-                RamanModeFeature                [ URL="\ref enlighten.RamanModeFeature.RamanModeFeature" ]
-
-                EEPROMEditor -> EEPROMWriter 
-
-                edge [style="invis"] IntegrationTimeFeature -> GainDBFeature -> DetectorTemperatureFeature -> AccessoryControlFeature -> RamanModeFeature -> MultiPos
-            }
-
-            subgraph cluster_features_automation
-            {
-                label = "Automation"
-                color = white
-                style = filled
-
-                BatchCollection                 [ URL="\ref enlighten.BatchCollection.BatchCollection" ]
-                ManufacturingFeature            [ URL="\ref enlighten.ManufacturingFeature.ManufacturingFeature" ]
-                ResourceMonitorFeature          [ URL="\ref enlighten.ResourceMonitorFeature.ResourceMonitorFeature" ]
-                TakeOneFeature                  [ URL="\ref enlighten.TakeOneFeature.TakeOneFeature" ]
-
-                edge [style="invis"] TakeOneFeature -> BatchCollection -> ManufacturingFeature -> ResourceMonitorFeature
-            }
-
-            subgraph cluster_knowitall
-            {
-                label = "KnowItAll"
-                style = filled
-
-                KIA_Feature [ label="Feature" URL="\ref enlighten.KnowItAll.Feature.Feature"  ]
-                KIA_Wrapper [ label="Wrapper" URL="\ref enlighten.KnowItAll.Wrapper.Wrapper"  ]
-                KIA_Config  [ label="Config"  URL="\ref enlighten.KnowItAll.Config.Config"    ]
-
-                subgraph cluster_KnowItAllWrapper
-                {
-                    label = "KnowItAll Wrapper (C++)"
-                    style = filled
-                    fillcolor = lightgray
-
-                    KIAConsole
-                }
-
-                KIA_Feature -> KIA_Wrapper -> KIAConsole
-                KIA_Feature -> KIA_Config
-            }
-        }
-        BusinessObjects [ URL="\ref enlighten.BusinessObjects.BusinessObjects" ]
-
-        Controller -> BusinessObjects 
-        BusinessObjects -> IntegrationTimeFeature [ lhead=cluster_features ]
+        WasatchBus -> { DeviceFinderUSB USBBus DeviceID }
+        SpectrometerSettings -> SpectrometerState
+        WasatchDeviceWrapper -> WrapperWorker 
+        Controller -> wasatch -> { WasatchDeviceWrapper WasatchDevice FeatureIdentificationDevice SpectrometerSettings EEPROM FPGAOptions WasatchBus BalanceAcquisition StatusMessage ProcessedReading }
     }
 \enddot
 
