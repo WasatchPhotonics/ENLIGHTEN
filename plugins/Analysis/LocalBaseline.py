@@ -1,8 +1,6 @@
 import pandas as pd
 import numpy as np
 
-import time
-
 from EnlightenPlugin import *
 
 # firstonly(i, "some string") will only have a value if i==0
@@ -51,7 +49,7 @@ class LocalBaseline(EnlightenPluginBase):
             x_widget = self.get_widget_from_name("x_"+str(i))
 
             x_pix = self.to_pixel(x_widget.value())
-            for j in range(100):
+            for _ in range(100):
                 x_pix_n = x_pix-1+max(enumerate(self.spectrum[x_pix-1:x_pix+1+1]), key=lambda P: P[1])[0]
                 if x_pix_n == x_pix:
                     break
@@ -101,7 +99,7 @@ class LocalBaseline(EnlightenPluginBase):
         # if given a number: produce formated number (ex: 1,000,000)
         # if given a string: it's a placeholder, just return it
         format_int = lambda i: f"{int(i):,}" if type(i) != str else i
-        format_float = lambda i: f"{float(i):,.2f}" if type(i) != str else i
+        # format_float = lambda i: f"{float(i):,.2f}" if type(i) != str else i
 
         header = []
         values = []

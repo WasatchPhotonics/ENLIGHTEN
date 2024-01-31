@@ -553,8 +553,8 @@ class EEPROMEditor:
         more digits of precision than Python2.7 (would have to make fields much
         wider to support Python3's apparent float64 internal precision).
         """
-        getcontext().prec = 8
-        return '%e' % getcontext().create_decimal_from_float(float(n))
+        decimal.getcontext().prec = 8
+        return '%e' % decimal.getcontext().create_decimal_from_float(float(n))
 
     def update_authentication(self):
         """ The user logged-in (or -out), so update what should be updated. """

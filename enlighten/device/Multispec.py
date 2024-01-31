@@ -11,7 +11,6 @@ from wasatch.DeviceID import DeviceID
 from wasatch.WasatchDeviceWrapper import WasatchDeviceWrapper
 
 from enlighten import util
-from enlighten import common
 
 log = logging.getLogger(__name__)
 

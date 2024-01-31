@@ -1,7 +1,6 @@
 from EnlightenPlugin import EnlightenPluginBase,    \
                             EnlightenPluginResponse, \
                             EnlightenPluginConfiguration
-import numpy as np
 import logging
 import time
 

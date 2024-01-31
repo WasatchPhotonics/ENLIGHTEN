@@ -1,6 +1,4 @@
-import numpy as np
 import logging
-import scipy
 
 from EnlightenPlugin import EnlightenPluginBase,        \
                             EnlightenPluginField,       \

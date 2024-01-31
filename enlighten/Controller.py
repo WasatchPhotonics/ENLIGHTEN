@@ -23,10 +23,8 @@ from wasatch.WasatchDeviceWrapper     import WasatchDeviceWrapper
 from wasatch.SpectrometerResponse     import ErrorLevel
 from wasatch.ProcessedReading         import ProcessedReading
 from wasatch.DeviceFinderUSB          import DeviceFinderUSB
-from wasatch.RealUSBDevice            import RealUSBDevice
 from wasatch.StatusMessage            import StatusMessage
 from wasatch.WasatchBus               import WasatchBus
-from wasatch.BLEDevice                import BLEDevice
 from wasatch.Reading                  import Reading
 
 from enlighten import util

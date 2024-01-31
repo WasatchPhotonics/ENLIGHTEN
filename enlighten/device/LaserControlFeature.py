@@ -1,6 +1,6 @@
 import logging
 
-from enlighten import util, common
+from enlighten import util
 from enlighten.common import LaserStates
 
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
