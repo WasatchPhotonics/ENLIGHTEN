@@ -1,8 +1,6 @@
 import os
 import logging
 
-from enlighten.common import msgbox
-
 log = logging.getLogger(__name__)
 
 ## 

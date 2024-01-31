@@ -2,8 +2,6 @@ import pyqtgraph
 from datetime import datetime
 import logging
 
-from enlighten.ui.ConfirmWidget import ConfirmWidget
-
 from enlighten import KnowItAll
 from enlighten import common
 from enlighten import util
@@ -253,8 +251,6 @@ class ThumbnailWidget(QtWidgets.QFrame):
         self.body.setVisible(True)
         # self.button_expand.setVisible(False)
 
-    ## 
-    # @todo merge with ConfirmWidget.add_small_push_button, move to util?
     def create_button(self, 
             size=(30, 30), 
             icon_size=(20, 20), 
@@ -325,7 +321,6 @@ class ThumbnailWidget(QtWidgets.QFrame):
             self.button_id.setToolTip("%s (score %.2f)" % (dm, dm.score))
         self.ctl.gui.colorize_button(self.button_id, False)
 
-    ## Display the ConfirmWidget
     def trash_callback(self):
         self.ctl.gui.colorize_button(self.button_trash, True)
         response = common.msgbox("Also delete measurement from disk?", buttons="Yes, No, Cancel")
@@ -428,7 +423,6 @@ class ThumbnailWidget(QtWidgets.QFrame):
 
         label = self.measurement.label
         pixels = self.measurement.settings.pixels()
-        first_pixel = self.measurement.processed_reading.first_pixel
         if self.measurement.plugin_name != "":
             log.debug(f"plugin trying to add save to plot")
 

@@ -106,7 +106,7 @@ def safe_mkdirp(directory):
         expanded = os.path.expanduser(directory)
         log.debug("creating %s", expanded)
         os.makedirs(expanded)
-    except Exception as exc:
+    except Exception:
         log.critical("can't create %s", directory, exc_info=1)
 
 ## 

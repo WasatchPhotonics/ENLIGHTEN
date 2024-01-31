@@ -5,15 +5,11 @@ import datetime
 import logging
 import struct
 import numpy as np
-import copy
-import math
 import time
 import sys
 import os
-import re
 
 from collections import defaultdict
-from threading import Thread
 
 # these aren't actually used...solves an import issue for MacOS I think
 if "macOS" in platform.platform():
@@ -22,7 +18,6 @@ if "macOS" in platform.platform():
 
 import wasatch
 from wasatch import applog
-from wasatch import utils as wasatch_utils
 
 from wasatch.WasatchDeviceWrapper     import WasatchDeviceWrapper
 from wasatch.SpectrometerResponse     import ErrorLevel
@@ -41,18 +36,15 @@ from enlighten.device.Spectrometer import Spectrometer
 from enlighten.ui.ThumbnailWidget import ThumbnailWidget
 from enlighten.ui.TimeoutDialog import TimeoutDialog
 from enlighten.BusinessObjects import BusinessObjects
-from enlighten.scope import Graph
 
 if common.use_pyside2():
     import PySide2
     from PySide2 import QtCore, QtWidgets, QtGui
-    from PySide2.QtCore import QObject, QEvent
-    from PySide2.QtWidgets import QMessageBox, QVBoxLayout, QWidget, QLabel
+    from PySide2.QtWidgets import QMessageBox
 else:
     import PySide6
     from PySide6 import QtCore, QtWidgets, QtGui
-    from PySide6.QtCore import QObject, QEvent
-    from PySide6.QtWidgets import QMessageBox, QVBoxLayout, QWidget, QLabel
+    from PySide6.QtWidgets import QMessageBox
 
 log = logging.getLogger(__name__)
 
@@ -561,7 +553,7 @@ class Controller:
         log.debug("connect_new: calling WasatchDeviceWrapper.connect()")
         if not device.connect():
             log.critical("connect_new: can't connect to device_id, giving up: %s", new_device_id)
-            self.multispec.set_gave_up(device_id)
+            self.multispec.set_gave_up(new_device_id)
             return
 
         ####################################################################
@@ -1110,7 +1102,7 @@ class Controller:
     # save spectra
     # ##########################################################################
 
-    def save_current_spectra(self):
+    def save_current_spectra(self): # MZ: called by VCRControls.save?
         """
         This is a GUI method (used as a callback) to generate one Measurement from
         the most-recent ProcessedReading of EACH connected spectrometer.
@@ -1119,7 +1111,6 @@ class Controller:
         was in use when they were created.  However, we (currently) only want the
         ID button to show up on Raman measurements, so...let's see where this goes.
         """
-        view = self.page_nav.get_current_view()
 
         if self.save_options.save_all_spectrometers():
             for spec in self.multispec.get_spectrometers():
@@ -1365,6 +1356,7 @@ class Controller:
                     spec.app_state.received_reading_at_current_integration_time:
                 log.info("displaying Timeout Warning MessageBox (stay connected, or disconnect)")
                 spec.app_state.spec_timeout_prompt_shown = True
+                # move to msgbox
                 dlg = QMessageBox(self.form)
                 dlg.setWindowTitle("Timeout Warning")
                 dlg.setText("Spectrometer acquisition has timed out. Would you like to stay connected to try to fix the issue?")
@@ -1571,7 +1563,7 @@ class Controller:
                 log.error(f"received a SpectrometerResponse where data is {type(spectrometer_response.data)}")
                 return 
 
-        except Exception as exc:
+        except Exception:
             # we didn't receive notification of an error which occurred downstream
             # in the thread, we actually had a problem communicating with the
             # thread "full stop."  The thread is hosed, so cut it loose.
@@ -1593,7 +1585,6 @@ class Controller:
         
         @param msg - presumably a StatusMessage from a spectrometer process
         """
-        cfu = self.form.ui
 
         if msg is None:
             return
@@ -1632,7 +1623,6 @@ class Controller:
 
     # called by attempt_reading
     def update_scope_graphs(self, reading=None):
-        cfu = self.form.ui
         app_state = self.app_state()
 
         # log.debug("update_scope_graphs: reading %d", reading.session_count)
@@ -1650,7 +1640,6 @@ class Controller:
         if spec is None:
             log.error("updating scope from unknown spectrometer %s", device_id)
             return
-        selected = self.multispec.is_selected(device_id)
 
         self.scan_averaging.update_label(spec, reading.sum_count)
         self.process_reading(reading, spec=spec)
@@ -1731,7 +1720,6 @@ class Controller:
         - post-process
         - apply business logic
         """
-        cfu = self.form.ui
 
         if settings is None:
             # we are NOT reprocessing
@@ -2240,7 +2228,7 @@ class Controller:
         
         @todo need to update for DetectorRegions
         """
-        x_axis = None
+        # x_axis = None
         retval = None
 
 

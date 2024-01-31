@@ -4,10 +4,10 @@ from enlighten import common
 
 if common.use_pyside2():
     from PySide2.QtGui import QColor
-    from PySide2.QtCore import *
+    from PySide2.QtCore import Qt
 else:
     from PySide6.QtGui import QColor
-    from PySide6.QtCore import *
+    from PySide6.QtCore import Qt
 
 log = logging.getLogger(__name__)
 

@@ -4,10 +4,8 @@ import logging
 from enlighten import common
 
 if common.use_pyside2():
-    from PySide2 import QtCore, QtWidgets, QtGui
     from PySide2.QtWidgets import QMenu
 else:
-    from PySide6 import QtCore, QtWidgets, QtGui
     from PySide6.QtWidgets import QMenu
 
 log = logging.getLogger(__name__)

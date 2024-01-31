@@ -2,6 +2,9 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2023-??-?? 4.0.37
+    - pylint
+    - docs
 - 2023-01-30 4.0.36
     - Raman
         - ensured all Raman features available in Expert mode

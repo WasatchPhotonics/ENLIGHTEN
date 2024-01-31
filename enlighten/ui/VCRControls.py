@@ -120,17 +120,17 @@ class VCRControls:
     # These are the callbacks connected to the QPushButton.clicked events.
 
     ## pause the current spectrometer
-    def pause(self, all=False, spec=None): 
+    def pause(self, spec=None): 
         log.debug("pause")
-        self._set_paused(True, all=self.ctl.multispec.locked, spec=spec)
+        self._set_paused(True, all_=self.ctl.multispec.locked, spec=spec)
         for callback in list(self.callbacks["pause"]):
             callback()
         self.update_visibility()
 
     ## set the current spectrometer to continuous acquisition
-    def play(self, all=False, spec=None):
+    def play(self, spec=None):
         log.debug("play")
-        self._set_paused(False, all=self.ctl.multispec.locked, spec=spec)
+        self._set_paused(False, all_=self.ctl.multispec.locked, spec=spec)
         for callback in list(self.callbacks["play"]):
             callback()
         self.update_visibility()
@@ -298,7 +298,7 @@ class VCRControls:
     # Private methods
     # ##########################################################################
 
-    def _set_paused(self, flag, all=False, spec=None):
+    def _set_paused(self, flag, all_=False, spec=None):
         """
         Pause the current spectrometer (or all, if specified).
 
@@ -316,14 +316,11 @@ class VCRControls:
         log.debug(f"_set_paused: {flag}")
         self.paused = flag
 
-        if all:
+        if all_:
             for spec in self.ctl.multispec.get_spectrometers():
                 spec.reset_acquisition_timeout()
                 spec.app_state.paused = flag
-                # spec.change_device_setting("free_running_mode", not flag) # see above
             return
-
-        # only change the current spectrometer
 
         if spec is None:
             spec = self.ctl.multispec.current_spectrometer()
@@ -332,4 +329,3 @@ class VCRControls:
         
         spec.app_state.paused = flag
         spec.reset_acquisition_timeout()
-        # spec.change_device_setting("free_running_mode", not flag) # see above
