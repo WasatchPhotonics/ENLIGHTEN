@@ -459,7 +459,7 @@ class LaserControlFeature:
         log.debug("enough_for_laser = %s (%.2f%%)" % (enough_for_laser, perc))
 
         if enough_for_laser:
-            self.remove_restriction("low battery")
+            self.clear_restriction("low battery")
         else:
             self.set_restriction("low battery")
 
