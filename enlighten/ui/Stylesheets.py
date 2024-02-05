@@ -99,7 +99,7 @@ class Stylesheets:
                     with open(pathname, "r") as f:
                         s = f.read() 
                     self.css[mode][basename] = s
-                    log.debug("  loaded %s[%s] (%d bytes)", mode, basename, len(s))
+                    # log.debug("  loaded %s[%s] (%d bytes)", mode, basename, len(s))
                 except:
                     log.error("unable to load %s[%s]", mode, pathname, exc_info=1)
 
