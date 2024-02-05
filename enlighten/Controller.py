@@ -1623,7 +1623,7 @@ class Controller:
     def update_scope_graphs(self, reading=None):
         app_state = self.app_state()
 
-        # log.debug("update_scope_graphs: reading %d", reading.session_count)
+        log.debug("update_scope_graphs: reading %d", reading.session_count)
 
         # if we weren't handed a fresh reading, just re-process the last one
         if reading is None and app_state.processed_reading.reading:
@@ -1631,6 +1631,7 @@ class Controller:
             reading = app_state.processed_reading.reading
 
         if reading is None or reading.spectrum is None:
+            log.debug(f"update_scope_graphs: reading {reading} empty")
             return
 
         device_id = reading.device_id
@@ -1743,6 +1744,7 @@ class Controller:
 
         # don't graph incomplete averages
         if self.scan_averaging.enabled(spec) and not reading.averaged:
+            log.debug("process_reading: scan averaging enabled but reading isn't averaged")
             return
 
         # graph the raw spectrum in the Scope Setup "live" window if nothing else
@@ -1942,6 +1944,7 @@ class Controller:
             app_state.processed_reading = pr
 
         # were we only taking one measurement?
+        log.debug("calling TakeOneFeature.process")
         self.take_one.process(pr)
 
         # update on-screen ASTM peaks
