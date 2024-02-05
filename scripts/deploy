@@ -185,3 +185,12 @@ then
 
     gzip $BUILD_LOG
 fi
+
+################################################################################
+# code quality
+################################################################################
+
+echo "Recommend periodically checking code quality with:"
+echo
+echo "    $ pylint enlighten plugins"
+echo
