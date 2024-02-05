@@ -2,7 +2,7 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
-- 2023-??-?? 4.0.37
+- 2023-02-05 4.0.37
     - pylint
     - docs
     - fixed LaserControlFeature restriction bug
