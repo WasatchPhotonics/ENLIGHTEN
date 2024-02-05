@@ -1,6 +1,4 @@
-import os
 import logging
-import datetime
 
 from EnlightenPlugin import EnlightenPluginBase,    \
                             EnlightenPluginField,    \

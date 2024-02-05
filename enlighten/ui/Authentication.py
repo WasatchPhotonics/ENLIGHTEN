@@ -5,9 +5,9 @@ import time
 from enlighten import common
 
 if common.use_pyside2():
-    from PySide2 import QtCore, QtGui, QtWidgets
+    from PySide2 import QtWidgets
 else:
-    from PySide6 import QtCore, QtGui, QtWidgets
+    from PySide6 import QtWidgets
 
 log = logging.getLogger(__name__)
 
@@ -91,7 +91,7 @@ class Authentication:
         the login pop-up, get their password, compare it to supported values and
         update features accordingly.
         """
-        (password, ok) = QtWidgets.QInputDialog.getText(
+        (password, _) = QtWidgets.QInputDialog.getText(
             self.ctl.form, 
             "Admin Login", 
             "Password:", 

@@ -8,8 +8,7 @@ class LaserWatchdogFeature:
 
     def __init__(self, ctl):
         self.ctl = ctl
-
-        cfu = self.ctl.form.ui
+        cfu = ctl.form.ui
 
         self.enabled = False
         self.sec = None
@@ -29,8 +28,6 @@ class LaserWatchdogFeature:
             return
 
         settings = spec.settings
-        state = settings.state
-
         if not settings.eeprom.has_laser:
             return
 
@@ -50,6 +47,7 @@ class LaserWatchdogFeature:
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
+
         sec = spec.settings.state.laser_watchdog_sec
 
         if self.cb_enable.isChecked():
@@ -58,8 +56,6 @@ class LaserWatchdogFeature:
             self.sb_sec.setToolTip("Laser watchdog disabled")
 
     def set_visible(self, flag):
-        cfu = self.ctl.form.ui
-
         log.debug(f"set_visible: flag {flag}")
         for w in [ self.lb_sec,
                    self.sb_sec,
@@ -73,7 +69,6 @@ class LaserWatchdogFeature:
             return
 
         settings = spec.settings
-        cfu = self.ctl.form.ui
 
         reason = None
         if not settings.eeprom.has_laser:
@@ -127,7 +122,6 @@ class LaserWatchdogFeature:
     def enable_callback(self, state):
         """ called when watchdog is checked ON or OFF """
         log.debug(f"enable_callback({state}): start")
-        cfu = self.ctl.form.ui
 
         if not state:
             log.debug(f"enable_callback({state}): disabling")

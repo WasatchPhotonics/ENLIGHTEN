@@ -4,7 +4,6 @@ import json
 import scipy.signal as signal
 import numpy as np
 
-from enlighten import common
 from wasatch import utils as wasatch_utils
 
 log = logging.getLogger(__name__)
@@ -442,7 +441,7 @@ class RamanShiftCorrectionFeature:
         width_px = round(spec.fwhm / cm_per_px)
         log.debug(f"using FWHM {spec.fwhm} (width {width_px}px)")
 
-        found_peak_indices_orig, peak_properties = signal.find_peaks(
+        found_peak_indices_orig, _ = signal.find_peaks(
             x            = pr.processed,
             height       = None, 
             threshold    = None, 
@@ -521,7 +520,7 @@ class RamanShiftCorrectionFeature:
             measured_px = found_peak_indices[index]
 
             # experimental: recompute measured_cm via parabolic approximation
-            measured_cm, intensity_new = wasatch_utils.parabolic_approximation(measured_px, x=wavenumbers, y=pr.processed)
+            measured_cm, _ = wasatch_utils.parabolic_approximation(measured_px, x=wavenumbers, y=pr.processed)
             measured_nm, _ = wasatch_utils.parabolic_approximation(measured_px, x=spec.settings.wavelengths, y=pr.processed)
 
             # what's our offset in cm (expected - measured)

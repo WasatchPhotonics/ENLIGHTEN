@@ -1,13 +1,11 @@
 import datetime
 import logging
-import csv
 import re
 import os
 
 from enlighten.measurement.Measurement import Measurement
 
 from wasatch.SpectrometerSettings import SpectrometerSettings
-from wasatch.Reading              import Reading
 from wasatch.CSVLoader            import CSVLoader
 
 log = logging.getLogger(__name__)
@@ -298,7 +296,7 @@ class ColumnFileParser:
             if c0 > 0:
                 return [ c0, c1, c2, c3, c4 ]
         except Exception as e:
-            log.debug("get_wavecal_coeffs_from_metadata: ignoring {e}")
+            log.debug(f"get_wavecal_coeffs_from_metadata: ignoring {e}")
             return
 
     def get_header_col(self, field):

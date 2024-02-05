@@ -2,8 +2,6 @@ import logging
 import numpy as np
 import math
 
-from enlighten import util
-
 log = logging.getLogger(__name__)
 
 ##
@@ -102,7 +100,7 @@ class RichardsonLucy:
         deconvolved[deconvolved < eps] = eps 
 
         # apply convolution
-        for i in range(self.iterations):
+        for _ in range(self.iterations):
             h_times_x = np.matmul(resolution_h, deconvolved)
             y_over_h_times_x = orig / h_times_x
             full_sum = np.matmul(np.transpose(resolution_h), y_over_h_times_x)

@@ -1,13 +1,13 @@
-import os
 import hashlib
 import logging
+import os
 
 from enlighten import common
 
 if common.use_pyside2():
-    from PySide2 import QtGui, QtWidgets
+    from PySide2 import QtWidgets
 else:
-    from PySide6 import QtGui, QtWidgets
+    from PySide6 import QtWidgets
 
 log = logging.getLogger(__name__)
 

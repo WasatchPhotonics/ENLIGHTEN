@@ -13,11 +13,6 @@ from wasatch.SpectrometerState     import SpectrometerState
 from wasatch.AbstractUSBDevice     import AbstractUSBDevice
 from wasatch.MockUSBDevice         import MockUSBDevice
 
-if common.use_pyside2():
-    from PySide2 import QtGui
-else:
-    from PySide6 import QtGui
-
 log = logging.getLogger(__name__)
 
 ##
@@ -315,18 +310,18 @@ class Spectrometer:
         pass
     
     def left_region_changed_callback(self):
-        (start, end) = self.roi_region_left.getRegion()
+        (_, end) = self.roi_region_left.getRegion()
 
         pixel = self.get_new_pixel(end)
         if pixel is None:
             return
     
-        log.debug(f"left_region_changed_callback: MZ: setting roi_horizontal_start to pixel {pixel} based on region end {end}")
+        log.debug(f"left_region_changed_callback: setting roi_horizontal_start to pixel {pixel} based on region end {end}")
         self.settings.eeprom.roi_horizontal_start = pixel
         self.ctl.horiz_roi.update_regions(self)
 
     def right_region_changed_callback(self):
-        (start, end) = self.roi_region_right.getRegion()
+        (start, _) = self.roi_region_right.getRegion()
 
         pixel = self.get_new_pixel(start)
         if pixel is None:

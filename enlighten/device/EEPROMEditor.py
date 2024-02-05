@@ -1,14 +1,10 @@
-import os
 import re
 import json
 import logging
+import decimal
 
-from decimal import *
-from wasatch import utils as wasatch_utils
-
-from enlighten import util
-from enlighten import common
 from wasatch.EEPROM import EEPROM
+from enlighten import common
 
 if common.use_pyside2():
     from PySide2 import QtGui, QtWidgets
@@ -507,7 +503,7 @@ class EEPROMEditor:
 
             self.update_digest()
 
-        except Exception as ex:
+        except Exception:
             log.error("widget_callback: caught exception for name '%s', index %s", name, index, exc_info=1)
 
         # TODO: call Controller.change_setting("eeprom", self.eeprom) on 
@@ -557,8 +553,8 @@ class EEPROMEditor:
         more digits of precision than Python2.7 (would have to make fields much
         wider to support Python3's apparent float64 internal precision).
         """
-        getcontext().prec = 8
-        return '%e' % getcontext().create_decimal_from_float(float(n))
+        decimal.getcontext().prec = 8
+        return '%e' % decimal.getcontext().create_decimal_from_float(float(n))
 
     def update_authentication(self):
         """ The user logged-in (or -out), so update what should be updated. """

@@ -1,12 +1,11 @@
 import webbrowser
 
 from enlighten import common
-from enlighten import util
 
 if common.use_pyside2():
-    from PySide2 import QtCore, QtGui, QtWidgets
+    from PySide2 import QtCore, QtWidgets
 else:
-    from PySide6 import QtCore, QtGui, QtWidgets
+    from PySide6 import QtCore, QtWidgets
 
 import logging
 
@@ -223,7 +222,7 @@ class Marquee:
             self.toast_dialog = dialog
             self.toast_timer.start(self.TOAST_DURATION_MS)
             self.toast_opacity = 1.0
-        retval = dialog.exec() # MZ: exec_()?
+        dialog.exec() 
 
     ## 
     # Recursively calls itself until opacity is zero.

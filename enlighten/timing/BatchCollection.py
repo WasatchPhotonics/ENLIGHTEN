@@ -8,9 +8,9 @@ from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from wasatch.TakeOneRequest import TakeOneRequest
 
 if common.use_pyside2():
-    from PySide2 import QtCore, QtGui
+    from PySide2 import QtCore
 else:
-    from PySide6 import QtCore, QtGui
+    from PySide6 import QtCore
 
 log = logging.getLogger(__name__)
 
@@ -377,7 +377,7 @@ class BatchCollection:
         self.first_tick = True
 
         # we should only be ABLE to start a batch if we're paused, but...just to be sure:
-        self.ctl.vcr_controls.pause(all=self.ctl.save_options.save_all_spectrometers())
+        self.ctl.vcr_controls.pause()
 
         # Compute "next start time" now, at the beginning of the batch,
         # because it's defined as a PERIOD (start-to-start), not a DELAY.
@@ -401,7 +401,7 @@ class BatchCollection:
 
         # if we're not in manual laser mode, initialize laser for the batch
         if self.laser_mode == "batch":
-            self.ctl.laser_control.set_laser_enable(True, all=self.ctl.save_options.save_all_spectrometers())
+            self.ctl.laser_control.set_laser_enable(True, all_=self.ctl.save_options.save_all_spectrometers())
             sleep_ms = self.laser_warmup_ms
             if sleep_ms > 0:
                 self.ctl.marquee.info("warming up laser", persist=True)
@@ -412,7 +412,7 @@ class BatchCollection:
             #
             # To be doubly safe, we're turning off ALL lasers, regardless of
             # whether we're in "save_all" or not.
-            self.ctl.laser_control.set_laser_enable(False, all=True)
+            self.ctl.laser_control.set_laser_enable(False, all_=True)
 
         log.debug("scheduling first tick in %d ms", sleep_ms)
         self.timer_measurement.start(sleep_ms)
@@ -448,14 +448,13 @@ class BatchCollection:
 
         if self.laser_mode == "batch":
             log.debug("disabling laser")
-            self.ctl.laser_control.set_laser_enable(False, all=True)
+            self.ctl.laser_control.set_laser_enable(False, all_=True)
 
         self.ctl.marquee.info("batch of %d measurements complete" % self.measurement_count, persist=True)
         self.current_batch_start_time = None
 
         # batches end in paused state
-        save_all = self.ctl.save_options.save_all_spectrometers()
-        self.ctl.vcr_controls.pause(all=save_all)
+        self.ctl.vcr_controls.pause()
 
         # export if requested
         if self.export_after_batch:

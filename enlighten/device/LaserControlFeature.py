@@ -1,19 +1,10 @@
-import time
-from datetime import datetime, timedelta
 import logging
 
-from enlighten import util, common
+from enlighten import util
 from enlighten.common import LaserStates
-
-from wasatch.EEPROM import EEPROM
 
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from enlighten.ui.MouseWheelFilter import MouseWheelFilter
-
-if common.use_pyside2():
-    from PySide2 import QtWidgets 
-else:
-    from PySide6 import QtWidgets 
 
 log = logging.getLogger(__name__)
 
@@ -163,12 +154,12 @@ class LaserControlFeature:
         self.refresh_laser_buttons()
 
     # expose this setter for BatchCollection and plugins
-    def set_laser_enable(self, flag, spec=None, all=False):
+    def set_laser_enable(self, flag, spec=None, all_=False):
 
         # BatchCollection doesn't use multispec.lock (it's not enforcing
         # synchronization in other commands), but it does manually send
         # an "all" to enable the lasers on all connected spectrometers.
-        if all:
+        if all_:
             for spec in self.ctl.multispec.get_spectrometers():
                 self.set_laser_enable(flag, spec=spec)
             return
@@ -464,12 +455,11 @@ class LaserControlFeature:
 
     # gets called by BatteryFeature when a new battery reading is received
     def battery_callback(self, perc, charging):
-        cfu = self.ctl.form.ui
         enough_for_laser = perc >= self.MIN_BATTERY_PERC
         log.debug("enough_for_laser = %s (%.2f%%)" % (enough_for_laser, perc))
 
         if enough_for_laser:
-            self.remove_restriction("low battery")
+            self.clear_restriction("low battery")
         else:
             self.set_restriction("low battery")
 

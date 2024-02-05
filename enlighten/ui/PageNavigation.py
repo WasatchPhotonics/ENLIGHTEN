@@ -348,7 +348,7 @@ class PageNavigation:
         # it's not really a per-spectrometer attribute, but adding for
         # consistency and convenience.
         if self.ctl.multispec:
-            self.ctl.multispec.set_app_state("technique_name", technique_name, all=True)
+            self.ctl.multispec.set_app_state("technique_name", technique_name, all_=True)
 
         # Business Objects
         self.ctl.update_feature_visibility()

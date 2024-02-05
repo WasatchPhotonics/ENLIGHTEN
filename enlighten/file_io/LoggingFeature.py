@@ -90,7 +90,7 @@ class LoggingFeature:
                 for line in Pygtail(applog.get_location(), encoding="utf-8"):
                     lines.append(line)
                 self.process(lines)
-            except IOError as exc:
+            except IOError:
                 log.warn("Cannot tail log file")
 
         self.timer.start(LoggingFeature.TIMER_SLEEP_MS)

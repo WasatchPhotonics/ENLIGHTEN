@@ -11,12 +11,6 @@ from wasatch.DeviceID import DeviceID
 from wasatch.WasatchDeviceWrapper import WasatchDeviceWrapper
 
 from enlighten import util
-from enlighten import common
-
-if common.use_pyside2():
-    from PySide2 import QtGui
-else:
-    from PySide6 import QtGui
 
 log = logging.getLogger(__name__)
 
@@ -349,8 +343,8 @@ class Multispec:
     ##
     # Update the given SpectrometerApplicationState field for the current spectrometer,
     # or for all spectrometers if locking is enabled.
-    def set_app_state(self, field, value, all=False):
-        if self.locked or all:
+    def set_app_state(self, field, value, all_=False):
+        if self.locked or all_:
             for spec in self.get_spectrometers():
                 log.debug("%s: app_state.%s -> %s", spec.label, field, value)
                 setattr(spec.app_state, field, value)
@@ -554,7 +548,6 @@ class Multispec:
             except Exception as e:
                 log.error(f"Multispec.remove: failed to delete from spectrometers with error {e}")
                 return False
-        device_id = spec.device_id 
         label = spec.label
 
         self.ctl.graph.remove_curve(label)
@@ -646,9 +639,6 @@ class Multispec:
               style, width etc
         @returns QPen
         """
-        widget   = "scope"
-        selected = self.is_selected(spec.device_id)
-
         if self.is_autocolor():
             color = self.choose_color(spec)
         elif spec.color is None:
@@ -679,9 +669,9 @@ class Multispec:
             return color
 
     ## send commands to device subprocess via (name, value) pickleable tuples
-    def change_device_setting(self, setting, value=0, all=False):
+    def change_device_setting(self, setting, value=0, all_=False):
         try:
-            if self.locked or all:
+            if self.locked or all_:
                 for spec in self.get_spectrometers():
                     spec.change_device_setting(setting, value)
                 return

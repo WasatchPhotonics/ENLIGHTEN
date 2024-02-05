@@ -1,7 +1,6 @@
 import spc_spectra as spc
 import datetime
 import logging
-import re
 import os
 
 import numpy as np

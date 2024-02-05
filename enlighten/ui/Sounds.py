@@ -43,7 +43,7 @@ class Sounds:
 
         # find all supported audio files
         log.debug("searching for sounds in %s", self.PATH)
-        for root, dirs, files in os.walk(self.PATH):
+        for root, _, files in os.walk(self.PATH):
             for filename in files:
                 name, ext = os.path.splitext(filename)
                 ext = ext[1:] # trim period

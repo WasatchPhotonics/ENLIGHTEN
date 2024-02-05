@@ -87,8 +87,8 @@ class RamanIntensityCorrection:
         This decides whether the "[ ] enable" checkbox is clickable.
         """
 
-        def set(flag, tt):
-            log.debug(f"is_allowed: flag {flag}, tt {tt}")
+        def set_allowed(flag, tt):
+            log.debug(f"set_allowed: flag {flag}, tt {tt}")
             self.cb_enable.setEnabled(flag)
             self.cb_enable.setToolTip(tt)
             self.allowed = flag
@@ -96,13 +96,13 @@ class RamanIntensityCorrection:
 
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
-            return set(False, "Raman Intensity Correction requires a spectrometer")
+            return set_allowed(False, "Raman Intensity Correction requires a spectrometer")
         elif not self.is_supported():
-            return set(False, "Raman Intensity Correction requires an SRM calibration and Raman technique")
+            return set_allowed(False, "Raman Intensity Correction requires an SRM calibration and Raman technique")
         elif spec.app_state.dark is None:
-            return set(False, "Raman Intensity Correction requires a dark measurement")
+            return set_allowed(False, "Raman Intensity Correction requires a dark measurement")
         else:
-            return set(True, "Apply NIST SRM-calibrated Raman Intensity Correction")
+            return set_allowed(True, "Apply NIST SRM-calibrated Raman Intensity Correction")
 
     def update_visibility(self):
         supported = self.is_supported()

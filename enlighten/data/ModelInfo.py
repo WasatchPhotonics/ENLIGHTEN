@@ -1,5 +1,4 @@
 import re
-import numpy as np
 import logging
 
 from .ModelFWHM import ModelFWHM
@@ -157,8 +156,9 @@ class WpModelInfo:
             log.error("bad WpModelInfo: min exceeds max")
 
         if self.has_excitation and self.wavelength_min <= self.excitation:
-            log.error(f"WpModelInfo: {self.name} can see {self.excitation} laser " + 
-                      f"from spectral range ({self.wavelength_min:.2f}, {self.wavelength_max:.2f})")
+            # log.error(f"WpModelInfo: {self.name} can see {self.excitation} laser " + 
+            #           f"from spectral range ({self.wavelength_min:.2f}, {self.wavelength_max:.2f})")
+            pass
 
     def dump(self):
         log.debug("WpModelInfo:")

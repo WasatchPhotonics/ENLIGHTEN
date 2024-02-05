@@ -5,7 +5,6 @@ import pyqtgraph
 import numpy as np
 import qimage2ndarray
 
-from enlighten import util
 from enlighten import common
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 
@@ -393,7 +392,6 @@ class AreaScanFeature:
         self.progress_bar_timer.start(100)
 
     def process_spectrum(self, spectrum, row):
-        width = len(spectrum)
         self.lb_current.setText(str(row))
 
         if row < self.start_line or row > self.stop_line:

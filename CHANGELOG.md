@@ -2,6 +2,11 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2023-02-05 4.0.37
+    - pylint
+    - docs
+    - fixed LaserControlFeature restriction bug
+    - fixed Measurements export ROI bug
 - 2023-01-30 4.0.36
     - Raman
         - ensured all Raman features available in Expert mode

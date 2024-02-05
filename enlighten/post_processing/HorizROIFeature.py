@@ -1,4 +1,3 @@
-import pyqtgraph
 import logging
 
 from wasatch.ProcessedReading import ProcessedReading

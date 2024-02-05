@@ -69,7 +69,14 @@ class AutoRamanFeature:
             self.enable_callback()
 
     def generate_take_one_request(self):
-        return TakeOneRequest(take_dark=True, enable_laser_before=True, disable_laser_after=True, laser_warmup_ms=3000)
+        spec = self.ctl.multispec.current_spectrometer()
+        avg = 1 if spec is None else spec.settings.state.scans_to_average
+
+        return TakeOneRequest(take_dark=True, 
+                              enable_laser_before=True, 
+                              disable_laser_after=True, 
+                              laser_warmup_ms=3000, 
+                              scans_to_average=avg)
 
     ############################################################################
     # Callbacks

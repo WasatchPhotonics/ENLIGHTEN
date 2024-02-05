@@ -9,14 +9,13 @@ import os
 import json
 import numpy as np
 import pandas as pd
-import pexpect
 import logging
 import datetime
 import traceback
 
 from pexpect.popen_spawn import PopenSpawn 
+import common from enlighten
 
-from enlighten.common import get_default_data_dir
 from EnlightenPlugin import EnlightenPluginBase,    \
                             EnlightenPluginField,    \
                             EnlightenPluginResponse,  \
@@ -214,7 +213,7 @@ class RamanID(EnlightenPluginBase):
         log.debug(f"using library dir: {self.library_dir}")
 
         # kick-off the stream processor
-        reading_for_streaming = False
+        ready_for_streaming = False
         try:
             log.debug("calling spawn_subprocess")
             ready_for_streaming = self.spawn_subprocess()

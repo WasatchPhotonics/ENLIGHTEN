@@ -5,7 +5,6 @@
 # Combine the two and you can have a timed dialog, or other widget really
 
 import logging
-from fileinput import close
 
 from enlighten import common
 

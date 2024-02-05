@@ -1,11 +1,8 @@
-import copy
 import numpy as np
 import logging
 
 from superman.baseline import BL_CLASSES, AirPLS
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
-
-from wasatch import utils as wasatch_utils
 
 log = logging.getLogger(__name__)
 
@@ -124,7 +121,7 @@ class BaselineCorrection:
         """ 
         s = "baseline_correction"
 
-        def set(field, value):
+        def set_field(field, value):
             if value is None:
                 return
             log.debug("%s -> %s", field, value)
@@ -134,11 +131,11 @@ class BaselineCorrection:
         #     self.current_algo_name = self.ctl.config.get(s, "algo")
 
         # AirPLS options to analyze algorithm performance
-        set("current_algo_name",            self.ctl.config.get      (s, "algo",                         default=None))
-        set("airpls_max_iters",             self.ctl.config.get_int  (s, "airpls_max_iters",             default=None))
-        set("airpls_smoothness_param",      self.ctl.config.get_int  (s, "airpls_smoothness_param",      default=None))
-        set("airpls_whittaker_deriv_order", self.ctl.config.get_int  (s, "airpls_whittaker_deriv_order", default=None))
-        set("airpls_conv_thresh",           self.ctl.config.get_float(s, "airpls_conv_thresh",           default=None))
+        set_field("current_algo_name",            self.ctl.config.get      (s, "algo",                         default=None))
+        set_field("airpls_max_iters",             self.ctl.config.get_int  (s, "airpls_max_iters",             default=None))
+        set_field("airpls_smoothness_param",      self.ctl.config.get_int  (s, "airpls_smoothness_param",      default=None))
+        set_field("airpls_whittaker_deriv_order", self.ctl.config.get_int  (s, "airpls_whittaker_deriv_order", default=None))
+        set_field("airpls_conv_thresh",           self.ctl.config.get_float(s, "airpls_conv_thresh",           default=None))
 
     def init_algos(self):
         """

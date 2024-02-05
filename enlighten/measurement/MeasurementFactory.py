@@ -1,5 +1,6 @@
 import pyqtgraph.exporters
 import pyqtgraph
+import traceback
 import logging
 import json
 import os
@@ -12,16 +13,10 @@ from enlighten.parser.TextFileParser import TextFileParser
 from enlighten.parser.DashFileParser import DashFileParser
 from enlighten.parser.SPCFileParser import SPCFileParser
 from enlighten.ui.ThumbnailWidget import ThumbnailWidget
-
-import traceback
-
 from enlighten.common import msgbox
-
-from wasatch.ProcessedReading import ProcessedReading
-from wasatch.SpectrometerSettings import SpectrometerSettings
-from wasatch import utils as wasatch_utils
-
 from enlighten import util, common
+
+from wasatch import utils as wasatch_utils
 
 if common.use_pyside2():
     from PySide2 import QtGui

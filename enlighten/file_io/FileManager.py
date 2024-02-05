@@ -1,5 +1,4 @@
 import logging
-import re
 import os
 
 from enlighten import common
@@ -30,10 +29,10 @@ class FileManager:
         self.file_loader_timer.setSingleShot(True)
         self.file_loader_timer.timeout.connect(self.file_loader_tick)
 
-    def get_pathname(self, caption="Select file to load", filter=None):
-        if filter is None:
-            filter = FileManager.FILTER
-        result = QtWidgets.QFileDialog.getOpenFileName(self.ctl.form, caption, self.last_load_dir, filter)
+    def get_pathname(self, caption="Select file to load", filter_=None):
+        if filter_ is None:
+            filter_ = FileManager.FILTER
+        result = QtWidgets.QFileDialog.getOpenFileName(self.ctl.form, caption, self.last_load_dir, filter_)
         if result is None or len(result) < 1:
             return
         pathname = result[0]
@@ -48,10 +47,10 @@ class FileManager:
         return dialog.getExistingDirectory()
         
     ## not currently used
-    def load_file(self, caption="Select file to load", filter=None):
-        if filter is None:
-            filter = FileManager.FILTER
-        pathname = self.get_pathname(caption, filter)
+    def load_file(self, caption="Select file to load", filter_=None):
+        if filter_ is None:
+            filter_ = FileManager.FILTER
+        pathname = self.get_pathname(caption, filter_)
         if pathname is None:
             return
 

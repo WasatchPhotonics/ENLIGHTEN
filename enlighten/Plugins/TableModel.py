@@ -1,13 +1,12 @@
 import logging
-import pandas as pd
 
 from enlighten import common
 
 if common.use_pyside2():
-    from PySide2 import QtGui, QtWidgets, QtCore
+    from PySide2 import QtCore
     from PySide2.QtCore import Qt
 else:
-    from PySide6 import QtGui, QtWidgets, QtCore
+    from PySide6 import QtCore
     from PySide6.QtCore import Qt
 
 log = logging.getLogger(__name__)

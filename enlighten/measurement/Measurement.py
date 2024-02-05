@@ -617,8 +617,6 @@ class Measurement:
             log.debug("declining to automatically relabel a manually named measurement")
             return
 
-        old_label = self.label
-
         # drop old trace (technically all we need to do is rename the label)
         was_displayed = False
         if self.thumbnail_widget:
@@ -1025,7 +1023,7 @@ class Measurement:
             wbk.save(pathname)
             log.info("saved %s", pathname)
             self.add_renamable(pathname)
-        except Exception as exc:
+        except Exception:
             log.critical("Problem saving workbook: %s", pathname, exc_info=1)
 
     def generate_today_dir(self):
@@ -1435,7 +1433,7 @@ class Measurement:
 
                     # write the spectral lines
                     self.write_processed_reading_lines(csv_writer)
-        except Exception as exc:
+        except Exception:
             log.critical("Exception writing row-ordered CSV file: %s", pathname, exc_info=1)
             return
 

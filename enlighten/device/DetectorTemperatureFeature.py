@@ -7,16 +7,14 @@ from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from enlighten import common
 
 if common.use_pyside2():
-    from PySide2 import QtGui, QtCore 
+    from PySide2 import QtCore 
 else:
-    from PySide6 import QtGui, QtCore 
+    from PySide6 import QtCore 
 
 log = logging.getLogger(__name__)
 
 class DetectorTemperatureFeature:
-    """
-    Encapsulate the monitoring of detector temperature.
-    """
+    """ Encapsulate the monitoring of detector temperature. """
 
     def __init__(self, ctl):
         self.ctl = ctl
