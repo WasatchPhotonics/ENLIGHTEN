@@ -22,13 +22,13 @@ else:
 log = logging.getLogger(__name__)
 
 ##
-# This class represents the set of Measurement objects which have been saved 
-# during this session via the Acquire button or BatchCollection, or which have 
-# been loaded from disk via the Load button.  It can be considered to be the set 
+# This class represents the set of Measurement objects which have been saved
+# during this session via the Acquire button or BatchCollection, or which have
+# been loaded from disk via the Load button.  It can be considered to be the set
 # of ThumbnailWidgets which fill the left-hand capture column in the GUI.
 class Measurements:
 
-    MAX_MEASUREMENT_COUNT = 500 
+    MAX_MEASUREMENT_COUNT = 500
 
     # I see no need to deepcopy this Singleton (and this allows us to deepcopy
     # Measurements freely).
@@ -58,8 +58,8 @@ class Measurements:
         cfu.pushButton_resize_captures     .clicked    .connect(self.resize_callback)
         cfu.pushButton_resort_captures     .clicked    .connect(self.resort_callback)
 
-        # Drop an expanding spacer into the layout, which will force all 
-        # ThumbnailWidgets to hold a fixed size and align at one end.  (Could 
+        # Drop an expanding spacer into the layout, which will force all
+        # ThumbnailWidgets to hold a fixed size and align at one end.  (Could
         # this not be done in Designer?)
         spacer = QtWidgets.QSpacerItem(20, 1024, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         cfu.verticalLayout_scope_capture_save.addItem(spacer)
@@ -73,7 +73,7 @@ class Measurements:
     # ##########################################################################
 
     ## called by KnowItAll.Feature on receiving a MatchResponse from KIA.Wrapper
-    # which correponds to a MeasurementID.  
+    # which correponds to a MeasurementID.
     def id_callback(self, measurement_id, declared_match):
         for m in self.measurements:
             if m.measurement_id == measurement_id:
@@ -84,7 +84,7 @@ class Measurements:
     def export_callback(self):
         self.export_session()
 
-    ## display a file selection dialog, let the user select one or more files, 
+    ## display a file selection dialog, let the user select one or more files,
     # then load them up (including thumbnail generation)
     def load_callback(self):
         self.ctl.file_manager.select_files_to_load(callback=self.create_from_file)
@@ -154,20 +154,20 @@ class Measurements:
 
     ##
     # This is the callback which the FileManager will call, one at a time, with
-    # delays, with each pathname selected by the user.  Note that a given 
-    # pathname may contain multiple spectra, which is why 
+    # delays, with each pathname selected by the user.  Note that a given
+    # pathname may contain multiple spectra, which is why
     # MeasurementFactory.create_from_file returns a list of Measurements rather
     # than a single reference.
     def create_from_file(self, pathname):
 
-        # if we're reprocessing loaded measurements, don't bother creating 
+        # if we're reprocessing loaded measurements, don't bother creating
         # thumbnails on instantiation; we'll do that after re-processing the
         # spectra
         generate_thumbnail = not self.ctl.save_options.load_raw()
 
         log.debug("create_from_file: calling MeasurementFactory.create_from_file with %s", pathname)
         measurements = self.ctl.measurement_factory.create_from_file(
-            pathname = pathname, 
+            pathname = pathname,
             is_collapsed = self.is_collapsed,
             generate_thumbnail = generate_thumbnail)
 
@@ -205,7 +205,7 @@ class Measurements:
         if self.measurements:
             self.measurements[-1].thumbnail_widget.rename_callback()
 
-    ## 
+    ##
     # Use the MeasurementFactory to instantiate a new Measurement, including
     # ThumbnailWidget, from the given spectrometer's latest ProcessedReading.
     def create_from_spectrometer(self, spec):
@@ -218,7 +218,7 @@ class Measurements:
         # create a Measurement from this Spectrometer's last ProcessedReading,
         # using the current "collapsed" state
         measurement = self.ctl.measurement_factory.create_from_spectrometer(
-            spec = spec, 
+            spec = spec,
             is_collapsed = self.is_collapsed)
 
         self.add(measurement)
@@ -255,7 +255,7 @@ class Measurements:
             if m.measurement_id == measurement_id:
                 return m
 
-    ## 
+    ##
     # Clears the list of Measurements (does not delete from disk).
     def erase_all(self):
         log.debug("erasing all Measurements")
@@ -274,9 +274,9 @@ class Measurements:
     ##
     # The user has clicked the "trash" icon on a ThumbnailWidget, or the "eraser"
     # icon at the top of the capture layout, or we're doing a massive collection
-    # and the ringbuffer overflowed, so the Measurement is being destroyed.  
+    # and the ringbuffer overflowed, so the Measurement is being destroyed.
     #
-    # It DOES NOT delete anything from disk.  
+    # It DOES NOT delete anything from disk.
     #
     # Measurements can only be deleted from disk by clicking on their individual
     # Trash icons, which logic is entirely encapsulated within Measurement,
@@ -325,7 +325,7 @@ class Measurements:
 
     ##
     # The user clicked the "Export" button at the bottom of the Thumbnail layout
-    # and wants to export every current Measurement into a single CSV (either 
+    # and wants to export every current Measurement into a single CSV (either
     # row- or column-ordered, per SaveOptions).  (Can also be triggered at end
     # of BatchCollection batch, or perhaps from a future plugin.)
     #
@@ -365,8 +365,8 @@ class Measurements:
                 visible_only = result["checked"]
                 if not (result["ok"] and filename):
                     log.info("cancelling export")
-                    return 
-                
+                    return
+
         # currently, all Sessions are stored in ~/EnlightenSpectra
         directory = common.get_default_data_dir()
 
@@ -414,7 +414,7 @@ class Measurements:
         if visible_only:
             export_measurements = [ m for m in self.measurements if m.is_displayed() ]
         else:
-            export_measurements = self.measurements 
+            export_measurements = self.measurements
 
         for m in export_measurements:
             devices.append(m.spec.label)
@@ -499,13 +499,13 @@ class Measurements:
 
     def _get_spectrometer_settings(self):
         """
-        Returns a list of all SpectrometerSettings (unique by serial_number) 
+        Returns a list of all SpectrometerSettings (unique by serial_number)
         contributing to our current set of saved measurements, in order of initial
         appearance.
 
-        To be perfectly clear, this returns a dictionary of 
+        To be perfectly clear, this returns a dictionary of
         wasatch.SpectrometerSettings by serial number.  Be aware that different
-        Measurement objects generated from the same spectrometer serial number 
+        Measurement objects generated from the same spectrometer serial number
         may have different ROI and interpolation settings.
         """
         settingss = []
@@ -519,7 +519,7 @@ class Measurements:
 
     def incompatible_axes(self, export_measurements):
         specs = {}
-        
+
         # group by serial
         for m in export_measurements:
             sn = "default"
@@ -528,7 +528,7 @@ class Measurements:
             if sn not in specs:
                 specs[sn] = []
             specs[sn].append(m)
-        
+
         # check each serial
         for sn in specs:
             if len(specs[sn]) < 2:
@@ -552,7 +552,7 @@ class Measurements:
     #
     # You might wonder if it's worth re-exporting every CSV_HEADER_FIELD atop
     # each colujmn of spectra, given that so many of the values (wavecal coeffs,
-    # etc) don't change.  The thing is, some do (integration time, note, 
+    # etc) don't change.  The thing is, some do (integration time, note,
     # detector and laser temperature, laser power, laser enabled etc).  So bite
     # the bullet and export them all for consistency.
     #
@@ -575,14 +575,14 @@ class Measurements:
     #
     # @todo should this function go into ExportFileParser?
     #
-    # @note If I'd known about Pandas when I wrote this, I might have done it 
+    # @note If I'd known about Pandas when I wrote this, I might have done it
     #       differently :-/
     #
     # @todo getting interpolation working here requires some thought.
     #
     # @par Collated
     #
-    # If SaveOptions.save_collated(), then the columns are grouped by each 
+    # If SaveOptions.save_collated(), then the columns are grouped by each
     # "subspectrum" (processed, raw, dark, reference etc). This changes the basic
     # layout above to:
     #
@@ -592,7 +592,7 @@ class Measurements:
     # Serial         S1 S1 S2    S1 S1 S2    S1 S1 S2
     # Label          Aa Bb Cc    Aa Bb Cc    Aa Bb Cc
     # m1             x  y  z     x  y  z     x  y  z
-    # m2             x  y  z     x  y  z     x  y  z 
+    # m2             x  y  z     x  y  z     x  y  z
     #
     # S1    S2    Pr          Rw          Dk            <-- a "blank column" is inserted between each grouping, with the label of that subspectrum
     # px wl px wl    Aa Bb Cc    Aa Bb Cc    Aa Bb Cc   <-- the Measurement.label is used as the header within each grouping
@@ -633,7 +633,7 @@ class Measurements:
 
         BLANK = ['']
 
-        # default to 5-digit precision for all spectral columns if a reference 
+        # default to 5-digit precision for all spectral columns if a reference
         # component is being exported
         prec = 5 if 'Reference' in pr_headers else 2
         max_pixels = max([settings.pixels() for settings in settingss])
@@ -680,11 +680,11 @@ class Measurements:
                 continue
             elif field.lower() == "enlighten version":
                 # MZ: note version is always in 2nd column
-                csv_writer.writerow(['ENLIGHTEN Version', common.VERSION]) 
+                csv_writer.writerow(['ENLIGHTEN Version', common.VERSION])
             else:
 
                 # first start with the metadata field name
-                row = [ field ] 
+                row = [ field ]
 
                 # now insert blanks to skip past the x-axes to the first measurement
                 row.extend(BLANK * (len(settingss) * len(x_headers) - 1))
@@ -697,7 +697,7 @@ class Measurements:
                         for m in export_measurements:
                             value = m.get_metadata(field)
                             row.append(value)
-                else:                     
+                else:
                     for m in export_measurements:
                         value = m.get_metadata(field)
                         row.append(value)
@@ -709,12 +709,12 @@ class Measurements:
         ########################################################################
         # Header One
         ########################################################################
-        
+
         # EnlightenVer
-        # MeasID      A        B        C 
+        # MeasID      A        B        C
         # Serial      S1       S1       S2
-        # Label       Aa       Bb       Cc  
-        # m1          x        y        z 
+        # Label       Aa       Bb       Cc
+        # m1          x        y        z
         # m2          x        y        z
         #
         # S1    S2    Aa       Bb       Cc <=== (serial, label)
@@ -722,9 +722,9 @@ class Measurements:
         row = []
         for settings in settingss:
             # It's important that we use the serial_number (not spec.label) here,
-            # so that parsers who read the list of serial_numbers from the 
-            # metadata line will be able to associate the prefix headers with 
-            # serial numbers.  That said, ExportFileParser IGNORES the prefix 
+            # so that parsers who read the list of serial_numbers from the
+            # metadata line will be able to associate the prefix headers with
+            # serial numbers.  That said, ExportFileParser IGNORES the prefix
             # columns (px/nm/cm can be regenerated), so we're just being nice to
             # other consumers.
             row.append(settings.eeprom.serial_number)
@@ -738,16 +738,16 @@ class Measurements:
                 row.append(m.label)
                 row.extend(BLANK * (len(pr_headers) - 1))
         csv_writer.writerow(row)
-        
+
         ########################################################################
         # Header Two
         ########################################################################
 
         # EnlightenVer
-        # MeasID      A        B        C 
+        # MeasID      A        B        C
         # Serial      S1       S1       S2
-        # Label       Aa       Bb       Cc  
-        # m1          x        y        z 
+        # Label       Aa       Bb       Cc
+        # m1          x        y        z
         # m2          x        y        z
         #
         # S1    S2    Aa       Bb       Cc
@@ -798,18 +798,29 @@ class Measurements:
             a = None
 
             if header == "processed":
-                a = pr.get_processed()
+                a = pr.get_processed()  # will get interpolated, cropped or "just processed" in that order
             elif header == "reference":
                 a = pr.get_reference()
             elif header == "dark":
                 a = pr.get_dark()
-            elif header == "raw":                                           
+            elif header == "raw":
                 a = pr.get_raw()
 
-            if a is not None and pixel < len(a):
-                value = a[pixel]
-            else:
+            if a is None:
                 return "NA"
+
+            roi = m.settings.eeprom.get_horizontal_roi()
+            if roi and pr.is_cropped() and not pr.is_interpolated():
+                uncorrected_pixel = pixel - roi.start
+                if uncorrected_pixel >= 0 and uncorrected_pixel < len(a):
+                    value = a[uncorrected_pixel]
+                else:
+                    return "NA"
+            else:
+                if pixel < len(a):
+                    value = a[pixel]
+                else:
+                    return "NA"
 
             # Override default precision (which was based on whether a "reference" column
             # is being exported) with this indication of whether a reference component was
@@ -824,17 +835,17 @@ class Measurements:
 
             log.debug(f"export_by_column: interpolation enabled: {self.ctl.interp}")
 
-            #####################################################################           
+            #####################################################################
             # Export Interpolated
-            #####################################################################           
+            #####################################################################
 
             for m in export_measurements:
-                
+
                 # Ensure all measurements are interpolated to the SAME (current)
                 # target axis; if any have already been interpolated to this axis
                 # (the normal case), this should be a no-op. Note that this may
-                # CHANGE individual Measurements, in that each will now have a 
-                # ProcessedReading.interpolated, regardless of whether it did 
+                # CHANGE individual Measurements, in that each will now have a
+                # ProcessedReading.interpolated, regardless of whether it did
                 # before.
                 self.ctl.interp.process(m.processed_reading)
                 if not m.processed_reading.interpolated:
@@ -860,14 +871,14 @@ class Measurements:
 
         else:
 
-            #####################################################################           
+            #####################################################################
             # Export Non-Interpolated
-            #####################################################################           
+            #####################################################################
 
             # Note that if some of these measurements were interpolated WHEN THEY
-            # WERE COLLECTED, they will be exported interpolated, even if 
-            # interpolation was subsequently disabled before the export. We 
-            # could change this by adding a "no_interpolation=False" default 
+            # WERE COLLECTED, they will be exported interpolated, even if
+            # interpolation was subsequently disabled before the export. We
+            # could change this by adding a "no_interpolation=False" default
             # param to ProcessedReading.get_foo() methods, but I don't currently
             # see it as a problem.
 
@@ -880,6 +891,7 @@ class Measurements:
                             row.append(get_x_header_value(settings.wavelengths, settings.wavenumbers, header, pixel))
                     else:
                         row.extend(BLANK * len(x_headers))
+
                 if self.ctl.save_options.save_collated():
                     for header in pr_headers:
                         row.extend(BLANK)
@@ -905,12 +917,12 @@ class Measurements:
     # so typically only listed one serial number on the file header.  Just list
     # them all.
     #
-    # A naive implementation of this would just be to re-save the first 
+    # A naive implementation of this would just be to re-save the first
     # Measurement as csv_by_row, then forcibly append all the others atop it.
     # However, that would go into the wrong directory, with the wrong filename.
     # This is short enough that it doesn't matter.
     #
-    # It is believed that this exported file will match what you would have 
+    # It is believed that this exported file will match what you would have
     # generated if you had initially saved the first Measurement as a row-ordered
     # CSV, then appended subsequent Measurements.
     def export_by_row(self, csv_writer, visible_only=False):
@@ -922,8 +934,8 @@ class Measurements:
         csv_writer.writerow(file_header)
         csv_writer.writerow(Measurement.CSV_HEADER_FIELDS)
 
-        # cache a copy of the current line number, in case we later want to 
-        # continue appending to the current open row-ordered file -- this 
+        # cache a copy of the current line number, in case we later want to
+        # continue appending to the current open row-ordered file -- this
         # is currently stored as an instance attribute in the SaveOptions
         # singleton, meaning it will get trampled in the row-ordered export.
         save_line_number = self.ctl.save_options.line_number
