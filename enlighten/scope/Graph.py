@@ -110,8 +110,6 @@ class Graph:
     # PluginController doesn't use these (passes own chart and legend)
 
     def populate_scope_setup(self):
-        log.debug("populate_scope_setup: start")
-
         policy = QtWidgets.QSizePolicy()
         policy.setVerticalPolicy(QtWidgets.QSizePolicy.Preferred)
         policy.setHorizontalPolicy(QtWidgets.QSizePolicy.Preferred)
@@ -124,8 +122,6 @@ class Graph:
         self.stacked_widget.setCurrentIndex(1)
 
     def populate_scope_capture(self):
-        log.debug("populate_scope_capture: start")
-
         self.plot = pyqtgraph.PlotWidget(name="Scope Capture")
 
         self.plot.setLabel(axis="bottom", text=common.AxesHelper.get_pretty_name(common.Axes.WAVELENGTHS))
