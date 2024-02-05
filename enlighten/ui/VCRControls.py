@@ -38,8 +38,8 @@ class VCRControls:
 
         self.paused = False     # external callers should use is_paused()
 
-        self.bt_pause           .clicked.connect(self.pause)
-        self.bt_play            .clicked.connect(self.play)
+        self.bt_pause           .clicked.connect(self.pause_callback)
+        self.bt_play            .clicked.connect(self.play_callback)
         self.bt_save            .clicked.connect(self.save)
         self.bt_start_collection.clicked.connect(self.start_collection)
         self.bt_step            .clicked.connect(self.step)
@@ -109,7 +109,6 @@ class VCRControls:
             # log.debug("VCRControls didn't have a registration from event %s to %s", event, str(callback))
             pass
 
-
     def _stop_enabled(self):
         return len(self.callbacks["stop"]) > 0
 
@@ -117,7 +116,11 @@ class VCRControls:
     # Button callbacks
     # ##########################################################################
 
-    # These are the callbacks connected to the QPushButton.clicked events.
+    def pause_callback(self):
+        self.pause()
+
+    def play_callback(self):
+        self.play()
 
     ## pause the current spectrometer
     def pause(self, spec=None): 
