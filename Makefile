@@ -49,7 +49,9 @@ clean:
              mac.bundled \
              docs/doxygen \
              enlighten.{err,out} \
+             build.{err,out} \
              doxygen.{err,out}
+	@find . -name __pycache__ -exec rm -rfv {} \;
 	@find . -name \*.pyc -exec rm -v {} \;
 
 deps:
