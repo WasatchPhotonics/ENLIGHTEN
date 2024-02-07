@@ -29,7 +29,8 @@ class SPCFileParser:
     # Graph is used to determine the current x-axis, if we are unable to determine
     # the file's x-axis (wavelength vs wavenumber) and default to simply load into the
     # current coordinate space.
-    def __init__(self, pathname, graph):
+    def __init__(self, ctl, pathname, graph):
+        self.ctl = ctl
         self.pathname = pathname
         self.graph = graph
 
@@ -168,7 +169,7 @@ class SPCFileParser:
             d["Label"] = label
 
         # instantiate the Measurement from the generated dictionary
-        return Measurement(d=d)
+        return Measurement(ctl=self.ctl, d=d)
 
     ## log all the attributes of the generated SPC object for debugging
     def dump(self, obj):

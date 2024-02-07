@@ -2,6 +2,16 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2023-02-06 4.0.38
+    - fixed load from export
+    - fixed graph traces on loaded exports
+    - fixed common.msgbox bug
+    - moved to ctl
+        - ColumnFileParser
+        - DashFileParser
+        - ExportFileParser
+        - SPCFileParser
+        - TextFileParser
 - 2023-02-05 4.0.37
     - pylint
     - docs

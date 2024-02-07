@@ -31,7 +31,8 @@ class TextFileParser:
           excitation for that unit as the excitation — or even for full x-axis?
     """
 
-    def __init__(self, pathname, graph):
+    def __init__(self, ctl, pathname, graph):
+        self.ctl = ctl
         self.pathname = pathname
         self.graph = graph
 
@@ -40,7 +41,7 @@ class TextFileParser:
         self.processed_reading.reading = Reading(device_id = "LOAD:" + self.pathname)
         self.settings = SpectrometerSettings()
 
-    def parse(self) -> Measurement:
+    def parse(self):
         x = []
         y = []
 
@@ -70,6 +71,7 @@ class TextFileParser:
         self.processed_reading.post_load_cleanup()
 
         m = Measurement(
+            ctl               = self.ctl,
             source_pathname   = self.pathname, 
             timestamp         = self.timestamp,
             processed_reading = self.processed_reading,

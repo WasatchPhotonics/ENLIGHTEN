@@ -13,7 +13,7 @@ application.
       can be modules (files) within it
 """
 
-VERSION = "4.0.37"
+VERSION = "4.0.38"
 
 ctl = None
 
@@ -152,7 +152,7 @@ def set_controller_instance(inst):
     global ctl
     ctl = inst
 
-def msgbox(prompt, title="Alert", buttons=None, detail=None, informative_text=None):
+def msgbox(prompt, title="Alert", buttons="", detail=None, informative_text=None):
     """
     Display an interupting message to the user.  In common rather than GUI so it can
     be used before Controller / Business Objects fully instantiated.

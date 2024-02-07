@@ -158,10 +158,10 @@ class DashFileParser:
     including those given).
     """
 
-    def __init__(self, pathname, save_options, encoding="utf-8"):
+    def __init__(self, ctl, pathname, encoding="utf-8"):
 
+        self.ctl = ctl
         self.pathname = pathname
-        self.save_options = save_options
         self.encoding = encoding
 
         # all the DashSpectrometers we've seen in this file
@@ -197,11 +197,11 @@ class DashFileParser:
 
         log.debug("instantiating new Measurement")
         m = Measurement(
+            ctl               = self.ctl,
             source_pathname   = self.pathname, 
             timestamp         = spec.dash_measurement.timestamp,
             settings          = spec.settings,
-            processed_reading = spec.dash_measurement.processed_reading,
-            save_options      = self.save_options)
+            processed_reading = spec.dash_measurement.processed_reading)
         self.measurements.append(m)
         m.dump()
 

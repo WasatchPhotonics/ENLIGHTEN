@@ -50,8 +50,9 @@ class ExportFileParser:
 
     @warning this does not currently work with "collated" exports.
     """ 
-    def __init__(self, pathname, encoding="utf-8"):
+    def __init__(self, ctl, pathname, encoding="utf-8"):
 
+        self.ctl      = ctl
         self.pathname = pathname
         self.encoding = encoding
 
@@ -182,13 +183,14 @@ class ExportFileParser:
         log.debug("generate_measurements: %d ExportedMeasurements to convert" % len(self.exported_measurements))
         for em in self.exported_measurements:
             self.post_process_metadata(em)
-            em.processed_reading.post_load_cleanup()
+            em.processed_reading.post_load_cleanup(settings=em.settings)
 
             if em.processed_reading.processed is None:
                 log.critical("ignoring malformed ExportMeasurement missing processed array")
                 continue
 
             m = Measurement(
+                ctl               = self.ctl,
                 source_pathname   = self.pathname, 
                 timestamp         = em.timestamp,
                 settings          = em.settings,

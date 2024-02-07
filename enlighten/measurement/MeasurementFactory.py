@@ -366,24 +366,23 @@ class MeasurementFactory:
 
     def create_from_dash_file(self, pathname, encoding="utf-8"):
         parser = DashFileParser(
-            pathname     = pathname,
-            save_options = self.ctl.save_options,
-            encoding     = encoding)
+            ctl         = self.ctl,
+            pathname    = pathname,
+            encoding    = encoding)
         return parser.parse()
 
     def create_from_columnar_file(self, pathname, encoding="utf-8"):
         parser = ColumnFileParser(
-            self.ctl, # needs a ctl because it creates a Measurement
-            pathname     = pathname,
-            save_options = self.ctl.save_options,
-            encoding     = encoding)
+            ctl         = self.ctl,
+            pathname    = pathname,
+            encoding    = encoding)
         return parser.parse()
 
     def create_from_export_file(self, pathname, encoding="utf-8"):
         parser = ExportFileParser(
-            pathname     = pathname,
-            save_options = self.ctl.save_options,
-            encoding     = encoding)
+            ctl         = self.ctl,
+            pathname    = pathname,
+            encoding    = encoding)
         return parser.parse()
 
     def create_from_json_file(self, pathname, encoding="utf-8"):
@@ -406,12 +405,14 @@ class MeasurementFactory:
 
     def create_from_spc_file(self, pathname):
         parser = SPCFileParser(
+            ctl = self.ctl,
             pathname = pathname,
             graph = self.ctl.graph)
         return parser.parse()
 
     def create_from_simple_columnar_file(self, pathname, encoding="utf-8"):
         parser = TextFileParser(
+            ctl = self.ctl,
             pathname = pathname,
             graph = self.ctl.graph)
         return parser.parse()

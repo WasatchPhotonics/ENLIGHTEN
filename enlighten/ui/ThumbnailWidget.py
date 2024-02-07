@@ -432,7 +432,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
             x_axis = self.measurement.processed_reading.get_wavelengths()
             log.debug(f"wavelengths len is {len(x_axis)}")
         elif self.graph.current_x_axis == common.Axes.WAVENUMBERS:
-            log.debug("axis is wavenunmbers so getting settings wavenumbers")
+            log.debug("axis is wavenumbers so getting settings wavenumbers")
             x_axis = self.measurement.processed_reading.get_wavenumbers()
         else:
             log.debug("generating from pixels")

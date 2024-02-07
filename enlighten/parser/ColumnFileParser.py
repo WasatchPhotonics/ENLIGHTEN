@@ -26,18 +26,17 @@ class ColumnFileParser:
 
     @see TextFileParser for files with no header row at all.
     """
-    def __init__(self, ctl, pathname, save_options=None, encoding="utf-8"):
+    def __init__(self, ctl, pathname, encoding="utf-8"):
 
         self.ctl = ctl
 
         self.pathname = pathname
-        self.save_options = save_options
         self.encoding = encoding
 
         # default
         self.timestamp = datetime.datetime.now()
 
-        self.csv_loader = CSVLoader(pathname, save_options, encoding)
+        self.csv_loader = CSVLoader(pathname, encoding)
 
         self.headers = self.csv_loader.headers
         self.metadata = self.csv_loader.metadata
