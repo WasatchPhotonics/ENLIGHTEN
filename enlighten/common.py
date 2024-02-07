@@ -13,7 +13,7 @@ application.
       can be modules (files) within it
 """
 
-VERSION = "4.0.38"
+VERSION = "4.0.39"
 
 ctl = None
 
@@ -186,7 +186,7 @@ def msgbox(prompt, title="Alert", buttons="", detail=None, informative_text=None
     if "yes"    in buttons: mask |= QMessageBox.Yes
     if "cancel" in buttons: mask |= QMessageBox.Cancel
     if mask == 0:
-        mask = QMessageBox.Okay
+        mask = QMessageBox.Ok
 
     mb.setStandardButtons(mask)
     mb.setIcon(QMessageBox.Warning)

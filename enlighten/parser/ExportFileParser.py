@@ -184,6 +184,7 @@ class ExportFileParser:
         for em in self.exported_measurements:
             self.post_process_metadata(em)
             em.processed_reading.post_load_cleanup(settings=em.settings)
+            self.ctl.horiz_roi.process(em.processed_reading)
 
             if em.processed_reading.processed is None:
                 log.critical("ignoring malformed ExportMeasurement missing processed array")

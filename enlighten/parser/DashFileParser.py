@@ -195,6 +195,10 @@ class DashFileParser:
             log.error("generate_measurement: invalid serial %s", serial)
             return
 
+        log.debug("finalizing ProcessedReading")
+        spec.dash_measurement.processed_reading.post_load_cleanup(spec.settings)
+        self.ctl.horiz_roi.process(spec.dash_measurement.processed_reading)
+
         log.debug("instantiating new Measurement")
         m = Measurement(
             ctl               = self.ctl,

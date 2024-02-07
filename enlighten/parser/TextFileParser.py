@@ -68,7 +68,8 @@ class TextFileParser:
         elif self.graph.in_wavenumbers():
             self.settings.wavenumbers = x
 
-        self.processed_reading.post_load_cleanup()
+        self.processed_reading.post_load_cleanup(self.settings)
+        self.ctl.horiz_roi.process(self.processed_reading)
 
         m = Measurement(
             ctl               = self.ctl,

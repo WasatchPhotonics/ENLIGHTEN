@@ -50,9 +50,8 @@ class ColumnFileParser:
         # put loaded data into where it goes in ENLIGHTEN datatypes
         self.post_process_metadata()
 
-        self.processed_reading.wavelengths = self.settings.wavelengths
-        self.processed_reading.wavenumbers = self.settings.wavenumbers
-        self.processed_reading.post_load_cleanup()
+        self.processed_reading.post_load_cleanup(self.settings)
+        self.ctl.horiz_roi.process(self.processed_reading)
 
         # generate a Measurement
         m = Measurement(

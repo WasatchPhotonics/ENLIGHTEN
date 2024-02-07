@@ -388,7 +388,7 @@ class Measurement:
 
         # ProcessedReading
         pr_d = wasatch_utils.dict_get_norm(d, ["ProcessedReading", "Spectrum", "Spectra"])
-        self.processed_reading = ProcessedReading(d=pr_d)
+        self.processed_reading = ProcessedReading(d=pr_d, settings=self.settings)
 
     ##
     # We presumably loaded a measurement from disk, reprocessed it, and are now
@@ -906,6 +906,18 @@ class Measurement:
     #
     # @note Only saving one column of data at this time. Make sure to
     # limit the total columns to 255 when saving multiple spectra.
+    #
+    # @par Horizontal ROI
+    #
+    # Note that the data output is a little different from 
+    # save_csv_file_by_column. This format probably should match that other 
+    # format, but right now it doesn't.
+    #
+    # A key difference is cropped (but not interpolated) ProcessedReadings. 
+    # CSV files output every PHYSICAL pixel for most fields (pixel, wavelength, 
+    # wavenumber, raw), and only substitute the "NA" for cropped values in 
+    # "processed." Instead, this currently just outputs the cropped versions of 
+    # everything.
     def save_excel_file(self):
         pr          = self.processed_reading
 
@@ -916,7 +928,8 @@ class Measurement:
         wavelengths = pr.get_wavelengths()
         wavenumbers = pr.get_wavenumbers()
 
-        pixels      = len(processed)
+        pixels      = len(wavelengths)
+        roi         = self.settings.eeprom.get_horizontal_roi()
 
         wbk = xlwt.Workbook()
         sheet_summary    = wbk.add_sheet('Summary')
@@ -953,12 +966,9 @@ class Measurement:
         first_row = 1
         row_count = 0
         for pixel in range(pixels):
-            if roi is not None and not roi.contains(pixel):
-                continue
-
             row = first_row + row_count
 
-            sheet_spectrum.write        (row, 0, pixel)
+            sheet_spectrum.write        (row, 0, pixel + roi.start if roi else pixel)
 
             if wavelengths is not None and self.ctl.save_options.save_wavelength():
                 sheet_spectrum.write    (row, 1, float(wavelengths  [pixel]), style_f2)
@@ -970,12 +980,12 @@ class Measurement:
                 sheet_spectrum.write    (row, 3, float(processed    [pixel]), style)
 
             if raw is not None and self.ctl.save_options.save_raw():
-                sheet_spectrum.write        (row, 4, float(raw      [pixel]), style)
+                sheet_spectrum.write    (row, 4, float(raw          [pixel]), style)
 
             if dark is not None and self.ctl.save_options.save_dark():
                 sheet_spectrum.write    (row, 5, float(dark         [pixel]), style)
 
-            if reference is not None and self.ctl.save_options.save_ref():
+            if reference is not None and self.ctl.save_options.save_reference():
                 sheet_spectrum.write    (row, 6, float(reference    [pixel]), style)
 
             row_count += 1

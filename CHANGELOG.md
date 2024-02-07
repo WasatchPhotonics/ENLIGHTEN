@@ -2,6 +2,9 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2023-02-07 4.0.39
+    - fixed ROI bug in Measurement.save_excel_file
+    - properly apply ROI for loaded export and columnar csv files
 - 2023-02-06 4.0.38
     - fixed load from export
     - fixed graph traces on loaded exports
