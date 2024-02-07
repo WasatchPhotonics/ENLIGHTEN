@@ -439,11 +439,10 @@ class Measurements:
         np_ys = np.asarray(ys)
 
         writer = SPCFileWriter.SPCFileWriter(file_type = file_type,
-                               experiment_type = experiment_type,
-                               x_units = x_units,
-                               y_units = y_units,
-                               log_text = log_label,
-                               )
+                                             experiment_type = experiment_type,
+                                             x_units = x_units,
+                                             y_units = y_units,
+                                             log_text = log_label)
         try:
             writer.write_spc_file(pathname, y_values = np_ys, x_values = np_xs)
             return True
@@ -786,7 +785,7 @@ class Measurements:
             elif header == "wavenumber":
                 if wavenumbers is not None and pixel < len(wavenumbers):
                     result = f"{wavenumbers[pixel]:.2f}"
-            log.debug(f"get_x_header_value: header {header}, pixel {pixel}, result {result}")
+            #log.debug(f"get_x_header_value: header {header}, pixel {pixel}, result {result}")
             return result
 
         def get_pr_header_value(m, header, pixel, pr=None):
