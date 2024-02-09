@@ -308,6 +308,7 @@ class Controller:
         log.debug("stopping all timers")
         for feature in [ self.batch_collection,
                          self.status_indicators,
+                         self.plugin_controller,
                          self.ble_manager,
                          self.logging_feature ]:
             feature.stop()
