@@ -100,7 +100,7 @@ class GainDBFeature:
         spec.settings.state.gain_db = spec.settings.eeprom.detector_gain
 
     # called by initialize_new_device a little after the other function
-    def reset(self, hotplug=False):
+    def reset(self):
         if not self.update_visibility():
             return
 
@@ -148,13 +148,17 @@ class GainDBFeature:
         self.spinbox.selectAll()
 
     def set_db(self, db):
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+
         db = float(db)
         
         # save gain_db to application state
         self.ctl.multispec.set_state("gain_db", db)
 
         # persist gain_db in .ini
-        self.ctl.config.set(self.ctl.multispec.current_spectrometer().settings.eeprom.serial_number, "gain_db", db)
+        self.ctl.config.set(spec.settings.eeprom.serial_number, "gain_db", db)
 
         # send gain update message to device
         self.ctl.multispec.change_device_setting("detector_gain", db)

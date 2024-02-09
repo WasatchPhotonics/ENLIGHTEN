@@ -30,7 +30,7 @@ class ScanAveragingFeature:
         if spec is None:
             return
 
-        self.set(spec.settings.state.scans_to_average)
+        self.set_scans_to_average(spec.settings.state.scans_to_average)
 
     def complete_registrations(self):
         self.ctl.vcr_controls.register_observer("pause", self.reset)
@@ -40,13 +40,6 @@ class ScanAveragingFeature:
     def reset(self):
         self.show_label(False)
         self.ctl.multispec.change_device_setting("reset_scan_averaging", True)
-
-    def set(self, value):
-        self.spinbox.blockSignals(True)
-        self.spinbox.setValue(value)
-        self.spinbox.blockSignals(False)
-
-        self.update_from_gui()
 
     def set_locked(self, flag):
         for w in [ self.bt_dn,
@@ -58,6 +51,10 @@ class ScanAveragingFeature:
         value = int(self.spinbox.value())
         self.ctl.multispec.set_state("scans_to_average", value)
         self.ctl.multispec.change_device_setting("scans_to_average", value)
+
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec:
+            self.ctl.config.set(spec.settings.eeprom.serial_number, "scans_to_average", value)
 
     def show_label(self, flag):
         self.label.setVisible(flag)
@@ -104,9 +101,16 @@ class ScanAveragingFeature:
         return spec.settings.state.scans_to_average > 1
 
     def set_scans_to_average(self, value):
-        value = int(value)
+        value = int(round(float(value)))
+        log.debug(f"set_scans_to_average({value})")
+
         if value != self.get_scans_to_average():
-            self.set(value)
+            log.debug(f"apply {value}")
+            self.spinbox.blockSignals(True)
+            self.spinbox.setValue(value)
+            self.spinbox.blockSignals(False)
+
+        self.update_from_gui()
 
     def get_scans_to_average(self):
         return int(self.spinbox.value())
