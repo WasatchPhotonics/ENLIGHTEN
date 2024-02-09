@@ -2120,28 +2120,17 @@ class Controller:
 
         log.debug("set_from_ini_file: done")
 
-    def update_spinBox(self, sn, widget, name):
-        if not self.config.has_option(sn, name):
-            return
+    def update_checkBox(self, sn, widget, name):
+        if self.config.has_option(sn, name):
+            widget.setChecked(self.config.get_bool(sn, name))
 
-        s = self.config.get(sn, name)
-        try:
-            widget.setValue(int(round(float(s)))) # yes, float() required for '0.0' O_o
-            return True
-        except:
-            log.error(f"update_spinbox: ignored invalid {name} {s}", exc_info=1)
+    def update_spinBox(self, sn, widget, name):
+        if self.config.has_option(sn, name):
+            widget.setValue(self.config.get_int(sn, name))
 
     def update_doubleSpinBox(self, sn, widget, name):
-        if not self.config.has_option(sn, name):
-            return
-
-        s = self.config.get(sn, name)
-        try:
-            value = float(s)
-            widget.setValue(value)
-            return True
-        except:
-            log.error(f"update_doubleSpinbox: ignored invalid {name} {s}", exc_info=1)
+        if self.config.has_option(sn, name):
+            widget.setValue(self.config.get_float(sn, name))
 
     def update_lineEdit(self, sn, widget, name):
         """
@@ -2182,13 +2171,6 @@ class Controller:
         widget.setText(value)
 
         widget.enlighten_trigger()
-
-    def update_checkBox(self, sn, widget, name):
-        if not self.config.has_option(sn, name):
-            return
-
-        value = self.config.get_bool(sn, name)
-        widget.setChecked(value)
 
     # ##########################################################################
     # X-Axis Management
