@@ -132,6 +132,7 @@ class PluginController:
         self.max_cols = 0
 
         self.next_request_id = 0
+        self.autoload = None
 
     def __init__(self, ctl,
             colors,
@@ -248,6 +249,31 @@ class PluginController:
         self.combo_module.installEventFilter(ScrollStealFilter(self.combo_module))
         self.measurement_factory.register_observer(self.events_factory_callback)
 
+        self.timer = QtCore.QTimer() 
+        self.timer.setSingleShot(True)
+        self.timer.timeout.connect(self.tick)
+
+    def start(self, ms):
+        """
+        The PluginController doesn't normally have an internal event loop (it's 
+        mostly ticked by Controller.tick_status).
+
+        However, occasionally it needs events which occur in the GUI thread, so
+        widgets can be updated. This is for that.
+        """
+        self.timer.start(ms)
+
+    def stop(self):
+        self.timer.stop()
+
+    def tick(self):
+        if self.autoload:
+            module = self.autoload
+            self.autoload = None
+            self.force_load_plugin(module)
+
+        self.timer.start(1000) # 1Hz
+
     def stub_plugin(self):
         """Create the plugins folder if it does not exist"""
         log.debug(f"starting plugin stub")
@@ -358,7 +384,7 @@ class PluginController:
         self.cancel_worker()
         self.reset_enlighten_info()
 
-    def autoload(self, module_name):
+    def force_load_plugin(self, module_name):
         if module_name not in self.module_infos:
             log.error(f"unable to autoload unknown plugin: {module_name}")
             return

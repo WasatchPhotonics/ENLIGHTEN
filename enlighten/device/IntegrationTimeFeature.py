@@ -62,7 +62,7 @@ class IntegrationTimeFeature:
         if (max_tenths * self.TENTHS_TO_SEC > self.MAX_SLIDER_SEC):
             max_tenths = self.MAX_SLIDER_SEC / self.TENTHS_TO_SEC
 
-        now_ms = self.ctl.config.get_float(self.ctl.multispec.current_spectrometer().settings.eeprom.serial_number, "integration_time_ms")
+        now_ms = self.ctl.config.get_float(spec.settings.eeprom.serial_number, "integration_time_ms")
         log.info("integration time from config: %d" % now_ms)
         
         self.slider.blockSignals(True)
@@ -109,6 +109,10 @@ class IntegrationTimeFeature:
     # the new value downstream (to one if unlocked, all if locked), plus updates states
     # appropriately.
     def set_ms(self, ms):
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+
         ms = int(ms)
 
         self.slider.blockSignals(True)
@@ -125,7 +129,7 @@ class IntegrationTimeFeature:
 
         # persist integration time in .ini
         log.debug("integration time to config: %d", ms)
-        self.ctl.config.set(self.ctl.multispec.current_spectrometer().settings.eeprom.serial_number, "integration_time_ms", ms)
+        self.ctl.config.set(spec.settings.eeprom.serial_number, "integration_time_ms", ms)
 
         # send changed integration time to hardware
         self.ctl.multispec.change_device_setting("integration_time_ms", ms)

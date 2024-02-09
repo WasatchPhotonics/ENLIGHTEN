@@ -216,7 +216,7 @@ class Configuration:
         if not self.config.has_section(section):
             self.config.add_section(section)
         self.config.set(section, key, str(value))
-        # log.debug("Configuration.set: (%s, %s, %s)", section, key, value)
+        log.debug("Configuration.set: (%s, %s, %s)", section, key, value)
 
     def save(self):
         try:
@@ -279,26 +279,29 @@ class Configuration:
     def get_bool(self, section, key, default=False):
         """ Not using ConfigParser.getboolean() because we want to support defaults. """
         if self.has_option(section, key):
-            return self.get(section, key).lower() == "true"
+            s = self.get(section, key)
+            return s.lower() in ["true", "yes", "on", "1"]
         else:
             return default
 
     def get_int(self, section, key, default=0):
         value = default
         if self.has_option(section, key):
+            s = self.get(section, key)
             try:
-                value = int(self.get(section, key))
+                value = int(round(float(s)))
             except ValueError:
-                log.error("invalid int for %s.%s got value of %s", section, key, self.get(section, key))
+                log.error(f"invalid int for {section}.{key} ({s})")
         return value
 
     def get_float(self, section, key, default=0.0):
         value = default
         if self.has_option(section, key):
             try:
-                value = float(self.get(section, key))
+                s = self.get(section, key)
+                value = float(s)
             except ValueError:
-                log.error("invalid float for %s.%s got value of %s", section, key, self.get(section, key))
+                log.error(f"invalid float for {section}.{key} ({s})")
         return value
 
     def has_section(self, section):

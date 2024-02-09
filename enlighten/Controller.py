@@ -308,6 +308,7 @@ class Controller:
         log.debug("stopping all timers")
         for feature in [ self.batch_collection,
                          self.status_indicators,
+                         self.plugin_controller,
                          self.ble_manager,
                          self.logging_feature ]:
             feature.stop()
@@ -836,12 +837,12 @@ class Controller:
             self.set_from_ini_file()
 
         ########################################################################
-        # integration time and Gain
+        # integration time and gain
         ########################################################################
 
         log.debug("configure integration time limits")
         self.integration_time_feature.reset(hotplug)
-        self.gain_db_feature.reset(hotplug)
+        self.gain_db_feature.reset()
 
         ########################################################################
         # send miscellaneous settings downstream
@@ -960,8 +961,8 @@ class Controller:
         ########################################################################
 
         if self.plugin:
-            log.info(f"Starting plugin {self.plugin} on connect")
-            self.plugin_controller.autoload(self.plugin)
+            self.plugin_controller.autoload = self.plugin
+            self.plugin_controller.start(1000)
             self.plugin = None
 
         ########################################################################
@@ -1279,7 +1280,8 @@ class Controller:
         ########################################################################       
 
         # note that we could probably do this more efficiently in an event-based
-        # manner using QSignals from PluginWorker
+        # manner using QSignals from PluginWorker. We could also encapsulate this
+        # using PluginController.timer.
         self.plugin_controller.process_responses()
 
         # We're going to tick KnowItAll from here, because we want queued
@@ -2073,6 +2075,7 @@ class Controller:
         self.update_spinBox      (sn, cfu.spinBox_integration_time_ms,               "integration_time_ms")
         self.update_spinBox      (sn, cfu.spinBox_boxcar_half_width,                 "boxcar_half_width")
         self.update_spinBox      (sn, cfu.spinBox_detector_setpoint_degC,            "detector_tec_setpoint_degC")
+        self.update_spinBox      (sn, cfu.spinBox_scan_averaging,                    "scans_to_average")
 
         # EEPROM
         #
@@ -2118,24 +2121,17 @@ class Controller:
 
         log.debug("set_from_ini_file: done")
 
+    def update_checkBox(self, sn, widget, name):
+        if self.config.has_option(sn, name):
+            widget.setChecked(self.config.get_bool(sn, name))
+
     def update_spinBox(self, sn, widget, name):
         if self.config.has_option(sn, name):
-            s = self.config.get(sn, name)
-            try:
-                widget.setValue(int(float(s))) # yes, float() required for '0.0' O_o
-                return True
-            except:
-                log.error("ignored invalid %s", exc_info=1)
+            widget.setValue(self.config.get_int(sn, name))
 
     def update_doubleSpinBox(self, sn, widget, name):
         if self.config.has_option(sn, name):
-            s = self.config.get(sn, name)
-            try:
-                value = float(s)
-                widget.setValue(value)
-                return True
-            except:
-                log.error("ignored invalid %s", exc_info=1)
+            widget.setValue(self.config.get_float(sn, name))
 
     def update_lineEdit(self, sn, widget, name):
         """
@@ -2168,18 +2164,14 @@ class Controller:
         callback to tell the EEPROMEditor to "do whatever you would normally do
         after a user manually edited that field and pressed return."
         """
-        if self.config.has_option(sn, name):
-            value = self.config.get(sn, name)
-            log.debug("Controller.update_lineEdit: setting %s to %s for %s", name, value, sn)
-            widget.setText(value)
+        if not self.config.has_option(sn, name):
+            return
 
-            # see above
-            widget.enlighten_trigger()
+        value = self.config.get(sn, name)
+        log.debug("Controller.update_lineEdit: setting %s to %s for %s", name, value, sn)
+        widget.setText(value)
 
-    def update_checkBox(self, sn, widget, name):
-        if self.config.has_option(sn, name):
-            value = ("TRUE" == self.config.get(sn, name).upper())
-            widget.setChecked(value)
+        widget.enlighten_trigger()
 
     # ##########################################################################
     # X-Axis Management

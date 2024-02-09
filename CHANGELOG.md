@@ -2,6 +2,11 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2023-02-07 4.0.40
+    - persist scans to average in enlighten.ini by serial number
+    - move PluginController.autoload to PluginController QTimer to make sure it
+      happens on GUI thread, but...previous call from initialize_new_device was 
+      already on a QTimer? Yet this seemed to fix bug?
 - 2023-02-07 4.0.39
     - fixed ROI bug in Measurement.save_excel_file
     - properly apply ROI for loaded export and columnar csv files
