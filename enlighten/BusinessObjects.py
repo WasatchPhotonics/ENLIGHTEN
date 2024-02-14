@@ -438,8 +438,6 @@ class BusinessObjects:
             colors                      = ctl.colors,
             config                      = ctl.config,
             generate_x_axis             = ctl.generate_x_axis,
-            get_last_processed_reading  = ctl.get_last_processed_reading,
-            get_settings                = ctl.settings,
             graph_scope                 = ctl.graph,
             gui                         = ctl.gui,
             marquee                     = ctl.marquee,
