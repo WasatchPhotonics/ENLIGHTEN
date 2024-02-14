@@ -2,6 +2,8 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2023-??-?? 4.0.41
+    - RamanShiftCorrection: better support for ROI, tweaked peak windows
 - 2023-02-09 4.0.40
     - Configuration cleanup
     - persist scans to average in enlighten.ini by serial number
