@@ -105,28 +105,28 @@ class Spectrometer:
         # prefer EEPROM for FWHM, or lookup from model
         if self.settings.eeprom.avg_resolution > 0:
             self.fwhm = self.settings.eeprom.avg_resolution
-            log.debug("using FWHM from EEPROM: %f", self.fwhm)
+            log.debug(f"using FWHM from EEPROM: {self.fwhm:.2f}")
         else:
             self.fwhm = ctl.model_info.model_fwhm.get_by_model(self.settings.full_model())
-            log.debug("using FWHM from lookup table: %s", self.fwhm)
+            log.debug("using FWHM from lookup table: {self.fwhm:.2f}")
 
         self.settings.eeprom_backup = copy.deepcopy(self.settings.eeprom)
 
-        self.label = "%s (%s)" % (self.settings.eeprom.serial_number, self.settings.full_model())
+        self.label = f"{self.settings.eeprom.serial_number} ({self.settings.full_model()})"
         self.converter = AxisConverter(ctl)
 
         self.closing = False
 
-        log.debug("Spectrometer: instantiated %s from device %s", self.label, self.device_id)
+        log.debug(f"Spectrometer: instantiated {self.label} from {self.device_id}")
 
     def close(self):
-        log.info("Spectrometer: closing %s", self.device_id)
+        log.info(f"Spectrometer: closing {self.device_id}")
         self.closing = True
         try:
             self.device.disconnect()
         except Exception as e:
             log.error(f"Spectrometer either does not exist or already disconnected {e}")
-        log.info("Spectrometer: closed %s", self.device_id)
+        log.info(f"Spectrometer: closed {self.device_id}")
 
     def __str__(self):
         return str(self.device_id).replace("DeviceID", "Spectrometer Object")
@@ -147,7 +147,7 @@ class Spectrometer:
     def get_fwhm(self, unit):
         unit = unit.lower()
         if unit not in ["cm", "nm", "px"]:
-            log.error("invalid fwhm unit: %s", unit)
+            log.error(f"invalid FWHM unit: {unit}")
             return
 
         # first get from EEPROM, if configured
@@ -221,7 +221,7 @@ class Spectrometer:
             timeout_ms += 10000
         future_time = datetime.datetime.now() + datetime.timedelta(milliseconds=timeout_ms)
         self.next_expected_acquisition_timestamp = future_time
-        log.debug("reset_acquisition_timeout(%s): expecting next acquisition within %d ms (by %s)", self.device_id, timeout_ms, future_time)
+        log.debug(f"reset_acquisition_timeout({self.device_id}): expecting next acquisition within {timeout_ms}  ms (by {future_time})")
 
     ## send commands to device subprocess via (name, value) pickleable tuples
     def change_device_setting(self, setting, value=0):
@@ -229,7 +229,7 @@ class Spectrometer:
             return
 
         device_id = self.device.device_id
-        log.info("change_device_setting[%s]: %s -> %s", device_id, setting, value)
+        log.info(f"change_device_setting[{device_id}]: {setting} -> {value}")
         self.device.change_setting(setting, value)
 
     def is_mock(self) -> bool:
