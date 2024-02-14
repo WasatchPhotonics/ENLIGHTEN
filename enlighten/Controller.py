@@ -358,10 +358,6 @@ class Controller:
     def current_spectrometer(self):
         return self.multispec.current_spectrometer() if self.multispec else None
 
-    def settings(self):
-        spec = self.current_spectrometer()
-        return spec.settings if spec else None
-
     def app_state(self):
         spec = self.current_spectrometer()
         return spec.app_state if spec else None
@@ -1142,7 +1138,7 @@ class Controller:
         # (Why does this need to be done?  Isn't the EEPROMEditor initialized
         # FROM the EEPROM object, and any changes to the EEPROMEditor fields
         # updated to the EEPROM object as a matter of course.)
-        ee = self.settings().eeprom
+        ee = spec.settings.eeprom
         ee.detector_gain       = cfu.doubleSpinBox_ee_detector_gain      .value()
         ee.detector_gain_odd   = cfu.doubleSpinBox_ee_detector_gain_odd  .value()
         ee.detector_offset     = cfu.      spinBox_ee_detector_offset    .value()
@@ -1172,8 +1168,7 @@ class Controller:
             return
 
         enabled = cfu.checkBox_graph_alternating_pixels.isChecked()
-
-        self.settings().state.graph_alternating_pixels = enabled
+        spec.settings.state.graph_alternating_pixels = enabled
         spec.change_device_setting("graph_alternating_pixels", enabled)
 
     # ##########################################################################
@@ -1600,12 +1595,6 @@ class Controller:
         elif msg.setting == "marquee_error":
             self.marquee.toast(msg.value) # could add error window type
 
-        elif msg.setting == "detector_regions":
-            settings = self.settings()
-            if settings is not None:
-                log.debug(f"applying DetectorRegions from StatusMessage: {msg.value}")
-                settings.state.detector_regions = msg.value
-
         else:
             log.debug("unsupported StatusMessage: %s", msg.setting)
 
@@ -1615,22 +1604,21 @@ class Controller:
     #                                                                          #
     # ##########################################################################
 
-    def get_last_reading(self):
-        return self.app_state().processed_reading.reading
-
     def refresh_scope_graphs(self):
         self.update_scope_graphs()
 
     # called by attempt_reading
     def update_scope_graphs(self, reading=None):
-        app_state = self.app_state()
+        spec = self.multispec.current_spectrometer()
+        if spec is None:
+            return
 
         log.debug("update_scope_graphs: reading %d", reading.session_count)
 
         # if we weren't handed a fresh reading, just re-process the last one
-        if reading is None and app_state.processed_reading.reading:
+        if reading is None and spec.app_state.processed_reading.reading:
             log.debug("update_scope_graphs: re-processing last reading")
-            reading = app_state.processed_reading.reading
+            reading = spec.app_state.processed_reading.reading
 
         if reading is None or reading.spectrum is None:
             log.debug(f"update_scope_graphs: reading {reading} empty")
@@ -1729,8 +1717,8 @@ class Controller:
                 settings = spec.settings
             else:
                 # is this a use-case?
-                log.debug("process_reading: wasn't passed either settings or spec?")
-                settings = self.settings()
+                log.error("process_reading: wasn't passed either settings or spec?")
+                return
         else:
             # we are reprocessing
             reprocessing = True
@@ -1859,7 +1847,9 @@ class Controller:
         # Boxcar Smoothing
         ########################################################################
 
-        # One could argue whether boxcar should be before or after interpolation
+        # One could argue whether boxcar should be before or after interpolation;
+        # however, it currently calls ProcessedReading.set_processed which does
+        # NOT update .interpolated, so for now it must remain before.
         self.boxcar.process(pr, spec)
 
         ########################################################################
@@ -2011,12 +2001,6 @@ class Controller:
         if spec.app_state and spec.app_state.processed_reading:
             return spec.app_state.processed_reading
         return None
-
-    def get_last_processed_spectrum(self):
-        pr = self.get_last_processed_reading()
-        if not pr:
-            return
-        return pr.get_processed()
 
     # ##########################################################################
     #                                                                          #

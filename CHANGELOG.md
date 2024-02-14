@@ -2,6 +2,9 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2023-02-14 4.0.41 ❤️
+    - RamanShiftCorrection: better support for ROI, tweaked peak windows
+    - updated to Tensorflow 2.13.1
 - 2023-02-09 4.0.40
     - Configuration cleanup
     - persist scans to average in enlighten.ini by serial number

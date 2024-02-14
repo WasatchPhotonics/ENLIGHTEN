@@ -12,7 +12,7 @@ spc_spectra
 libusb 
 seabreeze 
 boto3 
-tensorflow==2.13
+tensorflow==2.13.1
 bleak 
 pyftdi 
 adafruit-blinka

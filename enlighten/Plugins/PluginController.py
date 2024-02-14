@@ -138,8 +138,6 @@ class PluginController:
             colors,
             config,             # enlighten.Configuration
             generate_x_axis,
-            get_last_processed_reading,
-            get_settings,
             graph_scope,        # enlighten.Graph object associated with Scope Capture primary pyqtgraph
             gui,
             marquee,
@@ -175,8 +173,6 @@ class PluginController:
         self.colors                     = colors
         self.config                     = config
         self.generate_x_axis            = generate_x_axis
-        self.get_last_processed_reading = get_last_processed_reading
-        self.get_settings               = get_settings
         self.graph_scope                = graph_scope
         self.gui                        = gui
         self.marquee                    = marquee
@@ -568,11 +564,15 @@ class PluginController:
     # "please process the current spectrum".
     def button_process_callback(self):
         log.debug("user pressed process button")
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None or spec.app_state is None:
+            return
+        pr = spec.app_state.processed_reading
+        if pr is None:
+            return
+    
         self.button_process.setEnabled(False)
-        pr = self.get_last_processed_reading()
-        settings = self.get_settings()
-        spec = self.multispec.current_spectrometer()
-        self.process_reading(pr, settings, spec, manual=True)
+        self.process_reading(pr, spec.settings, spec, manual=True)
 
     # ##########################################################################
     # PluginWorker

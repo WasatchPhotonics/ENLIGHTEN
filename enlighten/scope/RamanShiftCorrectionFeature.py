@@ -36,6 +36,9 @@ class ASTMPeak:
         self.intensity = intensity
         self.primary = primary 
 
+    def __repr__(self):
+        return f"ASTMPeak <{self.wavenumber:.1f}cm⁻¹, intensity {self.intensity}, primary {self.primary}>"
+
 ################################################################################
 #                                                                              #
 #                           RamanShiftCorrectionFeature                        #
@@ -234,13 +237,13 @@ class RamanShiftCorrectionFeature:
 
                 is_primary = False
                 if "Primary" in rec:
-                    is_primary = rec["Primary"]
+                    is_primary = rec["Primary"] # json library converts to bool 
 
                 intensity = 5
                 if "Intensity" in rec:
                     intensity = rec["Intensity"]
 
-                compound.peaks.append(ASTMPeak(wavenumber, intensity, is_primary))
+                compound.peaks.append(ASTMPeak(wavenumber, intensity, primary=is_primary))
 
         # self.log_astm()
         return True
@@ -252,7 +255,7 @@ class RamanShiftCorrectionFeature:
             compound = self.astm_compounds[name]
             log.debug("  %s", compound.name)
             for peak in compound.peaks:
-                log.debug("    %6.1f (relative intensity %d, primary %s)", peak.wavenumber, peak.intensity, peak.primary)
+                log.debug(f"    {peak}")
 
     # ##########################################################################
     # ASTM Curve
@@ -302,8 +305,11 @@ class RamanShiftCorrectionFeature:
             self.curve.setData([])
             return
             
-        max_intensity = max(pr.processed)
-        min_intensity = min(pr.processed)
+        spectrum = pr.get_processed()
+        wavenumbers = pr.get_wavenumbers()
+
+        max_intensity = max(spectrum)
+        min_intensity = min(spectrum)
         # log.debug("min = %d, max = %d", min_intensity, max_intensity)
 
         if len(compound.peaks) == 0:
@@ -312,8 +318,8 @@ class RamanShiftCorrectionFeature:
 
         # relative intensity of 5 should match top of last spectrum
         scalar = (max_intensity - min_intensity) / 5.0 
-        x_min_cm = spec.settings.wavenumbers[0]
-        x_max_cm = spec.settings.wavenumbers[-1]
+        x_min_cm = wavenumbers[0]
+        x_max_cm = wavenumbers[-1]
 
         ########################################################################
         # build spectrum
@@ -322,7 +328,7 @@ class RamanShiftCorrectionFeature:
         y = []
         x = []
 
-        PEAK_HALF_WIDTH = 1     # cm-1...take from ModelInfo?  Note this is NOT FWHM...it's at the base
+        PEAK_HALF_WIDTH = spec.fwhm/2 if spec.fwhm else 1     
         BASE = min_intensity 
 
         # beginning of range
@@ -405,110 +411,74 @@ class RamanShiftCorrectionFeature:
         ########################################################################
 
         log.debug("starting wavenumber_correction")
-        wavenumbers = [x - spec.settings.state.wavenumber_correction for x in spec.settings.wavenumbers]
-            
+
+        spectrum = pr.get_processed()
+        wavenumbers = pr.get_wavenumbers()
+        wavelengths = pr.get_wavelengths()
+
+        log.debug(f"using processed spectrum of {len(spectrum)} pixels from ({wavenumbers[0]:.2f}, {wavenumbers[-1]:.2f}cm⁻¹)")
+
         ########################################################################
         # peakfinding
         ########################################################################
 
         # Compute min threshold between peaks in pixel space, using compound 
-        # data and spectrometer's average wavenumber/pixel resolution.  Also
-        # grab primary peak index.
+        # data and spectrometer's average wavenumber/pixel resolution. 
         cm_per_px = (wavenumbers[-1] - wavenumbers[0]) / spec.settings.pixels()
         log.debug("spec has %.2f cm/px", cm_per_px)
 
-        peak_cms = [peak.wavenumber for peak in compound.peaks]
-        peak_cms.sort()
-        min_gap_cm = None
-        for i in range(len(peak_cms)):
-            if i + 1 < len(peak_cms):
-                gap_cm = peak_cms[i+1] - peak_cms[i]
-                if min_gap_cm is None:
-                    min_gap_cm = gap_cm
-                elif min_gap_cm > gap_cm:
-                    min_gap_cm = gap_cm
-        if min_gap_cm is None:
-            log.error("couldn't determine min_gap_cm for %s", self.compound_name)
-            return
-        gap_px = round(0.5 * min_gap_cm / cm_per_px)
-        log.debug("min_gap_cm %.2f at %.2f cm/px implies gap_px of %d px", min_gap_cm, cm_per_px, gap_px)
-
-        spec = self.multispec.current_spectrometer()
-
         if not hasattr(spec, "fwhm") or not spec.fwhm:
             spec.fwhm = 3
-            log.debug(f"unspecified FWHM")
+            log.debug(f"unspecified FWHM, defaulting to {spec.fwhm}")
         width_px = round(spec.fwhm / cm_per_px)
         log.debug(f"using FWHM {spec.fwhm} (width {width_px}px)")
 
-        found_peak_indices_orig, _ = signal.find_peaks(
-            x            = pr.processed,
+        found_peak_indices, _ = signal.find_peaks(
+            x            = spectrum,
             height       = None, 
             threshold    = None, 
             distance     = None,            # gap_px
             prominence   = 200,             # https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.peak_prominences.html#scipy.signal.peak_prominences
-            width        = width_px,     
+            width        = [ 0.5 * width_px, 2 * width_px ],
             wlen         = None, 
             rel_height   = 0.5,  
             plateau_size = None)
 
-        # prune to indices within our ROI
-        cm_min = wavenumbers[0]
-        cm_max = wavenumbers[-1]
-        if spec.settings.eeprom.has_horizontal_roi():
-            roi = spec.settings.eeprom.get_horizontal_roi()
-            if roi.valid():
-                cm_min = wavenumbers[roi.start]
-                cm_max = wavenumbers[roi.end]
-        log.debug(f"using ROI ({cm_min:.2f}, {cm_max:.2f}cm-1)")
-
-        found_peak_indices = []
-        for i in found_peak_indices_orig:
-            keep = False
-            cm = wavenumbers[i]
-            if cm_min <= cm <= cm_max:
-                keep = True
-                found_peak_indices.append(i)
-            log.debug(f"  pixel {i:4d}: wavenumber {cm:.2f} (intensity {pr.processed[i]:.2f}, {keep})")
-
-        log.debug(f"scipy.signal.find_peaks Found {len(found_peak_indices_orig)} peaks, pruned to {len(found_peak_indices)} within ROI")
+        log.debug(f"found the following {len(found_peak_indices)} peaks within the measured spectrum of {len(spectrum)} pixels from ({wavenumbers[0]:.2f}, {wavenumbers[-1]:.2f}cm)")
+        for px in found_peak_indices:
+            log.debug(f"  pixel {px:4d}: wavenumber {wavenumbers[px]:.2f} (intensity {spectrum[px]:.2f})")
+        log.debug(f"spectrum: {list(spectrum)}")
+        log.debug(f"wavenumbers: {list(wavenumbers)}")
 
         if len(found_peak_indices) > self.MAX_PEAKS_FOUND:
-            self.marquee.error("Sample is too peaky...ensure laser firing, increase integration or consider boxcar")
+            self.marquee.error("Sample is too peaky...ensure laser on, increase integration time or enable boxcar")
             return
         elif len(found_peak_indices) < self.MIN_PEAKS_FOUND:
-            self.marquee.error(f"failed to find sufficient ASTM peaks ({len(found_peak_indices)} < {self.MIN_PEAKS_FOUND})")
+            self.marquee.error(f"failed to find sufficient peaks ({len(found_peak_indices)} < {self.MIN_PEAKS_FOUND}), increase integration time")
             return
 
         ########################################################################
         # see how many ASTM peaks we can match
         ########################################################################
 
-        # "shift" means "how much shift should we ADD to correct discrepancy"
+        # "shift" = "Raman shift in wavenumbers ADDED to correct discrepancy"
 
         # make a list of the found peak wavenumbers
-        found_peak_cms = [wavenumbers[x] for x in found_peak_indices]
+        found_peak_cms = [wavenumbers[px] for px in found_peak_indices]
 
         matched_peak_indices = []
         total_shift_cm = 0
         total_shift_nm = 0
         visible_peaks = 0
 
+        # iterate through the EXPECTED ASTM compound peaks, trying to match each
+        # against the closest MEASURED spectrum peak.
         for peak in compound.peaks:
-            log.debug("trying to match ASTM peak %.2f cm-1", peak.wavenumber)
+            log.debug(f"trying to match {peak}")
 
             if peak.wavenumber <= wavenumbers[0] or peak.wavenumber >= wavenumbers[-1]:
-                log.debug("can't see...ignoring")
+                log.debug("  can't see...ignoring")
                 continue
-
-            if spec.settings.eeprom.has_horizontal_roi():
-                roi = spec.settings.eeprom.get_horizontal_roi()
-                if roi.valid():
-                    start_cm = wavenumbers[roi.start]
-                    end_cm = wavenumbers[roi.end]
-                    if peak.wavenumber <= start_cm or peak.wavenumber >= end_cm:
-                        log.debug("outside ROI...ignoring")
-                        continue
 
             visible_peaks += 1
 
@@ -520,8 +490,8 @@ class RamanShiftCorrectionFeature:
             measured_px = found_peak_indices[index]
 
             # experimental: recompute measured_cm via parabolic approximation
-            measured_cm, _ = wasatch_utils.parabolic_approximation(measured_px, x=wavenumbers, y=pr.processed)
-            measured_nm, _ = wasatch_utils.parabolic_approximation(measured_px, x=spec.settings.wavelengths, y=pr.processed)
+            measured_cm, _ = wasatch_utils.parabolic_approximation(measured_px, x=wavenumbers, y=spectrum)
+            measured_nm, _ = wasatch_utils.parabolic_approximation(measured_px, x=wavelengths, y=spectrum)
 
             # what's our offset in cm (expected - measured)
             shift_cm = peak.wavenumber - measured_cm
@@ -529,20 +499,22 @@ class RamanShiftCorrectionFeature:
             peak_wavelength = wasatch_utils.wavenumber_to_wavelength(spec.settings.excitation(), peak.wavenumber)
             shift_nm = peak_wavelength - measured_nm
 
+            log.debug(f" closest match to ASTM peak {peak.wavenumber:.2f}cm⁻¹ was found at measured_cm {measured_cm:.2f}cm⁻¹, a shift of {shift_cm:.2f}cm⁻¹")
+
             # was this match "good enough"?
             if abs(shift_cm) > self.MAX_WAVENUMBER_SHIFT:
 
                 # it's okay to fail to match any one ASTM peak...
-                log.debug(f"failed to match ASTM peak {shift_cm:.2f}cm-1 to any declared peak in the measurement")
+                log.debug(f"failed to find {peak} in the spectrum")
                 if not peak.primary:
                     continue
 
                 # ...but not the primary
-                self.marquee.error("failed to match primary ASTM peak at {shift_cm:.2f}cm⁻¹")
+                self.marquee.error(f"failed to match primary ASTM peak at {peak.wavenumber:.1f}cm⁻¹")
                 return
 
-            log.debug(f"  peak {peak.wavenumber:.2f}cm-1 found on pixel {measured_px} ({measured_cm:.2f}cm-1, {measured_nm:.2f}nm), "
-                    + f"for shift of {shift_cm:.2f}cm-1 ({shift_nm:.2f}nm)")
+            log.debug(f"  peak {peak.wavenumber:.2f}cm-1 found on pixel {measured_px} ({measured_cm:.2f}cm⁻¹, {measured_nm:.2f}nm), "
+                    + f"for shift of {shift_cm:.2f}cm⁻¹ ({shift_nm:.2f}nm)")
 
             total_shift_cm += shift_cm
             total_shift_nm += shift_nm
