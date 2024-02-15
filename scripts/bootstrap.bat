@@ -72,6 +72,18 @@ if "%1" == "ui" (
     goto args_parsed
 )
 
+if "%1" == "help" (
+    echo options are:
+    echo   activate
+    echo   innosetup
+    echo   pyinstaller
+    echo   refreshdep
+    echo   oneshot
+    echo   ui
+    echo   test
+    goto:eof
+)
+
 REM DEFINE CUSTOM ACTION HERE
 if "%1" == "custom" (
     set "rebuild_env=0"
@@ -226,7 +238,7 @@ if "%update_conda%" == "1" (
     conda update -q conda
     if %errorlevel% neq 0 goto script_failure
 )
-     
+
 if "%rebuild_env%" == "1" (
     echo.
     echo %date% %time% ======================================================
@@ -234,7 +246,7 @@ if "%rebuild_env%" == "1" (
     echo %date% %time% ======================================================
     echo.
     conda env remove -n conda_enlighten3
-    REM SB: Do not errout if the env is already deleted, could be from 
+    REM SB: Do not errout if the env is already deleted, could be from
     REM previous partial run.
 )
 
@@ -256,7 +268,7 @@ if "%rebuild_env%" == "1" (
     echo.
     del /f /q environment.yml
     copy environments\conda-win10.yml environment.yml
-    conda env create -n conda_enlighten3 
+    conda env create -n conda_enlighten3
 )
 
 echo.
@@ -297,7 +309,7 @@ if "%install_python_deps%" == "1" (
     python -m pip install -r requirements.txt
     REM Bootstrap bat is meant to make a windows installer
     REM because of this separately install pywin32 since it's only meant for windows
-    pip install pywin32 
+    pip install pywin32
     if %errorlevel% neq 0 goto script_failure
 )
 
@@ -320,7 +332,7 @@ if "%log_conf_pkg%" == "1" (
     echo %date% %time% Logging Conda packages
     echo %date% %time% ======================================================
     echo.
-    cmd /c "conda list --explicit" 
+    cmd /c "conda list --explicit"
     if %errorlevel% neq 0 goto script_failure
 
     echo.
@@ -328,7 +340,7 @@ if "%log_conf_pkg%" == "1" (
     echo %date% %time% Logging Pip packages
     echo %date% %time% ======================================================
     echo.
-    pip freeze 
+    pip freeze
     if %errorlevel% neq 0 goto script_failure
 )
 
