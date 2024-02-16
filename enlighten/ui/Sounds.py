@@ -2,6 +2,8 @@ import logging
 import time
 import os
 
+from enlighten.util import unwrap
+
 log = logging.getLogger(__name__)
 
 # import audio library where available
@@ -54,10 +56,11 @@ class Sounds:
 
         # bindings
         self.cb_enable.stateChanged.connect(self.enable_callback)
-        self.cb_enable.setWhatsThis("Some users like sound effects. Who knew?\n\n" +
-                                    "(Also, some laser safety protocols may require " +
-                                    "audible as well as visual feedback of potentially " +
-                                    "hazardous events.)")
+        self.cb_enable.setWhatsThis(unwrap("""
+            Some users like sound effects. Who knew?
+
+            (Also, some laser safety protocols may require audible as well as 
+            visual feedback of potentially hazardous events.)"""))
 
         # initialization
         self.cb_enable.setChecked(self.ctl.config.get_bool("sound", "enable"))

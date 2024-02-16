@@ -99,9 +99,18 @@ class Cursor:
         self.cb_enable.setChecked(False)
 
         # add Cursor to Graph
-        # self.ctl.graph.cursor = self
         self.ctl.graph.register_observer("change_axis", self.change_axis_callback)
 
+        for widget in [ self.cb_enable, self.ds_value, cfu.pushButton_cursor_up, cfu.pushButton_cursor_dn ]:
+            widget.setWhatsThis(util.unwrap("""
+                The cursor provides a vertical red line on the graph which may be
+                moved horizontally to visually indicate an x-coordinate on the 
+                current graph axis. The current x-coordinate is displayed on the
+                Detector Control widget, and the y-value (intensity, absorbance 
+                etc) is displayed on the Status Bar at the bottom of the screen.
+                You can also move the cursor with the keyboard using ctrl-left 
+                and ctrl-right."""))
+            
     def register_observer(self, callback):
         self.observers.append(callback)
 

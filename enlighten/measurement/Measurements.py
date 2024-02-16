@@ -58,6 +58,16 @@ class Measurements:
         cfu.pushButton_resize_captures     .clicked    .connect(self.resize_callback)
         cfu.pushButton_resort_captures     .clicked    .connect(self.resort_callback)
 
+        cfu.pushButton_erase_captures      .setWhatsThis("Erase the current Clipboard, without deleting any files from disk")
+        cfu.pushButton_scope_capture_load  .setWhatsThis("Load spectra from disk for display on the graph")
+        cfu.pushButton_resize_captures     .setWhatsThis("Expand or collapse the Clipboard thumbnails for simplified viewing")
+        cfu.pushButton_resort_captures     .setWhatsThis("Switch the order of Clipboard spectra, changing whether new spectra are added at the top (default) or bottom")
+        cfu.pushButton_export_session      .setWhatsThis(util.unwrap("""
+            Save all spectra on the Clipboard to a single file. The export file 
+            may be CSV, JSON and/or SPC as configured in Save Options. You will 
+            be prompted to either export all Clipboard measurements, or just those
+            currently displayed on the graph."""))
+
         # Drop an expanding spacer into the layout, which will force all
         # ThumbnailWidgets to hold a fixed size and align at one end.  (Could
         # this not be done in Designer?)

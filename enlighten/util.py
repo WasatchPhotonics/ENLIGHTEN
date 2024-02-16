@@ -82,7 +82,39 @@ def determine_encoding(pathname: str) -> str:
     except:
         # if it's not utf-8 or utf-8-sig we'll just assume it's using Central and Eastern Europe encoding
         return "iso8859_2"
-         
+
+def unwrap(s):
+    result = None
+    for line in s.split("\n"):
+        line = line.strip()
+        if line == "":
+            if result:
+                result += "\n\n"
+            else:
+                continue
+        else:
+            if result:
+                if not result.endswith("\n"):
+                    result += " "
+                result += line
+            else:
+                result = line
+    return result
+
+def undent(s):
+    result = ""
+    for line in s.split("\n"):
+        line = line.strip()
+        if line == "":
+            if result:
+                result += "\n"
+            else:
+                continue
+        else:
+            if result:
+                result += "\n"
+            result += line
+    return result
 
 ################################################################################
 # File Helpers

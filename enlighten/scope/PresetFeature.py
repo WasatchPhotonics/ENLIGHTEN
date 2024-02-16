@@ -2,6 +2,7 @@ import logging
 import re
 
 from enlighten import common
+from enlighten.util import unwrap
 
 if common.use_pyside2():
     from PySide2 import QtWidgets
@@ -71,6 +72,16 @@ class PresetFeature:
 
         self.combo.currentIndexChanged.connect(self.combo_callback)
         self.combo.installEventFilter(ScrollStealFilter(self.combo))
+
+        self.combo.setToolTip("Save, restore or delete acquisition parameter presets")
+        self.combo.setWhatsThis(unwrap("""
+            Create presistent 'presets' of acquisition parameters (integration time, 
+            gain, scan averaging, boxcar, baseline correction, even plugin settings)
+            which you can quickly switch between and re-use across application sessions.
+
+            Create new presets by configuring your measurement parameters in ENLIGHTEN,
+            then selecting 'Create New'. Remove existing presets by selecting the preset,
+            then choosing 'Remove' (you will be prompted to confirm the deletion)."""))
 
     def load_config(self):
         """ Load all previously created presets from enlighten.ini / Configuration """

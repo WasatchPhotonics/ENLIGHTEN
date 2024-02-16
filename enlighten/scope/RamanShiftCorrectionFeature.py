@@ -4,6 +4,7 @@ import json
 import scipy.signal as signal
 import numpy as np
 
+from enlighten.util import unwrap
 from wasatch import utils as wasatch_utils
 
 log = logging.getLogger(__name__)
@@ -143,6 +144,28 @@ class RamanShiftCorrectionFeature:
         self.cb_visible .stateChanged           .connect(self.checkbox_callback)
 
         self.update_visibility()
+
+        self.button.setWhatsThis(unwrap("""
+            Apply ASTM 1840-96 (2014) Raman shift correction to the active 
+            wavenumber axis. Use the Settings view to select an approved ASTM 
+            1840-96 compound, place it in the sample holder, and enable the laser
+            to generate a dark-corrected Raman spectrum. 
+
+            You can optionally enable a visual overlay of the 'expected' Raman 
+            peak for the selected sample, as a 'sanity-check' against your current 
+            x-axis.
+
+            When you can see the measured Raman spectrum on-screen, click this 
+            button to generate an "averaged offset" between the measured peaks 
+            and expected peak values. This offset will be automatically used to 
+            optimize your x-axis values in wavenumber space. 
+
+            Note this is a 'session' correction performed at runtime which is 
+            deliberately not stored in the enlighten.ini file or spectrometer 
+            EEPROM. The point of this correction is to make a snapshot, 
+            instantaneous correction to account for prevailing temperature, air 
+            pressure, humidity etc, and therefore storing it over time would be 
+            counter-productive."""))
 
     ## @returns sorted list of configured ASTM compound names
     def get_names(self):
