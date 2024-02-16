@@ -2,6 +2,7 @@ import logging
 from datetime import datetime, timedelta
 
 from wasatch.TakeOneRequest import TakeOneRequest
+from enlighten.util import unwrap
 
 log = logging.getLogger(__name__)
 
@@ -31,6 +32,24 @@ class AutoRamanFeature:
         self.ctl.vcr_controls.register_observer("play",  self.update_visibility)
 
         self.cb_enable.clicked.connect(self.enable_callback)
+        self.cb_enable.setWhatsThis(unwrap("""
+            Auto-Raman provides one-click collection of an averaged, dark-corrected
+            Raman measurement.
+
+            This feature is somewhat hazardous as it involves automonously enabling
+            the laser, so please read the ENLIGHTEN documentation before enabling it.
+
+            The feature is only available when the spectrometer is "paused" in the
+            VCR controls.
+
+            Clicking the button will store an averaged dark (first clearing any
+            existing dark measurement), then enable the laser, wait a configured
+            "warmup" time for the laser to stabilize, take an averaged Raman 
+            sample measurement, disable the laser, and perform dark correction.
+
+            Auto-Raman measurements are taken using the "Step" and "Step-and-Save"
+            buttons on the VCR toolbar.
+            """))
 
         self.update_visibility()
 

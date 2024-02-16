@@ -2458,7 +2458,7 @@ QComboBox QListView
                 </property>
                 <property name="icon">
                  <iconset resource="grey_icons.qrc">
-                  <normaloff>:/greys/images/grey_icons/arrow-question.svg</normaloff>:/greys/images/grey_icons/arrow-question.svg</iconset>
+                  <normaloff>:/greys/images/grey_icons/arrow-info.svg</normaloff>:/greys/images/grey_icons/arrow-inf.svg</iconset>
                 </property>
                 <property name="iconSize">
                  <size>

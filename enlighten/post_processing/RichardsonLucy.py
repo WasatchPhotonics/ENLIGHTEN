@@ -2,6 +2,8 @@ import logging
 import numpy as np
 import math
 
+from enlighten.util import unwrap
+
 log = logging.getLogger(__name__)
 
 ##
@@ -36,6 +38,16 @@ class RichardsonLucy:
 
         self.cb_enable.toggled.connect(self.update_from_gui)
         self.cb_enable.setToolTip("apply Richardson-Lucy focal deconvolution")
+        self.cb_enable.setWhatsThis(unwrap("""
+            Peak Sharpening uses the Richardson-Lucy algorithm to apply
+            a physics-based sharpening deconvolution to spectral peaks,
+            essentially correcting for detector pixel spacing and non-linearities
+            in the wavelength calibration to normalize optical resolution
+            across the detector.
+
+            That said, it is an experimental feature and currently only 
+            recommended for advanced users who understand its limitations
+            and limited scope of applicability."""))
 
         # ModelInfo may not have "ideal" FHWM for each unit (nm, cm-1, px etc)
         # for each spectrometer, so if we change the x-axis unit, determine if

@@ -1,6 +1,7 @@
 import logging
 
 from wasatch.ProcessedReading import ProcessedReading
+from enlighten.util import unwrap
 
 log = logging.getLogger(__name__)
 
@@ -77,6 +78,31 @@ class HorizROIFeature:
 
         self.button.clicked.connect(self.button_callback)
         self.cb_editing.stateChanged.connect(self.cb_editing_callback)
+
+        self.button.setWhatsThis(unwrap("""
+            Most Wasatch Photonics spectrometes will come with a factory-configured
+            "horizontal region of interest" (ROI) which crops the full detector
+            down to the pixels which have been quality-tested to provide the best
+            signal and calibrated performance. When your spectrometer has a configured
+            ROI, you will get the best data quality by leaving it enabled.
+
+            In particular, Raman spectrometers with a NIST SRM calibration will only
+            allow Raman Intensity Correction to be enabled when the ROI is in effect.
+            This is because NIST Standard Reference Materials are only certified for
+            a specific spectral range, and therefore the generated calibration 
+            coefficients are only accurate within that range. Applying correction
+            factors extrapolated outside the ROI could yield invalid data, which is
+            why the ROI requirement is enforced when using Ramain Intensity Correction.
+
+            For clarity, the on-screen ROI button is left grey (a neutral, happy,
+            unalarming tone) when the ROI feature is ENABLED (the default), and the
+            ROI button is colored red (scary, dangerous, something unusual happening
+            here) when the ROI is DISABLED (showing the full detector spectrum).
+
+            When spectra are saved to CSV with ROI enabled, the "processed" column
+            will show "NA" (not applicable) for pixels outside the ROI. However, the
+            "raw" column will always contain the full detector data for your 
+            verification."""))
 
         self.update_visibility()
 
