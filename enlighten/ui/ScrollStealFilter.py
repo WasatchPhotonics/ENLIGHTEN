@@ -16,8 +16,8 @@ class ScrollStealFilter(QObject):
     the widget, but should not trigger inadvertent events when you've simply
     "scrolled past" the widget within a QScrollArea.
 
-    In contrast, MouseWheelFilter prevents the mouse-wheel from ever affecting
-    the widget (appropriate for QVerticalSliders).
+    In contrast, the similar class MouseWheelFilter prevents the mouse-wheel from
+    EVER affecting the widget (appropriate for QVerticalSliders).
 
     @see https://stackoverflow.com/questions/5821802/qspinbox-inside-a-qscrollarea-how-to-prevent-spin-box-from-stealing-focus-when
     @see https://doc.qt.io/qtforpython/overviews/eventsandfilters.html
@@ -26,7 +26,7 @@ class ScrollStealFilter(QObject):
         super().__init__(parent)
 
     def eventFilter(self, o: QObject, e: QEvent):
-        if e.type() == QEvent.Wheel: # and not o.hasFocus():
+        if e.type() == QEvent.Wheel:
             e.ignore()
             return True
         return False

@@ -140,6 +140,14 @@ class PageNavigation:
         self.stack_main         = cfu.stackedWidget_low
         self.combo_technique    = cfu.technique_comboBox
 
+        self.button_raman       .setWhatsThis("Switch to Raman technique, which enables Raman-relevant features in the Control Palette.")
+        self.button_non_raman   .setWhatsThis("Switch to non-Raman techniques (absorbance, reflectance etc) which hides Raman-only features in the Control Palette.")
+        self.button_expert      .setWhatsThis("Enable access to all features and options, whether they seem relevant to your spectrometer or not.\n\n" +
+                                              "Also enables access to some 'experimental features' still in development.\n\n" +
+                                              "Intended for advanced users who know what they are doing. Use at your own risk.")
+        self.combo_view         .setWhatsThis("Switch between various ENLIGHTEN views to access different types of product features.")
+        self.combo_technique    .setWhatsThis("Select between various non-Raman techniques, each providing distinct spectral processing and options.")
+
         self.operation_mode = common.OperationModes.RAMAN
         self.current_view = -1 
         self.has_used_raman = False
