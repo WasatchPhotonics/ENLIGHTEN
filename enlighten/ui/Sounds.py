@@ -17,8 +17,9 @@ class Sounds:
     Encapsulates ENLIGHTEN's limited audio capabilities.
     
     @note At this time, we only support sound on Windows 
-    """
 
+    @todo Allow user sound overrides in EnlightenSpectra/sounds (basename = event)
+    """
     PATH = "enlighten/assets/example_data/sounds"
 
     def clear(self):
@@ -42,19 +43,23 @@ class Sounds:
         self.min_interval_sec = 3
 
         # find all supported audio files
-        log.debug("searching for sounds in %s", self.PATH)
+        log.debug(f"searching for sounds in {self.PATH}")
         for root, _, files in os.walk(self.PATH):
-            for filename in files:
+            for filename in sorted(files):
                 name, ext = os.path.splitext(filename)
                 ext = ext[1:] # trim period
                 if ext in ["wav", "flac", "m4a", "mp3", "aiff"]:
                     pathname = os.path.join(root, filename)
                     name = name.lower()
                     self.sounds[name] = Sound(pathname, parent=self)
-                    # log.debug("found %s -> %s", name, pathname)
+                    log.debug(f"found sound {name} -> {pathname}")
 
         # bindings
         self.cb_enable.stateChanged.connect(self.enable_callback)
+        self.cb_enable.setWhatsThis("Some users like sound effects. Who knew?\n\n" +
+                                    "(Also, some laser safety protocols may require " +
+                                    "audible as well as visual feedback of potentially " +
+                                    "hazardous events.)")
 
         # initialization
         self.cb_enable.setChecked(self.ctl.config.get_bool("sound", "enable"))
@@ -87,19 +92,18 @@ class Sounds:
 
     def play(self, name, repeat=True):
         if not self.is_enabled():
-            log.debug("silencing %s", name)
             return
 
-        if self.last_sound_start is not None:
-            now = time.time()
-            interval_sec = abs(int(now - self.last_sound_start))
-            if interval_sec < self.min_interval_sec:
-                log.debug("too soon for new sound %s (last was %s at %s, only %d sec)", name, self.last_sound_name, self.last_sound_start, interval_sec)
-                return
-            else:
-                log.debug("okay to start new sound (now %s is %d sec after %s)", now, interval_sec, self.last_sound_start)
-        else:
-            log.debug("first sound")
+        # if self.last_sound_start is not None:
+        #     now = time.time()
+        #     interval_sec = abs(int(now - self.last_sound_start))
+        #     if interval_sec < self.min_interval_sec:
+        #         log.debug("too soon for new sound {name} (last was  at %s, only %d sec)", name, self.last_sound_name, self.last_sound_start, interval_sec)
+        #         return
+        #     else:
+        #         log.debug("okay to start new sound (now %s is %d sec after %s)", now, interval_sec, self.last_sound_start)
+        # else:
+        #     log.debug("first sound")
 
         if self.last_sound_name is not None and self.last_sound_name == name:
             if not repeat:
@@ -131,12 +135,13 @@ class Sounds:
             sound = self.sounds[filename]
             sound.play()
 
-##
-# A single playable sound (.wav file, etc)
-#
-# This has a parent-reference to Sounds so that an individual sounds will know 
-# if the overall sound-system is enabled.
 class Sound:
+    """
+    A single playable sound (.wav file, etc)
+    
+    This has a parent-reference to Sounds so that an individual sounds will know 
+    if the overall sound-system is enabled.
+    """
     def __del__(self):
         del self.parent
         del self.pathname

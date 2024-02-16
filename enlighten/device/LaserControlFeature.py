@@ -205,6 +205,17 @@ class LaserControlFeature:
             log.debug(f"set_laser_enable: calling {event} callback {callback}")
             callback()
 
+        self.ctl.sounds.play("laser_on" if flag else "laser_off")
+
+    def tick_status(self):
+        """ Called from Controller.tick_status """
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+
+        if spec.settings.state.laser_enabled:
+            self.ctl.sounds.play("laser_steady", repeat=True)
+
     def process_reading(self, reading):
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:

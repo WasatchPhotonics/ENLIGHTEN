@@ -309,9 +309,6 @@ class BusinessObjects:
             clipboard                   = ctl.clipboard,
             hardware_file_manager       = ctl.hardware_file_manager)
 
-        self.header("instantiating Sounds")
-        ctl.sounds = Sounds(ctl)
-
         self.header("instantiating ScanAveragingFeature")
         ctl.scan_averaging = ScanAveragingFeature(ctl)
 
@@ -529,6 +526,9 @@ class BusinessObjects:
             cb_enabled                  = cfu.checkBox_region_enabled,
             multispec                   = ctl.multispec,
             spinbox                     = cfu.spinBox_region)
+
+        self.header("instantiating Sounds")
+        ctl.sounds = Sounds(ctl)
 
         self.header("instantiating HelpFeature")
         ctl.help = HelpFeature(ctl)

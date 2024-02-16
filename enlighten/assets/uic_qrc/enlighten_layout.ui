@@ -2532,7 +2532,7 @@ QComboBox QListView
         </sizepolicy>
        </property>
        <property name="currentIndex">
-        <number>3</number>
+        <number>2</number>
        </property>
        <widget class="QScrollArea" name="scrollArea_hardware">
         <property name="sizePolicy">
@@ -2557,9 +2557,9 @@ QComboBox QListView
          <property name="geometry">
           <rect>
            <x>0</x>
-           <y>0</y>
-           <width>727</width>
-           <height>5412</height>
+           <y>-4592</y>
+           <width>1169</width>
+           <height>5382</height>
           </rect>
          </property>
          <property name="sizePolicy">
@@ -6842,6 +6842,34 @@ QComboBox QListView
                    </property>
                   </widget>
                  </item>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="label_detector_serial">
+                   <property name="text">
+                    <string>none</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QLabel" name="label_172">
+                   <property name="text">
+                    <string>Detector Serial Number</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QLabel" name="label_eeprom_digest">
+                   <property name="text">
+                    <string>0xabcde</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QLabel" name="label_240">
+                   <property name="text">
+                    <string>EEPROM Digest</string>
+                   </property>
+                  </widget>
+                 </item>
                  <item row="4" column="0">
                   <widget class="QLabel" name="label_ccd_temperature_raw">
                    <property name="text">
@@ -6884,20 +6912,6 @@ QComboBox QListView
                    </property>
                   </widget>
                  </item>
-                 <item row="8" column="0">
-                  <widget class="QCheckBox" name="checkBox_sound_enable">
-                   <property name="text">
-                    <string />
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="8" column="1">
-                  <widget class="QLabel" name="label_11">
-                   <property name="text">
-                    <string>Enable Sound Effects</string>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="7" column="0">
                   <widget class="QLabel" name="label_ambient_temperature">
                    <property name="text">
@@ -6909,34 +6923,6 @@ QComboBox QListView
                   <widget class="QLabel" name="label_236">
                    <property name="text">
                     <string>Ambient Temperature</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="0">
-                  <widget class="QLabel" name="label_eeprom_digest">
-                   <property name="text">
-                    <string>0xabcde</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="1">
-                  <widget class="QLabel" name="label_240">
-                   <property name="text">
-                    <string>EEPROM Digest</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QLabel" name="label_detector_serial">
-                   <property name="text">
-                    <string>none</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="1">
-                  <widget class="QLabel" name="label_172">
-                   <property name="text">
-                    <string>Detector Serial Number</string>
                    </property>
                   </widget>
                  </item>
@@ -8420,9 +8406,9 @@ QComboBox QListView
             <property name="geometry">
              <rect>
               <x>0</x>
-              <y>0</y>
-              <width>562</width>
-              <height>1365</height>
+              <y>-575</y>
+              <width>669</width>
+              <height>1398</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -10395,6 +10381,13 @@ QComboBox QListView
                           <verstretch>0</verstretch>
                          </sizepolicy>
                         </property>
+                        <property name="font">
+                         <font>
+                          <pointsize>10</pointsize>
+                          <weight>75</weight>
+                          <bold>true</bold>
+                         </font>
+                        </property>
                         <property name="text">
                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Theme&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                         </property>
@@ -10413,6 +10406,13 @@ QComboBox QListView
                          </widget>
                         </item>
                         <item>
+                         <widget class="QLabel" name="label_42">
+                          <property name="text">
+                           <string>Additional themes beyond light and dark</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
                          <spacer name="horizontalSpacer">
                           <property name="orientation">
                            <enum>Qt::Horizontal</enum>
@@ -10426,6 +10426,13 @@ QComboBox QListView
                          </spacer>
                         </item>
                        </layout>
+                      </item>
+                      <item>
+                       <widget class="QCheckBox" name="checkBox_sound_enable">
+                        <property name="text">
+                         <string>Enable sound effects</string>
+                        </property>
+                       </widget>
                       </item>
                      </layout>
                     </widget>

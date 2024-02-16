@@ -7,6 +7,9 @@
     - added session close button for KIA
     - adding some WhatsThis docs
     - light mode fixes, updated CSS.md
+    - sounds
+        - moved from Hardware to Settings
+        - added laser_steady
 - 2023-02-14 4.0.41 ❤️
     - RamanShiftCorrection: better support for ROI, tweaked peak windows
     - updated to Tensorflow 2.13.1
