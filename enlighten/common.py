@@ -13,7 +13,7 @@ application.
       can be modules (files) within it
 """
 
-VERSION = "4.0.41"
+VERSION = "4.0.42"
 
 ctl = None
 

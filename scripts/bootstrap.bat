@@ -182,6 +182,7 @@ echo.
 grep '^VERSION' enlighten/common.py | grep -E -o '([0-9]\.?)+' > version.txt
 set /p ENLIGHTEN_VERSION=<version.txt
 echo ENLIGHTEN_VERSION = %ENLIGHTEN_VERSION%
+del /f /q version.txt
 
 echo.
 echo %date% %time% ======================================================

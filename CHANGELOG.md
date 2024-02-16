@@ -2,6 +2,9 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2023-??-?? 4.0.42
+    - (working on keras.engine issue)
+    - added session close button for KIA
 - 2023-02-14 4.0.41 ❤️
     - RamanShiftCorrection: better support for ROI, tweaked peak windows
     - updated to Tensorflow 2.13.1

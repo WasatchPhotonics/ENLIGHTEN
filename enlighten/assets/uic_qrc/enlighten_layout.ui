@@ -11367,7 +11367,7 @@ QComboBox QListView
                                    <x>0</x>
                                    <y>0</y>
                                    <width>222</width>
-                                   <height>388</height>
+                                   <height>385</height>
                                   </rect>
                                  </property>
                                  <property name="sizePolicy">
@@ -11761,26 +11761,41 @@ QComboBox QListView
                      <number>0</number>
                     </property>
                     <item>
-                     <widget class="QLabel" name="label_kia_outer">
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
-                      <property name="font">
-                       <font>
-                        <weight>75</weight>
-                        <bold>true</bold>
-                       </font>
-                      </property>
-                      <property name="text">
-                       <string>Spectral Library Matching</string>
-                      </property>
-                      <property name="scaledContents">
-                       <bool>true</bool>
-                      </property>
-                     </widget>
+                     <layout class="QHBoxLayout" name="horizontalLayout_50">
+                      <item>
+                       <widget class="QLabel" name="label_kia_outer">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="font">
+                         <font>
+                          <weight>75</weight>
+                          <bold>true</bold>
+                         </font>
+                        </property>
+                        <property name="text">
+                         <string>Spectral Library Matching</string>
+                        </property>
+                        <property name="scaledContents">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QPushButton" name="pushButton_kia_close">
+                        <property name="text">
+                         <string />
+                        </property>
+                        <property name="icon">
+                         <iconset resource="grey_icons.qrc">
+                          <normaloff>:/greys/images/grey_icons/no_xicon.svg</normaloff>:/greys/images/grey_icons/no_xicon.svg</iconset>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
                     </item>
                     <item>
                      <widget class="QFrame" name="frame_kia_side_white">
@@ -14202,7 +14217,7 @@ p, li { white-space: pre-wrap; }
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-1862</y>
+                <y>0</y>
                 <width>240</width>
                 <height>2828</height>
                </rect>
@@ -16842,8 +16857,6 @@ p, li { white-space: pre-wrap; }
                  </layout>
                 </widget>
                </item>
-
-
                <item>
                 <widget class="QFrame" name="frame_srm">
                  <property name="sizePolicy">
@@ -16973,7 +16986,6 @@ p, li { white-space: pre-wrap; }
                  </layout>
                 </widget>
                </item>
-
                <item>
                 <widget class="QFrame" name="frame_scanAveraging">
                  <layout class="QVBoxLayout" name="verticalLayout_45">
@@ -17671,15 +17683,6 @@ p, li { white-space: pre-wrap; }
                  </layout>
                 </widget>
                </item>
-
-
-
-
-
-
-
-
-
                <item>
                 <widget class="QFrame" name="frame_post_processing">
                  <property name="sizePolicy">

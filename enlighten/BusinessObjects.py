@@ -381,6 +381,8 @@ class BusinessObjects:
         # TODO: refactor like PluginController
         self.header("instantiating KIAFeature")
         ctl.kia_feature = KIAFeature(
+            ctl                         = ctl,
+
             baseline_correction         = ctl.baseline_correction,
             bt_alias                    = cfu.pushButton_id_results_make_alias,
             bt_benign                   = cfu.pushButton_id_results_flag_benign,
