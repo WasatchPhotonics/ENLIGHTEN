@@ -17,7 +17,6 @@ class Sounds:
     Encapsulates ENLIGHTEN's limited audio capabilities.
     
     @note At this time, we only support sound on Windows 
-
     @todo Allow user sound overrides in EnlightenSpectra/sounds (basename = event)
     """
     PATH = "enlighten/assets/example_data/sounds"
@@ -36,7 +35,6 @@ class Sounds:
         self.sounds = {}
         self.enabled = False
         self.last_sound_name = None
-        self.last_sound_start = None
 
         # Enforce at least this much time between playing of sequential sounds.
         # Extra sound events requested within this interval are DISCARDED, NOT QUEUED.
@@ -76,45 +74,25 @@ class Sounds:
             return self.sounds[name]
         return None
 
-    def getNames(self):
-        names = list(self.sounds.keys())
-        names.extend(["asterisk", "question", "exclamation"]) # Windows built-ins
-        return list(sorted(set(names)))
-
     def stop(self):
         if not self.is_enabled():
             return
         winsound.PlaySound(None, winsound.SND_PURGE)
 
-    def reset_repeat(self):
-        log.debug("Sound.reset_repeat")
+    def reset_repeat(self):  # MZ: used?
         self.last_sound_name = None
 
     def play(self, name, repeat=True):
         if not self.is_enabled():
             return
 
-        # if self.last_sound_start is not None:
-        #     now = time.time()
-        #     interval_sec = abs(int(now - self.last_sound_start))
-        #     if interval_sec < self.min_interval_sec:
-        #         log.debug("too soon for new sound {name} (last was  at %s, only %d sec)", name, self.last_sound_name, self.last_sound_start, interval_sec)
-        #         return
-        #     else:
-        #         log.debug("okay to start new sound (now %s is %d sec after %s)", now, interval_sec, self.last_sound_start)
-        # else:
-        #     log.debug("first sound")
-
         if self.last_sound_name is not None and self.last_sound_name == name:
             if not repeat:
-                log.debug("not repeating %s", name)
+                log.debug(f"declining to repeat {name}")
                 return
-            else:
-                log.debug("okay to repeat %s", name)
-        else:
-            log.debug("not a repeat %s (last was %s)", name, self.last_sound_name)
 
         self.stop()
+
         if name.lower() in self.sounds:
             self.sounds[name.lower()].playAsync()
         elif name.lower() == "asterisk":
@@ -124,16 +102,10 @@ class Sounds:
         elif name.lower() == "exclamation":
             winsound.PlaySound('SystemExclamation', winsound.SND_ALIAS)
         else:
-            log.error("unknown sound %s", name)
+            log.warn("unknown sound %s", name)
             return
 
         self.last_sound_name  = name
-        self.last_sound_start = time.time()
-
-    def playAll(self):
-        for filename in self.getNames():
-            sound = self.sounds[filename]
-            sound.play()
 
 class Sound:
     """

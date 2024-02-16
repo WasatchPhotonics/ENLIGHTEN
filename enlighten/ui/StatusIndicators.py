@@ -23,26 +23,7 @@ log = logging.getLogger(__name__)
 # - green ("connected")
 # - orange ("warning")
 #
-# These are the 9 basic options:
-#
-# @par Hardware Status
-#
-# - orange/warning if a "critical" error was logged within the last HARDWARE_WARNING_WINDOW_SEC, else
-# - green/connected if one or more spectrometers found, else
-# - else grey/disconnected (no spectrometers found)
-#
-# @par Lamp / Laser
-#
-# - orange/warning if laser / lamp on selected spectrometer illuminated, else
-# - grey/disconnected if laser is found but interlock open (or battery too low), else
-# - green/connected (no laser/lamp found, or interlock closed but not illuminated)
-#
-# @par Temperature
-#
-# - orange/warning if TEC enabled and at least one reading in last 3sec was >1C from setpoint (or unreadable), else
-# - grey/disconnected if TEC disabled or no TEC found, else
-# - green/connected (TEC enabled and within setpoint during stability window)
-#
+# See WhatsThis for meanings.
 class StatusIndicators:
 
     SLEEP_BETWEEN_UPDATES_MS = 250
@@ -51,10 +32,31 @@ class StatusIndicators:
 
     def __init__(self, ctl):
         self.ctl = ctl
+        cfu = ctl.form.ui
 
-        self.button_hardware             = ctl.form.ui.systemStatusWidget_pushButton_hardware
-        self.button_lamp                 = ctl.form.ui.systemStatusWidget_pushButton_light
-        self.button_temperature          = ctl.form.ui.systemStatusWidget_pushButton_temperature
+        # MZ: why are these buttons rather than labels?
+        self.button_hardware    = cfu.systemStatusWidget_pushButton_hardware
+        self.button_lamp        = cfu.systemStatusWidget_pushButton_light
+        self.button_temperature = cfu.systemStatusWidget_pushButton_temperature
+
+        def style(color, msg):
+            return f"<p><span style='color:{color}; font-weight:bold'>{color.upper()}:</span> {msg}</p>"
+
+        # These are the 9 basic options:
+        self.button_hardware.setWhatsThis(
+            style('orange', f"device error logged within the last {self.HARDWARE_WARNING_WINDOW_SEC}sec") +
+            style('green',  "spectrometer connected") +
+            style('gray',   "no spectrometers found"))
+            
+        self.button_lamp.setWhatsThis(
+            style('orange', "laser/lamp emitting") +
+            style('gray',   "laser safety interlock open or battery too low") +
+            style('green',  "no laser/lamp found, or interlock closed but not emitting"))
+
+        self.button_temperature.setWhatsThis(
+            style("orange", "TEC enabled but not yet stable") +
+            style("gray",   "TEC disabled") + 
+            style("green",  "TEC enabled and stable (or ambient detector)"))
 
         # self-register
         self.ctl.logging_feature.status_indicators = self
@@ -79,8 +81,8 @@ class StatusIndicators:
     def stop(self):
         self.timer.stop()
 
-    def raise_hardware_error(self):
-        log.debug("raising hardware error")
+    def raise_hardware_error(self, msg=None):
+        log.debug(f"raising hardware error ({msg})")
         self.last_hardware_error_time = datetime.datetime.now()
 
     ##
@@ -106,6 +108,8 @@ class StatusIndicators:
             reading = None
             if app_state is not None and app_state.processed_reading is not None:
                 reading = app_state.processed_reading.reading
+
+            log.debug(f"update_visibility: reading {reading}")
 
             ####################################################################
             # hardware status
@@ -138,7 +142,7 @@ class StatusIndicators:
                         lamp_tt = "laser not enabled"
 
                 else:
-                    if reading.laser_is_firing:
+                    if reading.laser_is_firing or reading.laser_enabled:
                         lamp = "warning"
                         lamp_tt = "laser is firing"
                     elif self.ctl.laser_control.cant_fire_because_battery(spec):

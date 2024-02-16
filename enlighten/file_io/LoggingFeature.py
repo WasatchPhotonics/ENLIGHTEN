@@ -113,17 +113,21 @@ class LoggingFeature:
         html = escape(line)
 
         color = None
+        error = False
 
         if " CRITICAL " in html:
             color = "980000" # red
+            error = True
         elif " ERROR " in html:
             color = "ba8023" # orange
+            error = True
         elif " WARNING " in html:
             color = "cac401" # yellow
 
         if color:
             html = f"<span style='color: #{color}'>" + html + "</span>"
-            if self.ctl.status_indicators:
-                self.ctl.status_indicators.raise_hardware_error()
+
+        if error and self.ctl.status_indicators:
+            self.ctl.status_indicators.raise_hardware_error(line)
 
         return html

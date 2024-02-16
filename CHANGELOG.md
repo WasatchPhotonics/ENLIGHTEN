@@ -4,12 +4,13 @@
 
 - 2023-??-?? 4.0.42
     - (working on keras.engine issue)
-    - added session close button for KIA
-    - adding some WhatsThis docs
-    - light mode fixes, updated CSS.md
-    - sounds
-        - moved from Hardware to Settings
-        - added laser_steady
+    - GUI tweaks
+        - added session close button for KIA
+        - added WhatsThis docs
+        - theme fixes
+        - moved sounds checkbox to Settings view
+        - added laser_steady.wav
+        - tightened checks around StatusIndicators
 - 2023-02-14 4.0.41 ❤️
     - RamanShiftCorrection: better support for ROI, tweaked peak windows
     - updated to Tensorflow 2.13.1
