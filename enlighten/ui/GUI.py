@@ -12,48 +12,53 @@ else:
 
 log = logging.getLogger(__name__)
 
-##
-# This is currently holding "GUI Utility" methods, but may grow to encapsulate
-# more and more of the actual ENLIGHTEN GUI as we continue to prise functionality
-# out of Controller.  
-#
-# Should probably end up "owning" Graph, Stylesheets etc, and be the single 
-# object passed to classes which need those functions.
-#
-# Also provides the "skinning / themes" feature (dark/light-mode etc).
-#
 class GUI:
+    """
+    This is currently holding "GUI Utility" methods, but may grow to encapsulate
+    more and more of the actual ENLIGHTEN GUI as we continue to prise functionality
+    out of Controller.  
+    
+    Should probably end up "owning" Graph, Stylesheets etc, and be the single 
+    object passed to classes which need those functions.
+    
+    Also provides the "skinning / themes" feature (dark/light-mode etc).
+    """
 
     SECTION = "graphs"
 
     def __init__(self, ctl):
-        
         self.ctl = ctl
+        cfu = ctl.form.ui
 
         self.theme = self.ctl.config.get("theme", "theme")
+        log.debug(f"init: theme {self.theme}")
 
         # apply ENLIGHTEN application stylesheet found in configured directory
         self.ctl.stylesheets.apply(self.ctl.form, "enlighten") 
 
-        self.ctl.form.ui.pushButton_dark_mode.clicked.connect(self.dark_mode_callback)
+        cfu.pushButton_dark_mode.clicked.connect(self.dark_mode_callback)
+        cfu.pushButton_dark_mode.setWhatsThis("Toggles between 'dark mode' (default) and 'light mode'")
 
         self.init_graph_color()
         self.update_theme()
 
     def init_graph_color(self, init=True):
         """
-        call with init=True if this is being done before the graph widget was added to the scene
-        otherwise call with init=False to repopulate the graph widget, forcing background color update
+        Call with init=True if this is being done BEFORE the graph widget was 
+        added to the scene, otherwise call with init=False to repopulate the 
+        graph widget, forcing background color update.
         """
-
         colors = ('w', 'k') if self.theme.startswith("dark") else ('k', 'w')
         pyqtgraph.setConfigOption('foreground', colors[0])
         pyqtgraph.setConfigOption('background', colors[1])
 
         if not init:
+
             # reset widgets so background color changes immediately
-            self.ctl.graph.populate_scope_setup()
-            self.ctl.graph.populate_scope_capture()
+            # MZ: I think this overwrites existing curve objects...?
+            if False:
+                self.ctl.graph.populate_scope_setup()
+                self.ctl.graph.populate_scope_capture()
 
             # this is only a partial fix of #108, to finish it out
             # reinstantiate all instances of pyqtgraph.PlotWidget
@@ -69,18 +74,20 @@ class GUI:
             # it should be fairly easy to reference these using self.ctl...
 
     def dark_mode_callback(self):
-
-        # toggle darkness
+        log.debug(f"dark_mode_callback: theme was {self.theme}")
         self.theme = 'dark' if not (self.theme.startswith("dark")) else 'light'
+        log.debug(f"dark_mode_callback: theme now {self.theme}")
 
-        self.init_graph_color(False)
+        self.init_graph_color(False) 
+        
         self.update_theme()
+        log.debug("dark_mode_callback: done")
 
     def update_theme(self):
-        cfu = self.ctl.form.ui
-
+        log.debug(f"update_theme: start ({self.theme})")
         self.ctl.stylesheets.set_theme(self.theme)
 
+        cfu = self.ctl.form.ui
         if self.theme.startswith("dark"):
             cfu.pushButton_dark_mode.setToolTip("Seek the light!")
         else:
@@ -91,8 +98,10 @@ class GUI:
             path += "-light"
         path += ".png"
 
+        log.debug(f"logo {path}")
         pixmap = QtGui.QPixmap(path)
         cfu.label_application_logo.setPixmap(pixmap)
+        log.debug("update_theme: done")
 
     def colorize_button(self, button, flag):
         if button is None:
@@ -102,10 +111,9 @@ class GUI:
             self.ctl.stylesheets.apply(button, "red_gradient_button")
         else:
             self.ctl.stylesheets.apply(button, "gray_gradient_button")
-
-    ##
-    # @param widget: allows enlighten.ini to override color/style for named widgets
+    
     def make_pen(self, widget=None, color=None, selected=False):
+        """ @param widget: allows enlighten.ini to override color/style for named widgets """
         if color is None and widget is not None:
             color = self.ctl.colors.get_by_widget(widget)
         

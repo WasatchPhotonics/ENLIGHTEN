@@ -108,7 +108,7 @@ for now we have frame_FOO_white[wpBox] enclosing frame_FOO_black[wpGrad], etc.
 
 Fix if you can.
 
-# Dark Mode vs Light Mode
+# Dark Mode vs Light Mode vs Themes
 
 The current "dark mode" setting is stored in two objects within ENLIGHTEN.
 The _boolean_ stating whether "Dark Mode is enabled" is in the GUI class.
@@ -147,6 +147,20 @@ The default ENLIGHTEN color palette was tailored from this:
 Tailored from this:
 
 - https://raw.githubusercontent.com/ColinDuquesnoy/QDarkStyleSheet/master/qdarkstyle/light/lightstyle.qss
+
+## Themes
+
+We started with just "dark", then added "light", and then added the various 
+colors (teal, orange, yellow, pink etc).
+
+Right now, light and dark are toggle-able through the moon button on the button 
+bar, while you can select any theme (including light and dark) from the Settings
+page.
+
+Graph backgrounds are only black if the style name starts with "dark" (i.e. "dark"
+and "darkblue" at present), otherwise default to white.
+
+Currently, graph color only changes when you restart ENLIGHTEN.
 
 # Path Forward
 

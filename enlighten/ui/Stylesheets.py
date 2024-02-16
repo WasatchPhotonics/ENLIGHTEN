@@ -43,34 +43,32 @@ class Stylesheets:
         self.ctl.form.ui.comboBox_Theme.currentIndexChanged.connect(self.set_theme_combobox)
 
     def set_theme_combobox(self, index):
-        """
-        Event handler for when theme combobox is changed (do NOT update the combobox again)
-        """
+        """ Event handler for when theme combobox is changed (do NOT update the combobox again) """
         
         # for update_widgets to apply now
         self.theme = self.get_theme_list()[index]
         
         # for persistence on next restart
         self.ctl.config.set("theme", "theme", self.theme)
+        log.debug(f"set_theme_combobox: theme now {self.theme}")
 
-        log.debug(f"mode now {self.theme}")
         self.update_widgets()
 
     def set_theme(self, theme):
-        """
-        Programmatically set the theme (and make sure the settings combobox is updated)
-        """
+        """ Programmatically set the theme (and make sure the settings combobox is updated) """
+        cfu = self.ctl.form.ui
 
         # for update_widgets to apply now
         self.theme = theme
         
         # for persistence on next restart
         self.ctl.config.set("theme", "theme", theme)
-
-        log.debug(f"mode now {self.theme}")
+        log.debug(f"set_theme: theme now {self.theme}")
 
         # make sure comboxbox matches set theme
-        self.ctl.form.ui.comboBox_Theme.setCurrentIndex(self.get_theme_list().index(theme))
+        # cfu.comboBox_Theme.blockSignals(True)
+        cfu.comboBox_Theme.setCurrentIndex(self.get_theme_list().index(theme))
+        # cfu.comboBox_Theme.blockSignals(False)
 
         self.update_widgets()
 
@@ -78,15 +76,17 @@ class Stylesheets:
         self.set_theme("dark" if flag else "light")
 
     def update_widgets(self):
-        for widget, name in self.widget_last_style.items():
-            self.apply(widget, name)
+        log.debug("update_widgets: start ---------------------")
+        for widget, style_name in self.widget_last_style.items():
+            self.apply(widget, style_name)
+        log.debug("update_widgets: done ----------------------")
 
     ##
     # Load all the CSS stylesheets of the installed distribution into a dict, 
     # where the keys are the basename of each file (sans extension).
-    def load(self, mode):
-        path = self.path + "/" + mode
-        log.debug(f"loading CSS from %s", path)
+    def load(self, theme):
+        path = os.path.join(self.path, theme)
+        log.debug(f"loading CSS from {path}")
         for (_dirpath, _dirnames, filenames) in os.walk(path):
             for filename in sorted(filenames):
                 if not filename.endswith(".css"):
@@ -94,33 +94,41 @@ class Stylesheets:
 
                 basename = filename.replace(".css", "")
                 pathname = os.path.join(path, filename)
-                s = ""
                 try:
                     with open(pathname, "r") as f:
                         s = f.read() 
-                    self.css[mode][basename] = s
-                    # log.debug("  loaded %s[%s] (%d bytes)", mode, basename, len(s))
+                    self.css[theme][basename] = s
+                    # log.debug("  loaded %s[%s] (%d bytes)", theme, basename, len(s))
                 except:
-                    log.error("unable to load %s[%s]", mode, pathname, exc_info=1)
+                    log.error(f"unable to load {theme}[{pathname}]", exc_info=1)
 
     ## apply CSS to a widget (don't change widget if stylesheet not found)
-    def apply(self, widget, name):
-        css = self.get(name)
+    def apply(self, widget, style_name):
+        css = self.get(style_name)
         if css is None:
+            log.error("no CSS found for style_name {style_name}, theme {self.theme}")
             return
 
-        try:
-            log.debug("applying stylesheet %s[%s] to widget %s", self.theme, name, widget.objectName())
+        widget_name = widget.objectName()
+        old = widget.styleSheet()
+
+        if not widget_name or len(widget_name) == 0:
+            log.error(f"widget [{widget_name}] has no name: {widget}")
+            return
+
+        if old == css:
+            log.debug(f"{widget_name} already has stylesheet equivalent to {self.theme}[{style_name}]")
+        else:
+            log.debug(f"applying {self.theme}[{style_name}] to {widget_name}")
             widget.setStyleSheet(css)
-            self.widget_last_style[widget] = name
-        except:
-            log.error("unable to apply stylesheet '%s'", name, exc_info=1)
+
+        self.widget_last_style[widget] = style_name
 
     ## return a stylesheet by name (None on error)
-    def get(self, name):
-        if name in self.css[self.theme]:
-            return self.css[self.theme][name]
-        log.critical("unknown stylesheet: %s[%s]", self.theme, name)
+    def get(self, style_name):
+        if style_name in self.css[self.theme]:
+            return self.css[self.theme][style_name]
+        log.critical(f"unknown stylesheet: theme {self.theme}, style_name {style_name}")
 
     ##
     # This was awkwardly designed, but allows a widget (including the Marquee)
@@ -135,4 +143,3 @@ class Stylesheets:
                 self.apply(widget, "hazard")
         else:
             self.apply(widget, "panel")
-
