@@ -35,6 +35,9 @@ class IntegrationTimeFeature:
 
         self.ctl.presets.register(self, "integration_time_ms", getter=self.get_ms, setter=self.set_ms)
 
+        for widget in [ self.slider, self.spinbox, self.bt_up, self.bt_dn ]:
+            widget.setWhatsThis("Control the detector integration time, or sensor exposure time, in milliseconds.")
+
     # called by initialize_new_device on hotplug, BEFORE reading / applying .ini
     def init_hotplug(self):
         spec = self.ctl.multispec.current_spectrometer()

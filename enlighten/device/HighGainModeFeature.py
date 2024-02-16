@@ -8,9 +8,7 @@ class HighGainModeFeature:
     
     Note this completely unrelated to normal "detector gain" on Hamamatsu silicon 
     detectors (a FunkyFloat above 1.0), and likewise unrelated to the "gain dB" on
-    Sony IMX detectors (a float from 0.0 - 31.9 or so).
-    
-    Note this feature supports "locking" via Multispec.
+    Sony IMX detectors (a float from 0.0 - 32.0 or so).
     """
 
     CONFIG_KEY = "high_gain_mode_enabled"
@@ -22,6 +20,7 @@ class HighGainModeFeature:
         self.cb_enabled = cfu.checkBox_high_gain_mode_enabled
 
         self.cb_enabled.toggled.connect(self.enable_callback)
+        self.cb_enabled.setWhatsThis("Toggles between analog gain modes on Hamamatsu InGaAs detectors.")
         self.cb_enabled.setVisible(False)
 
     def init_hotplug(self):

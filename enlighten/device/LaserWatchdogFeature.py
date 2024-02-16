@@ -22,6 +22,11 @@ class LaserWatchdogFeature:
 
         self.sb_sec.installEventFilter(ScrollStealFilter(self.sb_sec))
 
+        for widget in [self.lb_sec, self.sb_sec, self.cb_enable]:
+            widget.setWhatsThis("Control the hardware laser watchdog. This accepts a positive integral number of seconds, after which the laser is automatically turned off. " +
+                "The goal is partially laser safety, but also to avoid burning out laser diodes and running down battery on mobile units. This feature is only available on " +
+                "XS series spectrometers with single-mode lasers (SML). The watchdog can be disabled by setting to zero seconds.")
+
     def init_hotplug(self):
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
