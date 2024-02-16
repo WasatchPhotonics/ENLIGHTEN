@@ -279,10 +279,8 @@ class Measurements:
     # It DOES NOT delete anything from disk.
     #
     # Measurements can only be deleted from disk by clicking on their individual
-    # Trash icons, which logic is entirely encapsulated within Measurement,
-    # ThumbnailWidget and ConfirmWidget.  There is currently no "programmatic"
-    # way to delete all Measurements FROM DISK, though eventually that may be
-    # requested.  If it is, we can just add m.delete(from_disk=True).
+    # Trash icons, which logic is entirely encapsulated within Measurement and
+    # ThumbnailWidget.  
     #
     # @see https://stackoverflow.com/a/20167458 re: deleteLater()
     def delete_measurement(self, measurement):

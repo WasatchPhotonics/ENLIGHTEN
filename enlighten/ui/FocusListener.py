@@ -2,13 +2,14 @@ import logging
 
 log = logging.getLogger(__name__)
 
-##
-# This class is currently used by ThumbnailWidget to detect when the user has
-# tabbed or clicked out of an "open edit" QLineEdit.
-#
-# @todo it would seem slightly more efficient if we actually disconnected the
-#       signal in unregister(), and reconnect in register
 class FocusListener:
+    """
+    This class is currently used by ThumbnailWidget to detect when the user has
+    tabbed or clicked out of an "open edit" QLineEdit.
+    
+    @todo it would seem slightly more efficient if we actually disconnected the
+          signal in unregister(), and reconnect in register
+    """
 
     def __init__(self, ctl):
         self.callbacks = {}

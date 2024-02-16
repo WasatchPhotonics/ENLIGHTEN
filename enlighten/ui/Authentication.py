@@ -70,8 +70,8 @@ class Authentication:
 
         cfu = ctl.form.ui
 
-        self.button_login           = cfu.pushButton_admin_login
-        self.combo_view             = cfu.comboBox_view
+        self.button_login   = cfu.pushButton_admin_login
+        self.combo_view     = cfu.comboBox_view
 
         self.level = self.BASIC
         self.error_count = 0
@@ -79,6 +79,7 @@ class Authentication:
         self.observers = set()
 
         self.button_login.clicked.connect(self.login)
+        self.button_login.setWhatsThis("Lets you 'login' to ENLIGHTEN™ with passwords enabling additional features.")
 
         self._update_widgets()
 

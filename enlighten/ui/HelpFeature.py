@@ -17,7 +17,6 @@ class HelpFeature:
 
     def __init__(self, ctl):
         self.ctl = ctl
-
         cfu = ctl.form.ui
 
         self.bt_help = cfu.pushButton_help
@@ -25,6 +24,11 @@ class HelpFeature:
 
         self.bt_help.clicked.connect(self.help_callback)
         self.bt_what.clicked.connect(self.what_callback)
+
+        self.bt_help.setWhatsThis("Opens a web browser to ENLIGHTEN on-line help if clicked, or shows a handy cheat-sheet of keyboard shortcuts on mouse-over.")
+        self.bt_what.setWhatsThis("An alternate help system which can provide richer information than we normally put into mouse-over tooltips.\n\n" +
+                                  "In particular, provides especially rich data on individual measurements in the Clipboard.\n\n" +
+                                  "And frankly, it lets us experiment with this Qt feature to see if it adds any value ;-)")
 
         tt = """Click or press F1 to view online manual. 
 
