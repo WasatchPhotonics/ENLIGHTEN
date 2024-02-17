@@ -237,7 +237,7 @@ class Controller:
         # support styling of common.msgbox
         common.set_controller_instance(self)
 
-        self.did_you_know.display()
+        self.did_you_know.show()
 
     def disconnect_device(self, spec=None, closing=False):
         if spec in self.other_devices:

@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="dyk">
     <file>images/did_you_know/WP.png</file>
+    <file>images/did_you_know/keyboard_shortcuts.png</file>
+    <file>images/did_you_know/whats_this.png</file>
   </qresource>
 </RCC>
