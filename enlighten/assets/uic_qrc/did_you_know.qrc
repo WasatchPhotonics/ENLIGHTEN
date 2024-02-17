@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="dyk">
+    <file>images/did_you_know/WP.png</file>
+  </qresource>
+</RCC>

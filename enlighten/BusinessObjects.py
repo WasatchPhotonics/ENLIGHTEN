@@ -62,6 +62,7 @@ from enlighten.timing.BatchCollection import BatchCollection
 from enlighten.ui.Authentication import Authentication
 from enlighten.ui.Clipboard import Clipboard
 from enlighten.ui.Colors import Colors
+from enlighten.ui.DidYouKnowFeature import DidYouKnowFeature
 from enlighten.ui.FocusListener import FocusListener
 from enlighten.ui.GUI import GUI
 from enlighten.ui.GuideFeature import GuideFeature
@@ -532,6 +533,9 @@ class BusinessObjects:
 
         self.header("instantiating HelpFeature")
         ctl.help = HelpFeature(ctl)
+
+        self.header("instantiating DidYouKnowFeature")
+        ctl.did_you_know = DidYouKnowFeature(ctl)
 
         self.header("done with Business Object creation")
 

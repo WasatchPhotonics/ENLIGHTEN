@@ -1,6 +1,7 @@
 import logging
 
 from enlighten import common
+import did_you_know_rc
 
 if common.use_pyside2():
     from PySide2 import QtCore
@@ -27,6 +28,7 @@ class ImageResources:
         while it.hasNext():
             pathname = it.next()
             self.resources.append(pathname)
+            log.debug(f"  {pathname}")
 
         self.resources.sort()
         log.debug(f"found {len(self.resources)} resources")
