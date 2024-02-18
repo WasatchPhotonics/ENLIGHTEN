@@ -52,7 +52,7 @@ class DidYouKnowFeature:
             <p>Use template macros like <span style="font-family:monospace; color:yellow">{integration_time_ms}ms 
             {gain_db}dB {scans_to_average}avg</span> as the default Clipboard labels or filenames of new measurements.</p>
             <p>Virtually any ENLIGHTEN variable name or property can be referenced. See the manual for a list of supported macros.</p>""")
-        tip("Wavenumber Correction", "wavenumber_correction2", """
+        tip("Wavenumber Correction", "wavenumber_correction", """
             <p>Even the most assiduously calibrated laser or spectrometer can 
                experience minor shifts in wavelength due to ambient changes in 
                environment.</p>
