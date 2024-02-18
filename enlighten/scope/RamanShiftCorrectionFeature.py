@@ -146,7 +146,7 @@ class RamanShiftCorrectionFeature:
         self.update_visibility()
 
         self.button.setWhatsThis(unwrap("""
-            Apply ASTM 1840-96 (2014) Raman shift correction to the active 
+            Apply ASTM E1840-96 (2014) Raman shift correction to the active 
             wavenumber axis. Use the Settings view to select an approved ASTM 
             1840-96 compound, place it in the sample holder, and enable the laser
             to generate a dark-corrected Raman spectrum. 
