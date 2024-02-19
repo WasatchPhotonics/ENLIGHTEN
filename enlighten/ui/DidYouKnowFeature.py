@@ -243,7 +243,10 @@ class DidYouKnowFeature:
         tip("Prefix and Suffix", None, """
              <p>Two of the most useful on-screen fields for manual data collections are <b>prefix</b>
                 and <b>suffix</b>. As their name implies, they are automatically added at the beginning
-                and end of saved filenames (both individual measurements, and exports).</p>""")
+                and end of saved filenames (both individual measurements, and exports).</p>
+             <p>Although the related Note field does not automatically appear in any filenames or
+                labels, it <i>can</i> be automatically inserted into those, anywhere you want, by using
+                the {note} template notation.</p>""")
         
         # RamanLines
         # EmissionLines
