@@ -92,6 +92,18 @@ class SpectrometerApplicationState:
             log.info("  Processed Reading:")
             self.processed_reading.dump()
 
+    def check_refs(self):
+        """
+        The user has just changed integration time, gain, scan averaging or 
+        boxcar, so recommend a fresh dark and/or reference if one is already stored.
+        """
+        if self.dark and self.reference:
+            self.ctl.marquee("Recommend taking a fresh dark and reference when changing acquisition parameters")
+        elif self.dark:
+            self.ctl.marquee("Recommend taking a fresh dark when changing acquisition parameters")
+        elif self.reference:
+            self.ctl.marquee("Recommend taking a fresh reference when changing acquisition parameters")
+
     def has_dark(self):
         return self.dark is not None
 

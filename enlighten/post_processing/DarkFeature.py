@@ -129,7 +129,7 @@ class DarkFeature:
             app_state.dark_timestamp = timestamp
             app_state.dark_integration_time_ms = spec.settings.state.integration_time_ms
 
-            # should overwrite any KIA tips, no need for token
+            # should overwrite any "new dark recommended" tips, no need for token
             self.ctl.marquee.info("dark stored")
 
         self.display()

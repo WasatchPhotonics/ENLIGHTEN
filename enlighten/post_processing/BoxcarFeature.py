@@ -48,6 +48,10 @@ class BoxcarFeature:
         # save boxcar to application state
         self.ctl.multispec.set_state("boxcar_half_width", value)
 
+        # @todo consider Configuration.set_all that uses Multispec to set the 
+        # given key=value pair for every Spectrometer serial_number if Locked,
+        # else just current_spectrometer
+
         # persist boxcar in .ini
         self.ctl.config.set(self.ctl.multispec.current_spectrometer().settings.eeprom.serial_number, "boxcar_half_width", value)
 
@@ -56,11 +60,20 @@ class BoxcarFeature:
         else:
             self.spinbox.setToolTip("smoothing disabled (half-width)")
 
+
     def up_callback(self):
         incr_spinbox(self.spinbox)
 
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec:
+            spec.check_refs()
+
     def dn_callback(self):
         decr_spinbox(self.spinbox)
+
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec:
+            spec.check_refs()
 
     def process(self, pr, spec=None):
         """

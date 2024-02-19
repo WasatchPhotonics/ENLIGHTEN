@@ -170,6 +170,8 @@ class GainDBFeature:
         self._quiet_set(self.ctl.form.ui.doubleSpinBox_gain, db)
         self._quiet_set(self.ctl.form.ui.slider_gain, db)
 
+        spec.app_state.check_refs()
+
     def up_callback(self):
         util.incr_spinbox(self.ctl.form.ui.doubleSpinBox_gain)
         self.set_db(self.ctl.form.ui.doubleSpinBox_gain.value())

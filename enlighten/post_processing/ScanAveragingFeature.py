@@ -70,6 +70,7 @@ class ScanAveragingFeature:
         spec = self.ctl.multispec.current_spectrometer()
         if spec:
             self.ctl.config.set(spec.settings.eeprom.serial_number, "scans_to_average", value)
+            spec.app_state.check_refs()
 
     def show_label(self, flag):
         self.label.setVisible(flag)
