@@ -4,6 +4,7 @@ import logging
 import pyqtgraph
 
 from enlighten import common
+from enlighten.util import unwrap
 
 if common.use_pyside2():
     from PySide2 import QtWidgets
@@ -30,6 +31,44 @@ class DarkFeature:
         cfu.pushButton_dark_clear       .clicked    .connect(self.clear_callback)
         cfu.pushButton_dark_load        .clicked    .connect(self.load_callback)
         cfu.pushButton_dark_store       .clicked    .connect(self.store_callback)
+
+        for widget in [ self.button_toggle, 
+                        cfu.pushButton_dark_clear, 
+                        cfu.pushButton_dark_load, 
+                        cfu.pushButton_dark_store ]:
+            widget.setWhatsThis(unwrap("""
+                Dark correction, or "ambient subtraction", is one of the simplest 
+                yet most impactful things you can do to improve data quality.
+
+                It allows you to store a spectrum of your sample's ambient 
+                environment with your primary light source (laser, lamp etc)
+                disabled. If you are using a sampling accessory, this can include
+                an empty accessory, an empty vial, or a "water blank" vial --
+                the goal is to include anything and everything which will 
+                necessarily be present for your sample measurement, but which
+                is not itself the sample compound you are trying to measure.
+
+                This "dark spectrum" is intended to represent all 
+                ambient light, stray light, and thermal and electrical noise
+                of your system. By storing the dark measurement and subtracting
+                it from each subsequent sample measurement, ideally only the
+                "sample signal" will remain, greatly improving Signal-to-Noise
+                Ratio (SNR), with a naturally reduced baseline.
+
+                It is important that the dark measurement be taken with the 
+                same acquisition parameters as your sample measurement. If your
+                sample measurement will use 400ms integration time, 8dB gain,
+                5 scan averaging, and a 2-pixel boxcar, then your dark measurement
+                should be collected with the exact same settings.
+
+                Therefore, you are recommended to take a new dark whenever you
+                change integration time and other relevant settings. Indeed,
+                it is worth taking fresh darks every few minutes just to account
+                for gradual thermal drift within your device and the ambient
+                environment.
+
+                Darks are cheap, signal is priceless!"""))
+
 
         self.ctl.laser_control.register_observer("enabled", self.laser_control_enabled)
 
@@ -90,7 +129,7 @@ class DarkFeature:
             app_state.dark_timestamp = timestamp
             app_state.dark_integration_time_ms = spec.settings.state.integration_time_ms
 
-            # should overwrite any KIA tips, no need for token
+            # should overwrite any "new dark recommended" tips, no need for token
             self.ctl.marquee.info("dark stored")
 
         self.display()

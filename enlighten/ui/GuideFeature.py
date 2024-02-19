@@ -29,10 +29,8 @@ class Tip:
 
 class GuideFeature:
     """
-    This is an experimental feature allowing ENLIGHTEN Business Objects to 
-    recommend "tips" that might be suggested to the user through the Marquee.
+    Recommends "tips" that might be suggested to the user through the Marquee.
     """
-
     MIN_DISPLAY_SEC = 8 
     POLL_SEC = 3
 
@@ -52,6 +50,7 @@ class GuideFeature:
         self.timer.timeout.connect(self._tick)
 
         self.bt_enable.clicked.connect(self._enable_callback)
+        self.bt_enable.setWhatsThis("Recommend spectroscopy 'tips' while using ENLIGHTEN.")
 
         self.enabled = True
         self.update_visibility()
@@ -106,10 +105,12 @@ class GuideFeature:
     # ##########################################################################
 
     def _enable_callback(self):
+        """ @private """
         self.enabled = not self.enabled
         self.update_visibility()
 
     def _reset_timer(self):
+        """ @private """
         self.timer.start(self.POLL_SEC * 1000)
 
     def _tick(self):

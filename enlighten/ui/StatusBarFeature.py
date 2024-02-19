@@ -26,8 +26,8 @@ class StatusBarFeature:
 
     def __init__(self, ctl):
         self.ctl = ctl
-
         cfu = ctl.form.ui
+        
         self.widgets = {}
         self.menu_order = []
         for trio in [ [ "Min",                  cfu.label_StatusBar_min_name,     cfu.label_StatusBar_min_value ],
@@ -54,6 +54,7 @@ class StatusBarFeature:
     # individual key-value pairs on the StatusBar
     def create_status_menu(self):
         menu = QMenu(parent=self.ctl.form) # inherit parent's stylesheet
+        menu.setWhatsThis("Choose which fields to include on the Status Bar below the main scope.")
 
         for name in self.menu_order:
             action = menu.addAction(name)
@@ -73,8 +74,6 @@ class StatusBarFeature:
 
         tool_button = self.ctl.form.ui.status_bar_toolButton
         tool_button.setMenu(menu)
-
-        # This line shouldn't be needed but the menu won't show up if it's not here
         tool_button.menu() 
 
     # ##########################################################################

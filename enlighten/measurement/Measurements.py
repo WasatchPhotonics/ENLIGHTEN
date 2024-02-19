@@ -58,6 +58,16 @@ class Measurements:
         cfu.pushButton_resize_captures     .clicked    .connect(self.resize_callback)
         cfu.pushButton_resort_captures     .clicked    .connect(self.resort_callback)
 
+        cfu.pushButton_erase_captures      .setWhatsThis("Erase the current Clipboard, without deleting any files from disk")
+        cfu.pushButton_scope_capture_load  .setWhatsThis("Load spectra from disk for display on the graph")
+        cfu.pushButton_resize_captures     .setWhatsThis("Expand or collapse the Clipboard thumbnails for simplified viewing")
+        cfu.pushButton_resort_captures     .setWhatsThis("Switch the order of Clipboard spectra, changing whether new spectra are added at the top (default) or bottom")
+        cfu.pushButton_export_session      .setWhatsThis(util.unwrap("""
+            Save all spectra on the Clipboard to a single file. The export file 
+            may be CSV, JSON and/or SPC as configured in Save Options. You will 
+            be prompted to either export all Clipboard measurements, or just those
+            currently displayed on the graph."""))
+
         # Drop an expanding spacer into the layout, which will force all
         # ThumbnailWidgets to hold a fixed size and align at one end.  (Could
         # this not be done in Designer?)
@@ -279,10 +289,8 @@ class Measurements:
     # It DOES NOT delete anything from disk.
     #
     # Measurements can only be deleted from disk by clicking on their individual
-    # Trash icons, which logic is entirely encapsulated within Measurement,
-    # ThumbnailWidget and ConfirmWidget.  There is currently no "programmatic"
-    # way to delete all Measurements FROM DISK, though eventually that may be
-    # requested.  If it is, we can just add m.delete(from_disk=True).
+    # Trash icons, which logic is entirely encapsulated within Measurement and
+    # ThumbnailWidget.  
     #
     # @see https://stackoverflow.com/a/20167458 re: deleteLater()
     def delete_measurement(self, measurement):

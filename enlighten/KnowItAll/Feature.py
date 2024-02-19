@@ -160,6 +160,8 @@ class Feature:
     # Note there is no "cb_sharpen_peaks" or similar -- that is handled by the 
     # RichardsonLucy class, which is currently independent of KnowItAll.
     def __init__(self,
+            ctl,
+
             baseline_correction,
             bt_alias,
             bt_benign,
@@ -197,6 +199,8 @@ class Feature:
             table_results,
             vcr_controls,
             horiz_roi):
+        self.ctl = ctl
+        cfu = ctl.form.ui
 
         self.baseline_correction        = baseline_correction
         self.bt_alias                   = bt_alias
@@ -243,6 +247,7 @@ class Feature:
         self.enabled = False
         self.closing = False
         self.last_tip = None
+        self.hidden = False
         self.sent_install_tip = False
 
         # we're not using these right now
@@ -282,6 +287,7 @@ class Feature:
         self.sb_max_results     .valueChanged   .connect(self._max_results_callback)
         self.table_recent       .cellClicked    .connect(self._table_recent_callback)
         self.table_results      .cellClicked    .connect(self._table_results_callback)
+        cfu.pushButton_kia_close.clicked        .connect(self._hide_callback)
 
         # disable scroll stealing
         for widget in [ self.sb_score_min, self.sb_max_results ]:
@@ -363,7 +369,7 @@ class Feature:
         results = False
         button = False
 
-        if self.is_installed and self.page_nav.doing_raman():
+        if self.is_installed and self.page_nav.doing_raman() and not self.hidden:
             side = True
             button = True
             results = self.display_all
@@ -524,6 +530,10 @@ class Feature:
     # ##########################################################################
     # Callbacks
     # ##########################################################################
+
+    def _hide_callback(self):
+        self.hidden = True
+        self.update_visibility()
 
     ## The user clicked on the fingerprint button atop the scope screen, 
     #  indicating to identify the current processed reading (hopefully when 

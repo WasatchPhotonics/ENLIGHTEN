@@ -100,7 +100,7 @@ class EnlightenApplication:
         return parser
 
     def run(self):
-        # instantiate form (a QMainWindow with named "MainWindow")
+        # instantiate form (a QMainWindow with name "MainWindow")
         # UI needs to be imported here in order to access QResources for the splash screen
         self.form = BasicWindow(title="ENLIGHTEN™ %s" % common.VERSION)
 
@@ -141,6 +141,7 @@ class EnlightenApplication:
             window_state      = self.args.window_state,
             start_batch       = self.args.start_batch,
             plugin            = self.args.plugin)
+
         # This requires explanation.  This is obviously a Qt "connect" binding,
         # but Controller is not a Qt widget, and does not inherit from/extend
         # anything.  What gives?  See Controller.create_signals, which actually
@@ -148,15 +149,14 @@ class EnlightenApplication:
         # "exit" signal, which we here connect to its callback.
         #
         # This could also have been achieved by giving the controller a handle to
-        # this "self" EnlightenApplication instance, so that controller could do
-        # the closeEvent() stuff internally (which is how we later refactored
-        # ConfirmWidget).
-        #####
-        # The sim_spec code is used for debugging with the test framework during peculiar issues
-        #####
+        # this "self" EnlightenApplication instance, so that Controller could do
+        # the closeEvent() stuff internally.
         self.controller.control_exit_signal.exit.connect(self.closeEvent)
-        #sim_spec = DeviceID(label="MOCK:WP-00887:WP-00887-mock.json")
-        #self.controller.connect_new(sim_spec)
+
+        # The sim_spec code is used for debugging with the test framework during peculiar issues
+        # sim_spec = DeviceID(label="MOCK:WP-00887:WP-00887-mock.json")
+        # self.controller.connect_new(sim_spec)
+
         # pass off control to Qt to manage its objects until application shutdown
         self.splash.finish(self.controller.form)
         if not self.testing:

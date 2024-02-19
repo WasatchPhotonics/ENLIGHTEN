@@ -7,6 +7,12 @@ import datetime
 log = logging.getLogger(__name__)
 
 class ResourceMonitorFeature:
+    """
+    This class was created a few years ago when we had a buried memory leak which
+    only presented on Linux. Fear not, the leak was isolated and resolved (it was
+    in wasatch.applog). However, we're keeping the class as it could be handy
+    down the road.
+    """
 
     UPDATE_RATE_SEC = 5
 
@@ -24,8 +30,8 @@ class ResourceMonitorFeature:
         self.last_memory_check = datetime.datetime.now()
         self.exit_code = 0
 
-    ## @returns True if we should keep running, False if shutdown advised
     def copacetic(self):
+        """ @returns True if we should keep running, False if shutdown advised. """
         now = datetime.datetime.now()
 
         if not self.check_runtime(now):
@@ -38,17 +44,16 @@ class ResourceMonitorFeature:
 
         return True
 
-    ## @returns True if copacetic
     def check_runtime(self, now):
+        """ @returns True if copacetic """
         if self.ctl.run_sec > 0 and self.ctl.run_sec >= (datetime.datetime.now() - self.start_time).total_seconds():
             log.critical("exceeded configured runtime (%d sec)", self.ctl.run_sec)
             return False
         
         return True
 
-    ## only check memory usage every 5sec
-    #  @returns True if copacetic
     def check_memory_usage(self, now):
+        """ Check memory usage every 5sec.@returns True if copacetic """
         if (now - self.last_memory_check).total_seconds() < ResourceMonitorFeature.UPDATE_RATE_SEC:
             return True
 

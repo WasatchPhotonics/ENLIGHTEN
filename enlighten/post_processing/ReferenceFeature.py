@@ -4,6 +4,7 @@ import numpy as np
 import pyqtgraph
 
 from enlighten import common
+from enlighten.util import unwrap
 
 if common.use_pyside2():
     from PySide2 import QtWidgets
@@ -66,6 +67,19 @@ class ReferenceFeature:
         self.button_load    .clicked    .connect(self.load)
         self.button_store   .clicked    .connect(self.store)
         self.button_toggle  .clicked    .connect(self.toggle)
+
+        for widget in [ self.button_clear, self.button_load, self.button_store, self.button_toggle ]:
+            widget.setWhatsThis(unwrap("""
+                Many non-Raman spectroscopic techniques involve a "reference"
+                spectrum for comparison against the sample. Reference-based
+                techniques include absorbance, reflectance and transmission.
+                Reference-based techniques still typically benefit from dark
+                correction, so ENLIGHLTEN will often use three different spectra
+                when processing non-Raman reference-based techniques.
+
+                Similar to dark spectra, users are recommended to "refresh" their
+                reference whenever possible to account for thermal drift and
+                changes in ambient lighting."""))
 
     # ##########################################################################
     # public methods

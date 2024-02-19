@@ -1,6 +1,8 @@
 import logging
 import numpy as np
 
+from enlighten.util import unwrap
+
 log = logging.getLogger(__name__)
 
 class RamanIntensityCorrection:
@@ -49,6 +51,33 @@ class RamanIntensityCorrection:
 
         self.cb_enable.stateChanged.connect(self.enable_callback)
         self.cb_show_curve.stateChanged.connect(self.show_callback)
+
+        for widget in [ self.cb_enable, self.cb_show_curve ]:
+            widget.setWhatsThis(unwrap("""
+                Raman Intensity Correction uses an EEPROM-stored calibration, 
+                generated in the factory with NIST SRM standards, to correct 
+                intensity (y-axis) on Raman spectra. This is sometimes just 
+                called "SRM correction". 
+
+                ENLIGHTEN only allows you enable Raman Intensity Correction when
+                in Raman or Expert mode, as it is only applicable to Raman spectra.
+
+                Raman Intensity Correction requires a dark spectrum to be stored.
+                Therefore, when Raman Intensity Correction is enabled, you cannot
+                clear your dark; you must first disable Raman Intensity Correction
+                before clearing and refreshing your dark, then re-enabling it after.
+
+                Likewise, Raman Intensity Correction requires that the horizontal
+                ROI be enabled. This is because NIST SRM standards are only certified
+                within a given spectral range, and it would be invalid to extrapolate
+                the correction factors outside the configured ROI.
+
+                As a simple visual "sanity-check" of the correction factors generated
+                from the SRM calibration coefficients, you can enable a normalized 
+                graph trace indicating how the calibration changes over the detector.
+                Typically, this will resemble a "U"-shaped parabola, with higher
+                scaling factors at the edges of the detector, and curving lower
+                toward the center."""))
 
         self.sync_gui()
 

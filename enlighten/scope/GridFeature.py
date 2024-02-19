@@ -19,6 +19,7 @@ class GridFeature:
         self.enabled = False
 
         self.button.clicked.connect(self.toggle)
+        self.button.setWhatsThis("Convenience shortcut to show or hide a grid on the main graph. You can fine-tune the grid by right-clicking on the graph.")
 
     def toggle(self):
         self.enabled = not self.enabled

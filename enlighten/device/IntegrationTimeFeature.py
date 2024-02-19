@@ -35,6 +35,9 @@ class IntegrationTimeFeature:
 
         self.ctl.presets.register(self, "integration_time_ms", getter=self.get_ms, setter=self.set_ms)
 
+        for widget in [ self.slider, self.spinbox, self.bt_up, self.bt_dn ]:
+            widget.setWhatsThis("Control the detector integration time, or sensor exposure time, in milliseconds.")
+
     # called by initialize_new_device on hotplug, BEFORE reading / applying .ini
     def init_hotplug(self):
         spec = self.ctl.multispec.current_spectrometer()
@@ -140,23 +143,8 @@ class IntegrationTimeFeature:
             for spec in self.ctl.multispec.get_spectrometers():
                 spec.reset_acquisition_timeout()
         else:
-            spec = self.ctl.multispec.current_spectrometer()
-            if spec is not None:
-                spec.reset_acquisition_timeout()
-
-            ####################################################################
-            # remind users to keep dark/reference in sync
-            ####################################################################
-            
-            app_state = spec.app_state
-            refresh_dark      = app_state.has_dark()      and ms != app_state.dark_integration_time_ms 
-            refresh_reference = app_state.has_reference() and ms != app_state.reference_integration_time_ms 
-            if refresh_dark and refresh_reference:
-                self.ctl.marquee.info("Recommend re-taking dark and reference with new integration time")
-            elif refresh_reference:
-                self.ctl.marquee.info("Recommend re-taking reference with new integration time")
-            elif refresh_dark:
-                self.ctl.marquee.info("Recommend re-taking dark with new integration time")
+            spec.reset_acquisition_timeout()
+            spec.app_state.check_refs()
 
     def up_callback(self):
         util.incr_spinbox(self.spinbox)

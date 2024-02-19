@@ -35,34 +35,37 @@ from enlighten.ui.MouseWheelFilter import MouseWheelFilter
 # @see additional notes in wasatch.SpectrometerState
 class GainDBFeature:
 
-    # per https://www.misptc.com/wp-content/uploads/2018/04/2018041306101956.pdf
+    # for IMX385
     MIN_GAIN_DB = 0
     MAX_GAIN_DB = 72
 
     def __init__(self, ctl):
-        self.ctl = ctl  # type: enlighten.Controller.Controller
+        self.ctl = ctl
+        cfu = ctl.form.ui
 
         self.widgets = [
-            self.ctl.form.ui.pushButton_gain_dn,
-            self.ctl.form.ui.pushButton_gain_up,
-            self.ctl.form.ui.label_gainWidget_title,
-            self.ctl.form.ui.slider_gain,
-            self.ctl.form.ui.doubleSpinBox_gain
+            cfu.pushButton_gain_dn,
+            cfu.pushButton_gain_up,
+            cfu.label_gainWidget_title,
+            cfu.slider_gain,
+            cfu.doubleSpinBox_gain
         ]
         self.visible = False
         self.locked = False
 
         # bindings
-        self.ctl.form.ui.slider_gain.valueChanged.connect(self.sync_slider_to_spinbox_callback)
-        self.ctl.form.ui.slider_gain.installEventFilter(MouseWheelFilter(self.ctl.form.ui.slider_gain))
-        self.ctl.form.ui.doubleSpinBox_gain.valueChanged.connect(self.sync_spinbox_to_slider_callback)
-        self.ctl.form.ui.doubleSpinBox_gain.installEventFilter(ScrollStealFilter(self.ctl.form.ui.doubleSpinBox_gain))
-        self.ctl.form.ui.pushButton_gain_up.clicked.connect(self.up_callback)
-        self.ctl.form.ui.pushButton_gain_dn.clicked.connect(self.dn_callback)
+        cfu.slider_gain.valueChanged.connect(self.sync_slider_to_spinbox_callback)
+        cfu.slider_gain.installEventFilter(MouseWheelFilter(cfu.slider_gain))
+        cfu.doubleSpinBox_gain.valueChanged.connect(self.sync_spinbox_to_slider_callback)
+        cfu.doubleSpinBox_gain.installEventFilter(ScrollStealFilter(cfu.doubleSpinBox_gain))
+        cfu.pushButton_gain_up.clicked.connect(self.up_callback)
+        cfu.pushButton_gain_dn.clicked.connect(self.dn_callback)
 
         self.ctl.presets.register(self, "gain_db", getter=self.get_db, setter=self.set_db_callback)
-
         self.update_visibility()
+
+        for widget in self.widgets:
+            widget.setWhatsThis("Configure gain in decibels (dB) on Sony IMX sensors.")
 
     def set_locked(self, flag):
         self.locked = flag
@@ -166,6 +169,8 @@ class GainDBFeature:
         # ensure both gain widgets are correct, without generating additional events
         self._quiet_set(self.ctl.form.ui.doubleSpinBox_gain, db)
         self._quiet_set(self.ctl.form.ui.slider_gain, db)
+
+        spec.app_state.check_refs()
 
     def up_callback(self):
         util.incr_spinbox(self.ctl.form.ui.doubleSpinBox_gain)

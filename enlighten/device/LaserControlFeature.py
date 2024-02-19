@@ -41,6 +41,11 @@ class LaserControlFeature:
         cfu.doubleSpinBox_laser_power   .valueChanged       .connect(self.set_laser_power_callback)
         cfu.comboBox_laser_power_unit   .currentIndexChanged.connect(self.update_visibility)
 
+        cfu.pushButton_laser_toggle     .setWhatsThis("Primary means to turn the laser on or off. Also available through a 'convenience' button at the screen top-right.")
+        cfu.pushButton_laser_convenience.setWhatsThis("This is a 'convenience' shortcut for the Fire Laser button on the main Control Palette, positioned to ensure it's always accessible and visible")
+        cfu.doubleSpinBox_excitation_nm .setWhatsThis("If you know the exact wavelength of your laser in nanometers, enter it here to improve wavenumber axis accuracy")
+        cfu.comboBox_laser_power_unit   .setWhatsThis("Switch laser power units between duty-cycle percentage and calibrated milliWatts")
+
         for widget in [ cfu.verticalSlider_laser_power ]:
             widget.installEventFilter(MouseWheelFilter(widget))
 
@@ -199,6 +204,17 @@ class LaserControlFeature:
         for callback in self.observers[event]:
             log.debug(f"set_laser_enable: calling {event} callback {callback}")
             callback()
+
+        self.ctl.sounds.play("laser_on" if flag else "laser_off")
+
+    def tick_status(self):
+        """ Called from Controller.tick_status """
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+
+        if spec.settings.state.laser_enabled:
+            self.ctl.sounds.play("laser_steady", repeat=True)
 
     def process_reading(self, reading):
         spec = self.ctl.multispec.current_spectrometer()

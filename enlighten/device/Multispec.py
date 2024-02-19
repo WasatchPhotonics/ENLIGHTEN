@@ -104,6 +104,16 @@ class Multispec:
         self.button_lock        .clicked                .connect(self.lock_callback)
         self.button_color       .sigColorChanged        .connect(self.color_changed_callback)
 
+        self.check_autocolor    .setWhatsThis("Automatically color-code on-screen graph traces according to hardware lid colors")
+        self.check_hide_others  .setWhatsThis("Hide all connected spectrometers except the one currently selected")
+        self.combo_spectrometer .setWhatsThis("Select one 'active' spectrometer from the list of currently connected devices")
+        self.button_lock        .setWhatsThis("Apply setting changes (integration time, laser control, etc) to all connected spectrometers at once")
+        self.button_color       .setWhatsThis("Manually select the graph color for this spectrometer.")
+        self.eject_button       .setWhatsThis(util.unwrap("""
+            Disconnect this spectrometer from software, such that ENLIGHTEN will
+            no longer communicate with it until the program is re-launched or the
+            device is re-enumerated"""))
+
         self.update_widget()
 
         log.debug("instantiated Multispec")

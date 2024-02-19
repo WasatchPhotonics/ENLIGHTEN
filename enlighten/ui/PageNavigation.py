@@ -3,6 +3,8 @@ import logging
 from enlighten import common
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 
+from enlighten.util import unwrap
+
 log = logging.getLogger(__name__)
 
 class PageNavigation:
@@ -139,6 +141,16 @@ class PageNavigation:
         self.combo_view         = cfu.comboBox_view
         self.stack_main         = cfu.stackedWidget_low
         self.combo_technique    = cfu.technique_comboBox
+
+        self.button_raman       .setWhatsThis("Switch to Raman mode, which enables Raman-relevant features in the Control Palette.")
+        self.button_non_raman   .setWhatsThis("Switch to non-Raman mode, which hides Raman-only features while adding features for absorbance, reflectance etc.")
+        self.combo_view         .setWhatsThis("Switch between various ENLIGHTEN views to access different types of product features.")
+        self.combo_technique    .setWhatsThis("Select between various non-Raman techniques, each providing distinct spectral processing and options.")
+        self.button_expert      .setWhatsThis(unwrap("""
+            Enable access to all features and options, whether they seem relevant to your spectrometer or not.
+
+            Also enables access to some 'experimental features' still in development. Intended for advanced users 
+            who know what they are doing...use at your own risk."""))
 
         self.operation_mode = common.OperationModes.RAMAN
         self.current_view = -1 

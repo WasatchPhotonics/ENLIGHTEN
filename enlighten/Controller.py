@@ -237,6 +237,8 @@ class Controller:
         # support styling of common.msgbox
         common.set_controller_instance(self)
 
+        self.did_you_know.show()
+
     def disconnect_device(self, spec=None, closing=False):
         if spec in self.other_devices:
             self.other_devices.remove(spec)
@@ -1271,6 +1273,12 @@ class Controller:
                     log.debug("Error reading or processing StatusMessage on %s", spec.device_id, exc_info=1)
 
         ########################################################################       
+        # Tick laser status
+        ########################################################################       
+
+        self.laser_control.tick_status()
+
+        ########################################################################       
         # Tick plug-ins
         ########################################################################       
 
@@ -1278,6 +1286,10 @@ class Controller:
         # manner using QSignals from PluginWorker. We could also encapsulate this
         # using PluginController.timer.
         self.plugin_controller.process_responses()
+
+        ########################################################################       
+        # Tick KIA
+        ########################################################################       
 
         # We're going to tick KnowItAll from here, because we want queued
         # Measurements (from ThumbnailWidget button clicks) to process even

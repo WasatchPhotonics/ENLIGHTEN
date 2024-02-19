@@ -192,7 +192,10 @@ class Marquee:
 
     def show_immediate(self, benign=None):
         self.clear_timer.stop()
-        self.ctl.stylesheets.set_benign(self.inner, benign)
+
+        # we're not currently using this, and it messes with themes at the moment
+        # self.ctl.stylesheets.set_benign(self.inner, benign)
+
         self.schedule_clear()
         self.ctl.app.processEvents()
 

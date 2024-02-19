@@ -3,6 +3,7 @@ import logging
 import pyqtgraph
 
 from enlighten import common
+from enlighten.util import unwrap
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 
 if common.use_pyside2():
@@ -93,13 +94,25 @@ class Graph:
             self.populate_scope_capture()
 
         # bindings
-        self.combo_axis                             .currentIndexChanged    .connect(self.update_axis_callback)
-        self.combo_axis                                                     .installEventFilter(ScrollStealFilter(self.combo_axis))
-        self.button_invert                          .clicked                .connect(self.invert_x_axis)
-        self.cb_marker                              .stateChanged           .connect(self.update_marker)
-        self.button_lock_axes                       .clicked                .connect(self.toggle_lock_axes)
-        self.button_zoom                            .clicked                .connect(self.toggle_zoom)
-        self.button_copy                            .clicked                .connect(self.copy_to_clipboard_callback)
+        self.combo_axis         .currentIndexChanged    .connect(self.update_axis_callback)
+        self.combo_axis         .installEventFilter(ScrollStealFilter(self.combo_axis))
+        self.button_invert      .clicked                .connect(self.invert_x_axis)
+        self.cb_marker          .stateChanged           .connect(self.update_marker)
+        self.button_lock_axes   .clicked                .connect(self.toggle_lock_axes)
+        self.button_zoom        .clicked                .connect(self.toggle_zoom)
+        self.button_copy        .clicked                .connect(self.copy_to_clipboard_callback)
+
+        self.combo_axis         .setWhatsThis("Change the current graph x-axis. By default, Raman shift in wavenumbers (cm⁻¹) is selected in Raman mode, and wavelengths (nm) in Non-Raman mode.")
+        self.button_invert      .setWhatsThis("Flip the graph's x-axis direction from increasing wavelength/wavenumbers to decreasing, as is common in Raman spectroscopy")
+        self.cb_marker          .setWhatsThis("Show visible graph markers on each physical datapoint on the graph, making it easier to see individual pixels")
+        self.button_zoom        .setWhatsThis("Hide the Clipboard and Control Palettes to maximize the on-screen graph")
+        self.button_copy        .setWhatsThis("Copy all spectra currently displayed on the graph to the system copy-paste clipboard, where it can be easily pasted into programs like Microsoft Excel")
+        self.button_lock_axes   .setWhatsThis(unwrap("""
+            Freeze the graph axes so the graph doesn't auto-rescale with each new
+            spectrum. Unfreezing automatically rescales to 'view all', so is a 
+            useful shortcut for resetting the graph after manually panning and 
+            zooming. Note that you can also zoom the X and Y axes individually by
+            'right-dragging' along them."""))
 
         self.update_marker()
 

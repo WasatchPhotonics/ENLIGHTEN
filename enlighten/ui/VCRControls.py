@@ -1,6 +1,7 @@
 import logging
 
 from enlighten import util
+from enlighten.util import unwrap
 
 from enlighten.common import msgbox
 
@@ -67,6 +68,30 @@ class VCRControls:
         self.bt_step            .setToolTip(self.tooltips["step"])
         self.bt_step_save       .setToolTip(self.tooltips["step_save"])
         self.bt_stop            .setToolTip(self.tooltips["stop"])
+
+        self.bt_play            .setWhatsThis("VCR-style play button to un-pause display of on-screen spectra")
+        self.bt_save            .setWhatsThis("Saves a single measurement to disk and to the scrolling Clipboard along the left-hand side of the scope")
+        self.bt_start_collection.setWhatsThis("When Batch Collection is enabled, this button starts a new batch")
+        self.bt_stop            .setWhatsThis("Halt the current activity (such as a long-running Batch Collection)")
+        self.bt_pause           .setWhatsThis(unwrap("""VCR-style pause button to freeze on-screen spectra (spectrometer 
+                                                        silently continues free-running acquisition in background, but 
+                                                        new spectra are neither displayed nor saved)"""))
+        self.bt_step            .setWhatsThis(unwrap("""This button is only available when the spectrometer is "paused."
+
+                                                        In normal operation, this button will take a single measurement, then
+                                                        resume pause.
+                                                        
+                                                        When Auto-Raman is enabled, this button will take a single Auto-Raman
+                                                        measurement. See the "What's This" help for Auto-Raman for more 
+                                                        information."""))
+        self.bt_step_save       .setWhatsThis(unwrap("""This button is only available when the spectrometer is "paused."
+
+                                                        In normal operation, this button will take a single measurement, 
+                                                        saving it to disk and the Clipboard, then resume pause.
+                                                        
+                                                        When Auto-Raman is enabled, this button will take a single Auto-Raman
+                                                        measurement and save it to disk and the Clipboard. See the "What's 
+                                                        This" help for Auto-Raman for more information."""))
 
         # always colorize stop
         self.ctl.gui.colorize_button(self.bt_stop, True)

@@ -479,7 +479,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
     def generate_tooltip(self):
         # quick stats in first line
         proc = self.measurement.processed_reading.get_processed()
-        tt = f"Max {int(max(proc))}, Avg {int(sum(proc)/len(proc))}, Min {int(min(proc))}\n\n" if proc is not None else ""
+        wt = f"Max {int(max(proc))}, Avg {int(sum(proc)/len(proc))}, Min {int(min(proc))}\n\n" if proc is not None else ""
 
         # followed by Measurement metadata
         metadata = self.measurement.get_all_metadata()
@@ -488,7 +488,6 @@ class ThumbnailWidget(QtWidgets.QFrame):
             if v is not None:
                 s = str(v)
                 if len(s) > 0:
-                    tt += f"{k}: {s}\n"
-        # self.body.setToolTip(tt.strip())
-        self.body.setWhatsThis(tt.strip())
-        self.ctl.stylesheets.apply(self.body, "tooltip")
+                    wt += f"{k}: {s}\n"
+        self.body.setWhatsThis(wt.strip())
+        # self.ctl.stylesheets.apply(self.body, "tooltip")

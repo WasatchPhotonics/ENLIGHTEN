@@ -3,9 +3,10 @@ import numpy as np
 
 from wasatch.ProcessedReading import ProcessedReading
 
-from wasatch import utils as wasatch_utils
+from wasatch.utils import generate_excitation, generate_wavenumbers, generate_wavelengths_from_wavenumbers
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from enlighten import common
+from enlighten.util import unwrap
 
 if common.use_pyside2():
     from PySide2 import QtCore
@@ -43,6 +44,28 @@ class InterpolationFeature:
         self.dsb_start          .valueChanged       .connect(self._update_widgets)
         self.rb_wavelength      .toggled            .connect(self._update_widgets)
         self.rb_wavenumber      .toggled            .connect(self._update_widgets)
+
+        for widget in [ self.bt_toggle, self.cb_enabled, self.dsb_end, self.dsb_incr, 
+                        self.dsb_start, self.rb_wavelength, self.rb_wavenumber ]:
+            widget.setWhatsThis(unwrap("""
+                The interpolation icon is chosen to look like a small ruler.
+                Like a rule, interpolation generates a fixed, evenly-spaced x-axis
+                which allows spectra from different units and different models to
+                be easily compared and graphed side-by-side with a single common
+                axis. 
+
+                Even with a single spectrometer, this can be useful if your
+                x-axis changes periodically, for instance when using Raman Shift
+                Correction (as you should!), or if you are using different external
+                lasers with slightly different excitation wavelengths.
+
+                Interpolated axes are defined with a starting x-coordinate, 
+                ending coordinate, and increment. A real-world analog might be
+                a yardstick starting at 0", ending at 36", and incrementing
+                by 1/16" steps.
+
+                Note that interpolation is performed AFTER the horizontal ROI is
+                cropped."""))
 
         self._update_widgets()
 
@@ -138,7 +161,7 @@ class InterpolationFeature:
             excitation = settings.excitation()
             if excitation is not None and excitation > 0:
                 return excitation
-        return wasatch_utils.generate_excitation(wavelengths=wavelengths, wavenumbers=wavenumbers)
+        return generate_excitation(wavelengths=wavelengths, wavenumbers=wavenumbers)
 
     def process(self, pr):
         """ 
@@ -186,7 +209,7 @@ class InterpolationFeature:
             # generate corresponding wavenumbers if we can
             excitation = self.generate_excitation(wavelengths, wavenumbers, pr.settings)
             if excitation:
-                interpolated.wavenumbers = wasatch_utils.generate_wavenumbers(excitation=excitation, wavelengths=interpolated.wavelengths)
+                interpolated.wavenumbers = generate_wavenumbers(excitation=excitation, wavelengths=interpolated.wavelengths)
 
         elif self.use_wavenumbers:
             if wavenumbers is None:
@@ -199,7 +222,7 @@ class InterpolationFeature:
             # generate corresponding wavelengths if we can
             excitation = self.generate_excitation(wavelengths, wavenumbers, pr.settings)
             if excitation is not None:
-                interpolated.wavelengths = wasatch_utils.generate_wavelengths_from_wavenumbers(excitation=excitation, wavenumbers=interpolated.wavenumbers)
+                interpolated.wavelengths = generate_wavelengths_from_wavenumbers(excitation=excitation, wavenumbers=interpolated.wavenumbers)
 
         if old_axis is None:
             log.error("Old axis was none, returning none.")

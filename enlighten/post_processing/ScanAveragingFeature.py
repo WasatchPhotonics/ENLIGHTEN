@@ -1,6 +1,6 @@
 import logging
 
-from enlighten import util
+from enlighten.util import incr_spinbox, decr_spinbox, unwrap
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 
 log = logging.getLogger(__name__)
@@ -21,6 +21,21 @@ class ScanAveragingFeature:
         self.bt_up      .clicked        .connect(self.up)
 
         self.ctl.presets.register(self, "scans_to_average", getter=self.get_scans_to_average, setter=self.set_scans_to_average)
+
+        for widget in [ self.spinbox, self.bt_dn, self.bt_up ]:
+            widget.setWhatsThis(unwrap("""
+                Scan averaging is one of the simplest yet most effective things 
+                you can do to increase Signal-to-Noise Ratio (SNR).
+
+                As boxcar averages over space, scan averaging averages over time,
+                averaging several samples together to reduce high-frequency noise
+                and generate authentically smoothed spectra without compromising peak 
+                intensity or optical resolution.
+
+                Setting averaging to 5 is a quick way to get a measurable boost in
+                effective signal. However, as signal is measured on a logarithmic
+                scale, you basically need to jump to 25 spectra to get the next 
+                noticable improvement in quality."""))
 
         self.reset()
 
@@ -55,6 +70,7 @@ class ScanAveragingFeature:
         spec = self.ctl.multispec.current_spectrometer()
         if spec:
             self.ctl.config.set(spec.settings.eeprom.serial_number, "scans_to_average", value)
+            spec.app_state.check_refs()
 
     def show_label(self, flag):
         self.label.setVisible(flag)
@@ -87,10 +103,10 @@ class ScanAveragingFeature:
         self.label.setText("Collected %d of %d" % (count, spec.settings.state.scans_to_average))
 
     def up(self):
-        util.incr_spinbox(self.spinbox)
+        incr_spinbox(self.spinbox)
 
     def down(self):
-        util.decr_spinbox(self.spinbox)
+        decr_spinbox(self.spinbox)
 
     ## moved from Controller.doing_averaging
     def enabled(self, spec=None):

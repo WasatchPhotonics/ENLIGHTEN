@@ -62,6 +62,7 @@ from enlighten.timing.BatchCollection import BatchCollection
 from enlighten.ui.Authentication import Authentication
 from enlighten.ui.Clipboard import Clipboard
 from enlighten.ui.Colors import Colors
+from enlighten.ui.DidYouKnowFeature import DidYouKnowFeature
 from enlighten.ui.FocusListener import FocusListener
 from enlighten.ui.GUI import GUI
 from enlighten.ui.GuideFeature import GuideFeature
@@ -309,9 +310,6 @@ class BusinessObjects:
             clipboard                   = ctl.clipboard,
             hardware_file_manager       = ctl.hardware_file_manager)
 
-        self.header("instantiating Sounds")
-        ctl.sounds = Sounds(ctl)
-
         self.header("instantiating ScanAveragingFeature")
         ctl.scan_averaging = ScanAveragingFeature(ctl)
 
@@ -381,6 +379,8 @@ class BusinessObjects:
         # TODO: refactor like PluginController
         self.header("instantiating KIAFeature")
         ctl.kia_feature = KIAFeature(
+            ctl                         = ctl,
+
             baseline_correction         = ctl.baseline_correction,
             bt_alias                    = cfu.pushButton_id_results_make_alias,
             bt_benign                   = cfu.pushButton_id_results_flag_benign,
@@ -528,8 +528,14 @@ class BusinessObjects:
             multispec                   = ctl.multispec,
             spinbox                     = cfu.spinBox_region)
 
+        self.header("instantiating Sounds")
+        ctl.sounds = Sounds(ctl)
+
         self.header("instantiating HelpFeature")
         ctl.help = HelpFeature(ctl)
+
+        self.header("instantiating DidYouKnowFeature")
+        ctl.did_you_know = DidYouKnowFeature(ctl)
 
         self.header("done with Business Object creation")
 

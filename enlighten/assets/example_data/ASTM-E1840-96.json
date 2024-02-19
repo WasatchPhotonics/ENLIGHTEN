@@ -17,7 +17,7 @@
              "841.6": { "Intensity": 1 },
              "950.1": { "Intensity": 1 },
              "978.0": { "Intensity": 1 },
-            "1101.1": { "Intensity": 1 },
+            "1104.1": { "Intensity": 1 },
             "1177.7": { "Intensity": 3 },
             "1290.7": { "Intensity": 1 },
             "1316.9": { "Intensity": 1 },
@@ -27,8 +27,6 @@
             "1627.9": { "Intensity": 4 }
         },
         "Sulfur": {
-              "26.9": { "Intensity": 1 },
-              "50.0": { "Intensity": 3 },
               "85.1": { "Intensity": 1 },
              "153.8": { "Intensity": 3 },
              "219.1": { "Primary": true },
