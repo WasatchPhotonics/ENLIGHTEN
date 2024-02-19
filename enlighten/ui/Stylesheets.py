@@ -112,9 +112,10 @@ class Stylesheets:
         widget_name = widget.objectName()
         old = widget.styleSheet()
 
-        if not widget_name or len(widget_name) == 0:
-            log.error(f"widget [{widget_name}] has no name: {widget}")
-            return
+        # This screws up ThumbnailWidgets...
+        # if not widget_name or len(widget_name) == 0:
+        #     log.error(f"widget [{widget_name}] has no name: {widget}")
+        #     return
 
         if old == css:
             log.debug(f"{widget_name} already has stylesheet equivalent to {self.theme}[{style_name}]")

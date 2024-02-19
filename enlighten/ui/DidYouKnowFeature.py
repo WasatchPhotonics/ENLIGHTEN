@@ -43,8 +43,10 @@ class DidYouKnowFeature:
         tip("What's This?", "whats_this", """<p>Click the 'What's This' button ⓘ  to change your cursor into an arrow with a ? next to it,
             then click another button or control you'd like to learn more about.</p><p>What's This help goes deeper than normal mouse-overs,
             providing live instruction into advanced topics of spectroscopy and how to use your Wasatch spectrometer.</p>""")
-        tip("Quick Dark", None, "Use ctrl-D to quickly take a fresh dark, or to clear the current dark if stored.")
-        tip("Quick Edit", None, "Use ctrl-E to quickly edit the last-saved measurement label.")
+        tip("Quick Dark", "dark_bulb", """
+            <p>Use ctrl-D to quickly take a fresh Dark, or to clear the current Dark if stored.</p>
+            <p>No spoilers, but you can probably guess the shortcut for a fresh Reference :-)</p>""")
+        tip("Quick Edit", "quick_edit", "Use ctrl-E to quickly edit the last-saved measurement label.")
         tip("Open-Source", "github", """ENLIGHTEN™ is completely open-source, so you're free to see how it works, run it on new platforms,
             and even make changes. Find it on GitHub at <a href="https://github.com/WasatchPhotonics/ENLIGHTEN">WasatchPhotonics/ENLIGHTEN</a>.""")
         tip("Wavenumber Correction", "wavenumber_correction", """
@@ -102,13 +104,13 @@ class DidYouKnowFeature:
                has a little 📋 clipboard icon atop the EEPROM contents, and clicking that will
                copy the entire table to your computer's system clipboard for copy-pasting into
                Excel, Notepad or other programs.</p>""")
-        tip("Selective Export", None, """
+        tip("Selective Export", "export_selected", """
             <p>When Exporting the ENLIGHTEN™ Clipboard of saved measurements to a "wide" CSV
                file, you can specify whether you wish to export the entire Clipboard, or just
                the measurements currently graphed on-screen.</p>""")
         tip("Graph Options", "chart_options", """
             <p>You can righ-click on any graph in ENLIGHTEN™ to customize its grid, axes and other features.</p>""")
-        tip("Pan and Zoom on Trackpads", None, """
+        tip("Pan and Zoom on Trackpads", "zoom", """
             <p>All ENLIGHTEN™ graphs are easy enough to pan and zoom using a mouse while holding
                the right-click button. But what if you're on a laptop with a trackpad?</p>
             <p>Fortunately, you can still zoom and stretch your graph in two dimensions
@@ -116,7 +118,7 @@ class DidYouKnowFeature:
                control-drag (or two-finger drag) along the axis. The graph should zoom in or out
                in the indicated dimension, allowing you to see just the peak features you care
                about regardless of computing platform.</p>""")
-        tip("Batch Collection 'Explain This'", None, """
+        tip("Batch Collection 'Explain This'", "explain_this", """
             <p>Batch Collection settings can get pretty complex -- it's a flexible feature,
                with many configurable delays and options, and sometimes it's hard to remember
                exactly what each field does and how that will affect the series of measurements.</p>
@@ -130,10 +132,10 @@ class DidYouKnowFeature:
             <p>You can customize which fields are displayed using the "..." menu at the right end
                of the Status Bar. This will show additional fields not included by default, and let
                you disable fields you don't need or use.</p>""")
-        tip("Moveable Legend", None, """
+        tip("Moveable Legend", "moveable_legend", """
             <p>The main Scope graph has a legend in the upper-left corner labeling each displayed
                graph trace. You can move that around the graph by dragging with a mouse, to avoid
-               overwriting key peaks and spectral features.</p>""")
+               overwriting key peaks and spectral features, lining up the perfect screenshot.</p>""")
         tip("Resizable Clipboard and Control Palette", "screen_handles", """
             <p>We try to keep ENLIGHTEN™ usable on smaller screens and tablets, but there's so much
                detail we love to show! One way you can claw-back some screen real-estate is by grabbing
@@ -142,7 +144,7 @@ class DidYouKnowFeature:
         tip("Thermo Galactic SPC", "galactic", """
              <p>ENLIGHTEN™ can read and write spectra in the Thermo Galactic SPC format,
                 used by Thermo Scientific GRAMS and other popular spectroscopy software.</p>""")
-        tip("Boxcar Smoothing", None, """
+        tip("Boxcar Smoothing", "boxcar", """
              <p>Boxcar smoothing applies a lightweight spatial averaging convolution
                 to remove high-frequency noise from your spectrum, at the cost of
                 slightly reduced peak intensity and optical resolution (increased
@@ -156,7 +158,7 @@ class DidYouKnowFeature:
                 non-linearity inherent in calibrated wavelength or wavenumber axes.</p>
              <p>Typical values may be 1 or 2 for Raman, or up to 10 for non-Raman
                 with broad spectral features.</p>""")
-        tip("Scan Averaging", None, """
+        tip("Scan Averaging", "scan_averaging", """
              <p>Scan averaging is one of the simplest yet most effective things
                 you can do to increase Signal-to-Noise Ratio (SNR).</p>
              <p>As boxcar averages over <i>space</i>, scan averaging averages over <i>time</i>,
@@ -168,8 +170,8 @@ class DidYouKnowFeature:
                 effective signal. However, as signal is measured on a logarithmic
                 scale, you basically need to jump to 25 spectra to get the next
                 noticable improvement in quality.</p>""")
-        tip("Baseline Correction", None, """
-             <p>Baseline correction allows you to select one of several 3rd-party
+        tip("Baseline Correction", "baseline_correction", """
+             <p>Baseline correction (currently only accessible in Expert mode) allows you to select one of several 3rd-party
                 open-source algorithms to perform an automated "baseline subtraction"
                 from your spectra. Essentially this can be used as a simple form of
                 fluorescence removal.</p>
@@ -240,7 +242,7 @@ class DidYouKnowFeature:
                 and each saved measurement will be stored in metadata-rich 
                 <a href="https://en.wikipedia.org/wiki/JSON">JavaScript Object Notation</a>.
                 In addition to individual measurements, Exports will also be stored in JSON.</p>""")
-        tip("Prefix and Suffix", None, """
+        tip("Prefix and Suffix", "prefix_suffix", """
              <p>Two of the most useful on-screen fields for manual data collections are <b>prefix</b>
                 and <b>suffix</b>. As their name implies, they are automatically added at the beginning
                 and end of saved filenames (both individual measurements, and exports).</p>
@@ -256,6 +258,7 @@ class DidYouKnowFeature:
         # Themes, Light Mode
         # Horizontal ROI
         # Save/Export JSON
+        # collated
 
         tip("Template Macros", None, """
             <p>In the Settings view, configure template macros like <tt>{integration_time_ms}ms
