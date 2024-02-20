@@ -154,7 +154,7 @@ class RichardsonLucy:
         if spec is None:
             return
 
-        x_axis = self.ctl.graph.generate_x_axis(unit=unit, cropped=True)
+        x_axis = self.ctl.generate_x_axis(unit=unit, cropped=True)
         if x_axis is None:
             log.debug("no x-axis")
             return 

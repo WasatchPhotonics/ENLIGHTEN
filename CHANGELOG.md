@@ -4,7 +4,7 @@
 
 - 2023-02-20 4.0.43
     - fixed XL temperature
-    - fixing Peak Sharpening...
+    - fixed Peak Sharpening
 - 2023-02-19 4.0.42
     - GUI tweaks
         - added DidYouKnowFeature
