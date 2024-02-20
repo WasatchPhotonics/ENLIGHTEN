@@ -500,7 +500,7 @@ class Controller:
             if device_id.is_andor():
                 log.debug(f"connect_new: considering Andor {device_id}")
                 if self.multispec.have_any_andor():
-                    log.error("connect_new: only supporting one Andor unit for now (ignoring new)")
+                    log.debug("connect_new: only supporting one Andor unit for now (ignoring new)")
                     continue
                 else:
                     log.debug("connect_new: don't have any Andor so far")
@@ -700,9 +700,7 @@ class Controller:
             # (allow overrides from local configuration file)
             log.debug("attempting to download Andor EEPROM")
             andor_eeprom = self.cloud_manager.get_andor_eeprom(device.settings.eeprom.detector_serial_number)
-            if andor_eeprom == {}:
-                log.error(f"got empty dict for Andor eeprom. Serial number incorrect or no entry in dynamo table.")
-            else:
+            if andor_eeprom:
                 log.debug(f"andor_eeprom = {andor_eeprom}")
 
                 def default_missing(local_name, empty_value=None, cloud_name=None):
@@ -730,6 +728,8 @@ class Controller:
 
                 log.debug(f"calling save_config with: {device.settings.eeprom}")
                 device.change_setting("save_config", device.settings.eeprom)
+            else:
+                log.error(f"Could not load Andor EEPROM for {device.settings.eeprom.detector_serial_number}")
 
             cfu.label_detector_serial.setText(device.settings.eeprom.detector_serial_number)
         else:

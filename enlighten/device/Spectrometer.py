@@ -108,7 +108,7 @@ class Spectrometer:
             log.debug(f"using FWHM from EEPROM: {self.fwhm:.2f}")
         else:
             self.fwhm = ctl.model_info.model_fwhm.get_by_model(self.settings.full_model())
-            log.debug("using FWHM from lookup table: {self.fwhm:.2f}")
+            log.debug(f"using FWHM from lookup table: {self.fwhm}")
 
         self.settings.eeprom_backup = copy.deepcopy(self.settings.eeprom)
 

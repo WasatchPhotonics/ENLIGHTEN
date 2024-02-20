@@ -183,10 +183,10 @@ class StatusIndicators:
                     if latest is not None:
                         if app_state.detector_temperatures_degC.all_within(setpoint, 1.0, window_sec=self.TEMPERATURE_WINDOW_SEC):
                             temp = "connected"
-                            temp_tt = "temperature stable"
+                            temp_tt = "temperature stable around {setpoint}°C"
                         else:
                             temp = "warning" 
-                            temp_tt = "temperature stabilizing"
+                            temp_tt = f"temperature stabilizing toward {setpoint}°C"
                     else:
                         temp = "warning"
                 else:

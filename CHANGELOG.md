@@ -2,11 +2,14 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
-- 2023-??-?? 4.0.42
-    - (working on keras.engine issue)
+- 2023-02-20 4.0.43
+    - fixed XL temperature
+    - fixing Peak Sharpening...
+- 2023-02-19 4.0.42
     - GUI tweaks
+        - added DidYouKnowFeature
         - added session close button for KIA
-        - added WhatsThis docs
+        - fleshed-out WhatsThis docs
         - theme fixes
         - moved sounds checkbox to Settings view
         - added laser_steady.wav
