@@ -52,7 +52,7 @@ clean:
              build.{err,out} \
              doxygen.{err,out}
 	@find . -name __pycache__ -exec rm -rfv {} \;
-	@find . -name \*.pyc -exec rm -v {} \;
+	@find . -name \*.pyc -exec rm -fv {} \;
 
 deps:
 	@dos2unix scripts/rebuild_resources.sh
