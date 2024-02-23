@@ -24,13 +24,9 @@ the build process.
 
 ## Create Virtual Environment
 
-Note: previously ENLIGHTEN used Anaonda (typically Miniconda3) for virtual 
-environment management. In attempt to "keep with the times," we are trying to 
-transition to "python venv" which seems the evolved replacement. Older references
-to conda should be deprecated.
-
-    $ python3.11 -m venv py311
-    $ py311\Scripts\activate
+    $ cd %HOME%
+    $ python3.11 -m venv enlighten_py311
+    $ enlighten_py311\Scripts\activate
 
 ## Getting Enlighten Source
 
@@ -43,7 +39,7 @@ You must have a copy of Wasatch.PY in a parallel directory.
 ## Install Package Dependencies
 
     $ pip install requirements.txt
-    $ pip install spc_spectra       # not sure why separate
+    $ pip install pywin32 spc_spectra
 
 ## Configuration
 
@@ -76,14 +72,12 @@ Basically, follow this...
 
 ## Build a Release Installer
 
-The current recommended process is to build installers on Win10-64.
-Creating installers from Windows 11 is currently prone to runtime errors 
-(missing dependencies psutil, \_fblas). 
+The latest recommended process is to build installers on Win11-64.
 
 To build an installer, you need to first install all dependencies for your
-platform, then run this from a Git Cmd shell (within your venv):
+platform, then run this from a Git Cmd shell (will destroy and re-create venv)
 
-    scripts\bootstrap.bat installer (or "just-installer")
+    $ scripts\bootstrap.bat oneshot 
 
 ## Convenience Scripts
 
@@ -111,7 +105,7 @@ Try setting this environment variable before launching ENLIGHTEN, then checking 
 
 ### libusb1 "Entity not found"
 
-If you get this on Windows using ENLIGHTEN 64-bit:
+If you get something like this on Windows using ENLIGHTEN 64-bit:
 
   File "C:\Users\mzieg\miniconda3\envs\conda\_enlighten3\lib\site-packages\usb\backend\libusb1.py", line 893, in ctrl\_transfer
     ret = _check(self.lib.libusb_control_transfer(
