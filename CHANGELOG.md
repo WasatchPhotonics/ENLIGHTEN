@@ -2,6 +2,9 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2023-02-22 4.0.44
+    - deprecated Miniconda (python venv FTW)
+    - built installer on Win11
 - 2023-02-20 4.0.43
     - fixed XL temperature
     - fixed Peak Sharpening

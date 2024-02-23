@@ -8,7 +8,6 @@ always built from Windows 10 (but work on Windows 11).
 
 The following installation sequence is recommended:
 
-- [Miniconda](https://conda.io/miniconda.html) (latest for Python 3.x on Win64)
 - [Git for Windows](https://git-scm.com/download/win)
     - select "Use Git and optional Unix tools from the Command Prompt"
 - [InnoSetup](http://www.jrsoftware.org/isinfo.php) (tested 6.0.4)
@@ -20,10 +19,18 @@ Windows environments have additional dependencies if you need KnowItAll support:
 - [KnowItAllWrapper](https://github.com/WasatchPhotonics/KnowItAllWrapper)
     - a compiled copy of KIAConsole is in dist/
 
-Binary snapshots of key installers are retained for posterity in [Enlighten-dependencies](https://github.com/WasatchPhotonics/Enlighten-dependencies).
-
 See [MAINTENANCE](MAINTENANCE.md) for temporary changes or workarounds to
 the build process.
+
+## Create Virtual Environment
+
+Note: previously ENLIGHTEN used Anaonda (typically Miniconda3) for virtual 
+environment management. In attempt to "keep with the times," we are trying to 
+transition to "python venv" which seems the evolved replacement. Older references
+to conda should be deprecated.
+
+    $ python3.11 -m venv py311
+    $ py311\Scripts\activate
 
 ## Getting Enlighten Source
 
@@ -33,57 +40,39 @@ You must have a copy of Wasatch.PY in a parallel directory.
     $ git clone git@github.com:WasatchPhotonics/Wasatch.PY.git
     $ cd ENLIGHTEN
 
+## Install Package Dependencies
+
+    $ pip install requirements.txt
+    $ pip install spc_spectra       # not sure why separate
+
 ## Configuration
 
-Enlighten is written in Python, so there is no "build" per se -- you don't have
-to explicitly compile classes the way you do in C++ or Java.
+    $ set PYTHONPATH=..\Wasatch.PY;..\jcamp;plugins;.;enlighten\assets\uic_qrc
+    $ sh scripts\rebuild_resources.sh
 
-However, you do need to properly configure your environment with all our library 
-dependencies and package requirements.
+## Install libusb-win32 drivers
 
-This includes adding to your PYTHONPATH:
+To test ENLIGHTEN with a spectrometer, you'll need to install the libusb drivers.
+Normally this is done for customers when they run the ENLIGHTEN binary installer.
+If you're running from a source distribution, you'll need to install those 
+drivers manually so Windows knows how to enumerate the spectrometer.
 
-    $ set PYTHONPATH=..\Wasatch.PY;plugins;.;enlighten\assets\uic_qrc
-
-*Note:* when setting environment variables like PYTHONPATH under Windows, 
-_do not_ quote them (e.g., do *not* type: set PYTHONPATH="..\Wasatch.PY")
-
-## Activating the environment
-
-When interacting with Enlighten, be sure to activate your shell. This provides 
-access to the dependencies, such as numpy and matplotlib, and it is required for
-running Enlighten or creating installers.
-
-    $ scripts\bootstrap.bat activate
-
-Note that conda will "solve" (create) environments much more quickly if you
-use the new libmamba solver described here:
-
-- https://www.anaconda.com/blog/a-faster-conda-for-a-growing-community
-
-## Running Enlighten
-
-From an activated shell, use the run script
-
-    $ run.bat
-
-Note that to test ENLIGHTEN with a spectrometer, you'll need to install the
-libusb drivers.  Normally this is done for customers when they run the 
-ENLIGHTEN binary installer.  If you're running from a source distribution,
-you'll need to install those drivers manually so Windows knows how to enumerate
-the spectrometer.
-
-Basically, follow this procedure:
+Basically, follow this...
 
 - https://github.com/WasatchPhotonics/Wasatch.NET#post-install-step-1-libusb-drivers
 
-Except when it tells you to navigate here:
+...except when it tells you to navigate here...
 
     C:\Program Files\Wasatch Photonics\Wasatch.NET\libusb\drivers
 
-instead navigate here:
+...instead navigate here:
 
     enlighten\scripts\support\files\libusb\drivers
+
+## Run ENLIGHTEN
+
+    $ python scripts\Enlighten.py --help
+    $ python scripts\Enlighten.py 
 
 ## Build a Release Installer
 
@@ -92,7 +81,7 @@ Creating installers from Windows 11 is currently prone to runtime errors
 (missing dependencies psutil, \_fblas). 
 
 To build an installer, you need to first install all dependencies for your
-platform, then run this from a Git Cmd shell (after Conda activation):
+platform, then run this from a Git Cmd shell (within your venv):
 
     scripts\bootstrap.bat installer (or "just-installer")
 

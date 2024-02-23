@@ -42,14 +42,15 @@ then
     # this line was needed when we moved to Qt5, because uic is now a python script 
     # rather than executable, and it therefore needs to be running in the appropriate
     # Conda environment to find PySide2
-    source activate conda_enlighten3
+    # 
+    # source activate conda_enlighten3
 
     OS="Windows"
 
-    TWO_TO_THREE="$CONDA_PREFIX/Scripts/2to3.exe"
+    TWO_TO_THREE="${VIRTUAL_ENV}/Scripts/2to3.exe"
 
-    RCC="$CONDA_PREFIX/Scripts/pyside6-rcc.exe"
-    UIC="$CONDA_PREFIX/Scripts/pyside6-uic.exe"
+    RCC="${VIRTUAL_ENV}/Scripts/pyside6-rcc.exe"
+    UIC="${VIRTUAL_ENV}/Scripts/pyside6-uic.exe"
 
     # added because recent(?) versions of Git Cmd / Git Bash seem to 
     # automatically launch new shells (run .sh scripts like this one)
@@ -89,14 +90,14 @@ else
             RCC_OPTS="--generator python"
         else
             OS="Linux"
-            RCC="$CONDA_PREFIX/bin/pyside6-rcc"
-            UIC="$CONDA_PREFIX/bin/pyside6-uic"
-            TWO_TO_THREE="$CONDA_PREFIX/bin/2to3"
+            RCC="${VIRTUAL_ENV}/bin/pyside6-rcc"
+            UIC="${VIRTUAL_ENV}/bin/pyside6-uic"
+            TWO_TO_THREE="${VIRTUAL_ENV}/bin/2to3"
         fi
     fi
 fi
 
-echo "CONDA_PREFIX= $CONDA_PREFIX"
+echo "VIRTUAL_ENV = ${VIRTUAL_ENV}"
 echo "QUICK = $QUICK"
 echo "PAUSE = $PAUSE"
 echo "PYTHON= $PYTHON"
