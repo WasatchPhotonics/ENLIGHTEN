@@ -336,16 +336,10 @@ if "%innosetup%" == "1" (
     echo %date% %time% ======================================================
     echo.
 
-    if "%COMPRESSION%" == "" (
-        rem caller may set it to lzma/fast for speed
-        set "COMPRESSION=lzma/max"
-    )
-
     if not exist "scripts\windows_installer\" mkdir scripts\windows_installer
 
     "%PROGRAM_FILES_X86%\Inno Setup 6\iscc.exe" ^
         /DENLIGHTEN_VERSION=%ENLIGHTEN_VERSION% ^
-        /DCOMPRESSION=%COMPRESSION% ^
         scripts\Application_InnoSetup.iss
     if %errorlevel% neq 0 goto script_failure
 
@@ -354,6 +348,7 @@ if "%innosetup%" == "1" (
     echo %date% %time% Reviewing installer artifacts [built-dist]
     echo %date% %time% ======================================================
     echo.
+
     dir scripts\built-dist\Enlighten\*.exe
     if %errorlevel% neq 0 goto script_failure
 
@@ -362,6 +357,7 @@ if "%innosetup%" == "1" (
     echo %date% %time% Reviewing installer artifacts [windows_installer]
     echo %date% %time% ======================================================
     echo.
+
     dir scripts\windows_installer\*.exe
     if %errorlevel% neq 0 goto script_failure
 
