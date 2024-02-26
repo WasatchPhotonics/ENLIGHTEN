@@ -81,7 +81,7 @@ class DidYouKnowFeature:
                accurately. You can do this in Expert mode, which adds a "Wavenumber" control
                to the Laser Control panel in 0.001nm precision.</p>""")
         tip("Audible Laser Warning", "ear", """
-            <p>Wasatch spectrometers and ENLIGHTEN™ softwae try hard to make it extremely
+            <p>Wasatch spectrometers and ENLIGHTEN™ software try hard to make it extremely
                visible when your laser is firing: there is a red LED on the spectrometer
                housing, ENLIGHTEN™'s two Laser Enable buttons both turn red, and the "Light
                Source" virtual LED / Status Indicator in the lower-right corner turns a
@@ -109,7 +109,7 @@ class DidYouKnowFeature:
                file, you can specify whether you wish to export the entire Clipboard, or just
                the measurements currently graphed on-screen.</p>""")
         tip("Graph Options", "chart_options", """
-            <p>You can righ-click on any graph in ENLIGHTEN™ to customize its grid, axes and other features.</p>""")
+            <p>You can right-click on any graph in ENLIGHTEN™ to customize its grid, axes and other features.</p>""")
         tip("Pan and Zoom on Trackpads", "zoom", """
             <p>All ENLIGHTEN™ graphs are easy enough to pan and zoom using a mouse while holding
                the right-click button. But what if you're on a laptop with a trackpad?</p>
@@ -166,10 +166,10 @@ class DidYouKnowFeature:
                 and generate authentically smoothed spectra without compromising peak
                 intensity or optical resolution (but at the cost of longer measurement
                 operations and laser firing time).</p>
-             <p>Setting averaging to 5 is a quick way to get a measurable boost in
-                effective signal. However, as signal is measured on a logarithmic
-                scale, you basically need to jump to 25 spectra to get the next
-                noticable improvement in quality.</p>""")
+             <p>Setting averaging to 5 is a quick way to get a measurable boost 
+                in effective signal. However, as SNR increases with the square
+                root of the number of averages, you basically need to jump to 25 
+                spectra to get the next noticable improvement in quality.</p>""")
         tip("Baseline Correction", "baseline_correction", """
              <p>Baseline correction (currently only accessible in Expert mode) allows you to select one of several 3rd-party
                 open-source algorithms to perform an automated "baseline subtraction"

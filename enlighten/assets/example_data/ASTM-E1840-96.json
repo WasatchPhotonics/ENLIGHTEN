@@ -55,7 +55,7 @@
              "651.6": { "Intensity": 2 },
              "710.8": { "Intensity": 1 },
              "797.2": { "Intensity": 2 },
-             "834.5": { "Primary": true },
+             "834.5": { "Intensity": 1 },
              "857.9": { "Intensity": 3 },
              "968.7": { "Intensity": 1 },
             "1105.5": { "Intensity": 1 },
