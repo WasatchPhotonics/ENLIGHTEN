@@ -7,6 +7,7 @@
     - built installer on Win11
     - ASTM tweak
     - DYK tweaks
+    - convert timestamps to strings in JSON
 - 2023-02-20 4.0.43
     - fixed XL temperature
     - fixed Peak Sharpening
