@@ -6,9 +6,9 @@ REM an installer `oneshot`.
 
 set "rebuild_env=0"
 set "clear_pyinst_appdata=0"
-set "configure_conda=0"
+set "configure_venv=0"
 set "install_python_deps=0"
-set "update_conda=0"
+set "update_venv=0"
 set "log_conf_pkg=0"
 set "regenerate_qt=0"
 set "pyinstaller=0"
@@ -21,6 +21,9 @@ REM without inserting control characters which confuse unix2dos etc.
 REM https://stackoverflow.com/a/64515648
 set "RING_BELL=echo x|choice /n 2>nul"
 
+set ENLIGHTEN_VENV=%HOME%\enlighten_py311
+echo Using ENLIGHTEN_VENV at %ENLIGHTEN_VENV%
+
 if "%2" == "virtspec" (
     set "virtspec=1"
 )
@@ -28,23 +31,26 @@ if "%2" == "virtspec" (
 if "%1" == "activate" (
     goto args_parsed
 )
+
 if "%1" == "pyinstaller" (
     set "regenerate_qt=1"
     set "pyinstaller=1"
     goto args_parsed
 )
+
 if "%1" == "innosetup" (
     set "regenerate_qt=1"
     set "pyinstaller=1"
     set "innosetup=1"
     goto args_parsed
 )
+
 if "%1" == "refreshdep" (
     set "rebuild_env=1"
     set "clear_pyinst_appdata=1"
-    set "configure_conda=1"
+    set "configure_venv=1"
     set "install_python_deps=1"
-    set "update_conda=1"
+    set "update_venv=1"
     set "log_conf_pkg=1"
     goto args_parsed
 )
@@ -52,9 +58,9 @@ if "%1" == "refreshdep" (
 if "%1" == "oneshot" (
     set "rebuild_env=1"
     set "clear_pyinst_appdata=1"
-    set "configure_conda=1"
+    set "configure_venv=1"
     set "install_python_deps=1"
-    set "update_conda=1"
+    set "update_venv=1"
     set "log_conf_pkg=1"
     set "regenerate_qt=1"
     set "pyinstaller=1"
@@ -88,9 +94,9 @@ REM DEFINE CUSTOM ACTION HERE
 if "%1" == "custom" (
     set "rebuild_env=0"
     set "clear_pyinst_appdata=0"
-    set "configure_conda=0"
+    set "configure_venv=0"
     set "install_python_deps=0"
-    set "update_conda=0"
+    set "update_venv=0"
     set "log_conf_pkg=0"
     set "regenerate_qt=0"
     set "pyinstaller=0"
@@ -100,10 +106,10 @@ if "%1" == "custom" (
 
 echo === USAGE ===
 echo $ scripts\bootstrap activate
-echo Do not perform any major actions. Prepare environment variables and conda for using Enlighten.
+echo Do not perform any major actions. Prepare environment variables and venv for using Enlighten.
 echo.
 echo $ scripts\bootstrap activate virtspec
-echo Prepare environment variables and conda for using Enlighten with a virtual spectrometer. (use bootstrap activate to revert to normal)
+echo Prepare environment variables and venv for using Enlighten with a virtual spectrometer. (use bootstrap activate to revert to normal)
 echo.
 echo $ scripts\bootstrap pyinstaller
 echo regenerate Qt views and run pyinstaller (to create standalone exe)
@@ -112,7 +118,7 @@ echo $ scripts\bootstrap innosetup
 echo run innosetup (to create windows installer)
 echo.
 echo $ scripts\bootstrap refreshdep
-echo This will take a while. Remove and recreate the conda environment and reinstall all dependencies from the internet.
+echo This will take a while. Remove and recreate the venv environment and reinstall all dependencies from the internet.
 echo.
 echo $ scripts\bootstrap oneshot
 echo This will take a while. Perform all steps (except for testing) and produce an installer.
@@ -140,10 +146,9 @@ echo.
 echo %date% %time% ======================================================
 echo %date% %time% Setting environment variables
 echo %date% %time% ======================================================
-REM capture start time
+echo.
 set TIME_START=%time%
-set PYTHONUTF8=1
-set PYTHONPATH=.;..\Wasatch.PY;..\SPyC_Writer\src;..\jcamp;plugins;%CONDA_PREFIX%\lib\site-packages;enlighten\assets\uic_qrc
+set PYTHONPATH=.;..\Wasatch.PY;..\jcamp;plugins;enlighten\assets\uic_qrc
 echo PYTHONPATH = %PYTHONPATH%
 
 if exist "C:\Program Files (x86)" (
@@ -158,11 +163,6 @@ echo %date% %time% ======================================================
 echo %date% %time% Checking dependencies
 echo %date% %time% ======================================================
 echo.
-set MINICONDA=%USERPROFILE%\Miniconda3
-if not exist %MINICONDA% (
-    echo %MINICONDA% not found.
-    goto script_failure
-)
 
 if not exist "%PROGRAM_FILES_X86%\Inno Setup 6" (
     echo Warning: Inno Setup 6 not installed
@@ -179,6 +179,7 @@ echo %date% %time% ======================================================
 echo %date% %time% Extracting Enlighten version
 echo %date% %time% ======================================================
 echo.
+
 grep '^VERSION' enlighten/common.py | grep -E -o '([0-9]\.?)+' > version.txt
 set /p ENLIGHTEN_VERSION=<version.txt
 echo ENLIGHTEN_VERSION = %ENLIGHTEN_VERSION%
@@ -189,87 +190,48 @@ echo %date% %time% ======================================================
 echo %date% %time% Setting path
 echo %date% %time% ======================================================
 echo.
-set PATH=%MINICONDA%;%MINICONDA%\Scripts;%MINICONDA%\Library\bin;%PROGRAM_FILES_X86%\Inno Setup 6;%PATH%
-echo Path = %PATH%
+
+REM set PATH=%PROGRAM_FILES_X86%\Inno Setup 6;%PATH%
+REM echo Path = %PATH%
 
 echo.
 echo %date% %time% ======================================================
 echo %date% %time% Confirm Python version
 echo %date% %time% ======================================================
 echo.
-which python
+
+where python
 python --version
 if %errorlevel% neq 0 goto script_failure
 
 if "%clear_pyinst_appdata%" == "1" (
     echo.
     echo %date% %time% ======================================================
-    echo %date% %time% Delete pyinstaller appdata OPTIONAL
+    echo %date% %time% Delete pyinstaller appdata 
     echo %date% %time% ======================================================
     echo.
     echo removing %USERPROFILE%\AppData\Roaming\pyinstaller
     rd /s /q %USERPROFILE%\AppData\Roaming\pyinstaller
 )
-if "%rebuild_env%" == "1" (
-    echo.
-    echo %date% %time% ======================================================
-    echo %date% %time% Delete conda environment OPTIONAL
-    echo %date% %time% ======================================================
-    echo.
-    echo removing %MINICONDA%\envs\conda_enlighten3
-    rd /s /q %MINICONDA%\envs\conda_enlighten3
-)
-
-if "%configure_conda%" == "1" (
-    echo.
-    echo %date% %time% ======================================================
-    echo %date% %time% Configure Conda
-    echo %date% %time% ======================================================
-    echo.
-    conda config --set always_yes yes --set changeps1 no
-    if %errorlevel% neq 0 goto script_failure
-)
-
-if "%update_conda%" == "1" (
-    echo.
-    echo %date% %time% ======================================================
-    echo %date% %time% Update Conda OPTIONAL
-    echo %date% %time% ======================================================
-    echo.
-    conda update -q conda
-    if %errorlevel% neq 0 goto script_failure
-)
 
 if "%rebuild_env%" == "1" (
     echo.
     echo %date% %time% ======================================================
-    echo %date% %time% Remove old Conda environment OPTIONAL
+    echo %date% %time% Delete venv 
     echo %date% %time% ======================================================
     echo.
-    conda env remove -n conda_enlighten3
-    REM SB: Do not errout if the env is already deleted, could be from
-    REM previous partial run.
+    echo removing %ENLIGHTEN_VENV%
+    rd /s /q %ENLIGHTEN_VENV%
 )
 
-if "%log_conf_pkg%" == "1" (
+if "%configure_venv%" == "1" (
     echo.
     echo %date% %time% ======================================================
-    echo %date% %time% Logging Conda configuration
+    echo %date% %time% Create venv
     echo %date% %time% ======================================================
     echo.
-    conda info -a
+    python3.11 -m venv %ENLIGHTEN_VENV%
     if %errorlevel% neq 0 goto script_failure
-)
-
-if "%rebuild_env%" == "1" (
-    echo.
-    echo %date% %time% ======================================================
-    echo %date% %time% Creating Conda Environment OPTIONAL
-    echo %date% %time% ======================================================
-    echo.
-    del /f /q environment.yml
-    copy environments\conda-win10.yml environment.yml
-    conda env create -n conda_enlighten3
 )
 
 echo.
@@ -277,10 +239,8 @@ echo %date% %time% ======================================================
 echo %date% %time% Activating environment
 echo %date% %time% ======================================================
 echo.
-REM deactivate before activate in-case user runs `scripts\bootstrap activate` multiple times
-call deactivate
-REM Use "source" from bash, "call" from batch and neither from Cmd
-call activate conda_enlighten3
+
+call %ENLIGHTEN_VENV%\Scripts\activate
 if %errorlevel% neq 0 goto script_failure
 
 echo.
@@ -288,54 +248,30 @@ echo %date% %time% ======================================================
 echo %date% %time% Reconfirming Python version
 echo %date% %time% ======================================================
 echo.
-which python
-REM this version doesn't get logged...why? (maybe goes to stderr?)
+
+where python
 python --version
 if %errorlevel% neq 0 goto script_failure
-
-REM echo.
-REM echo %date% %time% ======================================================
-REM echo %date% %time% Upgrading PIP
-REM echo %date% %time% ======================================================
-REM echo.
-REM python -m pip install --upgrade pip
 
 if "%install_python_deps%" == "1" (
     echo.
     echo %date% %time% ======================================================
-    echo %date% %time% Installing Python pip dependencies [conda missing/bad]
+    echo %date% %time% Installing Python pip dependencies 
     echo %date% %time% ======================================================
     echo.
 
     python -m pip install -r requirements.txt
+
     REM Bootstrap bat is meant to make a windows installer
     REM because of this separately install pywin32 since it's only meant for windows
-    pip install pywin32
-    if %errorlevel% neq 0 goto script_failure
-)
+    pip install pywin32 
 
-if "%virtspec%" == "1" (
-    echo.
-    echo %date% %time% ======================================================
-    echo %date% %time% * Appending PyUSB Virtual Spectrometer to PATH *
-    echo %date% %time% ======================================================
-    echo.
-    set PYTHONPATH=..\pyusb-virtSpec;%PYTHONPATH%
-    pip uninstall pyusb
-)
-if "%virtspec%" == "0" (
-    pip install pyusb==1.2.1
+    REM not sure why this doesn't work from requirements.txt
+    pip install spc_spectra
+    if %errorlevel% neq 0 goto script_failure
 )
 
 if "%log_conf_pkg%" == "1" (
-    echo.
-    echo %date% %time% ======================================================
-    echo %date% %time% Logging Conda packages
-    echo %date% %time% ======================================================
-    echo.
-    cmd /c "conda list --explicit"
-    if %errorlevel% neq 0 goto script_failure
-
     echo.
     echo %date% %time% ======================================================
     echo %date% %time% Logging Pip packages
@@ -355,16 +291,6 @@ if "%regenerate_qt%" == "1" (
     if %errorlevel% neq 0 goto script_failure
 )
 
-if "%runtests%" == "1" (
-    echo.
-    echo %date% %time% ======================================================
-    echo %date% %time% Run tests...may take some time
-    echo %date% %time% ======================================================
-    echo.
-    py.test test
-    if %errorlevel% neq 0 goto script_failure
-)
-
 if "%pyinstaller%" == "1" (
     echo.
     echo %date% %time% ======================================================
@@ -376,7 +302,7 @@ if "%pyinstaller%" == "1" (
 
     echo.
     echo %date% %time% ======================================================
-    echo %date% %time% Running PyInstaller OPTIONAL
+    echo %date% %time% Running PyInstaller
     echo %date% %time% ======================================================
     echo.
     REM hide-early worked on Win10 but not Win11
@@ -386,7 +312,7 @@ if "%pyinstaller%" == "1" (
         --workpath="scripts/work-path" ^
         --noconfirm ^
         --python-option "X utf8" ^
-        --hide-console hide-early ^
+        --hide-console hide-late ^
         --clean ^
         --paths="../Wasatch.PY" ^
         --hidden-import="scipy._lib.messagestream" ^
@@ -410,16 +336,10 @@ if "%innosetup%" == "1" (
     echo %date% %time% ======================================================
     echo.
 
-    if "%COMPRESSION%" == "" (
-        rem caller may set it to lzma/fast for speed
-        set "COMPRESSION=lzma/max"
-    )
-
     if not exist "scripts\windows_installer\" mkdir scripts\windows_installer
 
     "%PROGRAM_FILES_X86%\Inno Setup 6\iscc.exe" ^
         /DENLIGHTEN_VERSION=%ENLIGHTEN_VERSION% ^
-        /DCOMPRESSION=%COMPRESSION% ^
         scripts\Application_InnoSetup.iss
     if %errorlevel% neq 0 goto script_failure
 
@@ -428,6 +348,7 @@ if "%innosetup%" == "1" (
     echo %date% %time% Reviewing installer artifacts [built-dist]
     echo %date% %time% ======================================================
     echo.
+
     dir scripts\built-dist\Enlighten\*.exe
     if %errorlevel% neq 0 goto script_failure
 
@@ -436,6 +357,7 @@ if "%innosetup%" == "1" (
     echo %date% %time% Reviewing installer artifacts [windows_installer]
     echo %date% %time% ======================================================
     echo.
+
     dir scripts\windows_installer\*.exe
     if %errorlevel% neq 0 goto script_failure
 

@@ -26,9 +26,6 @@ DefaultDirName={commonpf}\Wasatch Photonics\{#MyAppName}
 DisableDirPage=yes
 DefaultGroupName=Wasatch Photonics
 OutputDir=windows_installer
-; lzma/fast for test builds, lzma/max for public releases
-Compression={#COMPRESSION}
-SolidCompression=yes
 ArchitecturesAllowed=x64
 ArchitecturesInstallIn64BitMode=x64
 SetupIconFile=..\{#module_name}\assets\uic_qrc\images\EnlightenIcon.ico
@@ -36,6 +33,9 @@ UninstallDisplayIcon="{app}\{#MyAppName}\{#MyAppExeName}"
 PrivilegesRequired=poweruser
 WizardStyle=modern
 WizardImageFile=..\enlighten\assets\uic_qrc\images\logos\wp-314.bmp,..\enlighten\assets\uic_qrc\images\logos\wp-386.bmp
+
+; use standard compression defaults (lzma2/max)
+; @see https://jrsoftware.org/ishelp/index.php?topic=setup_compression
 
 ; will write installation logfile to %TEMP% (based on when the installer is run, not built)
 SetupLogging=yes
