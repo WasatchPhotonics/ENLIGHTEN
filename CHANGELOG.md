@@ -2,12 +2,14 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
-- 2023-02-26 4.0.44
+- 2023-02-27 4.0.44
     - deprecated Miniconda (python venv FTW)
     - built installer on Win11
     - ASTM tweak
     - DYK tweaks
     - convert timestamps to strings in JSON
+    - fix pixel axis with ROI
+    - disable KIA tips
 - 2023-02-20 4.0.43
     - fixed XL temperature
     - fixed Peak Sharpening

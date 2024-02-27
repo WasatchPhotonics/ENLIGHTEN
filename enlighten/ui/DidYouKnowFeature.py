@@ -40,20 +40,37 @@ class DidYouKnowFeature:
         # Note: tips are displayed as HTML, so whitespace will be normalized
 
         tip("Keyboard Shortcuts", "keyboard_shortcuts", 'Mouse-over the "Help" button for an on-screen cheat-sheet of keyboard shortcuts.')
-        tip("What's This?", "whats_this", """<p>Click the 'What's This' button ⓘ  to change your cursor into an arrow with a ? next to it,
-            then click another button or control you'd like to learn more about.</p><p>What's This help goes deeper than normal mouse-overs,
-            providing live instruction into advanced topics of spectroscopy and how to use your Wasatch spectrometer.</p>""")
+        tip("What's This?", "whats_this", """
+         <p>Click the 'What's This' button ⓘ  to change your cursor into an arrow 
+            with a ? next to it, then click another button or control you'd like
+            to learn more about.</p>
+         <p>What's This help goes deeper than normal mouse-overs, providing live
+            instruction into advanced topics of spectroscopy and how to use your
+            Wasatch spectrometer. It also provides a wealth of metadata and metrics
+            about saved Measurements on your Clipboard!</p>""")
         tip("Quick Dark", "dark_bulb", """
             <p>Use ctrl-D to quickly take a fresh Dark, or to clear the current Dark if stored.</p>
             <p>No spoilers, but you can probably guess the shortcut for a fresh Reference :-)</p>""")
-        tip("Quick Edit", "quick_edit", "Use ctrl-E to quickly edit the last-saved measurement label.")
+        tip("Quick Edit", "quick_edit", """
+          <p>Use ctrl-E to quickly edit the last-saved measurement label.</p>
+          <p>Keyboard shortcuts are intended to allow an adept user to quickly
+             perform a number of data-collection tasks from the keyboard,
+             such as:</p>
+          <ul><li>ctrl-T to change integration time</li>
+              <li>ctrl-N to edit the Note field (shift-tab and tab to edit Prefix/Postfix)</li>
+              <li>ctrl-D twice, to clear and refresh the dark</li>
+              <li>ctrl-L to enable the laser</li>
+              <li>ctrl-S to save a new measurement</li>
+              <li>ctrl-L again to disable the laser</li>
+              <li>ctrl-E to edit the label of the last-saved measurement</li>
+           </ul>""")
         tip("Open-Source", "github", """ENLIGHTEN™ is completely open-source, so you're free to see how it works, run it on new platforms,
             and even make changes. Find it on GitHub at <a href="https://github.com/WasatchPhotonics/ENLIGHTEN">WasatchPhotonics/ENLIGHTEN</a>.""")
         tip("Wavenumber Correction", "wavenumber_correction", """
             <p>Even the most assiduously calibrated laser or spectrometer can
                experience minor shifts in wavelength due to ambient changes in
                environment.</p>
-            <p>ASTM E1840-96 (2014) specifies a procedure for daily, or even hourly
+            <p>ASTM E1840-96 (2022) specifies a procedure for daily, or even hourly
                correction of the Raman wavenumber axis. This is performed using one
                of eight approved reference samples, whose Raman peaks are measured
                and compared to expected locations. Any deltas are averaged together
@@ -61,7 +78,7 @@ class DidYouKnowFeature:
                accuracy of Raman peak locations in graphed and saved data.</p>
             <p>In addition to selecting your approved reference sample, you can
                optionally visualize the "expected" Raman peaks on the graph to compare
-               against the measured spectrum, and to see which sample peaks are used
+               against the measured spectrum, and to see which compound peaks are used
                in the correction. The computed offset is briefly displayed on-screen,
                and is saved in measurement metadata (as well as the updated wavenumber
                axis.)</p>
@@ -86,18 +103,20 @@ class DidYouKnowFeature:
                housing, ENLIGHTEN™'s two Laser Enable buttons both turn red, and the "Light
                Source" virtual LED / Status Indicator in the lower-right corner turns a
                warning orange.</p>
-            <p>However, sometimes your eyes are elsewhere while managing a measurement, and
+            <p>However, sometimes your eyes are elsewhere whilst managing a complex measurement, and
                that's why we added an optional audible indicator as an added level of safety
-               for those who wish it. Use the Settings view to opt-in to Sound Effects if
+               for those who wish it. Use the Settings view to opt-in to Audible Feedback if
                you prefer to hear that comforting warble to let you know when you're emitting.</p>""")
         tip("Copy Graph to Excel", "clipboard", """
-            <p>Most graphs in ENLIGHTEN™, including the main Scope, have a "clipboard" 📋 icon
-               in the upper corner. You can click that at any time (or <b>just hit Ctrl-C</b>)
-               to copy all data from the graph
-               to the computer's system clipboard for copy-pasting between applications. The
-               copied data is tab-delimited, so can be pasted directly into Microsoft Excel for
-               quick processing and charting. If multiple traces are visible on the graph, each
-               are included in the clipboard output as separate columns.</p>""")
+            <p>Most graphs in ENLIGHTEN™, including the main Scope, have a 
+               "clipboard" 📋 icon in the upper corner. You can click that at 
+               any time (or just <b>hit Ctrl-C</b>) to copy all data from the 
+               graph to the computer's system clipboard for copy-pasting between 
+               pplications.</p>
+            <p>The copied data is tab-delimited, so can be pasted directly into 
+               Microsoft Excel for quick processing and charting. If multiple 
+               traces are visible on the graph, each are included in the 
+               clipboard output as separate columns.</p>""")
         tip("Copy EEPROM to Excel", "clipboard", """
             <p>If you're juggling multiple spectrometers, it can be important to track the
                settings, configuration and calibration of each. The Hardware view in ENLIGHTEN™
@@ -147,7 +166,7 @@ class DidYouKnowFeature:
         tip("Boxcar Smoothing", "boxcar", """
              <p>Boxcar smoothing applies a lightweight spatial averaging convolution
                 to remove high-frequency noise from your spectrum, at the cost of
-                slightly reduced peak intensity and optical resolution (increased
+                slightly reduced peak intensity and optical resolution (degraded
                 effective FWHM).</p>
              <p>It can be useful to quickly make spectra "prettier" and improve
                 "apparent SNR" for human viewers, but is a lossy transformation
@@ -241,14 +260,14 @@ class DidYouKnowFeature:
              <p>You can enable JSON output in addition to (or instead of) standard CSV files,
                 and each saved measurement will be stored in metadata-rich 
                 <a href="https://en.wikipedia.org/wiki/JSON">JavaScript Object Notation</a>.
-                In addition to individual measurements, Exports will also be stored in JSON.</p>""")
+                In addition to individual measurements, Exports can also be stored in JSON.</p>""")
         tip("Prefix and Suffix", "prefix_suffix", """
-             <p>Two of the most useful on-screen fields for manual data collections are <b>prefix</b>
-                and <b>suffix</b>. As their name implies, they are automatically added at the beginning
+             <p>Two of the most useful on-screen fields for manual data collections are <b>Prefix</b>
+                and <b>Suffix</b>. As their name implies, they are automatically added at the beginning
                 and end of saved filenames (both individual measurements, and exports).</p>
              <p>Although the related Note field does not automatically appear in any filenames or
                 labels, it <i>can</i> be automatically inserted into those, anywhere you want, by using
-                the {note} template notation.</p>""")
+                the <b>{note}</b> template notation.</p>""")
         
         # RamanLines
         # EmissionLines

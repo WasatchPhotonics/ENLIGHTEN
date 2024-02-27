@@ -232,6 +232,7 @@ class HorizROIFeature:
         prc.reference   = self.crop(pr.raw,               roi=roi)
         prc.wavelengths = self.crop(settings.wavelengths, roi=roi)
         prc.wavenumbers = self.crop(settings.wavenumbers, roi=roi)
+        prc.first_pixel = roi.start
 
         pr.cropped = prc
 

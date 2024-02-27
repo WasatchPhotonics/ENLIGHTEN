@@ -403,19 +403,20 @@ class Feature:
             log.debug("not tipping because no spec")
             return
 
-        # add more tips as we think of them
-        if not self.is_installed and not self.sent_install_tip:
-            self.sent_install_tip = True
-            return self.guide.suggest("""<html>Tip: install Wiley <a href="https://get.knowitall.com" style="color: #73f0d7">KnowItAll™</a> for automated Raman ID (enter code 'RAMAN')</html>""", persist=True)
+        # disabling while we reconsider recommendation system
+        if False:
+            if not self.is_installed and not self.sent_install_tip:
+                self.sent_install_tip = True
+                return self.guide.suggest("""<html>Tip: install Wiley <a href="https://get.knowitall.com" style="color: #73f0d7">KnowItAll™</a> for automated Raman ID (enter code 'RAMAN')</html>""", persist=True)
 
-        if not spec.app_state.has_dark():
-            return self.guide.suggest("Tip: take dark for better matching", token="take_dark")
+            if not spec.app_state.has_dark():
+                return self.guide.suggest("Tip: take dark for better matching", token="take_dark")
 
-        if self.raman_intensity_correction.is_supported() and not self.raman_intensity_correction.enabled:
-            return self.guide.suggest("Tip: enable Raman Intensity Correction for better matching", token="enable_raman_intensity_correction")
+            if self.raman_intensity_correction.is_supported() and not self.raman_intensity_correction.enabled:
+                return self.guide.suggest("Tip: enable Raman Intensity Correction for better matching", token="enable_raman_intensity_correction")
 
-        if not self.baseline_correction.enabled and self.baseline_correction.allowed:
-            return self.guide.suggest("Tip: enable baseline correction for better matching", token="enable_baseline_correction")
+            if not self.baseline_correction.enabled and self.baseline_correction.allowed:
+                return self.guide.suggest("Tip: enable baseline correction for better matching", token="enable_baseline_correction")
 
     # This is currently ticked from the Controller's "status" loop (1Hz at writing),
     # so it isn't dependent on integration time, or even if acquisitions are running.

@@ -1904,7 +1904,8 @@ class Controller:
                 elif self.graph.in_wavenumbers():
                     graphed = self.set_curve_data(spec.curve, x=pr.get_wavenumbers(), y=pr.get_processed(), label="cm")
                 else:
-                    graphed = self.set_curve_data(spec.curve, x=[], y=pr.get_processed(), label="px")
+                    pixel_axis = pr.get_pixel_axis()
+                    graphed = self.set_curve_data(spec.curve, x=pixel_axis, y=pr.get_processed(), label="px")
 
             if not graphed:
                 # This can happen in transmission or absorbance mode before a reference
