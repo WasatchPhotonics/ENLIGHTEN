@@ -26,7 +26,7 @@ scipy
 xlwt
 qimage2ndarray
 2to3
-matplotlib==3.7.5
+matplotlib==3.7
 
 # install these after?
 #spc_spectra 
