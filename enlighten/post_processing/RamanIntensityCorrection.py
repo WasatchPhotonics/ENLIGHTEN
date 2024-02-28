@@ -156,11 +156,12 @@ class RamanIntensityCorrection:
         log.debug("laser_enabled_callback: start")
         if self.is_allowed():
             log.debug("laser_enabled_callback: apparently we're allowed")
-            if not self.enabled:
-                log.debug("laser_enabled_callback: trying to suggest tip")
-                self.ctl.guide.suggest("Tip: enable Raman Intensity Correction for most accurate Raman intensity", token="enable_raman_intensity_correction")
-            else:
-                log.debug("laser_enabled_callback: not tipping because enabled {self.enabled}")
+            if False:
+                if not self.enabled:
+                    log.debug("laser_enabled_callback: trying to suggest tip")
+                    self.ctl.guide.suggest("Tip: enable Raman Intensity Correction for most accurate Raman intensity", token="enable_raman_intensity_correction")
+                else:
+                    log.debug("laser_enabled_callback: not tipping because enabled {self.enabled}")
         else:
             log.debug("laser_enabled_callback: apparently we're NOT allowed")
         log.debug("laser_enabled_callback: done")
@@ -177,8 +178,9 @@ class RamanIntensityCorrection:
 
         if self.enabled:
             self.ctl.guide.clear(token="enable_raman_intensity_correction")
-            if not self.ctl.horiz_roi.enabled:
-                self.ctl.guide.suggest("Tip: Raman Intensity Correction should only be used with Horizontal ROI enabled", token="srm_roi")
+            if False:
+                if not self.ctl.horiz_roi.enabled:
+                    self.ctl.guide.suggest("Tip: Raman Intensity Correction should only be used with Horizontal ROI enabled", token="srm_roi")
 
         self.ctl.dark_feature.update_enable()
 
