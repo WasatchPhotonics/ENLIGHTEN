@@ -625,7 +625,7 @@ class Multispec:
         self.device_id = device_id
 
         # this is a no-op when shutting down
-        ctl.initialize_new_device(spec.device)
+        self.ctl.initialize_new_device(spec.device)
 
         # update traces (make selected bold), so just use checkbox callback
         self.check_callback()

@@ -2,6 +2,8 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2023-02-27 4.0.45
+    - Multispec fix
 - 2023-02-27 4.0.44
     - deprecated Miniconda (python venv FTW)
     - built installer on Win11
