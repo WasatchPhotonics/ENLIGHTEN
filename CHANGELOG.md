@@ -7,6 +7,7 @@
     - Tensorflow Win11 fix
     - export ROI fix
     - flipped (corrected) meaning of "collated_export" (still defaults to "original behavior")
+    - restore installer COMPRESSION option
 - 2023-02-27 4.0.44
     - deprecated Miniconda (python venv FTW)
     - built installer on Win11
