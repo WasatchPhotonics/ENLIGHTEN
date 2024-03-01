@@ -2,6 +2,8 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2023-03-01 4.0.46
+    - bumping version number for clean installer
 - 2023-03-01 4.0.45
     - Multispec fix
     - Tensorflow Win11 fix
