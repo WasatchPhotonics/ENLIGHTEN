@@ -9022,10 +9022,16 @@ QComboBox QListView
                                <item row="8" column="0">
                                 <widget class="QCheckBox" name="checkBox_save_collated">
                                  <property name="toolTip">
-                                  <string>Collate Processed, Raw, Dark etc (loading not supported)</string>
+                                  <string>Collate measurement component spectra</string>
+                                 </property>
+                                 <property name="toolTip">
+                                  <string>If checked, exported CSVs will be grouped by MEASUREMENT, with processed, raw, dark, reference together in consecutive columns. If unchecked, exported CSVs will be grouped by COMPONENT, with all exported processed columns together, then all raw, all darks, all references etc. Consider how a copy machine "collates" documents by printing pages 1-4 together, then another copy of pages 1-4, etc, versus the "un-collated" behavior of printing N copies of page 1, followed by N copies of page 2 and so forth.</string>
                                  </property>
                                  <property name="text">
                                   <string>Collated Export</string>
+                                 </property>
+                                 <property name="checked">
+                                  <bool>true</bool>
                                  </property>
                                 </widget>
                                </item>

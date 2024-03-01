@@ -2,8 +2,11 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
-- 2023-02-27 4.0.45
+- 2023-03-01 4.0.45
     - Multispec fix
+    - Tensorflow Win11 fix
+    - export ROI fix
+    - flipped (corrected) meaning of "collated_export" (still defaults to "original behavior")
 - 2023-02-27 4.0.44
     - deprecated Miniconda (python venv FTW)
     - built installer on Win11

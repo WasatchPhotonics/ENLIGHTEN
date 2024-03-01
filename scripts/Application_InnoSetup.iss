@@ -22,6 +22,7 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
+Compression={#COMPRESSION}
 DefaultDirName={commonpf}\Wasatch Photonics\{#MyAppName}
 DisableDirPage=yes
 DefaultGroupName=Wasatch Photonics

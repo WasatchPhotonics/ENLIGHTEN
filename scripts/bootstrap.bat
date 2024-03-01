@@ -318,6 +318,7 @@ if "%pyinstaller%" == "1" (
         --hidden-import="scipy._lib.messagestream" ^
         --hidden-import="scipy.special.cython_special" ^
         --hidden-import="tensorflow" ^
+        --hidden-import="tensorflow.python.data.ops.shuffle_op" ^
         --add-data="support_files/libusb_drivers/amd64/libusb0.dll:." ^
         --icon "../enlighten/assets/uic_qrc/images/EnlightenIcon.ico" ^
         --specpath="%cd%/scripts" ^
@@ -337,6 +338,12 @@ if "%innosetup%" == "1" (
     echo.
 
     if not exist "scripts\windows_installer\" mkdir scripts\windows_installer
+
+    rem see https://jrsoftware.org/ishelp/index.php?topic=setup_compression
+    if "%COMPRESSION%" == "" (
+        rem caller may set it to lzma/fast for speed
+        set "COMPRESSION=lzma/max"
+    )
 
     "%PROGRAM_FILES_X86%\Inno Setup 6\iscc.exe" ^
         /DENLIGHTEN_VERSION=%ENLIGHTEN_VERSION% ^
