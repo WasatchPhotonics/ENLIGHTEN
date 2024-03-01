@@ -153,7 +153,7 @@ class SaveOptions():
         self.rb_by_col    .setChecked(not by_row) #   neither is checked...
 
         self.init_checkbox(self.cb_csv,          "format_csv")
-        self.init_checkbox(self.cb_collated,     "collated")
+        self.init_checkbox(self.cb_collated,     "collated_export")
         self.init_checkbox(self.cb_spc,          "format_spc")
         self.init_checkbox(self.cb_text,         "format_txt")
         self.init_checkbox(self.cb_excel,        "format_excel")
@@ -247,7 +247,7 @@ class SaveOptions():
 
         s = "save"
         self.ctl.config.set(s, "order", "row" if self.save_by_row() else "col")
-        self.ctl.config.set(s, "collated",           self.save_collated())
+        self.ctl.config.set(s, "collated_export",    self.save_collated())
         self.ctl.config.set(s, "format_csv",         self.save_csv())
         self.ctl.config.set(s, "format_spc",         self.save_spc())
         self.ctl.config.set(s, "format_txt",         self.save_text())
@@ -412,5 +412,7 @@ class SaveOptions():
             "prefix": "enlighten",
             "suffix": "",
             "note": "",
+
+            "collated_export": True,
         }
 

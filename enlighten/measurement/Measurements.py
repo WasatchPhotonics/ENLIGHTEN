@@ -546,12 +546,12 @@ class Measurements:
                 this_pr = specs[sn][i].processed_reading
                 this_wl = this_pr.get_wavelengths()
                 if first_wl != this_wl:
-                    log.debug(f"incompatible_axes: {sn} measurements 0 and {i} had different wavelengths")
+                    log.debug(f"incompatible_axes: bad: {sn} measurements 0 and {i} had different wavelengths")
                     return True
                 else:
-                    log.debug(f"incompatible_axes: {sn} measurements 0 and {i} had identical wavelengths ({first_wl[0]:.2f}, {first_wl[-1]:0.2f}) ({this_wl[0]:.2f}, {this_wl[-1]:0.2f})")
-                    first_pr.dump()
-                    this_pr.dump()
+                    log.debug(f"incompatible_axes: good: {sn} measurements 0 and {i} had identical wavelengths ({first_wl[0]:.2f}, {first_wl[-1]:0.2f}) ({this_wl[0]:.2f}, {this_wl[-1]:0.2f})")
+                    # first_pr.dump()
+                    # this_pr.dump()
         return False
 
     ##
@@ -589,7 +589,9 @@ class Measurements:
     #
     # @par Collated
     #
-    # If SaveOptions.save_collated(), then the columns are grouped by each
+    # By default, exports are "collated" (grouped by MEASUREMENT).
+    #
+    # If NOT SaveOptions.save_collated(), then the columns are grouped by each
     # "subspectrum" (processed, raw, dark, reference etc). This changes the basic
     # layout above to:
     #
@@ -676,6 +678,7 @@ class Measurements:
 
         # roll-in any plugin metadata appearing in any measurement
         for m in export_measurements:
+            m.processed_reading.dump()
             if m.processed_reading.plugin_metadata is not None:
                 for k in sorted(m.processed_reading.plugin_metadata.keys()):
                     if k not in fields:
@@ -697,7 +700,7 @@ class Measurements:
                 row.extend(BLANK * (len(settingss) * len(x_headers) - 1))
 
                 # now output the metadata atop the data columns
-                if self.ctl.save_options.save_collated():
+                if not self.ctl.save_options.save_collated():
                     for header in pr_headers:
                         row.extend(BLANK) # for the subspectrum name
                         # now re-write the value above every measurement for this subspectrum
@@ -736,7 +739,7 @@ class Measurements:
             # other consumers.
             row.append(settings.eeprom.serial_number)
             row.extend(BLANK * (len(x_headers) - 1))
-        if self.ctl.save_options.save_collated():
+        if not self.ctl.save_options.save_collated():
             for header in pr_headers:
                 row.append(header)
                 row.extend(BLANK * len(export_measurements))
@@ -764,7 +767,7 @@ class Measurements:
         for settings in settingss:
             for header in x_headers:
                 row.append(header)
-        if self.ctl.save_options.save_collated():
+        if not self.ctl.save_options.save_collated():
             for header in pr_headers:
                 row.extend(BLANK)
                 for m in export_measurements:
@@ -803,31 +806,43 @@ class Measurements:
                 return None
 
             a = None
-
             if header == "processed":
-                a = pr.get_processed()  # will get interpolated, cropped or "just processed" in that order
+                a = pr.get_processed()
             elif header == "reference":
                 a = pr.get_reference()
             elif header == "dark":
                 a = pr.get_dark()
             elif header == "raw":
-                a = pr.get_raw()
+                a = pr.get_raw()        
 
             if a is None:
                 return "NA"
 
-            roi = m.settings.eeprom.get_horizontal_roi()
-            if roi and pr.is_cropped() and not pr.is_interpolated():
-                uncorrected_pixel = pixel - roi.start
-                if uncorrected_pixel >= 0 and uncorrected_pixel < len(a):
-                    value = a[uncorrected_pixel]
-                else:
-                    return "NA"
-            else:
+            if pr.is_interpolated():
+                # for interpolated, just output what we have
                 if pixel < len(a):
                     value = a[pixel]
                 else:
                     return "NA"
+            else:
+                # for non-interpolated, allow processed to be cropped, but full data for other components
+                if header == "processed":
+                    roi = m.settings.eeprom.get_horizontal_roi()
+                    if roi and pr.is_cropped():
+                        if roi.start <= pixel and pixel <= roi.end:
+                            value = a[pixel - roi.start]
+                        else:
+                            return "NA"
+                    else:
+                        if pixel < len(a):
+                            value = a[pixel]
+                        else:
+                            return "NA"
+                else:
+                    if pixel < len(a):
+                        value = a[pixel]
+                    else:
+                        return "NA"
 
             # Override default precision (which was based on whether a "reference" column
             # is being exported) with this indication of whether a reference component was
@@ -865,7 +880,7 @@ class Measurements:
                 for settings in settingss:
                     for header in x_headers:
                         row.append(get_x_header_value(first.processed_reading.get_wavelengths(), first.processed_reading.get_wavenumbers(), header, pixel))
-                if self.ctl.save_options.save_collated():
+                if not self.ctl.save_options.save_collated():
                     for header in pr_headers:
                         row.extend(BLANK)
                         for m in export_measurements:
@@ -899,7 +914,7 @@ class Measurements:
                     else:
                         row.extend(BLANK * len(x_headers))
 
-                if self.ctl.save_options.save_collated():
+                if not self.ctl.save_options.save_collated():
                     for header in pr_headers:
                         row.extend(BLANK)
                         for m in export_measurements:
