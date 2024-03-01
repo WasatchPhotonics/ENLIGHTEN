@@ -347,6 +347,7 @@ if "%innosetup%" == "1" (
 
     "%PROGRAM_FILES_X86%\Inno Setup 6\iscc.exe" ^
         /DENLIGHTEN_VERSION=%ENLIGHTEN_VERSION% ^
+        /DCOMPRESSION=%COMPRESSION% ^
         scripts\Application_InnoSetup.iss
     if %errorlevel% neq 0 goto script_failure
 
