@@ -1602,10 +1602,10 @@ class Controller:
             return
 
         elif msg.setting == "marquee_info":
-            self.marquee.toast(msg.value)
+            self.marquee.info(msg.value)
 
         elif msg.setting == "marquee_error":
-            self.marquee.toast(msg.value) # could add error window type
+            self.marquee.error(msg.value) 
 
         else:
             log.debug("unsupported StatusMessage: %s", msg.setting)

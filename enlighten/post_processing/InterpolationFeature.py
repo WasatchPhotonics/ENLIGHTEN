@@ -116,14 +116,6 @@ class InterpolationFeature:
         else:
             self.bt_toggle.setToolTip(f"Enable x-axis interpolation")
 
-        # invalidate stored dark/references
-        #
-        # MZ: why were we doing this? I don't think we need to do this.
-        #     commenting out for now.
-        # for spec in self.ctl.multispec.get_spectrometers():
-        #     spec.app_state.clear_dark()
-        #     spec.app_state.clear_reference()
-
         s = "interpolation"
         for name in [ "enabled", "use_wavelengths", "use_wavenumbers", "start", "end", "incr" ]:
             self.ctl.config.set(s, name, getattr(self, name))
@@ -180,23 +172,16 @@ class InterpolationFeature:
             log.error("Using neither wavelengths nor wavenumbers, returning none.")
             return 
 
+        if pr.interpolated:
+            log.debug("re-interpolating (deleting previous interpolation results)")
+            pr.interpolated = None
+
         wavelengths = pr.get_wavelengths()
         wavenumbers = pr.get_wavenumbers()
 
-        # Log occurances of re-interpolation, but don't prevent or short-circuit
-        # them. Partly, this is so that we can re-interpolate a previously-
-        # interpolated measurements to a new axis (e.g. for loaded spectra). 
-        # However, it should also be the case that re-interpolating a previously-
-        # interpolated measurement to the SAME target x-axis should be virtually
-        # a no-op, as every "new x" value will resolve to an existing datapoint 
-        # and thus require no computations.
-        if pr.interpolated:
-            log.debug("re-interpolating processed reading")
-        else:
-            log.debug("interpolating processed reading")
-
         interpolated = ProcessedReading()
-        old_axis = None
+        old_cropped_axis = None
+        old_detector_axis = None
 
         if self.use_wavelengths:
             if wavelengths is None:
@@ -204,7 +189,8 @@ class InterpolationFeature:
                 return
 
             interpolated.wavelengths = self.new_axis
-            old_axis = wavelengths
+            old_cropped_axis = wavelengths
+            old_detector_axis = pr.get_wavelengths("orig")
 
             # generate corresponding wavenumbers if we can
             excitation = self.generate_excitation(wavelengths, wavenumbers, pr.settings)
@@ -217,44 +203,52 @@ class InterpolationFeature:
                 return
 
             interpolated.wavenumbers = self.new_axis
-            old_axis = wavenumbers
+            old_cropped_axis = wavenumbers
+            old_detector_axis = pr.get_wavenumbers("orig")
 
             # generate corresponding wavelengths if we can
             excitation = self.generate_excitation(wavelengths, wavenumbers, pr.settings)
             if excitation is not None:
                 interpolated.wavelengths = generate_wavelengths_from_wavenumbers(excitation=excitation, wavenumbers=interpolated.wavenumbers)
 
-        if old_axis is None:
+        if old_cropped_axis is None or old_detector_axis is None:
             log.error("Old axis was none, returning none.")
             return None
 
         processed = pr.get_processed()
         if processed is not None:
-            interpolated.processed = np.interp(self.new_axis, old_axis, processed)
+            interpolated.processed = np.interp(self.new_axis, old_cropped_axis, processed)
 
+        # Note that we are choosing to interpolate raw. That means this is no longer
+        # really "raw". However, we're storing it in the ".interpolated" record of
+        # ProcessedReading, so that should be fairly clear; they can always access
+        # ProcessedReading.raw directly to get the original data.
         raw = pr.get_raw()
         if raw is not None:
-            if len(raw) == len(old_axis):
-                interpolated.raw = np.interp(self.new_axis, old_axis, raw)
+            if len(raw) == len(old_detector_axis):
+                interpolated.raw = np.interp(self.new_axis, old_detector_axis, raw)
+                log.debug(f"interpolated raw to {len(interpolated.raw)}")
             else:
-                log.error(f"process: len(old_axis) {len(old_axis)} != len(raw) ({len(raw)})")
+                log.error(f"process: len(old_detector_axis) {len(old_detector_axis)} != len(raw) ({len(raw)})")
                 interpolated.raw = None
 
         dark = pr.get_dark()
         if dark is not None:
-            if len(dark) == len(old_axis):
-                interpolated.dark = np.interp(self.new_axis, old_axis, dark)
+            if len(dark) == len(old_detector_axis):
+                interpolated.dark = np.interp(self.new_axis, old_detector_axis, dark)
+                log.debug(f"interpolated dark to {len(interpolated.dark)}")
             else:
-                log.error(f"process: len(old_axis) {len(old_axis)} != len(dark) ({len(dark)})")
+                log.error(f"process: len(old_detector_axis) {len(old_detector_axis)} != len(dark) ({len(dark)})")
                 interpolated.dark = None
 
         reference = pr.get_reference()
         if reference is not None:
-            if len(reference) == len(old_axis):
-                interpolated.reference = np.interp(self.new_axis, old_axis, reference)
+            if len(reference) == len(old_detector_axis):
+                interpolated.reference = np.interp(self.new_axis, old_detector_axis, reference)
+                log.debug(f"interpolated reference to {len(interpolated.reference)}")
             else:
-                log.error(f"process: len(old_axis) {len(old_axis)} != len(reference) ({len(reference)})")
-                interpolated.dark = None
+                log.error(f"process: len(old_detector_axis) {len(old_detector_axis)} != len(reference) ({len(reference)})")
+                interpolated.reference = None
 
         pr.interpolated = interpolated
 

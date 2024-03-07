@@ -1250,6 +1250,20 @@ class Measurement:
             # include wavelength/wavenumber axis values, and might as well include
             # raw, dark and reference.
             if self.ctl.horiz_roi.enabled:
+                # We're setting stage to "orig" to indicate we don't want to load
+                # the "cropped" versions -- we want the original full-detector
+                # spectrum components. 
+                # 
+                # We will essentially "re-crop" the processed spectrum below, in
+                # formatted(). Even to me, this seems wasteful and error-prone. 
+                # It's also bad practice because it means we aren't literally
+                # saving what was displayed on-screen (although it should result
+                # in the same data). 
+                #
+                # Nevertheless, this seems the most direct and logical way
+                # to ensure we can output multiple components of differing 
+                # lengths (I want raw to be full-length) against a rock-solid 
+                # full-detector pixel axis.
                 stage = "orig"
                 if self.settings and self.settings.eeprom:
                     roi = self.settings.eeprom.get_horizontal_roi()
@@ -1267,6 +1281,15 @@ class Measurement:
             pixels = len(wavenumbers)
         else:
             pixels = len(processed)
+
+        if False:
+            log.debug(f"save_csv_file_by_column: stage {stage}, pixels {pixels}, " +
+                      f"wavelengths {None if wavelengths is None else len(wavelengths)}, " +
+                      f"wavenumbers {None if wavenumbers is None else len(wavenumbers)}, " +
+                      f"processed {None if processed is None else len(processed)}, " + 
+                      f"raw {None if raw is None else len(raw)}, " +
+                      f"dark {None if dark is None else len(dark)}, " +
+                      f"ref {None if reference is None else len(reference)}")
 
         with open(pathname, "w", newline="", encoding='utf-8') as f:
 
@@ -1314,6 +1337,9 @@ class Measurement:
                 if roi and obey_roi:
                     if pixel < roi.start or pixel > roi.end:
                         return "NA"
+
+                if pixel >= len(array):
+                    return "na"
 
                 value = array[pixel]
                 return '%.*f' % (prec, value)
