@@ -545,13 +545,21 @@ class Measurements:
             for i in range(1, len(specs[sn])):
                 this_pr = specs[sn][i].processed_reading
                 this_wl = this_pr.get_wavelengths()
-                if first_wl != this_wl:
-                    log.debug(f"incompatible_axes: bad: {sn} measurements 0 and {i} had different wavelengths")
+                # log.debug(f"incompatible_axes: first_wl {first_wl}")
+                # log.debug(f"incompatible_axes:  this_wl {this_wl}")
+                # first_pr.dump()
+                # this_pr.dump()
+                if len(first_wl) != len(this_wl):
+                    log.debug(f"incompatible_axes: bad: {sn} measurements 0 and {i} had different wavelength axis lengths ({len(first_wl)} != {len(this_wl)})")
                     return True
-                else:
-                    log.debug(f"incompatible_axes: good: {sn} measurements 0 and {i} had identical wavelengths ({first_wl[0]:.2f}, {first_wl[-1]:0.2f}) ({this_wl[0]:.2f}, {this_wl[-1]:0.2f})")
-                    # first_pr.dump()
-                    # this_pr.dump()
+
+                # MZ: I tried 'first_wl != this_wl' but it raised...?
+                for a, b in zip(first_wl, this_wl):
+                    if a != b:
+                        log.debug(f"incompatible_axes: bad: {sn} measurements 0 and {i} had different wavelength axes ({a} != {b})")
+                        return True
+                        
+                log.debug(f"incompatible_axes: good: {sn} measurements 0 and {i} had identical wavelengths ({first_wl[0]:.2f}, {first_wl[-1]:0.2f}) ({this_wl[0]:.2f}, {this_wl[-1]:0.2f})")
         return False
 
     ##
