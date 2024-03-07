@@ -870,24 +870,30 @@ class Measurements:
             # Export Interpolated
             #####################################################################
 
+            # Generate TEMPORARY interpolation of each Measurement (don't change
+            # clipboard object). Keep handle to "first" Measurement, for use in
+            # exporting the x-axis.
+            first = None
+            interpolated = {}
             for m in export_measurements:
-                m.processed_reading.tmp = self.ctl.interp.process(m.processed_reading, save=False)
+                interpolated[m] = self.ctl.interp.process(m.processed_reading, save=False)
+                if first is None:
+                    first = interpolated[m]
 
-            first = export_measurements[0]
-            for pixel in range(len(first.processed_reading.tmp.get_processed())):
+            for pixel in range(self.ctl.interp.total_pixels()):
                 row = []
                 for settings in settingss:
                     for header in x_headers:
-                        row.append(get_x_header_value(first.processed_reading.tmp.get_wavelengths(), first.processed_reading.tmp.get_wavenumbers(), header, pixel))
+                        row.append(get_x_header_value(first.get_wavelengths(), first.get_wavenumbers(), header, pixel))
                 if not self.ctl.save_options.save_collated():
                     for header in pr_headers:
                         row.extend(BLANK)
                         for m in export_measurements:
-                            row.append(get_pr_header_value(m, header, pixel, pr=m.processed_reading.tmp))
+                            row.append(get_pr_header_value(m, header, pixel, pr=interpolated[m]))
                 else:
                     for m in export_measurements:
                         for header in pr_headers:
-                            row.append(get_pr_header_value(m, header, pixel, pr=m.processed_reading.tmp))
+                            row.append(get_pr_header_value(m, header, pixel, pr=interpolated[m]))
                 csv_writer.writerow(row)
 
         else:
