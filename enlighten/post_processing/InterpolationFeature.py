@@ -155,7 +155,7 @@ class InterpolationFeature:
                 return excitation
         return generate_excitation(wavelengths=wavelengths, wavenumbers=wavenumbers)
 
-    def process(self, pr):
+    def process(self, pr, save=True):
         """ 
         This does dark and reference as well as processed and raw.
         """
@@ -172,7 +172,10 @@ class InterpolationFeature:
             log.error("Using neither wavelengths nor wavenumbers, returning none.")
             return 
 
+        old_interpolated = None
         if pr.interpolated:
+            if not save:
+                old_interpolated = pr.interpolated
             log.debug("re-interpolating (deleting previous interpolation results)")
             pr.interpolated = None
 
@@ -250,7 +253,11 @@ class InterpolationFeature:
                 log.error(f"process: len(old_detector_axis) {len(old_detector_axis)} != len(reference) ({len(reference)})")
                 interpolated.reference = None
 
-        pr.interpolated = interpolated
+        if save:
+            pr.interpolated = interpolated
+        else:
+            pr.interpolated = old_interpolated
+        return interpolated
 
     def init_from_config(self):
         log.debug("init_from_config")

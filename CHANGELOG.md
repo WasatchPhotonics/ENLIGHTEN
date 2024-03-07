@@ -3,7 +3,7 @@
 ## 4.0 GUI and Plugin Refactoring
 
 - 2023-03-07 4.0.48
-    - interpolation and ROI fixes
+    - don't permanently interpolate clipboard measurements during export
     - display "sensor stabilizing" message on SiG
     - Controller sends wasatch.StatusMessage with marquee_info or marquee_error to Marquee, not Toast
 - 2023-03-07 4.0.47

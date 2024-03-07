@@ -1,6 +1,7 @@
 import datetime
 import logging
 import json
+import copy
 import csv
 import os
 
@@ -502,7 +503,7 @@ class Measurements:
 
         except Exception:
             log.critical("exception exporting session", exc_info=1)
-            # we could optionally unlink pathname here; leaving for troubleshooting
+            os.remove(pathname)
 
     def _get_spectrometer_settings(self):
         """
@@ -870,33 +871,23 @@ class Measurements:
             #####################################################################
 
             for m in export_measurements:
-
-                # Ensure all measurements are interpolated to the SAME (current)
-                # target axis; if any have already been interpolated to this axis
-                # (the normal case), this should be a no-op. Note that this may
-                # CHANGE individual Measurements, in that each will now have a
-                # ProcessedReading.interpolated, regardless of whether it did
-                # before.
-                self.ctl.interp.process(m.processed_reading)
-                if not m.processed_reading.interpolated:
-                    self.ctl.marquee.error("export failed due to interpolation failure")
-                    return
+                m.processed_reading.tmp = self.ctl.interp.process(m.processed_reading, save=False)
 
             first = export_measurements[0]
-            for pixel in range(len(first.processed_reading.get_processed())):
+            for pixel in range(len(first.processed_reading.tmp.get_processed())):
                 row = []
                 for settings in settingss:
                     for header in x_headers:
-                        row.append(get_x_header_value(first.processed_reading.get_wavelengths(), first.processed_reading.get_wavenumbers(), header, pixel))
+                        row.append(get_x_header_value(first.processed_reading.tmp.get_wavelengths(), first.processed_reading.tmp.get_wavenumbers(), header, pixel))
                 if not self.ctl.save_options.save_collated():
                     for header in pr_headers:
                         row.extend(BLANK)
                         for m in export_measurements:
-                            row.append(get_pr_header_value(m, header, pixel, pr=m.processed_reading.interpolated))
+                            row.append(get_pr_header_value(m, header, pixel, pr=m.processed_reading.tmp))
                 else:
                     for m in export_measurements:
                         for header in pr_headers:
-                            row.append(get_pr_header_value(m, header, pixel, pr=m.processed_reading.interpolated))
+                            row.append(get_pr_header_value(m, header, pixel, pr=m.processed_reading.tmp))
                 csv_writer.writerow(row)
 
         else:
