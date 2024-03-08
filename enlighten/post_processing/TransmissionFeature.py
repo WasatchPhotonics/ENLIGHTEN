@@ -1,7 +1,6 @@
 import logging
 
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
-from enlighten.util import unwrap
 
 log = logging.getLogger(__name__)
 

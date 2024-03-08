@@ -4,10 +4,10 @@ import logging
 from enlighten import common
 
 if common.use_pyside2():
-    from PySide2 import QtGui, QtCore
+    from PySide2 import QtGui
     from PySide2.QtWidgets import QWidget, QCheckBox, QDialog, QHBoxLayout, QVBoxLayout, QLabel, QTextBrowser, QPushButton
 else:
-    from PySide6 import QtGui, QtCore
+    from PySide6 import QtGui
     from PySide6.QtWidgets import QWidget, QCheckBox, QDialog, QHBoxLayout, QVBoxLayout, QLabel, QTextBrowser, QPushButton
 
 log = logging.getLogger(__name__)
@@ -37,8 +37,6 @@ class DidYouKnowFeature:
         def tip(title, image, text):
             self.tips.append(Tip(title, image, text))
 
-        # Note: tips are displayed as HTML, so whitespace will be normalized
-
         tip("Keyboard Shortcuts", "keyboard_shortcuts", 'Mouse-over the "Help" button for an on-screen cheat-sheet of keyboard shortcuts.')
         tip("What's This?", "whats_this", """
          <p>Click the 'What's This' button ⓘ  to change your cursor into an arrow 
@@ -64,8 +62,10 @@ class DidYouKnowFeature:
               <li>ctrl-L again to disable the laser</li>
               <li>ctrl-E to edit the label of the last-saved measurement</li>
            </ul>""")
-        tip("Open-Source", "github", """ENLIGHTEN™ is completely open-source, so you're free to see how it works, run it on new platforms,
-            and even make changes. Find it on GitHub at <a href="https://github.com/WasatchPhotonics/ENLIGHTEN">WasatchPhotonics/ENLIGHTEN</a>.""")
+        tip("Open-Source", "github", """ENLIGHTEN™ is completely open-source, so 
+             you're free to see how it works, run it on new platforms,
+             and even make changes. Find it on GitHub at 
+             <a href="https://github.com/WasatchPhotonics/ENLIGHTEN">WasatchPhotonics/ENLIGHTEN</a>.""")
         tip("Wavenumber Correction", "wavenumber_correction", """
             <p>Even the most assiduously calibrated laser or spectrometer can
                experience minor shifts in wavelength due to ambient changes in
@@ -128,7 +128,8 @@ class DidYouKnowFeature:
                file, you can specify whether you wish to export the entire Clipboard, or just
                the measurements currently graphed on-screen.</p>""")
         tip("Graph Options", "chart_options", """
-            <p>You can right-click on any graph in ENLIGHTEN™ to customize its grid, axes and other features.</p>""")
+            <p>You can right-click on any graph in ENLIGHTEN™ to customize its grid, axes and 
+               other features.</p>""")
         tip("Pan and Zoom on Trackpads", "zoom", """
             <p>All ENLIGHTEN™ graphs are easy enough to pan and zoom using a mouse while holding
                the right-click button. But what if you're on a laptop with a trackpad?</p>
@@ -190,10 +191,10 @@ class DidYouKnowFeature:
                 root of the number of averages, you basically need to jump to 25 
                 spectra to get the next noticable improvement in quality.</p>""")
         tip("Baseline Correction", "baseline_correction", """
-             <p>Baseline correction (currently only accessible in Expert mode) allows you to select one of several 3rd-party
-                open-source algorithms to perform an automated "baseline subtraction"
-                from your spectra. Essentially this can be used as a simple form of
-                fluorescence removal.</p>
+             <p>Baseline correction (currently only accessible in Expert mode) allows 
+                you to select one of several 3rd-party open-source algorithms to perform 
+                an automated "baseline subtraction" from your spectra. Essentially this 
+                can be used as a simple form of fluorescence removal.</p>
              <p>Although multiple algorithms are provided for your experimentation,
                 <b>Wasatch recommends AirPLS for use with Raman spectroscopy.</b></p>
              <p>You can optionally check the "show curve" option to see the
@@ -268,16 +269,55 @@ class DidYouKnowFeature:
              <p>Although the related Note field does not automatically appear in any filenames or
                 labels, it <i>can</i> be automatically inserted into those, anywhere you want, by using
                 the <b>{note}</b> template notation.</p>""")
+        tip("Raman Lines", "raman_lines", """
+             <p><b>Raman.RamanLines</b> is a built-in "sample" plugin, showing some of the fun and 
+                useful things you can do with ENLIGHTEN's Python-based plug-in architecture.</p>
+             <p>In this case, it provides a list of common chemicals spectroscopists often have
+                at hand, with the Raman lines for each. If you Enable the plugin you can select
+                one or more compounds to see their Raman lines graphed against your spectrum.
+                (Make sure you've selected the <b>wavenumber</b> x-axis.)</p>
+             <p>This can be a quick way to confirm "What is that unlabeled vial on my desk," or
+                perhaps "Is that white plastic bottle HDPE or PTFE?" Plus you can always open up
+                the source code in <tt>EnlightenSpectra/plugins/Raman/RamanLines.py</tt> to see how easy
+                it is to write your own!</p>""")
+        tip("Emission Lines", "emission_lines", """
+             <p><b>Prod.EmissionLines</b> is a built-in "sample" plugin, showing some of the fun and 
+                useful things you can do with ENLIGHTEN's Python-based plug-in architecture.</p>
+             <p>In this case, it provides a list of noble gases often used in spectroscopy for 
+                wavelength calibration, with atomic emission lines for each. If you Enable the plugin 
+                you can select one or more gases to see their emission lines graphed against your spectrum.
+                (Make sure you've selected the <b>wavelength</b> x-axis.)</p>
+             <p>This can be a quick way to sanity-check "Is my wavelength calibration reasonable?"
+                or maybe "I wonder how much argon is in these room lights?" Plus you can always open up
+                the source code in <tt>EnlightenSpectra/plugins/Prod/EmissionLines.py</tt> to see how easy
+                it is to write your own!</p>""")
+        tip("Analysis.Stats", "stats", """
+             <p><b>Analysis.Stats</b> is a built-in "sample" plugin, showing some of the fun and 
+                useful things you can do with ENLIGHTEN's Python-based plug-in architecture.
+                In this case, it adds min/max/mean traces to your spectral graph, showing the 
+                highs, low, and average data over time. (Click "Reset" to clear previous data.)</p>
+             <p>Since those metrics can be tracked with no additional memory (there's no need to store 
+                each spectrum), this plugin can be left running for hours while you monitor a long-term 
+                process, and you can come back later to see if anything unexpected happened while you 
+                were away.  Plus you can always open up
+                the source code in <tt>EnlightenSpectra/plugins/Analysis/Stats.py</tt> to see how easy
+                it is to write your own!</p>""")
+        tip("Analysis.StatsBuffer", "stats_buffer", """
+             <p><b>Analysis.StatsBuffer</b> is a built-in "sample" plugin, showing some of the fun and 
+                useful things you can do with ENLIGHTEN's Python-based plug-in architecture.
+                In this case, it adds min, max, mean, median, mode and standard deviation traces 
+                to your spectral graph.</p>
+             <p>This plugin differs from the similarly-named "Analysis.Stats" in that several of these
+                metrics require "history" for computation. Therefore, you can set the "history" buffer
+                size, see how close it is to filling, and empty it at any time.  Plus you can always 
+                open up the source code in <tt>EnlightenSpectra/plugins/Analysis/StatsBuffer.py</tt> 
+                to see how easy it is to write your own!</p>""")
         
-        # RamanLines
-        # EmissionLines
-        # Analysis.Stats
-        # Analysis.StatsBuffer
+        # collated
         # Edit ROI (lock axes)
         # Themes, Light Mode
         # Horizontal ROI
         # Save/Export JSON
-        # collated
 
         tip("Template Macros", None, """
             <p>In the Settings view, configure template macros like <tt>{integration_time_ms}ms
@@ -475,12 +515,10 @@ class DidYouKnowFeature:
         bt_prev = QPushButton(parent=self.dialog)
         bt_prev.setText("Prev")
         bt_prev.clicked.connect(self.prev_callback)
-        # bt_prev.setFixedSize(QtCore.QSize(50, 30))
 
         bt_next = QPushButton(parent=self.dialog)
         bt_next.setText("Next")
         bt_next.clicked.connect(self.next_callback)
-        # bt_next.setFixedSize(QtCore.QSize(50, 30))
 
         self.lb_x_of_y = QLabel("Tip X/Y", parent=self.dialog)
 

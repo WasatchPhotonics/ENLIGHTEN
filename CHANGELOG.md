@@ -2,6 +2,8 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2023-??-?? 4.0.49
+    - DYK (Stats, StatsBuffer, EmissionLines, RamanLines)
 - 2023-03-07 4.0.48
     - temporarily interpolate clipboard measurements during export
     - display "sensor stabilizing" message on SiG

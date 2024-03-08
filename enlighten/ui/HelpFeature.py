@@ -1,6 +1,5 @@
 import webbrowser
 import logging
-import re
 
 from enlighten import common
 from enlighten.util import unwrap, undent

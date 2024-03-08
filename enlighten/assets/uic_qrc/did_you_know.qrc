@@ -8,6 +8,7 @@
     <file>images/did_you_know/clipboard.png</file>
     <file>images/did_you_know/dark_bulb.png</file>
     <file>images/did_you_know/ear.png</file>
+    <file>images/did_you_know/emission_lines.png</file>
     <file>images/did_you_know/explain_this.png</file>
     <file>images/did_you_know/export_selected.png</file>
     <file>images/did_you_know/json.png</file>
@@ -19,8 +20,11 @@
     <file>images/did_you_know/prefix_suffix.png</file>
     <file>images/did_you_know/quick_edit.png</file>
     <file>images/did_you_know/raman_intensity_correction.png</file>
+    <file>images/did_you_know/raman_lines.png</file>
     <file>images/did_you_know/scan_averaging.png</file>
     <file>images/did_you_know/screen_handles.png</file>
+    <file>images/did_you_know/stats.png</file>
+    <file>images/did_you_know/stats_buffer.png</file>
     <file>images/did_you_know/status_bar_menu.png</file>
     <file>images/did_you_know/wavenumber_correction.png</file>
     <file>images/did_you_know/whats_this.png</file>

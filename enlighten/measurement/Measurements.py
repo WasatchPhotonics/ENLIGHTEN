@@ -1,7 +1,6 @@
 import datetime
 import logging
 import json
-import copy
 import csv
 import os
 

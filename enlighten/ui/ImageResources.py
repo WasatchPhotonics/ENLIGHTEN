@@ -1,7 +1,8 @@
 import logging
 
 from enlighten import common
-import did_you_know_rc
+
+import did_you_know_rc # # pylint: disable=unused-import
 
 if common.use_pyside2():
     from PySide2 import QtCore

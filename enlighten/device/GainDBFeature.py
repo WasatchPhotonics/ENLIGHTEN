@@ -1,39 +1,40 @@
 from .. import util
 import logging
-import enlighten
 
 log = logging.getLogger(__name__)
 
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from enlighten.ui.MouseWheelFilter import MouseWheelFilter
-##
-# This class encapsulates control of detector gain (decibels), currently used 
-# only for Sony IMX detectors (SiG).  
-#
-# This is different from the gain and offset used for Hamamatsu detectors, 
-# although the same EEPROM field (detector_gain) is used to persist both (note 
-# that Hamamatsu gain is a float32, while decibels are currently integral, 
-# although firmware and IMX sensors support 0.1dB precision).
-#
-# This is even *more* different from the "High-Gain Mode" feature found on InGaAs 
-# detectors.
-#
-# Note that changing the detector gain through the Scope widget DOES NOT 
-# affect the "Detector Gain" value shown in the Hardware Setup EEPROMEditor, 
-# although they DO represent the same value.  The EEPROM value represents the
-# setting that will be sent to the spectrometer/FPGA at initial connection;
-# the Scope widget represents the current "session" value, but this is not 
-# persisted through EEPROM anymore than is, say, momentary integration time
-# used to update startupIntegrationTimeMS.
-#
-# Note that although the SiG can actually handle gain in increments of 0.1dB,
-# and our FunkyFloat type can support increments of 1/256 dB, the widget is
-# currently implemented as an integral QSpinBox (not QDoubleSpinBox), so
-# UI precision is currently 1dB.
-#
-# @todo support gain resolution of 0.1 dB
-# @see additional notes in wasatch.SpectrometerState
+
 class GainDBFeature:
+    """
+    This class encapsulates control of detector gain (decibels), currently used 
+    only for Sony IMX detectors (SiG).  
+    
+    This is different from the gain and offset used for Hamamatsu detectors, 
+    although the same EEPROM field (detector_gain) is used to persist both (note 
+    that Hamamatsu gain is a float32, while decibels are currently integral, 
+    although firmware and IMX sensors support 0.1dB precision).
+    
+    This is even *more* different from the "High-Gain Mode" feature found on InGaAs 
+    detectors.
+    
+    Note that changing the detector gain through the Scope widget DOES NOT 
+    affect the "Detector Gain" value shown in the Hardware Setup EEPROMEditor, 
+    although they DO represent the same value.  The EEPROM value represents the
+    setting that will be sent to the spectrometer/FPGA at initial connection;
+    the Scope widget represents the current "session" value, but this is not 
+    persisted through EEPROM anymore than is, say, momentary integration time
+    used to update startupIntegrationTimeMS.
+    
+    Note that although the SiG can actually handle gain in increments of 0.1dB,
+    and our FunkyFloat type can support increments of 1/256 dB, the widget is
+    currently implemented as an integral QSpinBox (not QDoubleSpinBox), so
+    UI precision is currently 1dB.
+    
+    @todo support gain resolution of 0.1 dB
+    @see additional notes in wasatch.SpectrometerState
+    """
 
     # for IMX385
     MIN_GAIN_DB = 0
@@ -71,9 +72,8 @@ class GainDBFeature:
         self.locked = flag
         self.update_visibility()
 
-    ##
-    # Only show these controls when an IMX-based spectrometer is selected
     def update_visibility(self):
+        """ Only show these controls when an IMX-based spectrometer is selected """
 
         if self.locked:
             self.visible = False
@@ -92,8 +92,8 @@ class GainDBFeature:
 
         return self.visible
 
-    # called by initialize_new_device on hotplug, BEFORE reading / applying .ini
     def init_hotplug(self):
+        """ called by initialize_new_device on hotplug, BEFORE reading / applying .ini """
         if not self.update_visibility():
             log.debug("GainDBFeature.init_hotplug: no visibility")
             return
@@ -102,8 +102,8 @@ class GainDBFeature:
         spec = self.ctl.multispec.current_spectrometer()
         spec.settings.state.gain_db = spec.settings.eeprom.detector_gain
 
-    # called by initialize_new_device a little after the other function
     def reset(self):
+        """ called by initialize_new_device a little after the other function """
         if not self.update_visibility():
             return
 
@@ -139,9 +139,7 @@ class GainDBFeature:
                 self.ctl.form.ui.doubleSpinBox_gain.minimum(), self.ctl.form.ui.doubleSpinBox_gain.maximum(), self.ctl.form.ui.doubleSpinBox_gain.value())
 
     def _quiet_set(self, widget, value):
-        """
-        Set the value of a widget without invoking the ValueChanged event
-        """
+        """ Set the value of a widget without invoking the ValueChanged event """
         widget.blockSignals(True)
         widget.setValue(value)
         widget.blockSignals(False)

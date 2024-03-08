@@ -1,5 +1,4 @@
 import logging
-import time
 import os
 
 from enlighten.util import unwrap
