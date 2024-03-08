@@ -12323,6 +12323,7 @@ QComboBox QListView
                              </property>
                             </widget>
                            </item>
+                           
                            <item>
                             <widget class="QPushButton" name="pushButton_roi_toggle">
                              <property name="sizePolicy">
@@ -12351,6 +12352,41 @@ QComboBox QListView
                              </property>
                             </widget>
                            </item>
+                           
+                           <item>
+                            <widget class="QPushButton" name="pushButton_srm_toggle">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>5</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>14</width>
+                               <height>26</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>30</width>
+                               <height>26</height>
+                              </size>
+                             </property>
+                             <property name="toolTip">
+                              <string>toggle Raman Intensity Correction</string>
+                             </property>
+                             <property name="text">
+                              <string />
+                             </property>
+                             <property name="icon">
+                              <iconset resource="grey_icons.qrc">
+                               <normaloff>:/greys/images/grey_icons/srm.svg</normaloff>:/greys/images/grey_icons/srm.svg</iconset>
+                             </property>
+                            </widget>
+                           </item>
+                           
+                           
                            <item>
                             <widget class="QPushButton" name="pushButton_interp_toggle">
                              <property name="sizePolicy">

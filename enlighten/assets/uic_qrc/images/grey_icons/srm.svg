@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" 
+     xmlns:xlink="http://www.w3.org/1999/xlink" 
+     xmlns:dc="http://purl.org/dc/elements/1.1/" 
+     xmlns:cc="http://web.resource.org/cc/" 
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+     xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" 
+     xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" 
+     version="1.1" 
+     baseProfile="full" 
+     width="500px" height="500px" 
+     viewBox="0 0 500 500" 
+     preserveAspectRatio="xMidYMid meet" 
+     id="svg_document" 
+     style="zoom: 1;">
+    <path stroke="#eee" stroke-width="20px" d="M11,443 C11,443 57,451 80,426 C103,401 135,223 139,185 C143,147 154,71 169,71 C184,71 198,233 213,288 C228,343 226,384 257,406 C289,428 316,398 316,398 C316,398 338,340 347,263 C357,186 373,-26 389,29 C405,84 408,225 418,298 C428,371 451,416 473,425 C495,434 514,432 514,432 " fill="none"/>
+    <path stroke="#ccc" stroke-width="20px" d="M11,443 C11,443 57,451 80,426 C103,401 137,271 150,208 C163,145 184,164 193,222 C202,280 199,270 214,325 C229,380 226,384 257,406 C289,428 316,398 316,398 C316,398 340,363 353,287 C366,211 396,210 408,276 C420,342 418,335 427,366 C436,397 451,416 473,425 C495,434 514,432 514,432 " fill="none"/>
+</svg>
