@@ -132,7 +132,7 @@ class DidYouKnowFeature:
                other features.</p>""")
         tip("Pan and Zoom on Trackpads", "zoom", """
             <p>All ENLIGHTEN™ graphs are easy enough to pan and zoom using a mouse while holding
-               the right-click button. But what if you're on a laptop with a trackpad?</p>
+               the right-mouse button. But what if you're on a laptop with a trackpad?</p>
             <p>Fortunately, you can still zoom and stretch your graph in two dimensions
                using trackpad gestures. Place the cursor over one of the graph axes, then
                control-drag (or two-finger drag) along the axis. The graph should zoom in or out
@@ -221,14 +221,8 @@ class DidYouKnowFeature:
              <p>Finally, Raman Intensity Correction requires that the horizontal
                 ROI be enabled. This is because NIST SRM standards are only certified
                 within a given spectral range, and it would be invalid to extrapolate
-                the correction factors outside the configured ROI.</p>
-             <p>As a simple visual "sanity-check" of the correction factors generated
-                from the SRM calibration coefficients, you can enable a normalized
-                graph trace indicating how the calibration changes over the detector.
-                Typically, this will resemble a "U"-shaped parabola, with higher
-                scaling factors at the edges of the detector, and curving lower
-                toward the center.</p>""")
-        tip("Auto-Raman", None, """
+                the correction factors outside the configured ROI.</p>""")
+        tip("Auto-Raman", "auto_raman", """
              <p>Auto-Raman is a new feature supporting one-click Raman measurements.
                 You can only enable it when in Raman mode, when the VCR controls are "paused."</p>
              <p>When Auto-Raman is enabled, pressing either the "Step" or "Step-and-Save" buttons
