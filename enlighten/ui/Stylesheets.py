@@ -125,10 +125,14 @@ class Stylesheets:
 
         self.widget_last_style[widget] = style_name
 
-    ## return a stylesheet by name (None on error)
     def get(self, style_name):
-        if style_name in self.css[self.theme]:
-            return self.css[self.theme][style_name]
+        """ 
+        @return a stylesheet by name (None on error)
+        @note first checks selected theme, then "dark" as the fallback
+        """
+        for theme in [self.theme, "dark"]:
+            if style_name in self.css[theme]:
+                return self.css[theme][style_name]
         log.critical(f"unknown stylesheet: theme {self.theme}, style_name {style_name}")
 
     ##

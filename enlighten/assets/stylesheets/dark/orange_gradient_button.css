@@ -3,6 +3,13 @@ QPushButton:hover {
     color: #eee;
 }
 
+/*
+ * 'enlighten_name_t':     '#f79a1c', # the 'T' in ENLIGHTEN (orange)
+ * 'enlighten_name_e2':    '#f84f21', # the 'E' in ENLIGHTEN (orangered) 
+ *
+ * f7 9a 1c = 247, 154, 28
+ * f8 4f 21 = 248,  79, 33
+ */
 QPushButton 
 {
     color: #eee;
@@ -10,8 +17,8 @@ QPushButton
     background-color: qlineargradient(spread:pad, 
         x1:0.5, y1:1, 
         x2:0.5, y2:0, 
-        stop:0 rgba(137, 10, 10, 255), 
-        stop:1 rgba(186, 10, 10, 255));
+        stop:0 rgba(247, 154, 28, 255), 
+        stop:1 rgba(248,  79, 33, 255));
     border-radius: 5px;
 }
 
