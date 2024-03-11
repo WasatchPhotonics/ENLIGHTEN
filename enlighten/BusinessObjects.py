@@ -297,9 +297,6 @@ class BusinessObjects:
         self.header("instantiating LaserWatchdogFeature")
         ctl.laser_watchdog = LaserWatchdogFeature(ctl)
 
-        self.header("instantiating RamanIntensityCorrection")
-        ctl.raman_intensity_correction = RamanIntensityCorrection(ctl)
-
         self.header("instantiating LaserTemperatureFeature")
         ctl.laser_temperature = LaserTemperatureFeature(
             cfu                         = cfu,
@@ -351,6 +348,9 @@ class BusinessObjects:
             lb_timestamp                = cfu.label_reference_timestamp,
             stacked_widget              = cfu.stackedWidget_scope_setup_reference_spectrum,
             gui_make_pen                = ctl.gui.make_pen)
+
+        self.header("instantiating RamanIntensityCorrection")
+        ctl.raman_intensity_correction = RamanIntensityCorrection(ctl)
 
         self.header("instantiating BatchCollection")
         ctl.batch_collection = BatchCollection(ctl)

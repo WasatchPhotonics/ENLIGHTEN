@@ -69,12 +69,16 @@ class DarkFeature:
 
                 Darks are cheap, signal is priceless!"""))
 
-
         self.ctl.laser_control.register_observer("enabled", self.laser_control_enabled)
+
+        self.observers = set()
 
     # ##########################################################################
     # public methods
     # ##########################################################################
+
+    def register_observer(self, callback):
+        self.observers.add(callback)
 
     def update_visibility(self):
         spec = self.ctl.multispec.current_spectrometer()
@@ -165,10 +169,12 @@ class DarkFeature:
             lb.setText("")
             self.curve.active = False
 
-        # todo some kind of observers for dark
+        # @todo some kind of observers for dark
         self.ctl.save_options.update_widgets()
-        self.ctl.raman_intensity_correction.update_visibility()
         self.ctl.gui.colorize_button(self.button_toggle, spec.app_state.has_dark())
+
+        for callback in self.observers:
+            callback()
 
     # ##########################################################################
     # callbacks (truncates any widget arguments)
@@ -239,9 +245,9 @@ class DarkFeature:
             self._enable_buttons(False, "disabled without spectrometer")
             return
 
-        if self.ctl.raman_intensity_correction and self.ctl.raman_intensity_correction.enabled:
-            self._enable_buttons(False, "dark cannot be cleared while Raman Intensity Correction is enabled")
-            return
+        # if self.ctl.raman_intensity_correction and self.ctl.raman_intensity_correction.enabled:
+        #     self._enable_buttons(False, "dark cannot be cleared while Raman Intensity Correction is enabled")
+        #     return
 
         self._enable_buttons(True)
 

@@ -2,8 +2,11 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
-- 2023-??-?? 4.0.49
+- 2023-03-11 4.0.49
     - DYK (Stats, StatsBuffer, EmissionLines, RamanLines)
+    - added RamanIntensityCorrection button
+    - added support for orange "tri-state" buttons
+    - removed duplicate theme stylesheets
 - 2023-03-07 4.0.48
     - temporarily interpolate clipboard measurements during export
     - display "sensor stabilizing" message on SiG
