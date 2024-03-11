@@ -7,6 +7,7 @@
     - added RamanIntensityCorrection button
     - added support for orange "tri-state" buttons
     - removed duplicate theme stylesheets
+    - ROI editting tweaks
 - 2023-03-07 4.0.48
     - temporarily interpolate clipboard measurements during export
     - display "sensor stabilizing" message on SiG

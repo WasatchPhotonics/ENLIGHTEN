@@ -115,6 +115,8 @@ class RamanIntensityCorrection:
             # log.debug(f"set_allowed: flag {flag}, tt {tt}")
             if update_tooltip:
                 self.button.setToolTip(tt)
+                if not flag:
+                    self.ctl.marquee.info(tt)
             self.allowed = flag
             return flag
 
