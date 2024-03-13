@@ -2,9 +2,10 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
-- 2024-03-?? 4.0.50
+- 2024-03-13 4.0.50
     - fixed changelog (2024)
     - SRM / Wavenumber button tweaks (also location)
+    - ARM fixes regarding FPGAOptions and div-by-zero InGaAs correction
 - 2024-03-11 4.0.49
     - DYK (Stats, StatsBuffer, EmissionLines, RamanLines)
     - added RamanIntensityCorrection button
