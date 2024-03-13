@@ -75,6 +75,7 @@ class HorizROIFeature:
 
         self.observers = set()
         self.ctl.graph.register_observer("change_axis", self.change_axis_callback)
+        self.ctl.page_nav.register_observer("mode", self.update_visibility)
 
         self.button.clicked.connect(self.button_callback)
         self.cb_editing.stateChanged.connect(self.cb_editing_callback)
@@ -136,7 +137,11 @@ class HorizROIFeature:
         if spec is None:
             return
 
-        self.cb_editing.setVisible(self.ctl.page_nav.doing_expert())
+        if self.ctl.page_nav.doing_expert():
+            self.cb_editing.setVisible(True)
+        else:
+            self.cb_editing.setChecked(False)
+            self.cb_editing.setVisible(False)
 
         log.debug(f"update_visibility: setting enabled to user_requested_enabled {self.user_requested_enabled}")
         self.enabled = self.user_requested_enabled
@@ -234,7 +239,17 @@ class HorizROIFeature:
 
         pr.cropped = prc
 
+    def region_updated_callback(self, spec, left_pixel=None, right_pixel=None):
+        roi = spec.settings.eeprom.get_horizontal_roi()
+        log.debug("region_updated_callback: roi now {roi}")
+
+        self.update_regions(spec)
+
     def update_regions(self, spec=None):
+        """
+        Besides internal calls within this class, this gets called by Spectrometer 
+        when the "curtains" are dragged by the user.
+        """
         if spec is None:
             spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
@@ -252,7 +267,7 @@ class HorizROIFeature:
             end = roi.end
         else:
             start = 0
-            end = spec.settings.pixels()
+            end = spec.settings.pixels() - 1
 
         axis = self.ctl.generate_x_axis(cropped=False)
 
@@ -260,25 +275,6 @@ class HorizROIFeature:
 
         spec.roi_region_left.setRegion((axis[0], axis[start]))
         spec.roi_region_right.setRegion((axis[end], axis[-1]))
-
-        # automatically make regions invisible if they actually extend to/past 
-        # the detector edge
-        #
-        # MZ: how is setOpacity(0) different from remote_roi_region()?
-        #     why are we ADDING an opaque region, if I'm reading this
-        #     right?
-        #
-        # MZ: disabling this for now until I understand what it was for.
-        #
-        # if roi.start <= 0:
-        #     spec.roi_region_left.setOpacity(0)
-        # else:
-        #     spec.roi_region_left.setOpacity(1)
-        # 
-        # if roi.end >= len(axis):
-        #     spec.roi_region_right.setOpacity(0)
-        # else:
-        #     spec.roi_region_right.setOpacity(1)
 
         self.ctl.graph.add_roi_region(spec.roi_region_left)
         self.ctl.graph.add_roi_region(spec.roi_region_right)

@@ -103,11 +103,13 @@ class GUI:
         cfu.label_application_logo.setPixmap(pixmap)
         log.debug("update_theme: done")
 
-    def colorize_button(self, button, flag):
+    def colorize_button(self, button, flag, tristate=False):
         if button is None:
             return
 
-        if flag:
+        if tristate and flag is None:
+            self.ctl.stylesheets.apply(button, "orange_gradient_button")
+        elif flag == True:
             self.ctl.stylesheets.apply(button, "red_gradient_button")
         else:
             self.ctl.stylesheets.apply(button, "gray_gradient_button")

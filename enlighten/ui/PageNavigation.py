@@ -388,6 +388,7 @@ class PageNavigation:
         if not self.has_used_raman and self.ctl.save_options:
             self.has_used_raman = True
             self.ctl.save_options.force_wavenumber()
+        self.set_operation_mode_common()
 
     def set_operation_mode_non_raman(self):
         self.ctl.graph.set_x_axis(common.Axes.WAVELENGTHS)
@@ -401,6 +402,7 @@ class PageNavigation:
         self.ctl.update_feature_visibility()
         self.display_non_raman_technique()
         self.update_expert_widgets()
+        self.set_operation_mode_common()
 
     def set_operation_mode_expert(self):
         log.debug("set_operation_mode_expert: start")
@@ -411,6 +413,7 @@ class PageNavigation:
         self.ctl.update_feature_visibility()
         self.display_non_raman_technique()
         self.update_expert_widgets()
+        self.set_operation_mode_common()
 
     def update_expert_widgets(self):
         is_ingaas = False
@@ -433,15 +436,10 @@ class PageNavigation:
         cfu.frame_area_scan_widget.setVisible(flag and not is_ingaas)
         cfu.frame_region_control.setVisible(False) # spec.settings.is_imx()
 
-    def set_operation_mode_common(self, mode):
-        # cache the newly-set operation mode for the current view, so the
-        # next time we switch back to this view we'll restore this mode
-        self.view_operation_mode[self.current_view] = mode
-
-        # This is used by doing_peakfinding()...generally setting operation mode
-        # is fire-and-forget, but that's one case when we later want to
-        # introspect and know what mode we're supposedly in.
-        self.operation_mode = mode
+    def set_operation_mode_common(self):
+        if "mode" in self.observers:
+            for callback in self.observers["mode"]:
+                callback()
 
     def display_non_raman_technique(self):
         self.ctl.form.ui.frame_TechniqueWidget.show()

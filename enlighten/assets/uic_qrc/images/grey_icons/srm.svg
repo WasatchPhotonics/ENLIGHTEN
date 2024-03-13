@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<svg xmlns="http://www.w3.org/2000/svg" cursor="crosshair" style="zoom: 1;" viewBox="0 0 19 21" xml:space="preserve" visibility="visible">
+    <g transform="translate(-2.9293143,-1.301635)" style="fill:none; stroke:#eee">
+        <path style="stroke:#ddd" d="M2.9293143,22.198992 c4.287606,0 5.070601,-8.999824 9.173797,-8.956181 c4.10317,0.043642 3.104606,8.191997 7.334936,8.202944 " visibility="visible"/>
+        <path d="M3.481716,22.026525 c4.287606,0 3.943236,-19.074236 8.192141,-18.951965 c4.248907,0.122271 4.241428,18.524017 8.161572,18.524017" visibility="visible"/>
+
+        <path d="M 20, 6 L 20,14" style="stroke-width:2px" />
+        <path d="M 20, 5 L 22, 7 L 18, 7 z"/>
+        <path d="M 20,15 L 22,13 L 18,13 z"/>
+    </g>
+</svg>

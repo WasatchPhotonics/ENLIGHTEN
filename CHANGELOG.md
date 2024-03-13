@@ -2,23 +2,30 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
-- 2023-??-?? 4.0.49
+- 2024-03-?? 4.0.50
+    - fixed changelog (2024)
+    - SRM / Wavenumber button tweaks (also location)
+- 2024-03-11 4.0.49
     - DYK (Stats, StatsBuffer, EmissionLines, RamanLines)
-- 2023-03-07 4.0.48
+    - added RamanIntensityCorrection button
+    - added support for orange "tri-state" buttons
+    - removed duplicate theme stylesheets
+    - ROI editting tweaks
+- 2024-03-07 4.0.48
     - temporarily interpolate clipboard measurements during export
     - display "sensor stabilizing" message on SiG
     - display wasatch.StatusMessage via Marquee, not Toast
-- 2023-03-07 4.0.47
+- 2024-03-07 4.0.47
     - fixed export bug
-- 2023-03-01 4.0.46
+- 2024-03-01 4.0.46
     - bumping version number for clean installer
-- 2023-03-01 4.0.45
+- 2024-03-01 4.0.45
     - Multispec fix
     - Tensorflow Win11 fix
     - export ROI fix
     - flipped (corrected) meaning of "collated_export" (still defaults to "original behavior")
     - restore installer COMPRESSION option
-- 2023-02-27 4.0.44
+- 2024-02-27 4.0.44
     - deprecated Miniconda (python venv FTW)
     - built installer on Win11
     - ASTM tweak
@@ -26,10 +33,10 @@
     - convert timestamps to strings in JSON
     - fix pixel axis with ROI
     - disable KIA tips
-- 2023-02-20 4.0.43
+- 2024-02-20 4.0.43
     - fixed XL temperature
     - fixed Peak Sharpening
-- 2023-02-19 4.0.42
+- 2024-02-19 4.0.42
     - GUI tweaks
         - added DidYouKnowFeature
         - added session close button for KIA
@@ -38,19 +45,19 @@
         - moved sounds checkbox to Settings view
         - added laser_steady.wav
         - tightened checks around StatusIndicators
-- 2023-02-14 4.0.41 ❤️
+- 2024-02-14 4.0.41 ❤️
     - RamanShiftCorrection: better support for ROI, tweaked peak windows
     - updated to Tensorflow 2.13.1
-- 2023-02-09 4.0.40
+- 2024-02-09 4.0.40
     - Configuration cleanup
     - persist scans to average in enlighten.ini by serial number
     - move PluginController.autoload to PluginController QTimer to make sure it
       happens on GUI thread, but...previous call from initialize_new_device was 
       already on a QTimer? Yet this seemed to fix bug?
-- 2023-02-07 4.0.39
+- 2024-02-07 4.0.39
     - fixed ROI bug in Measurement.save_excel_file
     - properly apply ROI for loaded export and columnar csv files
-- 2023-02-06 4.0.38
+- 2024-02-06 4.0.38
     - fixed load from export
     - fixed graph traces on loaded exports
     - fixed common.msgbox bug
@@ -60,12 +67,12 @@
         - ExportFileParser
         - SPCFileParser
         - TextFileParser
-- 2023-02-05 4.0.37
+- 2024-02-05 4.0.37
     - pylint
     - docs
     - fixed LaserControlFeature restriction bug
     - fixed Measurements export ROI bug
-- 2023-01-30 4.0.36
+- 2024-01-30 4.0.36
     - Raman
         - ensured all Raman features available in Expert mode
         - renamed RamanModeFeature to AutoRaman
@@ -92,7 +99,7 @@
         - CloudManager
         - RichardsonLucy
         - Sounds
-- 2023-01-26 4.0.35
+- 2024-01-26 4.0.35
     - RamanModeFeature 
         - prompt for confirmation
         - release restriction on LaserControlFeature when invisible
@@ -108,14 +115,14 @@
         - made RamanLines auto-enable
     - HelpFeature: added shortcuts to tooltip
     - LoggingFeature: utf-8 bugfix
-- 2023-01-24 4.0.34
+- 2024-01-24 4.0.34
     - Refactored RamanModeFeature, VCRControls and TakeOneFeature around TakeOneRequest
     - moved to ctl
         - BatchCollection
         - RamanModeFeature
         - TakeOneFeature
         - VCRControls
-- 2023-01-15 4.0.33
+- 2024-01-15 4.0.33
     - fix load bug
     - simplify common.msgbox api
     - simplify thumbnail removal prompt
@@ -125,7 +132,7 @@
     - default logfile to truncate
     - added SpectrometerApplicationState.received_reading_at_current_integration_time,
       in contention for ENLIGHTEN Longest Variable Name
-- 2023-01-12 4.0.32
+- 2024-01-12 4.0.32
     - GUI
         - StatusBar only shows battery when appropriate
         - added common.msgbox(..., detail)
@@ -134,7 +141,7 @@
         - renamed logfile to plugin.log
         - truncate plugin logfile on load
     - updated peaks in RamanLines and ASTM-1840 configuration
-- 2023-01-11 4.0.31
+- 2024-01-11 4.0.31
     - axis corner-cases
         - replaced InterpolatedProcessedReading with ProcessedReading.cropped and 
           .interpolated
