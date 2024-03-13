@@ -46,13 +46,43 @@ class LaserControlFeature:
         cfu.doubleSpinBox_excitation_nm .setWhatsThis("If you know the exact wavelength of your laser in nanometers, enter it here to improve wavenumber axis accuracy")
         cfu.comboBox_laser_power_unit   .setWhatsThis("Switch laser power units between duty-cycle percentage and calibrated milliWatts")
 
-        for widget in [ cfu.verticalSlider_laser_power ]:
+        self.expert_widgets = [
+            cfu.label_lightSourceWidget_excitation_nm,
+            cfu.doubleSpinBox_excitation_nm,
+        ]
+
+        self.laser_tec_control_widgets = [
+            cfu.verticalSlider_laser_setpoint_degC,
+            cfu.laserControlWidget_label_laserTemperature,
+            cfu.pushButton_laser_setpoint_dn,
+            cfu.pushButton_laser_setpoint_up,
+            cfu.spinBox_laser_setpoint_degC,
+            cfu.checkBox_laser_tec_enabled,
+        ]
+
+        for widget in [ cfu.verticalSlider_laser_power, cfu.verticalSlider_laser_setpoint_degC ]:
             widget.installEventFilter(MouseWheelFilter(widget))
 
         for widget in [ cfu.doubleSpinBox_excitation_nm,
                         cfu.doubleSpinBox_laser_power,
                         cfu.comboBox_laser_power_unit ]:
             widget.installEventFilter(ScrollStealFilter(widget))
+
+        self.ctl.page_nav.register_observer("mode", self.page_nav_mode_callback)
+
+    def page_nav_mode_callback(self):
+        cfu = self.ctl.form.ui
+
+        doing_expert = self.ctl.page_nav.doing_expert()
+        for widget in self.expert_widgets:
+            widget.setVisible(doing_expert)
+
+        spec = self.ctl.multispec.current_spectrometer()
+        for widget in self.laser_tec_control_widgets:
+            widget.setVisible(doing_expert and spec is not None and spec.settings.eeprom.sig_laser_tec)
+
+        has_laser_power_calibration = spec is not None and spec.settings.eeprom.has_laser_power_calibration()
+        cfu.comboBox_laser_power_unit.setVisible(has_laser_power_calibration and (spec.settings.is_mml() or doing_expert))
 
     # ##########################################################################
     # Public Methods
@@ -138,10 +168,6 @@ class LaserControlFeature:
                     self.configure_laser_power_controls_mW()
                 else:
                     self.configure_laser_power_controls_percent()
-
-        cfu.doubleSpinBox_excitation_nm.setVisible(doing_expert)
-        cfu.label_lightSourceWidget_excitation_nm.setVisible(doing_expert)
-
 
         if self.locked:
             # let them turn the laser on/off, nothing else (including watchdog)
