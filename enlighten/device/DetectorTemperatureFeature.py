@@ -24,7 +24,7 @@ class DetectorTemperatureFeature:
         self.name                  = "Detector_TEC_Temperature"
         self.output_to_file        = False
 
-        self.cb_enabled     = cfu.checkBox_tec_enabled
+        self.cb_enabled     = cfu.checkBox_detector_tec_enabled
         self.lb_degC        = cfu.label_hardware_capture_details_detector_temperature
         self.lb_raw         = cfu.label_ccd_temperature_raw
         self.slider         = cfu.verticalSlider_detector_setpoint_degC

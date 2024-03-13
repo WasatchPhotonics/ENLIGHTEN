@@ -432,7 +432,7 @@ class PageNavigation:
         # their respective owning Business Objects
         cfu.frame_post_processing.setVisible(flag)
         cfu.frame_baseline_correction.setVisible(flag)
-        cfu.frame_tec_control.setVisible(flag and has_cooling)
+        # cfu.frame_tec_control.setVisible(flag and has_cooling)
         cfu.frame_area_scan_widget.setVisible(flag and not is_ingaas)
         cfu.frame_region_control.setVisible(False) # spec.settings.is_imx()
 

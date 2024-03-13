@@ -10,7 +10,7 @@ then
     # $CONDA_PREFIX/bin/Designer.app/Contents/MacOS/Designer $FILE
 
     # or you can get it from "pip install PySide6"
-    $CONDA_PREFIX/bin/pyside6-designer $FILE
+    /usr/local/bin/pyside6-designer $FILE
 else
     # This comes up right away on Win10, but takes ~20sec on 
     # Ubuntu...?

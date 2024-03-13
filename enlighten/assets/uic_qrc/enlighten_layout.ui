@@ -2554,8 +2554,8 @@ QComboBox QListView
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>788</width>
-           <height>6132</height>
+           <width>722</width>
+           <height>5848</height>
           </rect>
          </property>
          <property name="sizePolicy">
@@ -8384,7 +8384,7 @@ QComboBox QListView
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>667</width>
+              <width>634</width>
               <height>1542</height>
              </rect>
             </property>
@@ -14214,9 +14214,9 @@ li.checked::marker { content: "\2612"; }
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>0</y>
+                <y>-511</y>
                 <width>240</width>
-                <height>3080</height>
+                <height>3225</height>
                </rect>
               </property>
               <property name="sizePolicy">
@@ -15012,6 +15012,25 @@ li.checked::marker { content: "\2612"; }
                           <item>
                            <layout class="QVBoxLayout" name="verticalLayout_64">
                             <item>
+                             <widget class="QLabel" name="laserControlWidget_label_laserPower">
+                              <property name="maximumSize">
+                               <size>
+                                <width>16777215</width>
+                                <height>20</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Laser Power</string>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignCenter</set>
+                              </property>
+                              <property name="wordWrap">
+                               <bool>true</bool>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
                              <layout class="QHBoxLayout" name="horizontalLayout_32">
                               <item>
                                <widget class="QPushButton" name="pushButton_laser_power_dn">
@@ -15152,6 +15171,206 @@ li.checked::marker { content: "\2612"; }
                                 <string>percentage (%)</string>
                                </property>
                               </item>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                         </layout>
+                        </item>
+                        <item>
+                         <layout class="QHBoxLayout" name="horizontalLayout_37_laser">
+                          <property name="leftMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>0</number>
+                          </property>
+                          <item>
+                           <widget class="QSlider" name="verticalSlider_laser_setpoint_degC">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>30</width>
+                              <height>70</height>
+                             </size>
+                            </property>
+                            <property name="minimum">
+                             <number>-20</number>
+                            </property>
+                            <property name="maximum">
+                             <number>20</number>
+                            </property>
+                            <property name="value">
+                             <number>10</number>
+                            </property>
+                            <property name="orientation">
+                             <enum>Qt::Vertical</enum>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <layout class="QVBoxLayout" name="verticalLayout_57_laser">
+                            <item>
+                             <widget class="QLabel" name="laserControlWidget_label_laserTemperature">
+                              <property name="maximumSize">
+                               <size>
+                                <width>16777215</width>
+                                <height>20</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Laser Temperature</string>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignCenter</set>
+                              </property>
+                              <property name="wordWrap">
+                               <bool>true</bool>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <layout class="QHBoxLayout" name="horizontalLayout_59_laser">
+                              <item>
+                               <widget class="QPushButton" name="pushButton_laser_setpoint_dn">
+                                <property name="sizePolicy">
+                                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                  <horstretch>0</horstretch>
+                                  <verstretch>0</verstretch>
+                                 </sizepolicy>
+                                </property>
+                                <property name="minimumSize">
+                                 <size>
+                                  <width>0</width>
+                                  <height>40</height>
+                                 </size>
+                                </property>
+                                <property name="maximumSize">
+                                 <size>
+                                  <width>40</width>
+                                  <height>40</height>
+                                 </size>
+                                </property>
+                                <property name="text">
+                                 <string />
+                                </property>
+                                <property name="icon">
+                                 <iconset resource="grey_icons.qrc">
+                                  <normaloff>:/greys/images/grey_icons/down_triangle.svg</normaloff>:/greys/images/grey_icons/down_triangle.svg</iconset>
+                                </property>
+                                <property name="iconSize">
+                                 <size>
+                                  <width>20</width>
+                                  <height>20</height>
+                                 </size>
+                                </property>
+                                <property name="autoRepeat">
+                                 <bool>true</bool>
+                                </property>
+                               </widget>
+                              </item>
+                              <item>
+                               <widget class="QPushButton" name="pushButton_laser_setpoint_up">
+                                <property name="sizePolicy">
+                                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                  <horstretch>0</horstretch>
+                                  <verstretch>0</verstretch>
+                                 </sizepolicy>
+                                </property>
+                                <property name="minimumSize">
+                                 <size>
+                                  <width>0</width>
+                                  <height>40</height>
+                                 </size>
+                                </property>
+                                <property name="maximumSize">
+                                 <size>
+                                  <width>40</width>
+                                  <height>40</height>
+                                 </size>
+                                </property>
+                                <property name="text">
+                                 <string />
+                                </property>
+                                <property name="icon">
+                                 <iconset resource="grey_icons.qrc">
+                                  <normaloff>:/greys/images/grey_icons/up_triangle.svg</normaloff>:/greys/images/grey_icons/up_triangle.svg</iconset>
+                                </property>
+                                <property name="iconSize">
+                                 <size>
+                                  <width>20</width>
+                                  <height>20</height>
+                                 </size>
+                                </property>
+                                <property name="autoRepeat">
+                                 <bool>true</bool>
+                                </property>
+                               </widget>
+                              </item>
+                             </layout>
+                            </item>
+                            <item>
+                             <widget class="QSpinBox" name="spinBox_laser_setpoint_degC">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="focusPolicy">
+                               <enum>Qt::StrongFocus</enum>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignCenter</set>
+                              </property>
+                              <property name="buttonSymbols">
+                               <enum>QAbstractSpinBox::NoButtons</enum>
+                              </property>
+                              <property name="suffix">
+                               <string>°C</string>
+                              </property>
+                              <property name="prefix">
+                               <string />
+                              </property>
+                              <property name="minimum">
+                               <number>-200</number>
+                              </property>
+                              <property name="maximum">
+                               <number>20</number>
+                              </property>
+                              <property name="value">
+                               <number>10</number>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QCheckBox" name="checkBox_laser_tec_enabled">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="toolTip">
+                               <string>Control the detector's Thermo-Electric Cooler (TEC)</string>
+                              </property>
+                              <property name="styleSheet">
+                               <string notr="true" />
+                              </property>
+                              <property name="text">
+                               <string>TEC Enabled</string>
+                              </property>
                              </widget>
                             </item>
                            </layout>
@@ -15908,6 +16127,206 @@ li.checked::marker { content: "\2612"; }
                               </property>
                               <property name="value">
                                <number>100</number>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </item>
+                         </layout>
+                        </item>
+                        <item>
+                         <layout class="QHBoxLayout" name="horizontalLayout_37">
+                          <property name="leftMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>0</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>0</number>
+                          </property>
+                          <item>
+                           <widget class="QSlider" name="verticalSlider_detector_setpoint_degC">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>30</width>
+                              <height>70</height>
+                             </size>
+                            </property>
+                            <property name="minimum">
+                             <number>-20</number>
+                            </property>
+                            <property name="maximum">
+                             <number>20</number>
+                            </property>
+                            <property name="value">
+                             <number>10</number>
+                            </property>
+                            <property name="orientation">
+                             <enum>Qt::Vertical</enum>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <layout class="QVBoxLayout" name="verticalLayout_57">
+                            <item>
+                             <widget class="QLabel" name="detectorControlWidget_label_detectorTemperature">
+                              <property name="maximumSize">
+                               <size>
+                                <width>16777215</width>
+                                <height>20</height>
+                               </size>
+                              </property>
+                              <property name="text">
+                               <string>Detector Temperature</string>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignCenter</set>
+                              </property>
+                              <property name="wordWrap">
+                               <bool>true</bool>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <layout class="QHBoxLayout" name="horizontalLayout_59">
+                              <item>
+                               <widget class="QPushButton" name="temperatureWidget_pushButton_detector_setpoint_dn">
+                                <property name="sizePolicy">
+                                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                  <horstretch>0</horstretch>
+                                  <verstretch>0</verstretch>
+                                 </sizepolicy>
+                                </property>
+                                <property name="minimumSize">
+                                 <size>
+                                  <width>0</width>
+                                  <height>40</height>
+                                 </size>
+                                </property>
+                                <property name="maximumSize">
+                                 <size>
+                                  <width>40</width>
+                                  <height>40</height>
+                                 </size>
+                                </property>
+                                <property name="text">
+                                 <string />
+                                </property>
+                                <property name="icon">
+                                 <iconset resource="grey_icons.qrc">
+                                  <normaloff>:/greys/images/grey_icons/down_triangle.svg</normaloff>:/greys/images/grey_icons/down_triangle.svg</iconset>
+                                </property>
+                                <property name="iconSize">
+                                 <size>
+                                  <width>20</width>
+                                  <height>20</height>
+                                 </size>
+                                </property>
+                                <property name="autoRepeat">
+                                 <bool>true</bool>
+                                </property>
+                               </widget>
+                              </item>
+                              <item>
+                               <widget class="QPushButton" name="temperatureWidget_pushButton_detector_setpoint_up">
+                                <property name="sizePolicy">
+                                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                  <horstretch>0</horstretch>
+                                  <verstretch>0</verstretch>
+                                 </sizepolicy>
+                                </property>
+                                <property name="minimumSize">
+                                 <size>
+                                  <width>0</width>
+                                  <height>40</height>
+                                 </size>
+                                </property>
+                                <property name="maximumSize">
+                                 <size>
+                                  <width>40</width>
+                                  <height>40</height>
+                                 </size>
+                                </property>
+                                <property name="text">
+                                 <string />
+                                </property>
+                                <property name="icon">
+                                 <iconset resource="grey_icons.qrc">
+                                  <normaloff>:/greys/images/grey_icons/up_triangle.svg</normaloff>:/greys/images/grey_icons/up_triangle.svg</iconset>
+                                </property>
+                                <property name="iconSize">
+                                 <size>
+                                  <width>20</width>
+                                  <height>20</height>
+                                 </size>
+                                </property>
+                                <property name="autoRepeat">
+                                 <bool>true</bool>
+                                </property>
+                               </widget>
+                              </item>
+                             </layout>
+                            </item>
+                            <item>
+                             <widget class="QSpinBox" name="spinBox_detector_setpoint_degC">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="focusPolicy">
+                               <enum>Qt::StrongFocus</enum>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignCenter</set>
+                              </property>
+                              <property name="buttonSymbols">
+                               <enum>QAbstractSpinBox::NoButtons</enum>
+                              </property>
+                              <property name="suffix">
+                               <string>°C</string>
+                              </property>
+                              <property name="prefix">
+                               <string />
+                              </property>
+                              <property name="minimum">
+                               <number>-200</number>
+                              </property>
+                              <property name="maximum">
+                               <number>20</number>
+                              </property>
+                              <property name="value">
+                               <number>10</number>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QCheckBox" name="checkBox_detector_tec_enabled">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="toolTip">
+                               <string>Control the detector's Thermo-Electric Cooler (TEC)</string>
+                              </property>
+                              <property name="styleSheet">
+                               <string notr="true" />
+                              </property>
+                              <property name="text">
+                               <string>TEC Enabled</string>
                               </property>
                              </widget>
                             </item>
@@ -17783,276 +18202,6 @@ li.checked::marker { content: "\2612"; }
                 </widget>
                </item>
                <item>
-                <widget class="QFrame" name="frame_tec_control">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="lineWidth">
-                  <number>1</number>
-                 </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_56">
-                  <property name="leftMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>0</number>
-                  </property>
-                  <item>
-                   <widget class="QLabel" name="temperatureWidget_label">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <bold>true</bold>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>Temperature Control</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QFrame" name="temperatureWidget_border">
-                    <property name="lineWidth">
-                     <number>1</number>
-                    </property>
-                    <property name="wpBox" stdset="0">
-                     <bool>false</bool>
-                    </property>
-                    <layout class="QGridLayout" name="temperatureWidget_grid" rowstretch="0" columnstretch="0">
-                     <property name="sizeConstraint">
-                      <enum>QLayout::SetDefaultConstraint</enum>
-                     </property>
-                     <property name="leftMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="topMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="rightMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="bottomMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="spacing">
-                      <number>0</number>
-                     </property>
-                     <item row="0" column="0">
-                      <widget class="QFrame" name="temperatureWidget_shaded">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>0</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>16777215</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="lineWidth">
-                        <number>1</number>
-                       </property>
-                       <property name="wpGrad" stdset="0">
-                        <bool>false</bool>
-                       </property>
-                       <layout class="QHBoxLayout" name="horizontalLayout_37">
-                        <item>
-                         <widget class="QSlider" name="verticalSlider_detector_setpoint_degC">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>30</width>
-                            <height>70</height>
-                           </size>
-                          </property>
-                          <property name="minimum">
-                           <number>-20</number>
-                          </property>
-                          <property name="maximum">
-                           <number>20</number>
-                          </property>
-                          <property name="value">
-                           <number>10</number>
-                          </property>
-                          <property name="orientation">
-                           <enum>Qt::Vertical</enum>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <layout class="QVBoxLayout" name="verticalLayout_57">
-                          <item>
-                           <layout class="QHBoxLayout" name="horizontalLayout_59">
-                            <item>
-                             <widget class="QPushButton" name="temperatureWidget_pushButton_detector_setpoint_dn">
-                              <property name="sizePolicy">
-                               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                                <horstretch>0</horstretch>
-                                <verstretch>0</verstretch>
-                               </sizepolicy>
-                              </property>
-                              <property name="minimumSize">
-                               <size>
-                                <width>0</width>
-                                <height>40</height>
-                               </size>
-                              </property>
-                              <property name="maximumSize">
-                               <size>
-                                <width>40</width>
-                                <height>40</height>
-                               </size>
-                              </property>
-                              <property name="text">
-                               <string />
-                              </property>
-                              <property name="icon">
-                               <iconset resource="grey_icons.qrc">
-                                <normaloff>:/greys/images/grey_icons/down_triangle.svg</normaloff>:/greys/images/grey_icons/down_triangle.svg</iconset>
-                              </property>
-                              <property name="iconSize">
-                               <size>
-                                <width>20</width>
-                                <height>20</height>
-                               </size>
-                              </property>
-                              <property name="autoRepeat">
-                               <bool>true</bool>
-                              </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <widget class="QPushButton" name="temperatureWidget_pushButton_detector_setpoint_up">
-                              <property name="sizePolicy">
-                               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                                <horstretch>0</horstretch>
-                                <verstretch>0</verstretch>
-                               </sizepolicy>
-                              </property>
-                              <property name="minimumSize">
-                               <size>
-                                <width>0</width>
-                                <height>40</height>
-                               </size>
-                              </property>
-                              <property name="maximumSize">
-                               <size>
-                                <width>40</width>
-                                <height>40</height>
-                               </size>
-                              </property>
-                              <property name="text">
-                               <string />
-                              </property>
-                              <property name="icon">
-                               <iconset resource="grey_icons.qrc">
-                                <normaloff>:/greys/images/grey_icons/up_triangle.svg</normaloff>:/greys/images/grey_icons/up_triangle.svg</iconset>
-                              </property>
-                              <property name="iconSize">
-                               <size>
-                                <width>20</width>
-                                <height>20</height>
-                               </size>
-                              </property>
-                              <property name="autoRepeat">
-                               <bool>true</bool>
-                              </property>
-                             </widget>
-                            </item>
-                           </layout>
-                          </item>
-                          <item>
-                           <widget class="QSpinBox" name="spinBox_detector_setpoint_degC">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
-                            <property name="focusPolicy">
-                             <enum>Qt::StrongFocus</enum>
-                            </property>
-                            <property name="alignment">
-                             <set>Qt::AlignCenter</set>
-                            </property>
-                            <property name="buttonSymbols">
-                             <enum>QAbstractSpinBox::NoButtons</enum>
-                            </property>
-                            <property name="suffix">
-                             <string>°C</string>
-                            </property>
-                            <property name="prefix">
-                             <string>Setpoint: </string>
-                            </property>
-                            <property name="minimum">
-                             <number>-200</number>
-                            </property>
-                            <property name="maximum">
-                             <number>20</number>
-                            </property>
-                            <property name="value">
-                             <number>10</number>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="QCheckBox" name="checkBox_tec_enabled">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
-                            <property name="toolTip">
-                             <string>Control the detector's Thermo-Electric Cooler (TEC)</string>
-                            </property>
-                            <property name="styleSheet">
-                             <string notr="true" />
-                            </property>
-                            <property name="text">
-                             <string>Enabled</string>
-                            </property>
-                           </widget>
-                          </item>
-                         </layout>
-                        </item>
-                       </layout>
-                      </widget>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item>
                 <widget class="QFrame" name="frame_area_scan_widget">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -19290,7 +19439,6 @@ li.checked::marker { content: "\2612"; }
   <tabstop>verticalSlider_detector_setpoint_degC</tabstop>
   <tabstop>temperatureWidget_pushButton_detector_setpoint_up</tabstop>
   <tabstop>spinBox_detector_setpoint_degC</tabstop>
-  <tabstop>checkBox_tec_enabled</tabstop>
   <tabstop>systemStatusWidget_pushButton_hardware</tabstop>
   <tabstop>systemStatusWidget_pushButton_light</tabstop>
   <tabstop>systemStatusWidget_pushButton_temperature</tabstop>

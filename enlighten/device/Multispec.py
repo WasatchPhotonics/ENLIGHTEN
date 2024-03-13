@@ -57,8 +57,7 @@ class Multispec:
                                        cfu.detectorControlWidget_shaded,
                                        cfu.displayAxisWidget_shaded,
                                        cfu.scanAveragingWidget_shaded,
-                                       cfu.boxcarWidget_shaded,
-                                       cfu.temperatureWidget_shaded ]
+                                       cfu.boxcarWidget_shaded ]
         self.device_id = None
         self.ejected = set()
         self.strip_features = []
