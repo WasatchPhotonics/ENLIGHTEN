@@ -6,6 +6,7 @@
     - merged old Temperature Control panel into Detector Control widget (as Detector Temperature)
     - added new Laser Temperature panel within Laser Control widget
     - added Laser Temperature to StatusBar
+    - added EDC for IMX385
 - 2024-03-13 4.0.50
     - fixed changelog (2024)
     - SRM / Wavenumber button tweaks (also location)

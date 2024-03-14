@@ -16603,6 +16603,25 @@ li.checked::marker { content: "\2612"; }
                           </item>
                          </layout>
                         </item>
+                        <item>
+                         <widget class="QCheckBox" name="checkBox_edc_enabled">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="toolTip">
+                           <string>Electrical Dark Correction</string>
+                          </property>
+                          <property name="styleSheet">
+                           <string notr="true" />
+                          </property>
+                          <property name="text">
+                           <string>EDC Enabled</string>
+                          </property>
+                         </widget>
+                        </item>
                        </layout>
                       </widget>
                      </item>

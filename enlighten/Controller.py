@@ -636,6 +636,7 @@ class Controller:
                          self.reference_feature,
                          self.baseline_correction,
                          self.status_bar,
+                         self.edc,
                          self.kia_feature ]:
             feature.update_visibility()
 
@@ -932,6 +933,7 @@ class Controller:
                          self.richardson_lucy,
                          self.status_indicators,
                          self.vcr_controls,
+                         self.edc,
                          self.horiz_roi ]:
             feature.update_visibility()
 

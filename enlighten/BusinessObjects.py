@@ -44,6 +44,7 @@ from enlighten.post_processing.AbsorbanceFeature import AbsorbanceFeature
 from enlighten.post_processing.BaselineCorrection import BaselineCorrection
 from enlighten.post_processing.BoxcarFeature import BoxcarFeature
 from enlighten.post_processing.DarkFeature import DarkFeature
+from enlighten.post_processing.ElectricalDarkCorrectionFeature import ElectricalDarkCorrectionFeature
 from enlighten.post_processing.HorizROIFeature import HorizROIFeature
 from enlighten.post_processing.InterpolationFeature import InterpolationFeature
 from enlighten.post_processing.RamanIntensityCorrection import RamanIntensityCorrection
@@ -325,6 +326,9 @@ class BusinessObjects:
 
         self.header("instantiating DarkFeature")
         ctl.dark_feature = DarkFeature(ctl)
+
+        self.header("instantiating ElectricalDarkCorrectionFeature")
+        ctl.edc = ElectricalDarkCorrectionFeature(ctl)
 
         self.header("instantiating ReferenceFeature")
         ctl.reference_feature = ReferenceFeature(
