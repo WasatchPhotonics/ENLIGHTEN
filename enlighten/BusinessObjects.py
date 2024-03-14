@@ -296,14 +296,7 @@ class BusinessObjects:
         ctl.laser_watchdog = LaserWatchdogFeature(ctl)
 
         self.header("instantiating LaserTemperatureFeature")
-        ctl.laser_temperature = LaserTemperatureFeature(
-            cfu                         = cfu,
-            graph                       = ctl.graph,
-            multispec                   = ctl.multispec,
-            lb_degC                     = cfu.label_hardware_capture_details_laser_temperature,
-            make_pen                    = ctl.gui.make_pen,
-            clipboard                   = ctl.clipboard,
-            hardware_file_manager       = ctl.hardware_file_manager)
+        ctl.laser_temperature = LaserTemperatureFeature(ctl)
 
         self.header("instantiating ScanAveragingFeature")
         ctl.scan_averaging = ScanAveragingFeature(ctl)
