@@ -134,6 +134,9 @@ class Multispec:
         return True # failed filter
 
     def register_strip_feature(self, feature):
+        """
+        MZ: Whut?
+        """
         self.strip_features.append(feature)
 
     ##
