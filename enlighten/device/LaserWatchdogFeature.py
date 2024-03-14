@@ -49,6 +49,7 @@ class LaserWatchdogFeature:
 
         if spec is None:
             self.lb_sec.setVisible(False)
+            self.sb_sec.setVisible(False)
             return
 
         self.configure()
@@ -107,7 +108,8 @@ class LaserWatchdogFeature:
         # apparently we've decided to show and use the feature
         ########################################################################
 
-        self.cb_enable.setVisible(True)
+        # self.cb_enable.setVisible(True)
+        self.set_visible(True)
         sec = spec.settings.eeprom.laser_watchdog_sec
 
         # has a new spectrometer just connected?
