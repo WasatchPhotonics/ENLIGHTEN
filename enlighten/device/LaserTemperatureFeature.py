@@ -26,12 +26,17 @@ class LaserTemperatureFeature:
         self.output_to_file        = False
         self.hardware_file_manager = hardware_file_manager
 
+        self.observers = set()
+
         self.populate_placeholder()
         self.multispec.register_strip_feature(self)
         self.hardware_file_manager.register_feature(self)
 
         cfu.pushButton_clear_laser_temperature_data .clicked    .connect(self.clear_data)
         cfu.pushButton_copy_laser_temperature_data  .clicked    .connect(self.copy_data)
+
+    def register_observer(self, callback):
+        self.observers.add(callback)
 
     def process_reading(self, spec, reading):
         current_spec = self.multispec.current_spectrometer()
@@ -42,12 +47,9 @@ class LaserTemperatureFeature:
             self.lb_degC.setText("Ambient")
             return
 
-        # This should have a value but if for some reason an instance is built that doesnt
-        # This will handle the error
-        if hasattr(spec.settings.eeprom,"has_laser_tec"):
-            if not spec.settings.eeprom.has_laser_tec:
-                self.lb_degC.setText("Ambient")
-                return
+        if not spec.settings.eeprom.sig_laser_tec:
+            self.lb_degC.setText("Ambient")
+            return
 
         app_state = spec.app_state
         degC = reading.laser_temperature_degC
@@ -74,6 +76,10 @@ class LaserTemperatureFeature:
 
         if spec == current_spec:
             self.lb_degC.setText("%.2f °C" % degC)
+
+            # only doing callback for the selected spectrometer
+            for callback in self.observers:
+                callback(degC)
 
     def populate_placeholder(self):
         self.cfu.laser_temperature_graph = pyqtgraph.PlotWidget(name="Laser temperature")

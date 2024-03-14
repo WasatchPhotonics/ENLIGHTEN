@@ -18,6 +18,9 @@ class StatusBarFeature:
     and has a pop-up menu allowing the user to select which fields they would
     like to display (especially useful on small screens).  Selections are 
     persisted across application sessions.
+
+    @todo selectively show/hide trios which are inapplicable to the currently
+          selected spectrometer (battery should be hidden unless has_battery)
     """
 
     # ##########################################################################
@@ -30,21 +33,23 @@ class StatusBarFeature:
         
         self.widgets = {}
         self.menu_order = []
-        for trio in [ [ "Min",                  cfu.label_StatusBar_min_name,     cfu.label_StatusBar_min_value ],
-                      [ "Max",                  cfu.label_StatusBar_max_name,     cfu.label_StatusBar_max_value ],
-                      [ "Mean",                 cfu.label_StatusBar_mean_name,    cfu.label_StatusBar_mean_value ],
-                      [ "Area",                 cfu.label_StatusBar_area_name,    cfu.label_StatusBar_area_value ],
-                      [ "Detector Temperature", cfu.label_StatusBar_temp_name,    cfu.label_StatusBar_temp_value ],
-                      [ "Cursor Intensity",     cfu.label_StatusBar_cursor_name,  cfu.label_StatusBar_cursor_value ],
-                      [ "Spectrum Count",       cfu.label_StatusBar_count_name,   cfu.label_StatusBar_count_value ],
-                      [ "Battery",              cfu.label_StatusBar_battery_name, cfu.label_StatusBar_battery_value ] ]:
+        for trio in [ [ "Min",                  cfu.label_StatusBar_min_name,           cfu.label_StatusBar_min_value ],
+                      [ "Max",                  cfu.label_StatusBar_max_name,           cfu.label_StatusBar_max_value ],
+                      [ "Mean",                 cfu.label_StatusBar_mean_name,          cfu.label_StatusBar_mean_value ],
+                      [ "Area",                 cfu.label_StatusBar_area_name,          cfu.label_StatusBar_area_value ],
+                      [ "Detector Temperature", cfu.label_StatusBar_detector_temp_name, cfu.label_StatusBar_detector_temp_value ],
+                      [ "Laser Temperature",    cfu.label_StatusBar_laser_temp_name,    cfu.label_StatusBar_laser_temp_value ],
+                      [ "Cursor Intensity",     cfu.label_StatusBar_cursor_name,        cfu.label_StatusBar_cursor_value ],
+                      [ "Spectrum Count",       cfu.label_StatusBar_count_name,         cfu.label_StatusBar_count_value ],
+                      [ "Battery",              cfu.label_StatusBar_battery_name,       cfu.label_StatusBar_battery_value ] ]:
             (name, label, value) = trio
             self.menu_order.append(name)
             self.widgets[name] = (label, value)
 
         # register for notifications from other business objects
         ctl.cursor.register_observer(self.cursor_updated)
-        ctl.detector_temperature.register_observer(self.temp_updated)
+        ctl.detector_temperature.register_observer(self.detector_temp_updated)
+        ctl.laser_temperature.register_observer(self.laser_temp_updated)
         ctl.battery_feature.register_observer(self.battery_updated)
 
         self.create_status_menu()
@@ -62,10 +67,9 @@ class StatusBarFeature:
 
             if self.ctl.config.has_option("StatusBar", name):
                 enabled = self.ctl.config.get_bool("StatusBar", name)
-            elif name in ["Area", "Spectrum Count"]:
-                enabled = False
-            else:                    
-                enabled = True
+            else:
+                # these are disabled by default
+                enabled = name not in [ "Area", "Spectrum Count", "Laser Temperature", "Battery" ]
 
             action.setChecked(enabled)
             self.show(name, enabled)
@@ -128,32 +132,26 @@ class StatusBarFeature:
     # If we ever create a "ReadingProcessor" or something that handles all new
     # Reading objects, we could always subscribe to notifications from that (as
     # would Graph, KnowItAll, PluginManager etc).
-    def update(self):
-        spec = self.ctl.multispec.current_spectrometer()
-        if spec is None:
-            return self.clear()
+    # 
+    # Called by the end of Controller.process_reading
+    def process_reading(self, pr):
+        if pr is None:
+            return
 
-        # latest reading
-        pr = spec.app_state.processed_reading
-        if pr is not None:
+        self.set("Spectrum Count", pr.session_count)
+        spectrum = pr.get_processed()
 
-            # count
-            self.set("Spectrum Count", pr.session_count)
+        if spectrum is not None:
+            self.set("Min", f"{np.min(spectrum):.2f}")
+            self.set("Max", f"{np.max(spectrum):.2f}")
+            self.set("Mean", f"{np.average(spectrum):.2f}")
 
-            # current spectrum
-            spectrum = pr.get_processed()
-            if spectrum is not None:
-                self.set("Min", f"{np.min(spectrum):.2f}")
-                self.set("Max", f"{np.max(spectrum):.2f}")
-                self.set("Mean", f"{np.average(spectrum):.2f}")
-
-                x_axis = self.ctl.generate_x_axis(spec=spec, cropped=pr.is_cropped())
-                if len(spectrum) != len(x_axis):
-                    # can happen when EEPROM is in bad state, or we've set a DetectorROI etc
-                    log.error("can't update: spectrum %d != x_axis %d", len(spectrum), len(x_axis))
-                    return
-
-                # area
+            x_axis = self.ctl.generate_x_axis(cropped=pr.is_cropped())
+            if len(spectrum) != len(x_axis):
+                # can happen when EEPROM is in bad state, or we've set a DetectorROI etc
+                log.error(f"process_reading: can't compute area (spectrum {len(spectrum)} != x_axis {len(x_axis)})")
+            else:
+                # note that unit will vary depending on x-axis
                 area = 0 if x_axis is None else np.trapz(spectrum, x_axis)
                 self.set("Area", f"{area:.3e}")
 
@@ -169,8 +167,11 @@ class StatusBarFeature:
     def cursor_updated(self, x, y):
         self.set("Cursor Intensity", f"{y:.2f}")
 
-    def temp_updated(self, degC):
+    def detector_temp_updated(self, degC):
         self.set("Detector Temperature", f"{degC:-.2f} °C")
+
+    def laser_temp_updated(self, degC):
+        self.set("Laser Temperature", f"{degC:-.2f} °C")
 
     def battery_updated(self, perc, charging):
         spec = self.ctl.multispec.current_spectrometer()

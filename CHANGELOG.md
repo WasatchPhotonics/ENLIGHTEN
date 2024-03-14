@@ -2,6 +2,10 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2024-??-?? 4.0.51
+    - merged old Temperature Control panel into Detector Control widget (as Detector Temperature)
+    - added new Laser Temperature panel within Laser Control widget
+    - added Laser Temperature to StatusBar
 - 2024-03-13 4.0.50
     - fixed changelog (2024)
     - SRM / Wavenumber button tweaks (also location)

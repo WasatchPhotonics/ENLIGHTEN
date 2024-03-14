@@ -1928,10 +1928,9 @@ class Controller:
         # KnowItAll
         ########################################################################
 
-        if self.page_nav.doing_raman():
+        if selected and self.page_nav.doing_raman():
             log.debug("process_reading: sending KIA request (reprocessing = %s)", reprocessing)
-            if pr.device_id == self.multispec.current_spectrometer().device_id:
-                self.kia_feature.process(pr, settings)
+            self.kia_feature.process(pr, settings)
 
         ########################################################################
         # Re-Processing complete
@@ -1953,11 +1952,12 @@ class Controller:
         self.take_one.process(pr)
 
         # update on-screen ASTM peaks
-        if self.page_nav.doing_raman():
+        if selected and self.page_nav.doing_raman():
             self.raman_shift_correction.update()
 
-        # update the StatusBar
-        self.status_bar.update()
+        # update the StatusBar if this
+        if selected:
+            self.status_bar.process_reading(pr)
 
     def set_curve_data(self, curve, y, x=None, label=None) -> bool:
         """

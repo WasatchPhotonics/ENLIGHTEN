@@ -264,9 +264,6 @@ class BusinessObjects:
         self.header("instantiating AbsorbanceFeature")
         ctl.absorbance = AbsorbanceFeature(ctl)
 
-        self.header("instantiating StatusBarFeature")
-        ctl.status_bar = StatusBarFeature(ctl)
-
         self.header("instantiating InterpolationFeature")
         ctl.interp = InterpolationFeature(ctl)
 
@@ -536,6 +533,9 @@ class BusinessObjects:
 
         self.header("instantiating DidYouKnowFeature")
         ctl.did_you_know = DidYouKnowFeature(ctl)
+
+        self.header("instantiating StatusBarFeature")
+        ctl.status_bar = StatusBarFeature(ctl)
 
         self.header("done with Business Object creation")
 
