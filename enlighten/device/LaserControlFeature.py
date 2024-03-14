@@ -48,19 +48,10 @@ class LaserControlFeature:
 
         self.expert_widgets = [
             cfu.label_lightSourceWidget_excitation_nm,
-            cfu.doubleSpinBox_excitation_nm,
+            cfu.doubleSpinBox_excitation_nm
         ]
 
-        self.laser_tec_control_widgets = [
-            cfu.verticalSlider_laser_setpoint_degC,
-            cfu.laserControlWidget_label_laserTemperature,
-            cfu.pushButton_laser_setpoint_dn,
-            cfu.pushButton_laser_setpoint_up,
-            cfu.spinBox_laser_setpoint_degC,
-            cfu.checkBox_laser_tec_enabled,
-        ]
-
-        for widget in [ cfu.verticalSlider_laser_power, cfu.verticalSlider_laser_setpoint_degC ]:
+        for widget in [ cfu.verticalSlider_laser_power ]:
             widget.installEventFilter(MouseWheelFilter(widget))
 
         for widget in [ cfu.doubleSpinBox_excitation_nm,
@@ -78,8 +69,6 @@ class LaserControlFeature:
             widget.setVisible(doing_expert)
 
         spec = self.ctl.multispec.current_spectrometer()
-        for widget in self.laser_tec_control_widgets:
-            widget.setVisible(doing_expert and spec is not None and spec.settings.eeprom.sig_laser_tec)
 
         has_laser_power_calibration = spec is not None and spec.settings.eeprom.has_laser_power_calibration()
         cfu.comboBox_laser_power_unit.setVisible(has_laser_power_calibration and (spec.settings.is_mml() or doing_expert))
