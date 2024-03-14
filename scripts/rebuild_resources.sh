@@ -7,8 +7,6 @@
 
 QUICK=false
 PAUSE=false
-echo "args: $*"
-echo "first arg: $1"
 while [ "$1" != "" ]
 do
     echo "evaluating arg '$1'"
@@ -97,14 +95,14 @@ else
     fi
 fi
 
-echo "VIRTUAL_ENV = ${VIRTUAL_ENV}"
-echo "QUICK = $QUICK"
-echo "PAUSE = $PAUSE"
-echo "PYTHON= $PYTHON"
-echo "OS    = $OS"
-echo "RCC   = $RCC (opts $RCC_OPTS)"
-echo "UIC   = $UIC (pre $UIC_PRE opts $UIC_OPTS)"
-echo "2to3  = $TWO_TO_THREE"
+echo "VIRTUAL_ENV = $VIRTUAL_ENV"
+echo "QUICK       = $QUICK"
+echo "PAUSE       = $PAUSE"
+echo "PYTHON      = $PYTHON"
+echo "OS          = $OS"
+echo "RCC         = $RCC (opts '$RCC_OPTS')"
+echo "UIC         = $UIC (pre '$UIC_PRE', opts '$UIC_OPTS')"
+echo "2to3        = $TWO_TO_THREE"
 echo
 
 FAILED=false
