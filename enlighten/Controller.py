@@ -290,7 +290,6 @@ class Controller:
         self.detector_temperature.remove_spec_curve(spec)
         self.laser_temperature.remove_spec_curve(spec)
         self.area_scan.remove_spec_curve(spec)
-        self.multispec.spec_most_recent_reads.pop(spec, None)
         if not self.multispec.remove(spec):
             log.error("disconnect_device[%s]: failed to remove from Multispec", device_id)
             return False
@@ -390,12 +389,28 @@ class Controller:
         self.hard_strip_timer.start(1000)
 
     def process_hardware_strip(self):
-        """ @todo move to StripChartFeature """
-        for spec, recent_read in self.multispec.spec_most_recent_reads.items():
-            for feature in [self.detector_temperature,
-                            self.laser_temperature,
-                            self.battery_feature]:
-                feature.process_reading(spec, recent_read) 
+        """ 
+        @todo move to StripChartFeature 
+
+        So, it's worth noting that the data we collect for the Factory view seems
+        to be coming from here, which only updates from the "latest" reading at 
+        1Hz, regardless of integration time or incoming data rate. 
+
+        We could probably be more event-driven and "timely" than this, but on the
+        other hand these metrics probably don't need to be updated at especially
+        high frequencies...this seems okay for now.
+        """
+        for spec in self.multispec.get_spectrometers():
+            pr = spec.processed_reading
+            if pr:
+                reading = pr.reading
+                if reading:
+                    for feature in [ self.detector_temperature,
+                                     self.laser_temperature,
+                                     self.ambient_temperature,
+                                     self.battery_feature ]:
+                        feature.process_reading(spec, reading) 
+
         if self.page_nav.get_current_view() == common.Views.HARDWARE or self.form.ui.checkBox_feature_file_capture.isChecked():
             self.hard_strip_timer.start(self.form.ui.spinBox_integration_time_ms.value())
             return
@@ -1404,7 +1419,6 @@ class Controller:
         else:
             log.debug("not looking for any particular reading")
 
-        self.multispec.spec_most_recent_reads[spec] = reading
         if reading.failure is not None:
             # WasatchDeviceWrapper currently turns these into upstream poison-pills,
             # so this is not expected

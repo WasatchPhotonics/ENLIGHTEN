@@ -7904,8 +7904,11 @@ QComboBox QListView
                          </layout>
                         </widget>
                        </item>
+
+
+
                        <item>
-                        <widget class="QFrame" name="frame_hardware_capture_temperatures_laser">
+                        <widget class="QFrame" name="frame_factory_laser_temperature">
                          <property name="sizePolicy">
                           <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
                            <horstretch>0</horstretch>
@@ -8090,8 +8093,11 @@ QComboBox QListView
                          </layout>
                         </widget>
                        </item>
+
+
+
                        <item>
-                        <widget class="QFrame" name="frame_hardware_capture_temperatures_detector">
+                        <widget class="QFrame" name="frame_factory_detector_temperature">
                          <property name="sizePolicy">
                           <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
                            <horstretch>0</horstretch>

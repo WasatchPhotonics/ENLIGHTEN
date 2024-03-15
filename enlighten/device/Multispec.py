@@ -60,19 +60,21 @@ class Multispec:
                                        cfu.boxcarWidget_shaded ]
         self.device_id = None
         self.ejected = set()
-        self.strip_features = []
         self.spectrometers = {}
-        self.spec_most_recent_reads = {}
-        self.spec_laser_temp_curves = {}
-        self.spec_hardware_live_curves = {}
-        self.spec_detector_temp_curves = {}
-        self.spec_roi_curtains = {} # MZ: should not be here
-        self.reset_spec_objs = {}
-        self.spec_in_reset = defaultdict(int) # deafult of int() is 0
-        self.spec_hardware_feature_curves = defaultdict(dict)
         self.in_process = {} # a dict of device_id to WasatchDeviceWrapper (may be None if "gave up")
         self.disconnecting = {}
         self.ignore = {}
+
+        # There's a bunch of stuff here that I think would more cleanly go into 
+        # SpectrometerApplicationState...
+        self.strip_features = []
+        self.spec_laser_temp_curves = {}
+        self.spec_hardware_live_curves = {}
+        self.spec_detector_temp_curves = {}
+        self.spec_roi_curtains = {} 
+        self.reset_spec_objs = {}
+        self.spec_in_reset = defaultdict(int) # default of int() is 0
+        self.spec_hardware_feature_curves = defaultdict(dict)
 
         # dict of serial_number to color - persisted in Multispec so that 
         # Spectrometers which disconnect and reconnect can easily re-acquire 

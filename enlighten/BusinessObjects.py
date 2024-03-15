@@ -420,11 +420,7 @@ class BusinessObjects:
         ctl.mfg = ManufacturingFeature(ctl)
 
         self.header("instantiating HardwareCaptureControlFeature")
-        ctl.hardware_control_feature = HardwareCaptureControlFeature(
-            cfu                         = cfu,
-            graph                       = ctl.graph,
-            laser_feature               = ctl.laser_temperature,
-            detector_feature            = ctl.detector_temperature)
+        ctl.hardware_control_feature = HardwareCaptureControlFeature(ctl)
 
         self.header("instantiating PluginController")
         ctl.plugin_controller = PluginController(
