@@ -578,6 +578,7 @@ class Controller:
             if poll_result is not None:
                 if poll_result.data:
                     self.header("check_ready_initialize: successfully connected %s" % device_id)
+                    device.settings.state.dump("Controller.check_ready_initialize")
                     self.initialize_new_device(device)
 
                     # remove the "in-process" flag, as it's now in the "connected" list
@@ -750,8 +751,8 @@ class Controller:
             log.debug("initialize_new_device: re-selecting already-connected device")
             hotplug = False
             if self.multispec.is_in_reset(device_id):
-                log.debug(f"readding reset device")
-                self.multispec.readd_spec_object(device_id)
+                log.debug(f"reading reset device")
+                self.multispec.read_spec_object(device_id)
         else:
             log.debug("initialize_new_device: initializing newly-connected device")
             self.multispec.add(device)
@@ -914,6 +915,7 @@ class Controller:
             for feature in [ self.accessory_control,
                              self.laser_control,
                              self.laser_watchdog,
+                             self.laser_temperature,
                              self.horiz_roi ]:
                 feature.init_hotplug()
 

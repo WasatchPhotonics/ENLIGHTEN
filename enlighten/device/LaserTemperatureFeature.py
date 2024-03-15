@@ -33,6 +33,18 @@ class LaserTemperatureFeature:
 
         self.update_visibility()
 
+    def init_hotplug(self):
+        log.debug("init_hotplug: start")
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+
+        if spec.settings.is_xs() and spec.settings.eeprom.sig_laser_tec:
+            self.combo_mode.blockSignals(True)
+            log.debug(f"init_hotplug: setting index to {spec.settings.state.laser_tec_mode}")
+            self.combo_mode.setCurrentIndex(spec.settings.state.laser_tec_mode)
+            self.combo_mode.blockSignals(False)
+
     def update_visibility(self):
         spec = self.ctl.multispec.current_spectrometer()
         visible = spec is not None and spec.settings.eeprom.sig_laser_tec and self.ctl.page_nav.doing_expert()
@@ -51,19 +63,28 @@ class LaserTemperatureFeature:
     def register_observer(self, callback):
         self.observers.add(callback)
 
-    def process_reading(self, spec, reading):
-        current_spec = self.ctl.multispec.current_spectrometer()
-        if spec is None:
+    def notify(self, spec, s):
+        """ if selected spectrometer, displays on Factory and sends to observers """
+        if spec != self.ctl.multispec.current_spectrometer():
             return
+
+        self.lb_degC.setText(s)
+        for callback in self.observers:
+            callback(s)
+
+    def process_reading(self, spec, reading):
+        if spec is None:
+            return self.notify(spec, "Disconnected")
 
         if spec.settings.eeprom.format <= 12:
-            self.lb_degC.setText("Ambient")
-            return
+            return self.notify(spec, "ambient")
 
         if not spec.settings.eeprom.sig_laser_tec:
-            self.lb_degC.setText("Ambient")
-            return
+            return self.notify(spec, "ambient")
 
+        if not reading.laser_tec_enabled:
+            return self.notify(spec, "disabled")
+            
         app_state = spec.app_state
         degC = reading.laser_temperature_degC
         if degC is None:
@@ -71,7 +92,7 @@ class LaserTemperatureFeature:
 
         active_curve = self.ctl.multispec.get_hardware_feature_curve(self.name, spec.device_id)
         if active_curve == None:
-            return
+            return 
 
         rds = app_state.laser_temperature_data
         rds.add(degC)
@@ -87,12 +108,7 @@ class LaserTemperatureFeature:
         except:
             log.error("error plotting laser temperature", exc_info=1)
 
-        if spec == current_spec:
-            self.lb_degC.setText("%.2f °C" % degC)
-
-            # only doing callback for the selected spectrometer
-            for callback in self.observers:
-                callback(degC)
+        self.notify(spec, f"{degC:-.2f} °C")
 
     def populate_placeholder(self):
         cfu = self.ctl.form.ui

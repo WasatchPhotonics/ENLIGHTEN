@@ -170,8 +170,10 @@ class StatusBarFeature:
     def detector_temp_updated(self, degC):
         self.set("Detector Temperature", f"{degC:-.2f} °C")
 
-    def laser_temp_updated(self, degC):
-        self.set("Laser Temperature", f"{degC:-.2f} °C")
+    def laser_temp_updated(self, s):
+        if isinstance(s, float):
+            s = f"{s:-.2f} °C"
+        self.set("Laser Temperature", s)
 
     def battery_updated(self, perc, charging):
         spec = self.ctl.multispec.current_spectrometer()
