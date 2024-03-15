@@ -14,7 +14,7 @@ else:
 log = logging.getLogger(__name__)
 
 class DetectorTemperatureFeature:
-    """ Encapsulate the monitoring of detector temperature. """
+    """ Encapsulate the monitoring and control of detector temperature. """
 
     def __init__(self, ctl):
         self.ctl = ctl
@@ -24,7 +24,7 @@ class DetectorTemperatureFeature:
         self.name                  = "Detector_TEC_Temperature"
         self.output_to_file        = False
 
-        self.cb_enabled     = cfu.checkBox_tec_enabled
+        self.cb_enabled     = cfu.checkBox_detector_tec_enabled
         self.lb_degC        = cfu.label_hardware_capture_details_detector_temperature
         self.lb_raw         = cfu.label_ccd_temperature_raw
         self.slider         = cfu.verticalSlider_detector_setpoint_degC
@@ -44,10 +44,27 @@ class DetectorTemperatureFeature:
         self.clear_btn      .clicked            .connect(self.clear_data)
         self.copy_btn       .clicked            .connect(self.copy_data)
 
+        self.detector_tec_control_widgets = [
+            self.cb_enabled,
+            self.slider,
+            self.spinbox,
+            self.button_up,
+            self.button_dn
+        ]
+
         self.observers = []
         self.populate_placeholder()
         self.ctl.multispec.register_strip_feature(self)
         self.ctl.hardware_file_manager.register_feature(self)
+        self.ctl.page_nav.register_observer("mode", self.page_nav_mode_callback)
+
+        self.page_nav_mode_callback()
+
+    def page_nav_mode_callback(self):
+        spec = self.ctl.multispec.current_spectrometer()
+        doing_expert = self.ctl.page_nav.doing_expert()
+        for widget in self.detector_tec_control_widgets:
+            widget.setVisible(doing_expert and spec is not None and spec.settings.eeprom.has_cooling)
 
     # ##########################################################################
     # public methods

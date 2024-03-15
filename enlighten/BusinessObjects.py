@@ -44,6 +44,7 @@ from enlighten.post_processing.AbsorbanceFeature import AbsorbanceFeature
 from enlighten.post_processing.BaselineCorrection import BaselineCorrection
 from enlighten.post_processing.BoxcarFeature import BoxcarFeature
 from enlighten.post_processing.DarkFeature import DarkFeature
+from enlighten.post_processing.ElectricalDarkCorrectionFeature import ElectricalDarkCorrectionFeature
 from enlighten.post_processing.HorizROIFeature import HorizROIFeature
 from enlighten.post_processing.InterpolationFeature import InterpolationFeature
 from enlighten.post_processing.RamanIntensityCorrection import RamanIntensityCorrection
@@ -264,9 +265,6 @@ class BusinessObjects:
         self.header("instantiating AbsorbanceFeature")
         ctl.absorbance = AbsorbanceFeature(ctl)
 
-        self.header("instantiating StatusBarFeature")
-        ctl.status_bar = StatusBarFeature(ctl)
-
         self.header("instantiating InterpolationFeature")
         ctl.interp = InterpolationFeature(ctl)
 
@@ -298,14 +296,7 @@ class BusinessObjects:
         ctl.laser_watchdog = LaserWatchdogFeature(ctl)
 
         self.header("instantiating LaserTemperatureFeature")
-        ctl.laser_temperature = LaserTemperatureFeature(
-            cfu                         = cfu,
-            graph                       = ctl.graph,
-            multispec                   = ctl.multispec,
-            lb_degC                     = cfu.label_hardware_capture_details_laser_temperature,
-            make_pen                    = ctl.gui.make_pen,
-            clipboard                   = ctl.clipboard,
-            hardware_file_manager       = ctl.hardware_file_manager)
+        ctl.laser_temperature = LaserTemperatureFeature(ctl)
 
         self.header("instantiating ScanAveragingFeature")
         ctl.scan_averaging = ScanAveragingFeature(ctl)
@@ -328,6 +319,9 @@ class BusinessObjects:
 
         self.header("instantiating DarkFeature")
         ctl.dark_feature = DarkFeature(ctl)
+
+        self.header("instantiating ElectricalDarkCorrectionFeature")
+        ctl.edc = ElectricalDarkCorrectionFeature(ctl)
 
         self.header("instantiating ReferenceFeature")
         ctl.reference_feature = ReferenceFeature(
@@ -536,6 +530,9 @@ class BusinessObjects:
 
         self.header("instantiating DidYouKnowFeature")
         ctl.did_you_know = DidYouKnowFeature(ctl)
+
+        self.header("instantiating StatusBarFeature")
+        ctl.status_bar = StatusBarFeature(ctl)
 
         self.header("done with Business Object creation")
 

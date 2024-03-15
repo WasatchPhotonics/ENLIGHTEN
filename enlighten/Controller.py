@@ -578,6 +578,7 @@ class Controller:
             if poll_result is not None:
                 if poll_result.data:
                     self.header("check_ready_initialize: successfully connected %s" % device_id)
+                    device.settings.state.dump("Controller.check_ready_initialize")
                     self.initialize_new_device(device)
 
                     # remove the "in-process" flag, as it's now in the "connected" list
@@ -629,6 +630,7 @@ class Controller:
         for feature in [ self.accessory_control,
                          self.horiz_roi,
                          self.laser_control,
+                         self.laser_temperature,
                          self.laser_watchdog,
                          self.auto_raman,
                          self.raman_intensity_correction,
@@ -636,6 +638,7 @@ class Controller:
                          self.reference_feature,
                          self.baseline_correction,
                          self.status_bar,
+                         self.edc,
                          self.kia_feature ]:
             feature.update_visibility()
 
@@ -748,8 +751,8 @@ class Controller:
             log.debug("initialize_new_device: re-selecting already-connected device")
             hotplug = False
             if self.multispec.is_in_reset(device_id):
-                log.debug(f"readding reset device")
-                self.multispec.readd_spec_object(device_id)
+                log.debug(f"reading reset device")
+                self.multispec.read_spec_object(device_id)
         else:
             log.debug("initialize_new_device: initializing newly-connected device")
             self.multispec.add(device)
@@ -912,6 +915,7 @@ class Controller:
             for feature in [ self.accessory_control,
                              self.laser_control,
                              self.laser_watchdog,
+                             self.laser_temperature,
                              self.horiz_roi ]:
                 feature.init_hotplug()
 
@@ -925,6 +929,7 @@ class Controller:
                          self.graph,
                          self.high_gain_mode,
                          self.laser_control,
+                         self.laser_temperature,
                          self.laser_watchdog,
                          self.raman_shift_correction,
                          self.raman_intensity_correction,
@@ -932,6 +937,7 @@ class Controller:
                          self.richardson_lucy,
                          self.status_indicators,
                          self.vcr_controls,
+                         self.edc,
                          self.horiz_roi ]:
             feature.update_visibility()
 
@@ -1928,10 +1934,9 @@ class Controller:
         # KnowItAll
         ########################################################################
 
-        if self.page_nav.doing_raman():
+        if selected and self.page_nav.doing_raman():
             log.debug("process_reading: sending KIA request (reprocessing = %s)", reprocessing)
-            if pr.device_id == self.multispec.current_spectrometer().device_id:
-                self.kia_feature.process(pr, settings)
+            self.kia_feature.process(pr, settings)
 
         ########################################################################
         # Re-Processing complete
@@ -1953,11 +1958,12 @@ class Controller:
         self.take_one.process(pr)
 
         # update on-screen ASTM peaks
-        if self.page_nav.doing_raman():
+        if selected and self.page_nav.doing_raman():
             self.raman_shift_correction.update()
 
-        # update the StatusBar
-        self.status_bar.update()
+        # update the StatusBar if this
+        if selected:
+            self.status_bar.process_reading(pr)
 
     def set_curve_data(self, curve, y, x=None, label=None) -> bool:
         """
