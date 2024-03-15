@@ -64,7 +64,7 @@ class DetectorTemperatureFeature:
         spec = self.ctl.multispec.current_spectrometer()
         doing_expert = self.ctl.page_nav.doing_expert()
         for widget in self.detector_tec_control_widgets:
-            widget.setVisible(doing_expert and spec and spec.settings.eeprom.has_cooling)
+            widget.setVisible(doing_expert and spec is not None and spec.settings.eeprom.has_cooling)
 
     # ##########################################################################
     # public methods
