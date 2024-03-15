@@ -9,6 +9,8 @@
     - added EDC for IMX385
     - LaserTemperatureFeature to ctl
         - added XS Laser TEC Mode
+    - added AmbientTemperatureFeature
+    - refactored Factory view a bit
 - 2024-03-13 4.0.50
     - fixed changelog (2024)
     - SRM / Wavenumber button tweaks (also location)

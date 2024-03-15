@@ -2,7 +2,11 @@ import logging
 
 log = logging.getLogger(__name__)
 
-class FactoryStripCharts:
+class FactoryStripChartFeature:
+    """
+    This class manages the set of strip-charts on the Factory View which graph 
+    device characteristics against a time axis.
+    """
 
     def __init__(self, ctl):
         self.ctl = ctl
@@ -12,7 +16,7 @@ class FactoryStripCharts:
                         cfu.checkBox_laser_tec_temp    : cfu.frame_factory_laser_temperature,
                         cfu.checkBox_detector_tec_temp : cfu.frame_factory_detector_temperature }
 
-        for cb, frame in self.charts:
+        for cb, frame in self.charts.items():
             cb.setChecked(True)
             cb.stateChanged.connect(self.update_visibility)
 

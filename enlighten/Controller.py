@@ -401,7 +401,7 @@ class Controller:
         high frequencies...this seems okay for now.
         """
         for spec in self.multispec.get_spectrometers():
-            pr = spec.processed_reading
+            pr = spec.app_state.processed_reading
             if pr:
                 reading = pr.reading
                 if reading:
@@ -901,6 +901,8 @@ class Controller:
                 self.detector_temperature.add_spec_curve(spec)
             if spec.settings.eeprom.has_battery:
                 self.battery_feature.add_spec_curve(spec)
+            if spec.settings.is_xs() or spec.settings.is_gen15():
+                self.ambient_temperature.add_spec_curve(spec)
             # This plots on the live graph on the hardware capture page
             # This graph is held by the area scan object and is a 1D spectra
             # Not the scan waterfall that is a 2D layout
