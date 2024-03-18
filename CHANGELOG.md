@@ -12,6 +12,7 @@
     - added AmbientTemperatureFeature
     - refactored Factory view a bit
     - prompt before erasing Clipboard
+    - ctrl-5 for Factory view (authenticates if needed)
 - 2024-03-13 4.0.50
     - fixed changelog (2024)
     - SRM / Wavenumber button tweaks (also location)

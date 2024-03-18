@@ -42,6 +42,7 @@ class HelpFeature:
             Ctrl-2 Settings View
             Ctrl-3 Hardware View
             Ctrl-4 Log View
+            Ctrl-5 Factory View
             
             Ctrl-A Authenticate
             Ctrl-C Copy to system clipboard

@@ -1096,6 +1096,7 @@ class Controller:
         make_shortcut("Ctrl+2", self.page_nav.set_view_settings)
         make_shortcut("Ctrl+3", self.page_nav.set_view_hardware)
         make_shortcut("Ctrl+4", self.page_nav.set_view_logging)
+        make_shortcut("Ctrl+5", self.page_nav.set_view_factory)
 
         # Convenience
         make_shortcut("Ctrl+A", self.authentication.login) # authenticate, advanced
