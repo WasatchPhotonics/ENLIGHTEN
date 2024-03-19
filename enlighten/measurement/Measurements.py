@@ -134,6 +134,14 @@ class Measurements:
         self.update_buttons()
 
     def erase_all_callback(self):
+        result = msgbox(prompt = "Do you wish to erase all measurements from the Clipboard?", 
+                        informative_text="This will not delete any files from disk.",
+                        buttons="Yes|No")
+        if result.lower() != "yes":
+            log.debug("erase_all_callback: user changed their mind")
+            return
+
+        log.debug("erase_all_callback: user confirmed erasure")
         self.erase_all()
 
     # ##########################################################################
@@ -265,9 +273,8 @@ class Measurements:
             if m.measurement_id == measurement_id:
                 return m
 
-    ##
-    # Clears the list of Measurements (does not delete from disk).
     def erase_all(self):
+        """ Clears the list of Measurements (does not delete from disk). """
         log.debug("erasing all Measurements")
         while self.count():
             self.delete_oldest()

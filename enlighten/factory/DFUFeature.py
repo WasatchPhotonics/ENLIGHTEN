@@ -2,8 +2,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
-class ManufacturingFeature:
-    """ A place to put manufacturing bits that don't fit elsewhere """
+class DFUFeature:
 
     def __init__(self, ctl):
         self.ctl = ctl

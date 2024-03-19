@@ -278,6 +278,10 @@ class PageNavigation:
 
     def set_view_factory(self):
         log.debug("set_view_factory")
+        if not self.ctl.authentication.has_advanced_rights():
+            self.ctl.authentication.login(switch_to_factory=True)
+            return
+
         if self.current_view != common.Views.FACTORY:
             self.set_view(common.Views.FACTORY)
             return

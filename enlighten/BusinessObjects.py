@@ -26,12 +26,13 @@ from enlighten.device.IntegrationTimeFeature import IntegrationTimeFeature
 from enlighten.device.LaserControlFeature import LaserControlFeature
 from enlighten.device.LaserWatchdogFeature import LaserWatchdogFeature
 from enlighten.device.LaserTemperatureFeature import LaserTemperatureFeature
-from enlighten.device.ManufacturingFeature import ManufacturingFeature
+from enlighten.device.AmbientTemperatureFeature import AmbientTemperatureFeature
 from enlighten.device.Multispec import Multispec
 from enlighten.device.RegionControlFeature import RegionControlFeature
+from enlighten.factory.DFUFeature import DFUFeature
+from enlighten.factory.FactoryStripChartFeature import FactoryStripChartFeature
 from enlighten.file_io.Configuration import Configuration
 from enlighten.file_io.FileManager import FileManager
-from enlighten.file_io.HardwareCaptureControlFeature import HardwareCaptureControlFeature
 from enlighten.file_io.HardwareFileOutputManager import HardwareFileOutputManager
 from enlighten.file_io.LoggingFeature import LoggingFeature
 from enlighten.measurement.AreaScanFeature import AreaScanFeature
@@ -134,7 +135,7 @@ class BusinessObjects:
         ctl.grid = None
         ctl.gui = None
         ctl.guide = None
-        ctl.hardware_control_feature = None
+        ctl.factory_strip_feature = None
         ctl.hardware_file_manager = None
         ctl.help = None
         ctl.high_gain_mode = None
@@ -298,6 +299,9 @@ class BusinessObjects:
         self.header("instantiating LaserTemperatureFeature")
         ctl.laser_temperature = LaserTemperatureFeature(ctl)
 
+        self.header("instantiating AmbientTemperatureFeature")
+        ctl.ambient_temperature = AmbientTemperatureFeature(ctl)
+
         self.header("instantiating ScanAveragingFeature")
         ctl.scan_averaging = ScanAveragingFeature(ctl)
 
@@ -416,15 +420,11 @@ class BusinessObjects:
         self.header("instantiating RichardsonLucy")
         ctl.richardson_lucy = RichardsonLucy(ctl)
 
-        self.header("instantiating ManufacturingFeature")
-        ctl.mfg = ManufacturingFeature(ctl)
+        self.header("instantiating DFUFeature")
+        ctl.dfu = DFUFeature(ctl)
 
-        self.header("instantiating HardwareCaptureControlFeature")
-        ctl.hardware_control_feature = HardwareCaptureControlFeature(
-            cfu                         = cfu,
-            graph                       = ctl.graph,
-            laser_feature               = ctl.laser_temperature,
-            detector_feature            = ctl.detector_temperature)
+        self.header("instantiating FactoryStripChartFeature")
+        ctl.factory_strip_charts = FactoryStripChartFeature(ctl)
 
         self.header("instantiating PluginController")
         ctl.plugin_controller = PluginController(

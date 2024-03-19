@@ -127,8 +127,10 @@ class SpectrometerApplicationState:
         # 3. historical (on-screen graph trendline, updated at a SLOW rate)
         if not hotplug:
             return
-        self.laser_temperature_data = RollingDataSet(time_window)
-        self.battery_data = RollingDataSet(time_window)
+
+        self.ambient_temperature_data = RollingDataSet(time_window)
+        self.laser_temperature_data   = RollingDataSet(time_window)
+        self.battery_data             = RollingDataSet(time_window)
 
         self.detector_temperatures_degC                  = RollingDataSet(time_window)
         self.detector_temperatures_degC_averaged         = RollingDataSet(time_window) # MZ: basically just slows down display graph rate

@@ -86,12 +86,13 @@ class Authentication:
     def register_observer(self, callback):
         self.observers.add(callback)
 
-    def login(self):
+    def login(self, switch_to_factory=False):
         """
         The user has clicked "Advanced Features" or pressed "Ctrl-A," so display
         the login pop-up, get their password, compare it to supported values and
         update features accordingly.
         """
+        log.debug("prompting for password")
         (password, _) = QtWidgets.QInputDialog.getText(
             self.ctl.form, 
             "Admin Login", 
@@ -111,6 +112,7 @@ class Authentication:
             self.ctl.marquee.error("invalid password")
             time.sleep(self.error_count * 2)
             self.error_count += 1
+        log.debug(f"level {self.level}")
 
         self.ctl.gui.colorize_button(self.button_login, self.level != self.BASIC)
         self._update_widgets()
@@ -127,6 +129,9 @@ class Authentication:
 
         for callback in self.observers:
             callback()
+
+        if self.level > self.BASIC and switch_to_factory:
+            self.ctl.page_nav.set_view_factory()
 
     def _update_auth_widget(self, widget, auth):
         """

@@ -63,6 +63,7 @@ class GainDBFeature:
         cfu.pushButton_gain_dn.clicked.connect(self.dn_callback)
 
         self.ctl.presets.register(self, "gain_db", getter=self.get_db, setter=self.set_db_callback)
+        self.ctl.page_nav.register_observer("mode", self.update_visibility)
         self.update_visibility()
 
         for widget in self.widgets:
@@ -73,7 +74,10 @@ class GainDBFeature:
         self.update_visibility()
 
     def update_visibility(self):
-        """ Only show these controls when an IMX-based spectrometer is selected """
+        """ 
+        Only show these controls when an IMX-based spectrometer is selected,
+        and in Expert mode.
+        """
 
         if self.locked:
             self.visible = False
@@ -82,7 +86,7 @@ class GainDBFeature:
             if spec is None:
                 self.visible = False
             else:
-                self.visible = spec.settings.is_micro()
+                self.visible = spec.settings.is_micro() and self.ctl.page_nav.doing_expert()
 
         # normally we'd do this at the enclosing frame, but gain is currently 
         # nested within the detectorControlWidget, and a sub-frame breaks the
