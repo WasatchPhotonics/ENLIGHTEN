@@ -601,10 +601,10 @@ class Feature:
 
         log.debug("instantiating Wrapper")
         self.lb_processing.setText("connecting")
-        library_pathname    = None#self.ext_library    if self._ext_enabled() else None
+        library_pathname    = None  #self.ext_library    if self._ext_enabled() else None
         wrapper = Wrapper(
             log_queue = Queue(),
-            log_level = self.ctl.logging_feature.level,
+            log_level = self.ctl.log_level,
             executable_pathname = self.executable_pathname,
             library_pathname = library_pathname)
 

@@ -93,7 +93,7 @@ class LoggingFeature:
             except IOError:
                 log.warn("Cannot tail log file")
 
-        self.timer.start(LoggingFeature.TIMER_SLEEP_MS)
+        self.timer.start(self.TIMER_SLEEP_MS)
 
     def process(self, lines):
         if lines is None or lines == []:
