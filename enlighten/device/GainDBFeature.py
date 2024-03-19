@@ -73,7 +73,10 @@ class GainDBFeature:
         self.update_visibility()
 
     def update_visibility(self):
-        """ Only show these controls when an IMX-based spectrometer is selected """
+        """ 
+        Only show these controls when an IMX-based spectrometer is selected,
+        and in Expert mode.
+        """
 
         if self.locked:
             self.visible = False
@@ -82,7 +85,7 @@ class GainDBFeature:
             if spec is None:
                 self.visible = False
             else:
-                self.visible = spec.settings.is_micro()
+                self.visible = spec.settings.is_micro() and self.ctl.page_nav.doing_expert()
 
         # normally we'd do this at the enclosing frame, but gain is currently 
         # nested within the detectorControlWidget, and a sub-frame breaks the
