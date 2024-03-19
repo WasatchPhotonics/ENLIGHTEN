@@ -376,46 +376,7 @@ class BusinessObjects:
 
         # TODO: refactor like PluginController
         self.header("instantiating KIAFeature")
-        ctl.kia_feature = KIAFeature(
-            ctl                         = ctl,
-
-            baseline_correction         = ctl.baseline_correction,
-            bt_alias                    = cfu.pushButton_id_results_make_alias,
-            bt_benign                   = cfu.pushButton_id_results_flag_benign,
-            bt_clear                    = cfu.pushButton_id_results_clear,
-            bt_hazard                   = cfu.pushButton_id_results_flag_hazard,
-            bt_id                       = cfu.pushButton_scope_id,
-            bt_reset                    = cfu.pushButton_id_results_reset,
-            bt_suppress                 = cfu.pushButton_id_results_suppress,
-            cb_all                      = cfu.checkBox_kia_display_all_results,
-            cb_enabled                  = cfu.checkBox_kia_enabled,
-            cb_hazard                   = cfu.checkBox_kia_alarm_low_scoring_hazards,
-            colors                      = ctl.colors,
-            page_nav                    = ctl.page_nav,
-            file_manager                = ctl.file_manager,
-            frame_results               = cfu.frame_id_results_white,
-            frame_side                  = cfu.frame_kia_outer,
-            generate_x_axis             = ctl.generate_x_axis,
-            get_last_processed_reading  = ctl.get_last_processed_reading,
-            guide                       = ctl.guide,
-            lb_logo                     = cfu.label_kia_logo,
-            lb_name                     = cfu.label_kia_compound_name,
-            lb_path                     = cfu.label_kia_install_path,
-            lb_processing               = cfu.label_kia_processing,
-            lb_score                    = cfu.label_kia_score,
-            logging_feature             = ctl.logging_feature,
-            marquee                     = ctl.marquee,
-            measurements                = ctl.measurements,
-            multispec                   = ctl.multispec,
-            raman_intensity_correction  = ctl.raman_intensity_correction,
-            sb_score_min                = cfu.spinBox_kia_score_min,
-            sb_max_results              = cfu.spinBox_kia_max_results,
-            sounds                      = ctl.sounds,
-            stylesheets                 = ctl.stylesheets,
-            table_recent                = cfu.tableWidget_id_match_recent,
-            table_results               = cfu.tableWidget_id_match_results,
-            vcr_controls                = ctl.vcr_controls,
-            horiz_roi                   = ctl.horiz_roi)
+        ctl.kia_feature = KIAFeature(ctl)
 
         self.header("instantiating RichardsonLucy")
         ctl.richardson_lucy = RichardsonLucy(ctl)

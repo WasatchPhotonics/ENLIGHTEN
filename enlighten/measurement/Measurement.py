@@ -232,6 +232,7 @@ class Measurement:
                            'Region',
                            'High Gain Mode',
                            'Laser Power mW',
+                           'Electrical Dark Correction',
                            'Battery %',
                            'Device ID',
                            'FW Version',
@@ -842,6 +843,7 @@ class Measurement:
         if field == "region":                    return self.settings.state.region
         if field == "slit width":                return self.settings.eeprom.slit_size_um
         if field == "wavenumber correction":     return self.settings.state.wavenumber_correction
+        if field == "electrical dark correction":return self.ctl.edc.enabled
         if field == "battery %":                 return self.processed_reading.reading.battery_percentage if self.processed_reading.reading is not None else 0
         if field == "fw version":                return self.settings.microcontroller_firmware_version
         if field == "fpga version":              return self.settings.fpga_firmware_version

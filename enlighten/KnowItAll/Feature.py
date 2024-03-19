@@ -156,89 +156,31 @@ class Feature:
     # Lifecycle
     # ##########################################################################
 
-    ##
-    # Note there is no "cb_sharpen_peaks" or similar -- that is handled by the 
-    # RichardsonLucy class, which is currently independent of KnowItAll.
-    def __init__(self,
-            ctl,
-
-            baseline_correction,
-            bt_alias,
-            bt_benign,
-            bt_clear,
-            bt_hazard,
-            bt_id,
-            bt_reset,
-            bt_suppress,
-            cb_all,                         # display all results
-            cb_enabled,
-            cb_hazard,
-            colors,
-            file_manager,
-            frame_results,
-            frame_side,
-            generate_x_axis,
-            get_last_processed_reading,
-            guide,
-            lb_logo,
-            lb_name,
-            lb_path,
-            lb_processing,
-            lb_score,     
-            logging_feature,
-            marquee,
-            measurements,
-            multispec,
-            page_nav,
-            raman_intensity_correction,
-            sb_max_results,
-            sb_score_min,      
-            sounds,
-            stylesheets,
-            table_recent,
-            table_results,
-            vcr_controls,
-            horiz_roi):
+    def __init__(self, ctl):
         self.ctl = ctl
         cfu = ctl.form.ui
 
-        self.baseline_correction        = baseline_correction
-        self.bt_alias                   = bt_alias
-        self.bt_benign                  = bt_benign
-        self.bt_clear                   = bt_clear
-        self.bt_hazard                  = bt_hazard
-        self.bt_id                      = bt_id
-        self.bt_reset                   = bt_reset
-        self.bt_suppress                = bt_suppress
-        self.cb_all                     = cb_all
-        self.cb_enabled                 = cb_enabled
-        self.cb_hazard                  = cb_hazard
-        self.colors                     = colors
-        self.file_manager               = file_manager
-        self.frame_results              = frame_results
-        self.frame_side                 = frame_side
-        self.generate_x_axis            = generate_x_axis
-        self.get_last_processed_reading = get_last_processed_reading
-        self.guide                      = guide
-        self.lb_logo                    = lb_logo
-        self.lb_name                    = lb_name
-        self.lb_path                    = lb_path
-        self.lb_processing              = lb_processing
-        self.lb_score                   = lb_score
-        self.logging_feature            = logging_feature
-        self.marquee                    = marquee
-        self.measurements               = measurements
-        self.multispec                  = multispec
-        self.page_nav                   = page_nav
-        self.raman_intensity_correction = raman_intensity_correction
-        self.sb_score_min               = sb_score_min
-        self.sb_max_results             = sb_max_results
-        self.sounds                     = sounds
-        self.stylesheets                = stylesheets
-        self.table_recent               = table_recent
-        self.table_results              = table_results
-        self.vcr_controls               = vcr_controls
-        self.horiz_roi                  = horiz_roi
+        self.bt_alias                   = cfu.pushButton_id_results_make_alias
+        self.bt_benign                  = cfu.pushButton_id_results_flag_benign
+        self.bt_clear                   = cfu.pushButton_id_results_clear
+        self.bt_hazard                  = cfu.pushButton_id_results_flag_hazard
+        self.bt_id                      = cfu.pushButton_scope_id
+        self.bt_reset                   = cfu.pushButton_id_results_reset
+        self.bt_suppress                = cfu.pushButton_id_results_suppress
+        self.cb_all                     = cfu.checkBox_kia_display_all_results
+        self.cb_enabled                 = cfu.checkBox_kia_enabled
+        self.cb_hazard                  = cfu.checkBox_kia_alarm_low_scoring_hazards
+        self.frame_results              = cfu.frame_id_results_white
+        self.frame_side                 = cfu.frame_kia_outer
+        self.lb_logo                    = cfu.label_kia_logo
+        self.lb_name                    = cfu.label_kia_compound_name
+        self.lb_path                    = cfu.label_kia_install_path
+        self.lb_processing              = cfu.label_kia_processing
+        self.lb_score                   = cfu.label_kia_score
+        self.sb_score_min               = cfu.spinBox_kia_score_min
+        self.sb_max_results             = cfu.spinBox_kia_max_results
+        self.table_recent               = cfu.tableWidget_id_match_recent
+        self.table_results              = cfu.tableWidget_id_match_results
 
         self.kia_pathname = None         # where KnowItAll is installed
         self.executable_pathname = None
@@ -328,7 +270,7 @@ class Feature:
         # connect if not already 
         if self.wrapper is None:
             if not self._connect():
-                self.marquee.error("Failed to connect")
+                self.ctl.marquee.error("Failed to connect")
                 return
         else:
             self._clear_response("(processing)")
@@ -369,7 +311,7 @@ class Feature:
         results = False
         button = False
 
-        if self.is_installed and self.page_nav.doing_raman() and not self.hidden:
+        if self.is_installed and not self.hidden and (self.ctl.page_nav.doing_raman() or self.ctl.page_nav.doing_expert()):
             side = True
             button = True
             results = self.display_all
@@ -385,38 +327,6 @@ class Feature:
             self._update_table_buttons()
 
         self.lb_logo.setVisible(True)
-
-        self._queue_tip()
-
-    ## 
-    # Put a helpful suggestion in the tip box.
-    #
-    # @private
-    def _queue_tip(self):
-        # only generate tips while we're on Raman Scope Capture
-        if not (self.page_nav.doing_raman() and self.page_nav.doing_scope()):
-            log.debug("not tipping because not raman scope")
-            return
-
-        spec = self.multispec.current_spectrometer()
-        if spec is None:
-            log.debug("not tipping because no spec")
-            return
-
-        # disabling while we reconsider recommendation system
-        if False:
-            if not self.is_installed and not self.sent_install_tip:
-                self.sent_install_tip = True
-                return self.guide.suggest("""<html>Tip: install Wiley <a href="https://get.knowitall.com" style="color: #73f0d7">KnowItAll™</a> for automated Raman ID (enter code 'RAMAN')</html>""", persist=True)
-
-            if not spec.app_state.has_dark():
-                return self.guide.suggest("Tip: take dark for better matching", token="take_dark")
-
-            if self.raman_intensity_correction.is_supported() and not self.raman_intensity_correction.enabled:
-                return self.guide.suggest("Tip: enable Raman Intensity Correction for better matching", token="enable_raman_intensity_correction")
-
-            if not self.baseline_correction.enabled and self.baseline_correction.allowed:
-                return self.guide.suggest("Tip: enable baseline correction for better matching", token="enable_baseline_correction")
 
     # This is currently ticked from the Controller's "status" loop (1Hz at writing),
     # so it isn't dependent on integration time, or even if acquisitions are running.
@@ -454,7 +364,7 @@ class Feature:
 
             self._process_response(response)
 
-            self.stylesheets.apply(self.bt_id, "gray_gradient_button") # applies only if main ID button was pressed
+            self.ctl.stylesheets.apply(self.bt_id, "gray_gradient_button") # applies only if main ID button was pressed
             self.lb_processing.setText(self._get_elapsed_time_str() + " (complete)")
             self.processing = False
 
@@ -509,12 +419,12 @@ class Feature:
             log.error("process_last: already processing")
             return
 
-        pr = self.get_last_processed_reading()
+        pr = self.ctl.get_last_processed_reading()
         if pr is None or pr.processed is None or len(pr.processed) == 0:
             log.error("process_last: no usable last ProcessedReading")
             return
 
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             log.error("process_last: no usable spectrometer")
             return
@@ -541,17 +451,17 @@ class Feature:
     #  paused).  
     def _id_callback(self):
         if self.processing:
-            self.marquee.error("Identification already in process")
+            self.ctl.marquee.error("Identification already in process")
             return
 
         self._clear_response("(processing)")
 
         if self.wrapper is None:
             if not self._connect():
-                self.marquee.error("Failed to connect")
+                self.ctl.marquee.error("Failed to connect")
                 return
 
-        self.stylesheets.apply(self.bt_id, "red_gradient_button")
+        self.ctl.stylesheets.apply(self.bt_id, "red_gradient_button")
         self.process_last()
 
     ## The user has clicked the "continuous" checkbox which enables or disables 
@@ -574,11 +484,9 @@ class Feature:
 
         if not self.enabled:
             self.lb_processing.setText("disabled")
-        else:
-            self._queue_tip()
 
-        if self.measurements:
-            self.measurements.update_kia()
+        if self.ctl.measurements:
+            self.ctl.measurements.update_kia()
 
     ## The user has flagged a compound as benign.
     def _benign_callback(self):
@@ -663,11 +571,6 @@ class Feature:
     def _max_results_callback(self):
         self.max_results = self.sb_max_results.value()
 
-    ## The user clicked the "guide" checkbox
-    def _guide_callback(self):
-        self.guide = self.cb_guide.isChecked()
-        self.update_visibility()
-
     ## The user clicked the "show all results" checkbox, so display or hide the 
     #  table.
     def _all_callback(self):
@@ -701,7 +604,7 @@ class Feature:
         library_pathname    = None#self.ext_library    if self._ext_enabled() else None
         wrapper = Wrapper(
             log_queue = Queue(),
-            log_level = self.logging_feature.level,
+            log_level = self.ctl.logging_feature.level,
             executable_pathname = self.executable_pathname,
             library_pathname = library_pathname)
 
@@ -790,7 +693,7 @@ class Feature:
             log.debug("cropped spectrum")
             if roi is not None:
                 log.debug("cropping x-axis")
-                x_axis = self.horiz_roi.crop(x_axis, roi=roi)
+                x_axis = self.ctl.horiz_roi.crop(x_axis, roi=roi)
 
         log.debug("new x_axis = %s", x_axis)
 
@@ -824,7 +727,7 @@ class Feature:
         self.lb_score.setText("NA")
         self._update_result_table()
         self._update_recent_table()
-        self.marquee.clear(token="KnowItAll")
+        self.ctl.marquee.clear(token="KnowItAll")
 
     ## @private
     def _process_response(self, response):
@@ -840,7 +743,7 @@ class Feature:
             self._clear_response("(no match)")
             self.current_processed_reading = None
             if response.measurement_id is not None:
-                self.measurements.id_callback(measurement_id=response.measurement_id, declared_match=None)
+                self.ctl.measurements.id_callback(measurement_id=response.measurement_id, declared_match=None)
 
         # clear suppressed results
         self._clear_suppressed(response)
@@ -884,15 +787,15 @@ class Feature:
             self._play_sound("unknown")
 
         if dm.aliased_name.preferred == "(null)":
-            self.marquee.error("Please check KnowItAll license", persist=True)
+            self.ctl.marquee.error("Please check KnowItAll license", persist=True)
         else:
-            self.marquee.info(dm.aliased_name.preferred, persist=True, benign=benign, token="KnowItAll")
+            self.ctl.marquee.info(dm.aliased_name.preferred, persist=True, benign=benign, token="KnowItAll")
 
         self._update_result_table()
         self._update_recent_table()
 
         if response.measurement_id is not None:
-            self.measurements.id_callback(measurement_id=response.measurement_id, declared_match=dm)
+            self.ctl.measurements.id_callback(measurement_id=response.measurement_id, declared_match=dm)
 
         # disconnect from the ProcessedReading...if Controller still has it, 
         # fine, else let it GC
@@ -1088,9 +991,9 @@ class Feature:
     def _colorize_table_row(self, table, row, aliased_name):
         hexcolor = None
         if self._is_hazard(aliased_name.all_names):
-            hexcolor = self.colors.color_names.get(Feature.HAZARD_COLOR_NAME)
+            hexcolor = self.ctl.colors.color_names.get(Feature.HAZARD_COLOR_NAME)
         elif self._is_benign(aliased_name.all_names):
-            hexcolor = self.colors.color_names.get(Feature.BENIGN_COLOR_NAME)
+            hexcolor = self.ctl.colors.color_names.get(Feature.BENIGN_COLOR_NAME)
 
         if hexcolor:
             log.debug("setting table row %d to color %s", row, hexcolor)
@@ -1230,7 +1133,6 @@ class Feature:
     # 
     # @private
     def _play_sound(self, category):
-        if self.sounds:
-            if category == "hazard":
-                self.sounds.play("exclamation")
+        if category == "hazard":
+            self.ctl.sounds.play("exclamation")
 

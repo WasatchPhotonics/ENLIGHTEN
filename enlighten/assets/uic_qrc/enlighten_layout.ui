@@ -18051,6 +18051,8 @@ li.checked::marker { content: "\2612"; }
                  </layout>
                 </widget>
                </item>
+
+
                <item>
                 <widget class="QFrame" name="frame_post_processing">
                  <property name="sizePolicy">
@@ -18166,6 +18168,9 @@ li.checked::marker { content: "\2612"; }
                  </layout>
                 </widget>
                </item>
+
+
+
                <item>
                 <widget class="QFrame" name="frame_presets">
                  <property name="sizePolicy">
