@@ -10,14 +10,15 @@ class AmbientTemperatureFeature:
         self.ctl = ctl
         cfu = ctl.form.ui
 
-        self.lb_degC        = cfu.label_factory_ambient_temperature
-        self.bt_clear       = cfu.pushButton_clear_ambient_temperature_data
-        self.bt_copy        = cfu.pushButton_copy_ambient_temperature_data
-
-        self.curve          = None
-        self.name           = "Ambient_Temperature"
-        self.output_to_file = False
-        self.observers      = set()
+        self.lb_chart_degC    = cfu.label_factory_ambient_temperature
+        self.lb_hardware_degC = cfu.label_ambient_temperature
+        self.bt_clear         = cfu.pushButton_clear_ambient_temperature_data
+        self.bt_copy          = cfu.pushButton_copy_ambient_temperature_data
+                              
+        self.curve            = None
+        self.name             = "Ambient_Temperature"
+        self.output_to_file   = False
+        self.observers        = set()
 
         self.populate_placeholder()
 
@@ -36,7 +37,8 @@ class AmbientTemperatureFeature:
         if spec != self.ctl.multispec.current_spectrometer():
             return
 
-        self.lb_degC.setText(s)
+        self.lb_chart_degC.setText(s)
+        self.lb_hardware_degC.setText(s)
         for callback in self.observers:
             callback(s)
 
@@ -89,6 +91,7 @@ class AmbientTemperatureFeature:
         self.ctl.multispec.register_hardware_feature_curve(self.name, spec.device_id, curve) 
     
     def remove_spec_curve(self, spec):
+        log.debug("removing curve from hardware graph")
         cur_curve = self.ctl.multispec.get_hardware_feature_curve(self.name, spec.device_id)
         if cur_curve is None:
             return
@@ -99,7 +102,8 @@ class AmbientTemperatureFeature:
                 self.graph.removeItem(curve)
         self.ctl.multispec.remove_hardware_curve(self.name, spec.device_id)
         if self.ctl.multispec.get_spectrometers() == []:
-            self.lb_degC.setText("disconnected")
+            self.lb_chart_degC.setText("disconnected")
+            self.lb_hardware_degC.setText("disconnected")
 
     def clear_data(self):
         for spec in self.ctl.multispec.get_spectrometers():

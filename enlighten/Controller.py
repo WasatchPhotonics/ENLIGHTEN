@@ -1480,13 +1480,6 @@ class Controller:
         # active spectrometer gets additional processing
         if self.multispec.is_selected(device_id):
 
-            # @todo move to AmbientTemperatureFeature
-            # display ambient temperature on Hardware Setup
-            if spec.settings.is_gen15() and reading.ambient_temperature_degC is not None:
-                cfu.label_ambient_temperature.setText("%.2f°C" % reading.ambient_temperature_degC)
-            else:
-                cfu.label_ambient_temperature.setText("unknown")
-
             # update laser status 
             if spec.settings.is_xs():
                 self.laser_control.process_reading(reading)
