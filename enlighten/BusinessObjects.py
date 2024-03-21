@@ -328,24 +328,7 @@ class BusinessObjects:
         ctl.edc = ElectricalDarkCorrectionFeature(ctl)
 
         self.header("instantiating ReferenceFeature")
-        ctl.reference_feature = ReferenceFeature(
-            graph                       = ctl.graph,
-            gui                         = ctl.gui,
-            marquee                     = ctl.marquee,
-            measurement_factory         = ctl.measurement_factory,
-            multispec                   = ctl.multispec,
-            page_nav                    = ctl.page_nav,
-            save_options                = ctl.save_options,
-            set_curve_data              = ctl.set_curve_data,
-                                        
-            button_clear                = cfu.pushButton_reference_clear,
-            button_load                 = cfu.pushButton_reference_load,
-            button_store                = cfu.pushButton_reference_store,
-            button_toggle               = cfu.pushButton_scope_toggle_reference,
-            frame_setup                 = cfu.frame_scopeSetup_spectra_reference_white,
-            lb_timestamp                = cfu.label_reference_timestamp,
-            stacked_widget              = cfu.stackedWidget_scope_setup_reference_spectrum,
-            gui_make_pen                = ctl.gui.make_pen)
+        ctl.reference_feature = ReferenceFeature(ctl)
 
         self.header("instantiating RamanIntensityCorrection")
         ctl.raman_intensity_correction = RamanIntensityCorrection(ctl)
