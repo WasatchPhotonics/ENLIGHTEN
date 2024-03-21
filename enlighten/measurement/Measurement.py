@@ -1657,7 +1657,7 @@ class Measurement:
             return
 
         log.debug("interpolating from (%.2f, %.2f) to (%.2f, %.2f)",
-            old_x[0], old_x[-1], new_x[0], new_x[-1]);
+            old_x[0], old_x[-1], new_x[0], new_x[-1])
 
         if pr.raw is not None and len(pr.raw) > 0:
             pr.raw = np.interp(new_x, old_x, pr.raw)

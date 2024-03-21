@@ -195,5 +195,6 @@ fi
 
 echo "Recommend periodically checking code quality with:"
 echo
+echo "    $ make flake8"
 echo "    $ pylint enlighten plugins"
 echo

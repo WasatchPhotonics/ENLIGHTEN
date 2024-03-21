@@ -1,5 +1,4 @@
 import logging
-import datetime
 
 from enlighten import common
 
