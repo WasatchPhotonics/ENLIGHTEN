@@ -20,15 +20,16 @@ function upload()
         exit 1
     fi
 
-    REMOTE_PATH="www/binaries/apps/enlighten/$LOCAL_NAME"
+    REMOTE_PATH="binaries/apps/enlighten/$LOCAL_NAME"
     if $IS_BETA
     then
-        REMOTE_PATH="www/binaries/apps/enlighten/beta/$LOCAL_NAME"
+        REMOTE_PATH="binaries/apps/enlighten/beta/$LOCAL_NAME"
     fi
+    FULL_REMOTE_PATH="www/$REMOTE_PATH"
 
-    if ssh $USERNAME@wasatchphotonics.com ls $REMOTE_PATH 1>/dev/null 2>&1
+    if ssh $USERNAME@wasatchphotonics.com ls $FULL_REMOTE_PATH 1>/dev/null 2>&1
     then
-        echo "ERROR: $REMOTE_PATH already found on remote host (manually remove/rename then retry)"
+        echo "ERROR: $FULL_REMOTE_PATH already found on remote host (manually remove/rename then retry)"
         if $FORCE
         then
             echo "--force configured, allowing overwrite"
@@ -36,12 +37,14 @@ function upload()
             exit 1
         fi
     else
-        echo "$REMOTE_PATH does not currently exist on remote host"
+        echo "$FULL_REMOTE_PATH does not currently exist on remote host"
     fi
 
-    scp $LOCAL_NAME $USERNAME@wasatchphotonics.com:$REMOTE_PATH
+    scp $LOCAL_NAME $USERNAME@wasatchphotonics.com:$FULL_REMOTE_PATH
 
     mv -f $LOCAL_NAME releases
+
+    echo "File posted to https://wasatchphotonics.com/$REMOTE_PATH"
 }
 
 ################################################################################
