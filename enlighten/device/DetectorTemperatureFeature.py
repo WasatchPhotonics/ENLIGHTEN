@@ -45,6 +45,7 @@ class DetectorTemperatureFeature:
         self.copy_btn       .clicked            .connect(self.copy_data)
 
         self.detector_tec_control_widgets = [
+            cfu.detectorControlWidget_label_detectorTemperature,
             self.cb_enabled,
             self.slider,
             self.spinbox,
