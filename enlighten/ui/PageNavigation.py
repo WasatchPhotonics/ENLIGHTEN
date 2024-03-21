@@ -421,7 +421,6 @@ class PageNavigation:
 
     def update_expert_widgets(self):
         is_ingaas = False
-        has_cooling = False
         flag = self.doing_expert()
         cfu = self.ctl.form.ui
 
@@ -430,13 +429,11 @@ class PageNavigation:
             flag = False
         else:
             is_ingaas = spec.settings.is_ingaas()
-            has_cooling = spec.settings.eeprom.has_cooling
 
         # todo: migrate all of these to register_observer("doing_expert") in 
         # their respective owning Business Objects
         cfu.frame_post_processing.setVisible(flag)
         cfu.frame_baseline_correction.setVisible(flag)
-        # cfu.frame_tec_control.setVisible(flag and has_cooling)
         cfu.frame_area_scan_widget.setVisible(flag and not is_ingaas)
         cfu.frame_region_control.setVisible(False) # spec.settings.is_imx()
 

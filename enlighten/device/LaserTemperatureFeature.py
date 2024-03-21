@@ -55,10 +55,7 @@ class LaserTemperatureFeature:
     def combo_callback(self):
         spec = self.ctl.multispec.current_spectrometer()
         if spec and spec.settings.is_xs() and spec.settings.eeprom.sig_laser_tec:
-            index = self.combo_mode.currentIndex()
-            text  = self.combo_mode.currentText()
-            log.debug("combo_callback: index {index}, text {text}")
-            self.ctl.multispec.change_device_setting("set_laser_tec_mode", index)
+            self.ctl.multispec.change_device_setting("set_laser_tec_mode", self.combo_mode.currentIndex())
 
     def register_observer(self, callback):
         self.observers.add(callback)

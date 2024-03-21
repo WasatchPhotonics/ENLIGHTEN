@@ -11,21 +11,21 @@ import os
 
 from collections import defaultdict
 
-# these aren't actually used...solves an import issue for MacOS I think
 if "macOS" in platform.platform():
-    import matplotlib
-    import matplotlib.pyplot as plt
+    # solves an import issue for MacOS
+    import matplotlib                   # pylint:disable=unused-import
+    import matplotlib.pyplot as plt     # pylint:disable=unused-import
 
 import wasatch
 from wasatch import applog
 
-from wasatch.WasatchDeviceWrapper     import WasatchDeviceWrapper
-from wasatch.SpectrometerResponse     import ErrorLevel
-from wasatch.ProcessedReading         import ProcessedReading
-from wasatch.DeviceFinderUSB          import DeviceFinderUSB
-from wasatch.StatusMessage            import StatusMessage
-from wasatch.WasatchBus               import WasatchBus
-from wasatch.Reading                  import Reading
+from wasatch.WasatchDeviceWrapper import WasatchDeviceWrapper
+from wasatch.SpectrometerResponse import ErrorLevel
+from wasatch.ProcessedReading import ProcessedReading
+from wasatch.DeviceFinderUSB import DeviceFinderUSB
+from wasatch.StatusMessage import StatusMessage
+from wasatch.WasatchBus import WasatchBus
+from wasatch.Reading import Reading
 
 from enlighten import util
 from enlighten import common

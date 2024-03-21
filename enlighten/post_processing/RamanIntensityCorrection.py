@@ -1,5 +1,4 @@
 import logging
-import numpy as np
 
 from enlighten.util import unwrap
 

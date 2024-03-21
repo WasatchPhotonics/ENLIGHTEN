@@ -240,9 +240,6 @@ class HorizROIFeature:
         pr.cropped = prc
 
     def region_updated_callback(self, spec, left_pixel=None, right_pixel=None):
-        roi = spec.settings.eeprom.get_horizontal_roi()
-        log.debug("region_updated_callback: roi now {roi}")
-
         self.update_regions(spec)
 
     def update_regions(self, spec=None):
