@@ -22,7 +22,7 @@ log = logging.getLogger(__name__)
 try:
     from .keys import *
     DISABLED = False
-except Exception as e:
+except:
     DISABLED = True
     log.error("No AWS keys found. Cloud eeprom restore disabled")
 

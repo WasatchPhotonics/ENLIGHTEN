@@ -780,6 +780,7 @@ class EEPROMEditor:
     def parse_wpsc_report(self, wpsc_report: dict) -> dict:
         eeprom_dump = wpsc_report["EEPROMDump"]
         translation_keys = self.wpsc_translations.keys()
+
         def capital_to_snake(key):
             snake_case = re.sub(r"(.)([A-Z])(?=[a-z]+)|(.)([A-Z]{2,})$", r'\1\3_\2\4', key) # catches most
             snake_case = snake_case.lower()
@@ -790,14 +791,17 @@ class EEPROMEditor:
             else:
                 log.debug(f"key {snake_case} not found in translation, returning as is")
             return snake_case
+
         eeprom_dump = {capital_to_snake(key): item for key, item in eeprom_dump.items()}
         eeprom_dump["excitation_nm_float"] = eeprom_dump["excitation_nm"]
         roi_starts = eeprom_dump["roi_vert_region_starts"]
         roi_ends = eeprom_dump["roi_vert_region_ends"]
+
         for idx, region in enumerate(zip(roi_starts, roi_ends)):
             start, end = region
             eeprom_dump[f"roi_vertical_region_{idx + 1}_start"] = start
             eeprom_dump[f"roi_vertical_region_{idx + 1}_end"] = end
+
         return eeprom_dump
 
     def import_eeprom(self, file_name=None):
@@ -812,7 +816,7 @@ class EEPROMEditor:
             file_name = QtWidgets.QFileDialog.getOpenFileName(None,
                 "Open EEPROM", common.get_default_data_dir(), "EEPROM Files (*.json)")
             if file_name is not None:
-            # file_name is a tuple with the first element being the actual name
+                # file_name is a tuple with the first element being the actual name
                 with open(file_name[0],'r') as eeprom_file:
                     eeprom_json = json.load(eeprom_file)
             else:

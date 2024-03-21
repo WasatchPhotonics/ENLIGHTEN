@@ -7,6 +7,7 @@
     - fixed Dark/Reference on Settings
     - fixed Detector Temperature label bug
     - simplified designer.sh
+    - added 'make flake8'
 - 2024-03-19 4.0.52
     - started KIA conversion to ctl
     - fixed 2/3-byte FPGA_COMPILATION_OPTIONS

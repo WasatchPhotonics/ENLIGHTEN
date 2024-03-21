@@ -855,9 +855,9 @@ class Measurement:
         if field == "plugin name":               return self.plugin_name
 
         if field == "laser power mw":
-            if self.processed_reading.reading is not None and \
-                self.processed_reading.reading.laser_power_mW is not None and \
-                self.processed_reading.reading.laser_power_mW > 0:
+            if (self.processed_reading.reading is not None and 
+                    self.processed_reading.reading.laser_power_mW is not None and 
+                    self.processed_reading.reading.laser_power_mW > 0):
                 return self.processed_reading.reading.laser_power_mW
             else:
                 return ""
@@ -1644,12 +1644,12 @@ class Measurement:
 
         pr = self.processed_reading
 
-        if self.settings.wavelengths is not None and len(self.settings.wavelengths) and \
-            new_settings.wavelengths is not None and len( new_settings.wavelengths):
+        if (self.settings.wavelengths is not None and len(self.settings.wavelengths) and 
+             new_settings.wavelengths is not None and len( new_settings.wavelengths)):
            old_x = self.settings.wavelengths
            new_x =  new_settings.wavelengths
-        elif self.settings.wavenumbers is not None and len(self.settings.wavenumbers) and \
-              new_settings.wavenumbers is not None and len( new_settings.wavenumbers):
+        elif (self.settings.wavenumbers is not None and len(self.settings.wavenumbers) and
+               new_settings.wavenumbers is not None and len( new_settings.wavenumbers)):
            old_x = self.settings.wavenumbers
            new_x =  new_settings.wavenumbers
         else:
