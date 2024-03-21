@@ -103,7 +103,7 @@ class DespikingFeature:
             log.debug(f"main values were calculated as {main_calc} sum is {main_sum}")
             if w == 0:
                 continue
-                log.debug(f"W VALUE WAS 0")
+                log.debug("W VALUE WAS 0")
             averaged_value = (1/w)*main_sum
             log.debug(f"assigning value {averaged_value} to spiky point with original value {spectra[index]}")
             spectra[index] = averaged_value

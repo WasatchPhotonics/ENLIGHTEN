@@ -14,7 +14,7 @@ import datetime
 import traceback
 
 from pexpect.popen_spawn import PopenSpawn 
-import common from enlighten
+from enlighten import common
 
 from EnlightenPlugin import EnlightenPluginBase,    \
                             EnlightenPluginField,    \
@@ -113,7 +113,7 @@ log = logging.getLogger(__name__)
 class RamanID(EnlightenPluginBase):
 
     ## hardcoded path to external executable
-    RAMAN_ID_EXE = "C:\Program Files\Wasatch Photonics\Raman ID Algorithm\RamanID.exe"
+    RAMAN_ID_EXE = "C:\\Program Files\\Wasatch Photonics\\Raman ID Algorithm\\RamanID.exe"
 
     ## contains transcript of all strings exchanged with client subprocess (in EnlightenSpectra)
     PEXPECT_LOGFILE = "RamanID-pexpect.log"

@@ -26,14 +26,14 @@ class GridFeature:
         self.gui.colorize_button(self.button, self.enabled)
 
         def resolve_graph_plot(head, attr):
-            if head != None and hasattr(head, attr):
+            if head is not None and hasattr(head, attr):
                 return getattr(head, attr)
             else:
                 None
 
         for name, obj_path in self.plots.items():
             plot = functools.reduce(resolve_graph_plot, obj_path)
-            if plot != None:
+            if plot is not None:
                 plot.showGrid(self.enabled, self.enabled)
             else:
                 log.error(f"{name} couldn't set grid")

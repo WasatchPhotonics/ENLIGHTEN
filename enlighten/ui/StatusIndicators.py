@@ -154,7 +154,7 @@ class StatusIndicators:
                         lamp_tt = "laser armed (can fire)"
                     else:
                         lamp = "disconnected"
-                        lamp_tt = f"laser disarmed (cannot fire)"
+                        lamp_tt = "laser disarmed (cannot fire)"
             elif settings.eeprom.gen15 and len(all_specs) <= 1:
                 if settings.state.laser_enabled:
                     lamp = "warning"

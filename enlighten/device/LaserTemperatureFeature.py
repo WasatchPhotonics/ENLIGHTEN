@@ -88,7 +88,7 @@ class LaserTemperatureFeature:
             return
 
         active_curve = self.ctl.multispec.get_hardware_feature_curve(self.name, spec.device_id)
-        if active_curve == None:
+        if active_curve is None:
             return 
 
         rds = app_state.laser_temperature_data
@@ -143,7 +143,7 @@ class LaserTemperatureFeature:
 
     def update_curve_color(self, spec):
         curve = self.ctl.multispec.get_hardware_feature_curve(self.name, spec.device_id)
-        if curve == None:
+        if curve is None:
             return
         curve.opts["pen"] = spec.color
 

@@ -298,7 +298,7 @@ def clean_json(s):
     m = pat.match(s)
     while m is not None:
         array_contents = m.group(2).strip()
-        contents_as_line = re.sub(",\s+", ", ", array_contents)
+        contents_as_line = re.sub(r",\s+", ", ", array_contents)
         new_list = "[ " + contents_as_line + " ]"
         s = m.group(1) + new_list + m.group(3)
         m = pat.match(s)

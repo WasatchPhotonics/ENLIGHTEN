@@ -117,7 +117,7 @@ class BatteryFeature:
 
     def update_curve_color(self, spec):
         curve = self.ctl.multispec.get_hardware_feature_curve(self.name, spec.device_id)
-        if curve == None:
+        if curve is None:
             return
         curve.opts["pen"] = spec.color
 

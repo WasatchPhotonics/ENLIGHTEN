@@ -121,10 +121,10 @@ class GainDBFeature:
                 ini_gain_db = self.ctl.config.get_float(serial_number, "gain_db")
                 log.debug("Get gain from INI: %s", ini_gain_db)
                 self.set_db(ini_gain_db)
-            elif spec.settings.state.gain_db != None:
+            elif spec.settings.state.gain_db is not None:
                 log.debug("Get gain from SpectrometerSettings: %s", spec.settings.state.gain_db)
                 self.set_db(spec.settings.state.gain_db)
-            elif spec.settings.eeprom.detector_gain != None:
+            elif spec.settings.eeprom.detector_gain is not None:
                 gain_eeprom = spec.settings.eeprom.detector_gain
                 log.debug("Get gain from EEPROM: %s", gain_eeprom)
                 self.set_db(gain_eeprom)

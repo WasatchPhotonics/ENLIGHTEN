@@ -76,6 +76,7 @@ class RollingDataSet:
         return True
 
     def one_within(self, value, delta, window_sec=None):
+        now = dt.now()
         for k, v in self.data:
             if abs(value - v) <= delta:
                 if window_sec is not None:

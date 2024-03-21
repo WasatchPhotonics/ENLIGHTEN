@@ -974,6 +974,11 @@ class Measurements:
         save_line_number = self.ctl.save_options.line_number
         self.ctl.save_options.line_number = 0
 
+        if visible_only:
+            export_measurements = [ m for m in self.measurements if m.is_displayed() ]
+        else:
+            export_measurements = self.measurements
+
         for m in export_measurements:
             if visible_only and not m.is_displayed():
                 continue

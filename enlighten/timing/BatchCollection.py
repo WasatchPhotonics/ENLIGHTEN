@@ -97,9 +97,9 @@ class BatchCollection:
     
     The three modes are exposed in the configuration file as:
     
-    \code
+    @verbatim
       laser_mode = manual | batch | spectrum
-    \endcode
+    @endverbatim
     
     If multiple spectrometers are connected, the laser commands (like acquisition
     triggers) are sent to each.
@@ -292,7 +292,7 @@ class BatchCollection:
             s += "Clicking this will start a new Batch Collection.</p>"
 
             if self.spinbox_collection_timeout.value() == 0:
-                s += "<p>The following collection will not timeout and will complete based on the end of batch collection and measurement count.<\p>"
+                s += "<p>The following collection will not timeout and will complete based on the end of batch collection and measurement count.</p>"
             else:
                 s += f"<p>The following collection will timeout after {self.spinbox_collection_timeout.value()} seconds. After a complete measurement if the timeout is reached, the batch will complete and export then the collection will stop.</p>"
 

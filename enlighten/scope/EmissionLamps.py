@@ -99,7 +99,7 @@ class EmissionLamp:
                 self.set_visible(name, wavelength)
     
     def set_visible(self, name, wavelength):
-        if not name in self.visible:
+        if name not in self.visible:
             self.visible[name] = []
         self.visible[name].append(wavelength)
 

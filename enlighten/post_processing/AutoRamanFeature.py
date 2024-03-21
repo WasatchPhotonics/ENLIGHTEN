@@ -148,8 +148,8 @@ class AutoRamanFeature:
         # Prompt the user. Make it scary.
         result = self.ctl.gui.msgbox_with_checkbox(
             title="Auto-Raman Warning", 
-            text="Auto-Raman will AUTOMATICALLY FIRE THE LASER when taking measurements " + \
-                 "using the ⏯ button. Be aware that the laser will automtically enable " + \
+            text="Auto-Raman will AUTOMATICALLY FIRE THE LASER when taking measurements " + 
+                 "using the ⏯ button. Be aware that the laser will automtically enable " + 
                  "and disable when taking spectra while this mode is enabled.",
             checkbox_text="Don't show again")
 

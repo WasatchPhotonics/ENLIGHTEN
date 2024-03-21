@@ -54,7 +54,7 @@ class SavitzkyGolay(EnlightenPluginBase):
             x             = request.processed_reading.processed,
             window_length = win_len,    # < len(x)
             polyorder     = polyorder,  # < win_len
-            deriv         = deriv,      #  # >= 0
-            delta         = delta)      #  # spacing if delta>1, default 1
+            deriv         = deriv,      # >= 0
+            delta         = delta)      # spacing if delta>1, default 1
 
         return EnlightenPluginResponse(request, overrides = { "processed": smoothed } )

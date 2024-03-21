@@ -209,7 +209,7 @@ class PageNavigation:
         self.combo_view.setCurrentIndex(index)
 
     def update_technique_callback(self):
-        log.debug(f"technique callback triggered")
+        log.debug("technique callback triggered")
         self.current_technique = self.determine_current_technique()
         log.debug(f"setting to technique {self.current_technique}")
         callback = self.technique_callbacks.get(self.current_technique, None)
@@ -289,23 +289,13 @@ class PageNavigation:
         self.set_view_common()
         self.set_main_page(common.Pages.FACTORY)
 
-    def set_technique_transmission(self):
-        self.ctl.graph.set_x_axis(common.Axes.WAVELENGTHS)
-        self.ctl.graph.set_y_axis(common.Axes.PERCENT)
-        self.set_technique_common(common.Techniques.REFLECTANCE_TRANSMISSION)
-
-    def set_technique_absorbance(self):
-        self.ctl.graph.set_x_axis(common.Axes.WAVELENGTHS)
-        self.ctl.graph.set_y_axis(common.Axes.AU)
-        self.set_technique_common(common.Techniques.ABSORBANCE)
-
     def update_view_shortcut(self):
         index = self.combo_view.currentIndex()
         tt = f"Ctrl-{index+1} shortcut" if index < common.Views.FACTORY else ""
         self.combo_view.setToolTip(tt)
 
     def is_expert(self):
-         return self.operation_mode == common.OperationModes.EXPERT
+        return self.operation_mode == common.OperationModes.EXPERT
 
     def set_view_common(self):
         self.update_view_shortcut()
@@ -342,14 +332,14 @@ class PageNavigation:
         return self.operation_mode == common.OperationModes.EXPERT
 
     def set_technique_absorbance(self):
-        self.set_technique_common(common.Techniques.ABSORBANCE)
         self.ctl.graph.set_x_axis(common.Axes.WAVELENGTHS)
         self.ctl.graph.set_y_axis(common.Axes.AU)
+        self.set_technique_common(common.Techniques.ABSORBANCE)
 
     def set_technique_transmission(self):
-        self.set_technique_common(common.Techniques.TRANSMISSION)
         self.ctl.graph.set_x_axis(common.Axes.WAVELENGTHS)
         self.ctl.graph.set_y_axis(common.Axes.PERCENT)
+        self.set_technique_common(common.Techniques.REFLECTANCE_TRANSMISSION)
 
     def set_technique_common(self, technique):
         log.debug("set_technique_common: technique %d", technique)

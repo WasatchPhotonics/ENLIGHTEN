@@ -85,7 +85,7 @@ class PluginWorker(threading.Thread):
                 continue
 
             request = self.request_queue.get_nowait()
-            if request == None:
+            if request is None:
                 log.critical("PluginWorker[%s] received poison-pill", module_name)
                 plugin.disconnect()
                 break

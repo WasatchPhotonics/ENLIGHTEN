@@ -1076,7 +1076,7 @@ class Feature:
         orig = root
         while True:
             if orig in self.config.unalias:
-                orig = self.config.unalias[name]
+                orig = self.config.unalias[an]
             else:
                 break
         an.orig = orig

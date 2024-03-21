@@ -192,7 +192,7 @@ class DashFileParser:
 
         spec = self.specs[self.serial]
         if spec is None:
-            log.error("generate_measurement: invalid serial %s", serial)
+            log.error("generate_measurement: invalid serial %s", self.serial)
             return
 
         log.debug("finalizing ProcessedReading")

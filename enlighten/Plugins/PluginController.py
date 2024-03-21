@@ -553,7 +553,7 @@ class PluginController:
         #   +---+---+---+   R = Right
         # 2 |   | B |   |   B = Bottom
         #   +---+---+---+
-                                                                         # row, col, row span, col span
+
         if   pos == "top"   : self.layout_graphs.addWidget(self.plugin_plot, 0, 1)
         elif pos == "bottom": self.layout_graphs.addWidget(self.plugin_plot, 2, 1)
         elif pos == "left"  : self.layout_graphs.addWidget(self.plugin_plot, 1, 0)
@@ -579,7 +579,7 @@ class PluginController:
     # ##########################################################################
 
     def run_worker(self):
-        if self.worker != None:
+        if self.worker is not None:
             log.error("can't create new PluginWorker when one is already running")
             return False
 
@@ -731,7 +731,7 @@ class PluginController:
             self.vlayout_fields.addLayout(self.plugin_fields_layout)
 
             added_group = []
-            if type(config.fields) == dict:
+            if isinstance(config.fields, dict):
                 self.plugin_field_widgets = []
                 log.debug("trying to add stack widget because dict for the fields")
                 self.select_vbox = QtWidgets.QVBoxLayout()
@@ -765,7 +765,7 @@ class PluginController:
                     if pfw.field_config.datatype == "radio":
                         group_box = pfw.field_config.group
                         layout = pfw.field_config.layout
-                        if not group_box in added_group:
+                        if group_box not in added_group:
                             self.plugin_fields_layout.addWidget(group_box)
                             group_box.setLayout(layout)
                             added_group.append(group_box)
@@ -969,7 +969,7 @@ class PluginController:
     def get_current_settings(self):
         config = self.get_current_configuration()
         plugin_fields = { pfw.field_name: pfw.field_value for pfw in self.plugin_field_widgets }
-        if type(config.fields) == dict:
+        if isinstance((config.fields, dict):
             plugin_fields["active_page"] = self.widget_selector.currentText()
         log.debug(f"get_current_settings: plugin_fields = {plugin_fields}")
         return plugin_fields

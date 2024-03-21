@@ -740,7 +740,7 @@ class EEPROMEditor:
         if index is None:
             self.spinBoxes[name] = widget
         else:
-            if not name in self.spinBoxes:
+            if name not in self.spinBoxes:
                 self.spinBoxes[name] = {}
             self.spinBoxes[name][index] = widget
 
@@ -765,7 +765,7 @@ class EEPROMEditor:
         if index is None:
             self.lineEdits[name] = widget
         else:
-            if not name in self.lineEdits:
+            if name not in self.lineEdits:
                 self.lineEdits[name] = {}
             self.lineEdits[name][index] = widget
 

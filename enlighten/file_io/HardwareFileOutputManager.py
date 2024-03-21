@@ -50,12 +50,12 @@ class HardwareFileOutputManager:
 
     def write_line(self, feature_name, value):
         file_obj = self.file_map.get(feature_name, None)
-        if file_obj == None:
+        if file_obj is None:
             log.error("Passed feature to write to file that does not exist")
             return
         file_obj.write(value)
         file_obj.write('\n')
-        if self.output_timeout != None and self.output_timeout < datetime.datetime.now():
+        if self.output_timeout is not None and self.output_timeout < datetime.datetime.now():
             self.disable_output()
             self.cb_output.setChecked(False)
 

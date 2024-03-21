@@ -766,7 +766,7 @@ class Controller:
             log.debug("initialize_new_device: re-selecting already-connected device")
             hotplug = False
             if self.multispec.is_in_reset(device_id):
-                log.debug(f"reading reset device")
+                log.debug("reading reset device")
                 self.multispec.read_spec_object(device_id)
         else:
             log.debug("initialize_new_device: initializing newly-connected device")
@@ -1363,17 +1363,17 @@ class Controller:
                 return
 
             if self.external_trigger.is_enabled():
-                log.debug("attempt_reading(%s): ignoring timeout while externally triggered");
+                log.debug("attempt_reading(%s): ignoring timeout while externally triggered")
                 return
 
             if spec.settings.state.area_scan_enabled:
-                log.debug("attempt_reading(%s): ignoring timeout in area scan");
+                log.debug("attempt_reading(%s): ignoring timeout in area scan")
                 return
 
             now = datetime.datetime.now()
             if spec.settings.state.ignore_timeouts_until is not None and \
                     spec.settings.state.ignore_timeouts_until > now:
-                log.debug("attempt_reading(%s): temporarily ignoring timeouts");
+                log.debug("attempt_reading(%s): temporarily ignoring timeouts")
                 return
             spec.settings.state.ignore_timeouts_until = None
 
@@ -1557,7 +1557,7 @@ class Controller:
             if spectrometer_response.poison_pill:
                 # the user hasn't [yet] decided to disconnect, but we can't really "do anything" with data that's
                 # coming from a spectrometer throwing poison-pills, so for now treat it as a keepalive
-                log.debug(f"received poison-pill from spectrometer, but the user has not [yet] opted to disconnect")
+                log.debug("received poison-pill from spectrometer, but the user has not [yet] opted to disconnect")
                 return 
 
             if spectrometer_response.keep_alive:
@@ -1710,7 +1710,7 @@ class Controller:
           - snap usable dark
         - Subtract Dark
         - Correction for detector non-linearity* (when enabled)
-        - Correct for stray light*  (when enabled)
+        - Correct for stray light*  (when enabled)
         - Correct for intensity* (when enabled, per your suggested OoO)
         - Apply Boxcar Smoothing
         - Baseline removal / fluorescence removal, etc
@@ -2245,7 +2245,7 @@ class Controller:
                 settings = spec.settings
 
         if settings is None:
-            log.error(f"settings was None even after getting current spec, not generating x-axis")
+            log.error("settings was None even after getting current spec, not generating x-axis")
             return
 
         log.debug(f"generate_x_axis: spec {spec}, settings {settings}, unit {unit}, cropped {cropped}")
@@ -2313,11 +2313,11 @@ class Controller:
 
         log.info(f"displaying MessageBox with the received error and options (Okay, Disconnect, Log): {response_error}")
         dlg_title = "Spectrometer Error"
-        dlg_msg = ("ENLIGHTEN has encountered an error with the spectrometer. " \
-                  + "The exception is shown below.  Click 'View Log' to " \
-                  + "automatically open the logfile in Notepad, 'Disconnect' to " \
-                  + "retry or 'Okay' to dismiss this dialog:\n\n" \
-                  + response_error + "\n\n")
+        dlg_msg = ("ENLIGHTEN has encountered an error with the spectrometer. " +
+                    "The exception is shown below.  Click 'View Log' to " +
+                    "automatically open the logfile in Notepad, 'Disconnect' to " +
+                    "retry or 'Okay' to dismiss this dialog:\n\n" + 
+                    response_error + "\n\n")
         dlg_btns = [("Okay", QMessageBox.AcceptRole), ("Disconnect", QMessageBox.RejectRole), ("View Log", QMessageBox.HelpRole)]
 
         selection = TimeoutDialog.showWithTimeout(self.form, 
@@ -2339,7 +2339,7 @@ class Controller:
             log.info("user clicked 'View Log' so displaying the logfile")
             self.open_log()
         else:
-            log.info(f"User didn't choose a button. Attempting disconnect and reconnect")
+            log.info("User didn't choose a button. Attempting disconnect and reconnect")
             self.seen_errors[spec].pop(response_error)
             return False
         return False
