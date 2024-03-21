@@ -969,7 +969,7 @@ class PluginController:
     def get_current_settings(self):
         config = self.get_current_configuration()
         plugin_fields = { pfw.field_name: pfw.field_value for pfw in self.plugin_field_widgets }
-        if isinstance((config.fields, dict):
+        if isinstance(config.fields, dict):
             plugin_fields["active_page"] = self.widget_selector.currentText()
         log.debug(f"get_current_settings: plugin_fields = {plugin_fields}")
         return plugin_fields
