@@ -1975,7 +1975,7 @@ class Controller:
         if selected:
             self.status_bar.process_reading(pr)
 
-    def set_curve_data(self, curve, y, x=None, label=None) -> bool:
+    def set_curve_data(self, curve, y, x=None, label=None):
         """
         Lightweight wrapper over pyqtgraph.PlotCurveItem.setData.
         
@@ -1987,20 +1987,20 @@ class Controller:
         @returns True if graph was updated
         """
         if curve is None:
-            log.error("set_curve_data[%s]: no curve", label)
+            log.error(f"set_curve_data[{label}]: no curve")
             return False
 
         if y is None:
-            log.error("set_curve_data[%s]: no y", label)
+            log.error(f"set_curve_data[{label}]: no y")
             return False
 
         if x is None or x == []:
-            log.debug("set_curve_data[%s]: no x (y_len = %d, y=%s, curve = %s)", label, len(y), y[:5], str(curve))
+            log.debug(f"set_curve_data[{label}]: no x (y_len {len(y)}, y {y[:5]}, curve {curve})")
             self.graph.set_data(curve=curve, y=y)
             return True
 
         if len(x) != len(y):
-            log.debug("%s: ignoring attempt to plot %d y-values against %d x-values", label, len(y), len(x))
+            log.debug(f"set_curve_data[{label}]: ignoring attempt to plot {len(y)} y-values against {len(x)} x-values")
             return False
 
         if len(x) >= 3 and x[0] > x[1] and x[1] < x[2]:
@@ -2013,7 +2013,7 @@ class Controller:
             x = tmp
 
         log.debug(f"set_curve_data[{label}]: passing to Graph")
-        self.graph.set_data(curve=curve, y=y, x=x)
+        self.graph.set_data(curve=curve, y=y, x=x, label=label)
         return True
 
     # ##########################################################################

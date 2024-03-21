@@ -159,9 +159,7 @@ class DarkFeature:
             return
 
         if spec.app_state.has_dark():
-            x_axis = self.ctl.generate_x_axis(spec=spec)
-            self.ctl.set_curve_data(self.curve, x=x_axis, y=spec.app_state.dark, label="display_dark")
-
+            self.ctl.set_curve_data(self.curve, y=spec.app_state.dark, label="display_dark")
             lb.setText(spec.app_state.dark_timestamp.strftime("%Y-%m-%d %H:%M:%S"))
             self.curve.active = True
         else:

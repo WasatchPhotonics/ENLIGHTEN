@@ -2,6 +2,11 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2024-03-21 4.0.53
+    - moved ReferenceFeature to ctl
+    - fixed Dark/Reference on Settings
+    - fixed Detector Temperature label bug
+    - simplified designer.sh
 - 2024-03-19 4.0.52
     - started KIA conversion to ctl
     - fixed 2/3-byte FPGA_COMPILATION_OPTIONS
