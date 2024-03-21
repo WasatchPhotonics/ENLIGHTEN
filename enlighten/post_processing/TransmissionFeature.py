@@ -63,6 +63,7 @@ class TransmissionFeature:
                 try:
                     value = 100.0 * float(sample[i]) / float(ref[i])
                 except:
+                    log.debug(f"error computing transmission at pixel {i} (sample len {len(sample)}, orig ref len {len(pr.reference)})")
                     pass
             if self.max_enabled:
                 value = min(value, self.max_perc)
@@ -75,7 +76,7 @@ class TransmissionFeature:
             self.ctl.marquee.error("measurement out-of-range")
 
         pr.set_processed(transmission)
-        log.debug("trans = %s", transmission[0:10])
+        log.debug("trans = %s", transmission[0:5])
         return True
 
     def update_from_gui(self):
