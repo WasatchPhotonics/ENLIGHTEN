@@ -2,6 +2,12 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2024-03-22 4.0.55
+    - added msgbox_with_lineedit
+    - hopefully didn't break dialog response processing
+    - R&D
+        - skip ambient on ARM 1.0.2.9
+        - ignore None responses in WasatchDevice funcs
 - 2024-03-22 4.0.54
     - fixed GainDB persistence
     - fixed Reference visibility when Emission/Raman selected
