@@ -2,10 +2,11 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
-- 2024-??-?? 4.0.54
+- 2024-03-22 4.0.54
     - fixed GainDB persistence
     - fixed Reference visibility when Emission/Raman selected
     - flake8 fixes
+    - moved GridFeature to ctl
 - 2024-03-21 4.0.53
     - moved ReferenceFeature to ctl
     - fixed Dark/Reference on Settings

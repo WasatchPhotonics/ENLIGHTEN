@@ -199,9 +199,6 @@ class PluginController:
         self.layout_graphs              = layout_graphs
         self.measurements               = measurements
 
-        # provide post-creation
-        self.grid = None
-
         # start up check examples exist
         self.directory = common.get_default_data_dir()
         self.stub_plugin()
@@ -848,7 +845,7 @@ class PluginController:
             return
 
         self.plugin_plot = pyqtgraph.PlotWidget(name=f"{config.name}")
-        if self.grid is not None and self.grid.enabled:
+        if self.ctl.grid is not None and self.ctl.grid.enabled:
             self.plugin_plot.showGrid(True, True)
         self.combo_graph_pos.setVisible(True)
         self.lb_graph_pos.setVisible(True)

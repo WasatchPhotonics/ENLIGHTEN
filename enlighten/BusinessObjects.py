@@ -402,13 +402,7 @@ class BusinessObjects:
             measurements                = ctl.measurements)
 
         self.header("instantiating GridFeature")
-        ctl.grid = GridFeature(
-            button                      = cfu.pushButton_graphGrid,
-            gui                         = ctl.gui,
-            stylesheets                 = ctl.stylesheets,
-            plots                       = { "scope graph" : [ctl.graph, "plot"],
-                                            "plugin graph": [ctl.plugin_controller, "graph_plugin", "plot"] })
-        ctl.plugin_controller.grid = ctl.grid
+        ctl.grid = GridFeature(ctl)
 
         self.header("instantiating AreaScanFeature")
         ctl.area_scan = AreaScanFeature(

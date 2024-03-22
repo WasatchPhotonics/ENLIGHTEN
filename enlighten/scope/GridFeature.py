@@ -5,16 +5,13 @@ log = logging.getLogger(__name__)
 
 class GridFeature:
 
-    def __init__(self,
-            button,
-            gui,
-            plots,
-            stylesheets):
+    def __init__(self, ctl):
+        self.ctl = ctl
+        cfu = ctl.form.ui
 
-        self.button = button
-        self.gui = gui
-        self.plots = plots
-        self.stylesheets = stylesheets
+        self.button = cfu.pushButton_graphGrid
+        self.plots = { "scope graph" : [ctl.graph, "plot"],
+                       "plugin graph": [ctl.plugin_controller, "graph_plugin", "plot"] }
 
         self.enabled = False
 
@@ -23,13 +20,12 @@ class GridFeature:
 
     def toggle(self):
         self.enabled = not self.enabled
-        self.gui.colorize_button(self.button, self.enabled)
+        self.ctl.gui.colorize_button(self.button, self.enabled)
 
+        # MZ: this is needlessly convoluted
         def resolve_graph_plot(head, attr):
             if head is not None and hasattr(head, attr):
                 return getattr(head, attr)
-            else:
-                None
 
         for name, obj_path in self.plots.items():
             plot = functools.reduce(resolve_graph_plot, obj_path)
@@ -37,4 +33,3 @@ class GridFeature:
                 plot.showGrid(self.enabled, self.enabled)
             else:
                 log.error(f"{name} couldn't set grid")
-
