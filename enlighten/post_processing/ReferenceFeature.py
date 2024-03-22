@@ -65,14 +65,19 @@ class ReferenceFeature:
         if spec is None:
             return
 
-        # hide reference widgets in non-referenced mode (basically, Raman)
+        visible = True
         if self.ctl.page_nav.doing_raman() and not self.ctl.page_nav.doing_expert():
-            [ widget.setVisible(False) for widget in self.visibility_widgets ]
-            return
+            visible = False
+        elif not self.ctl.page_nav.using_reference():
+            visible = False
+        else:
+            log.debug("visible")
 
-        [ widget.setVisible(True) for widget in self.visibility_widgets ]
+        for widget in self.visibility_widgets:
+            widget.setVisible(visible)
 
-        self.ctl.gui.colorize_button(self.button_toggle, spec.app_state.has_reference())
+        if visible:
+            self.ctl.gui.colorize_button(self.button_toggle, spec.app_state.has_reference())
 
     def toggle(self):
         spec = self.ctl.multispec.current_spectrometer()

@@ -119,17 +119,6 @@ class PageNavigation:
     Raman Mode).
     """
 
-    technique_callbacks = {
-        common.Techniques.NONE: lambda self, tech: self.set_technique_common(common.Techniques.NONE),
-        common.Techniques.EMISSION: lambda self, tech: self.set_technique_common(common.Techniques.EMISSION),
-        common.Techniques.RAMAN: lambda self, tech: self.set_technique_common(common.Techniques.RAMAN),
-        common.Techniques.REFLECTANCE_TRANSMISSION: lambda self, tech: self.set_technique_transmission(),
-        common.Techniques.ABSORBANCE: lambda self, tech: self.set_technique_absorbance(),
-        common.Techniques.COLOR: lambda self, tech: self.set_technique_common(common.Techniques.COLOR),
-        common.Techniques.FLUORESCENCE: lambda self, tech: self.set_technique_common(common.Techniques.FLUORESCENCE),
-        common.Techniques.RELATIVE_IRRADIANCE: lambda self, tech: self.set_technique_common(common.Techniques.RELATIVE_IRRADIANCE)
-        }
-
     def __init__(self, ctl):
         self.ctl = ctl
         cfu = ctl.form.ui
@@ -140,12 +129,12 @@ class PageNavigation:
         self.button_expert      = cfu.pushButton_expert
         self.combo_view         = cfu.comboBox_view
         self.stack_main         = cfu.stackedWidget_low
-        self.combo_technique    = cfu.technique_comboBox
+        self.combo_technique    = cfu.comboBox_technique
 
         self.button_raman       .setWhatsThis("Switch to Raman mode, which enables Raman-relevant features in the Control Palette.")
         self.button_non_raman   .setWhatsThis("Switch to non-Raman mode, which hides Raman-only features while adding features for absorbance, reflectance etc.")
         self.combo_view         .setWhatsThis("Switch between various ENLIGHTEN views to access different types of product features.")
-        self.combo_technique    .setWhatsThis("Select between various non-Raman techniques, each providing distinct spectral processing and options.")
+        self.combo_technique    .setWhatsThis("Specify whether a reference-based technique is in use. Absorbance, Reflectance and Transmission techniques all require a reference measurement, while Raman (or simple Emission) does not.")
         self.button_expert      .setWhatsThis(unwrap("""
             Enable access to all features and options, whether they seem relevant to your spectrometer or not.
 
@@ -210,13 +199,15 @@ class PageNavigation:
 
     def update_technique_callback(self):
         log.debug("technique callback triggered")
-        self.current_technique = self.determine_current_technique()
-        log.debug(f"setting to technique {self.current_technique}")
-        callback = self.technique_callbacks.get(self.current_technique, None)
-        if callback is not None:
-            callback(self, self.current_technique)
+        tech = self.determine_current_technique()
+        self.current_technique = tech
+
+        if tech == common.Techniques.REFLECTANCE_TRANSMISSION: 
+            self.set_technique_transmission()
+        elif tech == common.Techniques.ABSORBANCE:
+            self.set_technique_absorbance()
         else:
-            log.error("Determined technique was invalid for callback? Shouldn't be here.")
+            self.set_technique_common(tech)
 
     # called whenever the user changes the view via the GUI combobox
     def update_view_callback(self):
@@ -349,6 +340,7 @@ class PageNavigation:
 
         self.current_technique = technique
         technique_name = common.TechniquesHelper.get_pretty_name(self.current_technique)
+
         # All connected spectrometers always share the same view.  It's a
         # valid question if view should then be stored in app_state, since
         # it's not really a per-spectrometer attribute, but adding for

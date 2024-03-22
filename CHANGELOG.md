@@ -4,6 +4,7 @@
 
 - 2024-??-?? 4.0.54
     - fixed GainDB persistence
+    - fixed Reference visibility when Emission/Raman selected
     - flake8 fixes
 - 2024-03-21 4.0.53
     - moved ReferenceFeature to ctl

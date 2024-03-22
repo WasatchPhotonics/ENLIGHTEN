@@ -14453,7 +14453,7 @@ li.checked::marker { content: "\2612"; }
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-836</y>
+                <y>0</y>
                 <width>240</width>
                 <height>2893</height>
                </rect>
@@ -15012,7 +15012,7 @@ li.checked::marker { content: "\2612"; }
                        </property>
                        <layout class="QVBoxLayout" name="verticalLayout_58">
                         <item>
-                         <widget class="QComboBox" name="technique_comboBox">
+                         <widget class="QComboBox" name="comboBox_technique">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                             <horstretch>0</horstretch>
@@ -15039,7 +15039,7 @@ li.checked::marker { content: "\2612"; }
                           </property>
                           <item>
                            <property name="text">
-                            <string>Emission</string>
+                            <string>Emission/Raman</string>
                            </property>
                           </item>
                           <item>
