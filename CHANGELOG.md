@@ -2,6 +2,9 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2024-??-?? 4.0.54
+    - fixed GainDB persistence
+    - flake8 fixes
 - 2024-03-21 4.0.53
     - moved ReferenceFeature to ctl
     - fixed Dark/Reference on Settings

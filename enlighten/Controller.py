@@ -858,6 +858,7 @@ class Controller:
         # integration time and gain
         ########################################################################
 
+        # MZ: I don't remember why these are being handled differently
         log.debug("configure integration time limits")
         self.integration_time_feature.reset(hotplug)
         self.gain_db_feature.reset()
