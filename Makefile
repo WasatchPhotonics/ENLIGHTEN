@@ -177,6 +177,11 @@ mac-platypus:
 run:
 	@python scripts/Enlighten.py --log-level debug 1>enlighten.out 2>enlighten.err
 
+pylint:
+	@pylint enlighten plugins
+
 flake8:
-	find enlighten plugins -name \*.py | sort | grep -v uic_qrc | xargs flake8 | tee flake8.out 
-	awk -F": " '{print $$2}' < flake8.out | sort | uniq -c | sort -n
+	@find enlighten plugins -name \*.py | sort | grep -v uic_qrc | xargs flake8 | tee flake8.out 
+	@echo && echo Counts:
+	@awk -F": " '{print $$2}' < flake8.out | sort | uniq -c | sort -n
+	@rm -f flake8.out

@@ -13,8 +13,10 @@ from collections import defaultdict
 
 if "macOS" in platform.platform():
     # solves an import issue for MacOS
-    import matplotlib                   # pylint:disable=unused-import
-    import matplotlib.pyplot as plt     # pylint:disable=unused-import
+    import matplotlib
+    import matplotlib.pyplot as plt
+    assert matplotlib
+    assert plt
 
 import wasatch
 from wasatch import applog
