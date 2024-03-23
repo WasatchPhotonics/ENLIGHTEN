@@ -61,8 +61,10 @@ class SpectrometerApplicationState:
 
         self.reset_rolling_data()
 
-    def __init__(self, device_id):
+    def __init__(self, ctl, device_id):
+        self.ctl = ctl
         self.device_id = device_id
+
         self.clear()
 
     def dump(self):

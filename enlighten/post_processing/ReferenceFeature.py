@@ -56,6 +56,8 @@ class ReferenceFeature:
                 reference whenever possible to account for thermal drift and
                 changes in ambient lighting."""))
 
+        ctl.presets.register(self, "reference", setter=self.preset_changed, getter=None)
+
     # ##########################################################################
     # public methods
     # ##########################################################################
@@ -152,6 +154,13 @@ class ReferenceFeature:
         self.ctl.save_options.update_widgets()
         self.ctl.gui.colorize_button(self.button_toggle, spec.app_state.has_reference())
         self.ctl.graph.update_visibility()  # MZ: why does Reference need this but not Dark?
+
+    # ##########################################################################
+    # Callbacks
+    # ##########################################################################
+
+    def preset_changed(self, ignore):
+        self.clear()
 
     # ##########################################################################
     # private methods

@@ -163,8 +163,11 @@ class PresetFeature:
         for obs in self.observers:
             feature = obs.__class__.__name__
             for attr in self.observers[obs]:
+                value = None
                 try:
-                    value = self.observers[obs][attr]["get"]()
+                    cb = self.observers[obs][attr]["get"]
+                    if cb:
+                        value = self.observers[obs][attr]["get"]()
                 except:
                     log.error(f"unable to read {attr} from {feature}", exc_info=1)
                     continue
@@ -235,7 +238,9 @@ class PresetFeature:
                         value = self.presets[preset][feature][attr]
                         log.debug(f"applying {preset}: setting {feature}.{attr} -> {value}")
                         try:
-                            self.observers[obs][attr]["set"](value)
+                            cb = self.observers[obs][attr]["set"]
+                            if cb is not None:
+                                cb(value)
                         except:
                             log.error("failed to apply {preset} to feature {feature} with {attr} = {value}", exc_info=1)
         self.reset(preset)

@@ -97,7 +97,7 @@ class Spectrometer:
         self.settings = self.device.settings
         self.roi_region_left = None
         self.roi_region_right = None
-        self.app_state = SpectrometerApplicationState(self.device_id)
+        self.app_state = SpectrometerApplicationState(ctl, device_id=self.device_id)
 
         self.wp_model_info = ctl.model_info.get_by_model(self.settings.full_model())
         log.debug(f"best-guess ModelInfo: {self.wp_model_info}")

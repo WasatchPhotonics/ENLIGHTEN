@@ -71,6 +71,7 @@ class DarkFeature:
                 Darks are cheap, signal is priceless!"""))
 
         self.ctl.laser_control.register_observer("enabled", self.laser_control_enabled)
+        ctl.presets.register(self, "dark", setter=self.preset_changed, getter=None)
 
         self.observers = set()
 
@@ -192,6 +193,9 @@ class DarkFeature:
             self.ctl.guide.clear(token="take_dark")
         else:
             self.ctl.guide.suggest("Raman signal is improved if you take a dark measurement before firing the laser", token="take_dark")
+
+    def preset_changed(self, ignore):
+        self.clear()
 
     # ##########################################################################
     # private methods

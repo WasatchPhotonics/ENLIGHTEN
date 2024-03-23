@@ -4,6 +4,7 @@
 
 - 2024-??-?? 4.0.56
     - updated ColumnFileParser with wasatch.CSVLoader updates
+    - changing Preset auto-clears Dark and Reference
 - 2024-03-22 4.0.55
     - added msgbox_with_lineedit
     - hopefully didn't break dialog response processing
