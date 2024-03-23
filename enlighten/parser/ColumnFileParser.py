@@ -181,7 +181,8 @@ class ColumnFileParser:
         self.settings = SpectrometerSettings()
         eeprom = self.settings.eeprom
         state = self.settings.state
-        reading = self.processed_reading.reading
+        pr = self.processed_reading
+        reading = pr.reading
 
         # timestamp
         try:
@@ -197,7 +198,7 @@ class ColumnFileParser:
         if False and "Pixel Count" in metadata:
             eeprom.active_pixels_horizontal = int(self.get_safe_float("Pixel Count"))
         else:
-            eeprom.active_pixels_horizontal = len(self.processed_reading.processed)
+            eeprom.active_pixels_horizontal = len(pr.processed)
         log.debug("active_pixels_horizontal = %d", eeprom.active_pixels_horizontal)
 
         # fields where name changed in different versions / generators
@@ -256,14 +257,13 @@ class ColumnFileParser:
         coeffs = self.get_wavecal_coeffs_from_metadata()
 
         # prefer pre-rendered wavelengths, else generate fresh if we can
-        if "wavelength" in metadata \
-                and len(metadata["wavelength"]) == eeprom.active_pixels_horizontal:
+        if pr.wavelengths is not None and len(pr.wavelengths) == eeprom.active_pixels_horizontal:
             log.debug("using pre-rendered wavelengths")
-            self.settings.wavelengths = metadata["wavelength"] 
+            self.settings.wavelengths = pr.wavelengths
             self.settings.lock_wavecal = True
             log.debug("loaded %d wavelengths (%.2f, %.2f) from file", 
                 len(self.settings.wavelengths), self.settings.wavelengths[0], self.settings.wavelengths[-1])
-            # Generate fresh, but still store coeffs to preserve metadata if export later
+            # still store coeffs to preserve metadata if export later
             if coeffs is not None:
                 eeprom.wavelength_coeffs = coeffs
         elif coeffs is not None:
@@ -273,16 +273,18 @@ class ColumnFileParser:
             self.settings.update_wavecal()
             log.debug("regenerated %d wavelengths (%.2f, %.2f) from coeffs", 
                 len(self.settings.wavelengths), self.settings.wavelengths[0], self.settings.wavelengths[-1])
+            pr.wavelengths = self.settings.wavelengths
 
         # take pre-generated wavenumbers if we weren't able to generate them ourselves
-        if self.settings.wavenumbers is None \
-                and "wavenumber" in metadata \
-                and len(metadata["wavenumber"]) == eeprom.active_pixels_horizontal:
+        if (self.settings.wavenumbers is None 
+                and pr.wavenumbers 
+                and len(pr.wavenumbers) == eeprom.active_pixels_horizontal):
             log.debug("using pre-rendered wavenumbers")
-            self.settings.wavenumbers = metadata["wavenumber"] 
+            self.settings.wavenumbers = pr.wavenumbers
             self.settings.lock_wavecal = True
             log.debug("loaded %d wavenumbers (%.2f, %.2f) from file", 
                 len(self.settings.wavenumbers), self.settings.wavenumbers[0], self.settings.wavenumbers[-1])
+        pr.wavenumbers = self.settings.wavenumbers
 
     def get_wavecal_coeffs_from_metadata(self):
         try:

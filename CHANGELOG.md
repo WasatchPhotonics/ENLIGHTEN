@@ -2,6 +2,8 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2024-??-?? 4.0.56
+    - updated ColumnFileParser with wasatch.CSVLoader updates
 - 2024-03-22 4.0.55
     - added msgbox_with_lineedit
     - hopefully didn't break dialog response processing
