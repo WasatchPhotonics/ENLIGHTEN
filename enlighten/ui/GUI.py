@@ -159,7 +159,7 @@ class GUI:
         result = dialog.exec_()
 
         return { 
-            "ok": result == QDialog.Accepted,
+            "ok": result == QMessageBox.Ok, # note we don't use QDialogButtonBox
             "checked": dialog.checkBox().isChecked()
         }
 
@@ -242,3 +242,4 @@ class GUI:
         vb.addWidget(te)
 
         dialog.exec_()
+        # no return value, this is "display-only"

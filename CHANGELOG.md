@@ -5,6 +5,9 @@
 - 2024-??-?? 4.0.56
     - updated ColumnFileParser with wasatch.CSVLoader updates
     - changing Preset auto-clears Dark and Reference
+    - fixed GUI.msgbox_with_checkbox
+    - fixed SpectrometerApplicationState.check_refs
+    - moved plugin persistence from "advanced_options" to "plugins"
 - 2024-03-22 4.0.55
     - added msgbox_with_lineedit
     - hopefully didn't break dialog response processing

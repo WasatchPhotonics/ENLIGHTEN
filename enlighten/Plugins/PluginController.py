@@ -437,8 +437,8 @@ class PluginController:
             return
 
         connected = self.cb_connected.isChecked()
+        warn_suppress = self.config.get("plugins", "suppress_warning", default=False)
 
-        warn_suppress = self.config.get("advanced_options", "suppress_plugin_warning", default=False)
         if not warn_suppress and connected:
             result = self.ctl.gui.msgbox_with_checkbox(
                 title="Plugin Warning", 
@@ -450,7 +450,7 @@ class PluginController:
                 return
 
             if result["checked"]:
-                self.config.set("advanced_options", "suppress_plugin_warning", True)
+                self.config.set("plugins", "suppress_warning", True)
 
         if connected:
             log.debug("we just connected")
