@@ -7,6 +7,7 @@
     - support Expert mode in plugin fields
     - add Session Count to Measurement metadata
     - consistently handle plugin metadata
+    - added PresetFeature.clear_all
 - 2024-03-23 4.0.56
     - updated ColumnFileParser with wasatch.CSVLoader updates
     - changing Preset auto-clears Dark and Reference

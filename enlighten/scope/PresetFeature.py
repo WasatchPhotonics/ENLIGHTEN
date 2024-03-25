@@ -138,6 +138,8 @@ class PresetFeature:
             self.create_new()
         elif preset == "Remove...":
             self.remove(self.selected_preset)
+        elif preset == "Clear All...":
+            self.clear_all()
         else:
             log.debug(f"combo_callback: applying {preset}")
             self.apply(preset)
@@ -208,6 +210,7 @@ class PresetFeature:
         # guaranteed unique
         self.combo.addItem("Create New...")
         self.combo.addItem("Remove...")
+        self.combo.addItem("Clear All...")
 
         if selectedIndex > 0:
             if self.combo.currentText() != selected:
@@ -229,7 +232,13 @@ class PresetFeature:
             log.debug(f"declining to re-apply current preset {preset}")
             return
 
-        # send any stored attribute values to registered observers
+        log.debug(f"applying Preset {preset}")
+
+        # Send any stored attribute values to registered observers. Note that we
+        # iterate over CURRENTLY registered observers, so there may be some
+        # elements of a Preset (from an unconnected plugin, for instance) which
+        # don't get applied.
+        applied = {}
         for obs in self.observers:
             feature = obs.__class__.__name__
             if feature in self.presets[preset]:
@@ -241,8 +250,22 @@ class PresetFeature:
                             cb = self.observers[obs][attr]["set"]
                             if cb is not None:
                                 cb(value)
+                                if feature not in applied:
+                                    applied[feature] = set()
+                                applied[feature].add(attr)
                         except:
                             log.error("failed to apply {preset} to feature {feature} with {attr} = {value}", exc_info=1)
+
+        # check whether all Preset features and attributes were successfully applied
+        for feature in self.presets[preset]:
+            if feature not in applied:
+                log.debug(f"apply: failed to apply feature {feature} of preset {preset}")
+            else:
+                for attr in self.presets[preset][feature]:
+                    if attr not in applied[feature]:
+                        log.debug(f"apply: failed to apply attribute {feature}.{attr} of preset {preset}")
+
+        # MZ: don't remember why we're calling this
         self.reset(preset)
 
     def remove(self, preset):
@@ -259,5 +282,21 @@ class PresetFeature:
             if result == QMessageBox.Yes:
                 log.debug(f"removing {preset}")
                 del self.presets[preset]
+
+        self.reset() 
+
+    def clear_all(self):
+        """ The user selected (Clear All) from the comboBox, so prompt to delete all presets """
+
+        # prompt to confirm deletion
+        dlg = QMessageBox(self.ctl.form)
+        dlg.setWindowTitle("Clear All Presets")
+        dlg.setText(f"Permanently delete all presets?\nThis action cannot be undone.")
+        dlg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        dlg.setIcon(QMessageBox.Question)
+        result = dlg.exec_()
+        if result == QMessageBox.Yes:
+            log.debug(f"clearing all presets")
+            self.presets = {}
 
         self.reset() 
