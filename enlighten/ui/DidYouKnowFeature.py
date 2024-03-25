@@ -112,7 +112,7 @@ class DidYouKnowFeature:
                "clipboard" 📋 icon in the upper corner. You can click that at 
                any time (or just <b>hit Ctrl-C</b>) to copy all data from the 
                graph to the computer's system clipboard for copy-pasting between 
-               pplications.</p>
+               applications.</p>
             <p>The copied data is tab-delimited, so can be pasted directly into 
                Microsoft Excel for quick processing and charting. If multiple 
                traces are visible on the graph, each are included in the 
