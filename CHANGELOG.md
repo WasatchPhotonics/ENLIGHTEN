@@ -2,6 +2,8 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2024-??-?? 4.0.58
+    - restore saturation warning on XS
 - 2024-03-25 4.0.57
     - fix check_refs in BoxcarFeature
     - support Expert mode in plugin fields

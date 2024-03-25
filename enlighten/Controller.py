@@ -1790,11 +1790,8 @@ class Controller:
         # processed at this point, but "raw" is preferred to clarify saturation 
         # is irrespective of dark correction or any post-processing.
         if pr.raw.max() >= 0xfffe: 
-            # IMX detectors briefly saturate on every change of integration 
-            # time...perhaps we should take a couple throwaways in Wasatch.PY?
-            if not spec.settings.is_xs():
-                # todo: self.status_indicators.detector_warning("detector saturated")
-                self.marquee.error("detector saturated")
+            # todo: self.status_indicators.detector_warning("detector saturated")
+            self.marquee.error("detector saturated")
 
         ########################################################################
         # Dark Correction
