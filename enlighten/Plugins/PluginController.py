@@ -17,8 +17,8 @@ from .PluginWorker      import PluginWorker
 from .TableModel        import TableModel
 
 from enlighten import common
-from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from enlighten.scope.Graph import Graph
+from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 
 # this is in ../../plugins
 from EnlightenPlugin import *
@@ -99,7 +99,7 @@ log = logging.getLogger(__name__)
 # undesirable complexity at this time.
 class PluginController:
 
-    SELECT_STRING = "Select a plugin"
+    SECTION = "plugins"
 
     # ##########################################################################
     # initialization
@@ -107,7 +107,7 @@ class PluginController:
 
     def clear(self):
         self.plugin_plot      = None  # a pyqtgraph chart for displaying returned plugin arrays or strip charts
-        self.graph_plugin     = None  # second enlighten.Graph object associated with self.plugin_chart
+        self.graph_plugin     = None  # second enlighten.ui.Graph object associated with self.plugin_chart
         self.table_view       = None  # where panda_field gets displayed
         self.panda_field      = None  # if the plugin provided an export of type "pandas", this points to it
 
@@ -274,7 +274,6 @@ class PluginController:
             # goes through each classification folder and picks up the files
             plugin_files = [(file.path, folder) for folder in classification_folders for file in os.scandir(folder) if os.path.isfile(file.path)]
             for file, folder in plugin_files:
-                # find_all_plugins: file C:\Users\mzieg\Documents\EnlightenSpectra\plugins\Analysis\Despiking.py, folder C:\Users\mzieg\Documents\EnlightenSpectra\plugins\Analysis
                 try:
                     filename = os.path.basename(file)
                     package = os.path.basename(folder)
@@ -294,15 +293,20 @@ class PluginController:
 
     def populate_plugin_list(self):
         # log.debug("populating plugin list")
+        previous_selection = self.ctl.config.get(self.SECTION, "selected_plugin")
         self.combo_module.clear()
-        self.combo_module.addItem(PluginController.SELECT_STRING)
+        self.combo_module.addItem("Select a plugin")
+        found = False
         for module_name in sorted(self.module_infos):
             # log.debug("adding %s", module_name)
             self.combo_module.addItem(module_name)
+            if module_name == previous_selection:
+                found = True
 
-    ##
-    # This is how ENLIGHTEN destroys Business Objects, so use this as indication
-    # ENLIGHTEN is shutting down.
+        if found:
+            self.combo_module.setCurrentText(previous_selection)
+            self.combo_module_callback()
+
     def disconnect(self):
         log.debug("disconnecting current worker")
         self.cancel_worker()
@@ -338,6 +342,8 @@ class PluginController:
         log.debug(f"user selected plugin {module_name}")
         self.cb_connected.setEnabled(True)
         self.cb_connected.setChecked(False) # should be in this state anyway
+
+        self.ctl.config.set(self.SECTION, "selected_plugin", module_name)
 
     # - [3] when you click Connect (which is only visible when a valid plugin is
     #     selected)
@@ -557,7 +563,7 @@ class PluginController:
     def process_widgets(self, widgets, container):
         for epf in widgets:
             if not PluginValidator.validate_field(epf):
-                log.error("invalid EnlightenPluginField: %s", epf.name)
+                log.error(f"invalid EnlightenPluginField {epf.name}")
                 continue
 
             # plugins are allowed exactly one pandas output
@@ -571,7 +577,7 @@ class PluginController:
             elif epf.datatype == "radio":
                 # MZ: considering removing support for these in preference for 
                 # the new "combobox" datatype
-                groupBox = QtWidgets.QGroupBox(f"{epf.name}")
+                groupBox = QtWidgets.QGroupBox(epf.name)
                 vbox = QtWidgets.QVBoxLayout()
                 epf.group = groupBox
                 epf.layout = vbox
@@ -581,7 +587,7 @@ class PluginController:
                     container.append(pfw)
                 continue
 
-            log.debug(f"instantiating PluginFieldWidget {epf.name}")
+            log.debug(f"instantiating PluginFieldWidget with EnlightenPluginField {epf.name}")
             pfw = PluginFieldWidget(epf, self.ctl)
             container.append(pfw)
 
@@ -878,7 +884,7 @@ class PluginController:
 
     ##
     # Probably a controversial method...actually freeze the ENLIGHTEN GUI until 
-    # the next plugin response is available.  Enforces a hard timeout of 1sec.
+    # the next plugin response is available. Enforces a hard timeout of 1sec.
     # Probably we could do this in the background so the "GUI" doesn't free, but
     # ...we actually don't want to process any new spectra until this is resolved.
     #
@@ -953,7 +959,7 @@ class PluginController:
             plugin_fields = self.get_current_settings()
 
             self.mut.lock() # avoid duplicate request_ids
-            # Send copies of SpectrometerSettings and the ProcessedReading,
+            # Send COPIES of SpectrometerSettings and the ProcessedReading,
             # to reduce opportunities for plugin bugs to screw-up ENLIGHTEN.
             request = EnlightenPluginRequest(
                 request_id          = self.next_request_id,
@@ -972,7 +978,7 @@ class PluginController:
             log.debug("sending EnlightenPluginRequest %d", request.request_id)
             self.request_queue.put_nowait(request)
 
-            # experimental: allow plugin to block ENLIGHTEN until response received
+            # allow plugin to block ENLIGHTEN until response received
             if config.block_enlighten:
                 if not self.process_response_blocking(processed_reading):
                     return False
@@ -988,8 +994,8 @@ class PluginController:
 
     # release the block, if this is what we were waiting on
     def release_block(self, request):
-        if self.blocking_request is not None \
-                and self.blocking_request.request_id == request.request_id:
+        if (self.blocking_request is not None and 
+                self.blocking_request.request_id == request.request_id):
             log.debug("releasing block on request %d", request.request_id)
             self.blocking_request = None
         self.button_process.setEnabled(not self.enabled)

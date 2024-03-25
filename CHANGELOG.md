@@ -5,6 +5,7 @@
 - 2024-??-?? 4.0.59
     - plugins
         - moved PluginController to ctl
+        - persist last-selected plugin
         - removed enlighten.Plugins.EnlightenApplicationInfoReal,
                     EnlightenPlugin.EnlightenApplicationInfo 
 - 2024-03-25 4.0.58
