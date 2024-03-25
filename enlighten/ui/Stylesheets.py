@@ -103,8 +103,11 @@ class Stylesheets:
                     log.error(f"unable to load {theme}[{pathname}]", exc_info=1)
 
     ## apply CSS to a widget (don't change widget if stylesheet not found)
-    def apply(self, widget, style_name):
-        css = self.get(style_name)
+    def apply(self, widget, style_name, raw=False):
+        if raw:
+            css = style_name
+        else:
+            css = self.get(style_name)
         if css is None:
             log.error("no CSS found for style_name {style_name}, theme {self.theme}")
             return
