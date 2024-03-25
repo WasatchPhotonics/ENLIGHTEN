@@ -21,8 +21,8 @@ class MultiFrame(EnlightenPluginBase):
         # Field Names must be unique
         # They are returned as a flat list, not by page
                                             fields          = {"test":fields, "test2":[]})
-    def connect(self, enlighten_info):
-        return super().connect(enlighten_info)
+    def connect(self):
+        return super().connect()
 
     def process_request(self, request):
         log.debug(f"for multi page fields are {request.fields}")

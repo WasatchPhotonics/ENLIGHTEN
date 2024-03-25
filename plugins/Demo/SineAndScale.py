@@ -28,8 +28,8 @@ class SineAndScale(EnlightenPluginBase):
             fields          = fields,
             series_names    = [ "Sine Wave" ])
 
-    def connect(self, enlighten_info):
-        super().connect(enlighten_info)
+    def connect(self):
+        super().connect()
         return True
 
     def process_request(self, request):

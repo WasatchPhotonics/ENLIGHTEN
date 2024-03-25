@@ -37,8 +37,8 @@ class SaveAsAngstrom(EnlightenPluginBase):
             is_blocking = False)
 
     ## @returns False if it can't create / find the target directory
-    def connect(self, enlighten_info):
-        super().connect(enlighten_info)
+    def connect(self):
+        super().connect()
         return self.ensure_exists(self.directory)
 
     ##

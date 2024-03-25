@@ -42,8 +42,8 @@ class Despiking(EnlightenPluginBase):
                                             series_names    = ['Despiked',
                                                                'Detrended Diff',
                                                                'Mod Z Scores'])
-    def connect(self, enlighten_info):
-        return super().connect(enlighten_info)
+    def connect(self):
+        return super().connect()
 
     def process_request(self, request):
         """
@@ -67,7 +67,7 @@ class Despiking(EnlightenPluginBase):
         mod_z_scores[-1] = tau_outlier_criteria + 1
         candidate_idxs = [idx[0] for idx, value in np.ndenumerate(mod_z_scores) if abs(value) > tau_outlier_criteria]
         self.interpolate_zs(spiky_spectra, mod_z_scores, candidate_idxs, tau_outlier_criteria, window_size_m)
-        unit = self.enlighten_info.get_x_axis_unit()
+        unit = self.ctl.graph.get_x_axis_unit()
         # set x axis info
         if unit == "nm":
             series_x = settings.wavelengths

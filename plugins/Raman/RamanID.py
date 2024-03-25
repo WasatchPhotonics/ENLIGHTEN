@@ -197,8 +197,8 @@ class RamanID(EnlightenPluginBase):
     # 3. confirm executable has indicated "ready for streaming"
     #
     # @returns True if connected and ready to process requests
-    def connect(self, enlighten_info):
-        super().connect(enlighten_info)
+    def connect(self):
+        super().connect()
 
         # init from configuration
         log.debug("todo: initalize from persisted settings")
@@ -297,8 +297,8 @@ class RamanID(EnlightenPluginBase):
         log.debug("preparing to spawn {RamanID.RAMAN_ID_EXE}")
 
         # open a logfile for the subprocess
-        pexpect_log = os.path.join(self.enlighten_info.get_save_path(), RamanID.PEXPECT_LOGFILE)
-        debug_log   = os.path.join(self.enlighten_info.get_save_path(), RamanID.EXECUTABLE_LOGFILE)
+        pexpect_log = os.path.join(common.get_default_data_dir(), RamanID.PEXPECT_LOGFILE)
+        debug_log   = os.path.join(common.get_default_data_dir(), RamanID.EXECUTABLE_LOGFILE)
         log.debug(f"Pexpect will log to {pexpect_log}")
         log.debug(f"{RamanID.RAMAN_ID_EXE} will log to {debug_log}")
 

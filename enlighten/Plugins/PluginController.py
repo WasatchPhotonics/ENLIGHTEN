@@ -10,7 +10,6 @@ import numpy as np
 from time import sleep
 from queue import Queue
 
-from .EnlightenApplicationInfoReal import EnlightenApplicationInfoReal
 from .PluginFieldWidget import PluginFieldWidget
 from .PluginModuleInfo  import PluginModuleInfo
 from .PluginValidator   import PluginValidator
@@ -114,7 +113,6 @@ class PluginController:
 
         self.module_infos     = None  # will hold and cache all the metadata (PluginModuleInfo) about each plugin we know about
         self.module_name      = None  # the string module name of the selected plugin
-        self.enlighten_info   = None
 
         self.connected        = False # whether we've successfully called connect() on the selected plugin
         self.enabled          = False # whether the user is choosing to send new ProcessedReadings to the connected plugin
@@ -134,77 +132,30 @@ class PluginController:
         self.next_request_id = 0
         self.autoload = None
 
-    def __init__(self, ctl,
-            colors,
-            config,             # enlighten.Configuration
-            generate_x_axis,
-            graph_scope,        # enlighten.Graph object associated with Scope Capture primary pyqtgraph
-            gui,
-            marquee,
-            measurement_factory,
-            multispec,
-            parent,
-            save_options,
-            kia_feature,
-            measurements_clipboard,
-            horiz_roi,
-
-            button_process,
-            cb_connected,
-            cb_enabled,
-            combo_graph_pos,
-            combo_module,
-            frame_control,
-            frame_fields,
-            layout_graphs,
-            lb_graph_pos,
-            lb_title,
-            lb_widget,
-            vlayout_fields,
-            measurements):
+    def __init__(self, ctl):
+        self.ctl = ctl
+        cfu = ctl.form.ui
 
         log.debug("instantiating PluginController")
-
         self.clear()
 
-        self.ctl = ctl
-
-        # business objects and callbacks
-        self.colors                     = colors
-        self.config                     = config
-        self.generate_x_axis            = generate_x_axis
-        self.graph_scope                = graph_scope
-        self.gui                        = gui
-        self.marquee                    = marquee
-        self.measurement_factory        = measurement_factory
-        self.multispec                  = multispec
-        self.parent                     = parent
-        self.save_options               = save_options
-        self.kia_feature                = kia_feature
-        self.measurements_clipboard     = measurements_clipboard
-        self.horiz_roi                  = horiz_roi
-
         # widgets
-        self.button_process             = button_process
-        self.cb_connected               = cb_connected
-        self.cb_enabled                 = cb_enabled
-        self.combo_module               = combo_module
-        self.combo_graph_pos            = combo_graph_pos
-        self.frame_control              = frame_control
-        self.frame_fields               = frame_fields
-        self.lb_graph_pos               = lb_graph_pos
-        self.lb_title                   = lb_title
-        self.lb_widget                  = lb_widget
-        self.vlayout_fields             = vlayout_fields
-        self.layout_graphs              = layout_graphs
-        self.measurements               = measurements
+        self.button_process             = cfu.pushButton_plugin_process
+        self.cb_connected               = cfu.checkBox_plugin_connected
+        self.cb_enabled                 = cfu.checkBox_plugin_enabled
+        self.combo_graph_pos            = cfu.comboBox_plugin_graph_pos
+        self.combo_module               = cfu.comboBox_plugin_module
+        self.frame_control              = cfu.frame_plugin_control
+        self.frame_fields               = cfu.frame_plugin_fields
+        self.layout_graphs              = cfu.layout_scope_capture_graphs
+        self.lb_graph_pos               = cfu.label_plugin_graph_pos
+        self.lb_title                   = cfu.label_plugin_title
+        self.lb_widget                  = cfu.label_plugin_widget
+        self.vlayout_fields             = cfu.verticalLayout_plugin_fields
 
         # start up check examples exist
         self.directory = common.get_default_data_dir()
         self.stub_plugin()
-
-        # EnlightenApplicationInfo
-        self.reset_enlighten_info()
 
         # initialize GUI
         self.frame_control.setVisible(False)
@@ -240,7 +191,7 @@ class PluginController:
         # events
         log.debug("registering observer on MeasurementFactory")
         self.combo_module.installEventFilter(ScrollStealFilter(self.combo_module))
-        self.measurement_factory.register_observer(self.events_factory_callback)
+        self.ctl.measurement_factory.register_observer(self.events_factory_callback)
 
         self.timer = QtCore.QTimer() 
         self.timer.setSingleShot(True)
@@ -287,28 +238,6 @@ class PluginController:
             shutil.copytree(plugin_src, plugin_dst, dirs_exist_ok=True)
         else:
             log.error(f"couldn't find plugin src {plugin_src} so not creating stub")
-
-    ##
-    # releases any custom attributes created for a plugin
-    def reset_enlighten_info(self):
-        def reference_is_dark_corrected():
-            spec = self.multispec.current_spectrometer()
-            if spec is None or spec.app_state is None:
-                return False
-            return spec.app_state.reference_is_dark_corrected
-
-        self.enlighten_info = EnlightenApplicationInfoReal(
-            graph_scope = self.graph_scope, 
-            reference_is_dark_corrected = reference_is_dark_corrected,
-            save_options = self.save_options,
-            kia_feature = self.kia_feature,
-            plugin_settings = self.get_current_settings,
-            measurement_factory = self.measurement_factory,
-            measurements_clipboard = self.measurements_clipboard,
-            read_measurements = self.measurements.read_measurements,
-            horiz_roi = self.horiz_roi,
-            plugin_fields = self.get_plugin_fields
-        ) # leaving read measurement call for legacy purposes
 
     def initialize_python_path(self):
         log.debug("initializing plugin path")
@@ -377,7 +306,6 @@ class PluginController:
     def disconnect(self):
         log.debug("disconnecting current worker")
         self.cancel_worker()
-        self.reset_enlighten_info()
 
     def force_load_plugin(self, module_name):
         if module_name not in self.module_infos:
@@ -439,7 +367,7 @@ class PluginController:
             return
 
         connected = self.cb_connected.isChecked()
-        warn_suppress = self.config.get("plugins", "suppress_warning", default=False)
+        warn_suppress = self.ctl.config.get("plugins", "suppress_warning", default=False)
 
         if not warn_suppress and connected:
             result = self.ctl.gui.msgbox_with_checkbox(
@@ -452,11 +380,11 @@ class PluginController:
                 return
 
             if result["checked"]:
-                self.config.set("plugins", "suppress_warning", True)
+                self.ctl.config.set("plugins", "suppress_warning", True)
 
         if connected:
             log.debug("we just connected")
-            self.marquee.info(f"Connecting to plug-in {module_name}...", immediate=True)
+            self.ctl.marquee.info(f"Connecting to plug-in {module_name}...", immediate=True)
 
             log.debug("reconfiguring GUI for %s", module_name)
             if not self.configure_gui_for_module(module_name):
@@ -592,8 +520,7 @@ class PluginController:
         self.worker = PluginWorker(
             request_queue   = self.request_queue,
             response_queue  = self.response_queue,
-            module_info     = module_info,
-            enlighten_info  = self.enlighten_info)
+            module_info     = module_info)
 
         log.debug("create_worker: setting daemon")
         self.worker.setDaemon(True)
@@ -627,7 +554,7 @@ class PluginController:
     # plug-in selection
     # ##########################################################################
 
-    def process_widgets(self, widgets, parent):
+    def process_widgets(self, widgets, container):
         for epf in widgets:
             if not PluginValidator.validate_field(epf):
                 log.error("invalid EnlightenPluginField: %s", epf.name)
@@ -651,15 +578,12 @@ class PluginController:
                 for choice in epf.choices:
                     epf.name = choice
                     pfw = PluginFieldWidget(epf, self.ctl)
-                    parent.append(pfw)
+                    container.append(pfw)
                 continue
 
             log.debug(f"instantiating PluginFieldWidget {epf.name}")
             pfw = PluginFieldWidget(epf, self.ctl)
-            parent.append(pfw)
-            # old code left to be clear what parent was before dict
-            # makes this easier to understand imo
-            #self.plugin_field_widgets.append(pfw)
+            container.append(pfw)
 
     ##
     # This may or may not be the first time this plugin has been selected, so
@@ -791,7 +715,7 @@ class PluginController:
                     for name in config.series_names:
                         # keep reference to curve objects so we can later delete them
                         log.info(f"adding curve on main graph: {name}")
-                        self.create_graph_curves(name, self.graph_scope)
+                        self.create_graph_curves(name, self.ctl.graph)
 
             # configure streaming support
             self.cb_enabled.setVisible(config.streaming)
@@ -830,7 +754,7 @@ class PluginController:
             QtWidgets.QMessageBox.Critical, 
             "ENLIGHTEN PluginController", 
             summary,
-            parent = self.parent,
+            parent = self.ctl.form,
             flags = Qt.Widget)
         mb.setInformativeText(detail) # setDetailText has sizing issues
         mb.exec()
@@ -918,7 +842,7 @@ class PluginController:
                 name = name,
                 x    = [],
                 y    = [],
-                pen  = self.gui.make_pen())
+                pen  = self.ctl.gui.make_pen())
         else:
             log.debug("creating xy curve")
             curve = graph.plot.plot(
@@ -927,7 +851,7 @@ class PluginController:
                 y          = [],
                 pen        = None,
                 symbol     = 'x',
-                symbolPen  = self.gui.make_pen(),
+                symbolPen  = self.ctl.gui.make_pen(),
                 symbolSize = 12)
 
         self.plugin_curves[name] = curve
@@ -944,7 +868,6 @@ class PluginController:
             else:
                 log.critical("PluginController received an upstream poison-pill from %s", self.module_name)
                 
-                # self.marquee.error(f"Plug-in {self.module_name} encountered an error and shutdown")
                 if self.worker is not None and self.worker.error_message is not None:
                     self.display_exception(f"{self.module_name} exception", self.worker.error_message)
 
@@ -1008,7 +931,7 @@ class PluginController:
         # unless the plugin explicitly supports such
         device_id = processed_reading.device_id
         if device_id is not None:
-            if not config.multi_devices and not self.multispec.is_selected(device_id):
+            if not config.multi_devices and not self.ctl.multispec.is_selected(device_id):
                 log.debug("plugin doesn't support multiple spectrometers")
                 return False
 
@@ -1099,7 +1022,7 @@ class PluginController:
             ####################################################################
 
             if response.message is not None:
-                self.marquee.info(response.message, period_sec=5)
+                self.ctl.marquee.info(response.message, period_sec=5)
 
             ####################################################################
             # handle outputs                                                   #
@@ -1147,14 +1070,14 @@ class PluginController:
 
                 # all plugin series are either on the main graph or the secondary
                 # graph -- currently we don't support per-series configuration
-                graph = self.graph_plugin if config.has_other_graph else self.graph_scope
+                graph = self.graph_plugin if config.has_other_graph else self.ctl.graph
 
                 # determine default x-axis for a series, if none is provided
                 x_from_label = None
                 if config.x_unit is not None:
                     log.debug(f"took default x-axis from label ({config.x_unit})")
-                    x_from_label = self.generate_x_axis(unit=config.x_unit)
-                x_live = self.generate_x_axis()
+                    x_from_label = self.ctl.generate_x_axis(unit=config.x_unit)
+                x_live = self.ctl.generate_x_axis()
 
                 # plot each series to the selected graph; at this point it doesn't
                 # matter if the plot is xy or line
@@ -1192,7 +1115,7 @@ class PluginController:
                         log.debug(f"found undeclared curve {name}...adding. in_legend={series.get('in_legend', True)}")
                         self.plugin_curves[name] = graph.add_curve(
                             name=name, 
-                            pen=self.gui.make_pen(color=series.get("color")), 
+                            pen=self.ctl.gui.make_pen(color=series.get("color")), 
                             in_legend=series.get("in_legend", True)
                         )
 
@@ -1282,7 +1205,7 @@ class PluginController:
 
         for setting, value in response.commands:
             log.debug(f"applying {setting}")
-            self.multispec.change_device_setting(setting, value)
+            self.ctl.multispec.change_device_setting(setting, value)
 
     def apply_signals(self, response):
         if response.signals is None:
@@ -1357,7 +1280,7 @@ class PluginController:
             for curve in self.plugin_curves.keys():
                 log.info(f"attempting to remove curve {curve}")
                 self.plugin_curves[curve].setData([],[])
-                self.graph_scope.remove_curve(self.plugin_curves[curve].name())
+                self.ctl.graph.remove_curve(self.plugin_curves[curve].name())
         except:
             log.error(f"While attempting to clear main graph of plugins encountered error", exc_info=1)
 
@@ -1380,5 +1303,5 @@ class PluginController:
     def get_active_graph(self):
         module_info = self.get_current_module_info()
         if module_info and module_info.config:
-            return self.graph_plugin if module_info.config.has_other_graph else self.graph_scope
-        return self.graph_scope
+            return self.graph_plugin if module_info.config.has_other_graph else self.ctl.graph
+        return self.ctl.graph

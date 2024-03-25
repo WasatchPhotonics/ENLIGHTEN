@@ -36,16 +36,14 @@ class EventResponse(EnlightenPluginBase):
         return EnlightenPluginConfiguration(name            = "Event Response", 
                                             streaming       = True,
                                             fields          = fields)
-    def connect(self, enlighten_info):
-        self.app_info = enlighten_info
-        return super().connect(enlighten_info)
+    def connect(self):
+        return super().connect()
 
     def process_request(self, request):
         return EnlightenPluginResponse(request)
 
     def callback(self):
         self.event_count += 1
-        log.debug(f"clipboard measure is {self.app_info.read_measurements()}")
         response = EnlightenPluginResponse(EnlightenPluginRequest(),
                                            outputs={"callback verify": self.event_count})
         self.events.append(response)

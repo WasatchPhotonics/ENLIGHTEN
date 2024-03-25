@@ -2,6 +2,11 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2024-??-?? 4.0.59
+    - plugins
+        - moved PluginController to ctl
+        - removed enlighten.Plugins.EnlightenApplicationInfoReal,
+                    EnlightenPlugin.EnlightenApplicationInfo 
 - 2024-03-25 4.0.58
     - restore saturation warning on XS
     - enable Marquee.error with "hazard" CSS

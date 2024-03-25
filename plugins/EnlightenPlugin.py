@@ -29,15 +29,12 @@ log = logging.getLogger(__name__)
 #
 # @par Key Attributes
 #
-# - enlighten_info will be passed to connect() (and stored, if you call the 
-#   superclass method)
 # - error_message can be set by the plug-in if they wish a user-visible error 
 #   string or stacktrace to be displayed to the user in a message box (e.g.
 #   following a failure in connect)
 class EnlightenPluginBase:
     
     def __init__(self, ctl):
-        self.enlighten_info = None
         self.error_message = None
 
         # these can be set by functional-plugins to autogenerate EPC
@@ -98,12 +95,16 @@ class EnlightenPluginBase:
     def field(self, **kwargs):
         self._fields.append(EnlightenPluginField(**kwargs))
 
+    def get_plugin_field(self, name):
+        plugin_ctl = self.ctl.plugin_controller
+        for pfw in plugin_ctl.plugin_field_widgets:
+            if name == pfw.field_name:
+                return pwf
+
     def get_widget_from_name(self, name):
-        widget = None
-        for elem in self.enlighten_info.plugin_fields():
-            if elem.field_name == name:
-                widget = elem
-        return widget.field_widget
+        pfw = self.get_plugin_field(name)
+        if pfw:
+            return pfw.field_widget
 
     def plot(self, y, x=None, title=None, color=None):
         """
@@ -122,7 +123,7 @@ class EnlightenPluginBase:
         in_legend = True
 
         if x is None: 
-            unit = self.enlighten_info.get_x_axis_unit()
+            unit = self.ctl.graph.get_x_axis_unit()
             if unit == "nm" and len(y) == len(self.settings.wavelengths):
                 x = self.settings.wavelengths
             elif unit == "cm" and len(y) == len(self.settings.wavenumbers):
@@ -268,10 +269,8 @@ class EnlightenPluginBase:
     # ENLIGHTEN Plug-In Setup GUI.  Neither this method nor stop() will be called
     # when the "[x] Enabled" checkbox is ticked.
     #
-    # @param enlighten_info: EnlightenApplicationInfo
     # @return True if initialization is successful, False otherwise
-    def connect(self, enlighten_info):
-        self.enlighten_info = enlighten_info
+    def connect(self):
         return True
 
     # ENLIGHTEN will call this method when it has a new ProcessedReading for your 

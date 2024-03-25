@@ -371,35 +371,7 @@ class BusinessObjects:
         ctl.factory_strip_charts = FactoryStripChartFeature(ctl)
 
         self.header("instantiating PluginController")
-        ctl.plugin_controller = PluginController(
-            ctl=ctl,
-            colors                      = ctl.colors,
-            config                      = ctl.config,
-            generate_x_axis             = ctl.generate_x_axis,
-            graph_scope                 = ctl.graph,
-            gui                         = ctl.gui,
-            marquee                     = ctl.marquee,
-            measurement_factory         = ctl.measurement_factory,
-            multispec                   = ctl.multispec,
-            parent                      = ctl.form,
-            save_options                = ctl.save_options,
-            kia_feature                 = ctl.kia_feature,
-            measurements_clipboard      = ctl.measurements,
-            horiz_roi                   = ctl.horiz_roi,
-
-            button_process              = cfu.pushButton_plugin_process,
-            cb_connected                = cfu.checkBox_plugin_connected,
-            cb_enabled                  = cfu.checkBox_plugin_enabled,
-            combo_graph_pos             = cfu.comboBox_plugin_graph_pos,
-            combo_module                = cfu.comboBox_plugin_module,
-            frame_control               = cfu.frame_plugin_control,
-            frame_fields                = cfu.frame_plugin_fields,
-            layout_graphs               = cfu.layout_scope_capture_graphs,
-            lb_graph_pos                = cfu.label_plugin_graph_pos,
-            lb_title                    = cfu.label_plugin_title,
-            lb_widget                   = cfu.label_plugin_widget,
-            vlayout_fields              = cfu.verticalLayout_plugin_fields,
-            measurements                = ctl.measurements)
+        ctl.plugin_controller = PluginController(ctl)
 
         self.header("instantiating GridFeature")
         ctl.grid = GridFeature(ctl)

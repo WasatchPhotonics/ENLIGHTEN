@@ -28,8 +28,8 @@ class SegmentSpectrum(EnlightenPluginBase):
                                             graph_type      = 'xy',
                                             series_names    = ["Segment"],
                                             x_axis_label    = "Data Point")
-    def connect(self, enlighten_info):
-        super().connect(enlighten_info)
+    def connect(self):
+        super().connect()
         return True
 
     def button_callback(self):

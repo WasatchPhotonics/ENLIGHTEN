@@ -40,8 +40,8 @@ class ROI(EnlightenPluginBase):
             fields = fields,
             series_names = [ f"Region {x}" for x in range(4) ])
 
-    def connect(self, enlighten_info):
-        super().connect(enlighten_info)
+    def connect(self):
+        super().connect()
         return True
 
     def process_request(self, request):
