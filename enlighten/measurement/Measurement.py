@@ -239,6 +239,7 @@ class Measurement:
                            'FPGA Version',
                            'Prefix',
                            'Suffix',
+                           'Session Count',
                            'Plugin Name']
 
     EXTRA_HEADER_FIELDS_SET = set(EXTRA_HEADER_FIELDS)
@@ -794,11 +795,12 @@ class Measurement:
         if orig in self.metadata:
             return self.metadata[orig]
 
-        # allow plugins to stomp metadata
+        # allow plugins to stomp standard metadata
         if self.processed_reading.plugin_metadata is not None:
             pm = self.processed_reading.plugin_metadata
             for k, v in pm.items():
                 if field == k.lower():
+                    log.debug(f"get_metadata: stomping {k} from plugin metadata {v}")
                     return v
 
         wavecal = self.settings.get_wavecal_coeffs()
@@ -852,6 +854,7 @@ class Measurement:
         if field == "note":                      return self.note
         if field == "prefix":                    return self.prefix
         if field == "suffix":                    return self.suffix
+        if field == "session count":             return self.processed_reading.reading.session_count
         if field == "plugin name":               return self.plugin_name
 
         if field == "laser power mw":
@@ -889,8 +892,7 @@ class Measurement:
 
         if self.processed_reading.plugin_metadata is not None:
             for k, v in self.processed_reading.plugin_metadata.items():
-                if k not in md:
-                    md[k] = v
+                md[k] = v
 
         return md
 
@@ -1010,14 +1012,15 @@ class Measurement:
         write_pair.row = 1
 
         write_pair("", "ENLIGHTEN Summary Report")
+        md = self.get_all_metadata()
 
         fields = self.get_extra_header_fields()
         fields.extend(Measurement.CSV_HEADER_FIELDS)
         for field in fields:
             if field == "Timestamp":
                 write_pair(field, self.timestamp.strftime("%Y-%m-%d %H:%M:%S.%f"), style=style_datetime)
-            elif field not in Measurement.ROW_ONLY_FIELDS:
-                value = self.get_metadata(field)
+            elif field not in Measurement.ROW_ONLY_FIELDS and field in md:
+                value = md[field]
                 write_pair(field, value)
 
         if self.processed_reading.plugin_metadata is not None:
@@ -1288,26 +1291,28 @@ class Measurement:
             out = csv.writer(f, delimiter=delim)
 
             if include_metadata:
+                md = self.get_all_metadata()
+
                 # output additional (name, value) metadata pairs at the top,
                 # not included in row-ordered CSV
                 outputted = set()
                 for field in self.get_extra_header_fields():
-                    value = self.get_metadata(field)
-                    out.writerow([field, value])
-                    outputted.add(field)
+                    if field in md:
+                        out.writerow([field, md[field]])
+                        outputted.add(field)
 
                 # output (name, value) metadata pairs at the top,
                 # using the same names and order as our row-ordered CSV
                 for field in Measurement.CSV_HEADER_FIELDS:
-                    if field not in Measurement.ROW_ONLY_FIELDS:
-                        value = self.get_metadata(field)
-                        out.writerow([field, value])
+                    if field not in Measurement.ROW_ONLY_FIELDS and field in md:
+                        out.writerow([field, md[field]])
                         outputted.add(field)
 
                 if self.processed_reading.plugin_metadata is not None:
-                    for k, v in self.processed_reading.plugin_metadata.items():
-                        if k not in outputted:
-                            out.writerow([k, v])
+                    for field in self.processed_reading.plugin_metadata.keys():
+                        if field not in outputted:
+                            out.writerow([field, md[field]])
+                            outputted.add(field)
 
                 out.writerow([])
 

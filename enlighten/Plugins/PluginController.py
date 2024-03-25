@@ -1263,6 +1263,7 @@ class PluginController:
         if orig_pr is None:
             return
 
+        # log.debug("apply_overrides: copying response.metadata to orig_pr.plugin_metadata: {response.metadata}")
         orig_pr.plugin_metadata = response.metadata
         if response.overrides is None:
             return
