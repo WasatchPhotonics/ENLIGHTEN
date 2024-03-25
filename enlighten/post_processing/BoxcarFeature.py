@@ -60,20 +60,21 @@ class BoxcarFeature:
         else:
             self.spinbox.setToolTip("smoothing disabled (half-width)")
 
+        # @todo should we call spec.app_state.check_refs() here?
 
     def up_callback(self):
         incr_spinbox(self.spinbox)
 
         spec = self.ctl.multispec.current_spectrometer()
         if spec:
-            spec.check_refs()
+            spec.app_state.check_refs()
 
     def dn_callback(self):
         decr_spinbox(self.spinbox)
 
         spec = self.ctl.multispec.current_spectrometer()
         if spec:
-            spec.check_refs()
+            spec.app_state.check_refs()
 
     def process(self, pr, spec=None):
         """

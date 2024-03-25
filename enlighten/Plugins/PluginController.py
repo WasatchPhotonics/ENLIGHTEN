@@ -246,6 +246,8 @@ class PluginController:
         self.timer.setSingleShot(True)
         self.timer.timeout.connect(self.tick)
 
+        self.ctl.page_nav.register_observer("mode", self.update_field_visibility)
+
     def start(self, ms):
         """
         The PluginController doesn't normally have an internal event loop (it's 
@@ -770,14 +772,17 @@ class PluginController:
                     else:
                         self.plugin_fields_layout.addLayout(pfw.get_display_element())
 
-            self.frame_fields.setVisible(len(self.plugin_field_widgets) > 0)
+            # configure initial visibility
+            self.update_field_visibility()
 
             if self.panda_field:
+                # pandas ignores Expert visibility
                 log.debug("creating output table")
                 self.create_output_table()
 
             # configure graph series
             if config.series_names is not None and len(config.series_names) > 0:
+                # there are no Expert graphs or series
                 if not config.has_other_graph:
 
                     # note that these are all treated as lines 
@@ -807,6 +812,13 @@ class PluginController:
     def get_plugin_fields(self):
         """Used by the plugin to programmatically change fields"""
         return self.plugin_field_widgets
+
+    def update_field_visibility(self):
+        visible_count = 0
+        for pfw in self.plugin_field_widgets:
+            if pfw.update_visibility():
+                visible_count += 1
+        self.frame_fields.setVisible(visible_count > 0)
 
     ##
     # Make it easy for plug-in authors to see exceptions when debugging their class.

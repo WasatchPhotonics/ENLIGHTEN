@@ -2,7 +2,10 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
-- 2024-??-?? 4.0.56
+- 2024-??-?? 4.0.57
+    - fix check_refs in BoxcarFeature
+    - support Expert mode in plugin fields
+- 2024-03-23 4.0.56
     - updated ColumnFileParser with wasatch.CSVLoader updates
     - changing Preset auto-clears Dark and Reference
     - fixed GUI.msgbox_with_checkbox

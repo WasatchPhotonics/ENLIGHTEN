@@ -511,6 +511,7 @@ class EnlightenPluginField:
     # @param callback: function reference if button clicked (button only)
     # @param tooltip: mouseover string
     # @param stylesheet: optional stylesheet name
+    # @param expert: only display in Expert mode
     def __init__(self, 
             name, 
             datatype    = "string", 
@@ -523,6 +524,7 @@ class EnlightenPluginField:
             choices     = None,
             callback    = None,
             stylesheet  = None,
+            expert      = False,
             tooltip     = None):
 
         self.name       = name
@@ -537,6 +539,7 @@ class EnlightenPluginField:
         self.tooltip    = tooltip
         self.stylesheet = stylesheet
         self.choices    = choices
+        self.expert     = expert
 
 ##
 # This is a "request" object sent by the ENLIGHTEN GUI to the plug-in, containing
