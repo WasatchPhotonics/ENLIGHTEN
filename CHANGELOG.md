@@ -26,7 +26,7 @@
     - SRM works properly in Presets
 - 2024-03-22 4.0.55
     - added msgbox_with_lineedit
-    - hopefully didn't break dialog response processing
+    - hopefully didn't break dialog response processing (narrator: it did)
     - R&D
         - skip ambient on ARM 1.0.2.9
         - ignore None responses in WasatchDevice funcs
