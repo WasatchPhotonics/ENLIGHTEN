@@ -222,11 +222,12 @@ class Configuration:
         try:
             with open(self.pathname, "w", encoding="utf-8") as outfile:
                 for section in sorted(self.config.sections()):
-                    outfile.write(f"[{section}]\n")
-                    for key in sorted(self.config.options(section)):
-                        value = self.config.get(section, key, raw=True)
-                        outfile.write(f"{key} = {value}\n")
-                    outfile.write("\n")
+                    if len(section) > 0 and ']' not in section:
+                        outfile.write(f"[{section}]\n")
+                        for key in sorted(self.config.options(section)):
+                            value = self.config.get(section, key, raw=True)
+                            outfile.write(f"{key} = {value}\n")
+                        outfile.write("\n")
             log.info("saved %s", self.pathname)
         except:
             log.critical(f"failed to save {self.pathname}")

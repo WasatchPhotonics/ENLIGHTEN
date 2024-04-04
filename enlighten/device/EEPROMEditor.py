@@ -629,38 +629,41 @@ class EEPROMEditor:
             else:
                 log.debug("update_from_spec: checkbox bool %s is None", name)
 
-        log.debug("update_from_spec: doublespinboxes")
-        for name in self.doubleSpinBoxes:
-            value = getattr(self.eeprom, name)
-            if value is not None:
-                log.debug("update_from_spec: %s -> %s", name, value)
-                widget = self.doubleSpinBoxes[name]
-                widget.setValue(float(value))
-            else:
-                log.debug("update_from_spec: doublespinbox float %s is None", name)
-
-        log.debug("update_from_spec: spinboxes")
-        for name in self.spinBoxes:
-            if not isinstance(self.spinBoxes[name], dict):
-                # this is an int scalar
+        try:
+            log.debug("update_from_spec: doublespinboxes")
+            for name in self.doubleSpinBoxes:
                 value = getattr(self.eeprom, name)
                 if value is not None:
-                    widget = self.spinBoxes[name]
-                    widget.setValue(int(value))
+                    log.debug("update_from_spec: %s -> %s", name, value)
+                    widget = self.doubleSpinBoxes[name]
+                    widget.setValue(float(value))
                 else:
-                    log.debug("update_from_spec: spinbox int scalar %s is None", name)
-            else:
-                # this is an array of ints like "bad_pixels"...which is variable-sized, unlike the coeffs :-/
-                for index in self.spinBoxes[name]:
-                    array = getattr(self.eeprom, name)
-                    if index < len(array):
-                        value = array[index]
-                        if value is not None:
-                            widget = self.spinBoxes[name][index]
-                            widget.setValue(int(value))
-                        else:
-                            log.debug("update_from_spec: spinbox int array %s %d is None", name, index)
-                
+                    log.debug("update_from_spec: doublespinbox float %s is None", name)
+
+            log.debug("update_from_spec: spinboxes")
+            for name in self.spinBoxes:
+                if not isinstance(self.spinBoxes[name], dict):
+                    # this is an int scalar
+                    value = getattr(self.eeprom, name)
+                    if value is not None:
+                        widget = self.spinBoxes[name]
+                        widget.setValue(int(value))
+                    else:
+                        log.debug("update_from_spec: spinbox int scalar %s is None", name)
+                else:
+                    # this is an array of ints like "bad_pixels"...which is variable-sized, unlike the coeffs :-/
+                    for index in self.spinBoxes[name]:
+                        array = getattr(self.eeprom, name)
+                        if index < len(array):
+                            value = array[index]
+                            if value is not None:
+                                widget = self.spinBoxes[name][index]
+                                widget.setValue(int(value))
+                            else:
+                                log.debug("update_from_spec: spinbox int array %s %d is None", name, index)
+        except:
+            log.error("exception populating EEPROM numeric fields", exc_info=1)            
+
         log.debug("update_from_spec: lineEdits")
         for name in self.lineEdits:
             if not isinstance(self.lineEdits[name], dict):

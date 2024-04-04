@@ -2047,6 +2047,10 @@ class Controller:
         cfu = self.form.ui
         spec = self.current_spectrometer()
 
+        if not spec.settings.eeprom.is_valid_serial_number():
+            log.error(f"invalid serial number: {spec.settings.eeprom.serial_number}")
+            return
+
         # avoid corrupted data on unprogrammed EEPROMs
         sn = "UNKNOWN"
         if spec.settings.eeprom.serial_number is not None:

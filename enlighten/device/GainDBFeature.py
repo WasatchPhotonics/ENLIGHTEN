@@ -96,6 +96,8 @@ class GainDBFeature:
     def init_hotplug(self):
         """ called by initialize_new_device on hotplug, BEFORE reading / applying .ini """
         spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
 
         # on hotplug, initialize GainDB widget from EEPROM value
         spec.settings.state.gain_db = spec.settings.eeprom.detector_gain

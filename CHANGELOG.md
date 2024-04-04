@@ -3,6 +3,8 @@
 ## 4.0 GUI and Plugin Refactoring
 
 - 2024-??-?? 4.0.59
+    - fixed bug when exporting only displayed traces
+    - more-robust handling of corrupt EEPROMs
     - plugins
         - moved PluginController to ctl
         - persist last-selected plugin
