@@ -5,7 +5,7 @@
 - 2024-04-05 4.0.59
     - fixed bug when exporting only displayed traces
     - more-robust handling of corrupt EEPROMs
-    - master ubuntu_launcher.sh within scripts
+    - master enlighten_ubuntu_launcher.sh within scripts
     - plugins
         - moved PluginController to ctl
         - persist last-selected plugin

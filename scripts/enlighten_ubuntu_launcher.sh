@@ -8,9 +8,9 @@
 # 
 # Invocation: 
 # 
-# $ wget https://wasatchphotonics.com/binaries/apps/enlighten/beta/ubuntu_launcher.sh
-# $ chmod +x ubuntu_launcher.sh
-# $ sudo ./ubuntu_launcher.sh
+# $ wget https://wasatchphotonics.com/binaries/apps/enlighten/enlighten_ubuntu_launcher.sh
+# $ chmod +x enlighten_ubuntu_launcher.sh
+# $ sudo ./enlighten_ubuntu_launcher.sh
 #
 # Description: 
 #
@@ -23,7 +23,6 @@
 #
 # This installer was written for Enlighten 4.0.12 (via the branch ubu-py37).
 # It has been tested to various degrees on Ubuntu 18, Ubuntu 20 and Ubuntu 22.
-#
 #
 # The ubu-py37 is to be considered a downstream distribution branch
 # containing a tag + patches required to run on Ubuntu.

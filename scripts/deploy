@@ -173,6 +173,8 @@ else
     echo "skipping Linux"
 fi
 
+scp scripts/enlighten_ubuntu_launcher.sh $USERNAME@wasatchphotonics.com:www/binaries/apps/enlighten
+
 ################################################################################
 # capture build artifacts
 ################################################################################
