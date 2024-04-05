@@ -46,6 +46,9 @@ class Marquee:
 
         self.height = Marquee.ORIG_HEIGHT
 
+        # just store whatever the current theme sets
+        self.default_css = self.inner.styleSheet()
+
         self.hide()
 
         cfu.pushButton_marquee_close.clicked.connect(self.close_callback)
@@ -136,7 +139,7 @@ class Marquee:
     # to False.  I tried it but didn't really like it.  Too alarming.
     #
     # @public
-    def error(self, msg, persist=False, token=None, benign=None, immediate=False, extra_ms=0):
+    def error(self, msg, persist=False, token=None, benign=False, immediate=False, extra_ms=0):
         if msg is None:
             return
 
@@ -194,7 +197,10 @@ class Marquee:
         self.clear_timer.stop()
 
         # we're not currently using this, and it messes with themes at the moment
-        # self.ctl.stylesheets.set_benign(self.inner, benign)
+        if benign is not None:
+            self.ctl.stylesheets.set_benign(self.inner, benign)
+        else:
+            self.ctl.stylesheets.apply(self.inner, self.default_css, raw=True)
 
         self.schedule_clear()
         self.ctl.app.processEvents()

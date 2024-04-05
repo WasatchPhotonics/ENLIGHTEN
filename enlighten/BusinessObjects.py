@@ -328,24 +328,7 @@ class BusinessObjects:
         ctl.edc = ElectricalDarkCorrectionFeature(ctl)
 
         self.header("instantiating ReferenceFeature")
-        ctl.reference_feature = ReferenceFeature(
-            graph                       = ctl.graph,
-            gui                         = ctl.gui,
-            marquee                     = ctl.marquee,
-            measurement_factory         = ctl.measurement_factory,
-            multispec                   = ctl.multispec,
-            page_nav                    = ctl.page_nav,
-            save_options                = ctl.save_options,
-            set_curve_data              = ctl.set_curve_data,
-                                        
-            button_clear                = cfu.pushButton_reference_clear,
-            button_load                 = cfu.pushButton_reference_load,
-            button_store                = cfu.pushButton_reference_store,
-            button_toggle               = cfu.pushButton_scope_toggle_reference,
-            frame_setup                 = cfu.frame_scopeSetup_spectra_reference_white,
-            lb_timestamp                = cfu.label_reference_timestamp,
-            stacked_widget              = cfu.stackedWidget_scope_setup_reference_spectrum,
-            gui_make_pen                = ctl.gui.make_pen)
+        ctl.reference_feature = ReferenceFeature(ctl)
 
         self.header("instantiating RamanIntensityCorrection")
         ctl.raman_intensity_correction = RamanIntensityCorrection(ctl)
@@ -376,46 +359,7 @@ class BusinessObjects:
 
         # TODO: refactor like PluginController
         self.header("instantiating KIAFeature")
-        ctl.kia_feature = KIAFeature(
-            ctl                         = ctl,
-
-            baseline_correction         = ctl.baseline_correction,
-            bt_alias                    = cfu.pushButton_id_results_make_alias,
-            bt_benign                   = cfu.pushButton_id_results_flag_benign,
-            bt_clear                    = cfu.pushButton_id_results_clear,
-            bt_hazard                   = cfu.pushButton_id_results_flag_hazard,
-            bt_id                       = cfu.pushButton_scope_id,
-            bt_reset                    = cfu.pushButton_id_results_reset,
-            bt_suppress                 = cfu.pushButton_id_results_suppress,
-            cb_all                      = cfu.checkBox_kia_display_all_results,
-            cb_enabled                  = cfu.checkBox_kia_enabled,
-            cb_hazard                   = cfu.checkBox_kia_alarm_low_scoring_hazards,
-            colors                      = ctl.colors,
-            page_nav                    = ctl.page_nav,
-            file_manager                = ctl.file_manager,
-            frame_results               = cfu.frame_id_results_white,
-            frame_side                  = cfu.frame_kia_outer,
-            generate_x_axis             = ctl.generate_x_axis,
-            get_last_processed_reading  = ctl.get_last_processed_reading,
-            guide                       = ctl.guide,
-            lb_logo                     = cfu.label_kia_logo,
-            lb_name                     = cfu.label_kia_compound_name,
-            lb_path                     = cfu.label_kia_install_path,
-            lb_processing               = cfu.label_kia_processing,
-            lb_score                    = cfu.label_kia_score,
-            logging_feature             = ctl.logging_feature,
-            marquee                     = ctl.marquee,
-            measurements                = ctl.measurements,
-            multispec                   = ctl.multispec,
-            raman_intensity_correction  = ctl.raman_intensity_correction,
-            sb_score_min                = cfu.spinBox_kia_score_min,
-            sb_max_results              = cfu.spinBox_kia_max_results,
-            sounds                      = ctl.sounds,
-            stylesheets                 = ctl.stylesheets,
-            table_recent                = cfu.tableWidget_id_match_recent,
-            table_results               = cfu.tableWidget_id_match_results,
-            vcr_controls                = ctl.vcr_controls,
-            horiz_roi                   = ctl.horiz_roi)
+        ctl.kia_feature = KIAFeature(ctl)
 
         self.header("instantiating RichardsonLucy")
         ctl.richardson_lucy = RichardsonLucy(ctl)
@@ -427,44 +371,10 @@ class BusinessObjects:
         ctl.factory_strip_charts = FactoryStripChartFeature(ctl)
 
         self.header("instantiating PluginController")
-        ctl.plugin_controller = PluginController(
-            ctl=ctl,
-            colors                      = ctl.colors,
-            config                      = ctl.config,
-            generate_x_axis             = ctl.generate_x_axis,
-            graph_scope                 = ctl.graph,
-            gui                         = ctl.gui,
-            marquee                     = ctl.marquee,
-            measurement_factory         = ctl.measurement_factory,
-            multispec                   = ctl.multispec,
-            parent                      = ctl.form,
-            save_options                = ctl.save_options,
-            kia_feature                 = ctl.kia_feature,
-            measurements_clipboard      = ctl.measurements,
-            horiz_roi                   = ctl.horiz_roi,
-
-            button_process              = cfu.pushButton_plugin_process,
-            cb_connected                = cfu.checkBox_plugin_connected,
-            cb_enabled                  = cfu.checkBox_plugin_enabled,
-            combo_graph_pos             = cfu.comboBox_plugin_graph_pos,
-            combo_module                = cfu.comboBox_plugin_module,
-            frame_control               = cfu.frame_plugin_control,
-            frame_fields                = cfu.frame_plugin_fields,
-            layout_graphs               = cfu.layout_scope_capture_graphs,
-            lb_graph_pos                = cfu.label_plugin_graph_pos,
-            lb_title                    = cfu.label_plugin_title,
-            lb_widget                   = cfu.label_plugin_widget,
-            vlayout_fields              = cfu.verticalLayout_plugin_fields,
-            measurements                = ctl.measurements)
+        ctl.plugin_controller = PluginController(ctl)
 
         self.header("instantiating GridFeature")
-        ctl.grid = GridFeature(
-            button                      = cfu.pushButton_graphGrid,
-            gui                         = ctl.gui,
-            stylesheets                 = ctl.stylesheets,
-            plots                       = { "scope graph" : [ctl.graph, "plot"],
-                                            "plugin graph": [ctl.plugin_controller, "graph_plugin", "plot"] })
-        ctl.plugin_controller.grid = ctl.grid
+        ctl.grid = GridFeature(ctl)
 
         self.header("instantiating AreaScanFeature")
         ctl.area_scan = AreaScanFeature(

@@ -1,5 +1,6 @@
 import datetime
 import logging
+import numpy as np
 
 import pyqtgraph
 
@@ -70,6 +71,7 @@ class DarkFeature:
                 Darks are cheap, signal is priceless!"""))
 
         self.ctl.laser_control.register_observer("enabled", self.laser_control_enabled)
+        ctl.presets.register(self, "dark", setter=self.preset_changed, getter=None)
 
         self.observers = set()
 
@@ -159,9 +161,7 @@ class DarkFeature:
             return
 
         if spec.app_state.has_dark():
-            x_axis = self.ctl.generate_x_axis(spec=spec)
-            self.ctl.set_curve_data(self.curve, x=x_axis, y=spec.app_state.dark, label="display_dark")
-
+            self.ctl.set_curve_data(self.curve, y=spec.app_state.dark, label="display_dark")
             lb.setText(spec.app_state.dark_timestamp.strftime("%Y-%m-%d %H:%M:%S"))
             self.curve.active = True
         else:
@@ -193,6 +193,9 @@ class DarkFeature:
             self.ctl.guide.clear(token="take_dark")
         else:
             self.ctl.guide.suggest("Raman signal is improved if you take a dark measurement before firing the laser", token="take_dark")
+
+    def preset_changed(self, ignore):
+        self.clear()
 
     # ##########################################################################
     # private methods

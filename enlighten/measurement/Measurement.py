@@ -232,12 +232,14 @@ class Measurement:
                            'Region',
                            'High Gain Mode',
                            'Laser Power mW',
+                           'Electrical Dark Correction',
                            'Battery %',
                            'Device ID',
                            'FW Version',
                            'FPGA Version',
                            'Prefix',
                            'Suffix',
+                           'Session Count',
                            'Plugin Name']
 
     EXTRA_HEADER_FIELDS_SET = set(EXTRA_HEADER_FIELDS)
@@ -793,11 +795,12 @@ class Measurement:
         if orig in self.metadata:
             return self.metadata[orig]
 
-        # allow plugins to stomp metadata
+        # allow plugins to stomp standard metadata
         if self.processed_reading.plugin_metadata is not None:
             pm = self.processed_reading.plugin_metadata
             for k, v in pm.items():
                 if field == k.lower():
+                    log.debug(f"get_metadata: stomping {k} from plugin metadata {v}")
                     return v
 
         wavecal = self.settings.get_wavecal_coeffs()
@@ -842,6 +845,7 @@ class Measurement:
         if field == "region":                    return self.settings.state.region
         if field == "slit width":                return self.settings.eeprom.slit_size_um
         if field == "wavenumber correction":     return self.settings.state.wavenumber_correction
+        if field == "electrical dark correction":return self.ctl.edc.enabled
         if field == "battery %":                 return self.processed_reading.reading.battery_percentage if self.processed_reading.reading is not None else 0
         if field == "fw version":                return self.settings.microcontroller_firmware_version
         if field == "fpga version":              return self.settings.fpga_firmware_version
@@ -850,12 +854,13 @@ class Measurement:
         if field == "note":                      return self.note
         if field == "prefix":                    return self.prefix
         if field == "suffix":                    return self.suffix
+        if field == "session count":             return self.processed_reading.reading.session_count
         if field == "plugin name":               return self.plugin_name
 
         if field == "laser power mw":
-            if self.processed_reading.reading is not None and \
-                self.processed_reading.reading.laser_power_mW is not None and \
-                self.processed_reading.reading.laser_power_mW > 0:
+            if (self.processed_reading.reading is not None and 
+                    self.processed_reading.reading.laser_power_mW is not None and 
+                    self.processed_reading.reading.laser_power_mW > 0):
                 return self.processed_reading.reading.laser_power_mW
             else:
                 return ""
@@ -887,8 +892,7 @@ class Measurement:
 
         if self.processed_reading.plugin_metadata is not None:
             for k, v in self.processed_reading.plugin_metadata.items():
-                if k not in md:
-                    md[k] = v
+                md[k] = v
 
         return md
 
@@ -1008,14 +1012,15 @@ class Measurement:
         write_pair.row = 1
 
         write_pair("", "ENLIGHTEN Summary Report")
+        md = self.get_all_metadata()
 
         fields = self.get_extra_header_fields()
         fields.extend(Measurement.CSV_HEADER_FIELDS)
         for field in fields:
             if field == "Timestamp":
                 write_pair(field, self.timestamp.strftime("%Y-%m-%d %H:%M:%S.%f"), style=style_datetime)
-            elif field not in Measurement.ROW_ONLY_FIELDS:
-                value = self.get_metadata(field)
+            elif field not in Measurement.ROW_ONLY_FIELDS and field in md:
+                value = md[field]
                 write_pair(field, value)
 
         if self.processed_reading.plugin_metadata is not None:
@@ -1251,26 +1256,16 @@ class Measurement:
             # raw, dark and reference.
             if self.ctl.horiz_roi.enabled:
                 # We're setting stage to "orig" to indicate we don't want to load
-                # the "cropped" versions -- we want the original full-detector
-                # spectrum components. 
-                # 
-                # We will essentially "re-crop" the processed spectrum below, in
-                # formatted(). Even to me, this seems wasteful and error-prone. 
-                # It's also bad practice because it means we aren't literally
-                # saving what was displayed on-screen (although it should result
-                # in the same data). 
-                #
-                # Nevertheless, this seems the most direct and logical way
-                # to ensure we can output multiple components of differing 
-                # lengths (I want raw to be full-length) against a rock-solid 
-                # full-detector pixel axis.
+                # the "cropped" component versions -- we want the original full-
+                # detector spectrum components. (We'll still use the cropped/final
+                # processed spectrum.)
                 stage = "orig"
                 if self.settings and self.settings.eeprom:
                     roi = self.settings.eeprom.get_horizontal_roi()
 
         wavelengths = pr.get_wavelengths(stage)
         wavenumbers = pr.get_wavenumbers(stage)
-        processed = pr.get_processed(stage)
+        processed = pr.get_processed() # no stage
         raw = pr.get_raw(stage)
         dark = pr.get_dark(stage)
         reference = pr.get_reference(stage)
@@ -1282,7 +1277,7 @@ class Measurement:
         else:
             pixels = len(processed)
 
-        if False:
+        if True:
             log.debug(f"save_csv_file_by_column: stage {stage}, pixels {pixels}, " +
                       f"wavelengths {None if wavelengths is None else len(wavelengths)}, " +
                       f"wavenumbers {None if wavenumbers is None else len(wavenumbers)}, " +
@@ -1296,26 +1291,28 @@ class Measurement:
             out = csv.writer(f, delimiter=delim)
 
             if include_metadata:
+                md = self.get_all_metadata()
+
                 # output additional (name, value) metadata pairs at the top,
                 # not included in row-ordered CSV
                 outputted = set()
                 for field in self.get_extra_header_fields():
-                    value = self.get_metadata(field)
-                    out.writerow([field, value])
-                    outputted.add(field)
+                    if field in md:
+                        out.writerow([field, md[field]])
+                        outputted.add(field)
 
                 # output (name, value) metadata pairs at the top,
                 # using the same names and order as our row-ordered CSV
                 for field in Measurement.CSV_HEADER_FIELDS:
-                    if field not in Measurement.ROW_ONLY_FIELDS:
-                        value = self.get_metadata(field)
-                        out.writerow([field, value])
+                    if field not in Measurement.ROW_ONLY_FIELDS and field in md:
+                        out.writerow([field, md[field]])
                         outputted.add(field)
 
                 if self.processed_reading.plugin_metadata is not None:
-                    for k, v in self.processed_reading.plugin_metadata.items():
-                        if k not in outputted:
-                            out.writerow([k, v])
+                    for field in self.processed_reading.plugin_metadata.keys():
+                        if field not in outputted:
+                            out.writerow([field, md[field]])
+                            outputted.add(field)
 
                 out.writerow([])
 
@@ -1337,8 +1334,10 @@ class Measurement:
                 if roi and obey_roi:
                     if pixel < roi.start or pixel > roi.end:
                         return "NA"
+                    else:
+                        pixel -= roi.start
 
-                if pixel >= len(array):
+                if pixel < 0 or pixel >= len(array):
                     return "na"
 
                 value = array[pixel]
@@ -1650,12 +1649,12 @@ class Measurement:
 
         pr = self.processed_reading
 
-        if self.settings.wavelengths is not None and len(self.settings.wavelengths) and \
-            new_settings.wavelengths is not None and len( new_settings.wavelengths):
+        if (self.settings.wavelengths is not None and len(self.settings.wavelengths) and 
+             new_settings.wavelengths is not None and len( new_settings.wavelengths)):
            old_x = self.settings.wavelengths
            new_x =  new_settings.wavelengths
-        elif self.settings.wavenumbers is not None and len(self.settings.wavenumbers) and \
-              new_settings.wavenumbers is not None and len( new_settings.wavenumbers):
+        elif (self.settings.wavenumbers is not None and len(self.settings.wavenumbers) and
+               new_settings.wavenumbers is not None and len( new_settings.wavenumbers)):
            old_x = self.settings.wavenumbers
            new_x =  new_settings.wavenumbers
         else:
@@ -1663,7 +1662,7 @@ class Measurement:
             return
 
         log.debug("interpolating from (%.2f, %.2f) to (%.2f, %.2f)",
-            old_x[0], old_x[-1], new_x[0], new_x[-1]);
+            old_x[0], old_x[-1], new_x[0], new_x[-1])
 
         if pr.raw is not None and len(pr.raw) > 0:
             pr.raw = np.interp(new_x, old_x, pr.raw)

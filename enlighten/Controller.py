@@ -11,21 +11,23 @@ import os
 
 from collections import defaultdict
 
-# these aren't actually used...solves an import issue for MacOS I think
 if "macOS" in platform.platform():
+    # solves an import issue for MacOS
     import matplotlib
     import matplotlib.pyplot as plt
+    assert matplotlib
+    assert plt
 
 import wasatch
 from wasatch import applog
 
-from wasatch.WasatchDeviceWrapper     import WasatchDeviceWrapper
-from wasatch.SpectrometerResponse     import ErrorLevel
-from wasatch.ProcessedReading         import ProcessedReading
-from wasatch.DeviceFinderUSB          import DeviceFinderUSB
-from wasatch.StatusMessage            import StatusMessage
-from wasatch.WasatchBus               import WasatchBus
-from wasatch.Reading                  import Reading
+from wasatch.WasatchDeviceWrapper import WasatchDeviceWrapper
+from wasatch.SpectrometerResponse import ErrorLevel
+from wasatch.ProcessedReading import ProcessedReading
+from wasatch.DeviceFinderUSB import DeviceFinderUSB
+from wasatch.StatusMessage import StatusMessage
+from wasatch.WasatchBus import WasatchBus
+from wasatch.Reading import Reading
 
 from enlighten import util
 from enlighten import common
@@ -766,7 +768,7 @@ class Controller:
             log.debug("initialize_new_device: re-selecting already-connected device")
             hotplug = False
             if self.multispec.is_in_reset(device_id):
-                log.debug(f"reading reset device")
+                log.debug("reading reset device")
                 self.multispec.read_spec_object(device_id)
         else:
             log.debug("initialize_new_device: initializing newly-connected device")
@@ -856,6 +858,7 @@ class Controller:
         # integration time and gain
         ########################################################################
 
+        # MZ: I don't remember why these are being handled differently
         log.debug("configure integration time limits")
         self.integration_time_feature.reset(hotplug)
         self.gain_db_feature.reset()
@@ -1363,17 +1366,17 @@ class Controller:
                 return
 
             if self.external_trigger.is_enabled():
-                log.debug("attempt_reading(%s): ignoring timeout while externally triggered");
+                log.debug("attempt_reading(%s): ignoring timeout while externally triggered")
                 return
 
             if spec.settings.state.area_scan_enabled:
-                log.debug("attempt_reading(%s): ignoring timeout in area scan");
+                log.debug("attempt_reading(%s): ignoring timeout in area scan")
                 return
 
             now = datetime.datetime.now()
             if spec.settings.state.ignore_timeouts_until is not None and \
                     spec.settings.state.ignore_timeouts_until > now:
-                log.debug("attempt_reading(%s): temporarily ignoring timeouts");
+                log.debug("attempt_reading(%s): temporarily ignoring timeouts")
                 return
             spec.settings.state.ignore_timeouts_until = None
 
@@ -1557,7 +1560,7 @@ class Controller:
             if spectrometer_response.poison_pill:
                 # the user hasn't [yet] decided to disconnect, but we can't really "do anything" with data that's
                 # coming from a spectrometer throwing poison-pills, so for now treat it as a keepalive
-                log.debug(f"received poison-pill from spectrometer, but the user has not [yet] opted to disconnect")
+                log.debug("received poison-pill from spectrometer, but the user has not [yet] opted to disconnect")
                 return 
 
             if spectrometer_response.keep_alive:
@@ -1710,7 +1713,7 @@ class Controller:
           - snap usable dark
         - Subtract Dark
         - Correction for detector non-linearity* (when enabled)
-        - Correct for stray light*  (when enabled)
+        - Correct for stray light*  (when enabled)
         - Correct for intensity* (when enabled, per your suggested OoO)
         - Apply Boxcar Smoothing
         - Baseline removal / fluorescence removal, etc
@@ -1787,11 +1790,8 @@ class Controller:
         # processed at this point, but "raw" is preferred to clarify saturation 
         # is irrespective of dark correction or any post-processing.
         if pr.raw.max() >= 0xfffe: 
-            # IMX detectors briefly saturate on every change of integration 
-            # time...perhaps we should take a couple throwaways in Wasatch.PY?
-            if not spec.settings.is_xs():
-                # todo: self.status_indicators.detector_warning("detector saturated")
-                self.marquee.error("detector saturated")
+            # todo: self.status_indicators.detector_warning("detector saturated")
+            self.marquee.error("detector saturated")
 
         ########################################################################
         # Dark Correction
@@ -1975,7 +1975,7 @@ class Controller:
         if selected:
             self.status_bar.process_reading(pr)
 
-    def set_curve_data(self, curve, y, x=None, label=None) -> bool:
+    def set_curve_data(self, curve, y, x=None, label=None):
         """
         Lightweight wrapper over pyqtgraph.PlotCurveItem.setData.
         
@@ -1987,20 +1987,20 @@ class Controller:
         @returns True if graph was updated
         """
         if curve is None:
-            log.error("set_curve_data[%s]: no curve", label)
+            log.error(f"set_curve_data[{label}]: no curve")
             return False
 
         if y is None:
-            log.error("set_curve_data[%s]: no y", label)
+            log.error(f"set_curve_data[{label}]: no y")
             return False
 
         if x is None or x == []:
-            log.debug("set_curve_data[%s]: no x (y_len = %d, y=%s, curve = %s)", label, len(y), y[:5], str(curve))
+            log.debug(f"set_curve_data[{label}]: no x (y_len {len(y)}, y {y[:5]}, curve {curve})")
             self.graph.set_data(curve=curve, y=y)
             return True
 
         if len(x) != len(y):
-            log.debug("%s: ignoring attempt to plot %d y-values against %d x-values", label, len(y), len(x))
+            log.debug(f"set_curve_data[{label}]: ignoring attempt to plot {len(y)} y-values against {len(x)} x-values")
             return False
 
         if len(x) >= 3 and x[0] > x[1] and x[1] < x[2]:
@@ -2013,7 +2013,7 @@ class Controller:
             x = tmp
 
         log.debug(f"set_curve_data[{label}]: passing to Graph")
-        self.graph.set_data(curve=curve, y=y, x=x)
+        self.graph.set_data(curve=curve, y=y, x=x, label=label)
         return True
 
     # ##########################################################################
@@ -2046,6 +2046,10 @@ class Controller:
         """
         cfu = self.form.ui
         spec = self.current_spectrometer()
+
+        if not spec.settings.eeprom.is_valid_serial_number():
+            log.error(f"invalid serial number: {spec.settings.eeprom.serial_number}")
+            return
 
         # avoid corrupted data on unprogrammed EEPROMs
         sn = "UNKNOWN"
@@ -2245,7 +2249,7 @@ class Controller:
                 settings = spec.settings
 
         if settings is None:
-            log.error(f"settings was None even after getting current spec, not generating x-axis")
+            log.error("settings was None even after getting current spec, not generating x-axis")
             return
 
         log.debug(f"generate_x_axis: spec {spec}, settings {settings}, unit {unit}, cropped {cropped}")
@@ -2313,11 +2317,11 @@ class Controller:
 
         log.info(f"displaying MessageBox with the received error and options (Okay, Disconnect, Log): {response_error}")
         dlg_title = "Spectrometer Error"
-        dlg_msg = ("ENLIGHTEN has encountered an error with the spectrometer. " \
-                  + "The exception is shown below.  Click 'View Log' to " \
-                  + "automatically open the logfile in Notepad, 'Disconnect' to " \
-                  + "retry or 'Okay' to dismiss this dialog:\n\n" \
-                  + response_error + "\n\n")
+        dlg_msg = ("ENLIGHTEN has encountered an error with the spectrometer. " +
+                    "The exception is shown below.  Click 'View Log' to " +
+                    "automatically open the logfile in Notepad, 'Disconnect' to " +
+                    "retry or 'Okay' to dismiss this dialog:\n\n" + 
+                    response_error + "\n\n")
         dlg_btns = [("Okay", QMessageBox.AcceptRole), ("Disconnect", QMessageBox.RejectRole), ("View Log", QMessageBox.HelpRole)]
 
         selection = TimeoutDialog.showWithTimeout(self.form, 
@@ -2339,7 +2343,7 @@ class Controller:
             log.info("user clicked 'View Log' so displaying the logfile")
             self.open_log()
         else:
-            log.info(f"User didn't choose a button. Attempting disconnect and reconnect")
+            log.info("User didn't choose a button. Attempting disconnect and reconnect")
             self.seen_errors[spec].pop(response_error)
             return False
         return False

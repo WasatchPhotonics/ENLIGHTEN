@@ -15,8 +15,8 @@ class MakeOddNegative(EnlightenPluginBase):
             has_other_graph = True,
             series_names = ["Odd Negative"])
 
-    def connect(self, enlighten_info):
-        return super().connect(enlighten_info)
+    def connect(self):
+        return super().connect()
 
     def process_request(self, request):
         spectrum = request.processed_reading.processed 

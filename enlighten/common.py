@@ -13,7 +13,7 @@ application.
       can be modules (files) within it
 """
 
-VERSION = "4.0.51"
+VERSION = "4.0.59"
 
 ctl = None
 
@@ -210,7 +210,7 @@ def is_rpi():
     result = False
     try:
         # Win32 doesn't have os.uname :-(
-        (sysname, nodename, release, version, machine) = os.uname()
+        (sysname, nodename, release, version, machine) = os.uname() # pylint: disable=unused-variable
         result = nodename == "raspberrypi"
     except:
         pass

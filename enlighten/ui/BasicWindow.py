@@ -35,7 +35,7 @@ class BasicWindow(QtWidgets.QMainWindow):
         self.setWindowTitle(title)
 
     def resizeEvent(self, event):
-        log.debug(f"resize event called")
+        log.debug("resize event called")
         self.reconfigure_layout()
         return super(BasicWindow, self).resizeEvent(event)
  

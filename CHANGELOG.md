@@ -2,6 +2,51 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2024-04-05 4.0.59
+    - fixed bug when exporting only displayed traces
+    - more-robust handling of corrupt EEPROMs
+    - master ubuntu_launcher.sh within scripts
+    - plugins
+        - moved PluginController to ctl
+        - persist last-selected plugin
+        - removed enlighten.Plugins.EnlightenApplicationInfoReal,
+                    EnlightenPlugin.EnlightenApplicationInfo 
+- 2024-03-25 4.0.58
+    - restore saturation warning on XS
+    - enable Marquee.error with "hazard" CSS
+- 2024-03-25 4.0.57
+    - fix check_refs in BoxcarFeature
+    - support Expert mode in plugin fields
+    - add Session Count to Measurement metadata
+    - consistently handle plugin metadata
+    - added PresetFeature.clear_all
+- 2024-03-23 4.0.56
+    - updated ColumnFileParser with wasatch.CSVLoader updates
+    - changing Preset auto-clears Dark and Reference
+    - fixed GUI.msgbox_with_checkbox
+    - fixed SpectrometerApplicationState.check_refs
+    - moved plugin persistence from "advanced_options" to "plugins"
+    - SRM works properly in Presets
+- 2024-03-22 4.0.55
+    - added msgbox_with_lineedit
+    - hopefully didn't break dialog response processing (narrator: it did)
+    - R&D
+        - skip ambient on ARM 1.0.2.9
+        - ignore None responses in WasatchDevice funcs
+- 2024-03-22 4.0.54
+    - fixed GainDB persistence
+    - fixed Reference visibility when Emission/Raman selected
+    - flake8 fixes
+    - moved GridFeature to ctl
+- 2024-03-21 4.0.53
+    - moved ReferenceFeature to ctl
+    - fixed Dark/Reference on Settings
+    - fixed Detector Temperature label bug
+    - simplified designer.sh
+    - added 'make flake8'
+- 2024-03-19 4.0.52
+    - started KIA conversion to ctl
+    - fixed 2/3-byte FPGA_COMPILATION_OPTIONS
 - 2024-03-19 4.0.51
     - merged old Temperature Control panel into Detector Control widget (as Detector Temperature)
     - added new Laser Temperature panel within Laser Control widget

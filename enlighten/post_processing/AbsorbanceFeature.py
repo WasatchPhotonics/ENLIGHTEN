@@ -49,6 +49,7 @@ class AbsorbanceFeature:
                     saturated = True
             absorbance.append(au)
 
+        log.debug(f"calling pr.set_processed({absorbance[:5]})")
         pr.set_processed(absorbance)
 
         if saturated:

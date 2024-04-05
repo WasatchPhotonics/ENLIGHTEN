@@ -15,19 +15,13 @@ class PluginWorker(threading.Thread):
 
     ##
     # Actually instantiates the plugin.
-    def __init__(self,
-            request_queue,
-            response_queue, 
-            module_info,
-            enlighten_info):
-
+    def __init__(self, request_queue, response_queue, module_info):
         threading.Thread.__init__(self)
 
         self.request_queue  = request_queue
         self.response_queue = response_queue
         self.module_info    = module_info
         self.has_event_responses = True
-        self.enlighten_info = enlighten_info
         self.error_message  = None
 
         if self.module_info is None:
@@ -45,7 +39,7 @@ class PluginWorker(threading.Thread):
         ok = False
         try:
             log.debug(f"plugin {module_name} connecting")
-            ok = plugin.connect(self.enlighten_info)
+            ok = plugin.connect()
         except:
             log.critical("PluginWorker[%s] caught exception", exc_info=1)
             # retain exception trace so caller can display to script author
@@ -85,7 +79,7 @@ class PluginWorker(threading.Thread):
                 continue
 
             request = self.request_queue.get_nowait()
-            if request == None:
+            if request is None:
                 log.critical("PluginWorker[%s] received poison-pill", module_name)
                 plugin.disconnect()
                 break

@@ -119,17 +119,6 @@ class PageNavigation:
     Raman Mode).
     """
 
-    technique_callbacks = {
-        common.Techniques.NONE: lambda self, tech: self.set_technique_common(common.Techniques.NONE),
-        common.Techniques.EMISSION: lambda self, tech: self.set_technique_common(common.Techniques.EMISSION),
-        common.Techniques.RAMAN: lambda self, tech: self.set_technique_common(common.Techniques.RAMAN),
-        common.Techniques.REFLECTANCE_TRANSMISSION: lambda self, tech: self.set_technique_transmission(),
-        common.Techniques.ABSORBANCE: lambda self, tech: self.set_technique_absorbance(),
-        common.Techniques.COLOR: lambda self, tech: self.set_technique_common(common.Techniques.COLOR),
-        common.Techniques.FLUORESCENCE: lambda self, tech: self.set_technique_common(common.Techniques.FLUORESCENCE),
-        common.Techniques.RELATIVE_IRRADIANCE: lambda self, tech: self.set_technique_common(common.Techniques.RELATIVE_IRRADIANCE)
-        }
-
     def __init__(self, ctl):
         self.ctl = ctl
         cfu = ctl.form.ui
@@ -140,12 +129,12 @@ class PageNavigation:
         self.button_expert      = cfu.pushButton_expert
         self.combo_view         = cfu.comboBox_view
         self.stack_main         = cfu.stackedWidget_low
-        self.combo_technique    = cfu.technique_comboBox
+        self.combo_technique    = cfu.comboBox_technique
 
         self.button_raman       .setWhatsThis("Switch to Raman mode, which enables Raman-relevant features in the Control Palette.")
         self.button_non_raman   .setWhatsThis("Switch to non-Raman mode, which hides Raman-only features while adding features for absorbance, reflectance etc.")
         self.combo_view         .setWhatsThis("Switch between various ENLIGHTEN views to access different types of product features.")
-        self.combo_technique    .setWhatsThis("Select between various non-Raman techniques, each providing distinct spectral processing and options.")
+        self.combo_technique    .setWhatsThis("Specify whether a reference-based technique is in use. Absorbance, Reflectance and Transmission techniques all require a reference measurement, while Raman (or simple Emission) does not.")
         self.button_expert      .setWhatsThis(unwrap("""
             Enable access to all features and options, whether they seem relevant to your spectrometer or not.
 
@@ -209,14 +198,16 @@ class PageNavigation:
         self.combo_view.setCurrentIndex(index)
 
     def update_technique_callback(self):
-        log.debug(f"technique callback triggered")
-        self.current_technique = self.determine_current_technique()
-        log.debug(f"setting to technique {self.current_technique}")
-        callback = self.technique_callbacks.get(self.current_technique, None)
-        if callback is not None:
-            callback(self, self.current_technique)
+        log.debug("technique callback triggered")
+        tech = self.determine_current_technique()
+        self.current_technique = tech
+
+        if tech == common.Techniques.REFLECTANCE_TRANSMISSION: 
+            self.set_technique_transmission()
+        elif tech == common.Techniques.ABSORBANCE:
+            self.set_technique_absorbance()
         else:
-            log.error("Determined technique was invalid for callback? Shouldn't be here.")
+            self.set_technique_common(tech)
 
     # called whenever the user changes the view via the GUI combobox
     def update_view_callback(self):
@@ -289,23 +280,13 @@ class PageNavigation:
         self.set_view_common()
         self.set_main_page(common.Pages.FACTORY)
 
-    def set_technique_transmission(self):
-        self.ctl.graph.set_x_axis(common.Axes.WAVELENGTHS)
-        self.ctl.graph.set_y_axis(common.Axes.PERCENT)
-        self.set_technique_common(common.Techniques.REFLECTANCE_TRANSMISSION)
-
-    def set_technique_absorbance(self):
-        self.ctl.graph.set_x_axis(common.Axes.WAVELENGTHS)
-        self.ctl.graph.set_y_axis(common.Axes.AU)
-        self.set_technique_common(common.Techniques.ABSORBANCE)
-
     def update_view_shortcut(self):
         index = self.combo_view.currentIndex()
         tt = f"Ctrl-{index+1} shortcut" if index < common.Views.FACTORY else ""
         self.combo_view.setToolTip(tt)
 
     def is_expert(self):
-         return self.operation_mode == common.OperationModes.EXPERT
+        return self.operation_mode == common.OperationModes.EXPERT
 
     def set_view_common(self):
         self.update_view_shortcut()
@@ -342,14 +323,14 @@ class PageNavigation:
         return self.operation_mode == common.OperationModes.EXPERT
 
     def set_technique_absorbance(self):
-        self.set_technique_common(common.Techniques.ABSORBANCE)
         self.ctl.graph.set_x_axis(common.Axes.WAVELENGTHS)
         self.ctl.graph.set_y_axis(common.Axes.AU)
+        self.set_technique_common(common.Techniques.ABSORBANCE)
 
     def set_technique_transmission(self):
-        self.set_technique_common(common.Techniques.TRANSMISSION)
         self.ctl.graph.set_x_axis(common.Axes.WAVELENGTHS)
         self.ctl.graph.set_y_axis(common.Axes.PERCENT)
+        self.set_technique_common(common.Techniques.REFLECTANCE_TRANSMISSION)
 
     def set_technique_common(self, technique):
         log.debug("set_technique_common: technique %d", technique)
@@ -359,6 +340,7 @@ class PageNavigation:
 
         self.current_technique = technique
         technique_name = common.TechniquesHelper.get_pretty_name(self.current_technique)
+
         # All connected spectrometers always share the same view.  It's a
         # valid question if view should then be stored in app_state, since
         # it's not really a per-spectrometer attribute, but adding for
@@ -421,7 +403,6 @@ class PageNavigation:
 
     def update_expert_widgets(self):
         is_ingaas = False
-        has_cooling = False
         flag = self.doing_expert()
         cfu = self.ctl.form.ui
 
@@ -430,13 +411,11 @@ class PageNavigation:
             flag = False
         else:
             is_ingaas = spec.settings.is_ingaas()
-            has_cooling = spec.settings.eeprom.has_cooling
 
         # todo: migrate all of these to register_observer("doing_expert") in 
         # their respective owning Business Objects
         cfu.frame_post_processing.setVisible(flag)
         cfu.frame_baseline_correction.setVisible(flag)
-        # cfu.frame_tec_control.setVisible(flag and has_cooling)
         cfu.frame_area_scan_widget.setVisible(flag and not is_ingaas)
         cfu.frame_region_control.setVisible(False) # spec.settings.is_imx()
 

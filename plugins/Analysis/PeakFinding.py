@@ -53,8 +53,8 @@ class PeakFinding(EnlightenPluginBase):
             graph_type      = 'line', 
             series_names    = ['Peaks'])
 
-    def connect(self, enlighten_info):
-        return super().connect(enlighten_info)
+    def connect(self):
+        return super().connect()
 
     def process_request(self, request):
         spectrum = request.processed_reading.processed.tolist()
@@ -79,7 +79,7 @@ class PeakFinding(EnlightenPluginBase):
             dataframe = dataframe.T
 
         # generate a "fake graph" showing only peaks
-        unit = self.enlighten_info.get_x_axis_unit()
+        unit = self.ctl.graph.get_x_axis_unit()
         if unit == "nm":
             series_data = self.generate_series(settings.wavelengths, peak_nm, peak_y)
         elif unit == "cm":

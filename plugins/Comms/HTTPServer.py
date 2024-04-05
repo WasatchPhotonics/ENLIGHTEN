@@ -75,8 +75,8 @@ class HTTPServer(EnlightenPluginBase):
     ##
     # @see https://docs.python.org/3/library/socketserver.html
     # @see https://docs.python.org/3/library/http.server.html
-    def connect(self, enlighten_info):
-        super().connect(enlighten_info)
+    def connect(self):
+        super().connect()
 
         self.hostname = socket.gethostname()
         self.ip = socket.gethostbyname(self.hostname)

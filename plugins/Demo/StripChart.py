@@ -35,8 +35,8 @@ class StripChart(EnlightenPluginBase):
             x_axis_label    = "Time (Sec)", 
             y_axis_label    = "% / °C")
 
-    def connect(self, enlighten_info):
-        super().connect(enlighten_info)
+    def connect(self):
+        super().connect()
         return True
 
     # @todo could also check settings.eeprom.has_battery and has_cooling

@@ -18,8 +18,8 @@ class BlockNullOdd(EnlightenPluginBase):
                                             has_other_graph = True, 
                                             is_blocking     = True,
                                             series_names    = ["Long Process Data"])
-    def connect(self, enlighten_info):
-        return super().connect(enlighten_info)
+    def connect(self):
+        return super().connect()
 
     def process_request(self, request):
         log.debug(f"received request {request.request_id}")

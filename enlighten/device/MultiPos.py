@@ -1,6 +1,9 @@
-##
-# Used for spectrometers with articulated optics.
+import logging
+
+log = logging.getLogger(__name__)
+
 class MultiPos:
+    """ Used for spectrometers with articulated optics. """
     
     def __init__(self, 
             multispec,

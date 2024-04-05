@@ -1,5 +1,4 @@
 import logging
-import numpy as np
 
 from enlighten.util import unwrap
 
@@ -72,7 +71,7 @@ class RamanIntensityCorrection:
             within a given spectral range, and it would be invalid to extrapolate
             the correction factors outside the configured ROI."""))
 
-        self.ctl.presets.register(self, "enabled", getter=self.get_enabled, setter=self.set_enabled)
+        self.ctl.presets.register(self, "enable_when_allowed", getter=self.get_enable_when_allowed, setter=self.set_enable_when_allowed)
         self.ctl.page_nav.register_observer("view", self.update_visibility)
         self.ctl.page_nav.register_observer("mode", self.update_visibility)
         self.ctl.dark_feature.register_observer(self.update_visibility)
@@ -225,9 +224,9 @@ class RamanIntensityCorrection:
                 pr.cropped.processed[i] *= factors[i + roi.start]
             pr.raman_intensity_corrected = True
 
-    def set_enabled(self, value):
-        self.enabled = value if isinstance(value, bool) else value.lower() == "true"
+    def set_enable_when_allowed(self, value):
+        self.enable_when_allowed = value if isinstance(value, bool) else value.lower() == "true"
         self.update_visibility()
 
-    def get_enabled(self):
-        return self.enabled
+    def get_enable_when_allowed(self):
+        return self.enable_when_allowed

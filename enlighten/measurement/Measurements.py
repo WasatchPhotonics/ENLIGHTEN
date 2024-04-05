@@ -511,7 +511,7 @@ class Measurements:
             log.critical("exception exporting session", exc_info=1)
             os.remove(pathname)
 
-    def _get_spectrometer_settings(self):
+    def _get_spectrometer_settings(self, visible_only=False):
         """
         Returns a list of all SpectrometerSettings (unique by serial_number)
         contributing to our current set of saved measurements, in order of initial
@@ -521,10 +521,20 @@ class Measurements:
         wasatch.SpectrometerSettings by serial number.  Be aware that different
         Measurement objects generated from the same spectrometer serial number
         may have different ROI and interpolation settings.
+
+        @note This method has a fundamental weakness if something, say a plugin,
+              changes the SpectrometerSettings (say wavelengths/wavenumbers) for
+              some measurements OF THE SAME SERIAL NUMBER. We are fundamentally
+              assuming that SpectrometerSettings (and x-axis) does not change
+              FOR A GIVEN SERIAL NUMBER across the course of the export. What we
+              really should do is track "unique x-axes" across all Measurements,
+              regardless of serial number.
         """
         settingss = []
         seen_sn = set()
         for m in self.measurements:
+            if visible_only and not m.is_displayed():
+                continue
             if m.settings is not None and m.settings.eeprom.serial_number not in seen_sn:
                 settingss.append(m.settings)
                 seen_sn.add(m.settings.eeprom.serial_number)
@@ -595,12 +605,8 @@ class Measurements:
     # px wl px wl pr rw dk pr rw dk pr rw dk
     # \endverbatim
     #
-    # @todo should this function go into ExportFileParser?
-    #
     # @note If I'd known about Pandas when I wrote this, I might have done it
     #       differently :-/
-    #
-    # @todo getting interpolation working here requires some thought.
     #
     # @par Collated
     #
@@ -621,6 +627,16 @@ class Measurements:
     # S1    S2    Pr          Rw          Dk            <-- a "blank column" is inserted between each grouping, with the label of that subspectrum
     # px wl px wl    Aa Bb Cc    Aa Bb Cc    Aa Bb Cc   <-- the Measurement.label is used as the header within each grouping
     # \endverbatim
+    #
+    # @par Known Issues
+    #
+    # There is a fundamental weakness here that we are assuming:
+    #
+    # (1) SpectrometerSettings will not change for a given serial number over the
+    #     course of the measurements, and 
+    # (2) individual Measurement's ProcessedReading get_wavelengths() etc 
+    #     actually reflect the current SpectrometerSettings (and weren't trumped
+    #     along the line by a plugin or whatever).
     def export_by_column(self, csv_writer, visible_only=False):
 
         # could output some "Session" stuff up here
@@ -630,7 +646,7 @@ class Measurements:
         ########################################################################
 
         # count spectrometers (S1, S2)
-        settingss = self._get_spectrometer_settings()
+        settingss = self._get_spectrometer_settings(visible_only)
 
         # count x-axis headers (px, wl)
         x_headers = []
@@ -811,7 +827,7 @@ class Measurements:
             elif header == "wavenumber":
                 if wavenumbers is not None and pixel < len(wavenumbers):
                     result = f"{wavenumbers[pixel]:.2f}"
-            #log.debug(f"get_x_header_value: header {header}, pixel {pixel}, result {result}")
+            # log.debug(f"get_x_header_value: header {header}, pixel {pixel}, result {result}")
             return result
 
         def get_pr_header_value(m, header, pixel, pr=None):
@@ -870,7 +886,7 @@ class Measurements:
 
         if self.ctl.interp.enabled:
 
-            log.debug(f"export_by_column: interpolation enabled: {self.ctl.interp}")
+            log.debug(f"export_by_column: interpolation enabled")
 
             #####################################################################
             # Export Interpolated
@@ -914,6 +930,8 @@ class Measurements:
             # could change this by adding a "no_interpolation=False" default
             # param to ProcessedReading.get_foo() methods, but I don't currently
             # see it as a problem.
+
+            log.debug(f"export_by_column: interpolation not enabled")
 
             for pixel in range(max_pixels):
 
@@ -959,7 +977,7 @@ class Measurements:
     # generated if you had initially saved the first Measurement as a row-ordered
     # CSV, then appended subsequent Measurements.
     def export_by_row(self, csv_writer, visible_only=False):
-        settingss = self._get_spectrometer_settings()
+        settingss = self._get_spectrometer_settings(visible_only)
 
         file_header = Measurement.generate_dash_file_header(
             [settings.eeprom.serial_number for settings in settingss])
@@ -973,6 +991,11 @@ class Measurements:
         # singleton, meaning it will get trampled in the row-ordered export.
         save_line_number = self.ctl.save_options.line_number
         self.ctl.save_options.line_number = 0
+
+        if visible_only:
+            export_measurements = [ m for m in self.measurements if m.is_displayed() ]
+        else:
+            export_measurements = self.measurements
 
         for m in export_measurements:
             if visible_only and not m.is_displayed():

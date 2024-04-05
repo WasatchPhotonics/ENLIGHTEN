@@ -66,13 +66,6 @@ class Worek(EnlightenPluginBase):
         self.ChEActivityY2 = None
         self.ChEActivityY1 = None
 
-    def get_widget_from_name(self, name):
-        widget = None
-        for elem in self.enlighten_info.plugin_fields():
-            if elem.field_name == name:
-                widget = elem
-        return widget.field_widget
-
     def graph_slope(self):
         # self.get_widget_from_name("slope start") will be a QtWidgets.QDoubleSpinBox
         # same thing for slope_end_txtbox
@@ -164,16 +157,8 @@ class Worek(EnlightenPluginBase):
             series_names     = [ChE_label, Hb_label, ChE_Blank_slope_label, ChE_Sample_slope_label],
             x_axis_label = "time (sec)")
 
-    def connect(self, enlighten_info):
-        # if enlighten_info.ctl.page_nav.operation_mode != 4: # 4 = ABSORBANCE
-        #     # can be found in log:
-        #     # enlighten.Plugins.PluginWorker CRITICAL
-        #     # does not interrupt plugin connect tho :/
-        #     # must set PluginWorker error message somehow
-        #     log.critical("Worek plugin requires Non-Raman>Technique>Absorbance")
-        #     raise Exception("Worek plugin requires Non-Raman>Technique>Absorbance")
-
-        return super().connect(enlighten_info)
+    def connect(self):
+        return super().connect()
 
     def process_request(self, request):
         pr = request.processed_reading

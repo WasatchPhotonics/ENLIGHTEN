@@ -216,13 +216,6 @@ class ThumbnailWidget(QtWidgets.QFrame):
     # Utility
     # ##########################################################################
 
-    ##
-    # @warning we appear to be unable to write to our standard logger from 
-    # within this class, presumably due to a conflict with Qt?
-    def logMsg(self, msg):
-        log.debug(msg)
-        print("ThumbnailWidget: " + msg)
-
     def set_active(self, flag):
         self.is_displayed = flag
         self.ctl.gui.colorize_button(self.button_display, flag)
@@ -271,7 +264,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
                     button.setIcon(icon)
                     button.setIconSize(QtCore.QSize(icon_size[0], icon_size[1]))
                 except:
-                    logMsg("ERROR: can't find icon_name " + icon_name)
+                    log.error("ERROR: can't find icon_name " + icon_name)
 
         button.setParent(self)
         # button.resize(size[0], size[1])
@@ -424,7 +417,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
         label = self.measurement.label
         pixels = self.measurement.settings.pixels()
         if self.measurement.plugin_name != "":
-            log.debug(f"plugin trying to add save to plot")
+            log.debug("plugin trying to add save to plot")
 
         # take axis unit from Graph, then load axis values from Measurement
         if self.graph.current_x_axis == common.Axes.WAVELENGTHS:

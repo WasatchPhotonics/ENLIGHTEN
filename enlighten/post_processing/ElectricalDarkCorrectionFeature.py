@@ -10,11 +10,13 @@ class ElectricalDarkCorrectionFeature:
 
         self.cb_enable = cfu.checkBox_edc_enabled
 
+        self.enabled = False
+
         self.cb_enable.stateChanged.connect(self.enable_callback)
 
     def enable_callback(self):
-        enabled = self.cb_enable.isChecked()
-        self.ctl.multispec.change_device_setting("edc_enable", enabled)
+        self.enabled = self.cb_enable.isChecked()
+        self.ctl.multispec.change_device_setting("edc_enable", self.enabled)
 
     def update_visibility(self):
         spec = self.ctl.multispec.current_spectrometer()

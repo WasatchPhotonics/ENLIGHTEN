@@ -109,7 +109,7 @@ class GUI:
 
         if tristate and flag is None:
             self.ctl.stylesheets.apply(button, "orange_gradient_button")
-        elif flag == True:
+        elif flag:
             self.ctl.stylesheets.apply(button, "red_gradient_button")
         else:
             self.ctl.stylesheets.apply(button, "gray_gradient_button")
@@ -159,9 +159,40 @@ class GUI:
         result = dialog.exec_()
 
         return { 
-            "ok": result == QMessageBox.Ok,
+            "ok": result == QMessageBox.Ok, # note we don't use QDialogButtonBox
             "checked": dialog.checkBox().isChecked()
         }
+
+    def msgbox_with_lineedit(self, title, label_text, lineedit_text):
+        dialog = QDialog(parent=self.ctl.form)
+        dialog.setModal(True)
+        dialog.setWindowTitle(title)
+        dialog.setSizeGripEnabled(True)
+
+        lb = QLabel(label_text, parent=dialog)
+
+        le = QLineEdit(parent=dialog)
+        le.setText(lineedit_text)
+
+        bb = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        bb.accepted.connect(dialog.accept)
+        bb.rejected.connect(dialog.reject)
+
+        vb = QVBoxLayout(dialog)
+        vb.addWidget(lb)
+        vb.addWidget(le)
+        vb.addWidget(bb)
+
+        result = dialog.exec_()
+        log.debug(f"msgbox_with_lineedit: result = {result}")
+
+        retval = {
+            "ok": result == QDialog.Accepted,
+            "lineedit": le.text() 
+        }
+        log.debug(f"msgbox_with_lineedit: retval = {retval}")
+
+        return retval
 
     def msgbox_with_lineedit_and_checkbox(self, title, label_text, lineedit_text, checkbox_text, checkbox_checked=False):
         dialog = QDialog(parent=self.ctl.form)
@@ -189,7 +220,7 @@ class GUI:
 
         result = dialog.exec_()
         return {
-            "ok": result,
+            "ok": result == QDialog.Accepted,
             "checked": cb.isChecked(),
             "lineedit": le.text() 
         }
@@ -211,3 +242,4 @@ class GUI:
         vb.addWidget(te)
 
         dialog.exec_()
+        # no return value, this is "display-only"

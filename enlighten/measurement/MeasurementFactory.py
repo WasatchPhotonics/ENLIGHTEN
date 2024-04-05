@@ -449,7 +449,7 @@ class MeasurementFactory:
                 for m_data in d["Measurements"]:
                     m = Measurement(self.ctl, d=m_data)
                     if m is not None:
-                        measurments.append(m)
+                        measurements.append(m)
             elif "Measurement" in d:
                 m = Measurement(self.ctl, d=d["Measurement"])
                 if m is not None:

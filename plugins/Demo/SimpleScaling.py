@@ -18,8 +18,8 @@ class SimpleScaling(EnlightenPluginBase):
             fields       = [ EnlightenPluginField(name="Factor", datatype="float", initial=2, maximum=15, minimum=-5, step=0.25, direction="input") ],
             series_names = ["Scaled"])
 
-    def connect(self, enlighten_info):
-        super().connect(enlighten_info)
+    def connect(self):
+        super().connect()
         return True
 
     def process_request(self, request):

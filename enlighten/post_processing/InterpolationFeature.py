@@ -221,6 +221,7 @@ class InterpolationFeature:
         processed = pr.get_processed()
         if processed is not None:
             interpolated.processed = np.interp(self.new_axis, old_cropped_axis, processed)
+            log.debug(f"interpolated processed to {len(interpolated.processed)} ({self.new_axis[0]:.2f}, {self.new_axis[-1]:.2f})")
 
         # Note that we are choosing to interpolate raw. That means this is no longer
         # really "raw". However, we're storing it in the ".interpolated" record of

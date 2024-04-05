@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 
 from EnlightenPlugin import *
+from enlighten import common
 
 # firstonly(i, "some string") will only have a value if i==0
 # this is a workaround to prevent duplicate legend entries
@@ -98,8 +99,8 @@ class LocalBaseline(EnlightenPluginBase):
 
         # if given a number: produce formated number (ex: 1,000,000)
         # if given a string: it's a placeholder, just return it
-        format_int = lambda i: f"{int(i):,}" if type(i) != str else i
-        # format_float = lambda i: f"{float(i):,.2f}" if type(i) != str else i
+        format_int = lambda i: f"{int(i):,}" if not isinstance(i, str) else i
+        # format_float = lambda i: f"{float(i):,.2f}" if not isinstance(i, str) else i
 
         header = []
         values = []

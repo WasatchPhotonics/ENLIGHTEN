@@ -44,8 +44,8 @@ class PixelNoise(EnlightenPluginBase):
 
         return EnlightenPluginConfiguration(name="Pixel Noise", fields=fields)
 
-    def connect(self, enlighten_info):
-        super().connect(enlighten_info)
+    def connect(self):
+        super().connect()
         self.reset()
         return True
 

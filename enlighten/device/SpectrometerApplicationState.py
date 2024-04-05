@@ -61,8 +61,10 @@ class SpectrometerApplicationState:
 
         self.reset_rolling_data()
 
-    def __init__(self, device_id):
+    def __init__(self, ctl, device_id):
+        self.ctl = ctl
         self.device_id = device_id
+
         self.clear()
 
     def dump(self):
@@ -95,14 +97,22 @@ class SpectrometerApplicationState:
     def check_refs(self):
         """
         The user has just changed integration time, gain, scan averaging or 
-        boxcar, so recommend a fresh dark and/or reference if one is already stored.
+        boxcar, so recommend a fresh dark and/or reference if one is already 
+        stored.
+
+        Conceptually DarkFeature and ReferenceFeature should therefore subscribe
+        to IntegrationTimeFeature, GainDBFeature etc and generate their own 
+        messages, but...then Dark and Reference would probably trample each other,
+        and we'd need a priority queue.
+
+        Leaving here for now.
         """
-        if self.dark and self.reference:
-            self.ctl.marquee("Recommend taking a fresh dark and reference when changing acquisition parameters")
-        elif self.dark:
-            self.ctl.marquee("Recommend taking a fresh dark when changing acquisition parameters")
-        elif self.reference:
-            self.ctl.marquee("Recommend taking a fresh reference when changing acquisition parameters")
+        if self.dark is not None and self.reference is not None:
+            self.ctl.marquee.info("Recommend taking a fresh dark and reference when changing acquisition parameters")
+        elif self.dark is not None:
+            self.ctl.marquee.info("Recommend taking a fresh dark when changing acquisition parameters")
+        elif self.reference is not None:
+            self.ctl.marquee.info("Recommend taking a fresh reference when changing acquisition parameters")
 
     def has_dark(self):
         return self.dark is not None

@@ -43,33 +43,31 @@ class PluginFieldWidget(QtWidgets.QWidget):
     # @param field_config is an EnlightenPluginField
     def __init__(self, config, ctl=None):
         super().__init__()
+        self.ctl = ctl
 
         self.field_config = config
         self.field_name   = config.name
         self.field_value  = config.initial
 
-        # this will (after initUI) hold the QWidget used for input/output field values
+        # this will (after initUI) hold the QWidget used for input/output field 
+        # values (field_widget) and the descriptive label (label_widget)
         self.field_widget = None 
+        self.label_widget = None
 
         # create the hbox and populate it with the name-value pair 
         # (note the hbox isn't yet added to a parent layout)
         self.hbox = self.initUI()
 
         # populate the field widget
-        #
-        # Overlooked something simple. Forgot to invoke the lambda from the 
-        # dict. This does look much nicer with the change I made the output entry
-        # likely isn't needed but I'm leaving it in case we want the option to add
-        # output labels in the controller area on the right side.
         configure_widget = {
-            "output":   lambda widget : widget.setText(str(self.field_value)),
-            "float":    lambda widget : self.create_float_fields   (widget),
-            "int":      lambda widget : self.create_int_fields     (widget), 
-            "string":   lambda widget : self.create_string_fields  (widget),
-            "bool":     lambda widget : self.create_bool_fields    (widget),
-            "radio":    lambda widget : self.create_radio_fields   (widget),
-            "button":   lambda widget : self.create_button_fields  (widget),
-            "combobox": lambda widget : self.create_combobox_fields(widget)
+            "output":   lambda widget: widget.setText(str(self.field_value)),
+            "float":    lambda widget: self.create_float_fields   (widget),
+            "int":      lambda widget: self.create_int_fields     (widget), 
+            "string":   lambda widget: self.create_string_fields  (widget),
+            "bool":     lambda widget: self.create_bool_fields    (widget),
+            "radio":    lambda widget: self.create_radio_fields   (widget),
+            "button":   lambda widget: self.create_button_fields  (widget),
+            "combobox": lambda widget: self.create_combobox_fields(widget)
         }
 
         try:
@@ -81,8 +79,17 @@ class PluginFieldWidget(QtWidgets.QWidget):
             log.error(f"Error, plugin {config.name} does not have a valid data type for connection.", exc_info=1)
             return
 
-        if ctl and config.stylesheet:
-            ctl.stylesheets.apply(self.field_widget, config.stylesheet)
+        # MZ: when would this not be true?
+        if ctl:
+            if config.stylesheet:
+                ctl.stylesheets.apply(self.field_widget, config.stylesheet)
+
+    def update_visibility(self):
+        visible = not self.field_config.expert or self.ctl.page_nav.doing_expert()
+        for widget in [self.field_widget, self.label_widget]:
+            if widget:
+                widget.setVisible(visible)
+        return visible
         
     def initUI(self):
 
@@ -95,6 +102,7 @@ class PluginFieldWidget(QtWidgets.QWidget):
             label.setText(self.field_name)
             label.setWordWrap(True)
             hbox.addWidget(label)
+            self.label_widget = label
 
         if self.field_config.direction == "output":
             # create output widget

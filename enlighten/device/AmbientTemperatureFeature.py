@@ -57,7 +57,7 @@ class AmbientTemperatureFeature:
 
         # @todo: move from Multispec class to SpectrometerApplicationState
         active_curve = self.ctl.multispec.get_hardware_feature_curve(self.name, spec.device_id)
-        if active_curve == None:
+        if active_curve is None:
             log.debug("process_reading: no curve")
             return 
 
@@ -116,7 +116,7 @@ class AmbientTemperatureFeature:
 
     def update_curve_color(self, spec):
         curve = self.ctl.multispec.get_hardware_feature_curve(self.name, spec.device_id)
-        if curve == None:
+        if curve is None:
             return
         curve.opts["pen"] = spec.color
 

@@ -45,6 +45,7 @@ class DetectorTemperatureFeature:
         self.copy_btn       .clicked            .connect(self.copy_data)
 
         self.detector_tec_control_widgets = [
+            cfu.detectorControlWidget_label_detectorTemperature,
             self.cb_enabled,
             self.slider,
             self.spinbox,
@@ -244,7 +245,7 @@ class DetectorTemperatureFeature:
 
     def remove_spec_curve(self, spec):
         cur_curve = self.ctl.multispec.get_hardware_feature_curve(self.name, spec.device_id)
-        if cur_curve == None:
+        if cur_curve is None:
             log.info(f"attempted to delete curve for spec {spec.label} that doesn't exist. Returning")
             return
         # remove current curve from graph
@@ -324,7 +325,7 @@ class DetectorTemperatureFeature:
 
     def update_curve_color(self, spec):
         curve = self.ctl.multispec.get_hardware_feature_curve(self.name, spec.device_id)
-        if curve == None:
+        if curve is None:
             return
         curve.opts["pen"] = spec.color
 

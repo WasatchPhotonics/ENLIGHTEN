@@ -33,8 +33,8 @@ class LoadHook(EnlightenPluginBase):
             streaming   = True,               
             is_blocking = False)
 
-    def connect(self, enlighten_info):
-        super().connect(enlighten_info)
+    def connect(self):
+        super().connect()
         self.notice_status = 0
         return True
 

@@ -18,57 +18,32 @@ log = logging.getLogger(__name__)
 # one inherit the other, or derive both from a common ABC.
 class ReferenceFeature:
 
-    def __init__(self,
-            graph,
-            gui,
-            marquee,
-            measurement_factory,
-            multispec,
-            page_nav,
-            save_options,
-            set_curve_data,
-            button_clear,
-            button_load,
-            button_store,
-            button_toggle,
-            frame_setup,
-            lb_timestamp,
-            stacked_widget,
-            gui_make_pen):
+    def __init__(self, ctl):
+        self.ctl = ctl
+        cfu = ctl.form.ui
 
-        self.graph               = graph
-        self.gui                 = gui
-        self.marquee             = marquee
-        self.measurement_factory = measurement_factory
-        self.multispec           = multispec
-        self.page_nav            = page_nav
-        self.save_options        = save_options
-        self.set_curve_data      = set_curve_data
+        self.lb_timestamp       = cfu.label_reference_timestamp
+        self.button_toggle      = cfu.pushButton_scope_toggle_reference
 
-        self.button_clear        = button_clear
-        self.button_load         = button_load
-        self.button_store        = button_store
-        self.button_toggle       = button_toggle
-        self.frame_setup         = frame_setup
-        self.lb_timestamp        = lb_timestamp
-        self.gui_make_pen        = gui_make_pen
-        self.stacked_widget      = stacked_widget
+        button_clear            = cfu.pushButton_reference_clear
+        button_load             = cfu.pushButton_reference_load
+        button_store            = cfu.pushButton_reference_store
 
         self.populate_placeholder_scope_setup()
 
         # these should be invisible when feature deemed inappropriate
-        self.visibility_widgets = [ self.frame_setup, 
+        self.visibility_widgets = [ cfu.frame_scopeSetup_spectra_reference_white,
                                     self.button_toggle, 
-                                    self.button_store,
-                                    self.save_options.cb_reference ]
+                                    button_store,
+                                    self.ctl.save_options.cb_reference ]
 
         # no _callback functions because no arguments
-        self.button_clear   .clicked    .connect(self.clear)
-        self.button_load    .clicked    .connect(self.load)
-        self.button_store   .clicked    .connect(self.store)
+        button_clear        .clicked    .connect(self.clear)
+        button_load         .clicked    .connect(self.load)
+        button_store        .clicked    .connect(self.store)
         self.button_toggle  .clicked    .connect(self.toggle)
 
-        for widget in [ self.button_clear, self.button_load, self.button_store, self.button_toggle ]:
+        for widget in [ button_clear, button_load, button_store, self.button_toggle ]:
             widget.setWhatsThis(unwrap("""
                 Many non-Raman spectroscopic techniques involve a "reference"
                 spectrum for comparison against the sample. Reference-based
@@ -81,26 +56,33 @@ class ReferenceFeature:
                 reference whenever possible to account for thermal drift and
                 changes in ambient lighting."""))
 
+        ctl.presets.register(self, "reference", setter=self.preset_changed, getter=None)
+
     # ##########################################################################
     # public methods
     # ##########################################################################
 
     def update_visibility(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
 
-        # hide reference widgets in non-referenced mode (basically, Raman)
-        if self.page_nav.doing_raman() and not self.page_nav.doing_expert():
-            [ widget.setVisible(False) for widget in self.visibility_widgets ]
-            return
+        visible = True
+        if self.ctl.page_nav.doing_raman() and not self.ctl.page_nav.doing_expert():
+            visible = False
+        elif not self.ctl.page_nav.using_reference():
+            visible = False
+        else:
+            log.debug("visible")
 
-        [ widget.setVisible(True) for widget in self.visibility_widgets ]
+        for widget in self.visibility_widgets:
+            widget.setVisible(visible)
 
-        self.gui.colorize_button(self.button_toggle, spec.app_state.has_reference())
+        if visible:
+            self.ctl.gui.colorize_button(self.button_toggle, spec.app_state.has_reference())
 
     def toggle(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None or spec.app_state is None:
             return
 
@@ -121,7 +103,7 @@ class ReferenceFeature:
     # could add one later).  Eventually we should make this method match
     # DarkFeature.store() in structure.
     def store(self): 
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None or spec.app_state is None:
             return
 
@@ -136,19 +118,19 @@ class ReferenceFeature:
                 app_state.reference_is_dark_corrected = pr.dark_corrected
                 app_state.reference_excitation = spec.settings.excitation()
                 app_state.reference_integration_time_ms = spec.settings.state.integration_time_ms
-                self.marquee.info("reference stored")
+                self.ctl.marquee.info("reference stored")
 
         self.display()
 
     def clear(self, quiet=False):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         spec.app_state.clear_reference()
         self.display()
         if not quiet:
-            self.marquee.info("reference cleared")
+            self.ctl.marquee.info("reference cleared")
 
     def display(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
 
         self.update_enable()
 
@@ -156,13 +138,11 @@ class ReferenceFeature:
             self.curve.setData([])
             self.curve.active = False
             self.lb_timestamp.setText("")
-            self.gui.colorize_button(self.button_toggle, False)
+            self.ctl.gui.colorize_button(self.button_toggle, False)
             return
 
         if spec.app_state.has_reference():
-            x_axis = self.graph.generate_x_axis(spec=spec)
-            self.set_curve_data(self.curve, x=x_axis, y=spec.app_state.reference, label="display_reference")
-
+            self.ctl.set_curve_data(self.curve, y=spec.app_state.reference, label="display_reference")
             self.lb_timestamp.setText(spec.app_state.reference_timestamp.strftime("%Y-%m-%d %H:%M:%S"))
             self.curve.active = True
         else:
@@ -171,9 +151,16 @@ class ReferenceFeature:
             self.curve.active = False
 
         # todo some kind of observers for reference
-        self.save_options.update_widgets()
-        self.gui.colorize_button(self.button_toggle, spec.app_state.has_reference())
-        self.graph.update_visibility()  # MZ: why does Reference need this but not Dark?
+        self.ctl.save_options.update_widgets()
+        self.ctl.gui.colorize_button(self.button_toggle, spec.app_state.has_reference())
+        self.ctl.graph.update_visibility()  # MZ: why does Reference need this but not Dark?
+
+    # ##########################################################################
+    # Callbacks
+    # ##########################################################################
+
+    def preset_changed(self, ignore):
+        self.clear()
 
     # ##########################################################################
     # private methods
@@ -192,7 +179,7 @@ class ReferenceFeature:
     # would provide better support for "Export" files, where the Measurement we want
     # actually is buried within a larger set.
     def load(self): 
-        m = self.measurement_factory.load_interpolated(self.settings())
+        m = self.ctl.measurement_factory.load_interpolated(self.settings())
         if m is None:
             return
 
@@ -200,17 +187,17 @@ class ReferenceFeature:
         if pr.reference is None or len(pr.reference) == 0: 
             return
 
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None or spec.app_state is None:
             return
 
         spec.app_state.reference = np.copy(pr.reference)
         spec.app_state.reference_timestamp = m.timestamp
-        self.marquee.info("reference loaded")
+        self.ctl.marquee.info("reference loaded")
         self.display()
 
     def enable_buttons(self, flag=True, tt=None):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is not None:
             default_tt = "Clear reference" if spec.app_state.has_reference() else "Store reference" # diff: self.generate_toggle_tooltip()
         else:
@@ -229,7 +216,7 @@ class ReferenceFeature:
             b.setToolTip("disabled")
 
     def update_enable(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return self.enable_buttons(False)
         self.enable_buttons(True)
@@ -242,7 +229,8 @@ class ReferenceFeature:
         chart = pyqtgraph.PlotWidget(name="Recorded reference spectrum")
         chart.setSizePolicy(policy)
 
-        self.curve = chart.plot([], pen=self.gui_make_pen(widget="reference"))
+        self.curve = chart.plot([], pen=self.ctl.gui.make_pen(widget="reference"))
 
-        self.stacked_widget.addWidget(chart)
-        self.stacked_widget.setCurrentIndex(1)
+        stacked_widget = self.ctl.form.ui.stackedWidget_scope_setup_reference_spectrum
+        stacked_widget.addWidget(chart)
+        stacked_widget.setCurrentIndex(1)
