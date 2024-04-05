@@ -25,3 +25,7 @@ chmod +x enlighten_ubuntu_launcher.sh
 ```
 
 5. Follow on-screen prompts. You may be prompted to enter your password to enable "sudo" privileges.
+
+A video showing the basic process is posted here:
+
+- https://www.youtube.com/watch?v=RKpM3YETon4
