@@ -307,12 +307,12 @@ class EEPROMEditor:
         table["digest_current"] = digest
 
         spec = self.ctl.multispec.current_spectrometer()
-        if spec is not None:
-            table["firmware_revision"] = spec.settings.microcontroller_firmware_version
-            table["fpga_revision"]     = spec.settings.fpga_firmware_version
-        else:
-            table["firmware_revision"] = ""
-            table["fpga_revision"]     = ""
+        if spec:
+            for attr in [ "microcontroller_firmware_version", 
+                          "fpga_firmware_version", 
+                          "microcontroller_serial_number", 
+                          "detector_serial_number" ]:
+                table[attr] = getattr(spec.settings, attr) 
             
         self.ctl.clipboard.copy_dict(table)
 

@@ -751,9 +751,9 @@ class Controller:
             else:
                 log.error(f"Could not load Andor EEPROM for {device.settings.eeprom.detector_serial_number}")
 
-            cfu.label_detector_serial.setText(device.settings.eeprom.detector_serial_number)
+            cfu.label_detector_serial_number.setText(device.settings.eeprom.detector_serial_number)
         else:
-            cfu.label_detector_serial.setText("")
+            cfu.label_detector_serial_number.setText("")
 
         ########################################################################
         # update Multispec
@@ -813,6 +813,7 @@ class Controller:
 
         cfu.label_microcontroller_firmware_version.setText(spec.settings.microcontroller_firmware_version)
         cfu.label_fpga_firmware_version.setText(spec.settings.fpga_firmware_version)
+        cfu.label_microcontroller_serial_number.setText(spec.settings.microcontroller_serial_number)
 
         ########################################################################
         # update EEPROM Editor
