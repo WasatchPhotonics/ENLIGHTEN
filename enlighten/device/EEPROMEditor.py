@@ -170,7 +170,7 @@ class EEPROMEditor:
         self.bind_lineEdit        (cfu.lineEdit_ee_wavelength_coeff_2,        "wavelength_coeffs", 2)
         self.bind_lineEdit        (cfu.lineEdit_ee_wavelength_coeff_3,        "wavelength_coeffs", 3)
         self.bind_lineEdit        (cfu.lineEdit_ee_wavelength_coeff_4,        "wavelength_coeffs", 4)
-        self.bind_lineEdit        (cfu.lineEdit_ee_product_config,            "product_configuration")
+        self.bind_lineEdit        (cfu.lineEdit_ee_product_configuration,     "product_configuration")
         self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_0,   "raman_intensity_coeffs", 0)
         self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_1,   "raman_intensity_coeffs", 1)
         self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_2,   "raman_intensity_coeffs", 2)
