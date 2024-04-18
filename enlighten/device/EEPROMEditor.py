@@ -5,6 +5,7 @@ import decimal
 
 from wasatch.EEPROM import EEPROM
 from enlighten import common
+from typing import List
 
 if common.use_pyside2():
     from PySide2 import QtGui, QtWidgets
@@ -106,6 +107,21 @@ class EEPROMEditor:
             "bin2x2": "bin_2x2",
             "flip_x_axis": "invert_x_axis",
             }
+
+        # Filterable layouts are `QFormLayout`s that are filtered by row based on the
+        # current search box text.
+
+        self.filterable_layouts: List[QtWidgets.QFormLayout] = [
+            cfu.formLayout_15,
+            cfu.formLayout_ee_page_0,
+            cfu.formLayout_ee_page_1,
+            cfu.formLayout_ee_page_2,
+            cfu.formLayout_ee_page_4,
+            cfu.formLayout_ee_page_5,
+            cfu.formLayout_ee_page_6,
+            cfu.formLayout_ee_page_6_sub_2,
+            cfu.formLayout_ee_page_7
+        ]
 
     def bind(self):
         """
@@ -251,6 +267,7 @@ class EEPROMEditor:
         cfu.pushButton_eeprom_clipboard.clicked.connect(self.copy_to_clipboard)
         cfu.pushButton_importEEPROM.clicked.connect(self.import_eeprom)
         cfu.pushButton_exportEEPROM.clicked.connect(self.export_eeprom)
+        cfu.searchLineEdit.textChanged.connect(self.apply_filter)
 
         self.update_authentication()
 
@@ -712,6 +729,81 @@ class EEPROMEditor:
         # subformat 3 extends subformat 1
         if sub == 3:
             self.subformat_frames[1].setVisible(True)
+
+    def apply_filter(self, filter_text: str) -> None:
+        """
+        Hides all widgets to which the filter applies.
+        """
+        for layout in self.filterable_layouts:
+            if type(layout) == QtWidgets.QFormLayout:
+                rows = [[None, None] for _ in range(0, layout.rowCount())]
+
+                for i in range(0, layout.count()):
+                    rowIndex, role = layout.getItemPosition(i)
+                    rows[rowIndex][role.value] = layout.itemAt(i)
+
+                for i, row in enumerate(rows):
+                    matches_filter = False
+
+                    for cell in row:
+                        if self.contains_text(cell, filter_text):
+                            matches_filter = True
+
+                    if matches_filter:
+                        for cell in row:
+                            self.show(cell)
+                    else:
+                        for cell in row:
+                            self.hide(cell)
+
+    @classmethod
+    def contains_text(cls, root: any, filter_text: str) -> bool:
+        """
+        Recursively searches `root` for any label containing the string `filter_text`.
+        """
+        if isinstance(root, QtWidgets.QLayout):
+            for i in range(0, root.count()):
+                if cls.contains_text(root.itemAt(i), filter_text):
+                    return True
+
+            return False
+        elif isinstance(root, QtWidgets.QLayoutItem):
+            widget = root.widget()
+
+            if not isinstance(widget, QtWidgets.QLabel):
+                return False
+
+            return re.search(re.escape(filter_text), widget.text(), re.IGNORECASE)
+        else:
+            return False
+
+    @classmethod
+    def hide(cls, root: any) -> None:
+        """
+        Recursively hides all children of `root`.
+        """
+        if isinstance(root, QtWidgets.QLayout):
+            for i in range(0, root.count()):
+                cls.hide(root.itemAt(i))
+        elif isinstance(root, QtWidgets.QLayoutItem):
+            widget = root.widget()
+
+            if widget is not None:
+                widget.hide()
+
+    @classmethod
+    def show(cls, root: any) -> None:
+        """
+        Recursively shows all children of `root`.
+        """
+        if isinstance(root, QtWidgets.QLayout):
+            for i in range(0, root.count()):
+                cls.show(root.itemAt(i))
+        elif isinstance(root, QtWidgets.QLayoutItem):
+            widget = root.widget()
+
+            if widget is not None:
+                widget.show()
 
     # ##########################################################################
     # Binding
