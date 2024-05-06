@@ -19,19 +19,25 @@ class EmissionLines(EnlightenPluginBase):
         yet added that as a supported plugin input type.
         """
         self.name = "Emission Lines"
+        self.auto_enable = True
+
         self.lamps = self.get_lamps()
-        for lamp in self.lamps:
-            self.field(name=lamp, direction="input", datatype=bool, initial=False)
+        self.field(name="lamp", direction="input", datatype="combobox", choices=[k for k, v in self.lamps.items()])
 
     def process_request(self, request):
-        for lamp in self.lamps:
-            if request.fields[lamp]:
-                for p in self.generate_points(lamp=lamp):
-                    self.plot(
-                        title = f"{lamp} {p[0]:7.03f}cm⁻¹",
-                        x = [p[0], p[0]],
-                        y = [min(self.spectrum), p[1]]
-                    )
+        unit = self.ctl.graph.get_x_axis_unit()
+        if unit != "nm":
+            self.marquee_message = "EmissionLines disabled (requires wavelength axis)"
+            return
+
+        lamp = request.fields["lamp"]
+        if lamp in self.lamps:
+            for p in self.generate_points(lamp=lamp):
+                self.plot(
+                    title = f"{lamp} {p[0]:7.03f}cm⁻¹",
+                    x = [p[0], p[0]],
+                    y = [min(self.spectrum), p[1]]
+                )
 
     def generate_points(self, lamp):
         """
@@ -40,10 +46,17 @@ class EmissionLines(EnlightenPluginBase):
         spectrum, of the specified lamp's emission lines.
         """
         wavelengths = self.settings.wavelengths
+        x_lo = wavelengths[0]
+        x_hi = wavelengths[-1]
+
+        if self.settings.eeprom.has_horizontal_roi():
+            roi = self.settings.eeprom.get_horizontal_roi()
+            x_lo = wavelengths[roi.start]
+            x_hi = wavelengths[roi.end]
 
         # determine the vertical extent of the synthetic spectrum
-        lo = min(self.spectrum)
-        hi = max(self.spectrum)
+        y_lo = min(self.spectrum)
+        y_hi = max(self.spectrum)
 
         # determine which of this lamp's emission lines to visualize on the graph
         lines = self.lamps[lamp]
@@ -51,14 +64,14 @@ class EmissionLines(EnlightenPluginBase):
         max_rel_intensity = self.MIN_REL_INTENSITY
         for peak in sorted(lines.keys()):
             rel_intensity = lines[peak]
-            if peak >= wavelengths[0] and peak <= wavelengths[-1]:
+            if peak >= x_lo and peak <= x_hi:
                 visible.append(peak)
                 max_rel_intensity = max(max_rel_intensity, rel_intensity)
 
         points = []
         for x in visible:
             rel_intensity = max(lines[x], self.MIN_REL_INTENSITY)
-            y = lo + (hi - lo) * rel_intensity / max_rel_intensity
+            y = y_lo + (y_hi - y_lo) * rel_intensity / max_rel_intensity
             points.append((x, y))
 
         return points

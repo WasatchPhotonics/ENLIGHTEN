@@ -20,19 +20,24 @@ class RamanLines(EnlightenPluginBase):
         """
         self.name = "Raman Lines"
         self.auto_enable = True
+
         self.samples = self.get_samples()
-        for sample in self.samples:
-            self.field(name=sample, direction="input", datatype=bool, initial=False)
+        self.field(name="sample", direction="input", datatype="combobox", choices=[k for k, v in self.samples.items()])
 
     def process_request(self, request):
-        for sample in self.samples:
-            if request.fields[sample]:
-                for p in self.generate_points(sample=sample):
-                    self.plot(
-                        title = f"{sample} {p[0]:7.03f}cm⁻¹",
-                        x = [p[0], p[0]],
-                        y = [min(self.spectrum), p[1]]
-                    )
+        unit = self.ctl.graph.get_x_axis_unit()
+        if unit != "cm":
+            self.marquee_message = "RamanLines disabled (requires wavenumber axis)"
+            return
+
+        sample = request.fields["sample"]
+        if sample in self.samples:
+            for p in self.generate_points(sample=sample):
+                self.plot(
+                    title = f"{sample} {p[0]:7.03f}cm⁻¹",
+                    x = [p[0], p[0]],
+                    y = [min(self.spectrum), p[1]]
+                )
 
     def generate_points(self, sample):
         """

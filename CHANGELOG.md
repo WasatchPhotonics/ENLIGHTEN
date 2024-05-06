@@ -4,6 +4,7 @@
 
 - 2024-??-?? 4.0.60
     - added microcontroller serial number
+    - moved EmissionLines and RamanLines to combobox
 - 2024-04-05 4.0.59
     - fixed bug when exporting only displayed traces
     - more-robust handling of corrupt EEPROMs
