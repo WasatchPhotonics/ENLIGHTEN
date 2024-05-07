@@ -41,8 +41,9 @@ class TakeOneFeature:
     # @param spec   which spectrometer to use, or None for all
     # @param save   whether to save the measurement at completion
     # @param completion_callback if provided, fire when done
-    def start(self, spec=None, save=False, completion_callback=None):
-        log.debug(f"starting (spec {spec}, save {save}, completion_callback {completion_callback})")
+    # @param template if provided, use as the TakeOneRequest template
+    def start(self, spec=None, save=False, completion_callback=None, template=None):
+        log.debug(f"starting (spec {spec}, save {save}, completion_callback {completion_callback}, template {template})")
 
         self.spec = spec
         self.save = save
@@ -60,14 +61,14 @@ class TakeOneFeature:
             for callback in self.observers["start"]:
                 callback()
 
-        #avg = 1 if spec is None else spec.settings.state.scans_to_average
         avg = self.ctl.scan_averaging.get_scans_to_average()
 
         if self.ctl.auto_raman.enabled:
-            take_one_request = self.ctl.auto_raman.generate_take_one_request()
+            take_one_request = self.ctl.auto_raman.generate_take_one_request(template=template)
         else:
-            log.debug(f"start: avg {avg}")
-            take_one_request = TakeOneRequest(scans_to_average=avg)
+            # MZ: this is just shoving scan averaging down into WasatchDevice
+            log.debug(f"start: avg {avg} (instantiating)")
+            take_one_request = TakeOneRequest(scans_to_average=avg, template=template)
 
         if self.spec is None:
             self.ctl.multispec.set_app_state("take_one_request", take_one_request)
