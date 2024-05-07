@@ -348,15 +348,10 @@ class BatchCollection:
 
             # initialize driver-level laser auto_triggering and dark collection
             if self.laser_mode == "spectrum":
-                log.debug("BatchCollection.start_collection: instantiating template TakeOneRequest with laser_mode.spectrum")
                 self.take_one_template = TakeOneRequest(take_dark=self.dark_before_batch, enable_laser_before=True, disable_laser_after=True, laser_warmup_ms=self.laser_warmup_ms)
             else:
-                log.debug("BatchCollection.start_collection: instantiating template TakeOneRequest (default)")
                 self.take_one_template = TakeOneRequest()
 
-            # log.debug(f"starting laser_mode {self.laser_mode}, so take_one_request {take_one_request}")
-            # self.ctl.multispec.change_device_setting("take_one_request", take_one_request)
-            # self.ctl.multispec.set_app_state("take_one_request", take_one_request)
             self.running = True
 
         else:

@@ -66,8 +66,7 @@ class TakeOneFeature:
         if self.ctl.auto_raman.enabled:
             take_one_request = self.ctl.auto_raman.generate_take_one_request(template=template)
         else:
-            # MZ: this is just shoving scan averaging down into WasatchDevice
-            log.debug(f"start: avg {avg} (instantiating)")
+            log.debug(f"start: avg {avg}")
             take_one_request = TakeOneRequest(scans_to_average=avg, template=template)
 
         if self.spec is None:

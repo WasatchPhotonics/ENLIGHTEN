@@ -91,7 +91,6 @@ class AutoRamanFeature:
         spec = self.ctl.multispec.current_spectrometer()
         avg = 1 if spec is None else spec.settings.state.scans_to_average
 
-        log.debug("AutoRamanFeature.generate_take_one_request: instantiating")
         return TakeOneRequest(take_dark=True, 
                               enable_laser_before=True, 
                               disable_laser_after=True, 
