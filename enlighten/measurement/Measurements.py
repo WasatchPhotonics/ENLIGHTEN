@@ -392,8 +392,6 @@ class Measurements:
 
         log.info(f"checking for: {os.path.join(directory, filename)}, file exists={file_exists}")
 
-        overwrite_file = False
-
         if file_exists:
             should_overwrite = msgbox(prompt=f"Do you wish to overwrite the existing file: {filename}?",
                                       informative_text="All data in the previous file will be lost.",
