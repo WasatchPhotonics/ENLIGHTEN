@@ -386,20 +386,22 @@ class Measurements:
         directory = common.get_default_data_dir()
 
         # warn user if they are about to overwrite an existing file
-        file_exists = os.path.exists(os.path.join(directory, filename))
+        # it looks like only risk is for .csv and .json extensions
+        file_exists = (os.path.exists(os.path.join(directory, f'{filename}.csv'))
+                       or os.path.exists(os.path.join(directory, f'{filename}.json')))
 
-        log.info(f"file_exists checking for: {os.path.join(directory, filename)}, result={file_exists}")
+        log.info(f"checking for: {os.path.join(directory, filename)}, file exists={file_exists}")
 
         overwrite_file = False
 
         if file_exists:
-            overwrite_file = msgbox(prompt=f"Do you wish to overwrite the existing file {filename}?",
-                                    informative_text="This will overwrite the existing file.",
-                                    buttons="Yes|No")=="Yes"
+            should_overwrite = msgbox(prompt=f"Do you wish to overwrite the existing file: {filename}?",
+                                      informative_text="All data in the previous file will be lost.",
+                                      buttons="Yes|No") == "Yes"
+        else:
+            should_overwrite = False
 
-            log.info(f"file: {filename} exists, user overwrite result = {overwrite_file}")
-
-        if (not file_exists) or overwrite_file:
+        if not file_exists or should_overwrite:
             # doesn't use the dict
             if self.ctl.save_options.save_csv():
                 self.export_session_csv(directory, filename, visible_only=visible_only)
@@ -414,8 +416,8 @@ class Measurements:
             if self.ctl.save_options.save_spc():
                 self.export_session_spc(directory, filename, visible_only=visible_only)
 
-            for callback in self.observers["export"]:
-                callback(export, visible_only)
+        for callback in self.observers["export"]:
+            callback(export, visible_only)
 
     def read_measurements(self):
         return self.generate_export_dict()
