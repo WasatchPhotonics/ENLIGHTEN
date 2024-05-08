@@ -385,22 +385,37 @@ class Measurements:
         # currently, all Sessions are stored in ~/EnlightenSpectra
         directory = common.get_default_data_dir()
 
-        # doesn't use the dict
-        if self.ctl.save_options.save_csv():
-            self.export_session_csv(directory, filename, visible_only=visible_only)
+        # warn user if they are about to overwrite an existing file
+        file_exists = os.path.exists(os.path.join(directory, filename))
 
-        # cache export dictionary so we can re-use it between JSON and ExternalAPI
-        if self.ctl.save_options.save_json() or len(self.observers["export"]) > 0:
-            export = self.generate_export_dict(visible_only=visible_only)
+        log.info(f"file_exists checking for: {os.path.join(directory, filename)}, result={file_exists}")
 
-        if self.ctl.save_options.save_json():
-            self.export_session_json(directory, filename, export)
+        overwrite_file = False
 
-        if self.ctl.save_options.save_spc():
-            self.export_session_spc(directory, filename, visible_only=visible_only)
+        if file_exists:
+            overwrite_file = msgbox(prompt=f"Do you wish to overwrite the existing file {filename}?",
+                                    informative_text="This will overwrite the existing file.",
+                                    buttons="Yes|No")=="Yes"
 
-        for callback in self.observers["export"]:
-            callback(export, visible_only)
+            log.info(f"file: {filename} exists, user overwrite result = {overwrite_file}")
+
+        if (not file_exists) or overwrite_file:
+            # doesn't use the dict
+            if self.ctl.save_options.save_csv():
+                self.export_session_csv(directory, filename, visible_only=visible_only)
+
+            # cache export dictionary so we can re-use it between JSON and ExternalAPI
+            if self.ctl.save_options.save_json() or len(self.observers["export"]) > 0:
+                export = self.generate_export_dict(visible_only=visible_only)
+
+            if self.ctl.save_options.save_json():
+                self.export_session_json(directory, filename, export)
+
+            if self.ctl.save_options.save_spc():
+                self.export_session_spc(directory, filename, visible_only=visible_only)
+
+            for callback in self.observers["export"]:
+                callback(export, visible_only)
 
     def read_measurements(self):
         return self.generate_export_dict()
