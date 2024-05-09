@@ -176,6 +176,7 @@ class BatchCollection:
         self.clear_before_batch = False
         self.export_after_batch = False
         self.collection_start_time = None
+        self.take_one_template = None
 
         # set initial values before binding callbacks
         self.init_from_config()
@@ -267,7 +268,7 @@ class BatchCollection:
             self.laser_mode = "spectrum"
         elif self.rb_laser_batch.isChecked():
             self.laser_mode = "batch"
-        else: # elif self.rb_laser_manual.isChecked():
+        else: 
             self.laser_mode = "manual"
 
         # update config from state
@@ -328,6 +329,8 @@ class BatchCollection:
 
     def start_collection(self):
         """ Someone clicked the "Start Collection" button in VCRButtons. """
+        self.take_one_template = None
+
         if not self.enabled:
             self.stop() # just to be safe
             return False
@@ -345,13 +348,10 @@ class BatchCollection:
 
             # initialize driver-level laser auto_triggering and dark collection
             if self.laser_mode == "spectrum":
-                take_one_request = TakeOneRequest(take_dark=self.dark_before_batch, enable_laser_before=True, disable_laser_after=True, laser_warmup_ms=self.laser_warmup_ms)
+                self.take_one_template = TakeOneRequest(take_dark=self.dark_before_batch, enable_laser_before=True, disable_laser_after=True, laser_warmup_ms=self.laser_warmup_ms)
             else:
-                take_one_request = TakeOneRequest()
+                self.take_one_template = TakeOneRequest()
 
-            log.debug(f"starting laser_mode {self.laser_mode}, so take_one_request {take_one_request}")
-            self.ctl.multispec.change_device_setting("take_one_request", take_one_request)
-            self.ctl.multispec.set_app_state("take_one_request", take_one_request)
             self.running = True
 
         else:
@@ -499,6 +499,11 @@ class BatchCollection:
         self.running = False
         self.timer_measurement.stop()
         self.timer_batch.stop()
+
+        if self.laser_mode != "manual":
+            log.debug(f"BatchCollection.stop: disabling all lasers (laser_mode {self.laser_mode})")
+            self.ctl.laser_control.set_laser_enable(False, all_=True)
+
         self.ctl.vcr_controls.unregister_observer("save", self.save_complete)
         self.ctl.vcr_controls.unregister_observer("stop", self.vcr_stop)
         self.current_batch_start_time = None
@@ -529,7 +534,7 @@ class BatchCollection:
         self.next_tick_start_time = datetime.datetime.now() + datetime.timedelta(milliseconds=self.measurement_period_ms)
 
         # when this event completes, VCRControls will call our save_complete method
-        self.ctl.vcr_controls.step_save(self.save_complete)
+        self.ctl.vcr_controls.step_save(self.save_complete, take_one_template=self.take_one_template)
 
     def save_complete(self):
         """ A VCRControls "step_save" event has completed. """
