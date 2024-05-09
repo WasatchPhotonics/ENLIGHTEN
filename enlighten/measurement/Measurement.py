@@ -222,8 +222,8 @@ class Measurement:
                            'Baseline Correction Algo',
                            'ROI Pixel Start',
                            'ROI Pixel End',
-                           'ROI Vertical Region 1 Start',
-                           'ROI Vertical Region 1 End',
+                           'ROI Vertical Pixel Start',
+                           'ROI Vertical Pixel End',
                            'CCD C4',
                            'Slit Width',
                            'Cropped',
@@ -840,8 +840,8 @@ class Measurement:
         if field == "declared score":            return self.declared_match.score if self.declared_match is not None else 0
         if field == "roi pixel start":           return self.settings.eeprom.roi_horizontal_start
         if field == "roi pixel end":             return self.settings.eeprom.roi_horizontal_end
-        if field == "roi vertical region 1 start":  return self.settings.eeprom.roi_vertical_region_1_start
-        if field == "roi vertical region 1 end":    return self.settings.eeprom.roi_vertical_region_1_end
+        if field == "roi vertical pixel start":  return self.settings.eeprom.roi_vertical_region_1_start
+        if field == "roi vertical pixel end":    return self.settings.eeprom.roi_vertical_region_1_end
         if field == "cropped":                   return self.processed_reading.is_cropped()
         if field == "interpolated":              return self.ctl.interp.enabled if self.ctl else False
         if field == "raman intensity corrected": return self.processed_reading.raman_intensity_corrected
