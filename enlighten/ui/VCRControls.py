@@ -208,11 +208,11 @@ class VCRControls:
         self.update_visibility()
 
     ## collect one measurement, then go back to paused
-    def step(self, save=False, completion_callback=None):
+    def step(self, save=False, completion_callback=None, take_one_template=None):
         log.debug("step")
 
         # pass along any callback related to the completion of the TakeOne process
-        self.ctl.take_one.start(save=save, completion_callback=completion_callback)
+        self.ctl.take_one.start(save=save, completion_callback=completion_callback, template=take_one_template)
 
         # to be clear, these callbacks indicate the "step" button was clicked/fired, 
         # NOT that it is complete
@@ -222,9 +222,9 @@ class VCRControls:
 
         self.update_visibility()
 
-    def step_save(self, completion_callback=None): 
+    def step_save(self, completion_callback=None, take_one_template=None): 
         log.debug("step_save")
-        self.step(save=True, completion_callback=completion_callback)
+        self.step(save=True, completion_callback=completion_callback, take_one_template=take_one_template)
         for callback in list(self.callbacks["step_save"]):
             callback()
         self.update_visibility()
