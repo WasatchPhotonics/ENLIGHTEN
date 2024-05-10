@@ -2,9 +2,13 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
-- 2024-??-?? 4.0.60
+- 2024-05-10 4.0.60
     - UI
+        - display empirical assessment of laser firing status in Marquee
         - merged in mpylon's awesome EEPROMEditor search bar
+    - Measurements
+        - prompt user before overwriting existing files on export
+        - add vertical ROI metadata
     - BatchCollection
         - always disable laser in BatchCollection.stop
         - added TakeOneFeature copy-ctor (fixed LaserMode.Spectrum)
