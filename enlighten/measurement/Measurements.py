@@ -399,6 +399,18 @@ class Measurements:
         if self.ctl.save_options.save_spc():
             self.export_session_spc(directory, filename, visible_only=visible_only)
 
+        # add items to the combobox after the user clicks export
+        # this is really janky
+        cb_box = self.ctl.form.ui.comboBox_scope_capture_save_prefix
+        if cb_box.currentText() not in [cb_box.itemText(index) for index in range(cb_box.count())]:
+            cb_box.insertItem(0, cb_box.currentText())
+
+            # Make sure clear is at the bottom
+            idx = cb_box.findText("<<Clear>>")
+            if idx != -1:
+                cb_box.removeItem(idx)
+                cb_box.insertItem(cb_box.count(), "<<Clear>>")
+
         for callback in self.observers["export"]:
             callback(export, visible_only)
 

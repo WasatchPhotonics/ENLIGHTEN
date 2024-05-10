@@ -202,6 +202,14 @@ class VCRControls:
             # if this happens, it means the main save callback was unregistered
             msgbox("Fatal Error: Save button has no callback.", "Error")
 
+
+        # Probably not the right place for this, but
+
+        # Only add unique text
+        # cb_box = self.ctl.form.ui.comboBox_scope_capture_save_prefix
+        # if cb_box.currentText() not in [cb_box.itemText(index) for index in range(cb_box.count())]:
+        #     cb_box.insertItem(0, cb_box.currentText())
+
         for callback in list(self.callbacks["save"]):
             callback()
 

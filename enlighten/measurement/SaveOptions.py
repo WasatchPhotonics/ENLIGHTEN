@@ -3,6 +3,7 @@ import logging
 import re
 import os
 
+from PyQt5.QtCore import Qt, QEvent, QObject
 from enlighten import common
 from enlighten import util
 
@@ -49,7 +50,7 @@ class SaveOptions():
         self.le_label_template       = None
         self.le_filename_template    = None
         self.le_note                 = None
-        self.le_prefix               = None
+        self.cb_prefix               = None
         self.le_suffix               = None
         self.line_number             = 0
         self.multipart_suffix        = None # currently set/cleared by BatchCollection, used by Measurement
@@ -85,7 +86,7 @@ class SaveOptions():
         self.le_label_template    = cfu.lineEdit_save_label_template
         self.le_filename_template = cfu.lineEdit_save_filename_template
         self.le_note              = cfu.lineEdit_scope_capture_save_note
-        self.le_prefix            = cfu.lineEdit_scope_capture_save_prefix
+        self.cb_prefix            = cfu.comboBox_scope_capture_save_prefix
         self.le_suffix            = cfu.lineEdit_scope_capture_save_suffix
         self.rb_by_col            = cfu.radioButton_save_by_column
         self.rb_by_row            = cfu.radioButton_save_by_row
@@ -134,10 +135,13 @@ class SaveOptions():
         self.le_label_template  .editingFinished    .connect(self.update_widgets)
         self.le_filename_template.editingFinished   .connect(self.update_widgets)
         self.le_note            .editingFinished    .connect(self.update_widgets)
-        self.le_prefix          .editingFinished    .connect(self.update_widgets)
+        # self.cb_prefix          .editTextChanged       .connect(self.update_widgets)
         self.le_suffix          .editingFinished    .connect(self.update_widgets)
         self.rb_by_col          .toggled            .connect(self.update_widgets)
         self.rb_by_row          .toggled            .connect(self.update_widgets)
+
+        # put combox stuff down here for now
+        self.cb_prefix.editTextChanged.connect(self.update_cb_prefix)
 
         log.debug("instantiated SaveOptions")
 
@@ -175,7 +179,12 @@ class SaveOptions():
         if self.ctl.config.has_option(s, "filename_template"):
             self.le_filename_template.setText(self.ctl.config.get(s, "filename_template"))
 
-        self.le_prefix          .setText   (self.ctl.config.get(s, "prefix"))
+        self.cb_prefix          .addItems(["<<Clear>>"])
+        self.cb_prefix          .setCurrentText   (self.ctl.config.get(s, "prefix"))
+
+        filtered = EventFilter(self.cb_prefix)
+        self.cb_prefix.installEventFilter(filtered)
+
         self.le_suffix          .setText   (self.ctl.config.get(s, "suffix"))
         self.le_note            .setText   (re.sub(",", "", self.ctl.config.get(s, "note")))
 
@@ -187,6 +196,20 @@ class SaveOptions():
     def init_checkbox(self, cb, option):
         value = self.ctl.config.get_bool("save", option)
         cb.setChecked(value)
+
+    """
+    Strategy for giving memory to the combo box
+    - Only add items to the combox after VCR
+    """
+
+    def update_cb_prefix(self, text):
+        if text == "<<Clear>>":
+            log.debug("clearing cb_prefix combo box")
+            self.cb_prefix.clear()
+            self.cb_prefix.addItems(["<<Clear>>"])
+            self.cb_prefix.currentText = ""
+
+
 
     ## Update widgets and config state when:
     #
@@ -291,7 +314,7 @@ class SaveOptions():
     def allow_rename_files      (self): return self.cb_allow_rename.isChecked()
     def append                  (self): return self.cb_append.isChecked() and self.cb_append.isEnabled()
     def note                    (self): return re.sub(",", "", self.le_note.text()).strip()
-    def prefix                  (self): return self.le_prefix.text().strip()
+    def prefix                  (self): return self.cb_prefix.currentText().strip()
     def label_template          (self): return self.le_label_template.text().strip()
     def filename_template       (self): return self.le_filename_template.text().strip()
     def filename_as_label       (self): return self.cb_filename_as_label.isChecked()
