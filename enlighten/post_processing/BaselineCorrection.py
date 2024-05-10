@@ -76,7 +76,6 @@ class BaselineCorrection:
         self.airpls_smoothness_param = 20
         self.airpls_max_iters = 500
         self.airpls_conv_thresh = 8e-4
-        self.airpls_whittaker_deriv_order = 2
 
         # first check whether one should be selected and/or enabled
         self.init_from_config()
@@ -153,7 +152,6 @@ class BaselineCorrection:
         set_field("current_algo_name",            self.ctl.config.get      (s, "algo",                         default=None))
         set_field("airpls_max_iters",             self.ctl.config.get_int  (s, "airpls_max_iters",             default=None))
         set_field("airpls_smoothness_param",      self.ctl.config.get_int  (s, "airpls_smoothness_param",      default=None))
-        set_field("airpls_whittaker_deriv_order", self.ctl.config.get_int  (s, "airpls_whittaker_deriv_order", default=None))
         set_field("airpls_conv_thresh",           self.ctl.config.get_float(s, "airpls_conv_thresh",           default=None))
 
     def init_algos(self):
@@ -190,7 +188,6 @@ class BaselineCorrection:
                     algo = AirPLS(smoothness_param      = self.airpls_smoothness_param,
                                   max_iters             = self.airpls_max_iters,
                                   conv_thresh           = self.airpls_conv_thresh)
-                                 #whittaker_deriv_order = self.airpls_whittaker_deriv_order)
                 else:
                     algo = BL_CLASSES[abbr]()
                 self.algos[name] = algo

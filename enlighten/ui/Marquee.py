@@ -21,6 +21,16 @@ class Marquee:
     
     Also provides a button-less "toast" notification that auto-fades over 2sec.
 
+    This class is more complicated than it needs to be for two reasons:
+
+    1. The Marquee used to be animated, with gradual slide-out drawers and such.
+       This is the reason for some of the "schedule" nomenclature and timing.
+       Not really needed anymore, and could be simplified out.
+
+    2. Part of the KnowItAll implementation included the concept of "hazard" vs
+       "benign" identifications. We aren't currently using that, but it may come
+       back.
+
     TODO:
 
     - consider restoring some level of animation (just not moving buttons, like
