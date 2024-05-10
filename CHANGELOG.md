@@ -9,6 +9,7 @@
         - always disable laser in BatchCollection.stop
         - added TakeOneFeature copy-ctor (fixed LaserMode.Spectrum)
     - plugins
+        - fixed bug in base class
         - moved EmissionLines and RamanLines to combobox
     - XS
         - added microcontroller serial number

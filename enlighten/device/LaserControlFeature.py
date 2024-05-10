@@ -17,6 +17,10 @@ class LaserControlFeature:
     BTN_OFF_TEXT = "Turn Laser Off"
     BTN_ON_TEXT = "Turn Laser On"
 
+    MIN_INITIALIZATION_RATIO = 1.20 # 20% increase
+
+    LASER_INIT_TOKEN = "laser_init"
+
     def __init__(self, ctl):
         self.ctl = ctl
 
@@ -26,6 +30,10 @@ class LaserControlFeature:
         self.locked = False
         self.restrictions = set()
         self.observers = { "enabled": set(), "disabled": set() }
+
+        self.initializing = False
+        self.area_at_start = None
+        self.min_at_start = None
 
         cfu = self.ctl.form.ui
 
@@ -267,6 +275,54 @@ class LaserControlFeature:
                 log.info("laser stopped firing (watchdog or interlock?)")
                 self.set_laser_enable(False, spec)
 
+        self.update_initializion_status(reading)
+
+    def update_initializion_status(self, reading):
+        """ Provide empirical feedback on when the laser actually starts firing """
+
+        if not self.initializing:
+            return
+
+        if self.area_at_start is None:
+            # The laser is initializing, but we have not yet characterized
+            # the "dark" spectrum for comparison to determine when the laser 
+            # actually starts emitting.
+            #
+            # I thought about doing a Pearson match, but that seems overkill,
+            # and honestly performs some normalization that isn't entirely
+            # appropriate here. If the laser is firing, the total energy received
+            # should increase. Conceptually, the area under the curve should
+            # rise. We can just do this in pixel space (sum intensities), as
+            # there doesn't seem any benefit to doing a formal integration 
+            # against wavelength or wavenumber axes.
+            #
+            # The only extra processing I'm doing is a dead-simple baseline 
+            # correction (pull down to zero) so we can more easily compute
+            # a percentage increase for the laser.
+            self.min_at_start = min(reading.spectrum)
+            self.area_at_start = sum([(intensity - self.min_at_start) for intensity in reading.spectrum])
+            log.debug(f"update_initialization_status: min_at_start {self.min_at_start}, area_at_start {self.area_at_start}")
+            return
+
+        # check to see if there's evidence that the laser is firing (at least,
+        # the received energy has perceptibly increased)
+        area = sum([(intensity - self.min_at_start) for intensity in reading.spectrum])
+        ratio = area / self.area_at_start
+        log.debug(f"update_initialization_status: ratio {ratio:0.2f}%")
+
+        if ratio >= self.MIN_INITIALIZATION_RATIO:
+            # declare the laser to be firing
+            log.debug("update_initialization_status: laser believed to be firing")
+
+            self.initializing = False
+            self.min_at_start = None
+            self.area_at_start = None
+
+            self.ctl.marquee.info("laser is warming-up", token=self.LASER_INIT_TOKEN, period_sec=10)
+
+        else:
+            log.debug(f"update_initialization_status: laser does not appear to be firing")
+
     ## So Controller etc don't call directly into internal callbacks
     def toggle_laser(self):
         log.debug("toggle_laser called")
@@ -462,12 +518,13 @@ class LaserControlFeature:
                 log.critical(f"toggle_callback: turning laser OFF even though previous spec.settings.state.laser_enabled was {spec.settings.state.laser_enabled}, as spec.app_state.laser_state is {spec.app_state.laser_state}")
 
         self.set_laser_enable(flag)
-        token = "laser_init"
-
+        
         if flag:
-            self.ctl.marquee.info("laser is initializing and stabilizing for use", token=token, period_sec=10)
+            self.ctl.marquee.info("laser is initializing", token=self.LASER_INIT_TOKEN, period_sec=10) # consider persist=True
         else:
-            self.ctl.marquee.clear(token=token)
+            self.ctl.marquee.clear(token=self.LASER_INIT_TOKEN)
+
+        self.initializing = flag
 
     ## 
     # This gets called when the "front" (Scope) laser excitation value is changed.
