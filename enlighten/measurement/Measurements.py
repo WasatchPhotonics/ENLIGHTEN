@@ -388,7 +388,8 @@ class Measurements:
         # warn user if they are about to overwrite an existing file
         # it looks like only risk is for .csv and .json extensions
         file_exists = (os.path.exists(os.path.join(directory, f'{filename}.csv'))
-                       or os.path.exists(os.path.join(directory, f'{filename}.json')))
+                       or os.path.exists(os.path.join(directory, f'{filename}.json'))
+                       or os.path.exists(os.path.join(directory, f'{filename}.spc')))
 
         log.info(f"checking for: {os.path.join(directory, filename)}, file exists={file_exists}")
 
