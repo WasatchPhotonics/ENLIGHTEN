@@ -3,10 +3,13 @@
 ## 4.0 GUI and Plugin Refactoring
 
 - 2024-??-?? 4.0.60
-    - moved EmissionLines and RamanLines to combobox
+    - UI
+        - merged in mpylon's awesome EEPROMEditor search bar
     - BatchCollection
         - always disable laser in BatchCollection.stop
         - added TakeOneFeature copy-ctor (fixed LaserMode.Spectrum)
+    - plugins
+        - moved EmissionLines and RamanLines to combobox
     - XS
         - added microcontroller serial number
 - 2024-04-05 4.0.59
