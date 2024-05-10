@@ -99,7 +99,7 @@ class EnlightenPluginBase:
         plugin_ctl = self.ctl.plugin_controller
         for pfw in plugin_ctl.plugin_field_widgets:
             if name == pfw.field_name:
-                return pwf
+                return pfw
 
     def get_widget_from_name(self, name):
         pfw = self.get_plugin_field(name)
