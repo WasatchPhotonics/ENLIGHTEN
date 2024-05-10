@@ -2673,6 +2673,20 @@ QComboBox QListView
                 <number>0</number>
                </property>
                <item>
+                <layout class="QFormLayout" name="searchFormLayout">
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="searchLabel">
+                   <property name="text">
+                    <string>Search</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QLineEdit" name="searchLineEdit" />
+                 </item>
+                </layout>
+               </item>
+               <item>
                 <widget class="QFrame" name="frame_eeprom_editor">
                  <property name="wpPanel" stdset="0">
                   <bool>false</bool>
