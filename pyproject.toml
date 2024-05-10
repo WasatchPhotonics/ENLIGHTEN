@@ -1,0 +1,50 @@
+[project]
+name = "ENLIGHTEN"
+version = "4.0.9"
+description = "This is a demo package"
+readme = "README.md"
+requires-python = ">=3.8"
+
+dependencies= [
+    "tensorflow==2.13.1",
+    "numpy",
+    "PySide6",
+    "PyQt5",
+    "pygtail",
+    "pyusb",
+    "pefile",
+    "pyinstaller",
+    "pywavelets",
+    "superman",
+    "pyqtgraph",
+    "libusb",
+    "seabreeze",
+    "boto3",
+    "bleak",
+    "pyftdi",
+    "adafruit-blinka",
+    "SPyC_Writer",
+    "crcmod",
+    "pandas",
+    "pexpect",
+    "pip",
+    "psutil",
+    "pytest",
+    "scipy",
+    "xlwt",
+    "qimage2ndarray",
+    "2to3",
+    "matplotlib==3.7",
+    "spc_spectra",
+    "jcamp",
+]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include=["enlighten",]

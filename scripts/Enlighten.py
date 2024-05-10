@@ -9,6 +9,21 @@ import sys
 import os
 import re
 
+# Try to resolve issue with having to set PYTHONPATH everytime
+# Get the root directory of your project
+root_dir = os.path.dirname(os.path.abspath(__file__))
+# .:plugins:enlighten/assets/uic_qrc:../Wasatch.PY:../spyc_writer/src:../jcamp
+# Define the subfolders you want to include in the Python path
+subfolders = ['plugins', 'enlighten/assets/uic_qrc',]
+subfolders = []
+# Construct absolute paths to the subfolders
+subfolder_paths = [os.path.join(root_dir, folder) for folder in subfolders]
+
+# Add subfolder paths to the Python path
+for path in subfolder_paths:
+    if os.path.isdir(path):
+        sys.path.append(path)
+
 if "macOS" in platform.platform():
     import matplotlib
     import matplotlib.pyplot as plt
