@@ -8,32 +8,6 @@ needs to be re-thunk. For now, get a quick sense from rendered
 
 Note that all classes which start with a capital "Q" are part of Qt.
 
-This document is organized as follows:
-
-- [Infrastructure / Scaffolding](#Infrastructure)
-    - [scripts/enlighten.py](enlighten.py)
-    - [EnlightenApplication](#EnlightenApplication)
-    - [BasicWindow](#enlighten.ui.BasicWindow)
-    - [enlighten_layout](#enlighten.assets.uic_qrc.enlighten_layout)
-    - [scripts/rebuild_resources.sh](#rebuild_resources.sh)
-    - [Controller](#Controller)
-    - [BusinessObjects](#BusinessObjects)
-- [Device Connection](#Device Connection)
-- [Data Acquisition](#Data Acquisition)
-- [Package Overview](#Package Overview)
-    - [enlighten.ui](#enlighten.ui)
-    - [enlighten.device](#enlighten.device)
-    - [enlighten.post_processing](#enlighten.post_processing)
-    - [enlighten.scope](#enlighten.scope)
-    - [enlighten.measurements](#enlighten.measurements)
-    - [enlighten.file_io](#enlighten.file_io)
-    - [enlighten.data](#enlighten.data)
-    - [enlighten.network](#enlighten.network)
-    - [enlighten.parser](#enlighten.parser)
-    - [enlighten.timing](#enlighten.timing)
-    - [enlighten.Plugins](#enlighten.Plugins)
-    - [enlighten.factory](#enlighten.factory)
-
 ## Infrastructure
 
 The following files and classes represent the overall skeletal structure and 
@@ -231,10 +205,10 @@ Conceptually, for any one spectrometer:
                                           |_WasatchDevice_|                                         |
                    _____________________________  |   |  ______________________                     |
                   |_FeatureIdentificationDevice_|-+   +-|_SpectrometerSettings_|<-------------------'
-                   _____________________________  |        |   ________
-                  |__________AndorDevice________|-+        +--|_EEPROM_|
-                   _____________________________  |        |   ___________________
-                  |___________BLEDevice_________|-+        +--|_SpectrometerState_|
+                                   _____________  |        |  ________
+                                  |_AndorDevice_|-+        +-|_EEPROM_|
+                                     ___________  |        |  ___________________
+                                    |_BLEDevice_|-+        +-|_SpectrometerState_|
                                                   |
                                                  etc
 
@@ -254,7 +228,8 @@ This is how ENLIGHTEN reads and processes spectral data:
 
 ## Package Overview
 
-In the following, important classes are in **bold**.
+In the following, important classes are in **bold** (fundamental to operation or
+heavily-used).
 
 ### enlighten.ui
 
@@ -279,7 +254,7 @@ The enlighten.ui package contains classes controlling major aspects of the user 
 - Sounds: encapsulates ENLIGHTEN's (currently-limited) array of sound effects
 - **StatusBarFeature:** responsible for the configurable status bar at the bottom of the scope, showing spectral max, temperature, battery, etc
 - **StatusIndicators:** responsible for the 3 "virtual LEDs" at the bottom-right of the screen (hardware, laser, temperature)
-- Stylesheets: convenient access to CSS files for recoloring and styling widget appearance
+- **Stylesheets:** convenient access to CSS files for recoloring and styling widget appearance
 - **ThumbnailWidget:** responsible for creating the miniature graph "thumbnails" along the left-hand ENLIGHTEN "Clipboard", and responding to button events
 - TimeoutDialog
 - **VCRControls:** responsible for the "VCR control" buttons atop the control palette (Play/Pause, Stop, Save, Step, Step-and-Save)
@@ -290,24 +265,29 @@ This package contains classes which track state of individual spectrometers,
 including stateful features corresponding to hardware features implemented in the
 firmware of the spectrometer itself.
 
-- AccessoryControlFeature
-- AmbientTemperatureFeature
-- BatteryFeature
-- DetectorTemperatureFeature
-- **EEPROMEditor:**
-- EEPROMWriter
-- ExternalTriggerFeature
-- GainDBFeature
-- HighGainModeFeature
-- **IntegrationTimeFeature:**
-- **LaserControlFeature:**
-- LaserTemperatureFeature
-- LaserWatchdogFeature
-- MultiPos
-- **Multispec:**
-- RegionControlFeature
-- **Spectrometer:**
-- **SpectrometerApplicationState:**
+- AccessoryControlFeature: not currently used; created for 220190 / 220290 USB boards with OEM Accessory Conector
+- AmbientTemperatureFeature: used for boards with ambient thermistor (typically STM32 ARM)
+- BatteryFeature: used on XS spectrometers with batteries
+- DetectorTemperatureFeature: used on Regulated and Cooled spectrometers with a detector TEC
+- **EEPROMEditor:** used to display EEPROM contents (if not authenticated), or edit them (if logged-in)
+- EEPROMWriter: encapsulates function to send an EEPROM to Wasatch.PY for writing to non-volitile storage
+- ExternalTriggerFeature: 
+- GainDBFeature: control gain (dB) in XS spectrometers
+- HighGainModeFeature: toggle high-gain mode on InGaAs spectrometers
+- **IntegrationTimeFeature:** control integration time
+- **LaserControlFeature:** control laser (dis/enable and power via PWM)
+- LaserTemperatureFeature: monitor laser temperature and (if supported) control setpoint
+- [LaserWatchdogFeature](enlighten.device.LaserWatchdogFeature): configure / enable laser watchdog on XS spectrometers
+- MultiPos: experimental class to support spectrometers with multiple grating positions
+- **Multispec:** encapsulate management, selection, display and settings across multiple connected spectrometers
+- RegionControlFeature: experimental class to support multiple ROI on 2D detectors
+- **Spectrometer:** standard class to control and encapsulate settings/state 
+  for a single spectrometer; contains .settings (SpectrometerSettings) and 
+  .app_state (SpectrometerApplicationState)
+- **SpectrometerApplicationState:** holds state relating to a single spectrometer
+  which is only relevant to the ENLIGHTEN application (as opposed to the driver-level 
+  SpectrometerSettings, EEPROM and SpectrometerState of Wasatch.PY, which are 
+  applicable to _any_ spectrometer user and are not "ENLIGHTEN-specific")
 
 ### enlighten.post_processing
 
