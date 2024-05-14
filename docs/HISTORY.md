@@ -6,9 +6,12 @@ re-written during each.
 The classes aren't clickable because class names change during refactoring and
 current documentation wouldn't apply to old versions anyway.
 
+(Do you see a lot of weird 'digraph' stuff below? View the 
+[rendered](https://wasatchphotonics.com/api/ENLIGHTEN/md_docs_2_h_i_s_t_o_r_y.html) version.)
+
 # ENLIGHTEN 1.0
 
-Basically as-received from Nathan. (View the [rendered version](https://wasatchphotonics.com/api/ENLIGHTEN/md_docs__h_i_s_t_o_r_y.html) of this document.)
+Basically as-received from Nathan. 
 
 \dot
     digraph enlighten_1_0 {

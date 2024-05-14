@@ -3,27 +3,36 @@
 This is a high-level overview of how ENLIGHTEN is structured.
 
 I used to lead-off with a graphical diagram but it's grown a bit unwieldy and 
-needs to be re-thunk. For now, get a quick sense from early [ENLIGHTEN pre-history](HISTORY.md).
+needs to be re-thunk. For now, get a quick sense from rendered 
+[ENLIGHTEN history](https://wasatchphotonics.com/api/ENLIGHTEN/md_docs_2_h_i_s_t_o_r_y.html).
 
 Note that all classes which start with a capital "Q" are part of Qt.
 
 This document is organized as follows:
 
 - [Infrastructure / Scaffolding](#Infrastructure)
-- UI
-- Device Connection
-- Data Acquisition
-- Device Features
-- Post-Processing
-- Scope
-- Measurements
-- File I/O
-- Data
-- Network
-- Parser
-- Timing
-- Plugins
-- Factory
+    - [scripts/enlighten.py](enlighten.py)
+    - [EnlightenApplication](#EnlightenApplication)
+    - [BasicWindow](#enlighten.ui.BasicWindow)
+    - [enlighten_layout](#enlighten.assets.uic_qrc.enlighten_layout)
+    - [scripts/rebuild_resources.sh](#rebuild_resources.sh)
+    - [Controller](#Controller)
+    - [BusinessObjects](#BusinessObjects)
+- [Device Connection](#Device Connection)
+- [Data Acquisition](#Data Acquisition)
+- [Package Overview](#Package Overview)
+    - [enlighten.ui](#enlighten.ui)
+    - [enlighten.device](#enlighten.device)
+    - [enlighten.post_processing](#enlighten.post_processing)
+    - [enlighten.scope](#enlighten.scope)
+    - [enlighten.measurements](#enlighten.measurements)
+    - [enlighten.file_io](#enlighten.file_io)
+    - [enlighten.data](#enlighten.data)
+    - [enlighten.network](#enlighten.network)
+    - [enlighten.parser](#enlighten.parser)
+    - [enlighten.timing](#enlighten.timing)
+    - [enlighten.Plugins](#enlighten.Plugins)
+    - [enlighten.factory](#enlighten.factory)
 
 ## Infrastructure
 
@@ -32,7 +41,7 @@ scaffolding of ENLIGHTEN "as a Qt GUI application". These are all the things
 which are involved in bringing the program up and showing the initial (blank)
 graph.
 
-### scripts/enlighten.py
+### enlighten.py
 
 At its heart, ENLIGHTEN is a Python script. When you "run ENLIGHTEN," you are 
 literally running scripts/enlighten.py.
@@ -56,10 +65,10 @@ and arguments between methods.
 It does these things:
 
 - instantiates a QApplication, which will hold the "run loop"
-- instantiates an [enlighten.ui.BasicWindow](#enlighten.ui.BasicWindow), which is the GUI you see on-screen (see below)
+- instantiates a [BasicWindow](#BasicWindow), which is the GUI you see on-screen (see below)
 - instantiates a wasatch.applog, which handles all application logging
 - throws up a pretty QSplashScreen for you to look at while everything else loads
-- instantiates an [enlighten.Controller](#enlighten.Controller), passing in all the above
+- instantiates an [enlighten.Controller](#Controller), passing in all the above
 - calls QApplication.exec(), which basically means "keep ticking all threads until your exit signal is raised"
 
 Note that no particular method is called on the Controller. It doesn't have to, 
@@ -67,19 +76,20 @@ because the Controller constructor kicks off various threads which go and look
 for spectrometers to graph, and otherwise waits for you to click things on the 
 GUI.
 
-### enlighten.ui.BasicWindow
+### BasicWindow
 
-This is an important class in constructing the GUI. It extends QMainWindow, 
-meaning it is "the main window" of the runningQApplication.
+enlighten.ui.BasicWindow is an important class in constructing the GUI. It 
+extends QMainWindow, meaning it is "the main window" of the runningQApplication.
 
-The main thing it does is import [enlighten_layout](#enlighten.assets.uic_qrc.enlighten_layout), 
+The main thing it does is import [enlighten_layout](#enlighten_layout), 
 which you will see referenced throughout the codebase as Controller.form.ui (or 
 abbreviated as cfu).
 
-### enlighten.assets.uic_qrc.enlighten_layout
+### enlighten_layout
 
-This is the all-important file which defines "the ENLIGHTEN GUI" -- all the 
-QFrames, QPushButtons and pretty much everything you see on-screen.
+enlighten.assets.uic_qrc.enlighten_layout is the all-important file which defines
+"the ENLIGHTEN GUI" -- all the QFrames, QPushButtons and pretty much everything 
+you see on-screen.
 
 The "source code" for this file is:
 
@@ -97,17 +107,17 @@ editing layouts, including breaking layouts. There's a reason I often cheat to
 the XML.)
 
 This file gets "compiled" (converted) into enlighten_layout.py by 
-[rebuild_resources.sh](#scripts/rebuild_resources.sh). It is that "Python" version of
-the file which gets imported by [BasicWindow](#enlighten.layout.BasicWindow)
+[rebuild_resources.sh](#rebuild_resources.sh). It is that "Python" version of
+the file which gets imported by [BasicWindow](#BasicWindow)
 and referenced as Controller.form.ui.
 
-### scripts/rebuild_resources.sh
+### rebuild_resources.sh
 
-If you're reading this straight-through, this is the right time to address this
-script.
+If you're reading this straight-through, this is the right time to address 
+scripts/rebuild_resources.sh.
 
 A lot of Qt resources, including GUI icons and the all-important 
-[enlighten_layout](#enlighten.assets.ui.enlighten_layout), are editted / managed
+[enlighten_layout](#enlighten_layout), are editted / managed
 as text files, and then converted into Python modules which can be imported and
 referenced directly by Python code.
 
@@ -123,24 +133,24 @@ This script needs to be run when:
 - first cloning an ENLIGHTEN distribution 
 - changing branches or going back to an earlier tag
 - adding or editting any icons (.qrc)
-- editing [enlighten_layout.ui](enlighten.assets.uic_qrc.enlighten_layout)
+- editing [enlighten_layout](#enlighten_layout)
 
 It is a Bash script, which means you may have to run it different ways on different
 operating systems (in a Git Cmd shell on Windows, I use "sh scripts\rebuild_resources.sh").
 
 Note that PySide2 generated Python 2 source, which needed to be converted through 2to3.
 
-### enlighten.Controller
+### Controller
 
 Fundamentally, the Controller is [now] responsible for four things:
 
-1. Calls [BusinessObjects](enlighten.BusinessObjects) to instantiate a long list
+1. Calls [BusinessObjects](#BusinessObjects) to instantiate a long list
    of "feature objects" which individually represent specific ENLIGHTEN features.
 2. Instantiates a bunch of periodic QTimers that go off and do application-level
    things like monitor status. (Individual business objects may encapsulate their
    own internal QTimers for feature-specific things.)
 3. Handles connection and initialization of newly-detected 
-   [Spectrometers](enlighten.device.Spectrometer).
+   [Spectrometer](#Spectrometer)s.
 4. Polls connected spectrometers for new spectra to graph.
 
 By and large, anything in the Controller which isn't in direct support of one of 
@@ -156,7 +166,7 @@ encapsulated in the future:
 - Move attempt_reading, acquire_reading, update_scope_graphs, process_reading etc
   to a hypothetical enlighten.DataAcquisition.
 
-### enlighten.BusinessObjects
+### BusinessObjects
 
 This class exists to make the Controller's constructor shorter. Basically it's just
 encapsulating construction of all the various "feature objects" which individually
@@ -244,15 +254,15 @@ This is how ENLIGHTEN reads and processes spectral data:
 
 ## Package Overview
 
-In the following, important classes are in *bold*.
+In the following, important classes are in **bold**.
 
 ### enlighten.ui
 
 The enlighten.ui package contains classes controlling major aspects of the user interface.
 
-- *Authentication:* handles when user "authenticates" with a password (ctrl-A)
+- **Authentication:** handles when user "authenticates" with a password (ctrl-A)
 - BasicDialog
-- BasicWindow: see [enlighten_layout](enlighten.assets.uic_qrc.enlighten_layout)
+- BasicWindow: used exclusively(?) by [enlighten_layout](#enlighten_layout)
 - Clipboard: responsible for interacting with the OS _system_ clipboard for copy-paste (_not_ the set of Measurement thumbnails)
 - Colors: encapsulates colors for graph traces
 - DidYouKnowFeature: responsible for the pop-up tutorial at launch
@@ -261,18 +271,18 @@ The enlighten.ui package contains classes controlling major aspects of the user 
 - GuideFeature: currently deprecated, idea is to interactively prompt user with "good spectroscopy practices" (think Microsoft's "Clippy")
 - HelpFeature: responsible for online help
 - ImageResources: used to access the various icons and images compiled-in from .rc files via rcc
-- *Marquee:* responsible for the "message bar" at the top of the screen
+- **Marquee:** responsible for the "message bar" at the top of the screen
 - MouseWheelFilter: prevents "mouse-wheel" events from affecting QVerticalSliders
-- *PageNavigation:* used for moving between Views (Scope, Settings, Hardware, Log, Factory) and Modes (Raman, Non-Raman, Expert)
+- **PageNavigation:** used for moving between Views (Scope, Settings, Hardware, Log, Factory) and Modes (Raman, Non-Raman, Expert)
 - ResourceMonitorFeature: added to track down a memory leak
 - ScrollStealFilter: helps detatch "mouse-wheel" events from accidentally scrolling QSpinBoxes and QComboBoxes
 - Sounds: encapsulates ENLIGHTEN's (currently-limited) array of sound effects
-- *StatusBarFeature:* responsible for the configurable status bar at the bottom of the scope, showing spectral max, temperature, battery, etc
-- *StatusIndicators:* responsible for the 3 "virtual LEDs" at the bottom-right of the screen (hardware, laser, temperature)
+- **StatusBarFeature:** responsible for the configurable status bar at the bottom of the scope, showing spectral max, temperature, battery, etc
+- **StatusIndicators:** responsible for the 3 "virtual LEDs" at the bottom-right of the screen (hardware, laser, temperature)
 - Stylesheets: convenient access to CSS files for recoloring and styling widget appearance
-- *ThumbnailWidget:* responsible for creating the miniature graph "thumbnails" along the left-hand ENLIGHTEN "Clipboard", and responding to button events
+- **ThumbnailWidget:** responsible for creating the miniature graph "thumbnails" along the left-hand ENLIGHTEN "Clipboard", and responding to button events
 - TimeoutDialog
-- *VCRControls:* responsible for the "VCR control" buttons atop the control palette (Play/Pause, Stop, Save, Step, Step-and-Save)
+- **VCRControls:** responsible for the "VCR control" buttons atop the control palette (Play/Pause, Stop, Save, Step, Step-and-Save)
 
 ### enlighten.device
 
@@ -284,20 +294,20 @@ firmware of the spectrometer itself.
 - AmbientTemperatureFeature
 - BatteryFeature
 - DetectorTemperatureFeature
-- EEPROMEditor
+- **EEPROMEditor:**
 - EEPROMWriter
 - ExternalTriggerFeature
 - GainDBFeature
 - HighGainModeFeature
-- IntegrationTimeFeature
-- LaserControlFeature
+- **IntegrationTimeFeature:**
+- **LaserControlFeature:**
 - LaserTemperatureFeature
 - LaserWatchdogFeature
 - MultiPos
-- Multispec
+- **Multispec:**
 - RegionControlFeature
-- Spectrometer
-- SpectrometerApplicationState
+- **Spectrometer:**
+- **SpectrometerApplicationState:**
 
 ### enlighten.post_processing
 
@@ -327,7 +337,7 @@ view (more-or-less).
 
 - Cursor
 - EmissionLamps
-- Graph
+- **Graph:**
 - GridFeature
 - PresetFeature
 - RamanShiftCorrectionFeature
@@ -337,16 +347,16 @@ view (more-or-less).
 This package contains classes involved in saving and graphing individual spectra.
 
 - AreaScanFeature
-- Measurement
-- MeasurementFactory
-- Measurements
-- SaveOptions
+- **Measurement:**
+- **MeasurementFactory:**
+- **Measurements:**
+- **SaveOptions:**
 
 ### enlighten.file_io
 
-This package contains classes relating to file storage other than spectral measurements (handled in [Measurements](#enlighten.measurement).
+This package contains classes relating to file storage other than spectral measurements (handled in [Measurements](#measurement).
 
-- Configuration
+- **Configuration:**
 - FileManager
 - HardwareFileOutputManager
 - LoggingFeature
@@ -375,7 +385,7 @@ This package contains classes relating to file storage other than spectral measu
 
 ### enlighten.timing
 
-- BatchCollection
+- **BatchCollection:**
 - Ramp
 - RollingDataSet
 
@@ -386,7 +396,7 @@ This package contains classes relating to file storage other than spectral measu
 
 ### enlighten.Plugins
 
-- PluginController
+- **PluginController:**
 - PluginFieldWidget
 - PluginGraphSeries
 - PluginModuleInfo
