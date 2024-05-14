@@ -21,8 +21,11 @@ function convertToPy3()
 {
     local DEST="$1"
 
-    echo -n "...to Python3"
-    $TWO_TO_THREE -w $DEST > /dev/null 2>&1
+    if [ "$USE_PYSIDE_2" ]
+    then
+        echo -n "...to Python3"
+        $TWO_TO_THREE -w $DEST > /dev/null 2>&1
+    fi
 }
 
 ################################################################################
