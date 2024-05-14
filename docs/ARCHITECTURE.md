@@ -201,6 +201,7 @@ the Spectrometer object, which will internally communicate through its
 WasatchDeviceWrapper's WrapperWorker's WasatchDevice.
 
 Conceptually, for any one spectrometer:
+
      _____________________________________________________   _______________________________________________
     |____________________Child_Thread_____________________| |__________________Main_Thread__________________|
      _______________________________________________________________________________   _____________________
