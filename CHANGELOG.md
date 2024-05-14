@@ -2,6 +2,8 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2024-05-14 4.0.61
+    - changed laser status messages
 - 2024-05-10 4.0.60
     - UI
         - display empirical assessment of laser firing status in Marquee
