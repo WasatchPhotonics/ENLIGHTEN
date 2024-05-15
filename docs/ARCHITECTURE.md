@@ -1,12 +1,17 @@
 # Architecture
 
-This is a high-level overview of how ENLIGHTEN is structured.
+This started as a high-level overview of how ENLIGHTEN is structured.
+It kind of evolved into "if I had a few hours to orient a new ENLIGHTEN developer,
+what would they want to know?"
 
 I used to lead-off with a graphical diagram but it's grown a bit unwieldy and 
 needs to be re-thunk. For now, get a quick sense from rendered 
 [ENLIGHTEN history](https://wasatchphotonics.com/api/ENLIGHTEN/md_docs_2_h_i_s_t_o_r_y.html).
 
 Note that all classes which start with a capital "Q" are part of Qt.
+
+Also note that GitHub auto-generates an expanding ToC for Markdown documents
+under the hamburger menu ;-)
 
 ## Infrastructure
 
@@ -153,6 +158,98 @@ with virtual methods like:
 - init_hotplug (anything required when a new spectrometer is connected)
 - register_observer
 - close (prepare for application shutdown)
+
+## GUI Philosophy
+
+### Views
+
+ENLIGHTEN has a pull-down menu offering the following Views. Fundamentally none 
+change behavior, just which "screen" or "page" is being shown. 
+
+Note that in enlighten_layout.ui, all five screens are "stacked" in the Z-axis
+in one big QStackedWidget, and all PageNav does is move the selected page to top.
+
+- Scope: main real-time live spectral graph
+- Settings: ENLIGHTEN application settings
+- Hardware: EEPROMEditor mostly, plus firmware versions and some other bits at the bottom
+- Log: honestly not often used; scrolling color-coded "tail" of enlighten.log
+- Factory: normally-hidden screen, enabled via Authentication, providing Area 
+  Scan and some hardware strip-charts. Honestly, when all these features are 
+  working well and reliably, we can enable Factory at default (or move some of
+  these to Hardware).
+    
+### Operating Modes
+
+If "Views" determine which page is shown, Mode determines which widgets are 
+actually visible. There are currently three Modes, which were selected more from
+use-case pragmatism and workflow optimization than any taxonomic completeness.
+
+- Raman: features relevant to Raman measurements are visible; features mainly 
+  used for non-Raman techniques are hidden. X-axis defaults to wavenumber.
+- Non-Raman: features relevant to non-Raman techniques like absorbance, 
+  reflectance, transmission, emission, irradiance, color etc are visible; 
+  features mainly used for Raman are hidden. X-axis defaults to wavelength.
+- Expert all features are visible; if the user wishes to perform Raman absorbance
+  or emission in wavenumbers, it's assumed that they know what they're doing.
+  Also exposes additional controls that aren't normally visualized in either 
+  Raman or non-Raman mode (like laser TEC mode, or setting laser power in raw
+  duty cycle rather than calibrated mW).
+
+It will often be a matter of opinion as to whether something should be hidden
+behind a password (like the Factory view), or simply kept for Expert mode
+(like Peak Sharpening), or extracted out of ENLIGHTEN proper and offered as
+a plugin. In different cases we have deliberately exercised all three options,
+in part "to show we can" (demonstrate different ways the application can be
+dynamically reconfigured to support different skill-levels and use-cases).
+
+### Design Philosophy
+
+Some random thoughts about why ENLIGHTEN was designed the way it was.
+
+- Performance: ENLIGHTEN should prioritize "feeling fast" over "doing everything
+  it possibly can." One way it does that is by ticking key loops at a languid 
+  user-perception rate (considering that most monitors only refresh at 60Hz, and 
+  even movies are shot at 24fps), rather than maximized data-acquisition rate.
+- Cross-Platform: this is important. Obviously most customers will use Windows,
+  but supporting our POSIX cousins is important to many customers.
+- Open-Source: ENLIGHTEN is by-and-for scientists. We should prioritize openness
+  and transparency.
+- Raw data: we should always prefer offering unprocessed, raw data. We don't
+  entirely do that right now (2x2 binning, dark pixel correction etc all happen
+  automatically if configured in the EEPROM).
+- File formats: first priority is to be able to open/load anything; I'm less
+  worried about being able to save in every format. Our current CSV and Export
+  formats are optimized for Excel; data analysts wishing to parse data in 
+  scripts are encouraged to use the JSON format provided for that purpose.
+- Marquee: this should ALWAYS be visible, so there is always a standard place to
+  display status messages and alerts. It should not be animated in a way that 
+  moves other controls, such that a user might mis-click on the wrong button.
+- Control Palette: all standard spectrometer controls should be accessed from the
+  scrolling palette to the right. It would be a valuable nice-to-have if users 
+  could drag-and-move widgets up and down across the palette to their preferred 
+  ordering (persisted in enlighten.ini).
+- StatusIndicators: I guess the concept was that the three "virtual LEDs" at the
+  bottom-right of the screen should show a quick "all is well" (green status) or
+  "alert" indicators. I'm not sure the motif is entirely effective, and for a few
+  years they were largely ignored, but we've recently tried to ensure their 
+  coloration and tooltips are sensible.
+- StatusBar: important scalar metrics (including hardware states relevant to the
+  currently selected spectrometer) should be added as selectable options on the 
+  StatusBar for quick reference.
+- Multispec: ENLIGHTEN should theoretically be able to control up to 127 
+  connected USB spectrometers in parallel. I think the current record is
+  12 or 14. Note the "Lock" feature of Multispec, allowing you to simultaneously
+  fire all their lasers, or change integration time en masse.
+- Help: we have added MANY ways for ENLIGHTEN to actively teach / guide / nudge
+  users toward spectroscopic best practices (DidYouKnow, Tooltips, WhatsThis, F1,
+  GuideFeature etc). Most end-users won't know as much about spectroscopy as our
+  best spectroscopists. ENLIGHTEN has a key role as a teaching tool to teach our
+  users while they take spectra.
+- Palette: we didn't pick "dark mode" to be cool -- in real spectroscopic labs,
+  they work with the lights off and want as few bright light sources as possible;
+  that includes laptop GUIs.
+- Skinnable: the stylesheet hierarchy and "theme" options were provided to 
+  encourage customization in student labs, helping to make spectroscopy "fun"
 
 ## Timing Loops
 
@@ -305,17 +402,17 @@ firmware of the spectrometer itself.
 This package contains classes used to post-process raw spectra received from 
 spectrometers.
 
-- AbsorbanceFeature
-- AutoRamanFeature
-- BaselineCorrection
-- BoxcarFeature
-- DarkFeature
-- DespikingFeature
-- ElectricalDarkCorrectionFeature
-- HorizROIFeature
-- InterpolationFeature
-- RamanIntensityCorrection
-- ReferenceFeature
+- AbsorbanceFeature: used for Beer's Law absorbance (builds on TransmissionFeature)
+- AutoRamanFeature: a software-driven autonomous "Raman Mode" (averaged dark, laser enable, laser warmup, averaged sample, laser disable, dark subtraction)
+- BaselineCorrection: wraps numerous baseline correction algorithms offered by the open-source superman package
+- BoxcarFeature: offers a moving-average convolution to smooth spectra at the cost of broadened peaks
+- DarkFeature: encapsulates dark-correction (aka ambient subtraction)
+- DespikingFeature: experimental feature to remove cosmic rays; not currently usable with Raman (should probably be a plugin at this point)
+- ElectricalDarkCorrectionFeature: uses "optically masked" black pixels on the edges of detectors to automatically subtract electrical readout noise
+- HorizROIFeature: handles cropping the spectra to the configured horizontal start/stop pixels
+- InterpolationFeature: allows interpolating a spectrum to a fixed (regular incremental) x-axis to ease comparison across units with different wavecals
+- RamanIntensityCorrection: applies the y-axis intensity correction calibrated with NIST SRM standards
+- ReferenceFeature: similar to DarkFeature, responsible for the reference measurement used in many non-Raman techniques
 - RichardsonLucy
 - ScanAveragingFeature
 - TakeOneFeature
