@@ -25,6 +25,7 @@ a = Analysis(   ['scripts/Enlighten.py'],
                 optimize=0,
 )
 
+
 pyz = PYZ(a.pure)
 
 exe = EXE(

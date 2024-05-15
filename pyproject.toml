@@ -2,7 +2,8 @@
 [project]
 name="ENLIGHTEN"
 version="4.0.60"
-dependencies=[
+dependencies=[	"Wasatch.PY @ git+ssh://git@github.com/WasatchPhotonics/Wasatch.PY.git@jklein-fix-the-metadata",
+				"jcamp @ git+ssh://git@github.com/WasatchPhotonics/jcamp.git",
 				"tensorflow==2.13.1",
 				"numpy",
 				"PySide6",
@@ -40,6 +41,6 @@ build-backend="setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where=["."]
-include=["enlighten",enlighten*", "plugins", "plugins*"]
+include=["enlighten","enlighten*", "plugins", "plugins*"]
 exclude=['environments', 'enlighten_py311', 'testSpectrometers']
 namespaces=true
