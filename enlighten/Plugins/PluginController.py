@@ -10,18 +10,18 @@ import numpy as np
 from time import sleep
 from queue import Queue
 
-from .PluginFieldWidget import PluginFieldWidget
-from .PluginModuleInfo  import PluginModuleInfo
-from .PluginValidator   import PluginValidator
-from .PluginWorker      import PluginWorker
-from .TableModel        import TableModel
+from enlighten.Plugins.PluginFieldWidget import PluginFieldWidget
+from enlighten.Plugins.PluginModuleInfo  import PluginModuleInfo
+from enlighten.Plugins.PluginValidator   import PluginValidator
+from enlighten.Plugins.PluginWorker      import PluginWorker
+from enlighten.Plugins.TableModel        import TableModel
 
 from enlighten import common
 from enlighten.scope.Graph import Graph
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 
 # this is in ../../plugins
-from EnlightenPlugin import *
+from plugins.EnlightenPlugin import *
 
 if common.use_pyside2():
     from PySide2 import QtWidgets, QtCore
