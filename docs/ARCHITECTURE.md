@@ -1,24 +1,16 @@
 # Architecture
 
-This started as a high-level overview of how ENLIGHTEN is structured.
-It kind of evolved into "if I had a few hours to orient a new ENLIGHTEN developer,
-what would they want to know?"
+This file provides an "ENLIGHTEN 101" for new developers wishing to work on the 
+codebase.
 
-I used to lead-off with a graphical diagram but it's grown a bit unwieldy and 
-needs to be re-thunk. For now, get a quick sense from rendered 
-[ENLIGHTEN history](https://wasatchphotonics.com/api/ENLIGHTEN/md_docs_2_h_i_s_t_o_r_y.html).
-
-Note that all classes which start with a capital "Q" are part of Qt.
-
-Also note that GitHub auto-generates an expanding ToC for Markdown documents
-under the hamburger menu ;-)
+_Note that all classes which start with a capital "Q" are part of Qt._
 
 ## Infrastructure
 
 The following files and classes represent the overall skeletal structure and 
-scaffolding of ENLIGHTEN "as a Qt GUI application". These are all the things
-which are involved in bringing the program up and showing the initial (blank)
-graph.
+scaffolding of ENLIGHTEN "as a Qt GUI application" (unrelated to spectroscopy 
+or spectrometers). These are all the things which are involved in bringing the 
+program up and showing the initial (blank) graph.
 
 ### enlighten.py
 
@@ -58,11 +50,12 @@ GUI.
 ### BasicWindow
 
 enlighten.ui.BasicWindow is an important class in constructing the GUI. It 
-extends QMainWindow, meaning it is "the main window" of the runningQApplication.
+extends QMainWindow, meaning it is "the main window" of the running
+QApplication.
 
 The main thing it does is import [enlighten_layout](#enlighten_layout), 
-which you will see referenced throughout the codebase as Controller.form.ui (or 
-abbreviated as cfu).
+which you will see referenced throughout the codebase as Controller.form.ui 
+(sometimes abbreviated as cfu).
 
 ### enlighten_layout
 
@@ -121,7 +114,7 @@ Note that PySide2 generated Python 2 source, which needed to be converted throug
 
 ### Controller
 
-Fundamentally, the Controller is [now] responsible for four things:
+Fundamentally, the Controller is responsible for four things:
 
 1. Calls [BusinessObjects](#BusinessObjects) to instantiate a long list
    of "feature objects" which individually represent specific ENLIGHTEN features.
@@ -158,6 +151,110 @@ with virtual methods like:
 - init_hotplug (anything required when a new spectrometer is connected)
 - register_observer
 - close (prepare for application shutdown)
+
+## Timing Loops
+
+These are the major event timers that "tick" important ENLIGHTEN activities.
+
+Note that QTimers call their "tick" function _on the GUI thread,_ meaning they
+can do what they want with Qt widgets. In contrast, threading.Threads are not
+on the GUI thread, and can't change Qt objects. This gets a little weird in
+plugins. We should consider changing all threading.Threads to QThreads.
+
+- Controller.bus_timer (~1Hz) - checks for newly-connected USB spectrometers, 
+  newly discovered BLE spectrometers, and unplugged (missing) spectrometers
+- Controller.hard_strip_timer - drives the "strip-charts" in the Factory view
+  (QTimer should be encapsulated into StripChartFeature)
+- Controller.acquisition_timer (~10Hz) - polls each connected spectrometer for 
+  latest spectrum. Note this means that, regardless of integration time or
+  USB speed or anything else, _ENLIGHTEN_ does not read or graph spectra faster
+  than 10Hz. That is deliberate and in line with its goals.
+- Controller.status_timer (~1Hz) - checks memory usage, sends a heartbeat to
+  each spectrometer (probably unneeded now that we're multithreaded), polls
+  for any "status messages" flowed back from spectrometer threads, updates
+  laser status display, checks for any asynchronous plugin responses, and ticks
+  KnowItAll.
+- ...
+
+Note that most QTimers are configured as "SingleShot" deliberately, meaning
+they complete a tick, _then_ schedule their next tick after a constant "sleep"
+time. That means bus_timer for instance isn't really 1Hz, because ticks don't
+_start_ at 1-sec intervals, but rather the next tick starts 1sec after the
+previous tick ended. This makes it impossible for any tick to ever extend
+into another, and helps the application gracefully adapt to increased load / 
+slower CPUs / multiple spectrometers.
+
+## Device Connection
+
+This is basically what happens when you connect a spectrometer.
+
+The Controller has a QTimer called bus_timer. At 1Hz, it calls tick_bus_listener.
+That function refreshes a list of visible USB and BLE spectrometers. It then calls
+connect_new to see if any of the devices are "new" to the list, and if so, pick one
+(ONE) and try to connect to it.
+
+It attempts to connect to the device by passing the wasatch.DeviceID of the "new"
+device to a new wasatch.WasatchDeviceWrapper and calling that object's connect()
+method.
+
+If WasatchDeviceWrapper.connect returns true, that indicates Wasatch.PY now has
+an active wasatch.WrapperWorker object *running in a new thread.* 
+
+The new WrapperWorker has a WasatchDevice. The WasatchDevice has a .hardware 
+attribute which is usually a wasatch.FeatureIdentificationDevice (a Wasatch 
+Photonics USB spectrometer supporting the "FID" protocol defined in ENG-0001), 
+but sometimes may be a wasatch.AndorDevice or wasatch.BLEDevice or whatever).
+
+After successful WasatchDeviceWrapper.connect(), the WasatchDeviceWrapper is 
+handed to enlighten.device.Multispec, which is responsible for keeping track of 
+all currently-connected spectrometers. Multispec uses the WasatchDeviceWrapper 
+to instantiate an enlighten.device.Spectrometer.
+
+Going forward, ENLIGHTEN will primarily communicate with the spectrometer through
+the Spectrometer object, which will internally communicate through its
+WasatchDeviceWrapper's WrapperWorker's WasatchDevice.
+
+Conceptually, for any one spectrometer:
+
+     _____________________________________________________   _______________________________________________
+    |____________________Child_Thread_____________________| |__________________Main_Thread__________________|
+     _______________________________________________________________________________   _____________________
+    |________________________________Wasatch.PY_____________________________________| |______ENLIGHTEN______|
+                                                                                               ____________
+                                                                                              |_Controller_|
+                                                                                                    | has-a 
+                                       __________________                                      _____v______ 
+                                      |_threading.Thread_|                                    |_Multispec__|
+                                                  /\                                                | has-many      
+                                                  \/          ______________________   has-a  ______v_______
+                                              is-a|          |_WasatchDeviceWrapper_|<-------|_Spectrometer_|
+                                            ______|________     |                                   |
+                                           |_WrapperWorker_|<---' has-a                             | convenience
+                                                  | has-a                                           | handle
+                                           _______v_______                                          |
+                                          |_WasatchDevice_|                                         |
+                   _____________________________  |   |  ______________________                     |
+                  |_FeatureIdentificationDevice_|-+   +-|_SpectrometerSettings_|<-------------------'
+                                   _____________  |        |  ________
+                                  |_AndorDevice_|-+        +-|_EEPROM_|
+                                     ___________  |        |  ___________________
+                                    |_BLEDevice_|-+        +-|_SpectrometerState_|
+                                                  |
+                                                 etc
+
+Note that the wasatch.WasatchDeviceWrapper is part of Wasatch.PY, but is 
+instantiated by ENLIGHTEN's Controller in the main thread. The wasatch.WrapperWorker 
+and "everything else" in Wasatch.PY is instantiated in the child thread.
+
+enlighten.Spectrometer receives a "convenience handle" to wasatch.SpectrometerSettings, 
+which was instantiated and populated down in Wasatch.PY, and passed back up through the
+WrapperWorker.
+
+## Data Acquisition
+
+This is how ENLIGHTEN reads and processes spectral data:
+
+...TBD
 
 ## GUI Philosophy
 
@@ -250,89 +347,6 @@ Some random thoughts about why ENLIGHTEN was designed the way it was.
   that includes laptop GUIs.
 - Skinnable: the stylesheet hierarchy and "theme" options were provided to 
   encourage customization in student labs, helping to make spectroscopy "fun"
-
-## Timing Loops
-
-These are the major event timers that "tick" important ENLIGHTEN activities.
-
-Note that QTimers call their "tick" function _on the GUI thread,_ meaning they
-can do what they want with Qt widgets. In contrast, threading.Threads are not
-on the GUI thread, and can't change Qt objects. This gets a little weird in
-plugins. We should consider changing all threading.Threads to QThreads.
-
-- ... (TBD)
-
-## Device Connection
-
-This is basically what happens when you connect a spectrometer.
-
-The Controller has a QTimer called bus_timer. At 1Hz, it calls tick_bus_listener.
-That function refreshes a list of visible USB and BLE spectrometers. It then calls
-connect_new to see if any of the devices are "new" to the list, and if so, pick one
-(ONE) and try to connect to it.
-
-It attempts to connect to the device by passing the wasatch.DeviceID of the "new"
-device to a new wasatch.WasatchDeviceWrapper and calling that object's connect()
-method.
-
-If WasatchDeviceWrapper.connect returns true, that indicates Wasatch.PY now has
-an active wasatch.WrapperWorker object *running in a new thread.* 
-
-The new WrapperWorker has a WasatchDevice. The WasatchDevice has a .hardware 
-attribute which is usually a wasatch.FeatureIdentificationDevice (a Wasatch 
-Photonics USB spectrometer supporting the "FID" protocol defined in ENG-0001), 
-but sometimes may be a wasatch.AndorDevice or wasatch.BLEDevice or whatever).
-
-After successful WasatchDeviceWrapper.connect(), the WasatchDeviceWrapper is 
-handed to enlighten.device.Multispec, which is responsible for keeping track of 
-all currently-connected spectrometers. Multispec uses the WasatchDeviceWrapper 
-to instantiate an enlighten.device.Spectrometer.
-
-Going forward, ENLIGHTEN will primarily communicate with the spectrometer through
-the Spectrometer object, which will internally communicate through its
-WasatchDeviceWrapper's WrapperWorker's WasatchDevice.
-
-Conceptually, for any one spectrometer:
-
-     _____________________________________________________   _______________________________________________
-    |____________________Child_Thread_____________________| |__________________Main_Thread__________________|
-     _______________________________________________________________________________   _____________________
-    |________________________________Wasatch.PY_____________________________________| |______ENLIGHTEN______|
-                                                                                               ____________
-                                                                                              |_Controller_|
-                                                                                                    | has-a 
-                                       __________________                                      _____v______ 
-                                      |_threading.Thread_|                                    |_Multispec__|
-                                                  /\                                                | has-many      
-                                                  \/          ______________________   has-a  ______v_______
-                                              is-a|          |_WasatchDeviceWrapper_|<-------|_Spectrometer_|
-                                            ______|________     |                                   |
-                                           |_WrapperWorker_|<---' has-a                             | convenience
-                                                  | has-a                                           | handle
-                                           _______v_______                                          |
-                                          |_WasatchDevice_|                                         |
-                   _____________________________  |   |  ______________________                     |
-                  |_FeatureIdentificationDevice_|-+   +-|_SpectrometerSettings_|<-------------------'
-                                   _____________  |        |  ________
-                                  |_AndorDevice_|-+        +-|_EEPROM_|
-                                     ___________  |        |  ___________________
-                                    |_BLEDevice_|-+        +-|_SpectrometerState_|
-                                                  |
-                                                 etc
-
-Note that the wasatch.WasatchDeviceWrapper is part of Wasatch.PY, but is 
-instantiated by ENLIGHTEN's Controller in the main thread. The wasatch.WrapperWorker 
-and "everything else" in Wasatch.PY is instantiated in the child thread.
-
-enlighten.Spectrometer receives a "convenience handle" to wasatch.SpectrometerSettings, 
-which was instantiated and populated down in Wasatch.PY, and passed back up through the
-WrapperWorker.
-
-## Data Acquisition
-
-This is how ENLIGHTEN reads and processes spectral data:
-
-...TBD
 
 ## Package Overview
 
