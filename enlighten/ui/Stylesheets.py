@@ -1,13 +1,29 @@
 import os
 import logging
-
+import sys
 log = logging.getLogger(__name__)
+
+
+def get_asset_path(relative_path):
+    """ Returns the absolute path of an asset given a relative path
+        Needed to ensure that correct path is returned when run
+        in pyinstaller bundle or python environment
+    """
+    if hasattr(sys, '_MEIPASS'):
+        # Running in PyInstaller bundle
+        base_path = sys._MEIPASS
+    else:
+        # Running in regular Python environment
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 
 ## 
 # Encapsulates application of CSS stylesheets to Qt widgets.
 class Stylesheets:
 
-    DEFAULT_PATH = "enlighten/assets/stylesheets"
+    DEFAULT_PATH = get_asset_path("enlighten/assets/stylesheets")
 
     def get_theme_list(self):
         return os.listdir(self.DEFAULT_PATH)
