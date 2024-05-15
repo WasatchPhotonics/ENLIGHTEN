@@ -1,0 +1,45 @@
+
+[project]
+name="ENLIGHTEN"
+version="4.0.60"
+dependencies=[
+				"tensorflow==2.13.1",
+				"numpy",
+				"PySide6",
+				"PyQt5",
+				"pygtail", 
+				"pyusb",
+				"pefile", 
+				"pyinstaller",
+				"pywavelets", 
+				"superman", 
+				"pyqtgraph", 
+				"libusb", 
+				"seabreeze", 
+				"boto3", 
+				"bleak", 
+				"pyftdi", 
+				"adafruit-blinka",
+				"SPyC_Writer",
+				"crcmod",
+				"pandas",
+				"pexpect",
+				"pip",
+				"psutil",
+				"pytest",
+				"scipy",
+				"xlwt",
+				"qimage2ndarray",
+				"2to3",
+				"matplotlib==3.7",
+				"spc_spectra"]
+
+[build-system]
+requires=["setuptools","wheel"]
+build-backend="setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where=["."]
+include=["enlighten",enlighten*", "plugins", "plugins*"]
+exclude=['environments', 'enlighten_py311', 'testSpectrometers']
+namespaces=true
