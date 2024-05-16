@@ -318,7 +318,7 @@ class LaserControlFeature:
             self.min_at_start = None
             self.area_at_start = None
 
-            self.ctl.marquee.info("laser is warming-up", token=self.LASER_INIT_TOKEN, period_sec=10)
+            self.ctl.marquee.info("laser is firing", token=self.LASER_INIT_TOKEN, period_sec=10)
 
         else:
             log.debug(f"update_initialization_status: laser does not appear to be firing")
@@ -520,7 +520,7 @@ class LaserControlFeature:
         self.set_laser_enable(flag)
         
         if flag:
-            self.ctl.marquee.info("laser is initializing", token=self.LASER_INIT_TOKEN, period_sec=10) # consider persist=True
+            self.ctl.marquee.info("laser preparing to fire", token=self.LASER_INIT_TOKEN, period_sec=10) # consider persist=True
         else:
             self.ctl.marquee.clear(token=self.LASER_INIT_TOKEN)
 
