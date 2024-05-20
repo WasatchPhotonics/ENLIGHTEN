@@ -90,9 +90,7 @@ and referenced as `Controller.form.ui`.
 #### CSS
 
 Note that `enlighten_layout.ui` contains a large CSS stylesheet at the top
-of the XML. 
-
-<center>**DO NOT EDIT THIS STYLESHEET.**</center>
+of the XML. **DO NOT EDIT THIS STYLESHEET.**
 
 Instead, edit the file `enlighten/assets/stylesheets/dark/enlighten.css`. 
 `rebuild_resources.sh` calls another script (`embed_stylesheet.sh`) to 
