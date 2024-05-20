@@ -454,36 +454,36 @@ heavily-used).
 
 The enlighten.ui package contains classes controlling major aspects of the user interface.
 
-- **Authentication:** handles when user "authenticates" with a password (ctrl-A)
-- BasicDialog
-- BasicWindow: used exclusively(?) by [enlighten_layout](#enlighten_layout)
-- Clipboard: responsible for interacting with the OS _system_ clipboard for 
+- **`Authentication`**: handles when user "authenticates" with a password (ctrl-A)
+- `BasicDialog`: is this even used?
+- **`BasicWindow`**: used exclusively(?) by [enlighten_layout](#enlighten_layout)
+- `Clipboard`: responsible for interacting with the OS _system_ clipboard for 
   copy-paste (_not_ the set of Measurement thumbnails)
-- Colors: encapsulates colors for graph traces
-- DidYouKnowFeature: responsible for the pop-up tutorial at launch
-- FocusListener: used in detecting when QLineEdit fields are changed
-- GUI: utility methods relating to the GUI; should either grow or shrink
-- GuideFeature: currently deprecated, idea is to interactively prompt user with 
+- `Colors`: encapsulates colors for graph traces
+- `DidYouKnowFeature`: responsible for the pop-up tutorial at launch
+- `FocusListener`: used in detecting when QLineEdit fields are changed
+- `GUI`: utility methods relating to the GUI; should probably either grow or shrink
+- `GuideFeature`: currently deprecated, idea is to interactively prompt user with 
   "good spectroscopy practices" (think Microsoft's "Clippy")
-- HelpFeature: responsible for online help
-- ImageResources: used to access the various icons and images compiled-in from .rc files via rcc
-- **Marquee:** responsible for the "message bar" at the top of the screen
-- MouseWheelFilter: prevents "mouse-wheel" events from affecting QVerticalSliders
-- **PageNavigation:** used for moving between Views (Scope, Settings, Hardware, 
+- `HelpFeature`: responsible for online help
+- `ImageResources`: used to access the various icons and images compiled-in from .rc files via rcc
+- **`Marquee`**: responsible for the "message bar" at the top of the screen
+- `MouseWheelFilter`: prevents "mouse-wheel" events from affecting QVerticalSliders
+- **`PageNavigation`**: used for moving between Views (Scope, Settings, Hardware, 
   Log, Factory) and Modes (Raman, Non-Raman, Expert)
-- ResourceMonitorFeature: added to track down a memory leak
-- ScrollStealFilter: helps detatch "mouse-wheel" events from accidentally 
+- `ResourceMonitorFeature`: added to track down a memory leak
+- `ScrollStealFilter`: helps detatch "mouse-wheel" events from accidentally 
   scrolling QSpinBoxes and QComboBoxes
-- Sounds: encapsulates ENLIGHTEN's (currently-limited) array of sound effects
-- **StatusBarFeature:** responsible for the configurable status bar at the bottom
+- `Sounds`: encapsulates ENLIGHTEN's (currently-limited) array of sound effects
+- **`StatusBarFeature`**: responsible for the configurable status bar at the bottom
   of the scope, showing spectral max, temperature, battery, etc
-- **StatusIndicators:** responsible for the 3 "virtual LEDs" at the bottom-right
+- **`StatusIndicators`**: responsible for the 3 "virtual LEDs" at the bottom-right
   of the screen (hardware, laser, temperature)
-- **Stylesheets:** convenient access to CSS files for recoloring and styling widget appearance
-- **ThumbnailWidget:** responsible for creating the miniature graph "thumbnails"
+- **`Stylesheets`**: convenient access to CSS files for recoloring and styling widget appearance
+- **`ThumbnailWidget`**: responsible for creating the miniature graph "thumbnails"
   along the left-hand ENLIGHTEN "Clipboard", and responding to button events
 - TimeoutDialog
-- **VCRControls:** responsible for the "VCR control" buttons atop the control 
+- **`VCRControls`**: responsible for the "VCR control" buttons atop the control 
   palette (Play/Pause, Stop, Save, Step, Step-and-Save)
 
 ### enlighten.device
@@ -492,30 +492,31 @@ This package contains classes which track state of individual spectrometers,
 including stateful features corresponding to hardware features implemented in the
 firmware of the spectrometer itself.
 
-- AccessoryControlFeature: not currently used; created for 220190 / 220290 USB 
+- `AccessoryControlFeature`: not currently used; created for 220190 / 220290 USB 
   boards with OEM Accessory Connector
-- AmbientTemperatureFeature: used for boards with ambient thermistor (typically STM32 ARM)
-- BatteryFeature: used on XS spectrometers with batteries
-- DetectorTemperatureFeature: used on Regulated and Cooled spectrometers with a detector TEC
-- **EEPROMEditor:** used to display EEPROM contents (if not authenticated), or 
+- `AmbientTemperatureFeature`: used for boards with ambient thermistor (typically STM32 ARM)
+- `BatteryFeature`: used on XS spectrometers with batteries
+- `DetectorTemperatureFeature`: used on Regulated and Cooled spectrometers with a detector TEC
+- **`EEPROMEditor`**: used to display EEPROM contents (if not authenticated), or 
   edit them (if logged-in)
-- EEPROMWriter: encapsulates function to send an EEPROM to Wasatch.PY for writing
+- `EEPROMWriter`: encapsulates function to send an EEPROM to Wasatch.PY for writing
   to non-volitile storage
-- ExternalTriggerFeature: 
-- GainDBFeature: control gain (dB) in XS spectrometers
-- HighGainModeFeature: toggle high-gain mode on InGaAs spectrometers
-- **IntegrationTimeFeature:** control integration time
-- **LaserControlFeature:** control laser (dis/enable and power via PWM)
-- LaserTemperatureFeature: monitor laser temperature and (if supported) control setpoint
-- LaserWatchdogFeature: configure / enable laser watchdog on XS spectrometers
-- MultiPos: experimental class to support spectrometers with multiple grating positions
-- **Multispec:** encapsulate management, selection, display and settings across 
+- `ExternalTriggerFeature`: not recently tested, as most models lack an external
+  triggering connector
+- `GainDBFeature`: control gain (dB) in XS spectrometers
+- `HighGainModeFeature`: toggle high-gain mode on InGaAs spectrometers
+- **`IntegrationTimeFeature`**: control integration time
+- **`LaserControlFeature`**: control laser (dis/enable and power via PWM)
+- `LaserTemperatureFeature`: monitor laser temperature and (if supported) control setpoint
+- `LaserWatchdogFeature`: configure / enable laser watchdog on XS spectrometers
+- `MultiPos`: experimental class to support spectrometers with multiple grating positions
+- **`Multispec`**: encapsulate management, selection, display and settings across 
   multiple connected spectrometers
-- RegionControlFeature: experimental class to support multiple ROI on 2D detectors
-- **Spectrometer:** standard class to control and encapsulate settings/state 
+- `RegionControlFeature`: experimental class to support multiple ROI on 2D detectors
+- **`Spectrometer`**: standard class to control and encapsulate settings/state 
   for a single spectrometer; contains .settings (SpectrometerSettings) and 
   .app_state (SpectrometerApplicationState)
-- **SpectrometerApplicationState:** holds state relating to a single spectrometer
+- **`SpectrometerApplicationState`**: holds state relating to a single spectrometer
   which is only relevant to the ENLIGHTEN application (as opposed to the driver-level 
   SpectrometerSettings, EEPROM and SpectrometerState of Wasatch.PY, which are 
   applicable to _any_ spectrometer user and are not "ENLIGHTEN-specific")
@@ -525,31 +526,31 @@ firmware of the spectrometer itself.
 This package contains classes used to post-process raw spectra received from 
 spectrometers.
 
-- AbsorbanceFeature: used for Beer's Law absorbance (builds on TransmissionFeature)
-- AutoRamanFeature: a software-driven autonomous "Raman Mode" (averaged dark, 
+- `AbsorbanceFeature`: used for Beer's Law absorbance (builds on TransmissionFeature)
+- `AutoRamanFeature`: a software-driven autonomous "Raman Mode" (averaged dark, 
   laser enable, laser warmup, averaged sample, laser disable, dark subtraction)
-- BaselineCorrection: wraps numerous baseline correction algorithms offered by 
+- `BaselineCorrection`: wraps numerous baseline correction algorithms offered by 
   the open-source superman package
-- BoxcarFeature: offers a moving-average convolution to smooth spectra at the 
+- `BoxcarFeature`: offers a moving-average convolution to smooth spectra at the 
   cost of broadened peaks
-- DarkFeature: encapsulates dark-correction (aka ambient subtraction)
-- DespikingFeature: experimental feature to remove cosmic rays; not currently 
+- `DarkFeature`: encapsulates dark-correction (aka ambient subtraction)
+- `DespikingFeature`: experimental feature to remove cosmic rays; not currently 
   usable with Raman (should probably be a plugin at this point)
-- ElectricalDarkCorrectionFeature: uses "optically masked" black pixels on the 
-  edges of detectors to automatically subtract electrical readout noise
-- HorizROIFeature: handles cropping the spectra to the configured horizontal 
+- `ElectricalDarkCorrectionFeature`: uses "optically masked" black pixels on the 
+  edges of XS detectors to automatically subtract electrical readout noise
+- `HorizROIFeature`: handles cropping the spectra to the configured horizontal 
   start/stop pixels
-- InterpolationFeature: allows interpolating a spectrum to a fixed (regular 
+- `InterpolationFeature`: allows interpolating a spectrum to a fixed (regular 
   incremental) x-axis to ease comparison across units with different wavecals
-- RamanIntensityCorrection: applies the y-axis intensity correction calibrated 
+- **`RamanIntensityCorrection`**: applies the y-axis intensity correction calibrated 
   with NIST SRM standards
-- ReferenceFeature: similar to DarkFeature, responsible for the reference 
+- `ReferenceFeature`: similar to DarkFeature, responsible for the reference 
   measurement used in many non-Raman techniques
-- RichardsonLucy: a [peak-sharpening deconvolution](https://en.wikipedia.org/wiki/Richardson%E2%80%93Lucy_deconvolution) 
+- `RichardsonLucy`: a [peak-sharpening deconvolution](https://en.wikipedia.org/wiki/Richardson%E2%80%93Lucy_deconvolution) 
   which reshapes peaks to closer to their "ideal" FWHM (experimental)
-- ScanAveragingFeature: responsible for managing scan averaging; note that scan 
+- `ScanAveragingFeature`: responsible for managing scan averaging; note that scan 
   averaging itself is currently performed in `wasatch.WasatchDevice`
-- TakeOneFeature: a class responsible for taking a single, optionally averaged, 
+- **`TakeOneFeature`**: a class responsible for taking a single, optionally averaged, 
   optionally laser-illuminated, optionally dark-corrected measurement from 
   ENLIGHTEN's perspective. Primarily used by `VCRControls`' "Step" and "Step-and-Save"
   buttons (taking a single measurement at a button click), `BatchCollection` 
@@ -560,7 +561,7 @@ spectrometers.
   on-demand measurements. `wasatch.TakeOneRequest` was a recently-added 
   improvement to simplify specifying what features and settings were to be used 
   with an individual measurement. As with much soft clay, currently messy.
-- TransmissionFeature: provides the basic processing used for both transmission 
+- `TransmissionFeature`: provides the basic processing used for both transmission 
   and reflectance measurements, and also the first stage of computing absorbance.
 
 ### enlighten.scope
@@ -568,26 +569,26 @@ spectrometers.
 This package contains classes relating to the primary on-screen graph in Scope 
 view (more-or-less).
 
-- Cursor: supports a single red vertical "cursor" which can be dragged back and 
+- `Cursor`: supports a single red vertical "cursor" which can be dragged back and 
   forth across the graph, providing the exact x-coordinate on the StatusBar and 
   y-coordinate on the widget. We should probably make _both_ coordinates optional
   fields on the StatusBar, and display both on the widget.
-- EmissionLamps: not sure if this is actually used -- was for an earlier version
+- `EmissionLamps`: not sure if this is actually used -- was for an earlier version
   with built-in wavelength calibration. That was deliberately removed so that all
   units would be calibrated through one process (WPSC). Most of what this provided
   is now available through plugins/Prod/EmissionLines anyway.
-- **Graph:** encapsulates control of the center-screen graph, so was originally
+- **`Graph`**: encapsulates control of the center-screen graph, so was originally
   essentially a Singleton. More recently, I think it now also controls the optional 
   "Plugin" graph, meaning there may be two instances. Hasn't really been refactored
   to make that more obvious / convenient.
-- GridFeature: AKA "Caleb's Feature", a quick shortcut to enable the graph grid
+- `GridFeature`: AKA "Caleb's Feature", a quick shortcut to enable the graph grid
   (otherwise available by right-clicking on the pyqtgraph)
-- PresetFeature: a new feature allowing the current settings of a half-dozen 
+- `PresetFeature`: a new feature allowing the current settings of a half-dozen 
   "Feature" objects providing various acquisition parameters and post-processing
   options to be saved under a handy label (i.e. "Clear liquid vials", "White 
   powder stand-off" etc). Note that plug-ins can register too, such that plugin
   state can be instantly reset to one of several named presets.
-- RamanShiftCorrectionFeature: responsible for applying 
+- `RamanShiftCorrectionFeature`: responsible for applying 
   [ASTM E1840-96(2022)](https://www.astm.org/e1840-96r22.html), a session-level 
   x-axis offset correction which is deliberately not persisted to either EEPROM
   or enlighten.ini (and only affects the wavenumber axis, not wavelength).
@@ -596,16 +597,16 @@ view (more-or-less).
 
 This package contains classes involved in saving and graphing individual spectra.
 
-- AreaScanFeature: responsible for the little-used and probably-broken ENLIGHTEN
-  area scan image on the Factory view
-- **Measurement:** encapsulate a single measurement which has been saved to disk
+- `AreaScanFeature`: responsible for the little-used and probably-broken ENLIGHTEN
+  area scan image on the Factory view; should maybe be moved to `enlighten.factory`?
+- **`Measurement`**: encapsulate a single measurement which has been saved to disk
   (optionally to multiple file extensions) with a `ThumbnailWidget` on the 
   scrolling "Clipboard".
-- **MeasurementFactory:** responsible for generating new `Measurement` instances
-- **Measurements:** encapsulates the set of all `Measurement` instances on the
+- **`MeasurementFactory`**: responsible for generating new `Measurement` instances
+- **`Measurements`**: encapsulates the set of all `Measurement` instances on the
   scrolling "Clipboard" (i.e., the set of `Measurement` objects which would be
   exported to a single file if "Export" was clicked).
-- **SaveOptions:** the set of x-axes (pixel, wavelength, wavenumber) and
+- **`SaveOptions`**: the set of x-axes (pixel, wavelength, wavenumber) and
   `ProcessedReading` components (raw, dark, reference, processed) which should
   be saved in a new `Measurement`, along with the different output formats (CSV,
   JSON, SPC etc) desired
@@ -615,11 +616,11 @@ This package contains classes involved in saving and graphing individual spectra
 This package contains classes relating to file storage other than spectral 
 measurements (handled in [Measurements](#measurement).
 
-- **Configuration:** wraps `enlighten.ini`, the file responsible for persisting 
+- **`Configuration`**: wraps `enlighten.ini`, the file responsible for persisting 
   various application settings across executions
-- FileManager: general-purpose utilities for working with the external filesystem
-- HardwareFileOutputManager: used when logging strip-charts (temperature, battery etc) to file
-- LoggingFeature: although the logfile is primarily generated by `wasatch.applog`, 
+- `FileManager`: general-purpose utilities for working with the external filesystem
+- `HardwareFileOutputManager`: used when logging strip-charts (temperature, battery etc) to file
+- `LoggingFeature`: although the logfile is primarily generated by `wasatch.applog`, 
   this class controls viewing and display of that logfile through ENLIGHTEN
 
 ### enlighten.data
@@ -629,44 +630,46 @@ application. Any or all of them could have been represented by JSON files to loa
 at startup (like the ASTM file for Raman Wavenumber Correction). I have no strong
 opinion on which is better.
 
-- ColorNames: a list of named RGB shades that seemed handy (probably not needed)
-- ModelFWHM: probably used to provide default optical resolution for older units
+- `ColorNames`: a list of named RGB shades that seemed handy (probably not needed)
+- `ModelFWHM`: probably used to provide default optical resolution for older units
   before that was calibrated in the EEPROM
-- ModelInfo: metadata about WP models that can't be readily inferred from the EEPROM
+- `ModelInfo`: metadata about WP models that can't be readily inferred from the EEPROM
 
 ### enlighten.network
 
 Classes and files used for network communication. (Not a big thing in ENLIGHTEN to date.)
 
-- BLEManager: connect to BLE spectrometers (hasn't been tested in awhile)
-- CloudManager: connect to AWS to download XL (Andor) virtual EEPROM files
-- UpdateChecker: check for ENLIGHTEN updates? I forgot this was here. Probably not working...
-- awsConnect: probably used with CloudManager? dunno
-- keys: this file is not checked into the distribution, but must be present when
+- `BLEManager`: connect to BLE spectrometers (hasn't been tested in awhile)
+- `CloudManager`: connect to AWS to download XL (Andor) virtual EEPROM files
+- `UpdateChecker`: check for ENLIGHTEN updates? I forgot this was here. Probably not working...
+- `awsConnect`: probably used with CloudManager? dunno
+- `keys`: this file is not checked into the distribution, but must be present when
   building installers for AWS to work
 
 ### enlighten.parser
 
 These are classes used in loading spectra files.
 
-- ColumnFileParser: loads column-ordered single-measurement CSV files generated
+- `ColumnFileParser`: loads column-ordered single-measurement CSV files generated
   from the "Save" button
-- DashFileParser: loads the older row-ordered CSV files used by Dash (ENLIGHTEN's
+- `DashFileParser`: loads the older row-ordered CSV files used by Dash (ENLIGHTEN's
   predecessor)
-- ExportFileParser: loads the column-ordered "export" multi-measurement CSV files
+- `ExportFileParser`: loads the column-ordered "export" multi-measurement CSV files
   generated from the "Export" button
-- SPCFileParser: loads Thermo-Galactic GRAMS .SPC files
-- TextFileParser: loads dirt-simple 2-column x/y files
+- `SPCFileParser`: loads Thermo-Galactic GRAMS .SPC files
+- `TextFileParser`: loads dirt-simple 2-column x/y files
+
+_We need to add a DXFileParser._
 
 ### enlighten.timing
 
 These are classes used to control (or monitor) measurement timing.
 
-- **BatchCollection:** used to configure autonomous measurement "Batches" at some
+- **`BatchCollection`** used to configure autonomous measurement "Batches" at some
   interval, with configured actions to occur before and after each measurement 
   (or each batch)
-- Ramp: not currently used?
-- RollingDataSet: a data collection which automatically maintains a "moving 
+- `Ramp`: not currently used?
+- `RollingDataSet`: a data collection which automatically maintains a "moving 
   window" and "current moving average," used for smoothing noisy readings like 
   detector or laser temperature
 
@@ -675,8 +678,8 @@ These are classes used to control (or monitor) measurement timing.
 These are features only available on the password-protected "Factory" view, not 
 normally visible on the GUI.
 
-- DFUFeature: put an ARM-based spectrometer (XS) into DFU (Device Firmware Update) mode
-- FactoryStripChartFeature: generate "strip-charts" (a single scalar graphed over
+- `DFUFeature`: put an ARM-based spectrometer (XS) into DFU (Device Firmware Update) mode
+- `FactoryStripChartFeature`: generate "strip-charts" (a single scalar graphed over
   "time" as the x-axis) for detector temperature, laser temperature, battery etc
 
 ### enlighten.Plugins
@@ -684,18 +687,18 @@ normally visible on the GUI.
 Classes related to plug-ins, from ENLIGHTEN's side. Note that [plugins](#plugins)
 is a different namespace (below).
 
-- **PluginController:** primary controller for all plugins
-- PluginFieldWidget: a single GUI field (either output or input) generated by a 
-  plugin (may be str/QLineEdit, bool/QCheckbox, ComboBox etc); maps to exactly 
-  one plugins.EnlightenPluginField object
-- PluginGraphSeries: a graph trace generated by a plugin for display on primary 
+- **`PluginController`**: primary controller for all plugins
+- `PluginFieldWidget`: a single GUI field (either output or input) generated by a 
+  plugin (may be `str`/`QLineEdit`, `bool`/`QCheckbox`, `QComboBox` etc); maps to exactly 
+  one `plugins.EnlightenPluginField` object
+- `PluginGraphSeries`: a graph trace generated by a plugin for display on primary 
   or plugin graph
-- PluginModuleInfo: Python metadata about a dynamically imported plugin (Python 
+- `PluginModuleInfo`: Python metadata about a dynamically imported plugin (Python 
   module)
-- PluginValidator: class to validate plugin configuration, fields etc at load time
-- PluginWorker: for plugins which run in their own thread, the interface between
-  PluginController and the plugin
-- TableModel: for plugins which generate a Pandas DataFrame, used to display 
+- `PluginValidator`: class to validate plugin configuration, fields etc at load time
+- `PluginWorker`: for plugins which run in their own thread, the interface between
+  `PluginController1 and the plugin
+- `TableModel`: for plugins which generate a Pandas `DataFrame`, used to display 
   scrollable table in Qt
 
 ### plugins
