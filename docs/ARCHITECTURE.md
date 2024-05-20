@@ -39,13 +39,13 @@ It does these things:
 - instantiates a `QApplication`, which will hold the "run loop"
 - instantiates a [BasicWindow](#BasicWindow), which is the GUI you see on-screen
   (see below)
-- instantiates a wasatch.applog, which handles all application logging
+- instantiates a `wasatch.applog`, which handles all application logging
 - displays a pretty `QSplashScreen` for you to look at while everything else loads
 - instantiates a [Controller](#Controller), passing in all the above
 - calls `QApplication.exec()`, which basically means "display the form and keep 
   ticking all threads until the form is closed"
 
-Note that no particular method is called on the Controller. It doesn't have to, 
+Note that no particular method is called on the `Controller`. It doesn't have to, 
 because the `Controller` constructor kicks off various threads (`QTimers`) which go 
 and look for spectrometers to graph, poll data from previously-connected 
 spectrometers, and otherwise wait for you to click things on the GUI.
@@ -74,9 +74,9 @@ It is literally an XML file, and often I do tweak it directly in the XML.
 
 .ui files are normally edited using [Qt Designer](https://doc.qt.io/qt-6/qtdesigner-manual.html).
 The path at which that utility is installed on your system varies with OS and Qt
-version and seems to change over time. Currently if using PySide6 and venv it 
-lands in VENV_ROOT/Scripts/pyside6-designer. If not using venv, it could be in
-/usr/local/bin (at writing on MacOS).
+version and seems to change over time. Currently if using PySide6 and `venv` it 
+lands in `VENV_ROOT/Scripts/pyside6-designer`. If not using `venv`, it could be in
+`/usr/local/bin` (at writing on MacOS).
 
 (My one bit of advice regarding Designer is to watch some YouTube videos on
 "Qt designer layouts", including breaking layouts. There's a reason I often cheat
@@ -87,16 +87,22 @@ This file is converted into `enlighten_layout.py` by
 the file which gets imported by [BasicWindow](#BasicWindow)
 and referenced as `Controller.form.ui`.
 
+#### CSS
+
 Note that `enlighten_layout.ui` contains a large CSS stylesheet at the top
-of the XML. DO NOT EDIT THIS STYLESHEET. Instead, edit the file 
-`enlighten/assets/stylesheets/dark/enlighten.css`. `rebuild_resources.sh`
-calls another script (`embed_stylesheet.sh`) to automatically update the 
-stylesheet in `enlighten_layout.ui` with the one from `enlighten.css`.
+of the XML. 
+
+**DO NOT EDIT THIS STYLESHEET.** 
+
+Instead, edit the file `enlighten/assets/stylesheets/dark/enlighten.css`. 
+`rebuild_resources.sh` calls another script (`embed_stylesheet.sh`) to 
+automatically update the stylesheet in `enlighten_layout.ui` with the one from 
+`enlighten.css`.
 
 ### rebuild_resources.sh
 
 If you're reading this straight-through, now is the right time to address 
-scripts/rebuild_resources.sh.
+`scripts/rebuild_resources.sh`.
 
 A lot of Qt resources, including GUI icons and the all-important 
 [enlighten_layout](#enlighten_layout), are edited / managed as text files, and 
@@ -119,11 +125,11 @@ This script needs to be run when:
 - editing `enlighten.css`
 
 It is a Bash shell script, which means you may have to run it different ways on 
-different operating systems (in a Git Cmd shell on Windows, I use `sh 
-scripts\rebuild_resources.sh`).
+different operating systems (in a Git Cmd shell on Windows, I use 
+`sh scripts\rebuild_resources.sh`).
 
 Note that PySide2 generated Python 2 source, which needed to be converted through
-2to3.
+`2to3`.
 
 ### Controller
 
@@ -146,7 +152,7 @@ out of the `Controller`, to improve encapsulation, readability and maintainabili
 
 - Move `bus_timer`, `connect_new`, `initialize_new_device`, `set_from_ini_file` 
   etc into a hypothetical `enlighten.DeviceConnection` class which is solely 
-  responsible for finding and connecting to new `Spectrometer`s..
+  responsible for finding and connecting to new `Spectrometers`.
 - Move `attempt_reading`, `acquire_reading`, `update_scope_graphs`, 
   `process_reading` etc to a hypothetical `enlighten.DataAcquisition`.
 
@@ -169,10 +175,12 @@ Note that we would probably benefit from an ABC (Abstract Base Class)
 
 These are the major event timers that "tick" important ENLIGHTEN activities.
 
-Note that `QTimer`s call their "tick" function _on the GUI thread,_ meaning they
-can do what they want with Qt widgets. In contrast, `threading.Thread`s are not
+Note that `QTimers` call their "tick" function _on the GUI thread,_ meaning they
+can do what they want with Qt widgets. In contrast, `threading.Threads` are not
 on the GUI thread, and can't change Qt objects. This gets a little weird in
-plugins. **We should consider changing all `threading.Thread`s to `QThreads`.**
+plugins. 
+
+**We should consider changing all `threading.Threads` to `QThreads`.**
 
 - `Controller.bus_timer` (~1Hz) - checks for newly-connected USB spectrometers, 
   newly discovered BLE spectrometers, and unplugged (missing) spectrometers
@@ -188,9 +196,25 @@ plugins. **We should consider changing all `threading.Thread`s to `QThreads`.**
   for any "status messages" flowed back from 'Spectrometer` threads, updates
   laser status display, checks for any asynchronous plugin responses, and ticks
   KnowItAll.
-- ...
 
-Note that most `QTimer`s are configured as "SingleShot" deliberately, meaning
+Other BusinessObjects encapsulate internal `QTimers` for their own purposes,
+including:
+
+- `enlighten.ui.Marquee` encapsulates its own `QTimer` to decide when to hide 
+  messages and `Toasts`
+- `enlighten.ui.GuideFeature` has a `QTimer` which probably isn't used ATM
+- `enlighten.measurement.AreaScanFeature` has a `QTimer` to show its own
+  `QProgressBar` (and should probably be moved to `ui` or `factory`)
+- `enlighten.Plugins.PluginController` has a `QTimer` used in auto-loading a
+  plugin at startup
+- `enlighten.file_io.LoggingFeature` uses a `QTimer` to update the scrolling 
+  colorized view on the logfile
+- `enlighten.file_io.FileManager` uses a `QTimer` to spread-out large load 
+  operations (when a hundred measurements are being loaded at once) over time
+- `enlighten.timing.BatchCollection` uses one `QTimer` for batches, and a 
+  separate one for measurements within a batch
+
+Note that most `QTimers` are configured as "SingleShot" deliberately, meaning
 they complete a tick, _then_ schedule their next tick after a fixed "sleep"
 time. That means bus_timer for instance isn't really 1Hz, because ticks don't
 _start_ at 1-sec intervals, but rather the next tick _starts_ 1sec after the
@@ -273,14 +297,57 @@ between the "spectrometer process" and the "GUI process" (or the "logging proces
 had to be _pickled._ That also meant no (easy) "shared memory" or shared object
 handles.
 
+One obvious part of that multi-process "pickling" architecture meant that most 
+spectrometer settings are set by ENLIGHTEN as key-value pairs, where the key
+is a string ("integration_time_ms") and the value is a Python-native scalar (400).
+Such tuples were easy to pickle and send across `multiprocessing.Queues`.
+
+Also, at some point we turned every `FeatureIdentificationDevice` method response 
+into a `SpectrometerResponse`. That was done in an attempt to provide a "wrapping
+message frame" which could stream error responses and other metadata back 
+upstream to ENLIGHTEN. That has grown unnecessarily bulky and could be made much
+more lightweight.
+
 Now that ENLIGHTEN is properly multi-threaded, Some of this could definitely be 
-simplified, we just haven't yet taken the time.
+simplified and cleaned-up, we just haven't yet taken the time.
 
 ## Data Acquisition
 
 This is how ENLIGHTEN reads and processes spectral data:
 
-...TBD
+As described above, when a spectrometer is connected, it gets its own 
+`wasatch.WrapperWorker` whose `run` method is running in a new thread.
+That `run` method has an infinite loop, which continually does the following:
+
+1. generates and applies a [dedupped](#Dedupping) queue of new settings
+2. checks to see if any of the applied commands failed in a way that would
+   indicate serious hardware / firmware failure and we should disconnect
+   the spectrometer
+3. sends an "acquire_data" `SpectrometerRequest` into the `connected_device`
+   (typicall a `WasatchDevice`, though could be `AndorDevice`, `OceanDevice`, 
+   `BLEDevice`, `SPIDevice` etc).
+
+...the more I look into this, the more I realize the current state of
+data acquisition in ENLIGHTEN / Wasatch.PY is a nightmare. There are numerous
+classes containing out-of-date documentation. This section of the architecture
+does indeed need documenting, but rather than just documenting "what currently 
+happens" in this ARCHITECTURE.md file, we need to take the time to update the
+class and method documentation across Wasatch.PY itself.
+
+**...TO BE CONTINUED...**
+
+### Dedupping
+
+ENLIGHTEN does not send every command the user clicks downstream. Since the 
+spectrometer is operating in "free-running" mode, and new settings are only 
+applied "between" spectra, we only bother to apply "the most-recent" command of 
+any given type.
+
+Say that, since the last integration (1000ms ago), the user repeatedly hammered 
+the "integration time" down-arrow, changing to values 999, 998, all the way down
+to 974ms. When we're next ready to apply new settings to the spectrometer, we
+only bother to send the most-recent tuple ("integration_time_ms", 974), and 
+discard the others.
 
 ## GUI Philosophy
 
@@ -683,7 +750,7 @@ module:
 - `EnlightenPluginField`: the back-end datatype and field configuration which 
   generates an on-screen `PluginFieldWidget`
 - `EnlightenPluginRequest`: the `Controller` automatically passes new spectra 
-  (`ProcessedReading`s) to `PluginController`, which wraps them into 
+  (`ProcessedReadings`) to `PluginController`, which wraps them into 
   `EnlightenPluginRequests` and sends them down through `PluginWorker` to the 
   loaded plugin
 - `EnlightenPluginResponse`: after a plugin has finished processing an 
