@@ -8,7 +8,7 @@
         - enforce DEBUG logging at spectrometer connection
         - relax to configured logging (typically INFO) 10sec after spectrometer connection
 - 2024-05-14 4.0.61
-    - internal build
+    - changed laser status messages
 - 2024-05-10 4.0.60
     - UI
         - display empirical assessment of laser firing status in Marquee
