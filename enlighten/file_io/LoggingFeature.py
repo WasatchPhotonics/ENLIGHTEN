@@ -45,9 +45,6 @@ class LoggingFeature:
         if self.ctl.log_level == "DEBUG":
             self.cb_verbose.setChecked(True)
             log.debug("checked verbose logging because specified on command-line")
-        elif self.ctl.config.get_bool("logging", "verbose"):
-            self.cb_verbose.setChecked(True)
-            log.debug("checked verbose logging because previously set in .ini file")
 
         try:
             offset_file = applog.get_location() + ".offset"
@@ -67,12 +64,10 @@ class LoggingFeature:
         if enabled:
             log.info("enabling verbose logging")
             logging.getLogger().setLevel(logging.DEBUG)
-            self.ctl.config.set("logging", "verbose", "True")
             self.ctl.log_level = "DEBUG"
         else:
             log.info("disabling verbose logging")
             logging.getLogger().setLevel(logging.INFO)
-            self.ctl.config.set("logging", "verbose", "False")
             self.ctl.log_level = "INFO"
 
     def paused(self):

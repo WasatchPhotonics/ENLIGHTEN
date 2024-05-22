@@ -992,11 +992,6 @@ class Controller:
         # done
         ########################################################################
 
-        # we've connected to at least one spectrometer, so set logging to 
-        # whatever the user selected (we default at DEBUG until connection)
-        logging.getLogger().setLevel(self.log_level)
-        log.info(f"succesfully %s {spec.label}", "initialized" if hotplug else "selected")
-
         # updates from initialization to match time window in spinbox
         # call StripChartFeature getter
         spec.app_state.reset_rolling_data(time_window=cfu.spinBox_strip_window.value(), hotplug=hotplug)
