@@ -42,8 +42,12 @@ class LoggingFeature:
 
         # if verbose logging was specified at the command-line OR 
         # previously set via .ini, use that
-        if log.isEnabledFor(logging.DEBUG) or self.ctl.config.get_bool("logging", "verbose"):
+        if self.ctl.log_level == "DEBUG":
             self.cb_verbose.setChecked(True)
+            log.debug("checked verbose logging because specified on command-line")
+        elif self.ctl.config.get_bool("logging", "verbose"):
+            self.cb_verbose.setChecked(True)
+            log.debug("checked verbose logging because previously set in .ini file")
 
         try:
             offset_file = applog.get_location() + ".offset"

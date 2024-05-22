@@ -111,7 +111,7 @@ class EnlightenApplication:
         self.splash.show()
 
         self.main_logger = applog.MainLogger(
-            self.args.log_level,
+            "DEBUG",    # we always start in debug logging to catch startup issues
             logfile=self.args.logfile,
             timeout_sec=5,
             enable_stdout=not self.testing,

@@ -2,6 +2,13 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2024-05-22 4.0.62
+    - logging
+        - enforce DEBUG logging at launch
+        - enforce DEBUG logging at spectrometer connection
+        - relax to configured logging (typically INFO) 10sec after spectrometer connection
+- 2024-05-14 4.0.61
+    - internal build
 - 2024-05-10 4.0.60
     - UI
         - display empirical assessment of laser firing status in Marquee
