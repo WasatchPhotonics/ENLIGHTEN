@@ -386,7 +386,6 @@ class Controller:
         self.hard_strip_timer = QtCore.QTimer()
         self.hard_strip_timer.timeout.connect(self.process_hardware_strip)
         self.hard_strip_timer.setSingleShot(True)
-        self.hard_strip_timer.start(1000)
 
     def process_hardware_strip(self):
         """ 
@@ -1212,10 +1211,11 @@ class Controller:
         self.status_timer.setSingleShot(True)
         self.status_timer.timeout.connect(self.tick_status)
 
-        # don't attempt the FIRST ticks for 1 second
-        self.acquisition_timer     .start(1000)
-        self.status_timer          .start(1000)
-        self.status_indicators     .start(1000)
+        # don't attempt the FIRST ticks for 1 second (but offset)
+        self.acquisition_timer  .start(1000)
+        self.status_timer       .start(1100)
+        self.status_indicators  .start(1200)
+        self.hard_strip_timer   .start(1300)
 
     def tick_acquisition(self):
         """
@@ -1280,7 +1280,7 @@ class Controller:
             # (not sure this is still useful)
             spec.change_device_setting("heartbeat")
 
-            # look for any inbound status messages from the subprocess
+            # look for any inbound status messages from the child threads
             while True:
                 try:
                     if spec.device is None:

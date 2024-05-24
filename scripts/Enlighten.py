@@ -256,9 +256,6 @@ if __name__ == "__main__":
     os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
     multiprocessing.freeze_support() # needed on Win32
 
-    # deprecated:
-    # QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
-
     ec = main(sys.argv)
     print("Exiting main exit_code %d" % ec)
     sys.exit(ec)
