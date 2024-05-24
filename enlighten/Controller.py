@@ -104,7 +104,7 @@ class Controller:
 
         self.app                    = app
         self.log_queue              = log_queue # currently needed for KnowItAll.Wrapper
-        self.log_level              = log_level # passed to LoggingFeature
+        self.log_level              = log_level # passed to LoggingFeature and WasatchDeviceWrapper/Worker
         self.max_memory_growth      = max_memory_growth
         self.run_sec                = run_sec
         self.dialog_open            = False
@@ -131,6 +131,7 @@ class Controller:
         log.info("ENLIGHTEN version %s",     common.VERSION)
         log.info("Wasatch.PY version %s",    wasatch.version)
         log.info("applog at %s",             applog.get_location())
+        log.info("log_level %s",             self.log_level)
         log.info("Stylesheet path %s",       self.stylesheet_path)
         log.info("Python version %s",        util.python_version())
         log.info(f"Operating system {sys.platform} {struct.calcsize('P')*8 } bit")
@@ -208,13 +209,10 @@ class Controller:
         self.business_objects.create_rest()
         self.update_feature_visibility()
 
-        # configure acquisition loop
-        self.setup_main_event_loops() # MZ: move to end?
-
-        # setup timer to check for hardware changes
+        # setup timers
         self.setup_bus_listener()
-
-        self.setup_hardware_strip_listener() # move to StripChartFeature
+        self.setup_hardware_strip_listener() 
+        self.setup_main_event_loops() 
 
         # bind keyboard shortcuts
         self.bind_shortcuts()
@@ -993,11 +991,6 @@ class Controller:
         ########################################################################
         # done
         ########################################################################
-
-        # we've connected to at least one spectrometer, so set logging to 
-        # whatever the user selected (we default at DEBUG until connection)
-        logging.getLogger().setLevel(self.log_level)
-        log.info(f"succesfully %s {spec.label}", "initialized" if hotplug else "selected")
 
         # updates from initialization to match time window in spinbox
         # call StripChartFeature getter
