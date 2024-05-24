@@ -3,6 +3,8 @@
 ## 4.0 GUI and Plugin Refactoring
 
 - 2024-05-22 4.0.62
+    - XL
+        - support horizontal ROI
     - logging
         - enforce DEBUG logging at launch
         - enforce DEBUG logging at spectrometer connection
