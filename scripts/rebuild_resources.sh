@@ -80,6 +80,10 @@ else
             then
                 RCC=`which pyside2-rcc`
                 UIC=`which pyside2-uic`
+
+                # also check here:
+                # RCC=/usr/local/lib/python3.10/site-packages/PySide2/rcc
+                # UIC=/usr/local/lib/python3.10/site-packages/PySide2/uic
             else
                 RCC=`which pyside6-rcc`
                 UIC=`which pyside6-uic`

@@ -95,6 +95,12 @@ class EnlightenPluginBase:
     def field(self, **kwargs):
         self._fields.append(EnlightenPluginField(**kwargs))
 
+    def event(self, event, callback):
+        self.events[event] = callback
+
+    def output(self, name, value):
+        self.outputs[name] = value
+
     def get_plugin_field(self, name):
         plugin_ctl = self.ctl.plugin_controller
         for pfw in plugin_ctl.plugin_field_widgets:
