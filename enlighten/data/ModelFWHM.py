@@ -54,6 +54,8 @@ TABLE = """
     WP-633-ER-R-50      11.8       11.8      13.5       13.5
 """
 
+DEFAULT = 15
+
 class ModelFWHM:
 
     def __init__(self):
@@ -108,4 +110,5 @@ class ModelFWHM:
                 log.debug(f"scrambled match: {full_model} ({key}) -> {fwhm}")
                 return fwhm
 
-        log.error(f"could not find model {full_model} in FWHM table")
+        log.error(f"could not find model {full_model} in FWHM table, defaulting to {DEFAULT}")
+        return DEFAULT

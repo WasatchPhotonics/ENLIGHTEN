@@ -2,7 +2,8 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
-- 2024-??-?? 4.0.63
+- 2024-05-30 4.0.63
+    - add default FWHM
     - plugins
         - Exporters/SaveAsAngstrom: modernized, simplified
         - Demo/EventResponse: modernized, simplified, renamed Demo/Buttons
