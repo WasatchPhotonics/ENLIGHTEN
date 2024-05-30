@@ -42,6 +42,7 @@ class PluginModuleInfo:
         self.class_obj = None               # e.g. Foo.Foo (the class within the module object)
         self.instance = None                # a single instance of Foo.Foo() 
         self.config = None                  # an instance of EnlightenPluginConfiguration
+        self.name = None
 
         self.ctl = ctl
 
@@ -63,6 +64,7 @@ class PluginModuleInfo:
         self.module_obj = importlib.util.module_from_spec(self.module_specification)
         self.module_specification.loader.exec_module(self.module_obj)
         self.class_obj = getattr(self.module_obj, self.module_name)
+        self.name = self.full_module_name
 
         # log.debug("instantiating %s (%s)", self.module_name, self.class_obj)
         self.instance = self.class_obj(self.ctl)

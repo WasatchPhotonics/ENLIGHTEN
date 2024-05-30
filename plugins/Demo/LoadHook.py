@@ -1,52 +1,19 @@
 import logging
 
-from EnlightenPlugin import EnlightenPluginBase,    \
-                            EnlightenPluginField,    \
-                            EnlightenPluginResponse,  \
-                            EnlightenPluginConfiguration
+from EnlightenPlugin import EnlightenPluginBase
 
 log = logging.getLogger(__name__)
 
-##
-# This writes received spectra into a custom folder with a different
-# file format than ENLIGHTEN.
 class LoadHook(EnlightenPluginBase):
-
-    def __init__(self, ctl):
-        super().__init__(ctl)
-
-        self.notice_status = 0
-        self.basename = "load_hook"
+    """ Demostration plugin showing how to hook into ENLIGHTEN's "load" event. """
 
     def get_configuration(self):
-        fields = []
+        self.counter = 0
+        self.field(name="Load Count", datatype="int", direction="output")
+        self.event("load", self.load_callback)
 
-        fields.append(EnlightenPluginField(
-            name        = "Load Notice", 
-            datatype    = "int", 
-            direction   = "output"))
-
-        return EnlightenPluginConfiguration(
-            name        = "Load Hook", 
-            fields      = fields,
-            events      = { "load": self.load_notice }, 
-            streaming   = True,               
-            is_blocking = False)
-
-    def connect(self):
-        super().connect()
-        self.notice_status = 0
-        return True
-
-    # This is the default process_request method that all ENLIGHTEN plug-ins have.
-    # It receives EnlightenPluginRequests, as normal.
     def process_request(self, request):
+        self.output("Load Count", self.counter)
 
-        return EnlightenPluginResponse(request,
-                                       outputs = {"Load Notice": self.notice_status})
-
-    def disconnect(self):
-        super().disconnect()
-
-    def load_notice(self, measurement):
-        self.notice_status += 1
+    def load_callback(self, measurement):
+        self.counter += 1

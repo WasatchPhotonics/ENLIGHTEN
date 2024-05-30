@@ -1,30 +1,20 @@
 import logging
 
-from EnlightenPlugin import EnlightenPluginBase,    \
-                            EnlightenPluginResponse, \
-                            EnlightenPluginConfiguration
+from EnlightenPlugin import EnlightenPluginBase
 
 log = logging.getLogger(__name__)
 
-## negate alternating intensities
 class MakeOddNegative(EnlightenPluginBase):
+    """ Demonstrate graph possibilities by negating alternating intensities. """
 
     def get_configuration(self):
-        return EnlightenPluginConfiguration(
-            name = "Negate Odd", 
-            has_other_graph = True,
-            series_names = ["Odd Negative"])
-
-    def connect(self):
-        return super().connect()
+        # uncomment this for 2nd graph:
+        # self.has_other_graph = True
+        pass
 
     def process_request(self, request):
         spectrum = request.processed_reading.processed 
-        return EnlightenPluginResponse(request,
-            series  = { 
-                "Odd Negative": [ i if i % 2 == 0 else i * -1 for i in spectrum ]
-            } 
+        self.plot(
+            title = "Odd Negative",
+            y = [ i if i % 2 == 0 else i * -1 for i in spectrum ]
         )
-
-    def disconnect(self):
-        super().disconnect()

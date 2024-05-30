@@ -2,40 +2,31 @@ import platform
 import logging
 import os
 
-from EnlightenPlugin import EnlightenPluginBase,    \
-                            EnlightenPluginField,    \
-                            EnlightenPluginResponse,  \
-                            EnlightenPluginConfiguration
+from EnlightenPlugin import EnlightenPluginBase
 
 log = logging.getLogger(__name__)
 
-##
-# A simple plug-in to display a cropped segment of a spectrum.
-# The purpose is to demonstrate input fields.
 class SegmentSpectrum(EnlightenPluginBase):
+    """
+    A simple plug-in to display a cropped segment of a spectrum.
+    The purpose is to demonstrate input fields.
+    """
 
     def get_configuration(self):
-        fields = []
+        self.field(name="Start",     datatype="int",    direction="input",  maximum=2048)
+        self.field(name="End",       datatype="int",    direction="input",  maximum=2048, initial=200)
+        self.field(name="Length",    datatype="int",    direction="output")
+        self.field(name="Click Me!", datatype="button", direction="input",  callback=self.button_callback)
 
-        fields.append(EnlightenPluginField(name="Start",     datatype="int",    direction="input",  maximum=2048))
-        fields.append(EnlightenPluginField(name="End",       datatype="int",    direction="input",  maximum=2048, initial=200))
-        fields.append(EnlightenPluginField(name="Length",    datatype="int",    direction="output"))
-        fields.append(EnlightenPluginField(name="Click Me!", datatype="button", direction="input",  callback=self.button_callback))
-
-        return EnlightenPluginConfiguration(name            = "Segment", 
-                                            fields          = fields,
-                                            has_other_graph = True, 
-                                            graph_type      = 'xy',
-                                            series_names    = ["Segment"],
-                                            x_axis_label    = "Data Point")
-    def connect(self):
-        super().connect()
-        return True
+        self.has_other_graph = True
+        self.graph_type      = 'xy'
+        self.x_axis_label    = "Data Point"
+        self.y_axis_label    = "💥 Not Photons ⚠️"
 
     def button_callback(self):
+        """ open the Device Manager, just for funz """
         if "Windows" in platform.platform():
-            # open the Device Manager, just for funz
-            os.system("devmgmt.msc")
+            os.system("devmgmt.msc") 
 
     def process_request(self, request):
         spectrum = request.processed_reading.processed
@@ -49,15 +40,7 @@ class SegmentSpectrum(EnlightenPluginBase):
         start = min(start, len(spectrum))
         end   = min(end,   len(spectrum))
         
-        outputs = { "Length": end - start }
-        series  = { 
-            "Segment": {
-                'x': list(range(start, end)),
-                'y': spectrum[start:end]
-            }
-        }
-
-        return EnlightenPluginResponse(request, series=series, outputs=outputs)
-
-    def disconnect(self):
-        super().disconnect()
+        self.output("Length", end - start)
+        self.plot(title="Segment",
+                  x=list(range(start, end)),
+                  y=spectrum[start:end])

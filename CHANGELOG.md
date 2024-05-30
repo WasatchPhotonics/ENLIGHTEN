@@ -2,6 +2,12 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2024-??-?? 4.0.63
+    - plugins
+        - Exporters/SaveAsAngstrom: modernized, simplified
+        - Demo/EventResponse: modernized, simplified, renamed Demo/Buttons
+        - Demo/LoadHook: modernized, simplified
+        - Demo/MakeOddNegative: modernized, simplified
 - 2024-05-22 4.0.62
     - XL
         - support horizontal ROI
