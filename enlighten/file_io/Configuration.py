@@ -91,7 +91,7 @@ class Configuration:
 
         self.directory = common.get_default_data_dir()
         self.pathname  = os.path.join(self.directory, "enlighten.ini")
-        self.test_dir = os.path.join(self.directory, 'testSpectrometers')
+        self.test_dir = os.path.join(self.directory, 'testSpectrometers') # MZ: this doesn't belong in Configuration
 
         self.load_defaults()
         self.stub_missing()

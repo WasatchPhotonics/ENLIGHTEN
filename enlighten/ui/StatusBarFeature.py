@@ -33,6 +33,10 @@ class StatusBarFeature:
         
         self.widgets = {}
         self.menu_order = []
+
+        # @todo: it would be a lot easier to maintain this feature if we 
+        #        dynamically create these labels programmatically rather than 
+        #        define them in enlighten_layout.ui
         for trio in [ [ "Min",                  cfu.label_StatusBar_min_name,           cfu.label_StatusBar_min_value ],
                       [ "Max",                  cfu.label_StatusBar_max_name,           cfu.label_StatusBar_max_value ],
                       [ "Mean",                 cfu.label_StatusBar_mean_name,          cfu.label_StatusBar_mean_value ],
