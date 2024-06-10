@@ -262,12 +262,6 @@ if "%install_python_deps%" == "1" (
 
     python -m pip install -r requirements.txt
 
-    REM Bootstrap bat is meant to make a windows installer
-    REM because of this separately install pywin32 since it's only meant for windows
-    pip install pywin32 
-
-    REM not sure why this doesn't work from requirements.txt
-    pip install spc_spectra
     if %errorlevel% neq 0 goto script_failure
 )
 

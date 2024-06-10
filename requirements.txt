@@ -28,5 +28,6 @@ qimage2ndarray
 2to3
 matplotlib==3.7
 pyserial
-# install these after?
-#spc_spectra 
+spc_spectra
+
+pywin32 ; sys_platform == 'win32'
