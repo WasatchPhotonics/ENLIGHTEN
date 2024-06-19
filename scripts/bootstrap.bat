@@ -308,7 +308,7 @@ if "%pyinstaller%" == "1" (
         --workpath="scripts/work-path" ^
         --noconfirm ^
         --python-option "X utf8" ^
-        --hide-console hide-late ^
+        --noconsole ^
         --clean ^
         --paths="../Wasatch.PY" ^
         --hidden-import="scipy._lib.messagestream" ^

@@ -118,6 +118,10 @@ class EnlightenApplication:
             append_arg=str(self.args.log_append)
         )
 
+        # now that we've configured the logger, redirect stdout to our logger
+        # (so we can use Tensorflow without a console window)
+        sys.stdout = common.FakeOutputHandle("FakeStdout")
+
         # This violates convention but Controller has so many imports that it 
         # takes a while to import. This needs to occur here because the Qt app 
         # needs to be made before the splash screen. So it has to occur in this 
