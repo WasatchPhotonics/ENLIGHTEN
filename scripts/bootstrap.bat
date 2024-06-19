@@ -21,7 +21,9 @@ REM without inserting control characters which confuse unix2dos etc.
 REM https://stackoverflow.com/a/64515648
 set "RING_BELL=echo x|choice /n 2>nul"
 
-set ENLIGHTEN_VENV=%HOME%\enlighten_py311
+set ENLIGHTEN_PYTHON_REV=3.11
+set ENLIGHTEN_VENV=%HOME%\enlighten_py%ENLIGHTEN_PYTHON_REV%
+echo Using ENLIGHTEN_PYTHON_REV %ENLIGHTEN_PYTHON_REV%
 echo Using ENLIGHTEN_VENV at %ENLIGHTEN_VENV%
 
 if "%2" == "virtspec" (
@@ -230,7 +232,7 @@ if "%configure_venv%" == "1" (
     echo %date% %time% Create venv
     echo %date% %time% ======================================================
     echo.
-    python3.11 -m venv %ENLIGHTEN_VENV%
+    python%ENLIGHTEN_PYTHON_REV% -m venv %ENLIGHTEN_VENV%
     if %errorlevel% neq 0 goto script_failure
 )
 
@@ -299,14 +301,14 @@ if "%pyinstaller%" == "1" (
     echo %date% %time% Running PyInstaller
     echo %date% %time% ======================================================
     echo.
-    REM hide-early worked on Win10 but not Win11
-    REM hide-late doesn't work on Win10
+    REM --hide-console hide-early worked on Win10 but not Win11
+    REM --hide-console hide-late doesn't work on Win10
     pyinstaller ^
         --distpath="scripts/built-dist" ^
         --workpath="scripts/work-path" ^
         --noconfirm ^
         --python-option "X utf8" ^
-        --hide-console hide-early ^
+        --hide-console hide-late ^
         --clean ^
         --paths="../Wasatch.PY" ^
         --hidden-import="scipy._lib.messagestream" ^
