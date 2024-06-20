@@ -1,6 +1,5 @@
 <RCC>
   <qresource prefix="splashscreens">
-    <file alias="splash-orig.png">images/splashscreens/splash-orig.png</file>
-    <file alias="Enlighten-loading.png">images/splashscreens/Enlighten-loading.png</file>
+    <file alias="Enlighten-loading-90p.png">images/splashscreens/Enlighten-loading-90p.png</file>
   </qresource>
 </RCC>
