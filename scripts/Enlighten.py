@@ -105,8 +105,7 @@ class EnlightenApplication:
         # instantiate form (a QMainWindow with name "MainWindow")
         self.form = BasicWindow(title="ENLIGHTEN™ %s" % common.VERSION)
 
-        pixmap = QPixmap(":/splashscreens/splash-orig.png")
-        # pixmap = QPixmap(":/splashscreens/Enlighten-loading.gif")
+        pixmap = QPixmap(":/splashscreens/Enlighten-loading.png")
         pixmap = pixmap.scaled(pixmap.width()/2, pixmap.height()/2)
         self.splash = QSplashScreen()
         self.splash.setPixmap(pixmap)

@@ -94,14 +94,14 @@ class BusinessObjects:
         self.ctl = ctl 
         self.clear()
 
-    def header(self, s):
+    def header(self, msg):
         log.debug("")
-        log.debug("=" * len(s))
-        log.debug(s)
-        log.debug("=" * len(s))
+        log.debug("=" * len(msg))
+        log.debug(msg)
+        log.debug("=" * len(msg))
         log.debug("")
 
-        self.ctl.splash.showMessage(s, alignment=Qt.AlignHCenter | Qt.AlignBottom, color=QColor("white"))
+        self.ctl.splash.showMessage(f"version {common.VERSION}\n\n{msg}\n", alignment=Qt.AlignHCenter | Qt.AlignBottom, color=QColor("#ccc"))
         self.ctl.app.processEvents()
 
     def clear(self):
