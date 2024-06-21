@@ -53,7 +53,7 @@ class MeasurementFactory:
 
     ## Create a Measurement from a Spectrometer, using its most-recent 
     #  ProcessedReading.
-    def create_from_spectrometer(self, spec, is_collapsed, generate_thumbnail=True, save=True):
+    def create_from_spectrometer(self, spec, is_collapsed, generate_thumbnail=True, save=True, label=None):
         log.debug("creating Measurement from spec %s", spec.label)
 
         # instantiate the Measurement
@@ -79,6 +79,9 @@ class MeasurementFactory:
                     observer(measurement=measurement, event="save")
             except:
                 msgbox("Failed to dispatch save file.\n\n"+traceback.format_exc(), "Error")
+
+        if label is not None:
+            measurement.update_label(label, manual=True)
         
         return measurement
     
