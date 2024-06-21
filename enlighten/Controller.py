@@ -136,9 +136,9 @@ class Controller:
         log.info("Python version %s",        util.python_version())
         log.info(f"Operating system {sys.platform} {struct.calcsize('P')*8 } bit")
         if common.use_pyside2():
-            log.info("PySide version %s",        PySide2.__version__)
+            log.info("PySide version %s",    PySide2.__version__)
         else:
-            log.info("PySide version %s",        PySide6.__version__)
+            log.info("PySide version %s",    PySide6.__version__)
         log.info("PySide QtCore version %s", QtCore.__version__)
         log.info("QtCore version %s",        QtCore.qVersion())
 

@@ -2,8 +2,14 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
-- 2024-??-?? 4.0.64
+- 2024-06-19 4.0.64
     - move pywin32 and spc_spectra to requirements.txt
+    - try to remove console on Win11
+        - add --noconsole to pyinstaller
+        - add FakeOutputHandle to keep Tensorflow happy in absence of sys.stdout
+    - struggle with Microsoft Defender Antivirus
+        - played with Python 3.12, rolled-back to 3.11
+    - accept bizarre 1min+ delay on first Tensorflow initialization post-install/compilation
 - 2024-05-30 4.0.63
     - add default FWHM
     - plugins

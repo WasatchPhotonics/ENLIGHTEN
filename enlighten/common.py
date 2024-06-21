@@ -13,7 +13,7 @@ application.
       can be modules (files) within it
 """
 
-VERSION = "4.0.63"
+VERSION = "4.0.64"
 
 ctl = None
 
@@ -131,6 +131,36 @@ class LaserStates(IntEnum):
     DISABLED    = 0
     REQUESTED   = 1
     FIRING      = 2
+
+class FakeOutputHandle:
+    """
+    We [think we] need to build Windows installers with PyInstaller. However, 
+    since Win11 came out, PyInstaller's compiled executables tend to display a 
+    black "console window" on either Win10 or Win11, depending on which 
+    PyInstaller options you use. The only way we've found to completely hide
+    the console window is with --noconsole.
+
+    However, some Python packages (like Tensorflow) really, really want to write
+    directly to stdout, and raise exceptions if they can't. So this class is
+    provided to represent a fake output filehandle which we can assign to 
+    sys.stdout or sys.stderr, even when our executing environment doesn't provide
+    those things.
+    """
+    def __init__(self, name):
+        self.name = name
+
+    def write(self, msg):
+        if msg is None:
+            return
+        msg = msg.strip()
+        if msg:
+            log.debug(f"{self.name}: {msg}")
+
+    def flush(self):
+        pass
+
+    def reconfigure(self, *args, **kwargs):
+        pass
 
 def get_default_data_dir():
     """

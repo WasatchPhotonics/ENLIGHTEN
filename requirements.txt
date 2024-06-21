@@ -1,4 +1,5 @@
 tensorflow==2.13.1
+#cloud-tpu-client
 numpy
 PySide6
 PyQt5

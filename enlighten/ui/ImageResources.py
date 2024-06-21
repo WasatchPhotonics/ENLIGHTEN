@@ -30,7 +30,7 @@ class ImageResources:
         while it.hasNext():
             pathname = it.next()
             self.resources.append(pathname)
-            log.debug(f"  {pathname}")
+            # log.debug(f"  {pathname}")
 
         self.resources.sort()
         log.debug(f"found {len(self.resources)} resources")
