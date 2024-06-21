@@ -1,7 +1,8 @@
 # Version History
 
 ## 4.0 GUI and Plugin Refactoring
-
+- 2026-06-01 4.0.65
+    - Add label parameter to save_current_spectra
 - 2024-??-?? 4.0.64
     - move pywin32 and spc_spectra to requirements.txt
 - 2024-05-30 4.0.63
