@@ -2,6 +2,8 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2024-??-?? 4.0.65
+    - fixed scan averaging in BatchCollection (#432)
 - 2024-06-19 4.0.64
     - move pywin32 and spc_spectra to requirements.txt
     - try to remove console on Win11

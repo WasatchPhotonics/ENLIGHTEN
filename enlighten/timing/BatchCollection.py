@@ -346,11 +346,13 @@ class BatchCollection:
         if not self.running:
             log.info("starting")
 
+            avg = self.ctl.scan_averaging.get_scans_to_average() # #432
+
             # initialize driver-level laser auto_triggering and dark collection
             if self.laser_mode == "spectrum":
-                self.take_one_template = TakeOneRequest(take_dark=self.dark_before_batch, enable_laser_before=True, disable_laser_after=True, laser_warmup_ms=self.laser_warmup_ms)
+                self.take_one_template = TakeOneRequest(scans_to_average=avg, take_dark=self.dark_before_batch, enable_laser_before=True, disable_laser_after=True, laser_warmup_ms=self.laser_warmup_ms)
             else:
-                self.take_one_template = TakeOneRequest()
+                self.take_one_template = TakeOneRequest(scans_to_average=avg)
 
             self.running = True
 
