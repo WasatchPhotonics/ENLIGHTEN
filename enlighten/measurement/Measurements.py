@@ -352,6 +352,9 @@ class Measurements:
             log.warn("no measurements to export")
             return
 
+        # by default, all Sessions are stored in ~/EnlightenSpectra
+        directory = common.get_default_data_dir()
+
         ########################################################################
         # Generate pathname
         ########################################################################
@@ -374,16 +377,23 @@ class Measurements:
                     title = "Export",
                     label_text = "Enter export filename",
                     lineedit_text = default_filename,
+                    extra_button_label = "Browse",
                     checkbox_text = "Only export displayed traces")
                 log.debug(f"msgbox result: {result}")
                 filename = result["lineedit"]
                 visible_only = result["checked"]
-                if not (result["ok"] and filename):
+                if not result["ok"]:
                     log.info("cancelling export")
                     return
 
-        # currently, all Sessions are stored in ~/EnlightenSpectra
-        directory = common.get_default_data_dir()
+                # if the user clicked 'Browse', let them navigate to where they want the export saved [#420]
+                if result["extra_button_clicked"] or not filename:
+                    pathname = self.ctl.file_manager.save_dialog(filename=filename, caption="Select where to save your exported measurements")
+                    directory, filename = os.path.split(pathname)
+
+                if not filename:
+                    log.info("cancelling export")
+                    return
 
         # warn user if they are about to overwrite an existing file
         # it looks like only risk is for .csv and .json extensions
@@ -663,6 +673,9 @@ class Measurements:
 
         # count spectrometers (S1, S2)
         settingss = self._get_spectrometer_settings(visible_only)
+        if len(settingss) < 1:
+            common.msgbox("No spectra to export!")
+            return
 
         # count x-axis headers (px, wl)
         x_headers = []
