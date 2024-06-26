@@ -95,7 +95,8 @@ class Controller:
                 splash            = None,
                 window_state      = None,
                 start_batch       = False,
-                plugin            = None
+                plugin            = None,
+                password          = None
             ):
         """
         All of the parameters are normally set via command-line arguments
@@ -114,6 +115,7 @@ class Controller:
         self.window_state           = window_state
         self.start_batch            = start_batch
         self.plugin                 = plugin 
+        self.password               = password
         self.spec_timeout           = 30
         self.splash                 = splash
         self.form                   = form
