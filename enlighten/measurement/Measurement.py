@@ -1038,6 +1038,9 @@ class Measurement:
 
         today_dir = self.generate_today_dir()
         pathname = os.path.join(today_dir, "%s.xls" % self.generate_basename())
+        if not self.verify_pathname(pathname):
+            return
+
         try:
             wbk.save(pathname)
             log.info("saved %s", pathname)
@@ -1111,6 +1114,9 @@ class Measurement:
             pathname = "%s.spc" % self.basename
         else:
             pathname = os.path.join(today_dir, "%s.spc" % self.generate_basename())
+        if not self.verify_pathname(pathname):
+            return
+
         if current_x == common.Axes.WAVELENGTHS:
             spc_writer = SPCFileWriter.SPCFileWriter(SPCFileType.TXVALS,
                                       x_units = SPCXType.SPCXNMetr,
@@ -1160,6 +1166,8 @@ class Measurement:
             pathname = "%s.json" % self.basename
         else:
             pathname = os.path.join(today_dir, "%s.json" % self.generate_basename())
+        if not self.verify_pathname(pathname):
+            return
 
         s = self.to_json()
         with open(pathname, "w", encoding='utf-8') as f:
@@ -1174,6 +1182,8 @@ class Measurement:
         else:
             today_dir = self.generate_today_dir()
             pathname = os.path.join(today_dir, self.generate_basename() + ".dx")
+        if not self.verify_pathname(pathname):
+            return
 
         data = {
             'title': self.label,
@@ -1243,6 +1253,8 @@ class Measurement:
             pathname = "%s.%s" % (self.basename, ext)
         else:
             pathname = os.path.join(today_dir, "%s.%s" % (self.generate_basename(), ext))
+        if not self.verify_pathname(pathname):
+            return
 
         roi = None
         stage = None
@@ -1681,3 +1693,23 @@ class Measurement:
             pr.processed = np.interp(new_x, old_x, pr.processed)
 
         log.debug("interpolation complete")
+
+    def verify_pathname(self, pathname):
+        if not os.path.exists(pathname):
+            return True
+
+        if self.ctl.config.has_option("Measurement", "overwrite_existing"):
+            return self.ctl.config.get_bool("Measurement", "overwrite_existing")
+
+        result = self.ctl.gui.msgbox_with_checkbox(
+            title="Confirm Overwrite",
+            text=f"The following pathname already exists. Do you wish to overwrite it?\n{pathname}",
+            checkbox_text="Never show again")
+
+        if not result["ok"]:
+            return False
+
+        if result["checked"]:
+            self.ctl.config.set("Measurement", "overwrite_existing", True)
+
+        return True
