@@ -241,6 +241,7 @@ class Measurement:
                            'FPGA Version',
                            'Prefix',
                            'Suffix',
+                           'Preset',
                            'Session Count',
                            'Plugin Name']
 
@@ -860,6 +861,7 @@ class Measurement:
         if field == "suffix":                    return self.suffix
         if field == "session count":             return self.processed_reading.reading.session_count
         if field == "plugin name":               return self.plugin_name
+        if field == "preset":                    return self.ctl.presets.selected_preset
 
         if field == "laser power mw":
             if (self.processed_reading.reading is not None and 
