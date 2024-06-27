@@ -18,6 +18,8 @@ os.environ["BLINKA_FT232H"]="1" # used to allow SPI with FT232H
 
 from enlighten import common
 from enlighten.ui.BasicWindow import BasicWindow
+import splashscreens_rc
+
 from wasatch.DeviceID import DeviceID
 from wasatch   import applog
 
@@ -101,11 +103,10 @@ class EnlightenApplication:
 
     def run(self):
         # instantiate form (a QMainWindow with name "MainWindow")
-        # UI needs to be imported here in order to access QResources for the splash screen
         self.form = BasicWindow(title="ENLIGHTEN™ %s" % common.VERSION)
 
-        pixmap = QPixmap(":/application/images/splash.png")
-        pixmap = pixmap.scaled(pixmap.width()/2, pixmap.height()/2) # eyeballed, default seemed to take whole screen
+        pixmap = QPixmap(":/splashscreens/Enlighten-loading-90p.png")
+        pixmap = pixmap.scaled(pixmap.width()/2, pixmap.height()/2)
         self.splash = QSplashScreen()
         self.splash.setPixmap(pixmap)
         self.splash.show()
@@ -118,10 +119,14 @@ class EnlightenApplication:
             append_arg=str(self.args.log_append)
         )
 
+        # now that we've configured the logger, redirect stdout to our logger
+        # (so we can use Tensorflow without a console window)
+        sys.stdout = common.FakeOutputHandle("FakeStdout")
+
         # This violates convention but Controller has so many imports that it 
-        # takes a while to import. This needs to occur here because the Qt app 
-        # needs to be made before the splash screen. So it has to occur in this 
-        # function after both the app creation and splash screen creation.
+        # takes a while to import. We're choosing to import it here, AFTER
+        # displaying the splash screen, so you have something pretty to look at
+        # while we load all those BusinessObjects.
         from enlighten.Controller import Controller
 
         log.debug("platform = %s", platform.platform())

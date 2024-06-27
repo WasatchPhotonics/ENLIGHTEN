@@ -125,6 +125,8 @@ class EnlightenPluginBase:
         @param y y values
         @param title plot title, shown in legend
         @param color color of plot line
+
+        @todo add weight
         """
         in_legend = True
 

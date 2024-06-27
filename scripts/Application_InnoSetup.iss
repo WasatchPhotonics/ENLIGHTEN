@@ -54,7 +54,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 ; "Regular" files
 Source: "built-dist\*"; DestDir: "{app}"; Flags: recursesubdirs ignoreversion
 
-; I forget what needs this
+; possibly for https://pyinstaller.org/en/v6.0.0/usage.html#windows
 Source: "support_files\msvcr100.dll"; DestDir: "{app}\enlighten\"; Flags: recursesubdirs ignoreversion
 
 ; Include libusb dll's. Note this is only required for appveyor builds. Building on a Windows 10

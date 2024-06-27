@@ -2,20 +2,7 @@
   <qresource prefix="application">
     <file>images/enlightenLOGO.png</file>
     <file>images/enlightenLOGO-light.png</file>
-    <file>images/splash.png</file>
     <file>images/EnlightenIcon.ico</file>
-    <file>images/EnlightenTextLogo.png</file>
-    <file>images/emission/ar-1.png</file>
-    <file>images/emission/ar-2.png</file>
-    <file>images/emission/ar-3.png</file>
-    <file>images/emission/he-1.png</file>
-    <file>images/emission/hgar-1.png</file>
-    <file>images/emission/kr-1.png</file>
-    <file>images/emission/ne-1.png</file>
-    <file>images/emission/ne-2.png</file>
-    <file>images/emission/xe-1.png</file>
-    <file>images/emission/xe-2.png</file>
-    <file>images/emission/xe-3.png</file>
     <file>images/PoweredByKnowItAll-Wiley.png</file>
   </qresource>
 </RCC>
