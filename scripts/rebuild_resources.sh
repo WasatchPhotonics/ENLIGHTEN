@@ -113,12 +113,12 @@ echo "2to3        = $TWO_TO_THREE"
 echo
 
 FAILED=false
-if ! [ -f $RCC ]
+if ! [ -f "$RCC" ]
 then
     echo "Error: can't locate RCC: $RCC"
     FAILED=true
 fi
-if ! [ -f $UIC ]
+if ! [ -f "$UIC" ]
 then
     echo "Error: can't locate UIC: $UIC"
     FAILED=true
