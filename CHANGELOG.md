@@ -13,6 +13,7 @@
     - [#431] validate interpolation inputs
     - [#432] fixed scan averaging in BatchCollection
     - [#446] update theming docs
+    - added hidden scipy import for AirPLS
 - 2026-06-01 4.0.65
     - Add label parameter to save_current_spectra
 - 2024-06-19 4.0.64
