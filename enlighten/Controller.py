@@ -1121,7 +1121,7 @@ class Controller:
     # save spectra
     # ##########################################################################
 
-    def save_current_spectra(self): # MZ: called by VCRControls.save?
+    def save_current_spectra(self, label=None): # MZ: called by VCRControls.save?
         """
         This is a GUI method (used as a callback) to generate one Measurement from
         the most-recent ProcessedReading of EACH connected spectrometer.
@@ -1133,9 +1133,9 @@ class Controller:
 
         if self.save_options.save_all_spectrometers():
             for spec in self.multispec.get_spectrometers():
-                self.measurements.create_from_spectrometer(spec=spec)
+                self.measurements.create_from_spectrometer(spec=spec, label=label)
         else:
-            self.measurements.create_from_spectrometer(spec=self.current_spectrometer())
+            self.measurements.create_from_spectrometer(spec=self.current_spectrometer(), label=label)
 
     # ##########################################################################
     # miscellaneous callbacks
