@@ -3,12 +3,15 @@
 ## 4.0 GUI and Plugin Refactoring
 
 - 2024-??-?? 4.0.66
-    - [#420] allow user to navigate to target directory when saving exports
-    - [#408] support --password cmd-line arg and ENLIGHTEN_PASSWORD environment variable
     - [#389] add Preset to metadata
-    - [#428] verify before overwriting files
-    - [#426] support --max-thumbnails cmd-line arg and ENLIGHTEN_MAX_THUMBNAILS environment variable
     - [#406] handle whitespace in developer path
+    - [#408] support --password cmd-line arg and ENLIGHTEN_PASSWORD environment variable
+    - [#420] allow user to navigate to target directory when saving exports
+    - [#426] support --max-thumbnails cmd-line arg and ENLIGHTEN_MAX_THUMBNAILS environment variable
+    - [#428] verify before overwriting files
+    - [#429] confirm when user configures "static" filename template
+    - [#431] validate interpolation inputs
+    - [#432] fixed scan averaging in BatchCollection
     - [#446] update theming docs
 - 2026-06-01 4.0.65
     - Add label parameter to save_current_spectra
