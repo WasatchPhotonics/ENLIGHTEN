@@ -87,6 +87,7 @@ class Controller:
                 log_queue,
                 log_level         = "INFO",
                 max_memory_growth = 0,
+                max_thumbnails    = 500,
                 run_sec           = 0,
                 serial_number     = None,
                 stylesheet_path   = None,
@@ -107,6 +108,7 @@ class Controller:
         self.log_queue              = log_queue # currently needed for KnowItAll.Wrapper
         self.log_level              = log_level # passed to LoggingFeature and WasatchDeviceWrapper/Worker
         self.max_memory_growth      = max_memory_growth
+        self.max_thumbnails         = max_thumbnails
         self.run_sec                = run_sec
         self.dialog_open            = False
         self.serial_number_desired  = serial_number
@@ -1121,7 +1123,7 @@ class Controller:
     # save spectra
     # ##########################################################################
 
-    def save_current_spectra(self): # MZ: called by VCRControls.save?
+    def save_current_spectra(self, label=None): # MZ: called by VCRControls.save?
         """
         This is a GUI method (used as a callback) to generate one Measurement from
         the most-recent ProcessedReading of EACH connected spectrometer.
@@ -1133,9 +1135,9 @@ class Controller:
 
         if self.save_options.save_all_spectrometers():
             for spec in self.multispec.get_spectrometers():
-                self.measurements.create_from_spectrometer(spec=spec)
+                self.measurements.create_from_spectrometer(spec=spec, label=label)
         else:
-            self.measurements.create_from_spectrometer(spec=self.current_spectrometer())
+            self.measurements.create_from_spectrometer(spec=self.current_spectrometer(), label=label)
 
     # ##########################################################################
     # miscellaneous callbacks
