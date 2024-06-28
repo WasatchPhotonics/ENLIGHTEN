@@ -1,7 +1,4 @@
-import numpy as np
-import logging
-
-from EnlightenPlugin import *
+from EnlightenPlugin import EnlightenPluginBase
 
 class LockSettings(EnlightenPluginBase):
     """ Shows how a plugin can lock various standard ENLIGHTEN features.  """
