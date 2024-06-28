@@ -2,7 +2,8 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
-- 2024-??-?? 4.0.65
+- 2024-??-?? 4.0.66
+    - [#408] support --password cmd-line arg and ENLIGHTEN_PASSWORD environment variable
     - [#389] add Preset to metadata
     - [#428] verify before overwriting files
     - [#426] support --max-thumbnails cmd-line arg and ENLIGHTEN_MAX_THUMBNAILS environment variable
