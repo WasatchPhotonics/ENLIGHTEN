@@ -3,7 +3,8 @@
 ## 4.0 GUI and Plugin Refactoring
 
 - 2024-??-?? 4.0.66
-    - support --max-thumbnails cmd-line arg and ENLIGHTEN_MAX_THUMBNAILS environment variable
+    - [#428] verify before overwriting files
+    - [#426] support --max-thumbnails cmd-line arg and ENLIGHTEN_MAX_THUMBNAILS environment variable
 - 2026-06-01 4.0.65
     - Add label parameter to save_current_spectra
 - 2024-06-19 4.0.64
