@@ -30,6 +30,8 @@ class GUI:
         self.ctl = ctl
         cfu = ctl.form.ui
 
+        self.extra_button_clicked = False
+
         self.theme = self.ctl.config.get("theme", "theme")
         log.debug(f"init: theme {self.theme}")
 
@@ -194,7 +196,7 @@ class GUI:
 
         return retval
 
-    def msgbox_with_lineedit_and_checkbox(self, title, label_text, lineedit_text, checkbox_text, checkbox_checked=False):
+    def msgbox_with_lineedit_and_checkbox(self, title, label_text, lineedit_text, checkbox_text, checkbox_checked=False, extra_button_label=None):
         dialog = QDialog(parent=self.ctl.form)
         dialog.setModal(True)
         dialog.setWindowTitle(title)
@@ -208,9 +210,18 @@ class GUI:
         cb = QCheckBox(checkbox_text, parent=dialog)
         cb.setChecked(checkbox_checked)
 
+
         bb = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+
         bb.accepted.connect(dialog.accept)
         bb.rejected.connect(dialog.reject)
+
+        self.extra_button_clicked = False
+        if extra_button_label:
+            def extra_button_callback():
+                self.extra_button_clicked = True
+            extra_button = bb.addButton(extra_button_label, QDialogButtonBox.AcceptRole)
+            extra_button.clicked.connect(extra_button_callback)
 
         vb = QVBoxLayout(dialog)
         vb.addWidget(lb)
@@ -221,6 +232,7 @@ class GUI:
         result = dialog.exec_()
         return {
             "ok": result == QDialog.Accepted,
+            "extra_button_clicked": self.extra_button_clicked,
             "checked": cb.isChecked(),
             "lineedit": le.text() 
         }

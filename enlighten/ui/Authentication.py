@@ -81,23 +81,27 @@ class Authentication:
         self.button_login.clicked.connect(self.login)
         self.button_login.setWhatsThis("Lets you 'login' to ENLIGHTEN™ with passwords enabling additional features.")
 
-        self._update_widgets()
+        if ctl.password:
+            self.login(password=ctl.password)
+        else:
+            self._update_widgets()
 
     def register_observer(self, callback):
         self.observers.add(callback)
 
-    def login(self, switch_to_factory=False):
+    def login(self, switch_to_factory=False, password=None):
         """
         The user has clicked "Advanced Features" or pressed "Ctrl-A," so display
         the login pop-up, get their password, compare it to supported values and
         update features accordingly.
         """
-        log.debug("prompting for password")
-        (password, _) = QtWidgets.QInputDialog.getText(
-            self.ctl.form, 
-            "Admin Login", 
-            "Password:", 
-            QtWidgets.QLineEdit.Password)
+        if password is None:
+            log.debug("prompting for password")
+            (password, _) = QtWidgets.QInputDialog.getText(
+                self.ctl.form, 
+                "Admin Login", 
+                "Password:", 
+                QtWidgets.QLineEdit.Password)
 
         if password is None:
             self.level = self.BASIC
