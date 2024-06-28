@@ -28,8 +28,6 @@ log = logging.getLogger(__name__)
 # of ThumbnailWidgets which fill the left-hand capture column in the GUI.
 class Measurements:
 
-    MAX_MEASUREMENT_COUNT = 500
-
     # I see no need to deepcopy this Singleton (and this allows us to deepcopy
     # Measurements freely).
     def __deepcopy__(self, memo):
@@ -252,7 +250,7 @@ class Measurements:
             return
 
         # enforce resource limits
-        while self.count() >= Measurements.MAX_MEASUREMENT_COUNT:
+        while self.count() >= self.ctl.max_thumbnails:
             log.debug("enforcing resource limits")
             self.delete_oldest()
 
