@@ -91,12 +91,14 @@ class EnlightenApplication:
         parser.add_argument("--log-append",        type=str, default="False",     help="append to existing logfile", choices=["False", "True", "LIMIT"])
         parser.add_argument("--logfile",           type=str,                      help="explicit path for the logfile")
         parser.add_argument("--max-memory-growth", type=int, default=0,           help="automatically exit after this percent memory growth (0 for never, 100 = doubling)")
+        parser.add_argument("--max-thumbnails",    type=int,                      help="maximum number of thumbnails in measurement clipboard", default=os.environ.get("ENLIGHTEN_MAX_THUMBNAILS", 500))
         parser.add_argument("--run-sec",           type=int, default=0,           help="automatically exit after this many seconds (0 for never)")
         parser.add_argument("--serial-number",     type=str,                      help="only connect to specified serial number")
         parser.add_argument("--set-all-dfu",       action="store_true",           help="set spectrometers to DFU mode as soon as they connect")
         parser.add_argument("--stylesheet-path",   type=str,                      help="path to CSS directory")
         parser.add_argument("--window-state",      type=str, default="maximized", help="window initial state", choices=["normal", "maximized", "fullscreen", "minimized"])
         parser.add_argument("--plugin",            type=str,                      help="plugin name to start enabled")
+        parser.add_argument("--password",          type=str,                      help="authentication password", default=os.environ.get("ENLIGHTEN_PASSWORD"))
         parser.add_argument("--start-batch",       action="store_true",           help="start a Batch Collection as soon as a spectrometer connects")
 
         return parser
@@ -137,6 +139,7 @@ class EnlightenApplication:
             log_level         = self.args.log_level,
             log_queue         = self.main_logger.log_queue,
             max_memory_growth = self.args.max_memory_growth,
+            max_thumbnails    = self.args.max_thumbnails,
             run_sec           = self.args.run_sec,
             serial_number     = self.args.serial_number,
             stylesheet_path   = self.args.stylesheet_path,
@@ -145,6 +148,7 @@ class EnlightenApplication:
             splash            = self.splash,
             window_state      = self.args.window_state,
             start_batch       = self.args.start_batch,
+            password          = self.args.password,
             plugin            = self.args.plugin)
 
         # This requires explanation.  This is obviously a Qt "connect" binding,
