@@ -34,6 +34,7 @@ class InterpolationFeature:
 
         self.mutex = QtCore.QMutex()
         self.new_axis = None
+        self.allowed = False
 
         self.init_from_config()
 
@@ -110,6 +111,17 @@ class InterpolationFeature:
         self.end             = self.dsb_end.value()
         self.incr            = self.dsb_incr.value()
 
+        # #431 -- validate interpolation settings
+        self.allowed = self.start < self.end and self.incr > 0 and (self.use_wavelengths or self.use_wavenumbers)
+        if not self.allowed:
+            self.ctl.gui.colorize_button(self.bt_toggle, False)
+            self.bt_toggle.setEnabled(False)
+            self.bt_toggle.setToolTip("Interpolation cannot be enabled until configured in Settings")
+            self.new_axis = None
+            self.mutex.unlock()
+            return
+
+        self.bt_toggle.setEnabled(True)
         self.ctl.gui.colorize_button(self.bt_toggle, self.enabled)
         if self.enabled:
             self.bt_toggle.setToolTip(f"Disable x-axis interpolation")

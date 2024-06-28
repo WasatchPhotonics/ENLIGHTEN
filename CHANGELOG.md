@@ -3,6 +3,7 @@
 ## 4.0 GUI and Plugin Refactoring
 
 - 2024-??-?? 4.0.66
+    - [#431] validate interpolation inputs
     - [#429] confirm when user configures "static" filename template
     - [#408] support --password cmd-line arg and ENLIGHTEN_PASSWORD environment variable
     - [#389] add Preset to metadata
