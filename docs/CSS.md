@@ -153,6 +153,8 @@ Tailored from this:
 We started with just "dark", then added "light", and then added the various 
 colors (teal, orange, yellow, pink etc).
 
+The colored themes were programmatically generated using scripts/themegen.py.
+
 Right now, light and dark are toggle-able through the moon button on the button 
 bar, while you can select any theme (including light and dark) from the Settings
 page.
@@ -161,6 +163,45 @@ Graph backgrounds are only black if the style name starts with "dark" (i.e. "dar
 and "darkblue" at present), otherwise default to white.
 
 Currently, graph color only changes when you restart ENLIGHTEN.
+
+# Customization
+
+If you want to "skin" ENLIGHTEN, including changing the logos and icons, these 
+are the basic recommendations:
+
+- Splash Screen
+    - Current images are stored in enlighten/assets/uic_qrc/images/splashscreens
+      and defined as Qt resources in uic_qrc/splashscreens.qrc
+    - The splash screen is instantiated and displayed in scripts/Enlighten.py 
+    - The version number and "instantiating" messages are written to the splash 
+      screen by enlighten.BusinessObjects.header.
+- Logo
+    - The logos (one each for light and dark modes) are stored in 
+      enlighten/assets/uic_qrc/images and defined as resources in 
+      uic_qrc/enlighten_icons.qrc.
+    - The logo is positioned in uic_qrc/enlighten_layout.ui.
+    - The logo is programatically toggled between light and dark in
+      enlighten.ui.GUI.update_theme.
+- GUI Layout
+    - The overall layout of the ENLIGHTEN Qt application (the main "form" with
+      all the pages and tabs and frames) is defined in enlighten/assets/uic_qrc/enlighten_layout.ui,
+      and is normally edited with Qt Designer.
+- Colors (CSS Stylesheets)
+    - Colors and styles are defined in a couple places, but most are either in
+      enlighten/assets/stylesheets/dark/enlighten.css (the main stylesheet for the
+      GUI), or other files within stylesheets/dark, or per-theme overrides in
+      stylesheets/.
+    - Some other codes are defined in enlighten.data.ColorNames
+- Icons
+    - The icons used for compiled executables and shortcuts are in uic_qrc/images,
+      and are referenced by scripts/*.iss (for Windows installer)
+
+Note you need to run scripts/rebuild_resources.sh after changing most of the above.
+
+The GUI elements surrounding the Wiley KnowItAll™ interface were specifically 
+negotiated with Wiley, who own the trademark. Wasatch does not advise altering 
+aspects of their logo (other than completely disabling that functionality) 
+without direct communication with Wiley's marketing team.
 
 # Path Forward
 
