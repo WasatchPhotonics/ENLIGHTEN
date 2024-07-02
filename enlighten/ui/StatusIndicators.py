@@ -143,8 +143,18 @@ class StatusIndicators:
 
                 else:
                     if reading.laser_is_firing or reading.laser_enabled:
-                        lamp = "warning"
-                        lamp_tt = "laser is firing"
+                        if settings.eeprom.has_interlock_feedback:
+                            if reading.laser_is_firing:
+                                log.debug("MZ: has_interlock_feedback and is_firing or enabled, and is_firing, so warning")
+                                lamp = "warning"
+                                lamp_tt = "laser is firing"
+                            else:
+                                log.debug("MZ: has_interlock_feedback and is_firing or enabled, but not is_firing, so transitioning")
+                                lamp = "transitioning"
+                                lamp_tt = "laser preparing to fire"
+                        else:
+                            lamp = "warning"
+                            lamp_tt = "laser is firing"
                     elif self.ctl.laser_control.cant_fire_because_battery(spec):
                         perc = self.ctl.battery_feature.get_perc(spec)
                         lamp = "disconnected"

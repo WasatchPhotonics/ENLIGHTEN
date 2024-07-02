@@ -251,29 +251,47 @@ class LaserControlFeature:
             log.debug("update_laser_status: reading.laser_enabled is None")
             return
 
-        state = spec.app_state.laser_state
+        if spec.settings.eeprom.has_interlock_feedback:
+            # we have interlock feedback (and by implication, laser firing 
+            # feedback) so use that
 
-        if reading.laser_enabled:
-            # reading says laser firing
-            if state == LaserStates.DISABLED:
-                log.critical("reading thinks laser firing when application thinks disabled?! Disabling...")
-                self.set_laser_enable(False, spec)
-            elif state == LaserStates.REQUESTED:
-                log.debug("the laser has started firing")
-                spec.app_state.laser_state = LaserStates.FIRING
-            elif state == LaserStates.FIRING:
-                log.debug("all agree laser firing")
+            definitely_on = False
+            if not reading.laser_can_fire:
+                if spec.app_state.laser_state != LaserStates.DISABLED:
+                    self.set_laser_enable(False, spec)
+                self.set_restriction("Interlock open")
+            else:
+                self.clear_restriction("Interlock open")
+                if reading.laser_is_firing:
+                    definitely_on = True
+            self.refresh_laser_buttons(force_on=definitely_on)
         else:
-            # reading says laser not firing
-            if state == LaserStates.DISABLED:
-                log.debug("all agree laser disabled")
-                return
-            elif state == LaserStates.REQUESTED:
-                log.debug("awaiting laserDelaySec")
-                return
-            elif state == LaserStates.FIRING:
-                log.info("laser stopped firing (watchdog or interlock?)")
-                self.set_laser_enable(False, spec)
+
+            # we DON'T have interlock feedback (or laser firing feedback) so use
+            # looser rules
+            state = spec.app_state.laser_state
+
+            if reading.laser_enabled:
+                # reading says laser firing
+                if state == LaserStates.DISABLED:
+                    log.critical("reading thinks laser firing when application thinks disabled?! Disabling...")
+                    self.set_laser_enable(False, spec)
+                elif state == LaserStates.REQUESTED:
+                    log.debug("the laser has started firing")
+                    spec.app_state.laser_state = LaserStates.FIRING
+                elif state == LaserStates.FIRING:
+                    log.debug("all agree laser firing")
+            else:
+                # reading says laser not firing
+                if state == LaserStates.DISABLED:
+                    log.debug("all agree laser disabled")
+                    return
+                elif state == LaserStates.REQUESTED:
+                    log.debug("awaiting laserDelaySec")
+                    return
+                elif state == LaserStates.FIRING:
+                    log.info("laser stopped firing (watchdog or interlock?)")
+                    self.set_laser_enable(False, spec)
 
         self.update_initializion_status(reading)
 
