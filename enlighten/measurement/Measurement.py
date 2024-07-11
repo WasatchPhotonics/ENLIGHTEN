@@ -751,27 +751,27 @@ class Measurement:
             return
 
         if self.ctl.save_options.save_csv():
-            self.save_csv_file(resave)
+            self.save_csv_file(resave=resave)
             saved = True
 
         if self.ctl.save_options.save_text():
-            self.save_txt_file(resave)
+            self.save_txt_file(resave=resave)
             saved = True
 
         if self.ctl.save_options.save_excel():
-            self.save_excel_file(resave)
+            self.save_excel_file(resave=resave)
             saved = True
 
         if self.ctl.save_options.save_json():
-            self.save_json_file(resave)
+            self.save_json_file(resave=resave)
             saved = True
 
         if self.ctl.save_options.save_spc():
-            self.save_spc_file(resave)
+            self.save_spc_file(resave=resave)
             saved = True
 
         if self.ctl.save_options.save_dx():
-            self.save_dx_file(resave)
+            self.save_dx_file(resave=resave)
             saved = True
 
         if not saved:
