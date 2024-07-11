@@ -98,7 +98,7 @@ log = logging.getLogger(__name__)
 #
 # - What if you were appending measurements to one big CSV?
 # - What if you loaded the measurement for comparison from archival spectra?
-# - What if you loeaded the measurement from a big export file?
+# - What if you loaded the measurement from a big export file?
 #
 # My current decision is that we will retain the historical ability to rename
 # any file(s) saved from the given Measurement IFF the files were CREATED
@@ -639,7 +639,8 @@ class Measurement:
         # rename the underlying file(s)
         if self.ctl:
             if self.ctl.save_options.allow_rename_files() or self.ctl.save_options.filename_as_label():
-                self.rename_files()
+                if not self.rename_files():
+                    return
 
         # re-apply trace with new legend
         if was_displayed:
@@ -649,7 +650,7 @@ class Measurement:
             self.renamed_manually = True
 
         # re-save (update metadata on disk)
-        self.save()
+        self.save(resave=True)
 
     ##
     # The measurement has been relabled (say, "cyclohexane").  So if
@@ -678,9 +679,12 @@ class Measurement:
     # 4. It could have been generated from live data and APPENDED to an
     #    existing file (typically row-ordered CSV).
     #    - Renaming considered NOT POSSIBLE
+    #
+    # @returns True on success
     def rename_files(self):
         if not self.renamable_files:
-            return log.error("Measurement %s has no renamable files", self.measurement_id)
+            log.error("Measurement %s has no renamable files", self.measurement_id)
+            return False
 
         exts = {}
         for pathname in self.renamable_files:
@@ -690,10 +694,12 @@ class Measurement:
                 basename = m.group(2)
                 ext      = m.group(3)
                 if ext in exts:
-                    return log.error("found multiple renamable_files with extension %s: %s", ext, self.renamable_files)
+                    log.error("found multiple renamable_files with extension %s: %s", ext, self.renamable_files)
+                    return
                 exts[ext] = (basedir, basename)
             else:
-                return log.error("renamable_file w/o extension: %s", pathname)
+                log.error("renamable_file w/o extension: %s", pathname)
+                return False
 
         # determine what suffix we're going to use, if any
 
@@ -733,50 +739,53 @@ class Measurement:
                 os.rename(old_pathname, new_pathname)
                 self.add_renamable(new_pathname)
             except:
-                return log.error("Failed to rename %s -> %s", old_pathname, new_pathname, exc_info=1)
+                log.error("Failed to rename %s -> %s", old_pathname, new_pathname, exc_info=1)
+                return False
+
+        return True
 
     ## @todo cloud etc
-    def save(self):
+    def save(self, resave=False):
         saved = False
         if not self.ctl:
             return
 
         if self.ctl.save_options.save_csv():
-            self.save_csv_file()
+            self.save_csv_file(resave)
             saved = True
 
         if self.ctl.save_options.save_text():
-            self.save_txt_file()
+            self.save_txt_file(resave)
             saved = True
 
         if self.ctl.save_options.save_excel():
-            self.save_excel_file()
+            self.save_excel_file(resave)
             saved = True
 
         if self.ctl.save_options.save_json():
-            self.save_json_file()
+            self.save_json_file(resave)
             saved = True
 
         if self.ctl.save_options.save_spc():
-            self.save_spc_file()
+            self.save_spc_file(resave)
             saved = True
 
         if self.ctl.save_options.save_dx():
-            self.save_dx_file()
+            self.save_dx_file(resave)
             saved = True
 
         if not saved:
             if self.ctl.measurements:
                 self.ctl.measurements.ctl.marquee.error("No save formats selected -- spectrum not saved to disk")
 
-    def save_csv_file(self):
+    def save_csv_file(self, resave=False):
         if self.ctl is None:
-            self.save_csv_file_by_column()
+            self.save_csv_file_by_column(resave=resave)
         else:
             if self.ctl.save_options is not None and self.ctl.save_options.save_by_row():
-                self.save_csv_file_by_row()
+                self.save_csv_file_by_row(resave=resave)
             else:
-                self.save_csv_file_by_column()
+                self.save_csv_file_by_column(resave=resave)
 
     ##
     # This function is provided because legacy Dash and ENLIGHTEN saved row-
@@ -928,7 +937,7 @@ class Measurement:
     # wavenumber, raw), and only substitute the "NA" for cropped values in 
     # "processed." Instead, this currently just outputs the cropped versions of 
     # everything.
-    def save_excel_file(self):
+    def save_excel_file(self, resave=False):
         pr          = self.processed_reading
 
         processed   = pr.get_processed()
@@ -1040,7 +1049,7 @@ class Measurement:
 
         today_dir = self.generate_today_dir()
         pathname = os.path.join(today_dir, "%s.xls" % self.generate_basename())
-        if not self.verify_pathname(pathname):
+        if not self.verify_pathname(pathname, resave):
             return
 
         try:
@@ -1108,7 +1117,7 @@ class Measurement:
         s = json.dumps(m, sort_keys=True, indent=2, default=str)
         return util.clean_json(s)
 
-    def save_spc_file(self, use_basename=False) -> None:
+    def save_spc_file(self, use_basename=False, resave=False):
         today_dir = self.generate_today_dir()
         current_x = self.ctl.graph.current_x_axis
         log_text = f"Exported from Wasatch Photonics ENLIGHTEN.\nDevice {self.spec.label}"
@@ -1116,7 +1125,7 @@ class Measurement:
             pathname = "%s.spc" % self.basename
         else:
             pathname = os.path.join(today_dir, "%s.spc" % self.generate_basename())
-        if not self.verify_pathname(pathname):
+        if not self.verify_pathname(pathname, resave):
             return
 
         if current_x == common.Axes.WAVELENGTHS:
@@ -1162,13 +1171,13 @@ class Measurement:
     # of what x-axis and ProcessedReading fields to include, because there is
     # little benefit to removing them from individual files. We can always add
     # this later if requested.
-    def save_json_file(self, use_basename=False):
+    def save_json_file(self, use_basename=False, resave=False):
         today_dir = self.generate_today_dir()
         if use_basename:
             pathname = "%s.json" % self.basename
         else:
             pathname = os.path.join(today_dir, "%s.json" % self.generate_basename())
-        if not self.verify_pathname(pathname):
+        if not self.verify_pathname(pathname, resave):
             return
 
         s = self.to_json()
@@ -1178,13 +1187,13 @@ class Measurement:
         log.info("saved JSON %s", pathname)
         self.add_renamable(pathname)
 
-    def save_dx_file(self, use_basename=False):
+    def save_dx_file(self, use_basename=False, resave=False):
         if use_basename:
             pathname = self.basename + ".dx"
         else:
             today_dir = self.generate_today_dir()
             pathname = os.path.join(today_dir, self.generate_basename() + ".dx")
-        if not self.verify_pathname(pathname):
+        if not self.verify_pathname(pathname, resave):
             return
 
         data = {
@@ -1243,7 +1252,7 @@ class Measurement:
     #
     # Note that currently this is NOT writing UTF-8 / Unicode, although KIA-
     # generated labels are Unicode.  (Dieter doesn't seem to like Unicode CSV)
-    def save_csv_file_by_column(self, use_basename=False, ext="csv", delim=",", include_header=True, include_metadata=True):
+    def save_csv_file_by_column(self, use_basename=False, ext="csv", delim=",", include_header=True, include_metadata=True, resave=False):
         pr = self.processed_reading
 
         if not self.ctl or not self.ctl.save_options:
@@ -1255,7 +1264,8 @@ class Measurement:
             pathname = "%s.%s" % (self.basename, ext)
         else:
             pathname = os.path.join(today_dir, "%s.%s" % (self.generate_basename(), ext))
-        if not self.verify_pathname(pathname):
+
+        if not self.verify_pathname(pathname, resave):
             return
 
         roi = None
@@ -1385,8 +1395,8 @@ class Measurement:
     ##
     # This is essentially the same as column-ordered CSV, but with no metadata,
     # no header row and no commas. (per proj "Pioneer")
-    def save_txt_file(self, use_basename=False):
-        self.save_csv_file_by_column(use_basename, ext="txt", delim=" ", include_header=False, include_metadata=False)
+    def save_txt_file(self, use_basename=False, resave=False):
+        self.save_csv_file_by_column(use_basename=use_basename, ext="txt", delim=" ", include_header=False, include_metadata=False, resave=resave)
 
     # ##########################################################################
     # Row-ordered CSV
@@ -1425,10 +1435,11 @@ class Measurement:
     # generated labels are Unicode.
     #
     # Note that Measurements saved while "appending" are NOT considered renamable
-    # at the file level, while Measurements saved to individual files are.
+    # at the file level, while Measurements saved to individual files are. 
     #
     # @todo support .cropped, .interpolated
-    def save_csv_file_by_row(self):
+    # @todo consider how to properly support verify_pathname and resave
+    def save_csv_file_by_row(self, resave=False):
         sn = self.settings.eeprom.serial_number
 
         if self.ctl.save_options.append() and self.ctl.save_options.append_pathname is not None and os.path.exists(self.ctl.save_options.append_pathname):
@@ -1624,7 +1635,7 @@ class Measurement:
 
         # re-save files using current SaveOptions (will store new label, overwriting old files with old name)
         # (these will definitely be in TODAY directory, regardless of where they were loaded from)
-        self.save()
+        self.save(resave=True)
 
         # close-out the pending button click on the thumbnail (basically just
         # turns the button back from red to gray)
@@ -1696,7 +1707,9 @@ class Measurement:
 
         log.debug("interpolation complete")
 
-    def verify_pathname(self, pathname):
+    def verify_pathname(self, pathname, resave=False):
+        if resave:
+            return True
         if not os.path.exists(pathname):
             return True
 

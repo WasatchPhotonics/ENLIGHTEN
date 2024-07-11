@@ -2,7 +2,9 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
-- 2024-??-?? 4.0.66
+- 2024-??-?? 4.0.67
+    - [#452] bugfix: don't prompt when re-labeling thumbnails
+- 2024-06-28 4.0.66
     - [#389] add Preset to metadata
     - [#406] handle whitespace in developer path
     - [#408] support --password cmd-line arg and ENLIGHTEN_PASSWORD environment variable
