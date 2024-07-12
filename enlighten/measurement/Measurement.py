@@ -421,8 +421,10 @@ class Measurement:
         ts = self.timestamp.strftime("%Y%m%d-%H%M%S-%f")
         self.measurement_id = f"{ts}-{sn}"
 
-        # note that this is the wrapped filename exclusive of extension 
-        # ({prefix}-{filename_template}-{suffix})
+        # Note that this is the wrapped filename exclusive of extension 
+        # ({prefix}-{filename_template}-{suffix}). If the user later renames
+        # the thumbnail, the manually-entered label (possibly suffixed with -n
+        # in case of duplicates) will be stored as the new self.basename.
         self.basename = self.generate_basename() 
 
     def generate_label(self):
@@ -524,15 +526,23 @@ class Measurement:
 
     # Note that this wraps the prefix and suffix around the expanded template.
     # Prefix and Suffix are not retained in manually-renamed measurements (ctrl-E).
+    #
+    # YOU ARE HERE - bar-2 is not being saved as self.basename.
+    #                self.label is "bar", and subsequent calls
+    #                to "resave" are going to overwrite / recreate bar.csv, not 
+    #                bar-2.csv.
     def generate_basename(self):
+        # if self.basename is not None:
+        #     return self.basename
+
         if self.ctl is None or self.ctl.save_options is None:
             return self.measurement_id
-        else:
-            if self.renamed_manually and self.ctl.save_options.allow_rename_files():
-                return util.normalize_filename(self.label)
-            else:
-                basename = self.expand_template(self.ctl.save_options.filename_template())
-                return self.ctl.save_options.wrap_name(basename, self.prefix, self.suffix)
+
+        if self.renamed_manually and self.ctl.save_options.allow_rename_files():
+            return util.normalize_filename(self.label)
+            
+        basename = self.expand_template(self.ctl.save_options.filename_template())
+        return self.ctl.save_options.wrap_name(basename, self.prefix, self.suffix)
 
     def dump(self):
         log.debug("Measurement:")
@@ -682,6 +692,7 @@ class Measurement:
     #
     # @returns True on success
     def rename_files(self):
+        log.debug(f"rename_files: start renamable_files {self.renamable_files}")
         if not self.renamable_files:
             log.error("Measurement %s has no renamable files", self.measurement_id)
             return False
@@ -742,6 +753,7 @@ class Measurement:
                 log.error("Failed to rename %s -> %s", old_pathname, new_pathname, exc_info=1)
                 return False
 
+        log.debug(f"rename_files: end renamable_files {self.renamable_files}")
         return True
 
     ## @todo cloud etc
