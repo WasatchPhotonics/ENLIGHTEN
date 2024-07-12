@@ -101,6 +101,8 @@ class StatusIndicators:
         lamp_tt = ""
         temp_tt = ""
 
+        lamp_text = "Laser"
+
         if spec is not None:
             app_state = spec.app_state
             settings = spec.settings
@@ -144,20 +146,21 @@ class StatusIndicators:
                 else:
                     if reading.laser_is_firing: 
                         lamp = "warning"
-                        lamp_tt = "laser is FIRING"
+                        lamp_tt = "Laser is FIRING"
                     elif reading.laser_enabled:
                         lamp = "transitioning"
-                        lamp_tt = "laser is PREPARING TO FIRE"
+                        lamp_tt = "Laser is CHARGING (about to fire)"
+                        lamp_text = "Charging"
                     elif reading.laser_can_fire:
                         lamp = "connected"
-                        lamp_tt = "laser ARMED (can fire)"
+                        lamp_tt = "Laser is ARMED (can fire)"
                     elif self.ctl.laser_control.cant_fire_because_battery(spec):
                         perc = self.ctl.battery_feature.get_perc(spec)
                         lamp = "disconnected"
                         lamp_tt = f"low battery ({perc:.2f}%)"
                     else:
                         lamp = "disconnected"
-                        lamp_tt = "laser disarmed (cannot fire)"
+                        lamp_tt = "Laser is disarmed (cannot fire)"
             elif settings.eeprom.gen15 and len(all_specs) <= 1:
                 if settings.state.laser_enabled:
                     lamp = "warning"
@@ -171,7 +174,7 @@ class StatusIndicators:
                 specs_lasers_on = [s.settings.state.laser_enabled for s in all_specs]
                 if any(specs_lasers_on):
                     lamp = "warning"
-                    lamp_tt = "laser is firing"
+                    lamp_tt = "Laser is FIRING"
 
             ####################################################################
             # Detector Temperature
@@ -206,6 +209,8 @@ class StatusIndicators:
         self.button_hardware    .setToolTip(hw_tt)
         self.button_lamp        .setToolTip(lamp_tt)
         self.button_temperature .setToolTip(temp_tt)
+
+        self.button_lamp        .setText(lamp_text)
 
     # ##########################################################################
     # private methods
