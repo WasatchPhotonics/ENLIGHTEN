@@ -6,6 +6,7 @@ QPushButton
     background-color: qlineargradient(spread:pad, 
         x1:0, y1:1, 
         x2:0, y2:0, 
-        stop:0 rgba(186, 10, 10, 255),
-        stop:1 rgba(248, 79, 33, 255));
+        stop:1 rgba(247, 154, 28, 255),
+        stop:0 rgba(248,  79, 33, 255));
+    color: #ddd;
 }
