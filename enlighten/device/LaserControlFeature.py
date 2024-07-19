@@ -79,7 +79,7 @@ class LaserControlFeature:
         spec = self.ctl.multispec.current_spectrometer()
 
         has_laser_power_calibration = spec is not None and spec.settings.eeprom.has_laser_power_calibration()
-        cfu.comboBox_laser_power_unit.setVisible(has_laser_power_calibration and (spec.settings.is_mml() or doing_expert))
+        cfu.comboBox_laser_power_unit.setVisible(has_laser_power_calibration and doing_expert)
 
     # ##########################################################################
     # Public Methods
