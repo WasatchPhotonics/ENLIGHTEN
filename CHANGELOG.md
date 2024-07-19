@@ -2,11 +2,12 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
-- 2024-??-?? 4.0.67
+- 2024-07-19 4.0.67
     - [#452] don't prompt when re-labeling thumbnails
     - [#454] fix issue renaming .spc files
     - [#455] fix basename issue when multiple thumbnails have the same label
     - [#456] laser power unit combobox should disappear when leaving expert mode
+    - [#450] indicate when laser in LaserWarningDelay state
 - 2024-06-28 4.0.66
     - [#389] add Preset to metadata
     - [#406] handle whitespace in developer path
