@@ -256,7 +256,7 @@ class Measurement:
         self.label                    = None
         self.measurement_id           = None
         self.processed_reading        = None
-        self.renamable_files          = set()
+        self.pathname_by_ext          = {}
         self.renamed_manually         = False
         self.settings                 = None
         self.source_pathname          = None
@@ -402,12 +402,13 @@ class Measurement:
     def replace_processed_reading(self, pr):
         self.processed_reading = pr
         self.timestamp = datetime.datetime.now()
-        self.renamable_files = set()
+        self.pathname_by_ext = {}
         self.generate_id()
         self.generate_label()
 
-    def add_renamable(self, pathname):
-        self.renamable_files.add(pathname)
+    def add_pathname(self, pathname):
+        ext = pathname.split(".")[-1]
+        self.pathname_by_ext[ext] = pathname
 
     def generate_id(self):
         # It is unlikely that the same serial number will ever generate multiple
@@ -425,7 +426,7 @@ class Measurement:
         # ({prefix}-{filename_template}-{suffix}). If the user later renames
         # the thumbnail, the manually-entered label (possibly suffixed with -n
         # in case of duplicates) will be stored as the new self.basename.
-        self.basename = self.generate_basename() 
+        self.generate_basename() 
 
     def generate_label(self):
         if self.label is not None:
@@ -532,17 +533,21 @@ class Measurement:
     #                to "resave" are going to overwrite / recreate bar.csv, not 
     #                bar-2.csv.
     def generate_basename(self):
-        # if self.basename is not None:
-        #     return self.basename
+        if self.basename is None:
+            if self.ctl is None or self.ctl.save_options is None:
+                self.basename = self.measurement_id
 
-        if self.ctl is None or self.ctl.save_options is None:
-            return self.measurement_id
-
-        if self.renamed_manually and self.ctl.save_options.allow_rename_files():
-            return util.normalize_filename(self.label)
-            
-        basename = self.expand_template(self.ctl.save_options.filename_template())
-        return self.ctl.save_options.wrap_name(basename, self.prefix, self.suffix)
+            elif self.renamed_manually and self.ctl.save_options.allow_rename_files() and len(self.pathname_by_ext) > 0:
+                # return whatever we last used when saving the file
+                ext = sorted(keys(self.pathname_by_ext))[0]
+                pathname = self.pathname_by_ext[ext]
+                _, filename = os.path.split(pathname)
+                self.basename, _ = os.path.splitext(filename)
+                
+            else:
+                basename = self.expand_template(self.ctl.save_options.filename_template())
+                self.basename = self.ctl.save_options.wrap_name(basename, self.prefix, self.suffix)
+        return self.basename
 
     def dump(self):
         log.debug("Measurement:")
@@ -552,7 +557,7 @@ class Measurement:
         log.debug("  timestamp:             %s", self.timestamp)
         log.debug("  settings:              %s", self.settings)
         log.debug("  source_pathname:       %s", self.source_pathname)
-        log.debug("  renamable_files:       %s", self.renamable_files)
+        log.debug("  pathnames:             %s", self.pathname_by_ext)
 
         pr = self.processed_reading
         if pr is not None:
@@ -586,13 +591,13 @@ class Measurement:
             self.measurement_id, from_disk, update_parent)
 
         if from_disk:
-            for pathname in self.renamable_files:
+            for ext, pathname in self.pathname_by_ext.items():
                 try:
                     os.remove(pathname)
-                    log.debug("removed %s", pathname)
+                    log.debug("removed %s %s", ext.upper(), pathname)
                 except:
                     pass
-            self.renamable_files = set()
+            self.pathname_by_ext = {}
 
         if update_parent:
             # This deletion request came from within the Measurement (presumably
@@ -692,25 +697,18 @@ class Measurement:
     #
     # @returns True on success
     def rename_files(self):
-        log.debug(f"rename_files: start renamable_files {self.renamable_files}")
-        if not self.renamable_files:
+        if not self.pathname_by_ext:
             log.error("Measurement %s has no renamable files", self.measurement_id)
             return False
 
         exts = {}
-        for pathname in self.renamable_files:
+        for ext, pathname in self.pathname_by_ext.items():
             m = re.match(r"^(.*[/\\])?([^/\\]+)\.([^./\\]+)$", pathname)
             if m:
                 basedir  = m.group(1)
                 basename = m.group(2)
-                ext      = m.group(3)
-                if ext in exts:
-                    log.error("found multiple renamable_files with extension %s: %s", ext, self.renamable_files)
-                    return
+                ext_junk = m.group(3)
                 exts[ext] = (basedir, basename)
-            else:
-                log.error("renamable_file w/o extension: %s", pathname)
-                return False
 
         # determine what suffix we're going to use, if any
 
@@ -734,7 +732,7 @@ class Measurement:
             n += 1
 
         # apparently there's no conflict for any extension using suffix 'n'
-        self.renamable_files = set()
+        self.pathname_by_ext = {}
         for ext in exts:
             (basedir, basename) = exts[ext]
 
@@ -748,12 +746,14 @@ class Measurement:
             try:
                 log.debug(f"renaming {old_pathname} -> {new_pathname}")
                 os.rename(old_pathname, new_pathname)
-                self.add_renamable(new_pathname)
+                self.add_pathname(new_pathname)
             except:
                 log.error("Failed to rename %s -> %s", old_pathname, new_pathname, exc_info=1)
                 return False
 
-        log.debug(f"rename_files: end renamable_files {self.renamable_files}")
+        log.debug(f"rename_files: saving new basename {new_basename}")
+        self.basename = new_basename
+
         return True
 
     ## @todo cloud etc
@@ -1067,7 +1067,7 @@ class Measurement:
         try:
             wbk.save(pathname)
             log.info("saved %s", pathname)
-            self.add_renamable(pathname)
+            self.add_pathname(pathname)
         except Exception:
             log.critical("Problem saving workbook: %s", pathname, exc_info=1)
 
@@ -1175,6 +1175,8 @@ class Measurement:
             log.error(f"current x axis doesn't match vaild values. Aborting SPC save")
             return
 
+        self.add_pathname(pathname)
+
     ##
     # Save the Measurement in a JSON file for simplified programmatic parsing.
     # in the next column and so on (similar layout as the Excel output).
@@ -1197,7 +1199,7 @@ class Measurement:
             f.write(s)
 
         log.info("saved JSON %s", pathname)
-        self.add_renamable(pathname)
+        self.add_pathname(pathname)
 
     def save_dx_file(self, use_basename=False, resave=False):
         if use_basename:
@@ -1250,7 +1252,7 @@ class Measurement:
         jcamp.jcamp_writefile(pathname, data)
 
         log.info("saved JCAMP-DX %s", pathname)
-        self.add_renamable(pathname)
+        self.add_pathname(pathname)
 
         return pathname
 
@@ -1398,7 +1400,7 @@ class Measurement:
                 out.writerow(values)
 
         log.info("saved columnar %s", pathname)
-        self.add_renamable(pathname)
+        self.add_pathname(pathname)
 
     # ##########################################################################
     # TXT
@@ -1471,7 +1473,7 @@ class Measurement:
             if os.path.exists(pathname):
                 os.remove(pathname)
             self.appending = False
-            self.add_renamable(pathname)
+            self.add_pathname(pathname)
 
         file_header = Measurement.generate_dash_file_header([sn])
 
