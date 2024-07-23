@@ -2,6 +2,8 @@
 
 ## 4.0 GUI and Plugin Refactoring
 
+- 2024-??-?? 4.0.68
+    - change StatusBar frame count from ProcessedReading to Reading.session_count
 - 2024-07-19 4.0.67
     - [#452] don't prompt when re-labeling thumbnails
     - [#454] fix issue renaming .spc files

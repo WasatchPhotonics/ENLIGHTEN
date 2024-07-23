@@ -142,7 +142,7 @@ class StatusBarFeature:
         if pr is None:
             return
 
-        self.set("Spectrum Count", pr.session_count)
+        self.set("Spectrum Count", pr.reading.session_count)
         spectrum = pr.get_processed()
 
         if spectrum is not None:
