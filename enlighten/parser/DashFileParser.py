@@ -296,7 +296,7 @@ class DashFileParser:
         # IF we only loaded a SINGLE measurement from this file, THEN
         # we can rename the file when the measurement is relabeled
         if len(self.measurements) == 1:
-            self.measurements[0].add_renamable(self.pathname)
+            self.measurements[0].add_pathname(self.pathname)
 
         log.debug("returning %d Measurements", len(self.measurements))
         return self.measurements

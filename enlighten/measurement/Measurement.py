@@ -880,7 +880,7 @@ class Measurement:
         if field == "note":                      return self.note
         if field == "prefix":                    return self.prefix
         if field == "suffix":                    return self.suffix
-        if field == "session count":             return self.processed_reading.reading.session_count
+        if field == "session count":             return self.processed_reading.reading.session_count if self.processed_reading.reading is not None else 0
         if field == "plugin name":               return self.plugin_name
         if field == "preset":                    return self.ctl.presets.selected_preset
 

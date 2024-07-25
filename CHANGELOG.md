@@ -5,6 +5,10 @@
 - 2024-??-?? 4.0.68
     - change StatusBar frame count from ProcessedReading to Reading.session_count
     - clarified BatchCollection "explain this" re: collection timeout
+    - [#460] fix issues loading saved spectra
+        - fix logging bug in MeasurementFactory
+        - fixed missed calls to add_renamable from #452
+        - fix bug graphing loaded .json measurements
 - 2024-07-19 4.0.67
     - [#452] don't prompt when re-labeling thumbnails
     - [#454] fix issue renaming .spc files

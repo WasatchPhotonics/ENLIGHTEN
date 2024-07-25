@@ -73,7 +73,7 @@ class ColumnFileParser:
                 setattr(m, k.lower(), self.metadata[k])
 
         # this parser only loads a single measurement, so the file is renamable
-        m.add_renamable(self.pathname)
+        m.add_pathname(self.pathname)
 
         return m
 
