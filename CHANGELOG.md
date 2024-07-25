@@ -5,6 +5,9 @@
 - 2024-??-?? 4.0.68
     - change StatusBar frame count from ProcessedReading to Reading.session_count
     - clarified BatchCollection "explain this" re: collection timeout
+    - enlighten_ubuntu_launcher.sh
+        - fixed curl
+        - added python3.7-dev
 - 2024-07-19 4.0.67
     - [#452] don't prompt when re-labeling thumbnails
     - [#454] fix issue renaming .spc files
