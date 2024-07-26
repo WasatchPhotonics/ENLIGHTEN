@@ -1,8 +1,30 @@
 # Version History
 
 ## 4.0 GUI and Plugin Refactoring
+
+- 2024-??-?? 4.0.68
+    - change StatusBar frame count from ProcessedReading to Reading.session_count
+    - clarified BatchCollection "explain this" re: collection timeout
+- 2024-07-19 4.0.67
+    - [#452] don't prompt when re-labeling thumbnails
+    - [#454] fix issue renaming .spc files
+    - [#455] fix basename issue when multiple thumbnails have the same label
+    - [#456] laser power unit combobox should disappear when leaving expert mode
+    - [#450] indicate when laser in LaserWarningDelay state
+- 2024-06-28 4.0.66
+    - [#389] add Preset to metadata
+    - [#406] handle whitespace in developer path
+    - [#408] support --password cmd-line arg and ENLIGHTEN_PASSWORD environment variable
+    - [#420] allow user to navigate to target directory when saving exports
+    - [#426] support --max-thumbnails cmd-line arg and ENLIGHTEN_MAX_THUMBNAILS environment variable
+    - [#428] verify before overwriting files
+    - [#429] confirm when user configures "static" filename template
+    - [#431] validate interpolation inputs
+    - [#432] fixed scan averaging in BatchCollection
+    - [#446] update theming docs
+    - added hidden scipy imports for superman
 - 2026-06-01 4.0.65
-    - Add label parameter to save_current_spectra
+    - allow plugins to override Label metadata
 - 2024-06-19 4.0.64
     - move pywin32 and spc_spectra to requirements.txt
     - try to remove console on Win11

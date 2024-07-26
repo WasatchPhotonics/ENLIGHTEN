@@ -121,7 +121,8 @@ class Stylesheets:
         #     return
 
         if old == css:
-            log.debug(f"{widget_name} already has stylesheet equivalent to {self.theme}[{style_name}]")
+            # log.debug(f"{widget_name} already has stylesheet equivalent to {self.theme}[{style_name}]")
+            pass
         else:
             log.debug(f"applying {self.theme}[{style_name}] to {widget_name}")
             widget.setStyleSheet(css)

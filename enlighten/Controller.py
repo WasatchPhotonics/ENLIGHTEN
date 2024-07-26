@@ -87,6 +87,7 @@ class Controller:
                 log_queue,
                 log_level         = "INFO",
                 max_memory_growth = 0,
+                max_thumbnails    = 500,
                 run_sec           = 0,
                 serial_number     = None,
                 stylesheet_path   = None,
@@ -95,7 +96,8 @@ class Controller:
                 splash            = None,
                 window_state      = None,
                 start_batch       = False,
-                plugin            = None
+                plugin            = None,
+                password          = None
             ):
         """
         All of the parameters are normally set via command-line arguments
@@ -106,6 +108,7 @@ class Controller:
         self.log_queue              = log_queue # currently needed for KnowItAll.Wrapper
         self.log_level              = log_level # passed to LoggingFeature and WasatchDeviceWrapper/Worker
         self.max_memory_growth      = max_memory_growth
+        self.max_thumbnails         = max_thumbnails
         self.run_sec                = run_sec
         self.dialog_open            = False
         self.serial_number_desired  = serial_number
@@ -114,6 +117,7 @@ class Controller:
         self.window_state           = window_state
         self.start_batch            = start_batch
         self.plugin                 = plugin 
+        self.password               = password
         self.spec_timeout           = 30
         self.splash                 = splash
         self.form                   = form
