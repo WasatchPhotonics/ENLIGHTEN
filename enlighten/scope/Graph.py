@@ -295,7 +295,7 @@ class Graph:
                         # force cropping, as clearly y is cropped (likely loaded 
                         # from external file), and we really have no choice but to 
                         # use what was in effect when the Measurement was taken
-                        x = self.ctl.horiz_roi.crop(x, roi=roi, force=True)
+                        x = self.ctl.horiz_roi.crop(x, roi=roi)
 
             if len(y) != len(x):
                 log.error("unable to correct thumbnail widget by cropping (len(x) %d != len(y) %d)", len(x), len(y))
