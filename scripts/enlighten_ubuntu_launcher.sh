@@ -32,7 +32,7 @@
 # fail on error
 set -e
 
-LAUNCHER_VERSION="1.0.1"
+LAUNCHER_VERSION="1.0.3"
 INSTALL_PATH="$HOME/ENLIGHTEN"
 INSTALL_LOG="$INSTALL_PATH/install.log"
 
@@ -73,6 +73,7 @@ else
         sudo apt install software-properties-common
         sudo add-apt-repository ppa:deadsnakes/ppa
         sudo apt install python3.7
+        sudo apt install python3.7-dev
         sudo apt install python3.7-venv
         sudo apt install python3.7-distutils
 
@@ -91,7 +92,7 @@ else
         ( cd Wasatch.PY  && git checkout ubu-py37 )
 
         # keep subsequent pip install scripts from failing 
-        curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+        curl -o get-pip.py https://bootstrap.pypa.io/pip/3.7/get-pip.py 
         python3.7 get-pip.py
 
         # create venv for python dependencies

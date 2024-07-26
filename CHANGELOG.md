@@ -9,6 +9,9 @@
         - fix logging bug in MeasurementFactory
         - fixed missed calls to add_renamable from #452
         - fix bug graphing loaded .json measurements
+    - enlighten_ubuntu_launcher.sh
+        - fixed curl
+        - added python3.7-dev
 - 2024-07-19 4.0.67
     - [#452] don't prompt when re-labeling thumbnails
     - [#454] fix issue renaming .spc files
