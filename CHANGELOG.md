@@ -5,6 +5,7 @@
 - 2024-??-?? 4.0.68
     - change StatusBar frame count from ProcessedReading to Reading.session_count
     - clarified BatchCollection "explain this" re: collection timeout
+    - [#462] fix system clipboard copy after connecting to plugin
     - [#460] fix issues loading saved spectra
         - fix logging bug in MeasurementFactory
         - fixed missed calls to add_renamable from #452
