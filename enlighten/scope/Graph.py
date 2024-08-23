@@ -295,7 +295,7 @@ class Graph:
                         # force cropping, as clearly y is cropped (likely loaded 
                         # from external file), and we really have no choice but to 
                         # use what was in effect when the Measurement was taken
-                        x = self.ctl.horiz_roi.crop(x, roi=roi, force=True)
+                        x = self.ctl.horiz_roi.crop(x, roi=roi)
 
             if len(y) != len(x):
                 log.error("unable to correct thumbnail widget by cropping (len(x) %d != len(y) %d)", len(x), len(y))
@@ -461,14 +461,28 @@ class Graph:
             # iterate over every curve on the graph
             for curve in self.plot.listDataItems():
                 spectrum = curve.getData()[-1]
-                if spectrum is not None and len(spectrum) == len(x_axis):
-                    spectra.append(spectrum)
+                if spectrum is not None:
+                    if len(spectrum) == len(x_axis):
+                        spectra.append(spectrum)
+                    else:
+                        log.debug(f"not copying curve {curve} to clipboard because len(spectrum) {len(spectrum)} != len(x_axis) {len(x_axis)}")
+                else:
+                    log.debug(f"not copying curve {curve} to clipboard because spectrum is None")
         else:
             # multiple spectrometers, so x-axis and lengths can vary
             spectra = []
             for curve in self.plot.listDataItems():
-                spectra.append(curve.getData()[0])
-                spectra.append(curve.getData()[-1])
+                data = curve.getData()
+                x = data[0]
+                y = data[-1]
+                spectra.append(x)
+                spectra.append(y)
+
+        # ignore callbacks with only one column -- these may be specious callbacks 
+        # from empty plugin graph (x-axis only)
+        if len(spectra) < 2:
+            log.debug("declining to copy single-dimension array to clipboard")
+            return
 
         self.ctl.clipboard.copy_spectra(spectra)
 

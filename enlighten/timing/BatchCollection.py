@@ -289,23 +289,26 @@ class BatchCollection:
         if not self.enabled:
             s = "Batch Collection is <b>Disabled</b>."
         else:
-            s = "<p>Because Batch Collection is <b>Enabled</b>, a new ⏩ button will be added to the Scope Controls. "
-            s += "Clicking this will start a new Batch Collection.</p>"
-
-            if self.spinbox_collection_timeout.value() == 0:
-                s += "<p>The following collection will not timeout and will complete based on the end of batch collection and measurement count.</p>"
-            else:
-                s += f"<p>The following collection will timeout after {self.spinbox_collection_timeout.value()} seconds. After a complete measurement if the timeout is reached, the batch will complete and export then the collection will stop.</p>"
+            s = """<p>Because Batch Collection is <b>Enabled</b>, a new ⏩ button will be added to the Scope Controls.
+                   Clicking this will start a new Batch Collection.</p>"""
 
             if self.batch_count == 0:
-                s += "<p>The following batch will run in an endless loop, because <b>Batch Count</b> is zero.</p>"
+                s += "<p>The following batch will run in an endless loop, because <b>Batch Count</b> is zero. "
             else:
                 s += f"<p>The following batch will be run {self.batch_count} times, per <b>Batch Count</b>. "
-                s += f"Successive batches will be timed to <i>start</i> {self.batch_period_sec}sec apart (<b>Batch Period</b>).</p>"
+            s += f"Successive batches will be timed to <i>start</i> {self.batch_period_sec}sec apart (<b>Batch Period</b>).</p>"
 
-            s += f"<p>Each batch will collect {self.measurement_count} measurements (<b>Measurement Count</b>). "
-            s += "The measurements will all be acquired at the current integration time. "
-            s += f"The measurements will be spaced to <i>start</i> {self.measurement_period_ms}ms apart (<b>Measurement Period</b>).</p>"
+            s += f"""<p>Each batch will collect {self.measurement_count} measurements (<b>Measurement Count</b>).
+                     The measurements will all be acquired at the current integration time.  The measurements will be 
+                     spaced to <i>start</i> {self.measurement_period_ms}ms apart (<b>Measurement Period</b>).</p>"""
+
+            timeout_sec = self.spinbox_collection_timeout.value()
+            if self.spinbox_collection_timeout.value() == 0:
+                s += "<p>Because <b>Collection Timeout</b> is zero, the collection will <i>not</i> be arbitrarily halted due to collection length.</p>"
+            else:
+                s += f"""<p>Because <b>Collection Timeout</b> is {timeout_sec}sec, the collection will be summarily halted after {timeout_sec}sec 
+                         of wall-clock time. This runtime will be enforced in addition to Batch Count, Measurement Count, Integration Time and other 
+                         settings affecting timing.</p>"""
 
             if self.laser_mode == "manual":
                 s += "<p>The laser will not be automatically turned on or off during the collection (<b>Laser Mode Manual</b>).</p>"
@@ -313,8 +316,8 @@ class BatchCollection:
                 s += f"<p>The laser will be automatically turned on at the beginning of each {self.laser_mode} (<b>Laser Mode</b>). "
                 if self.dark_before_batch:
                     s += "Before turning the laser, a fresh dark will be taken. "
-                s += f"After the laser is turned on, it will be allowed to stabilize for {self.laser_warmup_ms}ms (<b>Laser Warmup</b>). "
-                s += f"The laser will be automatically turned off at the end of each {self.laser_mode}.</p>"
+                s += f"""After the laser is turned on, it will be allowed to stabilize for {self.laser_warmup_ms}ms (<b>Laser Warmup</b>). 
+                         The laser will be automatically turned off at the end of each {self.laser_mode}.</p>"""
 
             if self.clear_before_batch:
                 s += "<p>The save bar will be cleared at the <i>start</i> of each new batch.</p>"
@@ -346,11 +349,13 @@ class BatchCollection:
         if not self.running:
             log.info("starting")
 
+            avg = self.ctl.scan_averaging.get_scans_to_average() # #432
+
             # initialize driver-level laser auto_triggering and dark collection
             if self.laser_mode == "spectrum":
-                self.take_one_template = TakeOneRequest(take_dark=self.dark_before_batch, enable_laser_before=True, disable_laser_after=True, laser_warmup_ms=self.laser_warmup_ms)
+                self.take_one_template = TakeOneRequest(scans_to_average=avg, take_dark=self.dark_before_batch, enable_laser_before=True, disable_laser_after=True, laser_warmup_ms=self.laser_warmup_ms)
             else:
-                self.take_one_template = TakeOneRequest()
+                self.take_one_template = TakeOneRequest(scans_to_average=avg)
 
             self.running = True
 

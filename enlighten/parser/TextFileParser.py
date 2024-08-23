@@ -78,6 +78,6 @@ class TextFileParser:
             processed_reading = self.processed_reading,
             settings          = self.settings)
 
-        m.add_renamable(self.pathname)
+        m.add_pathname(self.pathname)
 
         return m

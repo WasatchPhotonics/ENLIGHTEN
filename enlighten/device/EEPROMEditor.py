@@ -735,7 +735,7 @@ class EEPROMEditor:
         Hides all widgets to which the filter applies.
         """
         for layout in self.filterable_layouts:
-            if type(layout) == QtWidgets.QFormLayout:
+            if isinstance(layout, QtWidgets.QFormLayout):
                 rows = [[None, None] for _ in range(0, layout.rowCount())]
 
                 for i in range(0, layout.count()):

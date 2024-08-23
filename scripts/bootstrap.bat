@@ -312,6 +312,8 @@ if "%pyinstaller%" == "1" (
         --clean ^
         --paths="../Wasatch.PY" ^
         --hidden-import="scipy._lib.messagestream" ^
+        --hidden-import="scipy._lib.array_api_compat.numpy.fft" ^
+        --hidden-import="scipy.special._special_ufuncs" ^
         --hidden-import="scipy.special.cython_special" ^
         --hidden-import="tensorflow" ^
         --hidden-import="tensorflow.python.data.ops.shuffle_op" ^

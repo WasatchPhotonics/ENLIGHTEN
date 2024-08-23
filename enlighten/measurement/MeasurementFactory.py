@@ -243,8 +243,8 @@ class MeasurementFactory:
             elif pathname.lower().endswith(".spc"):
                 measurements = self.create_from_spc_file(pathname)
         except:
-            msgbox("failed to parse file %s" % pathname)
-            log.error("failed to parse file %s", pathname, exc_info=1)
+            log.error(f"failed to parse file {pathname}", exc_info=1)
+            msgbox(f"failed to parse file {pathname}")
 
         if measurements is None:
             return
