@@ -9436,7 +9436,7 @@ QComboBox QListView
                                 <string>wavenumber</string>
                                </property>
                                <property name="checked">
-                                <bool>false</bool>
+                                <bool>true</bool>
                                </property>
                               </widget>
                              </item>
@@ -9469,6 +9469,9 @@ QComboBox QListView
                                </property>
                                <property name="maximum">
                                 <double>100.000000000000000</double>
+                               </property>
+                               <property name="minimum">
+                                <double>0.1</double>
                                </property>
                                <property name="value">
                                 <double>1.000000000000000</double>
