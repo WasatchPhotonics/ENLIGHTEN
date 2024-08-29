@@ -815,10 +815,6 @@ class Measurement:
         orig = field
         field = field.lower()
 
-        # if this field has already been computed, use cached
-        if orig in self.metadata:
-            return self.metadata[orig]
-
         # allow plugins to stomp standard metadata
         if self.processed_reading.plugin_metadata is not None:
             pm = self.processed_reading.plugin_metadata
@@ -826,6 +822,10 @@ class Measurement:
                 if field == k.lower():
                     log.debug(f"get_metadata: stomping {k} from plugin metadata {v}")
                     return v
+
+        # if this field has already been computed, use cached
+        if orig in self.metadata:
+            return self.metadata[orig]
 
         wavecal = self.settings.get_wavecal_coeffs()
 
