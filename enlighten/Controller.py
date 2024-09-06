@@ -1472,8 +1472,6 @@ class Controller:
             log.debug("attempt_reading: setting dark from Reading: %s", reading.dark)
             self.dark_feature.store(dark=reading.dark)
 
-        # YOU ARE HERE
-
         # Scope Capture
         log.debug("attempt_reading: passing new Reading to update_scope_graphs")
         self.update_scope_graphs(reading)
@@ -1490,9 +1488,9 @@ class Controller:
 
             # apply updated acquisition parameters
             if reading.new_integration_time_ms is not None:
-                self.integration_time_feature.set_ms(reading.new_integration_time_ms)
+                self.integration_time_feature.set_ms(reading.new_integration_time_ms, quiet=True)
             if reading.new_gain_db is not None:
-                self.gain_db_feature.set_db(reading.new_gain_db)
+                self.gain_db_feature.set_db(reading.new_gain_db, quiet=True)
 
         log.debug("attempt_reading: done")
 
