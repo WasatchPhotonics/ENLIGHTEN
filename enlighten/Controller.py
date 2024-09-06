@@ -1485,6 +1485,12 @@ class Controller:
             if spec.settings.is_xs():
                 self.laser_control.process_reading(reading)
 
+            # apply updated acquisition parameters
+            if reading.new_integration_time_ms is not None:
+                self.integration_time_feature.set_ms(reading.new_integration_time_ms)
+            if reading.new_gain_db is not None:
+                self.gain_db_feature.set(reading.new_gain_db)
+
     def acquire_reading(self, spec: Spectrometer) -> AcquiredReading:
         """
         Poll the spectrometer thread (WasatchDeviceWrapper) for a 
@@ -1762,7 +1768,7 @@ class Controller:
             selected = self.multispec.is_selected(spec.device_id)
 
         # don't graph incomplete averages
-        if self.scan_averaging.enabled(spec) and not reading.averaged:
+        if self.scan_averaging.enabled(spec) and reading.averaged_count < 1:
             log.debug("process_reading: scan averaging enabled but reading isn't averaged")
             return
 

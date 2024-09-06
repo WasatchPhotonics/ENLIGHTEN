@@ -103,7 +103,7 @@ class TakeOneFeature:
 
         # did we get an averaged reading (completing a single TakeOne within a spectrometer?)
         reading = processed_reading.reading
-        if not reading.averaged:
+        if reading.averaged_count < 1:
             return
         self.completion_count += 1
 

@@ -141,6 +141,9 @@ class GainDBFeature:
         if spec is None:
             return
 
+        if not spec.settings.is_xs():
+            return
+
         db = float(db)
         
         # save gain_db to application state
