@@ -2069,7 +2069,7 @@ QComboBox QListView
    <bool>true</bool>
   </property>
   <property name="dockOptions">
-   <set>QMainWindow::AnimatedDocks</set>
+   <set>QMainWindow::DockOption::AnimatedDocks</set>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,0,1">
@@ -2219,7 +2219,7 @@ QComboBox QListView
                  </font>
                 </property>
                 <property name="layoutDirection">
-                 <enum>Qt::LeftToRight</enum>
+                 <enum>Qt::LayoutDirection::LeftToRight</enum>
                 </property>
                 <property name="currentText">
                  <string>Scope</string>
@@ -2249,10 +2249,10 @@ QComboBox QListView
               <item>
                <spacer name="horizontalSpacer_8">
                 <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+                 <enum>Qt::Orientation::Horizontal</enum>
                 </property>
                 <property name="sizeType">
-                 <enum>QSizePolicy::Fixed</enum>
+                 <enum>QSizePolicy::Policy::Fixed</enum>
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
@@ -2355,10 +2355,10 @@ QComboBox QListView
               <item>
                <spacer name="horizontalSpacer_6">
                 <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+                 <enum>Qt::Orientation::Horizontal</enum>
                 </property>
                 <property name="sizeType">
-                 <enum>QSizePolicy::MinimumExpanding</enum>
+                 <enum>QSizePolicy::Policy::MinimumExpanding</enum>
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
@@ -2521,7 +2521,7 @@ QComboBox QListView
        </sizepolicy>
       </property>
       <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+       <enum>Qt::Orientation::Horizontal</enum>
       </property>
       <property name="opaqueResize">
        <bool>true</bool>
@@ -2550,7 +2550,7 @@ QComboBox QListView
          </size>
         </property>
         <property name="verticalScrollBarPolicy">
-         <enum>Qt::ScrollBarAlwaysOn</enum>
+         <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOn</enum>
         </property>
         <property name="widgetResizable">
          <bool>true</bool>
@@ -2560,8 +2560,8 @@ QComboBox QListView
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>739</width>
-           <height>5713</height>
+           <width>637</width>
+           <height>5494</height>
           </rect>
          </property>
          <property name="sizePolicy">
@@ -2648,10 +2648,10 @@ QComboBox QListView
                </size>
               </property>
               <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+               <enum>QFrame::Shape::StyledPanel</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Shadow::Raised</enum>
               </property>
               <property name="wpBox" stdset="0">
                <bool>false</bool>
@@ -2695,7 +2695,7 @@ QComboBox QListView
                   <item>
                    <layout class="QHBoxLayout" name="horizontalLayout_80">
                     <property name="sizeConstraint">
-                     <enum>QLayout::SetMinimumSize</enum>
+                     <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
                     </property>
                     <property name="topMargin">
                      <number>0</number>
@@ -2716,10 +2716,10 @@ QComboBox QListView
                     <item>
                      <spacer name="horizontalSpacer_46">
                       <property name="orientation">
-                       <enum>Qt::Horizontal</enum>
+                       <enum>Qt::Orientation::Horizontal</enum>
                       </property>
                       <property name="sizeType">
-                       <enum>QSizePolicy::MinimumExpanding</enum>
+                       <enum>QSizePolicy::Policy::MinimumExpanding</enum>
                       </property>
                       <property name="sizeHint" stdset="0">
                        <size>
@@ -2806,13 +2806,13 @@ QComboBox QListView
                         <item>
                          <layout class="QFormLayout" name="formLayout_ee_page_0">
                           <property name="fieldGrowthPolicy">
-                           <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+                           <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
                           </property>
                           <property name="labelAlignment">
-                           <set>Qt::AlignCenter</set>
+                           <set>Qt::AlignmentFlag::AlignCenter</set>
                           </property>
                           <property name="formAlignment">
-                           <set>Qt::AlignHCenter|Qt::AlignTop</set>
+                           <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
                           </property>
                           <property name="verticalSpacing">
                            <number>4</number>
@@ -2860,7 +2860,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -2937,7 +2937,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -2975,7 +2975,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -3010,7 +3010,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -3042,7 +3042,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -3077,7 +3077,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -3103,7 +3103,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -3131,7 +3131,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -3160,7 +3160,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -3185,7 +3185,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -3294,7 +3294,7 @@ QComboBox QListView
                             <item>
                              <spacer name="horizontalSpacer_10">
                               <property name="orientation">
-                               <enum>Qt::Horizontal</enum>
+                               <enum>Qt::Orientation::Horizontal</enum>
                               </property>
                               <property name="sizeHint" stdset="0">
                                <size>
@@ -3431,13 +3431,13 @@ QComboBox QListView
                         <item>
                          <layout class="QFormLayout" name="formLayout_ee_page_1">
                           <property name="fieldGrowthPolicy">
-                           <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+                           <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
                           </property>
                           <property name="labelAlignment">
-                           <set>Qt::AlignCenter</set>
+                           <set>Qt::AlignmentFlag::AlignCenter</set>
                           </property>
                           <property name="formAlignment">
-                           <set>Qt::AlignHCenter|Qt::AlignTop</set>
+                           <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
                           </property>
                           <property name="verticalSpacing">
                            <number>4</number>
@@ -3612,7 +3612,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -3637,7 +3637,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -3683,7 +3683,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -3705,7 +3705,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -3757,10 +3757,10 @@ QComboBox QListView
                   <item>
                    <widget class="QFrame" name="frame_eeprom_page_2_white">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::Shape::StyledPanel</enum>
                     </property>
                     <property name="frameShadow">
-                     <enum>QFrame::Raised</enum>
+                     <enum>QFrame::Shadow::Raised</enum>
                     </property>
                     <property name="wpBox" stdset="0">
                      <bool>false</bool>
@@ -3809,10 +3809,10 @@ QComboBox QListView
                         <item>
                          <layout class="QFormLayout" name="formLayout_ee_page_2">
                           <property name="fieldGrowthPolicy">
-                           <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+                           <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
                           </property>
                           <property name="labelAlignment">
-                           <set>Qt::AlignCenter</set>
+                           <set>Qt::AlignmentFlag::AlignCenter</set>
                           </property>
                           <property name="verticalSpacing">
                            <number>4</number>
@@ -3987,7 +3987,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -4012,7 +4012,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -4037,7 +4037,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -4062,7 +4062,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -4087,7 +4087,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -4112,7 +4112,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -4137,7 +4137,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -4162,7 +4162,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -4187,7 +4187,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -4212,7 +4212,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -4237,7 +4237,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -4262,7 +4262,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="maximum">
                              <number>255</number>
@@ -4333,13 +4333,13 @@ QComboBox QListView
                         <item row="1" column="0">
                          <layout class="QFormLayout" name="formLayout_15">
                           <property name="fieldGrowthPolicy">
-                           <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+                           <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
                           </property>
                           <property name="labelAlignment">
-                           <set>Qt::AlignCenter</set>
+                           <set>Qt::AlignmentFlag::AlignCenter</set>
                           </property>
                           <property name="formAlignment">
-                           <set>Qt::AlignHCenter|Qt::AlignTop</set>
+                           <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
                           </property>
                           <property name="verticalSpacing">
                            <number>4</number>
@@ -4361,7 +4361,7 @@ QComboBox QListView
                              <string>Reserved</string>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                            </widget>
                           </item>
@@ -4389,7 +4389,7 @@ QComboBox QListView
                              <string>Reserved</string>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                            </widget>
                           </item>
@@ -4417,7 +4417,7 @@ QComboBox QListView
                              <string>Reserved</string>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                            </widget>
                           </item>
@@ -4445,7 +4445,7 @@ QComboBox QListView
                              <string>Reserved</string>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                            </widget>
                           </item>
@@ -4521,7 +4521,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -4553,7 +4553,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -4585,7 +4585,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -4617,7 +4617,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -4666,7 +4666,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="maximum">
                              <number>1200</number>
@@ -4692,7 +4692,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="maximum">
                              <number>255</number>
@@ -4717,10 +4717,10 @@ QComboBox QListView
                   <item>
                    <widget class="QFrame" name="frame_eeprom_page_4_white">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::Shape::StyledPanel</enum>
                     </property>
                     <property name="frameShadow">
-                     <enum>QFrame::Raised</enum>
+                     <enum>QFrame::Shadow::Raised</enum>
                     </property>
                     <property name="wpBox" stdset="0">
                      <bool>false</bool>
@@ -4769,7 +4769,7 @@ QComboBox QListView
                         <item>
                          <layout class="QFormLayout" name="formLayout_ee_page_4">
                           <property name="fieldGrowthPolicy">
-                           <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+                           <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
                           </property>
                           <item row="0" column="0">
                            <widget class="QLabel" name="label_200">
@@ -4796,10 +4796,10 @@ QComboBox QListView
                   <item>
                    <widget class="QFrame" name="frame_eeprom_page_5_white">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::Shape::StyledPanel</enum>
                     </property>
                     <property name="frameShadow">
-                     <enum>QFrame::Raised</enum>
+                     <enum>QFrame::Shadow::Raised</enum>
                     </property>
                     <property name="wpBox" stdset="0">
                      <bool>false</bool>
@@ -4848,7 +4848,7 @@ QComboBox QListView
                         <item>
                          <layout class="QFormLayout" name="formLayout_ee_page_5">
                           <property name="fieldGrowthPolicy">
-                           <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+                           <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
                           </property>
                           <property name="verticalSpacing">
                            <number>4</number>
@@ -4862,7 +4862,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -4894,7 +4894,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -4926,7 +4926,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -4958,7 +4958,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -4990,7 +4990,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -5022,7 +5022,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -5054,7 +5054,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -5086,7 +5086,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -5118,7 +5118,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -5150,7 +5150,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -5182,7 +5182,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -5214,7 +5214,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -5246,7 +5246,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -5278,7 +5278,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -5310,7 +5310,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="keyboardTracking">
                              <bool>false</bool>
@@ -5371,10 +5371,10 @@ QComboBox QListView
                   <item>
                    <widget class="QFrame" name="frame_eeprom_sub_1">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::Shape::StyledPanel</enum>
                     </property>
                     <property name="frameShadow">
-                     <enum>QFrame::Raised</enum>
+                     <enum>QFrame::Shadow::Raised</enum>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_135">
                      <property name="spacing">
@@ -5395,10 +5395,10 @@ QComboBox QListView
                      <item>
                       <widget class="QFrame" name="frame_eeprom_sub_1_page_6_white">
                        <property name="frameShape">
-                        <enum>QFrame::StyledPanel</enum>
+                        <enum>QFrame::Shape::StyledPanel</enum>
                        </property>
                        <property name="frameShadow">
-                        <enum>QFrame::Raised</enum>
+                        <enum>QFrame::Shadow::Raised</enum>
                        </property>
                        <property name="wpBox" stdset="0">
                         <bool>false</bool>
@@ -5441,7 +5441,7 @@ QComboBox QListView
                            <item>
                             <layout class="QFormLayout" name="formLayout_ee_page_6">
                              <property name="fieldGrowthPolicy">
-                              <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+                              <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
                              </property>
                              <item row="1" column="0">
                               <widget class="QLineEdit" name="lineEdit_ee_raman_intensity_coeff_0">
@@ -5588,7 +5588,7 @@ QComboBox QListView
                                 </size>
                                </property>
                                <property name="alignment">
-                                <set>Qt::AlignCenter</set>
+                                <set>Qt::AlignmentFlag::AlignCenter</set>
                                </property>
                               </widget>
                              </item>
@@ -5613,10 +5613,10 @@ QComboBox QListView
                   <item>
                    <widget class="QFrame" name="frame_eeprom_sub_3">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::Shape::StyledPanel</enum>
                     </property>
                     <property name="frameShadow">
-                     <enum>QFrame::Raised</enum>
+                     <enum>QFrame::Shadow::Raised</enum>
                     </property>
                     <property name="wpBox" stdset="0">
                      <bool>false</bool>
@@ -5637,10 +5637,10 @@ QComboBox QListView
                      <item>
                       <widget class="QFrame" name="frame_eeprom_sub_3_black">
                        <property name="frameShape">
-                        <enum>QFrame::StyledPanel</enum>
+                        <enum>QFrame::Shape::StyledPanel</enum>
                        </property>
                        <property name="frameShadow">
-                        <enum>QFrame::Raised</enum>
+                        <enum>QFrame::Shadow::Raised</enum>
                        </property>
                        <property name="wpPanel" stdset="0">
                         <bool>false</bool>
@@ -5689,7 +5689,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                            </widget>
                           </item>
@@ -5702,7 +5702,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                            </widget>
                           </item>
@@ -5715,7 +5715,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="minimum">
                              <number>1</number>
@@ -5734,7 +5734,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="value">
                              <number>4</number>
@@ -5750,7 +5750,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="maximum">
                              <number>30000</number>
@@ -5769,7 +5769,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="maximum">
                              <number>100</number>
@@ -5820,7 +5820,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="maximum">
                              <number>8</number>
@@ -5845,10 +5845,10 @@ QComboBox QListView
                   <item>
                    <widget class="QFrame" name="frame_eeprom_sub_2">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::Shape::StyledPanel</enum>
                     </property>
                     <property name="frameShadow">
-                     <enum>QFrame::Raised</enum>
+                     <enum>QFrame::Shadow::Raised</enum>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_134">
                      <property name="spacing">
@@ -5869,10 +5869,10 @@ QComboBox QListView
                      <item>
                       <widget class="QFrame" name="frame_eeprom_sub_2_page_6_white">
                        <property name="frameShape">
-                        <enum>QFrame::StyledPanel</enum>
+                        <enum>QFrame::Shape::StyledPanel</enum>
                        </property>
                        <property name="frameShadow">
-                        <enum>QFrame::Raised</enum>
+                        <enum>QFrame::Shadow::Raised</enum>
                        </property>
                        <property name="wpBox" stdset="0">
                         <bool>false</bool>
@@ -5896,10 +5896,10 @@ QComboBox QListView
                         <item>
                          <widget class="QFrame" name="frame_eeprom_sub_2_page_6_black">
                           <property name="frameShape">
-                           <enum>QFrame::StyledPanel</enum>
+                           <enum>QFrame::Shape::StyledPanel</enum>
                           </property>
                           <property name="frameShadow">
-                           <enum>QFrame::Raised</enum>
+                           <enum>QFrame::Shadow::Raised</enum>
                           </property>
                           <property name="wpPanel" stdset="0">
                            <bool>false</bool>
@@ -5979,10 +5979,10 @@ QComboBox QListView
                            <item>
                             <widget class="QFrame" name="frame_3">
                              <property name="frameShape">
-                              <enum>QFrame::StyledPanel</enum>
+                              <enum>QFrame::Shape::StyledPanel</enum>
                              </property>
                              <property name="frameShadow">
-                              <enum>QFrame::Raised</enum>
+                              <enum>QFrame::Shadow::Raised</enum>
                              </property>
                              <layout class="QGridLayout" name="gridLayout_5">
                               <item row="13" column="0">
@@ -6147,10 +6147,10 @@ QComboBox QListView
                   <item>
                    <widget class="QFrame" name="frame_eeprom_sub_4">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::Shape::StyledPanel</enum>
                     </property>
                     <property name="frameShadow">
-                     <enum>QFrame::Raised</enum>
+                     <enum>QFrame::Shadow::Raised</enum>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_130">
                      <property name="leftMargin">
@@ -6168,10 +6168,10 @@ QComboBox QListView
                      <item>
                       <widget class="QFrame" name="frame_eeprom_sub_regions_white">
                        <property name="frameShape">
-                        <enum>QFrame::StyledPanel</enum>
+                        <enum>QFrame::Shape::StyledPanel</enum>
                        </property>
                        <property name="frameShadow">
-                        <enum>QFrame::Raised</enum>
+                        <enum>QFrame::Shadow::Raised</enum>
                        </property>
                        <property name="wpBox" stdset="0">
                         <bool>false</bool>
@@ -6192,10 +6192,10 @@ QComboBox QListView
                         <item>
                          <widget class="QFrame" name="frame_eeprom_sub_regions_black">
                           <property name="frameShape">
-                           <enum>QFrame::StyledPanel</enum>
+                           <enum>QFrame::Shape::StyledPanel</enum>
                           </property>
                           <property name="frameShadow">
-                           <enum>QFrame::Raised</enum>
+                           <enum>QFrame::Shadow::Raised</enum>
                           </property>
                           <property name="wpPanel" stdset="0">
                            <bool>false</bool>
@@ -6281,7 +6281,7 @@ QComboBox QListView
                                 </size>
                                </property>
                                <property name="alignment">
-                                <set>Qt::AlignCenter</set>
+                                <set>Qt::AlignmentFlag::AlignCenter</set>
                                </property>
                                <property name="maximum">
                                 <number>2048</number>
@@ -6297,7 +6297,7 @@ QComboBox QListView
                                 </size>
                                </property>
                                <property name="alignment">
-                                <set>Qt::AlignCenter</set>
+                                <set>Qt::AlignmentFlag::AlignCenter</set>
                                </property>
                                <property name="maximum">
                                 <number>2048</number>
@@ -6313,7 +6313,7 @@ QComboBox QListView
                                 </size>
                                </property>
                                <property name="alignment">
-                                <set>Qt::AlignCenter</set>
+                                <set>Qt::AlignmentFlag::AlignCenter</set>
                                </property>
                                <property name="maximum">
                                 <number>2048</number>
@@ -6329,7 +6329,7 @@ QComboBox QListView
                                 </size>
                                </property>
                                <property name="alignment">
-                                <set>Qt::AlignCenter</set>
+                                <set>Qt::AlignmentFlag::AlignCenter</set>
                                </property>
                                <property name="maximum">
                                 <number>2048</number>
@@ -6345,7 +6345,7 @@ QComboBox QListView
                                 </size>
                                </property>
                                <property name="alignment">
-                                <set>Qt::AlignCenter</set>
+                                <set>Qt::AlignmentFlag::AlignCenter</set>
                                </property>
                                <property name="maximum">
                                 <number>2048</number>
@@ -6361,7 +6361,7 @@ QComboBox QListView
                                 </size>
                                </property>
                                <property name="alignment">
-                                <set>Qt::AlignCenter</set>
+                                <set>Qt::AlignmentFlag::AlignCenter</set>
                                </property>
                                <property name="maximum">
                                 <number>2048</number>
@@ -6377,7 +6377,7 @@ QComboBox QListView
                                 </size>
                                </property>
                                <property name="alignment">
-                                <set>Qt::AlignCenter</set>
+                                <set>Qt::AlignmentFlag::AlignCenter</set>
                                </property>
                                <property name="maximum">
                                 <number>1080</number>
@@ -6393,7 +6393,7 @@ QComboBox QListView
                                 </size>
                                </property>
                                <property name="alignment">
-                                <set>Qt::AlignCenter</set>
+                                <set>Qt::AlignmentFlag::AlignCenter</set>
                                </property>
                                <property name="maximum">
                                 <number>1080</number>
@@ -6409,7 +6409,7 @@ QComboBox QListView
                                 </size>
                                </property>
                                <property name="alignment">
-                                <set>Qt::AlignCenter</set>
+                                <set>Qt::AlignmentFlag::AlignCenter</set>
                                </property>
                                <property name="minimum">
                                 <number>1</number>
@@ -6810,7 +6810,7 @@ QComboBox QListView
                <item>
                 <layout class="QFormLayout" name="formLayout_20">
                  <property name="fieldGrowthPolicy">
-                  <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+                  <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
                  </property>
                  <item row="0" column="0">
                   <widget class="QLabel" name="label_microcontroller_firmware_version">
@@ -6962,7 +6962,7 @@ QComboBox QListView
                <item>
                 <layout class="QFormLayout" name="formLayout_25">
                  <property name="fieldGrowthPolicy">
-                  <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+                  <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
                  </property>
                  <item row="0" column="0">
                   <widget class="QLabel" name="label_python_version">
@@ -7182,7 +7182,7 @@ QComboBox QListView
           <item>
            <spacer name="verticalSpacer_2">
             <property name="orientation">
-             <enum>Qt::Vertical</enum>
+             <enum>Qt::Orientation::Vertical</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
@@ -7218,10 +7218,10 @@ QComboBox QListView
               <item>
                <widget class="QFrame" name="frame">
                 <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
+                 <enum>QFrame::Shape::StyledPanel</enum>
                 </property>
                 <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
+                 <enum>QFrame::Shadow::Raised</enum>
                 </property>
                 <property name="wpBox" stdset="0">
                  <bool>false</bool>
@@ -7245,10 +7245,10 @@ QComboBox QListView
                  <item>
                   <widget class="QFrame" name="frame_2">
                    <property name="frameShape">
-                    <enum>QFrame::StyledPanel</enum>
+                    <enum>QFrame::Shape::StyledPanel</enum>
                    </property>
                    <property name="frameShadow">
-                    <enum>QFrame::Raised</enum>
+                    <enum>QFrame::Shadow::Raised</enum>
                    </property>
                    <property name="wpGrad" stdset="0">
                     <bool>false</bool>
@@ -7270,7 +7270,7 @@ QComboBox QListView
                     <item>
                      <spacer name="horizontalSpacer_18">
                       <property name="orientation">
-                       <enum>Qt::Horizontal</enum>
+                       <enum>Qt::Orientation::Horizontal</enum>
                       </property>
                       <property name="sizeHint" stdset="0">
                        <size>
@@ -7289,7 +7289,7 @@ QComboBox QListView
               <item>
                <spacer name="verticalSpacer_3">
                 <property name="orientation">
-                 <enum>Qt::Vertical</enum>
+                 <enum>Qt::Orientation::Vertical</enum>
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
@@ -7363,7 +7363,7 @@ QComboBox QListView
               <item>
                <spacer name="verticalSpacer_8">
                 <property name="orientation">
-                 <enum>Qt::Vertical</enum>
+                 <enum>Qt::Orientation::Vertical</enum>
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
@@ -7380,7 +7380,7 @@ QComboBox QListView
           <item>
            <spacer name="horizontalSpacer_9">
             <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+             <enum>Qt::Orientation::Horizontal</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
@@ -7425,10 +7425,10 @@ QComboBox QListView
             </size>
            </property>
            <property name="frameShape">
-            <enum>QFrame::StyledPanel</enum>
+            <enum>QFrame::Shape::StyledPanel</enum>
            </property>
            <property name="frameShadow">
-            <enum>QFrame::Raised</enum>
+            <enum>QFrame::Shadow::Raised</enum>
            </property>
            <property name="lineWidth">
             <number>1</number>
@@ -7458,10 +7458,10 @@ QComboBox QListView
                </size>
               </property>
               <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+               <enum>QFrame::Shape::StyledPanel</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Shadow::Raised</enum>
               </property>
               <property name="lineWidth">
                <number>1</number>
@@ -7476,7 +7476,7 @@ QComboBox QListView
                   </sizepolicy>
                  </property>
                  <property name="verticalScrollBarPolicy">
-                  <enum>Qt::ScrollBarAsNeeded</enum>
+                  <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
                  </property>
                  <property name="widgetResizable">
                   <bool>true</bool>
@@ -7486,7 +7486,7 @@ QComboBox QListView
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>422</width>
+                    <width>421</width>
                     <height>1502</height>
                    </rect>
                   </property>
@@ -7513,10 +7513,10 @@ QComboBox QListView
                           </sizepolicy>
                          </property>
                          <property name="frameShape">
-                          <enum>QFrame::StyledPanel</enum>
+                          <enum>QFrame::Shape::StyledPanel</enum>
                          </property>
                          <property name="frameShadow">
-                          <enum>QFrame::Raised</enum>
+                          <enum>QFrame::Shadow::Raised</enum>
                          </property>
                          <layout class="QHBoxLayout" name="horizontalLayout_54" stretch="0">
                           <item>
@@ -7533,7 +7533,7 @@ QComboBox QListView
                                </sizepolicy>
                               </property>
                               <property name="sizeAdjustPolicy">
-                               <enum>QAbstractScrollArea::AdjustToContents</enum>
+                               <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents</enum>
                               </property>
                               <property name="interactive">
                                <bool>false</bool>
@@ -7554,10 +7554,10 @@ QComboBox QListView
                           </sizepolicy>
                          </property>
                          <property name="frameShape">
-                          <enum>QFrame::StyledPanel</enum>
+                          <enum>QFrame::Shape::StyledPanel</enum>
                          </property>
                          <property name="frameShadow">
-                          <enum>QFrame::Raised</enum>
+                          <enum>QFrame::Shadow::Raised</enum>
                          </property>
                          <layout class="QHBoxLayout" name="horizontalLayout_57">
                           <item>
@@ -7606,10 +7606,10 @@ QComboBox QListView
                           <string notr="true" />
                          </property>
                          <property name="frameShape">
-                          <enum>QFrame::StyledPanel</enum>
+                          <enum>QFrame::Shape::StyledPanel</enum>
                          </property>
                          <property name="frameShadow">
-                          <enum>QFrame::Raised</enum>
+                          <enum>QFrame::Shadow::Raised</enum>
                          </property>
                          <layout class="QHBoxLayout" name="horizontalLayout_5">
                           <item>
@@ -7624,7 +7624,7 @@ QComboBox QListView
                              <string>Strip Chart Window (sec)</string>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                             <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                             </property>
                            </widget>
                           </item>
@@ -7643,7 +7643,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="minimum">
                              <number>5</number>
@@ -7668,10 +7668,10 @@ QComboBox QListView
                           </sizepolicy>
                          </property>
                          <property name="frameShape">
-                          <enum>QFrame::StyledPanel</enum>
+                          <enum>QFrame::Shape::StyledPanel</enum>
                          </property>
                          <property name="frameShadow">
-                          <enum>QFrame::Raised</enum>
+                          <enum>QFrame::Shadow::Raised</enum>
                          </property>
                          <layout class="QHBoxLayout" name="horizontalLayout_7">
                           <item>
@@ -7686,7 +7686,7 @@ QComboBox QListView
                              <string>Continuous File Capture</string>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                             <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                             </property>
                            </widget>
                           </item>
@@ -7731,7 +7731,7 @@ QComboBox QListView
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="maximum">
                              <number>2000</number>
@@ -7762,23 +7762,23 @@ QComboBox QListView
                           </size>
                          </property>
                          <property name="frameShape">
-                          <enum>QFrame::StyledPanel</enum>
+                          <enum>QFrame::Shape::StyledPanel</enum>
                          </property>
                          <property name="frameShadow">
-                          <enum>QFrame::Raised</enum>
+                          <enum>QFrame::Shadow::Raised</enum>
                          </property>
                          <layout class="QHBoxLayout" name="horizontalLayout_381">
                           <item>
                            <widget class="QSplitter" name="splitter_3">
                             <property name="orientation">
-                             <enum>Qt::Horizontal</enum>
+                             <enum>Qt::Orientation::Horizontal</enum>
                             </property>
                             <widget class="QFrame" name="frame_hardware_capture_battery_inner">
                              <property name="frameShape">
-                              <enum>QFrame::StyledPanel</enum>
+                              <enum>QFrame::Shape::StyledPanel</enum>
                              </property>
                              <property name="frameShadow">
-                              <enum>QFrame::Raised</enum>
+                              <enum>QFrame::Shadow::Raised</enum>
                              </property>
                              <property name="lineWidth">
                               <number>1</number>
@@ -7788,7 +7788,7 @@ QComboBox QListView
                                <number>0</number>
                               </property>
                               <property name="sizeConstraint">
-                               <enum>QLayout::SetDefaultConstraint</enum>
+                               <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
                               </property>
                               <property name="leftMargin">
                                <number>0</number>
@@ -7805,10 +7805,10 @@ QComboBox QListView
                               <item>
                                <widget class="QFrame" name="frame_hardware_capture_battery_nest">
                                 <property name="frameShape">
-                                 <enum>QFrame::StyledPanel</enum>
+                                 <enum>QFrame::Shape::StyledPanel</enum>
                                 </property>
                                 <property name="frameShadow">
-                                 <enum>QFrame::Raised</enum>
+                                 <enum>QFrame::Shadow::Raised</enum>
                                 </property>
                                 <layout class="QVBoxLayout" name="verticalLayout_99">
                                  <property name="spacing">
@@ -7829,10 +7829,10 @@ QComboBox QListView
                                  <item>
                                   <widget class="QFrame" name="frame_hclt_header_2">
                                    <property name="frameShape">
-                                    <enum>QFrame::StyledPanel</enum>
+                                    <enum>QFrame::Shape::StyledPanel</enum>
                                    </property>
                                    <property name="frameShadow">
-                                    <enum>QFrame::Raised</enum>
+                                    <enum>QFrame::Shadow::Raised</enum>
                                    </property>
                                    <layout class="QHBoxLayout" name="horizontalLayout_41">
                                     <item>
@@ -7847,10 +7847,10 @@ QComboBox QListView
                                        <string>Battery Charge</string>
                                       </property>
                                       <property name="textFormat">
-                                       <enum>Qt::PlainText</enum>
+                                       <enum>Qt::TextFormat::PlainText</enum>
                                       </property>
                                       <property name="alignment">
-                                       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                                       <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
                                       </property>
                                      </widget>
                                     </item>
@@ -7866,7 +7866,7 @@ QComboBox QListView
                                        <string>99.99 %</string>
                                       </property>
                                       <property name="alignment">
-                                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                                       </property>
                                      </widget>
                                     </item>
@@ -7948,23 +7948,23 @@ QComboBox QListView
                           </size>
                          </property>
                          <property name="frameShape">
-                          <enum>QFrame::StyledPanel</enum>
+                          <enum>QFrame::Shape::StyledPanel</enum>
                          </property>
                          <property name="frameShadow">
-                          <enum>QFrame::Raised</enum>
+                          <enum>QFrame::Shadow::Raised</enum>
                          </property>
                          <layout class="QHBoxLayout" name="horizontalLayout_8">
                           <item>
                            <widget class="QSplitter" name="splitter_laser_temperature">
                             <property name="orientation">
-                             <enum>Qt::Horizontal</enum>
+                             <enum>Qt::Orientation::Horizontal</enum>
                             </property>
                             <widget class="QFrame" name="frame_factory_laser_temperature_inner">
                              <property name="frameShape">
-                              <enum>QFrame::StyledPanel</enum>
+                              <enum>QFrame::Shape::StyledPanel</enum>
                              </property>
                              <property name="frameShadow">
-                              <enum>QFrame::Raised</enum>
+                              <enum>QFrame::Shadow::Raised</enum>
                              </property>
                              <property name="lineWidth">
                               <number>1</number>
@@ -7974,7 +7974,7 @@ QComboBox QListView
                                <number>0</number>
                               </property>
                               <property name="sizeConstraint">
-                               <enum>QLayout::SetDefaultConstraint</enum>
+                               <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
                               </property>
                               <property name="leftMargin">
                                <number>0</number>
@@ -7991,10 +7991,10 @@ QComboBox QListView
                               <item>
                                <widget class="QFrame" name="frame_factory_laser_temperature_nest">
                                 <property name="frameShape">
-                                 <enum>QFrame::StyledPanel</enum>
+                                 <enum>QFrame::Shape::StyledPanel</enum>
                                 </property>
                                 <property name="frameShadow">
-                                 <enum>QFrame::Raised</enum>
+                                 <enum>QFrame::Shadow::Raised</enum>
                                 </property>
                                 <layout class="QVBoxLayout" name="verticalLayout_82_laser">
                                  <property name="spacing">
@@ -8015,10 +8015,10 @@ QComboBox QListView
                                  <item>
                                   <widget class="QFrame" name="frame_factory_laser_temperature_header">
                                    <property name="frameShape">
-                                    <enum>QFrame::StyledPanel</enum>
+                                    <enum>QFrame::Shape::StyledPanel</enum>
                                    </property>
                                    <property name="frameShadow">
-                                    <enum>QFrame::Raised</enum>
+                                    <enum>QFrame::Shadow::Raised</enum>
                                    </property>
                                    <layout class="QHBoxLayout" name="horizontalLayout_39">
                                     <item>
@@ -8033,10 +8033,10 @@ QComboBox QListView
                                        <string>Laser TEC Temperature</string>
                                       </property>
                                       <property name="textFormat">
-                                       <enum>Qt::PlainText</enum>
+                                       <enum>Qt::TextFormat::PlainText</enum>
                                       </property>
                                       <property name="alignment">
-                                       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                                       <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
                                       </property>
                                      </widget>
                                     </item>
@@ -8052,7 +8052,7 @@ QComboBox QListView
                                        <string>30.45 °C</string>
                                       </property>
                                       <property name="alignment">
-                                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                                       </property>
                                      </widget>
                                     </item>
@@ -8134,23 +8134,23 @@ QComboBox QListView
                           </size>
                          </property>
                          <property name="frameShape">
-                          <enum>QFrame::StyledPanel</enum>
+                          <enum>QFrame::Shape::StyledPanel</enum>
                          </property>
                          <property name="frameShadow">
-                          <enum>QFrame::Raised</enum>
+                          <enum>QFrame::Shadow::Raised</enum>
                          </property>
                          <layout class="QHBoxLayout" name="horizontalLayout_8_amb">
                           <item>
                            <widget class="QSplitter" name="splitter_ambient_temperature">
                             <property name="orientation">
-                             <enum>Qt::Horizontal</enum>
+                             <enum>Qt::Orientation::Horizontal</enum>
                             </property>
                             <widget class="QFrame" name="frame_factory_ambient_temperature_inner">
                              <property name="frameShape">
-                              <enum>QFrame::StyledPanel</enum>
+                              <enum>QFrame::Shape::StyledPanel</enum>
                              </property>
                              <property name="frameShadow">
-                              <enum>QFrame::Raised</enum>
+                              <enum>QFrame::Shadow::Raised</enum>
                              </property>
                              <property name="lineWidth">
                               <number>1</number>
@@ -8160,7 +8160,7 @@ QComboBox QListView
                                <number>0</number>
                               </property>
                               <property name="sizeConstraint">
-                               <enum>QLayout::SetDefaultConstraint</enum>
+                               <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
                               </property>
                               <property name="leftMargin">
                                <number>0</number>
@@ -8177,10 +8177,10 @@ QComboBox QListView
                               <item>
                                <widget class="QFrame" name="frame_factory_ambient_temperature_nest">
                                 <property name="frameShape">
-                                 <enum>QFrame::StyledPanel</enum>
+                                 <enum>QFrame::Shape::StyledPanel</enum>
                                 </property>
                                 <property name="frameShadow">
-                                 <enum>QFrame::Raised</enum>
+                                 <enum>QFrame::Shadow::Raised</enum>
                                 </property>
                                 <layout class="QVBoxLayout" name="verticalLayout_82_amb">
                                  <property name="spacing">
@@ -8201,10 +8201,10 @@ QComboBox QListView
                                  <item>
                                   <widget class="QFrame" name="frame_factory_ambient_temperature_header">
                                    <property name="frameShape">
-                                    <enum>QFrame::StyledPanel</enum>
+                                    <enum>QFrame::Shape::StyledPanel</enum>
                                    </property>
                                    <property name="frameShadow">
-                                    <enum>QFrame::Raised</enum>
+                                    <enum>QFrame::Shadow::Raised</enum>
                                    </property>
                                    <layout class="QHBoxLayout" name="horizontalLayout_39_amb">
                                     <item>
@@ -8219,10 +8219,10 @@ QComboBox QListView
                                        <string>Ambient Temperature</string>
                                       </property>
                                       <property name="textFormat">
-                                       <enum>Qt::PlainText</enum>
+                                       <enum>Qt::TextFormat::PlainText</enum>
                                       </property>
                                       <property name="alignment">
-                                       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                                       <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
                                       </property>
                                      </widget>
                                     </item>
@@ -8238,7 +8238,7 @@ QComboBox QListView
                                        <string>42.0 °C</string>
                                       </property>
                                       <property name="alignment">
-                                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                                       </property>
                                      </widget>
                                     </item>
@@ -8320,23 +8320,23 @@ QComboBox QListView
                           </size>
                          </property>
                          <property name="frameShape">
-                          <enum>QFrame::StyledPanel</enum>
+                          <enum>QFrame::Shape::StyledPanel</enum>
                          </property>
                          <property name="frameShadow">
-                          <enum>QFrame::Raised</enum>
+                          <enum>QFrame::Shadow::Raised</enum>
                          </property>
                          <layout class="QHBoxLayout" name="horizontalLayout_25">
                           <item>
                            <widget class="QSplitter" name="splitter_detector_temperature">
                             <property name="orientation">
-                             <enum>Qt::Horizontal</enum>
+                             <enum>Qt::Orientation::Horizontal</enum>
                             </property>
                             <widget class="QFrame" name="frame_hardware_capture_tec_temperature">
                              <property name="frameShape">
-                              <enum>QFrame::StyledPanel</enum>
+                              <enum>QFrame::Shape::StyledPanel</enum>
                              </property>
                              <property name="frameShadow">
-                              <enum>QFrame::Raised</enum>
+                              <enum>QFrame::Shadow::Raised</enum>
                              </property>
                              <property name="lineWidth">
                               <number>1</number>
@@ -8346,7 +8346,7 @@ QComboBox QListView
                                <number>0</number>
                               </property>
                               <property name="sizeConstraint">
-                               <enum>QLayout::SetDefaultConstraint</enum>
+                               <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
                               </property>
                               <property name="leftMargin">
                                <number>0</number>
@@ -8363,10 +8363,10 @@ QComboBox QListView
                               <item>
                                <widget class="QFrame" name="frame_hardware_capture_tec_temperature_nest">
                                 <property name="frameShape">
-                                 <enum>QFrame::StyledPanel</enum>
+                                 <enum>QFrame::Shape::StyledPanel</enum>
                                 </property>
                                 <property name="frameShadow">
-                                 <enum>QFrame::Raised</enum>
+                                 <enum>QFrame::Shadow::Raised</enum>
                                 </property>
                                 <layout class="QVBoxLayout" name="verticalLayout_104">
                                  <property name="spacing">
@@ -8387,10 +8387,10 @@ QComboBox QListView
                                  <item>
                                   <widget class="QFrame" name="frame_hctt_header">
                                    <property name="frameShape">
-                                    <enum>QFrame::StyledPanel</enum>
+                                    <enum>QFrame::Shape::StyledPanel</enum>
                                    </property>
                                    <property name="frameShadow">
-                                    <enum>QFrame::Raised</enum>
+                                    <enum>QFrame::Shadow::Raised</enum>
                                    </property>
                                    <layout class="QHBoxLayout" name="horizontalLayout_94">
                                     <item>
@@ -8399,10 +8399,10 @@ QComboBox QListView
                                        <string>Detector TEC Temperature</string>
                                       </property>
                                       <property name="textFormat">
-                                       <enum>Qt::PlainText</enum>
+                                       <enum>Qt::TextFormat::PlainText</enum>
                                       </property>
                                       <property name="alignment">
-                                       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                                       <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
                                       </property>
                                      </widget>
                                     </item>
@@ -8412,7 +8412,7 @@ QComboBox QListView
                                        <string>-14.99 °C</string>
                                       </property>
                                       <property name="alignment">
-                                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                                       </property>
                                      </widget>
                                     </item>
@@ -8496,10 +8496,10 @@ QComboBox QListView
                   </size>
                  </property>
                  <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
+                  <enum>QFrame::Shape::StyledPanel</enum>
                  </property>
                  <property name="frameShadow">
-                  <enum>QFrame::Raised</enum>
+                  <enum>QFrame::Shadow::Raised</enum>
                  </property>
                  <property name="lineWidth">
                   <number>1</number>
@@ -8526,10 +8526,10 @@ QComboBox QListView
                      <string notr="true" />
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::Shape::StyledPanel</enum>
                     </property>
                     <property name="frameShadow">
-                     <enum>QFrame::Raised</enum>
+                     <enum>QFrame::Shadow::Raised</enum>
                     </property>
                     <layout class="QHBoxLayout" name="horizontalLayout_4">
                      <property name="spacing">
@@ -8600,8 +8600,8 @@ QComboBox QListView
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>581</width>
-              <height>1436</height>
+              <width>580</width>
+              <height>1444</height>
              </rect>
             </property>
             <property name="sizePolicy">
@@ -8659,10 +8659,10 @@ QComboBox QListView
                    </sizepolicy>
                   </property>
                   <property name="frameShape">
-                   <enum>QFrame::StyledPanel</enum>
+                   <enum>QFrame::Shape::StyledPanel</enum>
                   </property>
                   <property name="frameShadow">
-                   <enum>QFrame::Raised</enum>
+                   <enum>QFrame::Shadow::Raised</enum>
                   </property>
                   <layout class="QVBoxLayout" name="verticalLayout_3">
                    <item>
@@ -8714,15 +8714,15 @@ QComboBox QListView
                          <item>
                           <layout class="QHBoxLayout" name="horizontalLayout_9">
                            <property name="sizeConstraint">
-                            <enum>QLayout::SetMinimumSize</enum>
+                            <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
                            </property>
                            <item>
                             <spacer name="horizontalSpacer_3">
                              <property name="orientation">
-                              <enum>Qt::Horizontal</enum>
+                              <enum>Qt::Orientation::Horizontal</enum>
                              </property>
                              <property name="sizeType">
-                              <enum>QSizePolicy::Fixed</enum>
+                              <enum>QSizePolicy::Policy::Fixed</enum>
                              </property>
                              <property name="sizeHint" stdset="0">
                               <size>
@@ -8740,10 +8740,10 @@ QComboBox QListView
                              <item>
                               <layout class="QFormLayout" name="formLayout">
                                <property name="sizeConstraint">
-                                <enum>QLayout::SetMinimumSize</enum>
+                                <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
                                </property>
                                <property name="fieldGrowthPolicy">
-                                <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+                                <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
                                </property>
                                <property name="horizontalSpacing">
                                 <number>0</number>
@@ -8962,10 +8962,10 @@ QComboBox QListView
                            <item>
                             <spacer name="horizontalSpacer_2">
                              <property name="orientation">
-                              <enum>Qt::Horizontal</enum>
+                              <enum>Qt::Orientation::Horizontal</enum>
                              </property>
                              <property name="sizeType">
-                              <enum>QSizePolicy::Fixed</enum>
+                              <enum>QSizePolicy::Policy::Fixed</enum>
                              </property>
                              <property name="sizeHint" stdset="0">
                               <size>
@@ -9229,7 +9229,7 @@ QComboBox QListView
                            <item>
                             <spacer name="horizontalSpacer_4">
                              <property name="orientation">
-                              <enum>Qt::Horizontal</enum>
+                              <enum>Qt::Orientation::Horizontal</enum>
                              </property>
                              <property name="sizeHint" stdset="0">
                               <size>
@@ -9310,10 +9310,10 @@ QComboBox QListView
                            <item>
                             <spacer name="horizontalSpacer_17">
                              <property name="orientation">
-                              <enum>Qt::Horizontal</enum>
+                              <enum>Qt::Orientation::Horizontal</enum>
                              </property>
                              <property name="sizeType">
-                              <enum>QSizePolicy::Fixed</enum>
+                              <enum>QSizePolicy::Policy::Fixed</enum>
                              </property>
                              <property name="sizeHint" stdset="0">
                               <size>
@@ -9326,7 +9326,7 @@ QComboBox QListView
                            <item>
                             <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0" rowminimumheight="0,0,0" columnminimumwidth="100,100,100">
                              <property name="sizeConstraint">
-                              <enum>QLayout::SetMinimumSize</enum>
+                              <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
                              </property>
                              <property name="spacing">
                               <number>0</number>
@@ -9360,10 +9360,10 @@ QComboBox QListView
                                 </size>
                                </property>
                                <property name="focusPolicy">
-                                <enum>Qt::StrongFocus</enum>
+                                <enum>Qt::FocusPolicy::StrongFocus</enum>
                                </property>
                                <property name="alignment">
-                                <set>Qt::AlignCenter</set>
+                                <set>Qt::AlignmentFlag::AlignCenter</set>
                                </property>
                                <property name="minimum">
                                 <double>-9999.000000000000000</double>
@@ -9408,10 +9408,10 @@ QComboBox QListView
                                 </size>
                                </property>
                                <property name="focusPolicy">
-                                <enum>Qt::StrongFocus</enum>
+                                <enum>Qt::FocusPolicy::StrongFocus</enum>
                                </property>
                                <property name="alignment">
-                                <set>Qt::AlignCenter</set>
+                                <set>Qt::AlignmentFlag::AlignCenter</set>
                                </property>
                                <property name="accelerated">
                                 <bool>true</bool>
@@ -9462,10 +9462,10 @@ QComboBox QListView
                                 </size>
                                </property>
                                <property name="focusPolicy">
-                                <enum>Qt::StrongFocus</enum>
+                                <enum>Qt::FocusPolicy::StrongFocus</enum>
                                </property>
                                <property name="alignment">
-                                <set>Qt::AlignCenter</set>
+                                <set>Qt::AlignmentFlag::AlignCenter</set>
                                </property>
                                <property name="maximum">
                                 <double>100.000000000000000</double>
@@ -9480,7 +9480,7 @@ QComboBox QListView
                            <item>
                             <spacer name="horizontalSpacer_23">
                              <property name="orientation">
-                              <enum>Qt::Horizontal</enum>
+                              <enum>Qt::Orientation::Horizontal</enum>
                              </property>
                              <property name="sizeHint" stdset="0">
                               <size>
@@ -9501,10 +9501,10 @@ QComboBox QListView
                    <item>
                     <widget class="QFrame" name="frame_ramanCorrection_white">
                      <property name="frameShape">
-                      <enum>QFrame::StyledPanel</enum>
+                      <enum>QFrame::Shape::StyledPanel</enum>
                      </property>
                      <property name="frameShadow">
-                      <enum>QFrame::Raised</enum>
+                      <enum>QFrame::Shadow::Raised</enum>
                      </property>
                      <property name="wpBox" stdset="0">
                       <bool>false</bool>
@@ -9528,10 +9528,10 @@ QComboBox QListView
                       <item>
                        <widget class="QFrame" name="frame_ramanCorrection_dark">
                         <property name="frameShape">
-                         <enum>QFrame::StyledPanel</enum>
+                         <enum>QFrame::Shape::StyledPanel</enum>
                         </property>
                         <property name="frameShadow">
-                         <enum>QFrame::Raised</enum>
+                         <enum>QFrame::Shadow::Raised</enum>
                         </property>
                         <property name="wpPanel" stdset="0">
                          <bool>false</bool>
@@ -9561,10 +9561,10 @@ QComboBox QListView
                            <item>
                             <spacer name="horizontalSpacer_44">
                              <property name="orientation">
-                              <enum>Qt::Horizontal</enum>
+                              <enum>Qt::Orientation::Horizontal</enum>
                              </property>
                              <property name="sizeType">
-                              <enum>QSizePolicy::Fixed</enum>
+                              <enum>QSizePolicy::Policy::Fixed</enum>
                              </property>
                              <property name="sizeHint" stdset="0">
                               <size>
@@ -9586,7 +9586,7 @@ QComboBox QListView
                              <item row="0" column="2">
                               <spacer name="horizontalSpacer_45">
                                <property name="orientation">
-                                <enum>Qt::Horizontal</enum>
+                                <enum>Qt::Orientation::Horizontal</enum>
                                </property>
                                <property name="sizeHint" stdset="0">
                                 <size>
@@ -9611,7 +9611,7 @@ QComboBox QListView
                                 </font>
                                </property>
                                <property name="focusPolicy">
-                                <enum>Qt::StrongFocus</enum>
+                                <enum>Qt::FocusPolicy::StrongFocus</enum>
                                </property>
                               </widget>
                              </item>
@@ -9635,10 +9635,10 @@ QComboBox QListView
                    <item>
                     <widget class="QFrame" name="frame_BatchCollection_white">
                      <property name="frameShape">
-                      <enum>QFrame::StyledPanel</enum>
+                      <enum>QFrame::Shape::StyledPanel</enum>
                      </property>
                      <property name="frameShadow">
-                      <enum>QFrame::Raised</enum>
+                      <enum>QFrame::Shadow::Raised</enum>
                      </property>
                      <property name="wpBox" stdset="0">
                       <bool>false</bool>
@@ -9662,10 +9662,10 @@ QComboBox QListView
                       <item>
                        <widget class="QFrame" name="frame_BatchCollection_black">
                         <property name="frameShape">
-                         <enum>QFrame::StyledPanel</enum>
+                         <enum>QFrame::Shape::StyledPanel</enum>
                         </property>
                         <property name="frameShadow">
-                         <enum>QFrame::Raised</enum>
+                         <enum>QFrame::Shadow::Raised</enum>
                         </property>
                         <property name="wpPanel" stdset="0">
                          <bool>false</bool>
@@ -9695,10 +9695,10 @@ QComboBox QListView
                            <item>
                             <spacer name="horizontalSpacer_29">
                              <property name="orientation">
-                              <enum>Qt::Horizontal</enum>
+                              <enum>Qt::Orientation::Horizontal</enum>
                              </property>
                              <property name="sizeType">
-                              <enum>QSizePolicy::Fixed</enum>
+                              <enum>QSizePolicy::Policy::Fixed</enum>
                              </property>
                              <property name="sizeHint" stdset="0">
                               <size>
@@ -9757,7 +9757,7 @@ QComboBox QListView
                                     <string>Explain this</string>
                                    </property>
                                    <property name="alignment">
-                                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                                    </property>
                                   </widget>
                                  </item>
@@ -9766,7 +9766,7 @@ QComboBox QListView
                                <item>
                                 <layout class="QFormLayout" name="formLayout_24">
                                  <property name="fieldGrowthPolicy">
-                                  <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+                                  <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
                                  </property>
                                  <property name="verticalSpacing">
                                   <number>0</number>
@@ -9787,13 +9787,13 @@ QComboBox QListView
                                     </size>
                                    </property>
                                    <property name="focusPolicy">
-                                    <enum>Qt::StrongFocus</enum>
+                                    <enum>Qt::FocusPolicy::StrongFocus</enum>
                                    </property>
                                    <property name="toolTip">
                                     <string>Number of measurements in a batch</string>
                                    </property>
                                    <property name="alignment">
-                                    <set>Qt::AlignCenter</set>
+                                    <set>Qt::AlignmentFlag::AlignCenter</set>
                                    </property>
                                    <property name="accelerated">
                                     <bool>true</bool>
@@ -9831,13 +9831,13 @@ QComboBox QListView
                                     </size>
                                    </property>
                                    <property name="focusPolicy">
-                                    <enum>Qt::StrongFocus</enum>
+                                    <enum>Qt::FocusPolicy::StrongFocus</enum>
                                    </property>
                                    <property name="toolTip">
                                     <string>How often to take acquisitions, start-to-start (zero to acquire all in rapid succession)</string>
                                    </property>
                                    <property name="alignment">
-                                    <set>Qt::AlignCenter</set>
+                                    <set>Qt::AlignmentFlag::AlignCenter</set>
                                    </property>
                                    <property name="accelerated">
                                     <bool>true</bool>
@@ -9865,10 +9865,10 @@ QComboBox QListView
                                  <item row="2" column="0">
                                   <spacer name="verticalSpacer_4">
                                    <property name="orientation">
-                                    <enum>Qt::Vertical</enum>
+                                    <enum>Qt::Orientation::Vertical</enum>
                                    </property>
                                    <property name="sizeType">
-                                    <enum>QSizePolicy::Fixed</enum>
+                                    <enum>QSizePolicy::Policy::Fixed</enum>
                                    </property>
                                    <property name="sizeHint" stdset="0">
                                     <size>
@@ -9894,13 +9894,13 @@ QComboBox QListView
                                     </size>
                                    </property>
                                    <property name="focusPolicy">
-                                    <enum>Qt::StrongFocus</enum>
+                                    <enum>Qt::FocusPolicy::StrongFocus</enum>
                                    </property>
                                    <property name="toolTip">
                                     <string>How many batches to take before stopping (zero to loop indefinitely)</string>
                                    </property>
                                    <property name="alignment">
-                                    <set>Qt::AlignCenter</set>
+                                    <set>Qt::AlignmentFlag::AlignCenter</set>
                                    </property>
                                    <property name="maximum">
                                     <number>9999</number>
@@ -9926,13 +9926,13 @@ QComboBox QListView
                                     </size>
                                    </property>
                                    <property name="focusPolicy">
-                                    <enum>Qt::StrongFocus</enum>
+                                    <enum>Qt::FocusPolicy::StrongFocus</enum>
                                    </property>
                                    <property name="toolTip">
                                     <string>How long between batches, start to start (zero to loop with no delay)</string>
                                    </property>
                                    <property name="alignment">
-                                    <set>Qt::AlignCenter</set>
+                                    <set>Qt::AlignmentFlag::AlignCenter</set>
                                    </property>
                                    <property name="accelerated">
                                     <bool>true</bool>
@@ -9960,10 +9960,10 @@ QComboBox QListView
                                  <item row="5" column="0">
                                   <spacer name="verticalSpacer_5">
                                    <property name="orientation">
-                                    <enum>Qt::Vertical</enum>
+                                    <enum>Qt::Orientation::Vertical</enum>
                                    </property>
                                    <property name="sizeType">
-                                    <enum>QSizePolicy::Fixed</enum>
+                                    <enum>QSizePolicy::Policy::Fixed</enum>
                                    </property>
                                    <property name="sizeHint" stdset="0">
                                     <size>
@@ -9989,13 +9989,13 @@ QComboBox QListView
                                     </size>
                                    </property>
                                    <property name="focusPolicy">
-                                    <enum>Qt::StrongFocus</enum>
+                                    <enum>Qt::FocusPolicy::StrongFocus</enum>
                                    </property>
                                    <property name="toolTip">
                                     <string>How long a collection will perform. After this period it will stop even if measurements in a batch, or batches are remaining.</string>
                                    </property>
                                    <property name="alignment">
-                                    <set>Qt::AlignCenter</set>
+                                    <set>Qt::AlignmentFlag::AlignCenter</set>
                                    </property>
                                    <property name="accelerated">
                                     <bool>true</bool>
@@ -10060,10 +10060,10 @@ QComboBox QListView
                              <item>
                               <spacer name="horizontalSpacer_33">
                                <property name="orientation">
-                                <enum>Qt::Horizontal</enum>
+                                <enum>Qt::Orientation::Horizontal</enum>
                                </property>
                                <property name="sizeType">
-                                <enum>QSizePolicy::Fixed</enum>
+                                <enum>QSizePolicy::Policy::Fixed</enum>
                                </property>
                                <property name="sizeHint" stdset="0">
                                 <size>
@@ -10087,7 +10087,7 @@ QComboBox QListView
                                   <string>Laser Mode</string>
                                  </property>
                                  <property name="alignment">
-                                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                                  <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
                                  </property>
                                  <property name="flat">
                                   <bool>false</bool>
@@ -10168,13 +10168,13 @@ QComboBox QListView
                                     </size>
                                    </property>
                                    <property name="focusPolicy">
-                                    <enum>Qt::StrongFocus</enum>
+                                    <enum>Qt::FocusPolicy::StrongFocus</enum>
                                    </property>
                                    <property name="toolTip">
                                     <string>After turning on laser, wait this long for stabilization before acquiring</string>
                                    </property>
                                    <property name="alignment">
-                                    <set>Qt::AlignCenter</set>
+                                    <set>Qt::AlignmentFlag::AlignCenter</set>
                                    </property>
                                    <property name="suffix">
                                     <string> ms</string>
@@ -10199,10 +10199,10 @@ QComboBox QListView
                            <item>
                             <spacer name="horizontalSpacer_34">
                              <property name="orientation">
-                              <enum>Qt::Horizontal</enum>
+                              <enum>Qt::Orientation::Horizontal</enum>
                              </property>
                              <property name="sizeType">
-                              <enum>QSizePolicy::Expanding</enum>
+                              <enum>QSizePolicy::Policy::Expanding</enum>
                              </property>
                              <property name="sizeHint" stdset="0">
                               <size>
@@ -10229,10 +10229,10 @@ QComboBox QListView
                       </size>
                      </property>
                      <property name="frameShape">
-                      <enum>QFrame::StyledPanel</enum>
+                      <enum>QFrame::Shape::StyledPanel</enum>
                      </property>
                      <property name="frameShadow">
-                      <enum>QFrame::Raised</enum>
+                      <enum>QFrame::Shadow::Raised</enum>
                      </property>
                      <property name="wpBox" stdset="0">
                       <bool>false</bool>
@@ -10256,10 +10256,10 @@ QComboBox QListView
                       <item>
                        <widget class="QFrame" name="frame_CloudOptions_black">
                         <property name="frameShape">
-                         <enum>QFrame::StyledPanel</enum>
+                         <enum>QFrame::Shape::StyledPanel</enum>
                         </property>
                         <property name="frameShadow">
-                         <enum>QFrame::Raised</enum>
+                         <enum>QFrame::Shadow::Raised</enum>
                         </property>
                         <property name="wpPanel" stdset="0">
                          <bool>false</bool>
@@ -10289,10 +10289,10 @@ QComboBox QListView
                            <item>
                             <spacer name="horizontalSpacer_12">
                              <property name="orientation">
-                              <enum>Qt::Horizontal</enum>
+                              <enum>Qt::Orientation::Horizontal</enum>
                              </property>
                              <property name="sizeType">
-                              <enum>QSizePolicy::Fixed</enum>
+                              <enum>QSizePolicy::Policy::Fixed</enum>
                              </property>
                              <property name="sizeHint" stdset="0">
                               <size>
@@ -10372,10 +10372,10 @@ QComboBox QListView
                            <item>
                             <spacer name="horizontalSpacer_39">
                              <property name="orientation">
-                              <enum>Qt::Horizontal</enum>
+                              <enum>Qt::Orientation::Horizontal</enum>
                              </property>
                              <property name="sizeType">
-                              <enum>QSizePolicy::Fixed</enum>
+                              <enum>QSizePolicy::Policy::Fixed</enum>
                              </property>
                              <property name="sizeHint" stdset="0">
                               <size>
@@ -10395,10 +10395,10 @@ QComboBox QListView
                            <item>
                             <spacer name="horizontalSpacer_41">
                              <property name="orientation">
-                              <enum>Qt::Horizontal</enum>
+                              <enum>Qt::Orientation::Horizontal</enum>
                              </property>
                              <property name="sizeType">
-                              <enum>QSizePolicy::Fixed</enum>
+                              <enum>QSizePolicy::Policy::Fixed</enum>
                              </property>
                              <property name="sizeHint" stdset="0">
                               <size>
@@ -10418,10 +10418,10 @@ QComboBox QListView
                            <item>
                             <spacer name="horizontalSpacer_40">
                              <property name="orientation">
-                              <enum>Qt::Horizontal</enum>
+                              <enum>Qt::Orientation::Horizontal</enum>
                              </property>
                              <property name="sizeType">
-                              <enum>QSizePolicy::Expanding</enum>
+                              <enum>QSizePolicy::Policy::Expanding</enum>
                              </property>
                              <property name="sizeHint" stdset="0">
                               <size>
@@ -10438,10 +10438,10 @@ QComboBox QListView
                            <item>
                             <spacer name="horizontalSpacer_36">
                              <property name="orientation">
-                              <enum>Qt::Horizontal</enum>
+                              <enum>Qt::Orientation::Horizontal</enum>
                              </property>
                              <property name="sizeType">
-                              <enum>QSizePolicy::Fixed</enum>
+                              <enum>QSizePolicy::Policy::Fixed</enum>
                              </property>
                              <property name="sizeHint" stdset="0">
                               <size>
@@ -10477,10 +10477,10 @@ QComboBox QListView
                                   </size>
                                  </property>
                                  <property name="focusPolicy">
-                                  <enum>Qt::StrongFocus</enum>
+                                  <enum>Qt::FocusPolicy::StrongFocus</enum>
                                  </property>
                                  <property name="alignment">
-                                  <set>Qt::AlignCenter</set>
+                                  <set>Qt::AlignmentFlag::AlignCenter</set>
                                  </property>
                                  <property name="suffix">
                                   <string />
@@ -10506,10 +10506,10 @@ QComboBox QListView
                                   </size>
                                  </property>
                                  <property name="focusPolicy">
-                                  <enum>Qt::StrongFocus</enum>
+                                  <enum>Qt::FocusPolicy::StrongFocus</enum>
                                  </property>
                                  <property name="alignment">
-                                  <set>Qt::AlignCenter</set>
+                                  <set>Qt::AlignmentFlag::AlignCenter</set>
                                  </property>
                                  <property name="minimum">
                                   <number>1</number>
@@ -10533,10 +10533,10 @@ QComboBox QListView
                            <item>
                             <spacer name="horizontalSpacer_37">
                              <property name="orientation">
-                              <enum>Qt::Horizontal</enum>
+                              <enum>Qt::Orientation::Horizontal</enum>
                              </property>
                              <property name="sizeType">
-                              <enum>QSizePolicy::Expanding</enum>
+                              <enum>QSizePolicy::Policy::Expanding</enum>
                              </property>
                              <property name="sizeHint" stdset="0">
                               <size>
@@ -10601,7 +10601,7 @@ QComboBox QListView
                         <item>
                          <spacer name="horizontalSpacer">
                           <property name="orientation">
-                           <enum>Qt::Horizontal</enum>
+                           <enum>Qt::Orientation::Horizontal</enum>
                           </property>
                           <property name="sizeHint" stdset="0">
                            <size>
@@ -10626,10 +10626,10 @@ QComboBox QListView
                    <item>
                     <spacer name="verticalSpacer">
                      <property name="orientation">
-                      <enum>Qt::Vertical</enum>
+                      <enum>Qt::Orientation::Vertical</enum>
                      </property>
                      <property name="sizeType">
-                      <enum>QSizePolicy::MinimumExpanding</enum>
+                      <enum>QSizePolicy::Policy::MinimumExpanding</enum>
                      </property>
                      <property name="sizeHint" stdset="0">
                       <size>
@@ -10814,7 +10814,7 @@ QComboBox QListView
                     <item>
                      <spacer name="horizontalSpacer_5">
                       <property name="orientation">
-                       <enum>Qt::Horizontal</enum>
+                       <enum>Qt::Orientation::Horizontal</enum>
                       </property>
                       <property name="sizeHint" stdset="0">
                        <size>
@@ -11125,7 +11125,7 @@ QComboBox QListView
             <item>
              <spacer name="verticalSpacer_moveLower">
               <property name="orientation">
-               <enum>Qt::Vertical</enum>
+               <enum>Qt::Orientation::Vertical</enum>
               </property>
               <property name="sizeHint" stdset="0">
                <size>
@@ -11172,7 +11172,7 @@ QComboBox QListView
             </sizepolicy>
            </property>
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="handleWidth">
             <number>5</number>
@@ -11215,16 +11215,16 @@ QComboBox QListView
                 </sizepolicy>
                </property>
                <property name="verticalScrollBarPolicy">
-                <enum>Qt::ScrollBarAsNeeded</enum>
+                <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
                </property>
                <property name="sizeAdjustPolicy">
-                <enum>QAbstractScrollArea::AdjustToContents</enum>
+                <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents</enum>
                </property>
                <property name="widgetResizable">
                 <bool>true</bool>
                </property>
                <property name="alignment">
-                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
                </property>
                <widget class="QWidget" name="scrollAreaWidgetContents">
                 <property name="geometry">
@@ -11352,7 +11352,7 @@ QComboBox QListView
                          <item>
                           <spacer name="horizontalSpacer_15">
                            <property name="orientation">
-                            <enum>Qt::Horizontal</enum>
+                            <enum>Qt::Orientation::Horizontal</enum>
                            </property>
                            <property name="sizeHint" stdset="0">
                             <size>
@@ -11539,7 +11539,7 @@ QComboBox QListView
                               <item>
                                <widget class="QScrollArea" name="scrollArea_scope_capture_save_design">
                                 <property name="verticalScrollBarPolicy">
-                                 <enum>Qt::ScrollBarAlwaysOn</enum>
+                                 <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOn</enum>
                                 </property>
                                 <property name="widgetResizable">
                                  <bool>true</bool>
@@ -11596,10 +11596,10 @@ QComboBox QListView
                                      </size>
                                     </property>
                                     <property name="frameShape">
-                                     <enum>QFrame::StyledPanel</enum>
+                                     <enum>QFrame::Shape::StyledPanel</enum>
                                     </property>
                                     <property name="frameShadow">
-                                     <enum>QFrame::Raised</enum>
+                                     <enum>QFrame::Shadow::Raised</enum>
                                     </property>
                                     <widget class="QFrame" name="frame_rcsd_nest_5">
                                      <property name="geometry">
@@ -11629,10 +11629,10 @@ QComboBox QListView
                                       </size>
                                      </property>
                                      <property name="frameShape">
-                                      <enum>QFrame::StyledPanel</enum>
+                                      <enum>QFrame::Shape::StyledPanel</enum>
                                      </property>
                                      <property name="frameShadow">
-                                      <enum>QFrame::Raised</enum>
+                                      <enum>QFrame::Shadow::Raised</enum>
                                      </property>
                                      <widget class="QLabel" name="label_rcsd_timestamp_9">
                                       <property name="geometry">
@@ -11659,7 +11659,7 @@ QComboBox QListView
                                   <item>
                                    <spacer name="verticalSpacer_rcsd_3">
                                     <property name="orientation">
-                                     <enum>Qt::Vertical</enum>
+                                     <enum>Qt::Orientation::Vertical</enum>
                                     </property>
                                     <property name="sizeHint" stdset="0">
                                      <size>
@@ -11701,7 +11701,7 @@ QComboBox QListView
                               <item>
                                <widget class="QScrollArea" name="scrollArea_scope_capture_save">
                                 <property name="verticalScrollBarPolicy">
-                                 <enum>Qt::ScrollBarAlwaysOn</enum>
+                                 <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOn</enum>
                                 </property>
                                 <property name="widgetResizable">
                                  <bool>true</bool>
@@ -11740,7 +11740,7 @@ QComboBox QListView
                                   <item>
                                    <spacer name="verticalSpacer_scope_capture_save">
                                     <property name="orientation">
-                                     <enum>Qt::Vertical</enum>
+                                     <enum>Qt::Orientation::Vertical</enum>
                                     </property>
                                     <property name="sizeHint" stdset="0">
                                      <size>
@@ -11770,10 +11770,10 @@ QComboBox QListView
                           </sizepolicy>
                          </property>
                          <property name="frameShape">
-                          <enum>QFrame::NoFrame</enum>
+                          <enum>QFrame::Shape::NoFrame</enum>
                          </property>
                          <property name="frameShadow">
-                          <enum>QFrame::Plain</enum>
+                          <enum>QFrame::Shadow::Plain</enum>
                          </property>
                          <property name="lineWidth">
                           <number>0</number>
@@ -12026,10 +12026,10 @@ QComboBox QListView
                             <item>
                              <layout class="QFormLayout" name="formLayout_26">
                               <property name="fieldGrowthPolicy">
-                               <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+                               <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
                               </property>
                               <property name="labelAlignment">
-                               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                               <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                               </property>
                               <item row="0" column="0">
                                <widget class="QLabel" name="label_190">
@@ -12285,7 +12285,7 @@ QComboBox QListView
                       </size>
                      </property>
                      <property name="frameShadow">
-                      <enum>QFrame::Plain</enum>
+                      <enum>QFrame::Shadow::Plain</enum>
                      </property>
                      <property name="lineWidth">
                       <number>1</number>
@@ -12295,7 +12295,7 @@ QComboBox QListView
                      </property>
                      <layout class="QGridLayout" name="gridLayout_58" rowstretch="0" columnstretch="0">
                       <property name="sizeConstraint">
-                       <enum>QLayout::SetDefaultConstraint</enum>
+                       <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
                       </property>
                       <property name="leftMargin">
                        <number>0</number>
@@ -12340,7 +12340,7 @@ QComboBox QListView
                           <number>0</number>
                          </property>
                          <property name="sizeConstraint">
-                          <enum>QLayout::SetMaximumSize</enum>
+                          <enum>QLayout::SizeConstraint::SetMaximumSize</enum>
                          </property>
                          <property name="leftMargin">
                           <number>9</number>
@@ -12360,7 +12360,7 @@ QComboBox QListView
                             <number>2</number>
                            </property>
                            <property name="sizeConstraint">
-                            <enum>QLayout::SetDefaultConstraint</enum>
+                            <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
                            </property>
                            <item>
                             <widget class="QPushButton" name="pushButton_lock_axes">
@@ -12553,10 +12553,10 @@ QComboBox QListView
                            <item>
                             <spacer name="horizontalSpacer_gap_left">
                              <property name="orientation">
-                              <enum>Qt::Horizontal</enum>
+                              <enum>Qt::Orientation::Horizontal</enum>
                              </property>
                              <property name="sizeType">
-                              <enum>QSizePolicy::MinimumExpanding</enum>
+                              <enum>QSizePolicy::Policy::MinimumExpanding</enum>
                              </property>
                              <property name="sizeHint" stdset="0">
                               <size>
@@ -12741,10 +12741,10 @@ QComboBox QListView
                            <item>
                             <spacer name="horizontalSpacer_gap_right">
                              <property name="orientation">
-                              <enum>Qt::Horizontal</enum>
+                              <enum>Qt::Orientation::Horizontal</enum>
                              </property>
                              <property name="sizeType">
-                              <enum>QSizePolicy::MinimumExpanding</enum>
+                              <enum>QSizePolicy::Policy::MinimumExpanding</enum>
                              </property>
                              <property name="sizeHint" stdset="0">
                               <size>
@@ -12806,7 +12806,7 @@ QComboBox QListView
                               <string>Provide spectroscopy usage tips</string>
                              </property>
                              <property name="layoutDirection">
-                              <enum>Qt::LeftToRight</enum>
+                              <enum>Qt::LayoutDirection::LeftToRight</enum>
                              </property>
                              <property name="text">
                               <string />
@@ -12903,7 +12903,7 @@ QComboBox QListView
                       </size>
                      </property>
                      <property name="frameShadow">
-                      <enum>QFrame::Plain</enum>
+                      <enum>QFrame::Shadow::Plain</enum>
                      </property>
                      <property name="lineWidth">
                       <number>1</number>
@@ -13015,10 +13015,10 @@ QComboBox QListView
                                 <string notr="true" />
                                </property>
                                <property name="verticalScrollBarPolicy">
-                                <enum>Qt::ScrollBarAlwaysOff</enum>
+                                <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
                                </property>
                                <property name="horizontalScrollBarPolicy">
-                                <enum>Qt::ScrollBarAlwaysOff</enum>
+                                <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
                                </property>
                                <property name="widgetResizable">
                                 <bool>true</bool>
@@ -13075,13 +13075,13 @@ QComboBox QListView
                                     </size>
                                    </property>
                                    <property name="layoutDirection">
-                                    <enum>Qt::LeftToRight</enum>
+                                    <enum>Qt::LayoutDirection::LeftToRight</enum>
                                    </property>
                                    <property name="frameShape">
-                                    <enum>QFrame::StyledPanel</enum>
+                                    <enum>QFrame::Shape::StyledPanel</enum>
                                    </property>
                                    <property name="frameShadow">
-                                    <enum>QFrame::Raised</enum>
+                                    <enum>QFrame::Shadow::Raised</enum>
                                    </property>
                                    <property name="wpClear" stdset="0">
                                     <bool>false</bool>
@@ -13124,7 +13124,7 @@ QComboBox QListView
                                         <item row="0" column="0">
                                          <layout class="QGridLayout" name="layout_scope_capture_graphs">
                                           <property name="sizeConstraint">
-                                           <enum>QLayout::SetMinimumSize</enum>
+                                           <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
                                           </property>
                                           <property name="spacing">
                                            <number>0</number>
@@ -13209,7 +13209,7 @@ QComboBox QListView
                                <item>
                                 <widget class="QTableWidget" name="tableWidget_id_match_results">
                                  <property name="frameShape">
-                                  <enum>QFrame::Panel</enum>
+                                  <enum>QFrame::Shape::Panel</enum>
                                  </property>
                                  <property name="wpTable" stdset="0">
                                   <bool>false</bool>
@@ -13353,7 +13353,7 @@ QComboBox QListView
                                  <item>
                                   <spacer name="verticalSpacer_10">
                                    <property name="orientation">
-                                    <enum>Qt::Vertical</enum>
+                                    <enum>Qt::Orientation::Vertical</enum>
                                    </property>
                                    <property name="sizeHint" stdset="0">
                                     <size>
@@ -13395,10 +13395,10 @@ QComboBox QListView
                              <item>
                               <widget class="QTableWidget" name="tableWidget_id_match_recent">
                                <property name="frameShape">
-                                <enum>QFrame::Box</enum>
+                                <enum>QFrame::Shape::Box</enum>
                                </property>
                                <property name="frameShadow">
-                                <enum>QFrame::Plain</enum>
+                                <enum>QFrame::Shadow::Plain</enum>
                                </property>
                                <property name="wpTable" stdset="0">
                                 <bool>false</bool>
@@ -13490,7 +13490,7 @@ QComboBox QListView
                               <string>0</string>
                              </property>
                              <property name="alignment">
-                              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                              </property>
                              <property name="indent">
                               <number>-1</number>
@@ -13537,7 +13537,7 @@ QComboBox QListView
                               <string>65535</string>
                              </property>
                              <property name="alignment">
-                              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                              </property>
                             </widget>
                            </item>
@@ -13578,7 +13578,7 @@ QComboBox QListView
                               <string>100.3</string>
                              </property>
                              <property name="alignment">
-                              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                              </property>
                             </widget>
                            </item>
@@ -13619,7 +13619,7 @@ QComboBox QListView
                               <string>100.3</string>
                              </property>
                              <property name="alignment">
-                              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                              </property>
                             </widget>
                            </item>
@@ -13660,7 +13660,7 @@ QComboBox QListView
                               <string>0.0</string>
                              </property>
                              <property name="alignment">
-                              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                              </property>
                             </widget>
                            </item>
@@ -13701,7 +13701,7 @@ QComboBox QListView
                               <string>0.0</string>
                              </property>
                              <property name="alignment">
-                              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                              </property>
                             </widget>
                            </item>
@@ -13748,7 +13748,7 @@ QComboBox QListView
                               <string>0.0</string>
                              </property>
                              <property name="alignment">
-                              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                              </property>
                             </widget>
                            </item>
@@ -13783,7 +13783,7 @@ QComboBox QListView
                               <string>0.0</string>
                              </property>
                              <property name="alignment">
-                              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                              </property>
                             </widget>
                            </item>
@@ -13818,7 +13818,7 @@ QComboBox QListView
                               <string>none</string>
                              </property>
                              <property name="alignment">
-                              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                              <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                              </property>
                             </widget>
                            </item>
@@ -13827,10 +13827,10 @@ QComboBox QListView
                          <item>
                           <spacer name="horizontalSpacer_11">
                            <property name="orientation">
-                            <enum>Qt::Horizontal</enum>
+                            <enum>Qt::Orientation::Horizontal</enum>
                            </property>
                            <property name="sizeType">
-                            <enum>QSizePolicy::MinimumExpanding</enum>
+                            <enum>QSizePolicy::Policy::MinimumExpanding</enum>
                            </property>
                            <property name="sizeHint" stdset="0">
                             <size>
@@ -13858,7 +13858,7 @@ QComboBox QListView
                             <bool>false</bool>
                            </property>
                            <property name="popupMode">
-                            <enum>QToolButton::InstantPopup</enum>
+                            <enum>QToolButton::ToolButtonPopupMode::InstantPopup</enum>
                            </property>
                           </widget>
                          </item>
@@ -13928,7 +13928,7 @@ QComboBox QListView
            <item>
             <spacer name="horizontalSpacer_48">
              <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+              <enum>Qt::Orientation::Horizontal</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -13981,10 +13981,10 @@ QComboBox QListView
          <item>
           <widget class="QFrame" name="frame_logging_white">
            <property name="frameShape">
-            <enum>QFrame::StyledPanel</enum>
+            <enum>QFrame::Shape::StyledPanel</enum>
            </property>
            <property name="frameShadow">
-            <enum>QFrame::Raised</enum>
+            <enum>QFrame::Shadow::Raised</enum>
            </property>
            <property name="wpBox" stdset="0">
             <bool>false</bool>
@@ -14011,10 +14011,10 @@ QComboBox QListView
                </size>
               </property>
               <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+               <enum>QFrame::Shape::StyledPanel</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Shadow::Raised</enum>
               </property>
               <property name="wpPanel" stdset="0">
                <bool>false</bool>
@@ -14044,7 +14044,7 @@ QComboBox QListView
                   <number>1</number>
                  </property>
                  <property name="verticalScrollBarPolicy">
-                  <enum>Qt::ScrollBarAsNeeded</enum>
+                  <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
                  </property>
                  <property name="documentTitle">
                   <string notr="true" />
@@ -14063,7 +14063,7 @@ li.checked::marker { content: "\2612"; }
 &lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'DejaVu Sans Mono';"&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                  <property name="textInteractionFlags">
-                  <set>Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+                  <set>Qt::TextInteractionFlag::TextSelectableByKeyboard|Qt::TextInteractionFlag::TextSelectableByMouse</set>
                  </property>
                  <property name="placeholderText">
                   <string notr="true" />
@@ -14477,9 +14477,9 @@ li.checked::marker { content: "\2612"; }
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>0</y>
+                <y>-451</y>
                 <width>240</width>
-                <height>2893</height>
+                <height>2936</height>
                </rect>
               </property>
               <property name="sizePolicy">
@@ -14543,10 +14543,10 @@ li.checked::marker { content: "\2612"; }
                   <item>
                    <widget class="QFrame" name="frame_hardware_capture_control_white">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::Shape::StyledPanel</enum>
                     </property>
                     <property name="frameShadow">
-                     <enum>QFrame::Raised</enum>
+                     <enum>QFrame::Shadow::Raised</enum>
                     </property>
                     <property name="wpBox" stdset="0">
                      <bool>false</bool>
@@ -14576,10 +14576,10 @@ li.checked::marker { content: "\2612"; }
                         </sizepolicy>
                        </property>
                        <property name="frameShape">
-                        <enum>QFrame::StyledPanel</enum>
+                        <enum>QFrame::Shape::StyledPanel</enum>
                        </property>
                        <property name="frameShadow">
-                        <enum>QFrame::Raised</enum>
+                        <enum>QFrame::Shadow::Raised</enum>
                        </property>
                        <property name="wpGrad" stdset="0">
                         <bool>false</bool>
@@ -14706,7 +14706,7 @@ li.checked::marker { content: "\2612"; }
                     </property>
                     <layout class="QGridLayout" name="boxcarWidget_grid_5" rowstretch="0" columnstretch="0">
                      <property name="sizeConstraint">
-                      <enum>QLayout::SetDefaultConstraint</enum>
+                      <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
                      </property>
                      <property name="leftMargin">
                       <number>0</number>
@@ -14785,7 +14785,7 @@ li.checked::marker { content: "\2612"; }
                              </font>
                             </property>
                             <property name="focusPolicy">
-                             <enum>Qt::StrongFocus</enum>
+                             <enum>Qt::FocusPolicy::StrongFocus</enum>
                             </property>
                             <property name="toolTip">
                              <string>Select spectrometer to control</string>
@@ -14991,7 +14991,7 @@ li.checked::marker { content: "\2612"; }
                     </property>
                     <layout class="QGridLayout" name="random_grid_1" rowstretch="0" columnstretch="0">
                      <property name="sizeConstraint">
-                      <enum>QLayout::SetDefaultConstraint</enum>
+                      <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
                      </property>
                      <property name="leftMargin">
                       <number>0</number>
@@ -15056,7 +15056,7 @@ li.checked::marker { content: "\2612"; }
                            </font>
                           </property>
                           <property name="focusPolicy">
-                           <enum>Qt::StrongFocus</enum>
+                           <enum>Qt::FocusPolicy::StrongFocus</enum>
                           </property>
                           <property name="Comment" stdset="0">
                            <string>MZ: keep aligned with common.axis enum</string>
@@ -15157,7 +15157,7 @@ li.checked::marker { content: "\2612"; }
                     </property>
                     <layout class="QGridLayout" name="lightSourceWidget_grid" rowstretch="0" columnstretch="0">
                      <property name="sizeConstraint">
-                      <enum>QLayout::SetDefaultConstraint</enum>
+                      <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
                      </property>
                      <property name="leftMargin">
                       <number>0</number>
@@ -15265,7 +15265,7 @@ li.checked::marker { content: "\2612"; }
                              <number>100</number>
                             </property>
                             <property name="orientation">
-                             <enum>Qt::Vertical</enum>
+                             <enum>Qt::Orientation::Vertical</enum>
                             </property>
                             <property name="Comment" stdset="0">
                              <string>MZ: change to horizontalSlider</string>
@@ -15363,13 +15363,13 @@ li.checked::marker { content: "\2612"; }
                                </sizepolicy>
                               </property>
                               <property name="focusPolicy">
-                               <enum>Qt::StrongFocus</enum>
+                               <enum>Qt::FocusPolicy::StrongFocus</enum>
                               </property>
                               <property name="alignment">
-                               <set>Qt::AlignCenter</set>
+                               <set>Qt::AlignmentFlag::AlignCenter</set>
                               </property>
                               <property name="buttonSymbols">
-                               <enum>QAbstractSpinBox::NoButtons</enum>
+                               <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
                               </property>
                               <property name="keyboardTracking">
                                <bool>false</bool>
@@ -15424,10 +15424,10 @@ li.checked::marker { content: "\2612"; }
                         <item>
                          <layout class="QFormLayout" name="formLayout_laser_control">
                           <property name="labelAlignment">
-                           <set>Qt::AlignCenter</set>
+                           <set>Qt::AlignmentFlag::AlignCenter</set>
                           </property>
                           <property name="formAlignment">
-                           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                           <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
                           </property>
                           <property name="topMargin">
                            <number>0</number>
@@ -15450,13 +15450,13 @@ li.checked::marker { content: "\2612"; }
                              </size>
                             </property>
                             <property name="focusPolicy">
-                             <enum>Qt::StrongFocus</enum>
+                             <enum>Qt::FocusPolicy::StrongFocus</enum>
                             </property>
                             <property name="toolTip">
                              <string>Adjust laser wavelength</string>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="decimals">
                              <number>3</number>
@@ -15509,7 +15509,7 @@ li.checked::marker { content: "\2612"; }
                              </size>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="minimum">
                              <number>3</number>
@@ -15583,7 +15583,7 @@ li.checked::marker { content: "\2612"; }
                              <string>TEC mode</string>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="wordWrap">
                              <bool>true</bool>
@@ -15602,24 +15602,6 @@ li.checked::marker { content: "\2612"; }
                           </property>
                          </widget>
                         </item>
-                        <item>
-                         <widget class="QCheckBox" name="checkBox_auto_raman_enable">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="toolTip">
-                           <string>automatically take an averaged dark, then enable the laser and take an averaged Raman sample</string>
-                          </property>
-                          <property name="text">
-                           <string>Auto-Raman Mode</string>
-                          </property>
-                         </widget>
-                        </item>
-
-                        
                         <item>
                          <widget class="QPushButton" name="pushButton_auto_raman_measurement">
                           <property name="sizePolicy">
@@ -15666,10 +15648,10 @@ li.checked::marker { content: "\2612"; }
                   </sizepolicy>
                  </property>
                  <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
+                  <enum>QFrame::Shape::StyledPanel</enum>
                  </property>
                  <property name="frameShadow">
-                  <enum>QFrame::Raised</enum>
+                  <enum>QFrame::Shadow::Raised</enum>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_143">
                   <property name="leftMargin">
@@ -15711,10 +15693,10 @@ li.checked::marker { content: "\2612"; }
                      </sizepolicy>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::Shape::StyledPanel</enum>
                     </property>
                     <property name="frameShadow">
-                     <enum>QFrame::Raised</enum>
+                     <enum>QFrame::Shadow::Raised</enum>
                     </property>
                     <property name="wpBox" stdset="0">
                      <bool>false</bool>
@@ -15741,10 +15723,10 @@ li.checked::marker { content: "\2612"; }
                         </sizepolicy>
                        </property>
                        <property name="frameShape">
-                        <enum>QFrame::StyledPanel</enum>
+                        <enum>QFrame::Shape::StyledPanel</enum>
                        </property>
                        <property name="frameShadow">
-                        <enum>QFrame::Raised</enum>
+                        <enum>QFrame::Shadow::Raised</enum>
                        </property>
                        <property name="wpGrad" stdset="0">
                         <bool>false</bool>
@@ -15802,17 +15784,17 @@ li.checked::marker { content: "\2612"; }
                            </sizepolicy>
                           </property>
                           <property name="frameShape">
-                           <enum>QFrame::StyledPanel</enum>
+                           <enum>QFrame::Shape::StyledPanel</enum>
                           </property>
                           <property name="frameShadow">
-                           <enum>QFrame::Raised</enum>
+                           <enum>QFrame::Shadow::Raised</enum>
                           </property>
                           <property name="wpBox" stdset="0">
                            <bool>false</bool>
                           </property>
                           <layout class="QFormLayout" name="formLayout_30">
                            <property name="labelAlignment">
-                            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                            <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
                            </property>
                            <property name="horizontalSpacing">
                             <number>0</number>
@@ -15841,7 +15823,7 @@ li.checked::marker { content: "\2612"; }
                               </sizepolicy>
                              </property>
                              <property name="layoutDirection">
-                              <enum>Qt::LeftToRight</enum>
+                              <enum>Qt::LayoutDirection::LeftToRight</enum>
                              </property>
                              <property name="text">
                               <string>Strobe</string>
@@ -15869,10 +15851,10 @@ li.checked::marker { content: "\2612"; }
                               </size>
                              </property>
                              <property name="focusPolicy">
-                              <enum>Qt::StrongFocus</enum>
+                              <enum>Qt::FocusPolicy::StrongFocus</enum>
                              </property>
                              <property name="alignment">
-                              <set>Qt::AlignCenter</set>
+                              <set>Qt::AlignmentFlag::AlignCenter</set>
                              </property>
                              <property name="minimum">
                               <number>1</number>
@@ -15897,7 +15879,7 @@ li.checked::marker { content: "\2612"; }
                               </sizepolicy>
                              </property>
                              <property name="layoutDirection">
-                              <enum>Qt::RightToLeft</enum>
+                              <enum>Qt::LayoutDirection::RightToLeft</enum>
                              </property>
                              <property name="text">
                               <string>Frequency (Hz)</string>
@@ -15925,10 +15907,10 @@ li.checked::marker { content: "\2612"; }
                               </size>
                              </property>
                              <property name="focusPolicy">
-                              <enum>Qt::StrongFocus</enum>
+                              <enum>Qt::FocusPolicy::StrongFocus</enum>
                              </property>
                              <property name="alignment">
-                              <set>Qt::AlignCenter</set>
+                              <set>Qt::AlignmentFlag::AlignCenter</set>
                              </property>
                              <property name="minimum">
                               <number>1</number>
@@ -16040,7 +16022,7 @@ li.checked::marker { content: "\2612"; }
                     </property>
                     <layout class="QGridLayout" name="detectorControlWidget_grid" rowstretch="0" columnstretch="0">
                      <property name="sizeConstraint">
-                      <enum>QLayout::SetDefaultConstraint</enum>
+                      <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
                      </property>
                      <property name="leftMargin">
                       <number>0</number>
@@ -16101,7 +16083,7 @@ li.checked::marker { content: "\2612"; }
                              <number>100</number>
                             </property>
                             <property name="orientation">
-                             <enum>Qt::Vertical</enum>
+                             <enum>Qt::Orientation::Vertical</enum>
                             </property>
                             <property name="Comment" stdset="0">
                              <string>MZ: change to horizontalSlider</string>
@@ -16125,7 +16107,7 @@ li.checked::marker { content: "\2612"; }
                                <string>Integration Time</string>
                               </property>
                               <property name="alignment">
-                               <set>Qt::AlignCenter</set>
+                               <set>Qt::AlignmentFlag::AlignCenter</set>
                               </property>
                               <property name="wordWrap">
                                <bool>true</bool>
@@ -16221,7 +16203,7 @@ li.checked::marker { content: "\2612"; }
                                </sizepolicy>
                               </property>
                               <property name="focusPolicy">
-                               <enum>Qt::StrongFocus</enum>
+                               <enum>Qt::FocusPolicy::StrongFocus</enum>
                               </property>
                               <property name="toolTip">
                                <string>set integration time in ms (ctrl-T)</string>
@@ -16233,10 +16215,10 @@ li.checked::marker { content: "\2612"; }
                                <bool>true</bool>
                               </property>
                               <property name="alignment">
-                               <set>Qt::AlignCenter</set>
+                               <set>Qt::AlignmentFlag::AlignCenter</set>
                               </property>
                               <property name="buttonSymbols">
-                               <enum>QAbstractSpinBox::NoButtons</enum>
+                               <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
                               </property>
                               <property name="accelerated">
                                <bool>true</bool>
@@ -16303,7 +16285,7 @@ li.checked::marker { content: "\2612"; }
                              <number>10</number>
                             </property>
                             <property name="orientation">
-                             <enum>Qt::Vertical</enum>
+                             <enum>Qt::Orientation::Vertical</enum>
                             </property>
                            </widget>
                           </item>
@@ -16321,7 +16303,7 @@ li.checked::marker { content: "\2612"; }
                                <string>Detector Temperature</string>
                               </property>
                               <property name="alignment">
-                               <set>Qt::AlignCenter</set>
+                               <set>Qt::AlignmentFlag::AlignCenter</set>
                               </property>
                               <property name="wordWrap">
                                <bool>true</bool>
@@ -16417,13 +16399,13 @@ li.checked::marker { content: "\2612"; }
                                </sizepolicy>
                               </property>
                               <property name="focusPolicy">
-                               <enum>Qt::StrongFocus</enum>
+                               <enum>Qt::FocusPolicy::StrongFocus</enum>
                               </property>
                               <property name="alignment">
-                               <set>Qt::AlignCenter</set>
+                               <set>Qt::AlignmentFlag::AlignCenter</set>
                               </property>
                               <property name="buttonSymbols">
-                               <enum>QAbstractSpinBox::NoButtons</enum>
+                               <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
                               </property>
                               <property name="suffix">
                                <string>°C</string>
@@ -16520,7 +16502,7 @@ li.checked::marker { content: "\2612"; }
                              <number>8</number>
                             </property>
                             <property name="orientation">
-                             <enum>Qt::Vertical</enum>
+                             <enum>Qt::Orientation::Vertical</enum>
                             </property>
                             <property name="Comment" stdset="0">
                              <string>MZ: change to horizontalSlider</string>
@@ -16550,7 +16532,7 @@ li.checked::marker { content: "\2612"; }
                                <string>Gain</string>
                               </property>
                               <property name="alignment">
-                               <set>Qt::AlignCenter</set>
+                               <set>Qt::AlignmentFlag::AlignCenter</set>
                               </property>
                               <property name="wordWrap">
                                <bool>true</bool>
@@ -16646,7 +16628,7 @@ li.checked::marker { content: "\2612"; }
                                </sizepolicy>
                               </property>
                               <property name="focusPolicy">
-                               <enum>Qt::StrongFocus</enum>
+                               <enum>Qt::FocusPolicy::StrongFocus</enum>
                               </property>
                               <property name="toolTip">
                                <string>change gain in dB (ctrl-G)</string>
@@ -16658,10 +16640,10 @@ li.checked::marker { content: "\2612"; }
                                <bool>true</bool>
                               </property>
                               <property name="alignment">
-                               <set>Qt::AlignCenter</set>
+                               <set>Qt::AlignmentFlag::AlignCenter</set>
                               </property>
                               <property name="buttonSymbols">
-                               <enum>QAbstractSpinBox::NoButtons</enum>
+                               <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
                               </property>
                               <property name="accelerated">
                                <bool>true</bool>
@@ -16764,7 +16746,7 @@ li.checked::marker { content: "\2612"; }
                     </property>
                     <layout class="QGridLayout" name="displayAxisWidget_grid" rowstretch="0" columnstretch="0">
                      <property name="sizeConstraint">
-                      <enum>QLayout::SetDefaultConstraint</enum>
+                      <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
                      </property>
                      <property name="leftMargin">
                       <number>0</number>
@@ -16829,7 +16811,7 @@ li.checked::marker { content: "\2612"; }
                            </font>
                           </property>
                           <property name="focusPolicy">
-                           <enum>Qt::StrongFocus</enum>
+                           <enum>Qt::FocusPolicy::StrongFocus</enum>
                           </property>
                           <property name="Comment" stdset="0">
                            <string>MZ: keep aligned with common.axis enum</string>
@@ -16865,16 +16847,16 @@ li.checked::marker { content: "\2612"; }
                              </sizepolicy>
                             </property>
                             <property name="focusPolicy">
-                             <enum>Qt::StrongFocus</enum>
+                             <enum>Qt::FocusPolicy::StrongFocus</enum>
                             </property>
                             <property name="styleSheet">
                              <string notr="true">width: 110px; margin: 0; padding: 0; border: 0;</string>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="buttonSymbols">
-                             <enum>QAbstractSpinBox::NoButtons</enum>
+                             <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
                             </property>
                             <property name="accelerated">
                              <bool>false</bool>
@@ -17056,10 +17038,10 @@ li.checked::marker { content: "\2612"; }
                <item>
                 <widget class="QFrame" name="frame_plugin_option_white">
                  <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
+                  <enum>QFrame::Shape::StyledPanel</enum>
                  </property>
                  <property name="frameShadow">
-                  <enum>QFrame::Raised</enum>
+                  <enum>QFrame::Shadow::Raised</enum>
                  </property>
                  <property name="wpBox" stdset="0">
                   <bool>false</bool>
@@ -17080,10 +17062,10 @@ li.checked::marker { content: "\2612"; }
                   <item>
                    <widget class="QFrame" name="frame_plugin_option_black">
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::Shape::StyledPanel</enum>
                     </property>
                     <property name="frameShadow">
-                     <enum>QFrame::Raised</enum>
+                     <enum>QFrame::Shadow::Raised</enum>
                     </property>
                     <property name="wpPanel" stdset="0">
                      <bool>false</bool>
@@ -17119,7 +17101,7 @@ li.checked::marker { content: "\2612"; }
                         </font>
                        </property>
                        <property name="focusPolicy">
-                        <enum>Qt::StrongFocus</enum>
+                        <enum>Qt::FocusPolicy::StrongFocus</enum>
                        </property>
                       </widget>
                      </item>
@@ -17197,7 +17179,7 @@ li.checked::marker { content: "\2612"; }
                     </property>
                     <layout class="QGridLayout" name="temperatureWidget_grid_2" rowstretch="0" columnstretch="0">
                      <property name="sizeConstraint">
-                      <enum>QLayout::SetDefaultConstraint</enum>
+                      <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
                      </property>
                      <property name="leftMargin">
                       <number>0</number>
@@ -17264,7 +17246,7 @@ li.checked::marker { content: "\2612"; }
                            <string>Plugin Name</string>
                           </property>
                           <property name="alignment">
-                           <set>Qt::AlignCenter</set>
+                           <set>Qt::AlignmentFlag::AlignCenter</set>
                           </property>
                          </widget>
                         </item>
@@ -17302,10 +17284,10 @@ li.checked::marker { content: "\2612"; }
                            </size>
                           </property>
                           <property name="frameShape">
-                           <enum>QFrame::StyledPanel</enum>
+                           <enum>QFrame::Shape::StyledPanel</enum>
                           </property>
                           <property name="frameShadow">
-                           <enum>QFrame::Raised</enum>
+                           <enum>QFrame::Shadow::Raised</enum>
                           </property>
                           <property name="wpBox" stdset="0">
                            <bool>false</bool>
@@ -17366,7 +17348,7 @@ li.checked::marker { content: "\2612"; }
                              </sizepolicy>
                             </property>
                             <property name="focusPolicy">
-                             <enum>Qt::StrongFocus</enum>
+                             <enum>Qt::FocusPolicy::StrongFocus</enum>
                             </property>
                             <item>
                              <property name="text">
@@ -17449,7 +17431,7 @@ li.checked::marker { content: "\2612"; }
                     </property>
                     <layout class="QGridLayout" name="scanAveragingWidget_grid" rowstretch="0" columnstretch="0">
                      <property name="sizeConstraint">
-                      <enum>QLayout::SetDefaultConstraint</enum>
+                      <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
                      </property>
                      <property name="leftMargin">
                       <number>0</number>
@@ -17545,7 +17527,7 @@ li.checked::marker { content: "\2612"; }
                              </sizepolicy>
                             </property>
                             <property name="focusPolicy">
-                             <enum>Qt::StrongFocus</enum>
+                             <enum>Qt::FocusPolicy::StrongFocus</enum>
                             </property>
                             <property name="wrapping">
                              <bool>false</bool>
@@ -17554,10 +17536,10 @@ li.checked::marker { content: "\2612"; }
                              <bool>true</bool>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="buttonSymbols">
-                             <enum>QAbstractSpinBox::NoButtons</enum>
+                             <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
                             </property>
                             <property name="accelerated">
                              <bool>true</bool>
@@ -17631,7 +17613,7 @@ li.checked::marker { content: "\2612"; }
                            <string>Collecting: 1 of 5</string>
                           </property>
                           <property name="alignment">
-                           <set>Qt::AlignCenter</set>
+                           <set>Qt::AlignmentFlag::AlignCenter</set>
                           </property>
                          </widget>
                         </item>
@@ -17705,7 +17687,7 @@ li.checked::marker { content: "\2612"; }
                     </property>
                     <layout class="QGridLayout" name="boxcarWidget_grid" rowstretch="0" columnstretch="0">
                      <property name="sizeConstraint">
-                      <enum>QLayout::SetDefaultConstraint</enum>
+                      <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
                      </property>
                      <property name="leftMargin">
                       <number>0</number>
@@ -17819,16 +17801,16 @@ li.checked::marker { content: "\2612"; }
                              </sizepolicy>
                             </property>
                             <property name="focusPolicy">
-                             <enum>Qt::StrongFocus</enum>
+                             <enum>Qt::FocusPolicy::StrongFocus</enum>
                             </property>
                             <property name="toolTip">
                              <string>half-width</string>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="buttonSymbols">
-                             <enum>QAbstractSpinBox::NoButtons</enum>
+                             <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
                             </property>
                             <property name="accelerated">
                              <bool>true</bool>
@@ -17966,7 +17948,7 @@ li.checked::marker { content: "\2612"; }
                     </property>
                     <layout class="QGridLayout" name="backgroundSubtractionWidget_grid" rowstretch="0" columnstretch="0">
                      <property name="sizeConstraint">
-                      <enum>QLayout::SetDefaultConstraint</enum>
+                      <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
                      </property>
                      <property name="leftMargin">
                       <number>0</number>
@@ -18076,7 +18058,7 @@ li.checked::marker { content: "\2612"; }
                            </font>
                           </property>
                           <property name="focusPolicy">
-                           <enum>Qt::StrongFocus</enum>
+                           <enum>Qt::FocusPolicy::StrongFocus</enum>
                           </property>
                           <item>
                            <property name="text">
@@ -18108,10 +18090,10 @@ li.checked::marker { content: "\2612"; }
                   </sizepolicy>
                  </property>
                  <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
+                  <enum>QFrame::Shape::StyledPanel</enum>
                  </property>
                  <property name="frameShadow">
-                  <enum>QFrame::Raised</enum>
+                  <enum>QFrame::Shadow::Raised</enum>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_150">
                   <property name="leftMargin">
@@ -18153,10 +18135,10 @@ li.checked::marker { content: "\2612"; }
                      </sizepolicy>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::Shape::StyledPanel</enum>
                     </property>
                     <property name="frameShadow">
-                     <enum>QFrame::Raised</enum>
+                     <enum>QFrame::Shadow::Raised</enum>
                     </property>
                     <property name="wpBox" stdset="0">
                      <bool>false</bool>
@@ -18183,10 +18165,10 @@ li.checked::marker { content: "\2612"; }
                         </sizepolicy>
                        </property>
                        <property name="frameShape">
-                        <enum>QFrame::StyledPanel</enum>
+                        <enum>QFrame::Shape::StyledPanel</enum>
                        </property>
                        <property name="frameShadow">
-                        <enum>QFrame::Raised</enum>
+                        <enum>QFrame::Shadow::Raised</enum>
                        </property>
                        <property name="wpGrad" stdset="0">
                         <bool>false</bool>
@@ -18266,7 +18248,7 @@ li.checked::marker { content: "\2612"; }
                     </property>
                     <layout class="QGridLayout" name="grid_presets" rowstretch="0" columnstretch="0">
                      <property name="sizeConstraint">
-                      <enum>QLayout::SetDefaultConstraint</enum>
+                      <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
                      </property>
                      <property name="leftMargin">
                       <number>0</number>
@@ -18412,7 +18394,7 @@ li.checked::marker { content: "\2612"; }
                     </property>
                     <layout class="QGridLayout" name="boxcarWidget_grid_4_x" rowstretch="0" columnstretch="0">
                      <property name="sizeConstraint">
-                      <enum>QLayout::SetDefaultConstraint</enum>
+                      <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
                      </property>
                      <property name="leftMargin">
                       <number>0</number>
@@ -18474,7 +18456,7 @@ li.checked::marker { content: "\2612"; }
                         <item>
                          <layout class="QFormLayout" name="formLayout_28x">
                           <property name="labelAlignment">
-                           <set>Qt::AlignCenter</set>
+                           <set>Qt::AlignmentFlag::AlignCenter</set>
                           </property>
                           <property name="leftMargin">
                            <number>0</number>
@@ -18601,10 +18583,10 @@ li.checked::marker { content: "\2612"; }
                              </size>
                             </property>
                             <property name="focusPolicy">
-                             <enum>Qt::StrongFocus</enum>
+                             <enum>Qt::FocusPolicy::StrongFocus</enum>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="minimum">
                              <number>0</number>
@@ -18645,10 +18627,10 @@ li.checked::marker { content: "\2612"; }
                              </size>
                             </property>
                             <property name="focusPolicy">
-                             <enum>Qt::StrongFocus</enum>
+                             <enum>Qt::FocusPolicy::StrongFocus</enum>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="maximum">
                              <number>2000</number>
@@ -18686,13 +18668,13 @@ li.checked::marker { content: "\2612"; }
                              </size>
                             </property>
                             <property name="focusPolicy">
-                             <enum>Qt::StrongFocus</enum>
+                             <enum>Qt::FocusPolicy::StrongFocus</enum>
                             </property>
                             <property name="toolTip">
                              <string>Insert a delay between consecutive sensor lines</string>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="minimum">
                              <number>5</number>
@@ -18821,7 +18803,7 @@ li.checked::marker { content: "\2612"; }
                     </property>
                     <layout class="QGridLayout" name="boxcarWidget_grid_4" rowstretch="0" columnstretch="0">
                      <property name="sizeConstraint">
-                      <enum>QLayout::SetDefaultConstraint</enum>
+                      <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
                      </property>
                      <property name="leftMargin">
                       <number>0</number>
@@ -18913,10 +18895,10 @@ li.checked::marker { content: "\2612"; }
                              </sizepolicy>
                             </property>
                             <property name="focusPolicy">
-                             <enum>Qt::StrongFocus</enum>
+                             <enum>Qt::FocusPolicy::StrongFocus</enum>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="suffix">
                              <string>%</string>
@@ -18958,10 +18940,10 @@ li.checked::marker { content: "\2612"; }
                   </size>
                  </property>
                  <property name="frameShape">
-                  <enum>QFrame::StyledPanel</enum>
+                  <enum>QFrame::Shape::StyledPanel</enum>
                  </property>
                  <property name="frameShadow">
-                  <enum>QFrame::Raised</enum>
+                  <enum>QFrame::Shadow::Raised</enum>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_19">
                   <property name="leftMargin">
@@ -19003,10 +18985,10 @@ li.checked::marker { content: "\2612"; }
                      </sizepolicy>
                     </property>
                     <property name="frameShape">
-                     <enum>QFrame::StyledPanel</enum>
+                     <enum>QFrame::Shape::StyledPanel</enum>
                     </property>
                     <property name="frameShadow">
-                     <enum>QFrame::Raised</enum>
+                     <enum>QFrame::Shadow::Raised</enum>
                     </property>
                     <property name="wpBox" stdset="0">
                      <bool>false</bool>
@@ -19033,10 +19015,10 @@ li.checked::marker { content: "\2612"; }
                         </sizepolicy>
                        </property>
                        <property name="frameShape">
-                        <enum>QFrame::StyledPanel</enum>
+                        <enum>QFrame::Shape::StyledPanel</enum>
                        </property>
                        <property name="frameShadow">
-                        <enum>QFrame::Raised</enum>
+                        <enum>QFrame::Shadow::Raised</enum>
                        </property>
                        <property name="wpGrad" stdset="0">
                         <bool>false</bool>
@@ -19072,10 +19054,10 @@ li.checked::marker { content: "\2612"; }
                              </size>
                             </property>
                             <property name="focusPolicy">
-                             <enum>Qt::StrongFocus</enum>
+                             <enum>Qt::FocusPolicy::StrongFocus</enum>
                             </property>
                             <property name="alignment">
-                             <set>Qt::AlignCenter</set>
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="prefix">
                              <string>Region </string>
@@ -19105,7 +19087,7 @@ li.checked::marker { content: "\2612"; }
                <item>
                 <spacer name="verticalSpacer_7">
                  <property name="orientation">
-                  <enum>Qt::Vertical</enum>
+                  <enum>Qt::Orientation::Vertical</enum>
                  </property>
                  <property name="sizeHint" stdset="0">
                   <size>
@@ -19176,10 +19158,10 @@ li.checked::marker { content: "\2612"; }
                  </sizepolicy>
                 </property>
                 <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
+                 <enum>QFrame::Shape::StyledPanel</enum>
                 </property>
                 <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
+                 <enum>QFrame::Shadow::Raised</enum>
                 </property>
                 <property name="wpBox" stdset="0">
                  <bool>false</bool>
@@ -19215,7 +19197,7 @@ li.checked::marker { content: "\2612"; }
                     </size>
                    </property>
                    <property name="layoutDirection">
-                    <enum>Qt::LeftToRight</enum>
+                    <enum>Qt::LayoutDirection::LeftToRight</enum>
                    </property>
                    <property name="midLineWidth">
                     <number>0</number>
@@ -19228,7 +19210,7 @@ li.checked::marker { content: "\2612"; }
                      <number>0</number>
                     </property>
                     <property name="sizeConstraint">
-                     <enum>QLayout::SetDefaultConstraint</enum>
+                     <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
                     </property>
                     <property name="leftMargin">
                      <number>9</number>
@@ -19396,10 +19378,10 @@ li.checked::marker { content: "\2612"; }
           <item>
            <spacer name="horizontalSpacer_30">
             <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+             <enum>Qt::Orientation::Horizontal</enum>
             </property>
             <property name="sizeType">
-             <enum>QSizePolicy::Maximum</enum>
+             <enum>QSizePolicy::Policy::Maximum</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
@@ -19418,13 +19400,13 @@ li.checked::marker { content: "\2612"; }
              <bool>true</bool>
             </property>
             <property name="focusPolicy">
-             <enum>Qt::ClickFocus</enum>
+             <enum>Qt::FocusPolicy::ClickFocus</enum>
             </property>
             <property name="text">
              <string>Marquee messages go here</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignCenter</set>
+             <set>Qt::AlignmentFlag::AlignCenter</set>
             </property>
             <property name="wordWrap">
              <bool>true</bool>
@@ -19433,7 +19415,7 @@ li.checked::marker { content: "\2612"; }
              <bool>true</bool>
             </property>
             <property name="textInteractionFlags">
-             <set>Qt::TextBrowserInteraction</set>
+             <set>Qt::TextInteractionFlag::TextBrowserInteraction</set>
             </property>
            </widget>
           </item>

@@ -1472,7 +1472,10 @@ class Controller:
             log.debug("attempt_reading: setting dark from Reading: %s", reading.dark)
             self.dark_feature.store(dark=reading.dark)
 
+        # YOU ARE HERE
+
         # Scope Capture
+        log.debug("attempt_reading: passing new Reading to update_scope_graphs")
         self.update_scope_graphs(reading)
 
         # Area Scan
@@ -1489,7 +1492,9 @@ class Controller:
             if reading.new_integration_time_ms is not None:
                 self.integration_time_feature.set_ms(reading.new_integration_time_ms)
             if reading.new_gain_db is not None:
-                self.gain_db_feature.set(reading.new_gain_db)
+                self.gain_db_feature.set_db(reading.new_gain_db)
+
+        log.debug("attempt_reading: done")
 
     def acquire_reading(self, spec: Spectrometer) -> AcquiredReading:
         """
@@ -1745,6 +1750,8 @@ class Controller:
         - apply business logic
         """
 
+        log.debug("process_reading: start")
+
         if settings is None:
             # we are NOT reprocessing
             reprocessing = False
@@ -1768,7 +1775,7 @@ class Controller:
             selected = self.multispec.is_selected(spec.device_id)
 
         # don't graph incomplete averages
-        if self.scan_averaging.enabled(spec) and reading.averaged_count < 1:
+        if self.scan_averaging.enabled(spec) and not reading.averaged:
             log.debug("process_reading: scan averaging enabled but reading isn't averaged")
             return
 
