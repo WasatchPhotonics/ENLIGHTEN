@@ -1,8 +1,13 @@
 # Version History
 
+- 2024-08-29 4.1.1
+    - ensure metadata 'stomped' by plugins appear in exports
+- 2024-08-22 4.1.0
+    - public release
+
 ## 4.0 GUI and Plugin Refactoring
 
-- 2024-??-?? 4.0.68
+- 2024-08-22 4.0.68
     - change StatusBar frame count from ProcessedReading to Reading.session_count
     - clarified BatchCollection "explain this" re: collection timeout
     - [#462] fix system clipboard copy after connecting to plugin
