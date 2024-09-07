@@ -2560,8 +2560,8 @@ QComboBox QListView
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>637</width>
-           <height>5494</height>
+           <width>740</width>
+           <height>5778</height>
           </rect>
          </property>
          <property name="sizePolicy">
@@ -14477,9 +14477,9 @@ li.checked::marker { content: "\2612"; }
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-451</y>
+                <y>-590</y>
                 <width>240</width>
-                <height>2936</height>
+                <height>3281</height>
                </rect>
               </property>
               <property name="sizePolicy">
@@ -15630,6 +15630,786 @@ li.checked::marker { content: "\2612"; }
                           </property>
                          </widget>
                         </item>
+                        <item>
+                         <widget class="QCheckBox" name="checkBox_auto_raman_config">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="text">
+                           <string>Configure</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QFrame" name="frame_auto_raman_config">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="frameShape">
+                           <enum>QFrame::Shape::StyledPanel</enum>
+                          </property>
+                          <property name="frameShadow">
+                           <enum>QFrame::Shadow::Raised</enum>
+                          </property>
+                          <property name="wpBox" stdset="0">
+                           <bool>false</bool>
+                          </property>
+                          <layout class="QFormLayout" name="formLayout_30">
+                           <property name="labelAlignment">
+                            <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+                           </property>
+                           <property name="horizontalSpacing">
+                            <number>0</number>
+                           </property>
+                           <property name="verticalSpacing">
+                            <number>3</number>
+                           </property>
+                           <property name="leftMargin">
+                            <number>6</number>
+                           </property>
+                           <property name="topMargin">
+                            <number>6</number>
+                           </property>
+                           <property name="rightMargin">
+                            <number>6</number>
+                           </property>
+                           <property name="bottomMargin">
+                            <number>9</number>
+                           </property>
+                           <item row="0" column="0">
+                            <widget class="QSpinBox" name="spinBox_auto_raman_max_ms">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>100</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="focusPolicy">
+                              <enum>Qt::FocusPolicy::StrongFocus</enum>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignmentFlag::AlignCenter</set>
+                             </property>
+                             <property name="minimum">
+                              <number>5000</number>
+                             </property>
+                             <property name="maximum">
+                              <number>30000</number>
+                             </property>
+                             <property name="singleStep">
+                              <number>1000</number>
+                             </property>
+                             <property name="value">
+                              <number>10000</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="0" column="1">
+                            <widget class="QLabel" name="label_auto_raman_max_ms">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="layoutDirection">
+                              <enum>Qt::LayoutDirection::RightToLeft</enum>
+                             </property>
+                             <property name="text">
+                              <string>Max (ms)</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="1" column="0">
+                            <widget class="QSpinBox" name="spinBox_auto_raman_start_integ_ms">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>100</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="focusPolicy">
+                              <enum>Qt::FocusPolicy::StrongFocus</enum>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignmentFlag::AlignCenter</set>
+                             </property>
+                             <property name="minimum">
+                              <number>1</number>
+                             </property>
+                             <property name="maximum">
+                              <number>2000</number>
+                             </property>
+                             <property name="singleStep">
+                              <number>100</number>
+                             </property>
+                             <property name="value">
+                              <number>100</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="1" column="1">
+                            <widget class="QLabel" name="label_auto_raman_start_integ_ms">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="layoutDirection">
+                              <enum>Qt::LayoutDirection::RightToLeft</enum>
+                             </property>
+                             <property name="text">
+                              <string>Start Integ (ms)</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="2" column="0">
+                            <widget class="QSpinBox" name="spinBox_auto_raman_start_gain_db">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>100</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="focusPolicy">
+                              <enum>Qt::FocusPolicy::StrongFocus</enum>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignmentFlag::AlignCenter</set>
+                             </property>
+                             <property name="minimum">
+                              <number>0</number>
+                             </property>
+                             <property name="maximum">
+                              <number>31</number>
+                             </property>
+                             <property name="singleStep">
+                              <number>1</number>
+                             </property>
+                             <property name="value">
+                              <number>0</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="2" column="1">
+                            <widget class="QLabel" name="label_auto_raman_start_gain_db">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="layoutDirection">
+                              <enum>Qt::LayoutDirection::RightToLeft</enum>
+                             </property>
+                             <property name="text">
+                              <string>Start Gain (dB)</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="3" column="0">
+                            <widget class="QSpinBox" name="spinBox_auto_raman_max_integ_ms">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>100</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="focusPolicy">
+                              <enum>Qt::FocusPolicy::StrongFocus</enum>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignmentFlag::AlignCenter</set>
+                             </property>
+                             <property name="minimum">
+                              <number>1</number>
+                             </property>
+                             <property name="maximum">
+                              <number>10000</number>
+                             </property>
+                             <property name="singleStep">
+                              <number>1000</number>
+                             </property>
+                             <property name="value">
+                              <number>2000</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="3" column="1">
+                            <widget class="QLabel" name="label_auto_raman_max_integ_ms">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="layoutDirection">
+                              <enum>Qt::LayoutDirection::RightToLeft</enum>
+                             </property>
+                             <property name="text">
+                              <string>Max Integ (ms)</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="4" column="0">
+                            <widget class="QSpinBox" name="spinBox_auto_raman_min_integ_ms">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>100</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="focusPolicy">
+                              <enum>Qt::FocusPolicy::StrongFocus</enum>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignmentFlag::AlignCenter</set>
+                             </property>
+                             <property name="minimum">
+                              <number>1</number>
+                             </property>
+                             <property name="maximum">
+                              <number>1000</number>
+                             </property>
+                             <property name="singleStep">
+                              <number>1</number>
+                             </property>
+                             <property name="value">
+                              <number>10</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="4" column="1">
+                            <widget class="QLabel" name="label_auto_raman_min_integ_ms">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="layoutDirection">
+                              <enum>Qt::LayoutDirection::RightToLeft</enum>
+                             </property>
+                             <property name="text">
+                              <string>Min Integ (ms)</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="5" column="0">
+                            <widget class="QSpinBox" name="spinBox_auto_raman_max_gain_db">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>100</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="focusPolicy">
+                              <enum>Qt::FocusPolicy::StrongFocus</enum>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignmentFlag::AlignCenter</set>
+                             </property>
+                             <property name="minimum">
+                              <number>0</number>
+                             </property>
+                             <property name="maximum">
+                              <number>31</number>
+                             </property>
+                             <property name="singleStep">
+                              <number>1</number>
+                             </property>
+                             <property name="value">
+                              <number>31</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="5" column="1">
+                            <widget class="QLabel" name="label_auto_raman_max_gain_db">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="layoutDirection">
+                              <enum>Qt::LayoutDirection::RightToLeft</enum>
+                             </property>
+                             <property name="text">
+                              <string>Max Gain (dB)</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="6" column="0">
+                            <widget class="QSpinBox" name="spinBox_auto_raman_min_gain_db">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>100</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="focusPolicy">
+                              <enum>Qt::FocusPolicy::StrongFocus</enum>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignmentFlag::AlignCenter</set>
+                             </property>
+                             <property name="minimum">
+                              <number>0</number>
+                             </property>
+                             <property name="maximum">
+                              <number>31</number>
+                             </property>
+                             <property name="singleStep">
+                              <number>1</number>
+                             </property>
+                             <property name="value">
+                              <number>0</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="6" column="1">
+                            <widget class="QLabel" name="label_auto_raman_min_gain_db">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="layoutDirection">
+                              <enum>Qt::LayoutDirection::RightToLeft</enum>
+                             </property>
+                             <property name="text">
+                              <string>Min Gain (dB)</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="7" column="0">
+                            <widget class="QSpinBox" name="spinBox_auto_raman_target_counts">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>100</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="focusPolicy">
+                              <enum>Qt::FocusPolicy::StrongFocus</enum>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignmentFlag::AlignCenter</set>
+                             </property>
+                             <property name="minimum">
+                              <number>1000</number>
+                             </property>
+                             <property name="maximum">
+                              <number>60000</number>
+                             </property>
+                             <property name="singleStep">
+                              <number>1000</number>
+                             </property>
+                             <property name="value">
+                              <number>45000</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="7" column="1">
+                            <widget class="QLabel" name="label_auto_raman_target_counts">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="layoutDirection">
+                              <enum>Qt::LayoutDirection::RightToLeft</enum>
+                             </property>
+                             <property name="text">
+                              <string>Target Counts</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="8" column="0">
+                            <widget class="QSpinBox" name="spinBox_auto_raman_max_counts">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>100</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="focusPolicy">
+                              <enum>Qt::FocusPolicy::StrongFocus</enum>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignmentFlag::AlignCenter</set>
+                             </property>
+                             <property name="minimum">
+                              <number>5000</number>
+                             </property>
+                             <property name="maximum">
+                              <number>65000</number>
+                             </property>
+                             <property name="singleStep">
+                              <number>1000</number>
+                             </property>
+                             <property name="value">
+                              <number>50000</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="8" column="1">
+                            <widget class="QLabel" name="label_auto_raman_max_counts">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="layoutDirection">
+                              <enum>Qt::LayoutDirection::RightToLeft</enum>
+                             </property>
+                             <property name="text">
+                              <string>Max Counts</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="9" column="0">
+                            <widget class="QSpinBox" name="spinBox_auto_raman_min_counts">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>100</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="focusPolicy">
+                              <enum>Qt::FocusPolicy::StrongFocus</enum>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignmentFlag::AlignCenter</set>
+                             </property>
+                             <property name="minimum">
+                              <number>1000</number>
+                             </property>
+                             <property name="maximum">
+                              <number>60000</number>
+                             </property>
+                             <property name="singleStep">
+                              <number>1000</number>
+                             </property>
+                             <property name="value">
+                              <number>40000</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="9" column="1">
+                            <widget class="QLabel" name="label_auto_raman_min_counts">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="layoutDirection">
+                              <enum>Qt::LayoutDirection::RightToLeft</enum>
+                             </property>
+                             <property name="text">
+                              <string>Min Counts</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="10" column="0">
+                            <widget class="QSpinBox" name="spinBox_auto_raman_max_factor">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>100</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="focusPolicy">
+                              <enum>Qt::FocusPolicy::StrongFocus</enum>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignmentFlag::AlignCenter</set>
+                             </property>
+                             <property name="minimum">
+                              <number>2</number>
+                             </property>
+                             <property name="maximum">
+                              <number>20</number>
+                             </property>
+                             <property name="singleStep">
+                              <number>1</number>
+                             </property>
+                             <property name="value">
+                              <number>5</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="10" column="1">
+                            <widget class="QLabel" name="label_auto_raman_max_factor">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="layoutDirection">
+                              <enum>Qt::LayoutDirection::RightToLeft</enum>
+                             </property>
+                             <property name="text">
+                              <string>Max Factor</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="11" column="0">
+
+                            <widget class="QDoubleSpinBox" name="doubleSpinBox_auto_raman_drop_factor">
+                             <property name="alignment">
+                              <set>Qt::AlignmentFlag::AlignCenter</set>
+                             </property>
+                             <property name="accelerated">
+                              <bool>true</bool>
+                             </property>
+                             <property name="keyboardTracking">
+                              <bool>false</bool>
+                             </property>
+                             <property name="decimals">
+                              <number>1</number>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="minimum">
+                              <double>0.1</double>
+                             </property>
+                             <property name="maximum">
+                              <double>0.9</double>
+                             </property>
+                             <property name="singleStep">
+                              <double>0.1</double>
+                             </property>
+                             <property name="value">
+                              <double>0.5</double>
+                             </property>
+                            </widget>
+
+
+                           </item>
+                           <item row="11" column="1">
+                            <widget class="QLabel" name="label_auto_raman_drop_factor">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="layoutDirection">
+                              <enum>Qt::LayoutDirection::RightToLeft</enum>
+                             </property>
+                             <property name="text">
+                              <string>Drop Factor</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="12" column="0">
+                            <widget class="QSpinBox" name="spinBox_auto_raman_saturation">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>100</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="focusPolicy">
+                              <enum>Qt::FocusPolicy::StrongFocus</enum>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignmentFlag::AlignCenter</set>
+                             </property>
+                             <property name="minimum">
+                              <number>40000</number>
+                             </property>
+                             <property name="maximum">
+                              <number>65000</number>
+                             </property>
+                             <property name="singleStep">
+                              <number>1000</number>
+                             </property>
+                             <property name="value">
+                              <number>65000</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="12" column="1">
+                            <widget class="QLabel" name="label_auto_raman_saturation">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="layoutDirection">
+                              <enum>Qt::LayoutDirection::RightToLeft</enum>
+                             </property>
+                             <property name="text">
+                              <string>Saturation</string>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </widget>
+                        </item>
                        </layout>
                       </widget>
                      </item>
@@ -15792,7 +16572,7 @@ li.checked::marker { content: "\2612"; }
                           <property name="wpBox" stdset="0">
                            <bool>false</bool>
                           </property>
-                          <layout class="QFormLayout" name="formLayout_30">
+                          <layout class="QFormLayout" name="formLayout_30x">
                            <property name="labelAlignment">
                             <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
                            </property>

@@ -27,11 +27,14 @@ class AutoRamanFeature:
 
         self.bt_laser   = cfu.pushButton_laser_toggle
         self.bt_measure = cfu.pushButton_auto_raman_measurement
+        self.cb_config  = cfu.checkBox_auto_raman_config
+        self.fr_config  = cfu.frame_auto_raman_config
 
         self.visible = False
         self.running = False
 
         self.bt_measure.clicked.connect(self.measure_callback)
+        self.cb_config.stateChanged.connect(self.update_visibility)
 
         self.bt_measure.setWhatsThis(unwrap("""
             Auto-Raman provides one-click collection of an averaged, 
@@ -72,7 +75,7 @@ class AutoRamanFeature:
     def update_visibility(self):
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
-            self.visible = False
+            self.visible = True # False (do not commit)
         else:
             self.visible = self.ctl.page_nav.doing_raman() and \
                            self.ctl.vcr_controls.is_paused() and \
@@ -80,6 +83,13 @@ class AutoRamanFeature:
 
         log.debug(f"update_visibility: visible {self.visible}")
         self.bt_measure.setVisible(self.visible)
+
+        if self.visible and self.ctl.page_nav.doing_expert():
+            self.cb_config.setVisible(True)
+            self.fr_config.setVisible(self.cb_config.isChecked())
+        else:
+            self.cb_config.setVisible(False)
+            self.fr_config.setVisible(False)
 
     def measure_callback(self):
         log.debug(f"measure_callback: starting")
