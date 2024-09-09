@@ -519,6 +519,7 @@ class EnlightenPluginField:
     # @param tooltip: mouseover string
     # @param stylesheet: optional stylesheet name
     # @param expert: only display in Expert mode
+    # @param width: field width in pixels
     def __init__(self, 
             name, 
             datatype    = "string", 
