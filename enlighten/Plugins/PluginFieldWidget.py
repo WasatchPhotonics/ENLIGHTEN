@@ -117,6 +117,11 @@ class PluginFieldWidget(QtWidgets.QWidget):
         if self.field_config.tooltip is not None:
             self.field_widget.setToolTip(self.field_config.tooltip)
 
+        w = self.field_config.width
+        if w is not None:
+            self.field_widget.setMaximumWidth(w)
+            self.field_widget.setMinimumWidth(w)
+
         # add the pair
         hbox.addWidget(self.field_widget)
         return hbox

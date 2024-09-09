@@ -532,6 +532,7 @@ class EnlightenPluginField:
             callback    = None,
             stylesheet  = None,
             expert      = False,
+            width       = None,
             tooltip     = None):
 
         self.name       = name
@@ -547,6 +548,7 @@ class EnlightenPluginField:
         self.stylesheet = stylesheet
         self.choices    = choices
         self.expert     = expert
+        self.width      = width
 
 ##
 # This is a "request" object sent by the ENLIGHTEN GUI to the plug-in, containing
