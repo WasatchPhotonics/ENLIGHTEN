@@ -36,6 +36,48 @@ class AutoRamanFeature:
         self.bt_measure.clicked.connect(self.measure_callback)
         self.cb_config.stateChanged.connect(self.update_visibility)
 
+        self.sb_max_ms         = cfu.spinBox_auto_raman_max_ms           
+        self.sb_start_integ_ms = cfu.spinBox_auto_raman_start_integ_ms   
+        self.sb_start_gain_db  = cfu.spinBox_auto_raman_start_gain_db    
+        self.sb_max_integ_ms   = cfu.spinBox_auto_raman_max_integ_ms     
+        self.sb_min_integ_ms   = cfu.spinBox_auto_raman_min_integ_ms     
+        self.sb_max_gain_db    = cfu.spinBox_auto_raman_max_gain_db      
+        self.sb_min_gain_db    = cfu.spinBox_auto_raman_min_gain_db      
+        self.sb_target_counts  = cfu.spinBox_auto_raman_target_counts    
+        self.sb_max_counts     = cfu.spinBox_auto_raman_max_counts       
+        self.sb_min_counts     = cfu.spinBox_auto_raman_min_counts       
+        self.sb_max_factor     = cfu.spinBox_auto_raman_max_factor       
+        self.sb_saturation     = cfu.spinBox_auto_raman_saturation       
+        self.ds_drop_factor    = cfu.doubleSpinBox_auto_raman_drop_factor
+
+        self.sb_max_ms         .valueChanged.connect(self.update_from_gui)
+        self.sb_start_integ_ms .valueChanged.connect(self.update_from_gui)
+        self.sb_start_gain_db  .valueChanged.connect(self.update_from_gui)
+        self.sb_max_integ_ms   .valueChanged.connect(self.update_from_gui)
+        self.sb_min_integ_ms   .valueChanged.connect(self.update_from_gui)
+        self.sb_max_gain_db    .valueChanged.connect(self.update_from_gui)
+        self.sb_min_gain_db    .valueChanged.connect(self.update_from_gui)
+        self.sb_target_counts  .valueChanged.connect(self.update_from_gui)
+        self.sb_max_counts     .valueChanged.connect(self.update_from_gui)
+        self.sb_min_counts     .valueChanged.connect(self.update_from_gui)
+        self.sb_max_factor     .valueChanged.connect(self.update_from_gui)
+        self.sb_saturation     .valueChanged.connect(self.update_from_gui)
+        self.ds_drop_factor    .valueChanged.connect(self.update_from_gui)
+
+        ctl.presets.register(self, "auto_raman_max_ms"        , setter=self.set_max_ms        , getter=self.get_max_ms        )
+        ctl.presets.register(self, "auto_raman_start_integ_ms", setter=self.set_start_integ_ms, getter=self.get_start_integ_ms)
+        ctl.presets.register(self, "auto_raman_start_gain_db" , setter=self.set_start_gain_db , getter=self.get_start_gain_db )
+        ctl.presets.register(self, "auto_raman_max_integ_ms"  , setter=self.set_max_integ_ms  , getter=self.get_max_integ_ms  )
+        ctl.presets.register(self, "auto_raman_min_integ_ms"  , setter=self.set_min_integ_ms  , getter=self.get_min_integ_ms  )
+        ctl.presets.register(self, "auto_raman_max_gain_db"   , setter=self.set_max_gain_db   , getter=self.get_max_gain_db   )
+        ctl.presets.register(self, "auto_raman_min_gain_db"   , setter=self.set_min_gain_db   , getter=self.get_min_gain_db   )
+        ctl.presets.register(self, "auto_raman_target_counts" , setter=self.set_target_counts , getter=self.get_target_counts )
+        ctl.presets.register(self, "auto_raman_max_counts"    , setter=self.set_max_counts    , getter=self.get_max_counts    )
+        ctl.presets.register(self, "auto_raman_min_counts"    , setter=self.set_min_counts    , getter=self.get_min_counts    )
+        ctl.presets.register(self, "auto_raman_max_factor"    , setter=self.set_max_factor    , getter=self.get_max_factor    )
+        ctl.presets.register(self, "auto_raman_saturation"    , setter=self.set_saturation    , getter=self.get_saturation    )
+        ctl.presets.register(self, "auto_raman_drop_factor"   , setter=self.set_drop_factor   , getter=self.get_drop_factor   )
+
         self.bt_measure.setWhatsThis(unwrap("""
             Auto-Raman provides one-click collection of an averaged, 
             dark-corrected Raman measurement with automatically optimized 
@@ -102,9 +144,21 @@ class AutoRamanFeature:
         self.ctl.marquee.info("Collecting Auto-Raman measurement...")
 
         # define a TakeOneRequest with AutoRaman enabled
-        # - consider start_integ_ms = self.ctl.integration_time_feature.get_ms()
-        # - consider start_gain_db  = self.ctl.gain_db_feature.get_db()
-        auto_raman_request = AutoRamanRequest()
+        cfu = self.ctl.form.ui
+        auto_raman_request = AutoRamanRequest(
+            max_ms         = self.get_max_ms        (),
+            start_integ_ms = self.get_start_integ_ms(), # consider self.ctl.integration_time_feature.get_ms()
+            start_gain_db  = self.get_start_gain_db (), # consider self.ctl.gain_db_feature.get_db()
+            max_integ_ms   = self.get_max_integ_ms  (),
+            min_integ_ms   = self.get_min_integ_ms  (),
+            max_gain_db    = self.get_max_gain_db   (),
+            min_gain_db    = self.get_min_gain_db   (),
+            target_counts  = self.get_target_counts (),
+            max_counts     = self.get_max_counts    (),
+            min_counts     = self.get_min_counts    (),
+            max_factor     = self.get_max_factor    (),
+            saturation     = self.get_saturation    (),
+            drop_factor    = self.get_drop_factor   ())
         take_one_request = TakeOneRequest(auto_raman_request=auto_raman_request)
 
         log.debug(f"measure_callback: starting TakeOne")
@@ -124,3 +178,34 @@ class AutoRamanFeature:
         self.running = False
         self.ctl.gui.colorize_button(self.bt_measure, False)
         self.ctl.marquee.info("Auto-Raman measurement complete")
+
+    def update_from_gui(self):
+        pass
+
+    def set_max_ms        (self, value): self.sb_max_ms        .setValue(value)
+    def set_start_integ_ms(self, value): self.sb_start_integ_ms.setValue(value)
+    def set_start_gain_db (self, value): self.sb_start_gain_db .setValue(value)
+    def set_max_integ_ms  (self, value): self.sb_max_integ_ms  .setValue(value)
+    def set_min_integ_ms  (self, value): self.sb_min_integ_ms  .setValue(value)
+    def set_max_gain_db   (self, value): self.sb_max_gain_db   .setValue(value)
+    def set_min_gain_db   (self, value): self.sb_min_gain_db   .setValue(value)
+    def set_target_counts (self, value): self.sb_target_counts .setValue(value)
+    def set_max_counts    (self, value): self.sb_max_counts    .setValue(value)
+    def set_min_counts    (self, value): self.sb_min_counts    .setValue(value)
+    def set_max_factor    (self, value): self.sb_max_factor    .setValue(value)
+    def set_saturation    (self, value): self.sb_saturation    .setValue(value)
+    def set_drop_factor   (self, value): self.sb_drop_factor   .setValue(value)
+
+    def get_max_ms        (self): return self.sb_max_ms        .value()
+    def get_start_integ_ms(self): return self.sb_start_integ_ms.value()
+    def get_start_gain_db (self): return self.sb_start_gain_db .value()
+    def get_max_integ_ms  (self): return self.sb_max_integ_ms  .value()
+    def get_min_integ_ms  (self): return self.sb_min_integ_ms  .value()
+    def get_max_gain_db   (self): return self.sb_max_gain_db   .value()
+    def get_min_gain_db   (self): return self.sb_min_gain_db   .value()
+    def get_target_counts (self): return self.sb_target_counts .value()
+    def get_max_counts    (self): return self.sb_max_counts    .value()
+    def get_min_counts    (self): return self.sb_min_counts    .value()
+    def get_max_factor    (self): return self.sb_max_factor    .value()
+    def get_saturation    (self): return self.sb_saturation    .value()
+    def get_drop_factor   (self): return self.sb_drop_factor   .value()
