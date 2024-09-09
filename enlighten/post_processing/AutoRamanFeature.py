@@ -194,7 +194,7 @@ class AutoRamanFeature:
     def set_min_counts    (self, value): self.sb_min_counts    .setValue(value)
     def set_max_factor    (self, value): self.sb_max_factor    .setValue(value)
     def set_saturation    (self, value): self.sb_saturation    .setValue(value)
-    def set_drop_factor   (self, value): self.sb_drop_factor   .setValue(value)
+    def set_drop_factor   (self, value): self.ds_drop_factor   .setValue(value)
 
     def get_max_ms        (self): return self.sb_max_ms        .value()
     def get_start_integ_ms(self): return self.sb_start_integ_ms.value()
@@ -208,4 +208,4 @@ class AutoRamanFeature:
     def get_min_counts    (self): return self.sb_min_counts    .value()
     def get_max_factor    (self): return self.sb_max_factor    .value()
     def get_saturation    (self): return self.sb_saturation    .value()
-    def get_drop_factor   (self): return self.sb_drop_factor   .value()
+    def get_drop_factor   (self): return self.ds_drop_factor   .value()
