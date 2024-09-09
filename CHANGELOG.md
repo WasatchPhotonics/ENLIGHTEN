@@ -1,5 +1,7 @@
 # Version History
 
+- 2024-??-?? 4.1.2
+    - allow plugins to specify field width
 - 2024-08-29 4.1.1
     - ensure metadata 'stomped' by plugins appear in exports
 - 2024-08-22 4.1.0
