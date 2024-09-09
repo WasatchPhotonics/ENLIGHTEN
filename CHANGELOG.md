@@ -2,6 +2,9 @@
 
 - 2024-08-29 4.1.1
     - ensure metadata 'stomped' by plugins appear in exports
+    - fix interpolation defaults and persistence
+    - reduce extraneous Raman Intensity Correction messages
+    - allow user to "cancel" selection of new Save Directory
 - 2024-08-22 4.1.0
     - public release
 

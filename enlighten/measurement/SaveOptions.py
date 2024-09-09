@@ -367,7 +367,11 @@ class SaveOptions():
     #  to the selected directory.
     def update_location(self):
         directory = self.ctl.file_manager.get_directory()
-        if directory is None:
+        if directory is None or 0 == len(directory):
+            log.debug("update_location: cancelled")
+            return
+        elif not os.path.isdir(directory):
+            log.debug(f"update_location: not a directory: {directory}")
             return
 
         self.directory = directory
