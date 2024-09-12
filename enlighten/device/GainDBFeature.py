@@ -136,9 +136,12 @@ class GainDBFeature:
         self.spinbox.setFocus()
         self.spinbox.selectAll()
 
-    def set_db(self, db):
+    def set_db(self, db, quiet=False):
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
+            return
+
+        if not spec.settings.is_xs():
             return
 
         db = float(db)
@@ -156,7 +159,8 @@ class GainDBFeature:
         self._quiet_set(self.ctl.form.ui.doubleSpinBox_gain, db)
         self._quiet_set(self.ctl.form.ui.slider_gain, db)
 
-        spec.app_state.check_refs()
+        if not quiet:
+            spec.app_state.check_refs()
 
     def _up_callback(self):
         util.incr_spinbox(self.ctl.form.ui.doubleSpinBox_gain)

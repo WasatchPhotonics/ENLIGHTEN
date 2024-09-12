@@ -111,7 +111,7 @@ class IntegrationTimeFeature:
     # This sets the spinbox, which should (passively) auto-sync the slider, and then sends
     # the new value downstream (to one if unlocked, all if locked), plus updates states
     # appropriately.
-    def set_ms(self, ms):
+    def set_ms(self, ms, quiet=False):
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
@@ -144,7 +144,8 @@ class IntegrationTimeFeature:
                 spec.reset_acquisition_timeout()
         else:
             spec.reset_acquisition_timeout()
-            spec.app_state.check_refs()
+            if not quiet:
+                spec.app_state.check_refs()
 
     def up_callback(self):
         util.incr_spinbox(self.spinbox)

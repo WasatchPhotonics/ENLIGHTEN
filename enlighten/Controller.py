@@ -1473,6 +1473,7 @@ class Controller:
             self.dark_feature.store(dark=reading.dark)
 
         # Scope Capture
+        log.debug("attempt_reading: passing new Reading to update_scope_graphs")
         self.update_scope_graphs(reading)
 
         # Area Scan
@@ -1484,6 +1485,14 @@ class Controller:
             # update laser status 
             if spec.settings.is_xs():
                 self.laser_control.process_reading(reading)
+
+            # apply updated acquisition parameters
+            if reading.new_integration_time_ms is not None:
+                self.integration_time_feature.set_ms(reading.new_integration_time_ms, quiet=True)
+            if reading.new_gain_db is not None:
+                self.gain_db_feature.set_db(reading.new_gain_db, quiet=True)
+
+        log.debug("attempt_reading: done")
 
     def acquire_reading(self, spec: Spectrometer) -> AcquiredReading:
         """
@@ -1738,6 +1747,8 @@ class Controller:
         - post-process
         - apply business logic
         """
+
+        log.debug("process_reading: start")
 
         if settings is None:
             # we are NOT reprocessing
