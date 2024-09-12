@@ -1,7 +1,15 @@
 # Version History
 
-- 2024-??-?? 4.1.2
+- 2024-09-12 4.1.2
     - allow plugins to specify field width
+    - redesigned Auto-Raman mode
+        - button automatically appears in Laser Control Widget when spectrum is paused (if in Raman mode)
+        - "configure" checkbox exposes Auto-Raman settings
+        - wasatch.AutoRaman class streams status messages to Marquee
+        - LEFT TO DO (#474)
+            - proper ProgressBar?
+            - update battery, temperatures etc
+            - migrate BatchCollection
 - 2024-08-29 4.1.1
     - ensure metadata 'stomped' by plugins appear in exports
     - fix interpolation defaults and persistence
