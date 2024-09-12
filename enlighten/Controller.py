@@ -2290,12 +2290,7 @@ class Controller:
         return retval
 
     def perform_fpga_reset(self, spec=None):
-        if spec is None:
-            spec = self.multispec.current_spectrometer()
-        if spec is None:
-            return
-
-        spec.device.change_setting("reset_fpga", None)
+        self.multispec.change_device_setting("reset_fpga")
 
     def update_hardware_window(self):
         for spec in self.multispec.spectrometers.values():
