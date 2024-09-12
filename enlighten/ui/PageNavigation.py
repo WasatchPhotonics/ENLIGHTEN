@@ -142,6 +142,7 @@ class PageNavigation:
             who know what they are doing...use at your own risk."""))
 
         self.operation_mode = common.OperationModes.RAMAN
+        self.last_operation_mode = common.OperationModes.RAMAN
         self.current_view = -1 
         self.has_used_raman = False
         self.current_technique = self.combo_technique.currentIndex()
@@ -359,6 +360,7 @@ class PageNavigation:
             return self.set_operation_mode_non_raman()
 
         log.debug(f"raman mode operation set")
+        self.last_operation_mode = self.operation_mode
 
         self.ctl.graph.set_x_axis(common.Axes.WAVENUMBERS)
         self.ctl.graph.set_y_axis(common.Axes.COUNTS)
@@ -383,6 +385,7 @@ class PageNavigation:
         self.ctl.stylesheets.apply(self.button_non_raman, "center_rounded_active")
         self.ctl.stylesheets.apply(self.button_expert, "right_rounded_inactive")
 
+        self.last_operation_mode = self.operation_mode
         self.operation_mode = common.OperationModes.NON_RAMAN
 
         self.ctl.update_feature_visibility()
@@ -395,6 +398,7 @@ class PageNavigation:
         self.ctl.stylesheets.apply(self.button_raman, "left_rounded_inactive")
         self.ctl.stylesheets.apply(self.button_non_raman, "center_rounded_inactive")
         self.ctl.stylesheets.apply(self.button_expert, "right_rounded_active")
+        self.last_operation_mode = self.operation_mode
         self.operation_mode = common.OperationModes.EXPERT
         self.ctl.update_feature_visibility()
         self.display_non_raman_technique()
@@ -423,6 +427,14 @@ class PageNavigation:
         if "mode" in self.observers:
             for callback in self.observers["mode"]:
                 callback()
+
+    def toggle_expert(self):
+        if not self.doing_expert():
+            self.set_operation_mode_expert()
+        elif self.last_operation_mode == common.OperationModes.RAMAN:
+            self.set_operation_mode_raman()
+        else:
+            self.set_operation_mode_non_raman()
 
     def display_non_raman_technique(self):
         self.ctl.form.ui.frame_TechniqueWidget.show()

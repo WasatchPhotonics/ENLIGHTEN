@@ -11,6 +11,7 @@
             - update battery, temperatures etc
             - migrate BatchCollection
     - fixed "Reset FPGA" button
+    - added Ctrl-X toggle eXpert mode
 - 2024-08-29 4.1.1
     - ensure metadata 'stomped' by plugins appear in exports
     - fix interpolation defaults and persistence

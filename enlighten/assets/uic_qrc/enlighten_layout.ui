@@ -15642,7 +15642,10 @@ li.checked::marker { content: "\2612"; }
                            </sizepolicy>
                           </property>
                           <property name="text">
-                           <string>Configure</string>
+                           <string>Configure Auto-Raman</string>
+                          </property>
+                          <property name="toolTip">
+                           <string>Expose various low-level configuration options for the Auto-Raman feature, which may be assigned to named Presets</string>
                           </property>
                          </widget>
                         </item>

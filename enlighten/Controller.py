@@ -1111,6 +1111,7 @@ class Controller:
         make_shortcut("Ctrl+R", self.reference_feature.toggle)
         make_shortcut("Ctrl+S", self.vcr_controls.save)
         make_shortcut("Ctrl+T", self.integration_time_feature.set_focus)
+        make_shortcut("Ctrl+X", self.page_nav.toggle_expert)
 
         # Cursor
         make_shortcut(QtGui.QKeySequence.MoveToPreviousWord, self.cursor.dn_callback) # ctrl-left
@@ -1532,8 +1533,7 @@ class Controller:
                 # We received an error from the device.  Don't do anything about it immediately;
                 # don't disconnect for instance.  It may or may not be a poison-pill...we're not
                 # even checking yet, because we want to let the user decide what to do.
-                log.debug("acquire_reading: prompting user to disposition error")
-                log.debug(f"response from spec was {spectrometer_response}")
+                log.error(f"response from spec was {spectrometer_response}")
 
                 self.seen_errors[spec][spectrometer_response.error_msg] += 1
                 error_count = self.seen_errors[spec][spectrometer_response.error_msg]
@@ -1542,6 +1542,7 @@ class Controller:
                     log.debug(f"temporarily ignoring brief glitch (seen_errors {error_count} <= {self.SPEC_ERROR_MAX_RETRY})")
                     return
 
+                log.debug("acquire_reading: prompting user to disposition error")
                 stay_connected = self.display_response_error(spec, spectrometer_response.error_msg)
                 log.debug(f"dialog disposition: stay_connected {stay_connected}")
 
