@@ -166,18 +166,18 @@ class LaserControlFeature:
                 else:
                     self.configure_laser_power_controls_percent()
 
-        if self.locked:
-            # let them turn the laser on/off, nothing else (including watchdog)
-            for w in [ cfu.doubleSpinBox_excitation_nm,
-                       cfu.pushButton_laser_power_dn,
-                       cfu.pushButton_laser_power_up,
-                       cfu.verticalSlider_laser_power,
-                       cfu.doubleSpinBox_excitation_nm,
-                       cfu.doubleSpinBox_laser_power,
-                       cfu.spinBox_laser_watchdog_sec,
-                       cfu.checkBox_laser_watchdog,
-                       cfu.comboBox_laser_power_unit ]:
-                w.setEnabled(False)
+        # let them turn the laser on/off, nothing else (including watchdog)
+        for w in [ cfu.doubleSpinBox_excitation_nm,
+                   cfu.pushButton_laser_power_dn,
+                   cfu.pushButton_laser_power_up,
+                   cfu.verticalSlider_laser_power,
+                   cfu.doubleSpinBox_excitation_nm,
+                   cfu.doubleSpinBox_laser_power,
+                   cfu.spinBox_laser_watchdog_sec,
+                   cfu.checkBox_laser_watchdog,
+                   cfu.comboBox_laser_power_unit,
+                   cfu.comboBox_laser_tec_mode ]:
+            w.setEnabled(not self.locked)
 
         self.refresh_laser_buttons()
 

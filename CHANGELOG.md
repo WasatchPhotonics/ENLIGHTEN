@@ -1,5 +1,9 @@
 # Version History
 
+- 2024-09-16 4.1.3
+    - laser control locking
+        - allow unlocking after locking
+        - include laser TEC mode
 - 2024-09-12 4.1.2
     - allow plugins to specify field width
     - redesigned Auto-Raman mode
