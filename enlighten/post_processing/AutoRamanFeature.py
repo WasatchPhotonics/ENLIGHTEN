@@ -1,5 +1,4 @@
 import logging
-from datetime import datetime, timedelta
 
 from wasatch.TakeOneRequest   import TakeOneRequest
 from wasatch.AutoRamanRequest import AutoRamanRequest 
@@ -144,7 +143,6 @@ class AutoRamanFeature:
         self.ctl.marquee.info("Collecting Auto-Raman measurement...")
 
         # define a TakeOneRequest with AutoRaman enabled
-        cfu = self.ctl.form.ui
         auto_raman_request = AutoRamanRequest(
             max_ms         = self.get_max_ms        (),
             start_integ_ms = self.get_start_integ_ms(), # consider self.ctl.integration_time_feature.get_ms()

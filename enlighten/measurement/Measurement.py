@@ -703,11 +703,10 @@ class Measurement:
 
         exts = {}
         for ext, pathname in self.pathname_by_ext.items():
-            m = re.match(r"^(.*[/\\])?([^/\\]+)\.([^./\\]+)$", pathname)
+            m = re.match(r"^(.*[/\\])?([^/\\]+)\.[^./\\]+$", pathname)
             if m:
                 basedir  = m.group(1)
                 basename = m.group(2)
-                ext_junk = m.group(3)
                 exts[ext] = (basedir, basename)
 
         # determine what suffix we're going to use, if any
