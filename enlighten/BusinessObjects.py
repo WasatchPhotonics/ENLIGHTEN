@@ -72,6 +72,7 @@ from enlighten.ui.HelpFeature import HelpFeature
 from enlighten.ui.ImageResources import ImageResources
 from enlighten.ui.Marquee import Marquee
 from enlighten.ui.PageNavigation import PageNavigation
+from enlighten.ui.ReadingProgressBar import ReadingProgressBar
 from enlighten.ui.ResourceMonitorFeature import ResourceMonitorFeature
 from enlighten.ui.Sounds import Sounds
 from enlighten.ui.StatusBarFeature import StatusBarFeature
@@ -443,6 +444,9 @@ class BusinessObjects:
 
         self.header("instantiating StatusBarFeature")
         ctl.status_bar = StatusBarFeature(ctl)
+
+        self.header("instantiating ReadingProgressBar")
+        ctl.reading_progress_bar = ReadingProgressBar(ctl)
 
         self.header("done with Business Object creation")
 

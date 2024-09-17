@@ -254,7 +254,7 @@ class Controller:
 
         device_id = spec.device_id
         if spec.device.is_ble:
-            self.form.ui.readingProgressBar.setValue(0)
+            self.reading_progress_bar.hide()
         self.marquee.info("disconnecting %s" % spec.label)
         self.multispec.set_disconnecting(device_id, True)
 
@@ -601,9 +601,6 @@ class Controller:
 
                     # remove the "in-process" flag, as it's now in the "connected" list
                     # and fully initialized
-                    if device.is_ble:
-                        self.form.ui.readingProgressBar.show()
-
                     self.initialize_new_device(device)
 
                     self.multispec.remove_in_process(device_id)
@@ -1294,6 +1291,7 @@ class Controller:
                     msg = spec.device.acquire_status_message()
                     if msg is None:
                         break
+
                     self.process_status_message(msg)
                 except:
                     log.debug("Error reading or processing StatusMessage on %s", spec.device_id, exc_info=1)
@@ -1444,12 +1442,10 @@ class Controller:
         spec.app_state.spec_timeout_prompt_shown = False
         spec.app_state.received_reading_at_current_integration_time = True
 
-        if spec.device.is_ble and acquired_reading.progress != 1:
-            cfu.readingProgressBar.setValue(acquired_reading.progress*100)
-            # got an incomplete ble reading so stop proceeding for now
-            return
-        elif spec.device.is_ble:
-            cfu.readingProgressBar.setValue(100)
+        if spec.device.is_ble:
+            self.reading_progress_bar.set(acquired_reading.progress)
+            if acquired_reading.progress < 100:
+                return
 
         # @todo need to update DetectorRegions so this will pass (use total_pixels)
 
@@ -1633,6 +1629,9 @@ class Controller:
 
         elif msg.setting == "marquee_error":
             self.marquee.error(msg.value) 
+
+        elif msg.setting == "progress_bar": 
+            self.reading_progress_bar.set(msg.value)
 
         else:
             log.debug("unsupported StatusMessage: %s", msg.setting)
