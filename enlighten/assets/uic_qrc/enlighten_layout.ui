@@ -16482,7 +16482,7 @@ li.checked::marker { content: "\2612"; }
                               <enum>Qt::LayoutDirection::RightToLeft</enum>
                              </property>
                              <property name="text">
-                              <string>Laser Warning Delay (sec)</string>
+                              <string>Laser Warning (sec)</string>
                              </property>
                             </widget>
                            </item>

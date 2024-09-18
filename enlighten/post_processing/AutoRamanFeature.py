@@ -140,13 +140,12 @@ class AutoRamanFeature:
     def update_visibility(self):
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
-            self.visible = True # False (do not commit)
+            self.visible = False 
         else:
             self.visible = self.ctl.page_nav.doing_raman() and \
                            self.ctl.vcr_controls.is_paused() and \
                            spec.settings.eeprom.has_laser
 
-        log.debug(f"update_visibility: visible {self.visible}")
         for b in self.buttons:
             b.setVisible(self.visible)
 
