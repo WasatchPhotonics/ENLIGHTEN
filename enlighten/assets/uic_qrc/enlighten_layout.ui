@@ -2369,6 +2369,26 @@ QComboBox QListView
                </spacer>
               </item>
               <item>
+               <widget class="QPushButton" name="pushButton_auto_raman_convenience">
+                <property name="text">
+                 <string />
+                </property>
+                <property name="icon">
+                 <iconset resource="grey_icons.qrc">
+                  <normaloff>:/greys/images/grey_icons/auto.svg</normaloff>:/greys/images/grey_icons/auto.svg</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>20</width>
+                  <height>20</height>
+                 </size>
+                </property>
+                <property name="toolTip">
+                 <string>Automatically take one averaged dark-corrected Raman measurement scaled to fill the detector's dynamic range</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QPushButton" name="pushButton_laser_convenience">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -9467,11 +9487,11 @@ QComboBox QListView
                                <property name="alignment">
                                 <set>Qt::AlignmentFlag::AlignCenter</set>
                                </property>
+                               <property name="minimum">
+                                <double>0.100000000000000</double>
+                               </property>
                                <property name="maximum">
                                 <double>100.000000000000000</double>
-                               </property>
-                               <property name="minimum">
-                                <double>0.1</double>
                                </property>
                                <property name="value">
                                 <double>1.000000000000000</double>
@@ -14480,9 +14500,9 @@ li.checked::marker { content: "\2612"; }
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-590</y>
-                <width>240</width>
-                <height>3281</height>
+                <y>0</y>
+                <width>284</width>
+                <height>3306</height>
                </rect>
               </property>
               <property name="sizePolicy">
@@ -15232,7 +15252,7 @@ li.checked::marker { content: "\2612"; }
                           </property>
                           <property name="icon">
                            <iconset resource="grey_icons.qrc">
-                            <normaloff>:/greys/images/grey_icons/power_on_off.svg</normaloff>:/greys/images/grey_icons/power_on_off.svg</iconset>
+                            <normaloff>:/greys/images/grey_icons/laser.svg</normaloff>:/greys/images/grey_icons/laser.svg</iconset>
                           </property>
                           <property name="iconSize">
                            <size>
@@ -15629,7 +15649,17 @@ li.checked::marker { content: "\2612"; }
                            <string>Automatically take one averaged dark-corrected Raman measurement scaled to fill the detector's dynamic range</string>
                           </property>
                           <property name="text">
-                           <string>Auto-Raman Measurement</string>
+                           <string>Auto-Raman</string>
+                          </property>
+                          <property name="icon">
+                           <iconset resource="grey_icons.qrc">
+                            <normaloff>:/greys/images/grey_icons/auto.svg</normaloff>:/greys/images/grey_icons/auto.svg</iconset>
+                          </property>
+                          <property name="iconSize">
+                           <size>
+                            <width>20</width>
+                            <height>20</height>
+                           </size>
                           </property>
                          </widget>
                         </item>
@@ -15641,11 +15671,11 @@ li.checked::marker { content: "\2612"; }
                             <verstretch>0</verstretch>
                            </sizepolicy>
                           </property>
-                          <property name="text">
-                           <string>Configure Auto-Raman</string>
-                          </property>
                           <property name="toolTip">
                            <string>Expose various low-level configuration options for the Auto-Raman feature, which may be assigned to named Presets</string>
+                          </property>
+                          <property name="text">
+                           <string>Configure Auto-Raman</string>
                           </property>
                          </widget>
                         </item>
@@ -15715,7 +15745,7 @@ li.checked::marker { content: "\2612"; }
                               <set>Qt::AlignmentFlag::AlignCenter</set>
                              </property>
                              <property name="minimum">
-                              <number>5000</number>
+                              <number>100</number>
                              </property>
                              <property name="maximum">
                               <number>30000</number>
@@ -16004,7 +16034,7 @@ li.checked::marker { content: "\2612"; }
                               <number>1</number>
                              </property>
                              <property name="value">
-                              <number>31</number>
+                              <number>30</number>
                              </property>
                             </widget>
                            </item>
@@ -16305,8 +16335,13 @@ li.checked::marker { content: "\2612"; }
                             </widget>
                            </item>
                            <item row="11" column="0">
-
                             <widget class="QDoubleSpinBox" name="doubleSpinBox_auto_raman_drop_factor">
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>0</height>
+                              </size>
+                             </property>
                              <property name="alignment">
                               <set>Qt::AlignmentFlag::AlignCenter</set>
                              </property>
@@ -16319,27 +16354,19 @@ li.checked::marker { content: "\2612"; }
                              <property name="decimals">
                               <number>1</number>
                              </property>
-                             <property name="minimumSize">
-                              <size>
-                               <width>100</width>
-                               <height>0</height>
-                              </size>
-                             </property>
                              <property name="minimum">
-                              <double>0.1</double>
+                              <double>0.100000000000000</double>
                              </property>
                              <property name="maximum">
-                              <double>0.9</double>
+                              <double>0.900000000000000</double>
                              </property>
                              <property name="singleStep">
-                              <double>0.1</double>
+                              <double>0.100000000000000</double>
                              </property>
                              <property name="value">
-                              <double>0.5</double>
+                              <double>0.500000000000000</double>
                              </property>
                             </widget>
-
-
                            </item>
                            <item row="11" column="1">
                             <widget class="QLabel" name="label_auto_raman_drop_factor">
@@ -16410,6 +16437,62 @@ li.checked::marker { content: "\2612"; }
                              </property>
                              <property name="text">
                               <string>Saturation</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="13" column="0">
+                            <widget class="QSpinBox" name="spinBox_auto_raman_laser_warning_delay_sec">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>100</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="focusPolicy">
+                              <enum>Qt::FocusPolicy::StrongFocus</enum>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignmentFlag::AlignCenter</set>
+                             </property>
+                             <property name="minimum">
+                              <number>0</number>
+                             </property>
+                             <property name="maximum">
+                              <number>5</number>
+                             </property>
+                             <property name="singleStep">
+                              <number>1</number>
+                             </property>
+                             <property name="value">
+                              <number>3</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="13" column="1">
+                            <widget class="QLabel" name="label_auto_raman_laser_warning_delay_sec">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="layoutDirection">
+                              <enum>Qt::LayoutDirection::RightToLeft</enum>
+                             </property>
+                             <property name="text">
+                              <string>Laser Warning (sec)</string>
                              </property>
                             </widget>
                            </item>

@@ -1,5 +1,14 @@
 # Version History
 
+- 2024-09-19 4.1.5
+    - icon colors
+- 2024-09-18 4.1.4
+    - add ui.ReadingProgressBar
+    - AutoRaman
+        - clear graph at measurement start
+        - add convenience icon
+        - support configurable Laser Warning Delay
+        - apply ScrollStealFilter to config fields
 - 2024-09-16 4.1.3
     - laser control locking
         - allow unlocking after locking

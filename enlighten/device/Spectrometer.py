@@ -355,3 +355,7 @@ class Spectrometer:
             return None
     
         return min(max(round(pixel), 0), self.settings.pixels() - 1)
+
+    def clear_graph(self):
+        """ erase, but do not delete, this graph curve from the graph """
+        self.ctl.graph.set_data(curve=self.curve)
