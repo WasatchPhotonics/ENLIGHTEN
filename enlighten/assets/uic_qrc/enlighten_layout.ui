@@ -15252,7 +15252,7 @@ li.checked::marker { content: "\2612"; }
                           </property>
                           <property name="icon">
                            <iconset resource="grey_icons.qrc">
-                            <normaloff>:/greys/images/grey_icons/power_on_off.svg</normaloff>:/greys/images/grey_icons/power_on_off.svg</iconset>
+                            <normaloff>:/greys/images/grey_icons/laser.svg</normaloff>:/greys/images/grey_icons/laser.svg</iconset>
                           </property>
                           <property name="iconSize">
                            <size>
@@ -15649,7 +15649,17 @@ li.checked::marker { content: "\2612"; }
                            <string>Automatically take one averaged dark-corrected Raman measurement scaled to fill the detector's dynamic range</string>
                           </property>
                           <property name="text">
-                           <string>Auto-Raman Measurement</string>
+                           <string>Auto-Raman</string>
+                          </property>
+                          <property name="icon">
+                           <iconset resource="grey_icons.qrc">
+                            <normaloff>:/greys/images/grey_icons/auto.svg</normaloff>:/greys/images/grey_icons/auto.svg</iconset>
+                          </property>
+                          <property name="iconSize">
+                           <size>
+                            <width>20</width>
+                            <height>20</height>
+                           </size>
                           </property>
                          </widget>
                         </item>

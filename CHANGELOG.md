@@ -1,6 +1,8 @@
 # Version History
 
-- 2024-09-17 4.1.4
+- 2024-09-19 4.1.5
+    - icon colors
+- 2024-09-18 4.1.4
     - add ui.ReadingProgressBar
     - AutoRaman
         - clear graph at measurement start
