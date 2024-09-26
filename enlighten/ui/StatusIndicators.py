@@ -82,7 +82,7 @@ class StatusIndicators:
         self.timer.stop()
 
     def raise_hardware_error(self, msg=None):
-        log.debug(f"raising hardware error ({msg})")
+        # log.debug(f"raising hardware error ({msg})")
         self.last_hardware_error_time = datetime.datetime.now()
 
     ##

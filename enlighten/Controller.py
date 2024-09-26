@@ -1420,7 +1420,8 @@ class Controller:
                 log.debug(f"TakeOneRequest missing: ignoring Reading without {spec.app_state.take_one_request}")
                 return
         else:
-            log.debug("not looking for any particular reading")
+            # log.debug("not looking for any particular reading")
+            pass
 
         if reading.failure is not None:
             # WasatchDeviceWrapper currently turns these into upstream poison-pills,
@@ -1816,7 +1817,6 @@ class Controller:
         # This should be done before any processing that involves multiple
         # pixels, e.g. offset, boxcar, baseline correction, or Richardson-Lucy.
         # It should be done BEFORE interpolation.
-        log.debug("process_reading: calling horiz_roi.process")
         self.horiz_roi.process(pr)
 
         ########################################################################
@@ -1954,7 +1954,7 @@ class Controller:
         ########################################################################
 
         if selected and self.page_nav.doing_raman():
-            log.debug("process_reading: sending KIA request (reprocessing = %s)", reprocessing)
+            # log.debug("process_reading: sending KIA request (reprocessing = %s)", reprocessing)
             self.kia_feature.process(pr, settings)
 
         ########################################################################
@@ -1973,7 +1973,7 @@ class Controller:
             app_state.processed_reading = pr
 
         # were we only taking one measurement?
-        log.debug("calling TakeOneFeature.process")
+        # log.debug("calling TakeOneFeature.process")
         self.take_one.process(pr)
 
         # update on-screen ASTM peaks

@@ -90,16 +90,16 @@ class RamanIntensityCorrection:
         """
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
-            log.debug("not supported because no spec")
+            # log.debug("not supported because no spec")
             self.supported = False
         elif not spec.settings.eeprom.has_raman_intensity_calibration():
-            log.debug("not supported because no calibration")
+            # log.debug("not supported because no calibration")
             self.supported = False
         elif not self.ctl.page_nav.doing_raman():
-            log.debug("not supported because not doing Raman")
+            # log.debug("not supported because not doing Raman")
             self.supported = False
         else:
-            log.debug("supported because doing Raman and have calibration")
+            # log.debug("supported because doing Raman and have calibration")
             self.supported = True
 
         return self.supported

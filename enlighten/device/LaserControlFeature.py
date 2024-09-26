@@ -279,11 +279,12 @@ class LaserControlFeature:
                     log.debug("the laser has started firing")
                     spec.app_state.laser_state = LaserStates.FIRING
                 elif state == LaserStates.FIRING:
-                    log.debug("all agree laser firing")
+                    # log.debug("all agree laser firing")
+                    pass
             else:
                 # reading says laser not firing
                 if state == LaserStates.DISABLED:
-                    log.debug("all agree laser disabled")
+                    # log.debug("all agree laser disabled")
                     return
                 elif state == LaserStates.REQUESTED:
                     log.debug("awaiting laserDelaySec")

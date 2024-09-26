@@ -200,7 +200,6 @@ class AreaScanFeature:
         self.frame_count = 0 # could move to app_settings
 
     def process_reading(self, reading):
-        log.debug(f"trying to process area scan read")
         if reading is None or reading.spectrum is None:
             return
 
@@ -208,6 +207,7 @@ class AreaScanFeature:
             self.set_curve_data(self.multispec.get_hardware_feature_curve(self.name, reading.device_id), y=reading.spectrum, label="AreaScanFeature.process_reading")
             return
 
+        log.debug(f"trying to process area scan read")
         if reading.area_scan_row_count < 1:
             return
 

@@ -374,10 +374,13 @@ class Graph:
     # @see http://www.pyqtgraph.org/documentation/graphicsItems/plotdataitem.html
     def set_data(self, curve, y=None, x=None, label=None):
         if x is not None:
-            log.debug(f"set_data[{label}]: plotting {len(x)} x values {x[:3]} .. {x[-3:]}")
+            # log.debug(f"set_data[{label}]: plotting {len(x)} x values {x[:3]} .. {x[-3:]}")
+            pass
 
         if y is not None:
-            log.debug(f"set_data[{label}]: plotting {len(y)} y values {y[:3]} .. {y[-3:]}")
+            # log.debug(f"set_data[{label}]: plotting {len(y)} y values {y[:3]} .. {y[-3:]}")
+            pass
+
         self.update_curve_marker(curve)
         curve.setData(y=y, x=x)
 

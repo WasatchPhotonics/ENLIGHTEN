@@ -404,11 +404,11 @@ class Feature:
     # just read (or re-read)
     def process(self, pr, settings):
         if self.processing or not self.enabled:
-            log.debug(f"self.processing is {self.processing} or not self.enabled is {not self.enabled}, returning")
+            # log.debug(f"self.processing is {self.processing} or not self.enabled is {not self.enabled}, returning")
             return
 
         if pr is None or settings is None:
-            log.debug(f"pr is {pr} or settings is {settings}, returning")
+            # log.debug(f"pr is {pr} or settings is {settings}, returning")
             return
 
         log.info("kia feature processing is sending to cropped request")
