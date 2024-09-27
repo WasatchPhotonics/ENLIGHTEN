@@ -1,5 +1,7 @@
 # Version History
 
+- 2024-09-27 4.1.6
+    - fix AutoRaman Preset setters
 - 2024-09-19 4.1.5
     - icon colors
 - 2024-09-18 4.1.4
