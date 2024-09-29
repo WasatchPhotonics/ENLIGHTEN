@@ -34,6 +34,10 @@ if not (sys.version_info.major==3 and sys.version_info.minor==11):
     print("This program is intended for Python 3.11.")
     exit(1)
 
+virtspec = False
+if len(sys.argv) >= 2 and sys.argv[1] == "virtspec":
+    virtspec = True
+
 if not os.path.exists('.env'):
     os.mkdir('.env')
 
@@ -64,6 +68,12 @@ print("(Re)building UI")
 os.environ["VIRTUAL_ENV"] = ".env\\enlighten"
 ui_script = subprocess.Popen(["sh", "scripts/rebuild_resources.sh"])
 ui_script.wait()
+
+if virtspec:
+    print("*** Use virtual spectrometer ***")
+    uninstall_pyusb = subprocess.Popen([env_python, '-m', 'pip', 'uninstall', 'pyusb'])
+    uninstall_pyusb.wait()
+    os.environ["PYTHONPATH"] = "..\\pyusb-virtSpec;..\\Wasatch.PY;..\\jcamp;plugins;.;enlighten\\assets\\uic_qrc"
 
 print("Run Enlighten")
 
