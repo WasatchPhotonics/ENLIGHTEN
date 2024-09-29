@@ -48,3 +48,5 @@ keys.py
 .vscode/launch.json
 .idea/
 Thumbs.db
+
+.env
