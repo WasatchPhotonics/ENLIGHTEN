@@ -112,6 +112,45 @@ class CloudManager:
         util.normalize_decimal(dict_response)
         return dict_response
 
+    def default_missing(self, local_name, empty_value=None, cloud_name=None):
+        if cloud_name is None:
+            cloud_name = local_name
+        current_value = getattr(device.settings.eeprom, local_name) 
+        if current_value != empty_value:
+            log.debug(f"keeping non-default {local_name} {current_value}")
+        else:
+            if cloud_name in andor_eeprom:
+                cloud_value = andor_eeprom[cloud_name]
+                log.info(f"using cloud-recommended default of {local_name} {cloud_value}")
+                setattr(device.settings.eeprom, local_name, cloud_value)
+
+    def download_andor_eeprom(self, device):
+        # attempt to backfill missing EEPROM settings from cloud
+        # (allow overrides from local configuration file)
+        log.debug("attempting to download Andor EEPROM")
+        andor_eeprom = self.get_andor_eeprom(device.settings.eeprom.detector_serial_number)
+        if andor_eeprom:
+            log.debug(f"before defaults: andor_eeprom {andor_eeprom}")
+
+            self.default_missing("excitation_nm_float", 0)
+            self.default_missing("wavelength_coeffs",  [0, 1, 0, 0, 0])
+            self.default_missing("model", None, "wp_model")
+            self.default_missing("detector", "iDus")
+            self.default_missing("serial_number", device.settings.eeprom.detector_serial_number, "wp_serial_number")
+            self.default_missing("raman_intensity_coeffs", [])
+            self.default_missing("invert_x_axis", False)
+            self.default_missing("roi_horizontal_start", 0)
+            self.default_missing("roi_horizontal_end", 0)
+
+            # device.settings.eeprom is a Wasatch.PY EEPROM() object
+            device.settings.eeprom.raman_intensity_calibration_order = len(device.settings.eeprom.raman_intensity_coeffs) - 1
+            log.debug(f"after defaults: andor_eeprom {andor_eeprom}")
+
+            log.debug(f"calling save_config with: {device.settings.eeprom}")
+            device.change_setting("save_config", device.settings.eeprom)
+        else:
+            log.error(f"Could not load Andor EEPROM for {device.settings.eeprom.detector_serial_number}")
+
     def restore_callback(self):
         if not self.enabled():
             return 
