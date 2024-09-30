@@ -3065,7 +3065,7 @@ QComboBox QListView
                            
 
                           <item row="14" column="0">
-                           <widget class="QCheckBox" name="checkBox_ee_ble_power_enabled">
+                           <widget class="QCheckBox" name="checkBox_ee_disable_ble_power">
                             <property name="text">
                              <string />
                             </property>
@@ -3074,7 +3074,7 @@ QComboBox QListView
                           <item row="14" column="1">
                            <widget class="QLabel" name="label_46_2x">
                             <property name="text">
-                             <string>BLE Power Enabled</string>
+                             <string>Disable BLE Power</string>
                             </property>
                            </widget>
                           </item>

@@ -145,7 +145,7 @@ class EEPROMEditor:
         self.bind_checkBox        (cfu.checkBox_ee_sig_laser_tec,             "sig_laser_tec")
         self.bind_checkBox        (cfu.checkBox_ee_has_interlock_feedback,    "has_interlock_feedback")
         self.bind_checkBox        (cfu.checkBox_ee_has_shutter,               "has_shutter")
-        self.bind_checkBox        (cfu.checkBox_ee_ble_power_enabled,         "ble_power_enabled")
+        self.bind_checkBox        (cfu.checkBox_ee_disable_ble_power,         "disable_ble_power")
         self.bind_checkBox        (cfu.checkBox_ee_disable_laser_armed_indicator, "disable_laser_armed_indicator")
 
         # To be clear: we're editing the float version of excitation_nm. Edits 
