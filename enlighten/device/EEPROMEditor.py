@@ -145,9 +145,11 @@ class EEPROMEditor:
         self.bind_checkBox        (cfu.checkBox_ee_sig_laser_tec,             "sig_laser_tec")
         self.bind_checkBox        (cfu.checkBox_ee_has_interlock_feedback,    "has_interlock_feedback")
         self.bind_checkBox        (cfu.checkBox_ee_has_shutter,               "has_shutter")
+        self.bind_checkBox        (cfu.checkBox_ee_ble_power_enabled,         "ble_power_enabled")
+        self.bind_checkBox        (cfu.checkBox_ee_disable_laser_armed_indicator, "disable_laser_armed_indicator")
 
-        # To be clear: we're editing the float version of excitation_nm.  Edits 
-        # are automatically rounded and re-saved to the integral version.  We 
+        # To be clear: we're editing the float version of excitation_nm. Edits 
+        # are automatically rounded and re-saved to the integral version. We 
         # only "expose" one version (floating-point) to the user through 
         # ENLIGHTEN, although they can see both in the raw EEPROM (but not via 
         # ENLIGHTEN's EEPROM editor).

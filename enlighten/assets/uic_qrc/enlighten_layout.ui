@@ -2948,304 +2948,7 @@ QComboBox QListView
                             </property>
                            </widget>
                           </item>
-                          <item row="14" column="0">
-                           <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_excitation_nm_float">
-                            <property name="minimumSize">
-                             <size>
-                              <width>125</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="alignment">
-                             <set>Qt::AlignmentFlag::AlignCenter</set>
-                            </property>
-                            <property name="keyboardTracking">
-                             <bool>false</bool>
-                            </property>
-                            <property name="decimals">
-                             <number>3</number>
-                            </property>
-                            <property name="minimum">
-                             <double>0.000000000000000</double>
-                            </property>
-                            <property name="maximum">
-                             <double>2500.000000000000000</double>
-                            </property>
-                            <property name="singleStep">
-                             <double>0.010000000000000</double>
-                            </property>
-                            <property name="value">
-                             <double>785.000000000000000</double>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="14" column="1">
-                           <widget class="QLabel" name="label_83">
-                            <property name="text">
-                             <string>Excitation (nm)</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="15" column="0">
-                           <widget class="QSpinBox" name="spinBox_ee_slit_size_um">
-                            <property name="minimumSize">
-                             <size>
-                              <width>125</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="alignment">
-                             <set>Qt::AlignmentFlag::AlignCenter</set>
-                            </property>
-                            <property name="keyboardTracking">
-                             <bool>false</bool>
-                            </property>
-                            <property name="minimum">
-                             <number>5</number>
-                            </property>
-                            <property name="maximum">
-                             <number>1000</number>
-                            </property>
-                            <property name="singleStep">
-                             <number>5</number>
-                            </property>
-                            <property name="value">
-                             <number>50</number>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="15" column="1">
-                           <widget class="QLabel" name="label_86">
-                            <property name="text">
-                             <string>Slit Size (µm)</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="16" column="0">
-                           <widget class="QSpinBox" name="spinBox_ee_startup_integration_time_ms">
-                            <property name="minimumSize">
-                             <size>
-                              <width>125</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="alignment">
-                             <set>Qt::AlignmentFlag::AlignCenter</set>
-                            </property>
-                            <property name="keyboardTracking">
-                             <bool>false</bool>
-                            </property>
-                            <property name="minimum">
-                             <number>1</number>
-                            </property>
-                            <property name="maximum">
-                             <number>60000</number>
-                            </property>
-                            <property name="value">
-                             <number>10</number>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="16" column="1">
-                           <widget class="QLabel" name="label_13">
-                            <property name="text">
-                             <string>Startup Integration Time (ms)</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="17" column="0">
-                           <widget class="QSpinBox" name="spinBox_ee_startup_temp_degC">
-                            <property name="minimumSize">
-                             <size>
-                              <width>125</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="alignment">
-                             <set>Qt::AlignmentFlag::AlignCenter</set>
-                            </property>
-                            <property name="keyboardTracking">
-                             <bool>false</bool>
-                            </property>
-                            <property name="minimum">
-                             <number>-120</number>
-                            </property>
-                            <property name="maximum">
-                             <number>4095</number>
-                            </property>
-                            <property name="value">
-                             <number>10</number>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="17" column="1">
-                           <widget class="QLabel" name="label_21">
-                            <property name="toolTip">
-                             <string>°C for detectors (X/XM/XL), or raw DAC for lasers (XS)</string>
-                            </property>
-                            <property name="text">
-                             <string>Startup TEC Setpoint</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="18" column="0">
-                           <widget class="QSpinBox" name="spinBox_ee_startup_triggering_scheme">
-                            <property name="minimumSize">
-                             <size>
-                              <width>125</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="alignment">
-                             <set>Qt::AlignmentFlag::AlignCenter</set>
-                            </property>
-                            <property name="keyboardTracking">
-                             <bool>false</bool>
-                            </property>
-                            <property name="maximum">
-                             <number>255</number>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="18" column="1">
-                           <widget class="QLabel" name="label_29">
-                            <property name="text">
-                             <string>Startup Triggering Scheme</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="19" column="0">
-                           <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_detector_gain">
-                            <property name="minimumSize">
-                             <size>
-                              <width>125</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="alignment">
-                             <set>Qt::AlignmentFlag::AlignCenter</set>
-                            </property>
-                            <property name="keyboardTracking">
-                             <bool>false</bool>
-                            </property>
-                            <property name="decimals">
-                             <number>5</number>
-                            </property>
-                            <property name="minimum">
-                             <double>0.000000000000000</double>
-                            </property>
-                            <property name="maximum">
-                             <double>255.000000000000000</double>
-                            </property>
-                            <property name="value">
-                             <double>1.900000000000000</double>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="20" column="0">
-                           <widget class="QSpinBox" name="spinBox_ee_detector_offset">
-                            <property name="minimumSize">
-                             <size>
-                              <width>125</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="alignment">
-                             <set>Qt::AlignmentFlag::AlignCenter</set>
-                            </property>
-                            <property name="keyboardTracking">
-                             <bool>false</bool>
-                            </property>
-                            <property name="minimum">
-                             <number>-32000</number>
-                            </property>
-                            <property name="maximum">
-                             <number>32000</number>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="20" column="1">
-                           <widget class="QLabel" name="label_142">
-                            <property name="text">
-                             <string>Detector Offset (InGaAs even)</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="21" column="0">
-                           <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_detector_gain_odd">
-                            <property name="minimumSize">
-                             <size>
-                              <width>125</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="alignment">
-                             <set>Qt::AlignmentFlag::AlignCenter</set>
-                            </property>
-                            <property name="keyboardTracking">
-                             <bool>false</bool>
-                            </property>
-                            <property name="decimals">
-                             <number>5</number>
-                            </property>
-                            <property name="minimum">
-                             <double>0.000000000000000</double>
-                            </property>
-                            <property name="maximum">
-                             <double>255.000000000000000</double>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="22" column="0">
-                           <widget class="QSpinBox" name="spinBox_ee_detector_offset_odd">
-                            <property name="minimumSize">
-                             <size>
-                              <width>125</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="alignment">
-                             <set>Qt::AlignmentFlag::AlignCenter</set>
-                            </property>
-                            <property name="keyboardTracking">
-                             <bool>false</bool>
-                            </property>
-                            <property name="minimum">
-                             <number>-32000</number>
-                            </property>
-                            <property name="maximum">
-                             <number>32000</number>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="21" column="1">
-                           <widget class="QLabel" name="label_143">
-                            <property name="text">
-                             <string>Detector Gain (InGaAs odd)</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="22" column="1">
-                           <widget class="QLabel" name="label_161">
-                            <property name="text">
-                             <string>Detector Offset (InGaAs odd)</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="23" column="0">
-                           <widget class="QLabel" name="label_ee_format">
-                            <property name="text">
-                             <string>fmt</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="23" column="1">
-                           <widget class="QLabel" name="label_216">
-                            <property name="text">
-                             <string>Format</string>
-                            </property>
-                           </widget>
-                          </item>
+
                           <item row="6" column="0">
                            <widget class="QCheckBox" name="checkBox_ee_invert_x_axis">
                             <property name="text">
@@ -3302,7 +3005,290 @@ QComboBox QListView
                             </property>
                            </widget>
                           </item>
+                          <item row="10" column="0">
+                           <widget class="QCheckBox" name="checkBox_ee_hardware_even_odd">
+                            <property name="text">
+                             <string />
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="10" column="1">
+                           <widget class="QLabel" name="label_5">
+                            <property name="text">
+                             <string>Hardware Even/Odd Correction</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="11" column="0">
+                           <widget class="QCheckBox" name="checkBox_ee_sig_laser_tec">
+                            <property name="text">
+                             <string />
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="11" column="1">
+                           <widget class="QLabel" name="label_45">
+                            <property name="text">
+                             <string>SiG Laser TEC</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="12" column="0">
+                           <widget class="QCheckBox" name="checkBox_ee_has_interlock_feedback">
+                            <property name="text">
+                             <string />
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="12" column="1">
+                           <widget class="QLabel" name="label_46">
+                            <property name="text">
+                             <string>Interlock Feedback</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="13" column="0">
+                           <widget class="QCheckBox" name="checkBox_ee_has_shutter">
+                            <property name="text">
+                             <string />
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="13" column="1">
+                           <widget class="QLabel" name="label_46_2">
+                            <property name="text">
+                             <string>Internal Shutter</string>
+                            </property>
+                           </widget>
+                          </item>
+
+                           
+
+                          <item row="14" column="0">
+                           <widget class="QCheckBox" name="checkBox_ee_ble_power_enabled">
+                            <property name="text">
+                             <string />
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="14" column="1">
+                           <widget class="QLabel" name="label_46_2x">
+                            <property name="text">
+                             <string>BLE Power Enabled</string>
+                            </property>
+                           </widget>
+                          </item>
+
+                          <item row="15" column="0">
+                           <widget class="QCheckBox" name="checkBox_ee_disable_laser_armed_indicator">
+                            <property name="text">
+                             <string />
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="15" column="1">
+                           <widget class="QLabel" name="label_46_2y">
+                            <property name="text">
+                             <string>Disable Laser Armed Indicator</string>
+                            </property>
+                           </widget>
+                          </item>
+
+                          <item row="16" column="0">
+                           <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_excitation_nm_float">
+                            <property name="minimumSize">
+                             <size>
+                              <width>125</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                            <property name="keyboardTracking">
+                             <bool>false</bool>
+                            </property>
+                            <property name="decimals">
+                             <number>3</number>
+                            </property>
+                            <property name="minimum">
+                             <double>0.000000000000000</double>
+                            </property>
+                            <property name="maximum">
+                             <double>2500.000000000000000</double>
+                            </property>
+                            <property name="singleStep">
+                             <double>0.010000000000000</double>
+                            </property>
+                            <property name="value">
+                             <double>785.000000000000000</double>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="16" column="1">
+                           <widget class="QLabel" name="label_83">
+                            <property name="text">
+                             <string>Excitation (nm)</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="17" column="0">
+                           <widget class="QSpinBox" name="spinBox_ee_slit_size_um">
+                            <property name="minimumSize">
+                             <size>
+                              <width>125</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                            <property name="keyboardTracking">
+                             <bool>false</bool>
+                            </property>
+                            <property name="minimum">
+                             <number>5</number>
+                            </property>
+                            <property name="maximum">
+                             <number>1000</number>
+                            </property>
+                            <property name="singleStep">
+                             <number>5</number>
+                            </property>
+                            <property name="value">
+                             <number>50</number>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="17" column="1">
+                           <widget class="QLabel" name="label_86">
+                            <property name="text">
+                             <string>Slit Size (µm)</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="18" column="0">
+                           <widget class="QSpinBox" name="spinBox_ee_startup_integration_time_ms">
+                            <property name="minimumSize">
+                             <size>
+                              <width>125</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                            <property name="keyboardTracking">
+                             <bool>false</bool>
+                            </property>
+                            <property name="minimum">
+                             <number>1</number>
+                            </property>
+                            <property name="maximum">
+                             <number>60000</number>
+                            </property>
+                            <property name="value">
+                             <number>10</number>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="18" column="1">
+                           <widget class="QLabel" name="label_13">
+                            <property name="text">
+                             <string>Startup Integration Time (ms)</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="19" column="0">
+                           <widget class="QSpinBox" name="spinBox_ee_startup_temp_degC">
+                            <property name="minimumSize">
+                             <size>
+                              <width>125</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                            <property name="keyboardTracking">
+                             <bool>false</bool>
+                            </property>
+                            <property name="minimum">
+                             <number>-120</number>
+                            </property>
+                            <property name="maximum">
+                             <number>4095</number>
+                            </property>
+                            <property name="value">
+                             <number>10</number>
+                            </property>
+                           </widget>
+                          </item>
                           <item row="19" column="1">
+                           <widget class="QLabel" name="label_21">
+                            <property name="toolTip">
+                             <string>°C for detectors (X/XM/XL), or raw DAC for lasers (XS)</string>
+                            </property>
+                            <property name="text">
+                             <string>Startup TEC Setpoint</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="20" column="0">
+                           <widget class="QSpinBox" name="spinBox_ee_startup_triggering_scheme">
+                            <property name="minimumSize">
+                             <size>
+                              <width>125</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                            <property name="keyboardTracking">
+                             <bool>false</bool>
+                            </property>
+                            <property name="maximum">
+                             <number>255</number>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="20" column="1">
+                           <widget class="QLabel" name="label_29">
+                            <property name="text">
+                             <string>Startup Triggering Scheme</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="21" column="0">
+                           <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_detector_gain">
+                            <property name="minimumSize">
+                             <size>
+                              <width>125</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                            <property name="keyboardTracking">
+                             <bool>false</bool>
+                            </property>
+                            <property name="decimals">
+                             <number>5</number>
+                            </property>
+                            <property name="minimum">
+                             <double>0.000000000000000</double>
+                            </property>
+                            <property name="maximum">
+                             <double>255.000000000000000</double>
+                            </property>
+                            <property name="value">
+                             <double>1.900000000000000</double>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="21" column="1">
                            <layout class="QHBoxLayout" name="horizontalLayout_92">
                             <item>
                              <widget class="QLabel" name="label_31">
@@ -3344,59 +3330,107 @@ QComboBox QListView
                             </item>
                            </layout>
                           </item>
-                          <item row="10" column="0">
-                           <widget class="QCheckBox" name="checkBox_ee_hardware_even_odd">
-                            <property name="text">
-                             <string />
+                          <item row="22" column="0">
+                           <widget class="QSpinBox" name="spinBox_ee_detector_offset">
+                            <property name="minimumSize">
+                             <size>
+                              <width>125</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                            <property name="keyboardTracking">
+                             <bool>false</bool>
+                            </property>
+                            <property name="minimum">
+                             <number>-32000</number>
+                            </property>
+                            <property name="maximum">
+                             <number>32000</number>
                             </property>
                            </widget>
                           </item>
-                          <item row="10" column="1">
-                           <widget class="QLabel" name="label_5">
+                          <item row="22" column="1">
+                           <widget class="QLabel" name="label_142">
                             <property name="text">
-                             <string>Hardware Even/Odd Correction</string>
+                             <string>Detector Offset (InGaAs even)</string>
                             </property>
                            </widget>
                           </item>
-                          <item row="11" column="0">
-                           <widget class="QCheckBox" name="checkBox_ee_sig_laser_tec">
-                            <property name="text">
-                             <string />
+                          <item row="23" column="0">
+                           <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_detector_gain_odd">
+                            <property name="minimumSize">
+                             <size>
+                              <width>125</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                            <property name="keyboardTracking">
+                             <bool>false</bool>
+                            </property>
+                            <property name="decimals">
+                             <number>5</number>
+                            </property>
+                            <property name="minimum">
+                             <double>0.000000000000000</double>
+                            </property>
+                            <property name="maximum">
+                             <double>255.000000000000000</double>
                             </property>
                            </widget>
                           </item>
-                          <item row="12" column="0">
-                           <widget class="QCheckBox" name="checkBox_ee_has_interlock_feedback">
+                          <item row="23" column="1">
+                           <widget class="QLabel" name="label_143">
                             <property name="text">
-                             <string />
+                             <string>Detector Gain (InGaAs odd)</string>
                             </property>
                            </widget>
                           </item>
-                          <item row="11" column="1">
-                           <widget class="QLabel" name="label_45">
-                            <property name="text">
-                             <string>SiG Laser TEC</string>
+                          <item row="24" column="0">
+                           <widget class="QSpinBox" name="spinBox_ee_detector_offset_odd">
+                            <property name="minimumSize">
+                             <size>
+                              <width>125</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                            <property name="keyboardTracking">
+                             <bool>false</bool>
+                            </property>
+                            <property name="minimum">
+                             <number>-32000</number>
+                            </property>
+                            <property name="maximum">
+                             <number>32000</number>
                             </property>
                            </widget>
                           </item>
-                          <item row="12" column="1">
-                           <widget class="QLabel" name="label_46">
+                          <item row="24" column="1">
+                           <widget class="QLabel" name="label_161">
                             <property name="text">
-                             <string>Interlock Feedback</string>
+                             <string>Detector Offset (InGaAs odd)</string>
                             </property>
                            </widget>
                           </item>
-                          <item row="13" column="0">
-                           <widget class="QCheckBox" name="checkBox_ee_has_shutter">
+                          <item row="25" column="0">
+                           <widget class="QLabel" name="label_ee_format">
                             <property name="text">
-                             <string />
+                             <string>fmt</string>
                             </property>
                            </widget>
                           </item>
-                          <item row="13" column="1">
-                           <widget class="QLabel" name="label_46_2">
+                          <item row="25" column="1">
+                           <widget class="QLabel" name="label_216">
                             <property name="text">
-                             <string>Internal Shutter</string>
+                             <string>Format</string>
                             </property>
                            </widget>
                           </item>
