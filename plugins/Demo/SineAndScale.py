@@ -20,13 +20,9 @@ class SineAndScale(EnlightenPluginBase):
         self.sin_progress = 0
 
     def get_configuration(self):
-        fields = []
-        fields.append(EnlightenPluginField(name="Step",  datatype="float", direction="input", initial=2, maximum=30, minimum=-30, step=5))
-        fields.append(EnlightenPluginField(name="Negate", datatype="bool", direction="input"))
-        return EnlightenPluginConfiguration(
-            name            = "Sine Wave", 
-            fields          = fields,
-            series_names    = [ "Sine Wave" ])
+        self.name = "Sine Wave"
+        self.field(name="Step",  datatype="float", direction="input", initial=2, maximum=30, minimum=-30, step=5)
+        self.field(name="Negate", datatype="bool", direction="input")
 
     def connect(self):
         super().connect()
@@ -59,11 +55,7 @@ class SineAndScale(EnlightenPluginBase):
         sine_wave = sine_wave * rng / 2.0
         sine_wave = sine_wave + (lo + rng / 2.0)
 
-        series = {
-            'Sine Wave': { 'y': sine_wave }
-        }
-
-        return EnlightenPluginResponse(request=request, series=series)
+        self.plot(y=sine_wave, title="Sine Wave", color="yellow")
 
     def disconnect(self):
         super().disconnect()
