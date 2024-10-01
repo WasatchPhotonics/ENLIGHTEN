@@ -4,6 +4,7 @@
     - EEPROMEditor
         - added disable_ble_power
         - added disable_laser_armed_indicator
+    - simplified Demo.SineAndScale plugin
 - 2024-09-27 4.1.6
     - fix AutoRaman Preset setters
 - 2024-09-19 4.1.5
