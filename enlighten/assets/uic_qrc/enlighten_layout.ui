@@ -6992,6 +6992,20 @@ QComboBox QListView
                    </property>
                   </widget>
                  </item>
+                 <item row="9" column="0">
+                  <widget class="QLabel" name="label_ble_firmware_version">
+                   <property name="text">
+                    <string>unknown</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="9" column="1">
+                  <widget class="QLabel" name="label_165x">
+                   <property name="text">
+                    <string>BLE Firmware Version</string>
+                   </property>
+                  </widget>
+                 </item>
                 </layout>
                </item>
               </layout>

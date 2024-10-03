@@ -239,6 +239,7 @@ class Measurement:
                            'Device ID',
                            'FW Version',
                            'FPGA Version',
+                           'BLE Version',
                            'Prefix',
                            'Suffix',
                            'Preset',
@@ -874,6 +875,7 @@ class Measurement:
         if field == "battery %":                 return self.processed_reading.reading.battery_percentage if self.processed_reading.reading is not None else 0
         if field == "fw version":                return self.settings.microcontroller_firmware_version
         if field == "fpga version":              return self.settings.fpga_firmware_version
+        if field == "ble version":               return self.settings.ble_firmware_version
         if field == "laser power %":             return self.processed_reading.reading.laser_power_perc if self.processed_reading.reading is not None else 0
         if field == "device id":                 return str(self.settings.device_id)
         if field == "note":                      return self.note

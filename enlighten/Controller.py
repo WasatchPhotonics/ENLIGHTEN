@@ -812,6 +812,7 @@ class Controller:
         cfu.label_microcontroller_firmware_version.setText(spec.settings.microcontroller_firmware_version)
         cfu.label_fpga_firmware_version.setText(spec.settings.fpga_firmware_version)
         cfu.label_microcontroller_serial_number.setText(spec.settings.microcontroller_serial_number)
+        cfu.label_ble_firmware_version.setText(spec.settings.ble_firmware_version)
 
         ########################################################################
         # update EEPROM Editor
