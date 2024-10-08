@@ -29,11 +29,13 @@ class AutoRamanFeature:
         self.bt_measure     = cfu.pushButton_auto_raman_measurement
         self.bt_convenience = cfu.pushButton_auto_raman_convenience
         self.cb_config      = cfu.checkBox_auto_raman_config
+        self.cb_retain      = cfu.checkBox_auto_raman_retain_settings
         self.fr_config      = cfu.frame_auto_raman_config
         self.buttons        = [ self.bt_measure, self.bt_convenience ]
 
         self.visible = False
         self.running = False
+        self.retain_settings = False
 
         for b in self.buttons:
             b.clicked.connect(self.measure_callback)
@@ -110,7 +112,7 @@ class AutoRamanFeature:
                 enabling the laser, so please read the ENLIGHTEN documentation 
                 carefully before enabling it.
 
-                Clicking the button will clear the current dark, then enable the 
+                Clicking the button will clear the current dark, enable the 
                 laser, wait a configured "warmup" time for the laser to stabilize, 
                 then attempt to optimize acquisition parameters by first tuning 
                 integration time, then when necessary gain. 
@@ -123,13 +125,10 @@ class AutoRamanFeature:
                 perform dark correction.
 
                 The final processed measurement will then be graphed and sent to any 
-                connected plug-ins for additional processing. The optimized 
-                integration time and gain will be updated to the ENLIGHTEN GUI."""))
+                connected plug-ins for additional processing. If requested, ENLIGHTEN 
+                will then apply the optimized to the ENLIGHTEN GUI."""))
 
         self.update_visibility()
-
-        self.ctl.vcr_controls.register_observer("pause", self.update_visibility)
-        self.ctl.vcr_controls.register_observer("play",  self.update_visibility)
 
     ##
     # called by Controller.disconnect_device to ensure we turn this off between
@@ -143,8 +142,9 @@ class AutoRamanFeature:
             self.visible = False 
         else:
             self.visible = self.ctl.page_nav.doing_raman() and \
-                           self.ctl.vcr_controls.is_paused() and \
                            spec.settings.eeprom.has_laser
+
+        self.retain_settings = self.visible and self.cb_retain.isChecked()
 
         for b in self.buttons:
             b.setVisible(self.visible)
@@ -158,6 +158,9 @@ class AutoRamanFeature:
 
     def measure_callback(self):
         log.debug(f"measure_callback: starting")
+
+        # ensure we're paused
+        self.ctl.vcr_controls.pause()
 
         # clear graph trace
         spec = self.ctl.multispec.current_spectrometer()
@@ -210,6 +213,46 @@ class AutoRamanFeature:
         for b in self.buttons:
             self.ctl.gui.colorize_button(b, False)
         self.ctl.marquee.info("Auto-Raman measurement complete")
+
+    def process_reading(self, reading):
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec.device_id != reading.device_id:
+            log.debug("process_reading: ignoring non-selected spectrometer reading")
+            return
+
+        if self.retain_settings:
+            log.debug("retaining Auto-Raman settings")
+            if reading.dark is not None:
+                log.debug("retaining Auto-Raman dark")
+                self.ctl.dark_feature.store(reading.dark)
+            if reading.new_integration_time_ms is not None:
+                log.debug("retaining Auto-Raman integ")
+                self.ctl.integration_time_feature.set_ms(reading.new_integration_time_ms, quiet=True)
+            if reading.new_gain_db is not None:
+                log.debug("retaining Auto-Raman gain")
+                self.ctl.gain_db_feature.set_db(reading.new_gain_db, quiet=True)
+            if reading.sum_count is not None:
+                log.debug("retaining Auto-Raman avg")
+                self.ctl.scan_averaging.set_scans_to_average(max(1, reading.sum_count))
+        else:
+            # we aren't retaining the Auto-Dark settings in the GUI, so you'd 
+            # think we don't have to anything here...but in fact we need to re-
+            # set the settings in the spectrometer itself, which at this point 
+            # (under the current wasatch.AutoRaman design) are still free-running
+            # at whatever optimized values the AutoRaman algo computed
+
+            log.debug("NOT retaining Auto-Raman settings")
+            if reading.dark is not None:
+                log.debug("NOT retaining Auto-Raman dark")
+            if reading.new_integration_time_ms is not None:
+                log.debug("NOT retaining Auto-Raman integ (re-setting)")
+                self.ctl.integration_time_feature.set_ms(spec.settings.state.integration_time_ms, quiet=True)
+            if reading.new_gain_db is not None:
+                log.debug("NOT retaining Auto-Raman gain (re-setting)")
+                self.ctl.gain_db_feature.set_db(spec.settings.state.gain_db, quiet=True)
+            if reading.sum_count is not None:
+                log.debug("NOT retaining Auto-Raman avg")
+            
 
     def update_from_gui(self):
         pass

@@ -16544,6 +16544,22 @@ li.checked::marker { content: "\2612"; }
                              </property>
                             </widget>
                            </item>
+
+                           
+                           <item row="14" column="0" colspan="2">
+                            <widget class="QCheckBox" name="checkBox_auto_raman_retain_settings">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="text">
+                              <string>Retain Auto-Raman Settings</string>
+                             </property>
+                            </widget>
+                           </item>
+
                           </layout>
                          </widget>
                         </item>

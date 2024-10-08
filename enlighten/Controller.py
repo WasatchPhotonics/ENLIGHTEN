@@ -1468,10 +1468,16 @@ class Controller:
         # application state, such that "normal" dark subtraction will occur within
         # ENLIGHTEN.
         if reading.dark is not None:
-            log.debug("attempt_reading: setting dark from Reading: %s", reading.dark)
-            self.dark_feature.store(dark=reading.dark)
 
-        # Scope Capture
+            # DO NOT blindly store dark if this was an Auto-Raman measurement;
+            # leave that to AutoRamanFeature.process_reading to determine
+            if reading.take_one_request is not None and reading.take_one_request.auto_raman_request:
+                self.auto_raman.process_reading(reading)
+            else:
+                log.debug("attempt_reading: setting dark from Reading: %s", reading.dark)
+                self.dark_feature.store(dark=reading.dark)
+
+        # Scope Capture -- note that this is where dark correction will be applied
         log.debug("attempt_reading: passing new Reading to update_scope_graphs")
         self.update_scope_graphs(reading)
 
@@ -1484,12 +1490,6 @@ class Controller:
             # update laser status 
             if spec.settings.is_xs():
                 self.laser_control.process_reading(reading)
-
-            # apply updated acquisition parameters
-            if reading.new_integration_time_ms is not None:
-                self.integration_time_feature.set_ms(reading.new_integration_time_ms, quiet=True)
-            if reading.new_gain_db is not None:
-                self.gain_db_feature.set_db(reading.new_gain_db, quiet=True)
 
         log.debug("attempt_reading: done")
 
@@ -1808,8 +1808,13 @@ class Controller:
         # Dark Correction
         ########################################################################
 
-        if app_state is not None:
-            pr.correct_dark(spec.app_state.dark if dark is None else dark)
+        best_dark = dark                # use explicitly passed dark if given
+        if best_dark is None:
+            best_dark = reading.dark    # otherwise, what comes with Reading
+        if best_dark is None and app_state is not None:
+            best_dark = app_state.dark  # otherwise, what has been stored
+
+        pr.correct_dark(best_dark)
 
         ########################################################################
         # Cropping
