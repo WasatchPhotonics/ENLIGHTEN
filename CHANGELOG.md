@@ -8,6 +8,7 @@
         - if not retaining, still use (but don't store) averaged dark
         - expose maxScansToAverage AutoRamanRequest option
         - add Ctrl-* shortcut
+    - added "SSC Enabled" FeatureMask bit on EEPROM Editor
 - 2024-10-03 4.1.7
     - EEPROMEditor
         - added disable_ble_power
