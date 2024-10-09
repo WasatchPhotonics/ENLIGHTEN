@@ -1475,7 +1475,8 @@ class Controller:
             # that while we do pass the Reading to AutoRamanFeature here, the
             # Feature doesn't yet save the measurement, even if auto-save is 
             # enabled, because (for instance) dark correction has not yet been
-            # applied.
+            # applied; that is done automatically at the end of 
+            # Controller.process_reading by TakeOneFeature.
             if reading.take_one_request is not None and reading.take_one_request.auto_raman_request:
                 self.auto_raman.process_reading(reading)
             else:
