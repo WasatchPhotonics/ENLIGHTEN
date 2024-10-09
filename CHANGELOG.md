@@ -1,12 +1,13 @@
 # Version History
 
-- 2024-??-?? 4.1.8
+- 2024-10-09 4.1.8
     - AutoRaman
-        - add "Retain Auto-Raman Settings" checkbox
-        - add scan averaging to Auto-Raman settings retained
+        - add "auto-save" checkbox (persisted)
+        - add "Retain Auto-Raman Settings" checkbox (persisted)
+        - add scan averaging to retained Auto-Raman settings
         - if not retaining, still use (but don't store) averaged dark
-        - expose maxScansToAverage (NOT IMPLEMENTED)
-        - add "auto-save" checkbox (NOT IMPLEMENTED)
+        - expose maxScansToAverage AutoRamanRequest option
+        - add Ctrl-* shortcut
 - 2024-10-03 4.1.7
     - EEPROMEditor
         - added disable_ble_power

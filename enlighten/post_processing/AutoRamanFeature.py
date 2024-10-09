@@ -25,21 +25,19 @@ class AutoRamanFeature:
         self.ctl = ctl
         cfu = self.ctl.form.ui
 
-        self.bt_laser       = cfu.pushButton_laser_toggle
-        self.bt_measure     = cfu.pushButton_auto_raman_measurement
-        self.bt_convenience = cfu.pushButton_auto_raman_convenience
-        self.cb_config      = cfu.checkBox_auto_raman_config
-        self.cb_retain      = cfu.checkBox_auto_raman_retain_settings
-        self.fr_config      = cfu.frame_auto_raman_config
-        self.buttons        = [ self.bt_measure, self.bt_convenience ]
+        self.bt_laser           = cfu.pushButton_laser_toggle
+        self.bt_measure         = cfu.pushButton_auto_raman_measurement
+        self.bt_convenience     = cfu.pushButton_auto_raman_convenience
+        self.cb_config          = cfu.checkBox_auto_raman_config
+        self.cb_retain_settings = cfu.checkBox_auto_raman_retain_settings
+        self.cb_auto_save       = cfu.checkBox_auto_raman_auto_save
+        self.fr_config          = cfu.frame_auto_raman_config
+        self.buttons            = [ self.bt_measure, self.bt_convenience ]
 
         self.visible = False
         self.running = False
+        self.auto_save = False
         self.retain_settings = False
-
-        for b in self.buttons:
-            b.clicked.connect(self.measure_callback)
-        self.cb_config.stateChanged.connect(self.update_visibility)
 
         self.sb_max_ms                  = cfu.spinBox_auto_raman_max_ms           
         self.sb_start_integ_ms          = cfu.spinBox_auto_raman_start_integ_ms   
@@ -52,24 +50,17 @@ class AutoRamanFeature:
         self.sb_max_counts              = cfu.spinBox_auto_raman_max_counts       
         self.sb_min_counts              = cfu.spinBox_auto_raman_min_counts       
         self.sb_max_factor              = cfu.spinBox_auto_raman_max_factor       
+        self.sb_max_avg                 = cfu.spinBox_auto_raman_max_avg
         self.sb_saturation              = cfu.spinBox_auto_raman_saturation       
         self.ds_drop_factor             = cfu.doubleSpinBox_auto_raman_drop_factor
         self.sb_laser_warning_delay_sec = cfu.spinBox_auto_raman_laser_warning_delay_sec
 
-        self.sb_max_ms                 .valueChanged.connect(self.update_from_gui)
-        self.sb_start_integ_ms         .valueChanged.connect(self.update_from_gui)
-        self.sb_start_gain_db          .valueChanged.connect(self.update_from_gui)
-        self.sb_max_integ_ms           .valueChanged.connect(self.update_from_gui)
-        self.sb_min_integ_ms           .valueChanged.connect(self.update_from_gui)
-        self.sb_max_gain_db            .valueChanged.connect(self.update_from_gui)
-        self.sb_min_gain_db            .valueChanged.connect(self.update_from_gui)
-        self.sb_target_counts          .valueChanged.connect(self.update_from_gui)
-        self.sb_max_counts             .valueChanged.connect(self.update_from_gui)
-        self.sb_min_counts             .valueChanged.connect(self.update_from_gui)
-        self.sb_max_factor             .valueChanged.connect(self.update_from_gui)
-        self.sb_saturation             .valueChanged.connect(self.update_from_gui)
-        self.ds_drop_factor            .valueChanged.connect(self.update_from_gui)
-        self.sb_laser_warning_delay_sec.valueChanged.connect(self.update_from_gui)
+        self.cb_config          .clicked    .connect(self.update_config)
+        self.cb_retain_settings .clicked    .connect(self.update_config)
+        self.cb_auto_save       .clicked    .connect(self.update_config)
+        for b in self.buttons:
+            b.clicked.connect(self.measure_callback)
+
 
         for widget in [ self.sb_max_ms,
                         self.sb_start_integ_ms,
@@ -82,6 +73,7 @@ class AutoRamanFeature:
                         self.sb_max_counts,
                         self.sb_min_counts,
                         self.sb_max_factor,
+                        self.sb_max_avg,
                         self.sb_saturation,
                         self.ds_drop_factor,
                         self.sb_laser_warning_delay_sec ]:
@@ -98,9 +90,12 @@ class AutoRamanFeature:
         ctl.presets.register(self, "auto_raman_max_counts"             , setter=self.set_max_counts             , getter=self.get_max_counts             )
         ctl.presets.register(self, "auto_raman_min_counts"             , setter=self.set_min_counts             , getter=self.get_min_counts             )
         ctl.presets.register(self, "auto_raman_max_factor"             , setter=self.set_max_factor             , getter=self.get_max_factor             )
+        ctl.presets.register(self, "auto_raman_max_avg"                , setter=self.set_max_avg                , getter=self.get_max_avg                )
         ctl.presets.register(self, "auto_raman_saturation"             , setter=self.set_saturation             , getter=self.get_saturation             )
         ctl.presets.register(self, "auto_raman_drop_factor"            , setter=self.set_drop_factor            , getter=self.get_drop_factor            )
         ctl.presets.register(self, "auto_raman_laser_warning_delay_sec", setter=self.set_laser_warning_delay_sec, getter=self.get_laser_warning_delay_sec)
+
+        self.init_from_config()
 
         for b in self.buttons:
             b.setWhatsThis(unwrap("""
@@ -130,6 +125,20 @@ class AutoRamanFeature:
 
         self.update_visibility()
 
+    def init_from_config(self):
+        s = "Auto-Raman"
+        self.cb_config         .setChecked(self.ctl.config.get_bool(s, "config"))
+        self.cb_auto_save      .setChecked(self.ctl.config.get_bool(s, "auto_save"))
+        self.cb_retain_settings.setChecked(self.ctl.config.get_bool(s, "retain_settings"))
+
+    def update_config(self):
+        self.update_visibility()
+
+        s = "Auto-Raman"
+        self.ctl.config.set(s, "config",          self.cb_config.isChecked())
+        self.ctl.config.set(s, "auto_save",       self.auto_save)
+        self.ctl.config.set(s, "retain_settings", self.retain_settings)
+
     ##
     # called by Controller.disconnect_device to ensure we turn this off between
     # connections
@@ -144,7 +153,8 @@ class AutoRamanFeature:
             self.visible = self.ctl.page_nav.doing_raman() and \
                            spec.settings.eeprom.has_laser
 
-        self.retain_settings = self.visible and self.cb_retain.isChecked()
+        self.auto_save = self.cb_retain_settings.isChecked()
+        self.retain_settings = self.cb_retain_settings.isChecked()
 
         for b in self.buttons:
             b.setVisible(self.visible)
@@ -157,7 +167,6 @@ class AutoRamanFeature:
             self.fr_config.setVisible(False)
 
     def measure_callback(self):
-        log.debug(f"measure_callback: starting")
 
         # ensure we're paused
         self.ctl.vcr_controls.pause()
@@ -189,25 +198,22 @@ class AutoRamanFeature:
             max_counts              = self.get_max_counts    (),
             min_counts              = self.get_min_counts    (),
             max_factor              = self.get_max_factor    (),
+            max_avg                 = self.get_max_avg       (),
             saturation              = self.get_saturation    (),
             drop_factor             = self.get_drop_factor   (),
             laser_warning_delay_sec = self.get_laser_warning_delay_sec())
+
         take_one_request = TakeOneRequest(auto_raman_request=auto_raman_request)
 
-        log.debug(f"measure_callback: starting TakeOne")
-        self.ctl.take_one.start(completion_callback=self.completion_callback, stop_callback=self.stop_callback, template=take_one_request)
-
-        log.debug(f"measure_callback: done")
+        self.ctl.take_one.start(completion_callback=self.completion_callback, stop_callback=self.stop_callback, template=take_one_request, save=self.auto_save)
 
     def stop_callback(self):
-        log.debug(f"stop_callback: here")
         self.running = False
         for b in self.buttons:
             self.ctl.gui.colorize_button(b, False)
         self.ctl.marquee.error("Auto-Raman measurement cancelled")
 
     def completion_callback(self):
-        log.debug(f"completion_callback: here")
         # self.ctl.laser_control.refresh_laser_buttons()
         self.running = False
         for b in self.buttons:
@@ -217,22 +223,18 @@ class AutoRamanFeature:
     def process_reading(self, reading):
         spec = self.ctl.multispec.current_spectrometer()
         if spec.device_id != reading.device_id:
-            log.debug("process_reading: ignoring non-selected spectrometer reading")
             return
 
+        log.debug("processing reading")
+
         if self.retain_settings:
-            log.debug("retaining Auto-Raman settings")
             if reading.dark is not None:
-                log.debug("retaining Auto-Raman dark")
                 self.ctl.dark_feature.store(reading.dark)
             if reading.new_integration_time_ms is not None:
-                log.debug("retaining Auto-Raman integ")
                 self.ctl.integration_time_feature.set_ms(reading.new_integration_time_ms, quiet=True)
             if reading.new_gain_db is not None:
-                log.debug("retaining Auto-Raman gain")
                 self.ctl.gain_db_feature.set_db(reading.new_gain_db, quiet=True)
             if reading.sum_count is not None:
-                log.debug("retaining Auto-Raman avg")
                 self.ctl.scan_averaging.set_scans_to_average(max(1, reading.sum_count))
         else:
             # we aren't retaining the Auto-Dark settings in the GUI, so you'd 
@@ -240,23 +242,11 @@ class AutoRamanFeature:
             # set the settings in the spectrometer itself, which at this point 
             # (under the current wasatch.AutoRaman design) are still free-running
             # at whatever optimized values the AutoRaman algo computed
-
-            log.debug("NOT retaining Auto-Raman settings")
-            if reading.dark is not None:
-                log.debug("NOT retaining Auto-Raman dark")
             if reading.new_integration_time_ms is not None:
-                log.debug("NOT retaining Auto-Raman integ (re-setting)")
                 self.ctl.integration_time_feature.set_ms(spec.settings.state.integration_time_ms, quiet=True)
             if reading.new_gain_db is not None:
-                log.debug("NOT retaining Auto-Raman gain (re-setting)")
                 self.ctl.gain_db_feature.set_db(spec.settings.state.gain_db, quiet=True)
-            if reading.sum_count is not None:
-                log.debug("NOT retaining Auto-Raman avg")
             
-
-    def update_from_gui(self):
-        pass
-
     def set_max_ms                 (self, value): self.sb_max_ms                 .setValue(int(value))
     def set_start_integ_ms         (self, value): self.sb_start_integ_ms         .setValue(int(value))
     def set_start_gain_db          (self, value): self.sb_start_gain_db          .setValue(int(value))
@@ -268,6 +258,7 @@ class AutoRamanFeature:
     def set_max_counts             (self, value): self.sb_max_counts             .setValue(int(value))
     def set_min_counts             (self, value): self.sb_min_counts             .setValue(int(value))
     def set_max_factor             (self, value): self.sb_max_factor             .setValue(int(value))
+    def set_max_avg                (self, value): self.sb_max_avg                .setValue(int(value))
     def set_saturation             (self, value): self.sb_saturation             .setValue(int(value))
     def set_drop_factor            (self, value): self.ds_drop_factor            .setValue(float(value))
     def set_laser_warning_delay_sec(self, value): self.sb_laser_warning_delay_sec.setValue(int(value))
@@ -283,6 +274,7 @@ class AutoRamanFeature:
     def get_max_counts             (self): return self.sb_max_counts             .value()
     def get_min_counts             (self): return self.sb_min_counts             .value()
     def get_max_factor             (self): return self.sb_max_factor             .value()
+    def get_max_avg                (self): return self.sb_max_avg                .value()
     def get_saturation             (self): return self.sb_saturation             .value()
     def get_drop_factor            (self): return self.ds_drop_factor            .value()
     def get_laser_warning_delay_sec(self): return self.sb_laser_warning_delay_sec.value()

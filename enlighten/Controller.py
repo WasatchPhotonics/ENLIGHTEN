@@ -1110,6 +1110,7 @@ class Controller:
         make_shortcut("Ctrl+S", self.vcr_controls.save)
         make_shortcut("Ctrl+T", self.integration_time_feature.set_focus)
         make_shortcut("Ctrl+X", self.page_nav.toggle_expert)
+        make_shortcut("Ctrl+*", self.auto_raman.measure_callback)
 
         # Cursor
         make_shortcut(QtGui.QKeySequence.MoveToPreviousWord, self.cursor.dn_callback) # ctrl-left
@@ -1470,7 +1471,11 @@ class Controller:
         if reading.dark is not None:
 
             # DO NOT blindly store dark if this was an Auto-Raman measurement;
-            # leave that to AutoRamanFeature.process_reading to determine
+            # leave that to AutoRamanFeature.process_reading to determine. Note
+            # that while we do pass the Reading to AutoRamanFeature here, the
+            # Feature doesn't yet save the measurement, even if auto-save is 
+            # enabled, because (for instance) dark correction has not yet been
+            # applied.
             if reading.take_one_request is not None and reading.take_one_request.auto_raman_request:
                 self.auto_raman.process_reading(reading)
             else:
