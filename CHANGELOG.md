@@ -1,5 +1,7 @@
 # Version History
 
+- 2024-10-09 4.1.9
+    - flipped IMX385 first pixel color
 - 2024-10-09 4.1.8
     - AutoRaman
         - add "auto-save" checkbox (persisted)
