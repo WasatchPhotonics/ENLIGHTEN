@@ -1,7 +1,17 @@
 # Version History
 
+- 2024-10-10 4.1.11
+    - fixed Ctrl-G gain shortcut 
+    - renamed "ROI Start/Stop Lines" in saved Measurements
+    - AutoRaman
+        - auto-save bugfix
+        - bugfix when NOT retaining settings
+        - fixed saved Measurement metadata when NOT retaining settings
+        - restore previous int/gain on cancel
+- 2024-10-10 4.1.10
+    - bumped revision to test updated wasatch.IMX385 class
 - 2024-10-09 4.1.9
-    - flipped IMX385 first pixel color
+    - flipped IMX385 first pixel from red -> blue
 - 2024-10-09 4.1.8
     - AutoRaman
         - add "auto-save" checkbox (persisted)

@@ -829,16 +829,28 @@ class Measurement:
 
         wavecal = self.settings.get_wavecal_coeffs()
 
+        # use Auto-Raman settings, even if not "retained"
+        if (self.processed_reading.reading and
+            self.processed_reading.reading.take_one_request and
+            self.processed_reading.reading.take_one_request.auto_raman_request):
+            log.debug("get_metadata: using Auto-Raman settings")
+            if field == "integration time":      return self.processed_reading.reading.new_integration_time_ms
+            if field == "scan averaging":        return self.processed_reading.reading.sum_count
+            if field == "ccd gain":              return self.processed_reading.reading.new_gain_db if self.settings.is_sig() else self.settings.eeprom.detector_gain
+           
+        log.debug("get_metadata: not using Auto-Raman settings")
+        if field == "integration time":          return self.settings.state.integration_time_ms
+        if field == "scan averaging":            return self.settings.state.scans_to_average
+        if field == "ccd gain":                  return self.settings.state.gain_db if self.settings.is_sig() else self.settings.eeprom.detector_gain
+
         if field == "enlighten version":         return common.VERSION
         if field == "measurement id":            return self.measurement_id
         if field == "serial number":             return self.settings.eeprom.serial_number
         if field == "model":                     return self.settings.full_model()
         if field == "label":                     return self.label
         if field == "detector":                  return self.settings.eeprom.detector
-        if field == "scan averaging":            return self.settings.state.scans_to_average
         if field == "boxcar":                    return self.settings.state.boxcar_half_width
         if field == "line number":               return self.ctl.save_options.line_number if (self.ctl and self.ctl.save_options) else 0
-        if field == "integration time":          return self.settings.state.integration_time_ms
         if field == "timestamp":                 return self.timestamp
         if field == "blank":                     return self.settings.eeprom.serial_number # for Multispec
         if field == "temperature":               return self.processed_reading.reading.detector_temperature_degC if self.processed_reading.reading is not None else -99
@@ -850,7 +862,6 @@ class Measurement:
         if field == "ccd c3":                    return 0 if len(wavecal) < 4 else wavecal[3]
         if field == "ccd c4":                    return 0 if len(wavecal) < 5 else wavecal[4]
         if field == "ccd offset":                return self.settings.eeprom.detector_offset # even
-        if field == "ccd gain":                  return self.settings.state.gain_db if self.settings.is_sig() else self.settings.eeprom.detector_gain # even
         if field == "ccd offset odd":            return self.settings.eeprom.detector_offset_odd
         if field == "ccd gain odd":              return self.settings.eeprom.detector_gain_odd
         if field == "high gain mode":            return self.settings.state.high_gain_mode_enabled

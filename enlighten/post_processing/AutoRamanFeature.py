@@ -38,6 +38,8 @@ class AutoRamanFeature:
         self.running = False
         self.auto_save = False
         self.retain_settings = False
+        self.prev_integration_time_ms = None
+        self.prev_gain_db = None
 
         self.sb_max_ms                  = cfu.spinBox_auto_raman_max_ms           
         self.sb_start_integ_ms          = cfu.spinBox_auto_raman_start_integ_ms   
@@ -58,9 +60,9 @@ class AutoRamanFeature:
         self.cb_config          .clicked    .connect(self.update_config)
         self.cb_retain_settings .clicked    .connect(self.update_config)
         self.cb_auto_save       .clicked    .connect(self.update_config)
+
         for b in self.buttons:
             b.clicked.connect(self.measure_callback)
-
 
         for widget in [ self.sb_max_ms,
                         self.sb_start_integ_ms,
@@ -123,13 +125,13 @@ class AutoRamanFeature:
                 connected plug-ins for additional processing. If requested, ENLIGHTEN 
                 will then apply the optimized to the ENLIGHTEN GUI."""))
 
-        self.update_visibility()
-
     def init_from_config(self):
         s = "Auto-Raman"
         self.cb_config         .setChecked(self.ctl.config.get_bool(s, "config"))
         self.cb_auto_save      .setChecked(self.ctl.config.get_bool(s, "auto_save"))
         self.cb_retain_settings.setChecked(self.ctl.config.get_bool(s, "retain_settings"))
+
+        self.update_visibility()
 
     def update_config(self):
         self.update_visibility()
@@ -153,7 +155,7 @@ class AutoRamanFeature:
             self.visible = self.ctl.page_nav.doing_raman() and \
                            spec.settings.eeprom.has_laser
 
-        self.auto_save = self.cb_retain_settings.isChecked()
+        self.auto_save = self.cb_auto_save.isChecked()
         self.retain_settings = self.cb_retain_settings.isChecked()
 
         for b in self.buttons:
@@ -185,6 +187,9 @@ class AutoRamanFeature:
         self.ctl.dark_feature.clear(quiet=True)
         self.ctl.marquee.info("Collecting Auto-Raman measurement...")
 
+        self.prev_integration_time_ms = self.ctl.integration_time_feature.get_ms()
+        self.prev_gain_db = self.ctl.gain_db_feature.get_db()
+
         # define a TakeOneRequest with AutoRaman enabled
         auto_raman_request = AutoRamanRequest(
             max_ms                  = self.get_max_ms        (),
@@ -212,6 +217,7 @@ class AutoRamanFeature:
         for b in self.buttons:
             self.ctl.gui.colorize_button(b, False)
         self.ctl.marquee.error("Auto-Raman measurement cancelled")
+        self.restore_acquisition_parameters()
 
     def completion_callback(self):
         # self.ctl.laser_control.refresh_laser_buttons()
@@ -228,6 +234,7 @@ class AutoRamanFeature:
         log.debug("processing reading")
 
         if self.retain_settings:
+            log.debug("retaining settings")
             if reading.dark is not None:
                 self.ctl.dark_feature.store(reading.dark)
             if reading.new_integration_time_ms is not None:
@@ -237,15 +244,13 @@ class AutoRamanFeature:
             if reading.sum_count is not None:
                 self.ctl.scan_averaging.set_scans_to_average(max(1, reading.sum_count))
         else:
-            # we aren't retaining the Auto-Dark settings in the GUI, so you'd 
-            # think we don't have to anything here...but in fact we need to re-
-            # set the settings in the spectrometer itself, which at this point 
-            # (under the current wasatch.AutoRaman design) are still free-running
-            # at whatever optimized values the AutoRaman algo computed
-            if reading.new_integration_time_ms is not None:
-                self.ctl.integration_time_feature.set_ms(spec.settings.state.integration_time_ms, quiet=True)
-            if reading.new_gain_db is not None:
-                self.ctl.gain_db_feature.set_db(spec.settings.state.gain_db, quiet=True)
+            self.restore_acquisition_parameters()
+
+    def restore_acquisition_parameters(self):
+        if self.prev_integration_time_ms is not None:
+            self.ctl.integration_time_feature.set_ms(self.prev_integration_time_ms, quiet=True)
+        if self.prev_gain_db is not None:
+            self.ctl.gain_db_feature.set_db(self.prev_gain_db, quiet=True)
             
     def set_max_ms                 (self, value): self.sb_max_ms                 .setValue(int(value))
     def set_start_integ_ms         (self, value): self.sb_start_integ_ms         .setValue(int(value))
