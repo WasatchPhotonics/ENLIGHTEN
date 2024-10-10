@@ -57,6 +57,8 @@ class HelpFeature:
             Ctrl-S Save measurement
             Ctrl-T enter integration Time
             Ctrl-X toggle eXpert mode
+
+            Ctrl-* Auto-Raman
             
             Ctrl-Left  move cursor
             Ctrl-Right move cursor"""))
