@@ -3095,6 +3095,21 @@ QComboBox QListView
                           </item>
 
                           <item row="16" column="0">
+                           <widget class="QCheckBox" name="checkBox_ee_ssc_enabled">
+                            <property name="text">
+                             <string />
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="16" column="1">
+                           <widget class="QLabel" name="label_46_2z">
+                            <property name="text">
+                             <string>SSC Enabled</string>
+                            </property>
+                           </widget>
+                          </item>
+
+                          <item row="17" column="0">
                            <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_excitation_nm_float">
                             <property name="minimumSize">
                              <size>
@@ -3125,14 +3140,14 @@ QComboBox QListView
                             </property>
                            </widget>
                           </item>
-                          <item row="16" column="1">
+                          <item row="17" column="1">
                            <widget class="QLabel" name="label_83">
                             <property name="text">
                              <string>Excitation (nm)</string>
                             </property>
                            </widget>
                           </item>
-                          <item row="17" column="0">
+                          <item row="18" column="0">
                            <widget class="QSpinBox" name="spinBox_ee_slit_size_um">
                             <property name="minimumSize">
                              <size>
@@ -3160,14 +3175,14 @@ QComboBox QListView
                             </property>
                            </widget>
                           </item>
-                          <item row="17" column="1">
+                          <item row="18" column="1">
                            <widget class="QLabel" name="label_86">
                             <property name="text">
                              <string>Slit Size (µm)</string>
                             </property>
                            </widget>
                           </item>
-                          <item row="18" column="0">
+                          <item row="19" column="0">
                            <widget class="QSpinBox" name="spinBox_ee_startup_integration_time_ms">
                             <property name="minimumSize">
                              <size>
@@ -3192,14 +3207,14 @@ QComboBox QListView
                             </property>
                            </widget>
                           </item>
-                          <item row="18" column="1">
+                          <item row="19" column="1">
                            <widget class="QLabel" name="label_13">
                             <property name="text">
                              <string>Startup Integration Time (ms)</string>
                             </property>
                            </widget>
                           </item>
-                          <item row="19" column="0">
+                          <item row="20" column="0">
                            <widget class="QSpinBox" name="spinBox_ee_startup_temp_degC">
                             <property name="minimumSize">
                              <size>
@@ -3224,7 +3239,7 @@ QComboBox QListView
                             </property>
                            </widget>
                           </item>
-                          <item row="19" column="1">
+                          <item row="20" column="1">
                            <widget class="QLabel" name="label_21">
                             <property name="toolTip">
                              <string>°C for detectors (X/XM/XL), or raw DAC for lasers (XS)</string>
@@ -3234,7 +3249,7 @@ QComboBox QListView
                             </property>
                            </widget>
                           </item>
-                          <item row="20" column="0">
+                          <item row="21" column="0">
                            <widget class="QSpinBox" name="spinBox_ee_startup_triggering_scheme">
                             <property name="minimumSize">
                              <size>
@@ -3253,14 +3268,14 @@ QComboBox QListView
                             </property>
                            </widget>
                           </item>
-                          <item row="20" column="1">
+                          <item row="21" column="1">
                            <widget class="QLabel" name="label_29">
                             <property name="text">
                              <string>Startup Triggering Scheme</string>
                             </property>
                            </widget>
                           </item>
-                          <item row="21" column="0">
+                          <item row="22" column="0">
                            <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_detector_gain">
                             <property name="minimumSize">
                              <size>
@@ -3288,7 +3303,7 @@ QComboBox QListView
                             </property>
                            </widget>
                           </item>
-                          <item row="21" column="1">
+                          <item row="22" column="1">
                            <layout class="QHBoxLayout" name="horizontalLayout_92">
                             <item>
                              <widget class="QLabel" name="label_31">
@@ -3330,7 +3345,7 @@ QComboBox QListView
                             </item>
                            </layout>
                           </item>
-                          <item row="22" column="0">
+                          <item row="23" column="0">
                            <widget class="QSpinBox" name="spinBox_ee_detector_offset">
                             <property name="minimumSize">
                              <size>
@@ -3352,14 +3367,14 @@ QComboBox QListView
                             </property>
                            </widget>
                           </item>
-                          <item row="22" column="1">
+                          <item row="23" column="1">
                            <widget class="QLabel" name="label_142">
                             <property name="text">
                              <string>Detector Offset (InGaAs even)</string>
                             </property>
                            </widget>
                           </item>
-                          <item row="23" column="0">
+                          <item row="24" column="0">
                            <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_detector_gain_odd">
                             <property name="minimumSize">
                              <size>
@@ -3384,14 +3399,14 @@ QComboBox QListView
                             </property>
                            </widget>
                           </item>
-                          <item row="23" column="1">
+                          <item row="24" column="1">
                            <widget class="QLabel" name="label_143">
                             <property name="text">
                              <string>Detector Gain (InGaAs odd)</string>
                             </property>
                            </widget>
                           </item>
-                          <item row="24" column="0">
+                          <item row="25" column="0">
                            <widget class="QSpinBox" name="spinBox_ee_detector_offset_odd">
                             <property name="minimumSize">
                              <size>
@@ -3413,21 +3428,21 @@ QComboBox QListView
                             </property>
                            </widget>
                           </item>
-                          <item row="24" column="1">
+                          <item row="25" column="1">
                            <widget class="QLabel" name="label_161">
                             <property name="text">
                              <string>Detector Offset (InGaAs odd)</string>
                             </property>
                            </widget>
                           </item>
-                          <item row="25" column="0">
+                          <item row="26" column="0">
                            <widget class="QLabel" name="label_ee_format">
                             <property name="text">
                              <string>fmt</string>
                             </property>
                            </widget>
                           </item>
-                          <item row="25" column="1">
+                          <item row="26" column="1">
                            <widget class="QLabel" name="label_216">
                             <property name="text">
                              <string>Format</string>
@@ -16637,6 +16652,92 @@ li.checked::marker { content: "\2612"; }
                              </property>
                             </widget>
                            </item>
+
+                           <item row="14" column="0">
+                            <widget class="QSpinBox" name="spinBox_auto_raman_max_avg">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>100</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="focusPolicy">
+                              <enum>Qt::FocusPolicy::StrongFocus</enum>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignmentFlag::AlignCenter</set>
+                             </property>
+                             <property name="minimum">
+                              <number>1</number>
+                             </property>
+                             <property name="maximum">
+                              <number>1000</number>
+                             </property>
+                             <property name="singleStep">
+                              <number>1</number>
+                             </property>
+                             <property name="value">
+                              <number>100</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="14" column="1">
+                            <widget class="QLabel" name="label_auto_raman_max_avg">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="layoutDirection">
+                              <enum>Qt::LayoutDirection::RightToLeft</enum>
+                             </property>
+                             <property name="text">
+                              <string>Max Averaging</string>
+                             </property>
+                            </widget>
+                           </item>
+                           
+                           <item row="15" column="0" colspan="2">
+                            <widget class="QCheckBox" name="checkBox_auto_raman_retain_settings">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="text">
+                              <string>Retain Auto-Raman Settings</string>
+                             </property>
+                            </widget>
+                           </item>
+
+                           <item row="16" column="0" colspan="2">
+                            <widget class="QCheckBox" name="checkBox_auto_raman_auto_save">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="text">
+                              <string>Automatically Save</string>
+                             </property>
+                            </widget>
+                           </item>
+
                           </layout>
                          </widget>
                         </item>
