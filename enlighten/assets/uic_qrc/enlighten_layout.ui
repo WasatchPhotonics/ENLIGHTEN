@@ -2973,7 +2973,7 @@ QComboBox QListView
                           <item row="7" column="1">
                            <widget class="QLabel" name="label_219">
                             <property name="text">
-                             <string>Bin 2x2</string>
+                             <string>Enable Horizontal Binning</string>
                             </property>
                            </widget>
                           </item>
@@ -4702,6 +4702,9 @@ QComboBox QListView
                               <height>0</height>
                              </size>
                             </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
                            </widget>
                           </item>
                           <item row="12" column="1">
@@ -4715,13 +4718,17 @@ QComboBox QListView
                            <widget class="QSpinBox" name="spinBox_ee_laser_watchdog_sec">
                             <property name="minimumSize">
                              <size>
-                              <width>75</width>
+                              <width>125</width>
                               <height>0</height>
                              </size>
                             </property>
                             <property name="alignment">
                              <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
+                            <property name="keyboardTracking">
+                             <bool>false</bool>
+                            </property>
+
                             <property name="maximum">
                              <number>1200</number>
                             </property>
@@ -4741,13 +4748,17 @@ QComboBox QListView
                            <widget class="QSpinBox" name="spinBox_ee_light_source_type">
                             <property name="minimumSize">
                              <size>
-                              <width>75</width>
+                              <width>125</width>
                               <height>0</height>
                              </size>
                             </property>
                             <property name="alignment">
                              <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
+                            <property name="keyboardTracking">
+                             <bool>false</bool>
+                            </property>
+
                             <property name="maximum">
                              <number>255</number>
                             </property>
@@ -4760,6 +4771,88 @@ QComboBox QListView
                             </property>
                            </widget>
                           </item>
+
+                          
+                          <item row="15" column="0">
+                           <widget class="QSpinBox" name="spinBox_ee_power_timeout_sec">
+                            <property name="minimumSize">
+                             <size>
+                              <width>125</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                            <property name="keyboardTracking">
+                             <bool>false</bool>
+                            </property>
+
+                            <property name="maximum">
+                             <number>255</number>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="15" column="1">
+                           <widget class="QLabel" name="label_48a">
+                            <property name="text">
+                             <string>Power Timeout Sec</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="16" column="0">
+                           <widget class="QSpinBox" name="spinBox_ee_detector_timeout_sec">
+                            <property name="minimumSize">
+                             <size>
+                              <width>125</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                            <property name="keyboardTracking">
+                             <bool>false</bool>
+                            </property>
+                            <property name="maximum">
+                             <number>255</number>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="16" column="1">
+                           <widget class="QLabel" name="label_48b">
+                            <property name="text">
+                             <string>Detector Timeout Sec</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="17" column="0">
+                           <widget class="QSpinBox" name="spinBox_ee_horiz_binning_method">
+                            <property name="minimumSize">
+                             <size>
+                              <width>125</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                            <property name="keyboardTracking">
+                             <bool>false</bool>
+                            </property>
+                            <property name="maximum">
+                             <number>255</number>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="17" column="1">
+                           <widget class="QLabel" name="label_48c">
+                            <property name="text">
+                             <string>Horizontal Binning Method</string>
+                            </property>
+                           </widget>
+                          </item>
+
                          </layout>
                         </item>
                        </layout>

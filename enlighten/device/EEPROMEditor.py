@@ -94,7 +94,7 @@ class EEPROMEditor:
             "thermistor_beta": "tec_beta",
             "thermistor_res_at298k": "tec_r298",
             "detector_name": "detector",
-            "actual_pixels_horiz": "actual_horizontal",
+            "actual_pixels_horiz": "actual_pixels_horizontal",
             "active_pixels_horiz": "active_pixels_horizontal",
             "active_pixels_vert": "active_pixels_vertical",
             "roi_horiz_start": "roi_horizontal_start",
@@ -218,7 +218,7 @@ class EEPROMEditor:
 
         self.bind_spinBox         (cfu.spinBox_ee_active_pixels_horizontal,   "active_pixels_horizontal")
         self.bind_spinBox         (cfu.spinBox_ee_active_pixels_vertical,     "active_pixels_vertical")
-        self.bind_spinBox         (cfu.spinBox_ee_actual_horizontal_pixels,   "actual_horizontal")
+        self.bind_spinBox         (cfu.spinBox_ee_actual_horizontal_pixels,   "actual_pixels_horizontal")
         for i in range(15):
             self.bind_spinBox(getattr(cfu, f"spinBox_ee_bad_pixel_{i}"), "bad_pixels", i)
         self.bind_spinBox         (cfu.spinBox_ee_baud_rate,                  "baud_rate")
@@ -258,6 +258,9 @@ class EEPROMEditor:
         self.bind_spinBox         (cfu.spinBox_ee_regions_4_vertical_end,     "roi_vertical_region_4_end")
         self.bind_spinBox         (cfu.spinBox_ee_laser_watchdog_sec,         "laser_watchdog_sec")
         self.bind_spinBox         (cfu.spinBox_ee_light_source_type,          "light_source_type")
+        self.bind_spinBox         (cfu.spinBox_ee_power_timeout_sec,          "power_timeout_sec")
+        self.bind_spinBox         (cfu.spinBox_ee_detector_timeout_sec,       "detector_timeout_sec")
+        self.bind_spinBox         (cfu.spinBox_ee_horiz_binning_method,       "horiz_binning_method")
         for region in range(2, 5):
             for node in ("start", "end"):
                 self.bind_spinBox(getattr(cfu, f"spinBox_ee_regions_{region}_horiz_{node}"), f"roi_horiz_region_{region}_{node}")
