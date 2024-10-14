@@ -147,6 +147,7 @@ class EEPROMEditor:
         self.bind_checkBox        (cfu.checkBox_ee_has_shutter,               "has_shutter")
         self.bind_checkBox        (cfu.checkBox_ee_disable_ble_power,         "disable_ble_power")
         self.bind_checkBox        (cfu.checkBox_ee_disable_laser_armed_indicator, "disable_laser_armed_indicator")
+        self.bind_checkBox        (cfu.checkBox_ee_ssc_enabled,               "ssc_enabled")
 
         # To be clear: we're editing the float version of excitation_nm. Edits 
         # are automatically rounded and re-saved to the integral version. We 
@@ -505,12 +506,17 @@ class EEPROMEditor:
             elif name == "subformat":
                 self.update_subformat()
 
+            # vertical ROI
             elif "roi_vertical_region_1" in name:
                 spec = self.ctl.multispec.current_spectrometer()
                 if spec is not None:
                     end = self.eeprom.roi_vertical_region_1_end
                     start = self.eeprom.roi_vertical_region_1_start
                     spec.change_device_setting("vertical_binning", (start, end))
+
+            # SSC
+            elif "ssc_enabled" in name:
+                spec.change_device_setting("ssc_enabled", value)
 
             # send "user" updates downstream (not when switching between spectrometers though)
             if self.updated_from_eeprom:
@@ -527,9 +533,6 @@ class EEPROMEditor:
 
         # TODO: call Controller.change_setting("eeprom", self.eeprom) on 
         #       successful value change?
-        #
-        # Before we do that, we better be DAMN sure we're sending to the right
-        # serial number (maybe send a (serial_number, eeprom) tuple).
 
     # ##########################################################################
     # methods
