@@ -2964,7 +2964,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="7" column="0">
-                           <widget class="QCheckBox" name="checkBox_ee_bin_2x2">
+                           <widget class="QCheckBox" name="checkBox_ee_horiz_binning_enabled">
                             <property name="text">
                              <string />
                             </property>
@@ -3090,21 +3090,6 @@ QComboBox QListView
                            <widget class="QLabel" name="label_46_2y">
                             <property name="text">
                              <string>Disable Laser Armed Indicator</string>
-                            </property>
-                           </widget>
-                          </item>
-
-                          <item row="16" column="0">
-                           <widget class="QCheckBox" name="checkBox_ee_ssc_enabled">
-                            <property name="text">
-                             <string />
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="16" column="1">
-                           <widget class="QLabel" name="label_46_2z">
-                            <property name="text">
-                             <string>SSC Enabled</string>
                             </property>
                            </widget>
                           </item>
@@ -4842,7 +4827,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="17" column="0">
-                           <widget class="QSpinBox" name="spinBox_ee_horiz_binning_method">
+                           <widget class="QSpinBox" name="spinBox_ee_horiz_binning_mode">
                             <property name="minimumSize">
                              <size>
                               <width>125</width>
@@ -4863,7 +4848,7 @@ QComboBox QListView
                           <item row="17" column="1">
                            <widget class="QLabel" name="label_48c">
                             <property name="text">
-                             <string>Horizontal Binning Method</string>
+                             <string>Horizontal Binning Mode</string>
                             </property>
                            </widget>
                           </item>

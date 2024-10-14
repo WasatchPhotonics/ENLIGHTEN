@@ -41,7 +41,6 @@ class TestUSB:
                          "tec_beta",
                          "model",
                          "excitation_nm",
-                         "bin_2x2",
                          "detector",
                          "max_laser_power_mW",
                          "serial_number",

@@ -334,7 +334,7 @@ class DidYouKnowFeature:
             <h3>EEPROM</h3>
 
             <li>active_pixels_horizontal <li>active_pixels_vertical    <li>avg_resolution
-            <li>bin_2x2                  <li>cutoff_filter_installed   <li>detector
+            <li>horiz_binning_enabled    <li>cutoff_filter_installed   <li>detector
             <li>detector_gain            <li>detector_offset           <li>excitation_nm_float
             <li>has_battery              <li>has_cooling               <li>has_laser
             <li>laser_warmup_sec         <li>max_laser_power_mW        <li>min_integration_time_ms

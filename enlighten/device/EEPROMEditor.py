@@ -104,7 +104,7 @@ class EEPROMEditor:
             "excitation_wavelength_nm": "excitation_nm",
             "product_config": "product_configuration",
             "rel_int_corr_order": "raman_intensity_calibration_order",
-            "bin2x2": "bin_2x2",
+            "bin2x2": "horiz_binning_enabled",
             "flip_x_axis": "invert_x_axis",
             }
 
@@ -138,7 +138,7 @@ class EEPROMEditor:
         self.bind_checkBox        (cfu.checkBox_ee_has_cooling,               "has_cooling")
         self.bind_checkBox        (cfu.checkBox_ee_has_laser,                 "has_laser")
         self.bind_checkBox        (cfu.checkBox_ee_invert_x_axis,             "invert_x_axis")
-        self.bind_checkBox        (cfu.checkBox_ee_bin_2x2,                   "bin_2x2")
+        self.bind_checkBox        (cfu.checkBox_ee_horiz_binning_enabled,     "horiz_binning_enabled")
         self.bind_checkBox        (cfu.checkBox_ee_gen15,                     "gen15")
         self.bind_checkBox        (cfu.checkBox_ee_cutoff_filter_installed,   "cutoff_filter_installed")
         self.bind_checkBox        (cfu.checkBox_ee_hardware_even_odd,         "hardware_even_odd")
@@ -147,7 +147,6 @@ class EEPROMEditor:
         self.bind_checkBox        (cfu.checkBox_ee_has_shutter,               "has_shutter")
         self.bind_checkBox        (cfu.checkBox_ee_disable_ble_power,         "disable_ble_power")
         self.bind_checkBox        (cfu.checkBox_ee_disable_laser_armed_indicator, "disable_laser_armed_indicator")
-        self.bind_checkBox        (cfu.checkBox_ee_ssc_enabled,               "ssc_enabled")
 
         # To be clear: we're editing the float version of excitation_nm. Edits 
         # are automatically rounded and re-saved to the integral version. We 
@@ -261,7 +260,7 @@ class EEPROMEditor:
         self.bind_spinBox         (cfu.spinBox_ee_light_source_type,          "light_source_type")
         self.bind_spinBox         (cfu.spinBox_ee_power_timeout_sec,          "power_timeout_sec")
         self.bind_spinBox         (cfu.spinBox_ee_detector_timeout_sec,       "detector_timeout_sec")
-        self.bind_spinBox         (cfu.spinBox_ee_horiz_binning_method,       "horiz_binning_method")
+        self.bind_spinBox         (cfu.spinBox_ee_horiz_binning_mode,         "horiz_binning_mode")
         for region in range(2, 5):
             for node in ("start", "end"):
                 self.bind_spinBox(getattr(cfu, f"spinBox_ee_regions_{region}_horiz_{node}"), f"roi_horiz_region_{region}_{node}")
@@ -516,10 +515,6 @@ class EEPROMEditor:
                     end = self.eeprom.roi_vertical_region_1_end
                     start = self.eeprom.roi_vertical_region_1_start
                     spec.change_device_setting("vertical_binning", (start, end))
-
-            # SSC
-            elif "ssc_enabled" in name:
-                spec.change_device_setting("ssc_enabled", value)
 
             # send "user" updates downstream (not when switching between spectrometers though)
             if self.updated_from_eeprom:
