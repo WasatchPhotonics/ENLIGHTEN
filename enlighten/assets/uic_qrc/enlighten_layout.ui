@@ -4083,7 +4083,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="5" column="0">
-                           <widget class="QSpinBox" name="spinBox_ee_actual_horizontal_pixels">
+                           <widget class="QSpinBox" name="spinBox_ee_actual_pixels_horizontal">
                             <property name="minimumSize">
                              <size>
                               <width>125</width>
@@ -20584,7 +20584,6 @@ li.checked::marker { content: "\2612"; }
   <tabstop>lineEdit_ee_linearity_coeff_3</tabstop>
   <tabstop>spinBox_ee_active_pixels_horizontal</tabstop>
   <tabstop>spinBox_ee_active_pixels_vertical</tabstop>
-  <tabstop>spinBox_ee_actual_horizontal_pixels</tabstop>
   <tabstop>spinBox_ee_roi_horizontal_start</tabstop>
   <tabstop>spinBox_ee_roi_horizontal_end</tabstop>
   <tabstop>spinBox_ee_roi_vertical_region_1_start</tabstop>

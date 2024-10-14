@@ -218,7 +218,7 @@ class EEPROMEditor:
 
         self.bind_spinBox         (cfu.spinBox_ee_active_pixels_horizontal,   "active_pixels_horizontal")
         self.bind_spinBox         (cfu.spinBox_ee_active_pixels_vertical,     "active_pixels_vertical")
-        self.bind_spinBox         (cfu.spinBox_ee_actual_horizontal_pixels,   "actual_pixels_horizontal")
+        self.bind_spinBox         (cfu.spinBox_ee_actual_pixels_horizontal,   "actual_pixels_horizontal")
         for i in range(15):
             self.bind_spinBox(getattr(cfu, f"spinBox_ee_bad_pixel_{i}"), "bad_pixels", i)
         self.bind_spinBox         (cfu.spinBox_ee_baud_rate,                  "baud_rate")
