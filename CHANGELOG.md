@@ -1,5 +1,7 @@
 # Version History
 
+- 2024-??-?? 4.1.12
+    - added bin_4x2
 - 2024-10-10 4.1.11
     - fixed Ctrl-G gain shortcut 
     - renamed "ROI Start/Stop Lines" in saved Measurements
