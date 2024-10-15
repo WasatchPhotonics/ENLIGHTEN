@@ -306,6 +306,10 @@ class DidYouKnowFeature:
                 size, see how close it is to filling, and empty it at any time.  Plus you can always 
                 open up the source code in <tt>EnlightenSpectra/plugins/Analysis/StatsBuffer.py</tt> 
                 to see how easy it is to write your own!</p>""")
+        tip("Ctrl-Up/Down Arrows", None, """
+             <p>You probably know you can change numeric values with the up/down arrow keys when
+                you've selected a numeric field. You can also use Ctrl-Up/Down to change the values
+                in larger jumps!</p>""")
         
         # collated
         # Edit ROI (lock axes)

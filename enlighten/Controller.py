@@ -1076,6 +1076,8 @@ class Controller:
         associated Business Objects (e.g. Ctrl-D within DarkFeature). However,
         it seems helpful to have all of these consolidated in one place to 
         ensure uniqueness.
+
+        Note the "Help" for this feature is currently in ui.HelpFeature.
         """
 
         self.shortcuts = {}
@@ -1095,6 +1097,7 @@ class Controller:
         make_shortcut("Ctrl+3", self.page_nav.set_view_hardware)
         make_shortcut("Ctrl+4", self.page_nav.set_view_logging)
         make_shortcut("Ctrl+5", self.page_nav.set_view_factory)
+        make_shortcut("Ctrl+`", self.page_nav.next_view)
 
         # Convenience
         make_shortcut("Ctrl+A", self.authentication.login) # authenticate, advanced

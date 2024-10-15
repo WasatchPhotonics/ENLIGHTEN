@@ -1,6 +1,10 @@
 # Version History
 
-- 2024-??-?? 4.1.12
+- 2024-??-?? 4.1.13
+    - fixed AutoRaman on X series
+    - added DYK (Ctrl-Up/Down)
+    - added Ctrl-backtick shortcut
+- 2024-10-14 4.1.12
     - added bin_4x2
 - 2024-10-10 4.1.11
     - fixed Ctrl-G gain shortcut 
