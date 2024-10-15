@@ -1,11 +1,12 @@
 # Version History
 
-- 2024-??-?? 4.1.13
+- 2024-10-15 4.1.13
     - AutoRaman
         - fixed on X series
         - added option in BatchCollection
         - add flag to Measurement metadata
         - indicate laser firing status via LaserControl and StatusIndicators
+    - added bin_4x2_interp
     - added DYK (Ctrl-Up/Down)
     - added Ctrl-backtick shortcut
 - 2024-10-14 4.1.12
