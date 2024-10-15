@@ -334,11 +334,21 @@ class LaserControlFeature:
             self.configure_laser_power_controls_percent()
         self.ctl.form.ui.doubleSpinBox_laser_power.setValue(perc)
 
+    def update_laser_firing_indicators(self, flag):
+        self.refresh_laser_buttons(force_on=flag)
+        self.ctl.status_indicators.force_laser_on = flag
+
     # ##########################################################################
     # Private Methods
     # ##########################################################################
 
     def refresh_laser_buttons(self, force_on=False):
+        """ 
+        force_on means whether the button is red (indicate laser is enabled and 
+        firing) or grey (imply laser is not enabled and not firing). This doesn't
+        actually affect whether the button is clickable -- that is determined by
+        'allowed'.
+        """
         spec = self.ctl.multispec.current_spectrometer()
         cfu = self.ctl.form.ui
 

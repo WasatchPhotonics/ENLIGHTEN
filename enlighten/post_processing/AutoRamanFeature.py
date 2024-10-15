@@ -40,6 +40,7 @@ class AutoRamanFeature:
         self.retain_settings = False
         self.prev_integration_time_ms = None
         self.prev_gain_db = None
+        self.allowed = False
 
         self.sb_max_ms                  = cfu.spinBox_auto_raman_max_ms           
         self.sb_start_integ_ms          = cfu.spinBox_auto_raman_start_integ_ms   
@@ -168,6 +169,11 @@ class AutoRamanFeature:
             self.cb_config.setVisible(False)
             self.fr_config.setVisible(False)
 
+    def force_on(self, flag):
+        for b in self.buttons:
+            self.ctl.gui.colorize_button(b, flag)
+            b.setEnabled(not flag)
+
     def measure_callback(self):
 
         # ensure we're paused
@@ -178,6 +184,9 @@ class AutoRamanFeature:
         if spec is None:
             return
         spec.clear_graph()
+
+        # disable Laser Control
+        self.ctl.laser_control.set_restriction(self.LASER_CONTROL_DISABLE_REASON)
 
         self.running = True
         for b in self.buttons:
@@ -191,7 +200,12 @@ class AutoRamanFeature:
         self.prev_gain_db = self.ctl.gain_db_feature.get_db()
 
         # define a TakeOneRequest with AutoRaman enabled
-        auto_raman_request = AutoRamanRequest(
+        take_one_request = TakeOneRequest(auto_raman_request = self.generate_auto_raman_request())
+
+        self.ctl.take_one.start(completion_callback=self.completion_callback, stop_callback=self.stop_callback, template=take_one_request, save=self.auto_save)
+
+    def generate_auto_raman_request(self):
+        return AutoRamanRequest(
             max_ms                  = self.get_max_ms        (),
             start_integ_ms          = self.get_start_integ_ms(), # consider self.ctl.integration_time_feature.get_ms()
             start_gain_db           = self.get_start_gain_db (), # consider self.ctl.gain_db_feature.get_db()
@@ -208,10 +222,6 @@ class AutoRamanFeature:
             drop_factor             = self.get_drop_factor   (),
             laser_warning_delay_sec = self.get_laser_warning_delay_sec())
 
-        take_one_request = TakeOneRequest(auto_raman_request=auto_raman_request)
-
-        self.ctl.take_one.start(completion_callback=self.completion_callback, stop_callback=self.stop_callback, template=take_one_request, save=self.auto_save)
-
     def stop_callback(self):
         self.running = False
         for b in self.buttons:
@@ -220,7 +230,7 @@ class AutoRamanFeature:
         self.restore_acquisition_parameters()
 
     def completion_callback(self):
-        # self.ctl.laser_control.refresh_laser_buttons()
+        self.ctl.laser_control.refresh_laser_buttons()
         self.running = False
         for b in self.buttons:
             self.ctl.gui.colorize_button(b, False)

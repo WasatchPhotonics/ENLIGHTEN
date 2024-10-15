@@ -1644,6 +1644,9 @@ class Controller:
         elif msg.setting == "progress_bar": 
             self.reading_progress_bar.set(msg.value)
 
+        elif msg.setting == "laser_firing_indicators": 
+            self.laser_control.update_laser_firing_indicators(msg.value)
+
         else:
             log.debug("unsupported StatusMessage: %s", msg.setting)
 

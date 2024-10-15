@@ -833,12 +833,10 @@ class Measurement:
         if (self.processed_reading.reading and
             self.processed_reading.reading.take_one_request and
             self.processed_reading.reading.take_one_request.auto_raman_request):
-            log.debug("get_metadata: using Auto-Raman settings")
             if field == "integration time":      return self.processed_reading.reading.new_integration_time_ms
             if field == "scan averaging":        return self.processed_reading.reading.sum_count
             if field == "ccd gain":              return self.processed_reading.reading.new_gain_db if self.settings.is_sig() else self.settings.eeprom.detector_gain
            
-        log.debug("get_metadata: not using Auto-Raman settings")
         if field == "integration time":          return self.settings.state.integration_time_ms
         if field == "scan averaging":            return self.settings.state.scans_to_average
         if field == "ccd gain":                  return self.settings.state.gain_db if self.settings.is_sig() else self.settings.eeprom.detector_gain

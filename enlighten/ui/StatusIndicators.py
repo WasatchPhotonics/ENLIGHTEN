@@ -39,6 +39,9 @@ class StatusIndicators:
         self.button_lamp        = cfu.systemStatusWidget_pushButton_light
         self.button_temperature = cfu.systemStatusWidget_pushButton_temperature
 
+        # can be used to force the laser warning to illuminate
+        self.force_laser_on = False
+
         def style(color, msg):
             return f"<p><span style='color:{color}; font-weight:bold'>{color.upper()}:</span> {msg}</p>"
 
@@ -135,7 +138,11 @@ class StatusIndicators:
             all_specs = self.ctl.multispec.get_spectrometers()
             if settings.eeprom.has_laser and len(all_specs) <= 1:
                 
-                if reading is None:
+                if self.force_laser_on:
+                    lamp = "warning"
+                    lamp_tt = "Laser is FIRING"
+                    
+                elif reading is None:
                     if settings.state.laser_enabled:
                         lamp = "warning"
                         lamp_tt = "laser enabled"
@@ -161,6 +168,7 @@ class StatusIndicators:
                     else:
                         lamp = "disconnected"
                         lamp_tt = "Laser is disarmed (cannot fire)"
+
             elif settings.eeprom.gen15 and len(all_specs) <= 1:
                 if settings.state.laser_enabled:
                     lamp = "warning"

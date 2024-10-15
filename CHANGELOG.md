@@ -4,6 +4,8 @@
     - fixed AutoRaman on X series
     - added DYK (Ctrl-Up/Down)
     - added Ctrl-backtick shortcut
+    - added Auto-Raman option in BatchCollection
+    - indicate laser firing status via LaserControl in AutoRaman
 - 2024-10-14 4.1.12
     - added bin_4x2
 - 2024-10-10 4.1.11

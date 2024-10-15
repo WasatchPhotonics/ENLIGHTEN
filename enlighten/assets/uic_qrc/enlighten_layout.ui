@@ -10308,6 +10308,16 @@ QComboBox QListView
                                     </property>
                                    </widget>
                                   </item>
+                                  <item>
+                                   <widget class="QRadioButton" name="radioButton_BatchCollection_laser_auto_raman">
+                                    <property name="toolTip">
+                                     <string>Use Auto-Raman for every measurement</string>
+                                    </property>
+                                    <property name="text">
+                                     <string>Auto-Raman</string>
+                                    </property>
+                                   </widget>
+                                  </item>
                                  </layout>
                                 </widget>
                                </item>
