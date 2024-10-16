@@ -1,6 +1,5 @@
-tensorflow==2.13.1
-#cloud-tpu-client
 numpy
+tensorflow
 PySide6
 PyQt5
 pygtail 
@@ -27,8 +26,8 @@ scipy
 xlwt
 qimage2ndarray
 2to3
-matplotlib==3.7
+matplotlib
 pyserial
-spc_spectra
+# spc_spectra
 
 pywin32 ; sys_platform == 'win32'

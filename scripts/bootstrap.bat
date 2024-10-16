@@ -21,7 +21,7 @@ REM without inserting control characters which confuse unix2dos etc.
 REM https://stackoverflow.com/a/64515648
 set "RING_BELL=echo x|choice /n 2>nul"
 
-set ENLIGHTEN_PYTHON_REV=3.11
+set ENLIGHTEN_PYTHON_REV=3.12
 set ENLIGHTEN_VENV=%HOME%\enlighten_py%ENLIGHTEN_PYTHON_REV%
 echo Using ENLIGHTEN_PYTHON_REV %ENLIGHTEN_PYTHON_REV%
 echo Using ENLIGHTEN_VENV at %ENLIGHTEN_VENV%
@@ -311,6 +311,7 @@ if "%pyinstaller%" == "1" (
         --noconsole ^
         --clean ^
         --paths="../Wasatch.PY" ^
+        --hidden-import="numpy.core._multiarray_umath" ^
         --hidden-import="scipy._lib.messagestream" ^
         --hidden-import="scipy._lib.array_api_compat.numpy.fft" ^
         --hidden-import="scipy.special._special_ufuncs" ^
