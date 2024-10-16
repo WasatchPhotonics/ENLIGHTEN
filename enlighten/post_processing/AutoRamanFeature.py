@@ -224,14 +224,38 @@ class AutoRamanFeature:
 
     def stop_callback(self):
         self.running = False
+
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+
+        # this will tell the thread to stop collections and turn off the laser at
+        # the end of the current integration
+        spec.send_alert("auto_raman_cancel")
+
+        # hide the progress bar
+        self.ctl.reading_progress_bar.hide()
+
+        # forcibly disable the laser, regardless of inferred state
+        self.ctl.laser_control.set_laser_enable(False)
+
+        # permit manual control of laser 
+        self.ctl.laser_control.clear_restriction(self.LASER_CONTROL_DISABLE_REASON)
+
+        # we already cleared the old graph, and leaving it paused with no spectrum
+        # would be disquieting, so even though we just hit "Stop", go ahead and
+        # resume "Play"
+        self.ctl.vcr_controls.play()
+
         for b in self.buttons:
             self.ctl.gui.colorize_button(b, False)
         self.ctl.marquee.error("Auto-Raman measurement cancelled")
+
         self.restore_acquisition_parameters()
 
     def completion_callback(self):
-        self.ctl.laser_control.refresh_laser_buttons()
         self.running = False
+        self.ctl.laser_control.clear_restriction(self.LASER_CONTROL_DISABLE_REASON)
         for b in self.buttons:
             self.ctl.gui.colorize_button(b, False)
         self.ctl.marquee.info("Auto-Raman measurement complete")

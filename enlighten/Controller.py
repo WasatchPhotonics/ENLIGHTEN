@@ -1341,7 +1341,7 @@ class Controller:
 
     def attempt_reading(self, spec) -> None:
         """
-        Attempt to acquire a reading from the subprocess response queue,
+        Attempt to acquire a reading from the thread response queue,
         process and render data in the GUI.
         """
         cfu = self.form.ui
@@ -1597,6 +1597,7 @@ class Controller:
                     return 
 
                 # apparently it was a GOOD reading!
+                log.debug("acquire_reading: got good reading")
                 spec.reset_acquisition_timeout()
                 return AcquiredReading(reading=reading, progress=spectrometer_response.progress)
 
@@ -1618,7 +1619,7 @@ class Controller:
     def process_status_message(self, msg):
         """
         Used to handle StatusMessage objects received from spectrometer
-        subprocesses (as opposed to the Readings we normally receive).
+        threads (as opposed to the Readings we normally receive).
         
         These are not common in the current architecture.  These were used
         initially to provide progress updates to the GUI when loading long series

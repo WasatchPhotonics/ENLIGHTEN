@@ -1,5 +1,8 @@
 # Version History
 
+- 2024-??-?? 4.1.14
+    - AutoRaman
+        - fixed "Stop" button
 - 2024-10-15 4.1.13
     - AutoRaman
         - fixed on X series
