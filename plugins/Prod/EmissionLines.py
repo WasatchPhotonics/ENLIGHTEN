@@ -1,4 +1,4 @@
-from EnlightenPlugin import *
+from EnlightenPlugin import EnlightenPluginBase
 
 import logging
 log = logging.getLogger(__name__)

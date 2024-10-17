@@ -2,7 +2,7 @@ import numpy as np
 import scipy.stats 
 import logging
 
-from EnlightenPlugin import *
+from EnlightenPlugin import EnlightenPluginBase
 
 log = logging.getLogger(__name__)
 

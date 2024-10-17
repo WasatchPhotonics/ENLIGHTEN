@@ -51,6 +51,7 @@ class EnlightenPluginBase:
 
         self.series = {}
         self.events = {}
+        self.overrides = {}
 
         # plugins can do everything
         self.ctl = ctl
@@ -255,6 +256,7 @@ class EnlightenPluginBase:
             outputs = self.outputs,
             signals = self.signals,
             metadata = self.metadata,
+            overrides = self.overrides,
             message = self.marquee_message
         )
 
