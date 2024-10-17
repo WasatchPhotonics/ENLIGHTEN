@@ -3,6 +3,8 @@
 - 2024-??-?? 4.1.15
     - AutoRaman
         - added confirmation dialog
+        - updated Did You Know
+        - actually remembered to commit the new ReadingProgressBar class :-(
 - 2024-10-16 4.1.14
     - AutoRaman
         - fixed "Stop" button

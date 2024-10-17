@@ -294,7 +294,7 @@ class BatchCollection:
                 s += f"<p>The following batch will be run {self.batch_count} times, per <b>Batch Count</b>. "
             s += f"Successive batches will be timed to <i>start</i> {self.batch_period_sec}sec apart (<b>Batch Period</b>).</p>"
 
-            int_time = "the current" if self.laser_mode != "auto_raman" else "an individually optimized"
+            int_time = "the current" if self.laser_mode != "auto_raman" else "an individually optimized (per <b>Auto-Raman</b>)"
             s += f"""<p>Each batch will collect {self.measurement_count} measurements (<b>Measurement Count</b>).
                      The measurements will all be acquired at {int_time} integration time.  The measurements will be 
                      spaced to <i>start</i> {self.measurement_period_ms}ms apart (<b>Measurement Period</b>).</p>"""
