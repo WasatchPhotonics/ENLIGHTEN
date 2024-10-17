@@ -1,8 +1,9 @@
 # Version History
 
-- 2024-??-?? 4.1.14
+- 2024-10-16 4.1.14
     - AutoRaman
         - fixed "Stop" button
+        - release lock on manual laser control at completion
 - 2024-10-15 4.1.13
     - AutoRaman
         - fixed on X series
