@@ -40,7 +40,6 @@ class AutoRamanFeature:
         self.retain_settings = False
         self.prev_integration_time_ms = None
         self.prev_gain_db = None
-        self.allowed = False
 
         self.sb_max_ms                  = cfu.spinBox_auto_raman_max_ms           
         self.sb_start_integ_ms          = cfu.spinBox_auto_raman_start_integ_ms   
