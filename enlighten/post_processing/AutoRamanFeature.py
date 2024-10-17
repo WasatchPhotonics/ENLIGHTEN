@@ -100,6 +100,7 @@ class AutoRamanFeature:
         self.init_from_config()
 
         for b in self.buttons:
+            b.setToolTip("Collect one dark-corrected, averaged Raman measurement (ctrl-*)")
             b.setWhatsThis(unwrap("""
                 Auto-Raman provides one-click collection of an averaged, 
                 dark-corrected Raman measurement with automatically optimized 
@@ -136,10 +137,9 @@ class AutoRamanFeature:
     def update_config(self):
         self.update_visibility()
 
-        s = "Auto-Raman"
-        self.ctl.config.set(s, "config",          self.cb_config.isChecked())
-        self.ctl.config.set(s, "auto_save",       self.auto_save)
-        self.ctl.config.set(s, "retain_settings", self.retain_settings)
+        self.ctl.config.set(self.SECTION, "config",          self.cb_config.isChecked())
+        self.ctl.config.set(self.SECTION, "auto_save",       self.auto_save)
+        self.ctl.config.set(self.SECTION, "retain_settings", self.retain_settings)
 
     ##
     # called by Controller.disconnect_device to ensure we turn this off between
@@ -174,6 +174,25 @@ class AutoRamanFeature:
             b.setEnabled(not flag)
 
     def measure_callback(self):
+
+        # warn user of laser-safety precautions
+        warn_suppress = self.ctl.config.get(self.SECTION, "suppress_warning", default=False)
+        if not warn_suppress:
+            result = self.ctl.gui.msgbox_with_checkbox(
+                title="Auto-Raman Laser Warning", 
+                text=unwrap("""Auto-Raman measurements will automatically fire the laser
+                               while optimizing and collecting the dark-corrected Raman
+                               measurement. While the measurement is in progress, the
+                               standard laser control buttons will be disabled, but you
+                               can halt the Auto-Raman measurement at any time by pressing
+                               the 'Stop' button (⏹️) on the VCR controls."""),
+                checkbox_text="Don't show again")
+
+            if not result["ok"]:
+                return
+
+            if result["checked"]:
+                self.ctl.config.set(self.SECTION, "suppress_warning", True)
 
         # ensure we're paused
         self.ctl.vcr_controls.pause()

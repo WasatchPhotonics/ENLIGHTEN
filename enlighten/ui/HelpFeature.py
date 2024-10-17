@@ -62,7 +62,7 @@ class HelpFeature:
             Ctrl-* Auto-Raman
             
             Ctrl-Up/Down step values
-            Ctrl-Left/Right move cursor"""))
+            Ctrl-Left/Right move Scope cursor"""))
 
     def help_callback(self):
         url = self.HELP_URL

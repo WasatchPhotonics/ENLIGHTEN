@@ -1,5 +1,8 @@
 # Version History
 
+- 2024-??-?? 4.1.15
+    - AutoRaman
+        - added confirmation dialog
 - 2024-10-16 4.1.14
     - AutoRaman
         - fixed "Stop" button
