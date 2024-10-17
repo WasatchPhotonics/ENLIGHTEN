@@ -21,7 +21,7 @@ REM without inserting control characters which confuse unix2dos etc.
 REM https://stackoverflow.com/a/64515648
 set "RING_BELL=echo x|choice /n 2>nul"
 
-set ENLIGHTEN_PYTHON_REV=3.12
+set ENLIGHTEN_PYTHON_REV=3.11
 set ENLIGHTEN_VENV=%HOME%\enlighten_py%ENLIGHTEN_PYTHON_REV%
 echo Using ENLIGHTEN_PYTHON_REV %ENLIGHTEN_PYTHON_REV%
 echo Using ENLIGHTEN_VENV at %ENLIGHTEN_VENV%
