@@ -13,6 +13,10 @@ class ReadingProgressBar:
         cfu = ctl.form.ui
         self.pb = cfu.readingProgressBar
 
+        self.hide_timer = QtCore.QTimer()
+        self.hide_timer.setSingleShot(True)
+        self.hide_timer.timeout.connect(self.hide)
+
     def hide(self):
         self.pb.setVisible(False)
 
@@ -30,8 +34,9 @@ class ReadingProgressBar:
             
             if value == 0:
                 self.pb.setVisible(False)
-            elif value >= 100:
-                self.hide()
             else:
                 self.pb.setValue(value)
                 self.pb.setVisible(True)
+
+                if value >= 100:
+                    self.hide_timer.start(1000)

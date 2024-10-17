@@ -5,6 +5,7 @@
         - added confirmation dialog
         - updated Did You Know
         - actually remembered to commit the new ReadingProgressBar class :-(
+        - tidy ReadingProgressBar close
     - plugins
         - fixed imports
         - fixed overrides (e.g. Filters.SavitzkyGolay)
