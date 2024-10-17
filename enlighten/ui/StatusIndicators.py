@@ -10,21 +10,34 @@ else:
 
 log = logging.getLogger(__name__)
 
-## 
-# Encapsulates the 3 virtual status "LEDs" in the bottom-right of ENLIGHTEN's Scope view:
-# 
-# - hardware status 
-# - lamp/laser status
-# - detector temperature status 
-#
-# Each "LED" has three potential colors / states:
-#
-# - grey ("disconnected")
-# - green ("connected")
-# - orange ("warning")
-#
-# See WhatsThis for meanings.
 class StatusIndicators:
+    """
+    Encapsulates the 3 virtual status "LEDs" in the bottom-right of ENLIGHTEN's 
+    Scope view:
+
+    - hardware status 
+    - lamp/laser status
+    - detector temperature status 
+
+    Each "LED" has three potential colors / states:
+
+    - grey ("disconnected")
+    - green ("connected")
+    - orange ("warning")
+
+    See WhatsThis for meanings.
+
+    Note that this feature incapsulates its own QTimer and updates itself at 4Hz.
+    It does not update on received spectra (has no process_reading() method), but 
+    on scheduled updates does look at the most-recent ProcessedReading of the
+    currently selected spectrometer.
+
+    @todo Laser and temperature indicators should probably represent the UNION of
+          connected spectrometers, so if at least one is firing, or has unstable
+          temperature, that should probably be indicated. We could provide more
+          data on "which" spectrometers contribute to a particular reading via
+          tooltip.
+    """
 
     SLEEP_BETWEEN_UPDATES_MS = 250
     HARDWARE_WARNING_WINDOW_SEC = 3

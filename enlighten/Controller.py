@@ -1597,7 +1597,6 @@ class Controller:
                     return 
 
                 # apparently it was a GOOD reading!
-                log.debug("acquire_reading: got good reading")
                 spec.reset_acquisition_timeout()
                 return AcquiredReading(reading=reading, progress=spectrometer_response.progress)
 
