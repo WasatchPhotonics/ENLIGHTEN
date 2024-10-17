@@ -1192,16 +1192,18 @@ class PluginController:
         if orig_pr is None:
             return
 
-        # log.debug("apply_overrides: copying response.metadata to orig_pr.plugin_metadata: {response.metadata}")
         orig_pr.plugin_metadata = response.metadata
         if response.overrides is None:
             return
 
         for name in response.overrides:
             value = response.overrides[name]
-            if   name == "processed"            : orig_pr.processed            = value
-            elif name == "recordable_dark"      : orig_pr.recordable_dark      = value
-            elif name == "recordable_reference" : orig_pr.recordable_reference = value
+            if name == "processed": 
+                orig_pr.set_processed(value)
+            elif name == "recordable_dark": 
+                orig_pr.recordable_dark = value
+            elif name == "recordable_reference": 
+                orig_pr.recordable_reference = value
             else:
                 log.error(f"unsupported override: {name}")
 

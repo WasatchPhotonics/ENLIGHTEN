@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-from EnlightenPlugin import *
+from EnlightenPlugin import EnlightenPluginBase
 from enlighten import common
 
 # firstonly(i, "some string") will only have a value if i==0
