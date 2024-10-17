@@ -1076,6 +1076,8 @@ class Controller:
         associated Business Objects (e.g. Ctrl-D within DarkFeature). However,
         it seems helpful to have all of these consolidated in one place to 
         ensure uniqueness.
+
+        Note the "Help" for this feature is currently in ui.HelpFeature.
         """
 
         self.shortcuts = {}
@@ -1095,6 +1097,7 @@ class Controller:
         make_shortcut("Ctrl+3", self.page_nav.set_view_hardware)
         make_shortcut("Ctrl+4", self.page_nav.set_view_logging)
         make_shortcut("Ctrl+5", self.page_nav.set_view_factory)
+        make_shortcut("Ctrl+`", self.page_nav.next_view)
 
         # Convenience
         make_shortcut("Ctrl+A", self.authentication.login) # authenticate, advanced
@@ -1338,7 +1341,7 @@ class Controller:
 
     def attempt_reading(self, spec) -> None:
         """
-        Attempt to acquire a reading from the subprocess response queue,
+        Attempt to acquire a reading from the thread response queue,
         process and render data in the GUI.
         """
         cfu = self.form.ui
@@ -1615,7 +1618,7 @@ class Controller:
     def process_status_message(self, msg):
         """
         Used to handle StatusMessage objects received from spectrometer
-        subprocesses (as opposed to the Readings we normally receive).
+        threads (as opposed to the Readings we normally receive).
         
         These are not common in the current architecture.  These were used
         initially to provide progress updates to the GUI when loading long series
@@ -1640,6 +1643,9 @@ class Controller:
 
         elif msg.setting == "progress_bar": 
             self.reading_progress_bar.set(msg.value)
+
+        elif msg.setting == "laser_firing_indicators": 
+            self.laser_control.update_laser_firing_indicators(msg.value)
 
         else:
             log.debug("unsupported StatusMessage: %s", msg.setting)

@@ -1,5 +1,25 @@
 # Version History
 
+- 2024-??-?? 4.1.15
+    - AutoRaman
+        - added confirmation dialog
+        - updated Did You Know
+        - actually remembered to commit the new ReadingProgressBar class :-(
+- 2024-10-16 4.1.14
+    - AutoRaman
+        - fixed "Stop" button
+        - release lock on manual laser control at completion
+- 2024-10-15 4.1.13
+    - AutoRaman
+        - fixed on X series
+        - added option in BatchCollection
+        - add flag to Measurement metadata
+        - indicate laser firing status via LaserControl and StatusIndicators
+    - added bin_4x2_interp
+    - added DYK (Ctrl-Up/Down)
+    - added Ctrl-backtick shortcut
+- 2024-10-14 4.1.12
+    - added bin_4x2
 - 2024-10-10 4.1.11
     - fixed Ctrl-G gain shortcut 
     - renamed "ROI Start/Stop Lines" in saved Measurements

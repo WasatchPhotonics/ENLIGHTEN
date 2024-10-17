@@ -43,6 +43,7 @@ class HelpFeature:
             Ctrl-3 Hardware View
             Ctrl-4 Log View
             Ctrl-5 Factory View
+            Ctrl-` next view (backtick)
             
             Ctrl-A Authenticate
             Ctrl-C Copy to system clipboard
@@ -60,8 +61,8 @@ class HelpFeature:
 
             Ctrl-* Auto-Raman
             
-            Ctrl-Left  move cursor
-            Ctrl-Right move cursor"""))
+            Ctrl-Up/Down step values
+            Ctrl-Left/Right move Scope cursor"""))
 
     def help_callback(self):
         url = self.HELP_URL

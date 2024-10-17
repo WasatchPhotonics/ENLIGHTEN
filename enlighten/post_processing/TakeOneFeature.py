@@ -82,8 +82,12 @@ class TakeOneFeature:
         if self.running:
             if self.spec is None:
                 self.ctl.multispec.change_device_setting("cancel_take_one")
+                for spec in self.ctl.multispec.get_spectrometers():
+                    spec.app_state.take_one_request = None
             else:
                 self.spec.change_device_setting("cancel_take_one")
+                self.spec.app_state.take_one_request = None
+
             self.pause(True)
         
         if self.stop_callback:

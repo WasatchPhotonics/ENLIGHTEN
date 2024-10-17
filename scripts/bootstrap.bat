@@ -311,6 +311,7 @@ if "%pyinstaller%" == "1" (
         --noconsole ^
         --clean ^
         --paths="../Wasatch.PY" ^
+        --hidden-import="numpy.core._multiarray_umath" ^
         --hidden-import="scipy._lib.messagestream" ^
         --hidden-import="scipy._lib.array_api_compat.numpy.fft" ^
         --hidden-import="scipy.special._special_ufuncs" ^

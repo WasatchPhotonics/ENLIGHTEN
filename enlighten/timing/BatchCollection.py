@@ -86,7 +86,7 @@ class BatchCollection:
     
     @par Laser Control
     
-    There are three use-cases:
+    There are four use-cases:
     
     - MANUAL: means the user is manually controlling the laser (if there
       is one), so don't worry about it
@@ -94,11 +94,13 @@ class BatchCollection:
       off at the end (measurement_count)
     - SPECTRUM: turn the laser on at the beginning of a measurement (each
       count), off after.
+    - AUTO-RAMAN: use the standard ENLIGHTEN Auto-Raman feature to generate
+      one or more an optimized measurements at each batch cycle
     
-    The three modes are exposed in the configuration file as:
+    The four modes are exposed in the configuration file as:
     
     @verbatim
-      laser_mode = manual | batch | spectrum
+      laser_mode = manual | batch | spectrum | auto-raman
     @endverbatim
     
     If multiple spectrometers are connected, the laser commands (like acquisition
@@ -113,21 +115,9 @@ class BatchCollection:
     
     It's clearly useful to be able to take a fresh dark at the start of each
     batch, and that has been implemented.
-    
-    However, another customer requested the ability to take a dark before each
-    measurement within a batch (presumably with laser mode "Spectrum"), and that's
-    a bit more tricky.  Right now "spectrum" laser mode is controlled inside
-    Wasatch.PY, so for each measurement we'd have to disable the driver's laser mode,
-    TakeOne dark, set the dark, then re-enable laser mode, and take the measurement.
-    That's not much better than having manual control of the laser from this
-    process, which is what we were trying to avoid, as it doesn't really allow
-    fine-grained control over warmup time.
-    
-    For now, I'm following in the architectural path of pushing somewhat more
-    functionality down into Wasatch.PY, and letting the driver provide BOTH the
-    dark and the laser control around the Reading.  We won't be performing dark
-    subtraction within the driver, but adding a .dark attribute to the Reading
-    which ENLIGHTEN can register and store upon receipt.
+
+    If you need a fresh dark before each measurement (not just each batch), 
+    then Auto-Raman mode is recommended.
     """
     def __init__(self, ctl):
         self.ctl = ctl
@@ -141,6 +131,7 @@ class BatchCollection:
         self.rb_laser_manual                = cfu.radioButton_BatchCollection_laser_manual
         self.rb_laser_spectrum              = cfu.radioButton_BatchCollection_laser_spectrum
         self.rb_laser_batch                 = cfu.radioButton_BatchCollection_laser_batch
+        self.rb_laser_auto_raman            = cfu.radioButton_BatchCollection_laser_auto_raman
         self.spinbox_measurement_count      = cfu.spinBox_BatchCollection_measurement_count
         self.spinbox_measurement_period_ms  = cfu.spinBox_BatchCollection_measurement_period_ms
         self.spinbox_batch_count            = cfu.spinBox_BatchCollection_batch_count
@@ -189,6 +180,7 @@ class BatchCollection:
         self.rb_laser_manual               .toggled      .connect(self.update_from_widgets)
         self.rb_laser_spectrum             .toggled      .connect(self.update_from_widgets)
         self.rb_laser_batch                .toggled      .connect(self.update_from_widgets)
+        self.rb_laser_auto_raman           .toggled      .connect(self.update_from_widgets)
         self.spinbox_measurement_count     .valueChanged .connect(self.update_from_widgets)
         self.spinbox_measurement_period_ms .valueChanged .connect(self.update_from_widgets)
         self.spinbox_batch_count           .valueChanged .connect(self.update_from_widgets)
@@ -250,6 +242,8 @@ class BatchCollection:
                 self.rb_laser_batch.setChecked(True)
             elif self.laser_mode == "spectrum":
                 self.rb_laser_spectrum.setChecked(True)
+            elif self.laser_mode == "auto_raman":
+                self.rb_laser_auto_raman.setChecked(True)
 
     def update_from_widgets(self):
 
@@ -268,6 +262,8 @@ class BatchCollection:
             self.laser_mode = "spectrum"
         elif self.rb_laser_batch.isChecked():
             self.laser_mode = "batch"
+        elif self.rb_laser_auto_raman.isChecked():
+            self.laser_mode = "auto_raman"
         else: 
             self.laser_mode = "manual"
 
@@ -298,20 +294,18 @@ class BatchCollection:
                 s += f"<p>The following batch will be run {self.batch_count} times, per <b>Batch Count</b>. "
             s += f"Successive batches will be timed to <i>start</i> {self.batch_period_sec}sec apart (<b>Batch Period</b>).</p>"
 
+            int_time = "the current" if self.laser_mode != "auto_raman" else "an individually optimized (per <b>Auto-Raman</b>)"
             s += f"""<p>Each batch will collect {self.measurement_count} measurements (<b>Measurement Count</b>).
-                     The measurements will all be acquired at the current integration time.  The measurements will be 
+                     The measurements will all be acquired at {int_time} integration time.  The measurements will be 
                      spaced to <i>start</i> {self.measurement_period_ms}ms apart (<b>Measurement Period</b>).</p>"""
-
-            timeout_sec = self.spinbox_collection_timeout.value()
-            if self.spinbox_collection_timeout.value() == 0:
-                s += "<p>Because <b>Collection Timeout</b> is zero, the collection will <i>not</i> be arbitrarily halted due to collection length.</p>"
-            else:
-                s += f"""<p>Because <b>Collection Timeout</b> is {timeout_sec}sec, the collection will be summarily halted after {timeout_sec}sec 
-                         of wall-clock time. This runtime will be enforced in addition to Batch Count, Measurement Count, Integration Time and other 
-                         settings affecting timing.</p>"""
 
             if self.laser_mode == "manual":
                 s += "<p>The laser will not be automatically turned on or off during the collection (<b>Laser Mode Manual</b>).</p>"
+            elif self.laser_mode == "auto_raman":
+                s += """<p>Each measurement within the batch will be collected via <b>Auto-Raman</b>, 
+                           meaning acquisition parameters will be optimized according to the configured 
+                           Auto-Raman settings to generate an ideal averaged, dark-corrected Raman 
+                           measurement.</p>"""
             else:
                 s += f"<p>The laser will be automatically turned on at the beginning of each {self.laser_mode} (<b>Laser Mode</b>). "
                 if self.dark_before_batch:
@@ -323,6 +317,14 @@ class BatchCollection:
                 s += "<p>The save bar will be cleared at the <i>start</i> of each new batch.</p>"
             if self.export_after_batch:
                 s += "<p>At the end of each batch, the save bar will be automatically exported.</p>"
+
+            timeout_sec = self.spinbox_collection_timeout.value()
+            if self.spinbox_collection_timeout.value() == 0:
+                s += "<p>Because <b>Collection Timeout</b> is zero, the collection will <i>not</i> be arbitrarily halted due to collection length.</p>"
+            else:
+                s += f"""<p>Because <b>Collection Timeout</b> is {timeout_sec}sec, the collection will be summarily halted after {timeout_sec}sec 
+                         of wall-clock time. This runtime will be enforced in addition to Batch Count, Measurement Count, Integration Time and other 
+                         settings affecting timing.</p>"""
 
         self.lb_explain.setToolTip(f"<html><body>{s}</body></html>")
 
@@ -339,7 +341,6 @@ class BatchCollection:
             return False
 
         self.ctl.vcr_controls.register_observer("stop", self.vcr_stop)
-        #self.ctl.vcr_controls.register_observer("save", self.save_complete)
         self.collection_start_time = datetime.datetime.now()
         if self.spinbox_collection_timeout.value() != 0:
             self.collection_timeout = self.collection_start_time + datetime.timedelta(seconds=self.spinbox_collection_timeout.value())
@@ -352,7 +353,11 @@ class BatchCollection:
             avg = self.ctl.scan_averaging.get_scans_to_average() # #432
 
             # initialize driver-level laser auto_triggering and dark collection
-            if self.laser_mode == "spectrum":
+            if self.laser_mode == "auto_raman":
+                aar = self.ctl.auto_raman.generate_auto_raman_request()
+                self.take_one_template = TakeOneRequest(auto_raman_request=aar)
+                self.ctl.auto_raman.force_on(True)
+            elif self.laser_mode == "spectrum":
                 self.take_one_template = TakeOneRequest(scans_to_average=avg, take_dark=self.dark_before_batch, enable_laser_before=True, disable_laser_after=True, laser_warmup_ms=self.laser_warmup_ms)
             else:
                 self.take_one_template = TakeOneRequest(scans_to_average=avg)
@@ -508,6 +513,7 @@ class BatchCollection:
         if self.laser_mode != "manual":
             log.debug(f"BatchCollection.stop: disabling all lasers (laser_mode {self.laser_mode})")
             self.ctl.laser_control.set_laser_enable(False, all_=True)
+        self.ctl.auto_raman.force_on(False)
 
         self.ctl.vcr_controls.unregister_observer("save", self.save_complete)
         self.ctl.vcr_controls.unregister_observer("stop", self.vcr_stop)

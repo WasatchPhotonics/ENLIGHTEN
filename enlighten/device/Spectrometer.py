@@ -223,13 +223,19 @@ class Spectrometer:
         self.next_expected_acquisition_timestamp = future_time
         log.debug(f"reset_acquisition_timeout({self.device_id}): expecting next acquisition within {timeout_ms}  ms (by {future_time})")
 
+    def send_alert(self, setting, value=True):
+        if self.closing:
+            return
+
+        log.info(f"send_alert[{self.device.device_id}]: {setting} -> {value}")
+        self.device.send_alert(setting, value)
+
     ## send commands to device subprocess via (name, value) pickleable tuples
     def change_device_setting(self, setting, value=0):
         if self.closing:
             return
 
-        device_id = self.device.device_id
-        log.info(f"change_device_setting[{device_id}]: {setting} -> {value}")
+        log.info(f"change_device_setting[{self.device.device_id}]: {setting} -> {value}")
         self.device.change_setting(setting, value)
 
     def is_mock(self) -> bool:

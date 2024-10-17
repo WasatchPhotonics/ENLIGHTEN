@@ -100,6 +100,7 @@ class AutoRamanFeature:
         self.init_from_config()
 
         for b in self.buttons:
+            b.setToolTip("Collect one dark-corrected, averaged Raman measurement (ctrl-*)")
             b.setWhatsThis(unwrap("""
                 Auto-Raman provides one-click collection of an averaged, 
                 dark-corrected Raman measurement with automatically optimized 
@@ -136,10 +137,9 @@ class AutoRamanFeature:
     def update_config(self):
         self.update_visibility()
 
-        s = "Auto-Raman"
-        self.ctl.config.set(s, "config",          self.cb_config.isChecked())
-        self.ctl.config.set(s, "auto_save",       self.auto_save)
-        self.ctl.config.set(s, "retain_settings", self.retain_settings)
+        self.ctl.config.set(self.SECTION, "config",          self.cb_config.isChecked())
+        self.ctl.config.set(self.SECTION, "auto_save",       self.auto_save)
+        self.ctl.config.set(self.SECTION, "retain_settings", self.retain_settings)
 
     ##
     # called by Controller.disconnect_device to ensure we turn this off between
@@ -168,7 +168,31 @@ class AutoRamanFeature:
             self.cb_config.setVisible(False)
             self.fr_config.setVisible(False)
 
+    def force_on(self, flag):
+        for b in self.buttons:
+            self.ctl.gui.colorize_button(b, flag)
+            b.setEnabled(not flag)
+
     def measure_callback(self):
+
+        # warn user of laser-safety precautions
+        warn_suppress = self.ctl.config.get(self.SECTION, "suppress_warning", default=False)
+        if not warn_suppress:
+            result = self.ctl.gui.msgbox_with_checkbox(
+                title="Auto-Raman Laser Warning", 
+                text=unwrap("""Auto-Raman measurements will automatically fire the laser
+                               while optimizing and collecting the dark-corrected Raman
+                               measurement. While the measurement is in progress, the
+                               standard laser control buttons will be disabled, but you
+                               can halt the Auto-Raman measurement at any time by pressing
+                               the 'Stop' button (⏹️) on the VCR controls."""),
+                checkbox_text="Don't show again")
+
+            if not result["ok"]:
+                return
+
+            if result["checked"]:
+                self.ctl.config.set(self.SECTION, "suppress_warning", True)
 
         # ensure we're paused
         self.ctl.vcr_controls.pause()
@@ -178,6 +202,9 @@ class AutoRamanFeature:
         if spec is None:
             return
         spec.clear_graph()
+
+        # disable Laser Control
+        self.ctl.laser_control.set_restriction(self.LASER_CONTROL_DISABLE_REASON)
 
         self.running = True
         for b in self.buttons:
@@ -191,7 +218,12 @@ class AutoRamanFeature:
         self.prev_gain_db = self.ctl.gain_db_feature.get_db()
 
         # define a TakeOneRequest with AutoRaman enabled
-        auto_raman_request = AutoRamanRequest(
+        take_one_request = TakeOneRequest(auto_raman_request = self.generate_auto_raman_request())
+
+        self.ctl.take_one.start(completion_callback=self.completion_callback, stop_callback=self.stop_callback, template=take_one_request, save=self.auto_save)
+
+    def generate_auto_raman_request(self):
+        return AutoRamanRequest(
             max_ms                  = self.get_max_ms        (),
             start_integ_ms          = self.get_start_integ_ms(), # consider self.ctl.integration_time_feature.get_ms()
             start_gain_db           = self.get_start_gain_db (), # consider self.ctl.gain_db_feature.get_db()
@@ -208,20 +240,40 @@ class AutoRamanFeature:
             drop_factor             = self.get_drop_factor   (),
             laser_warning_delay_sec = self.get_laser_warning_delay_sec())
 
-        take_one_request = TakeOneRequest(auto_raman_request=auto_raman_request)
-
-        self.ctl.take_one.start(completion_callback=self.completion_callback, stop_callback=self.stop_callback, template=take_one_request, save=self.auto_save)
-
     def stop_callback(self):
         self.running = False
+
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+
+        # this will tell the thread to stop collections and turn off the laser at
+        # the end of the current integration
+        spec.send_alert("auto_raman_cancel")
+
+        # hide the progress bar
+        self.ctl.reading_progress_bar.hide()
+
+        # forcibly disable the laser, regardless of inferred state
+        self.ctl.laser_control.set_laser_enable(False)
+
+        # permit manual control of laser 
+        self.ctl.laser_control.clear_restriction(self.LASER_CONTROL_DISABLE_REASON)
+
+        # we already cleared the old graph, and leaving it paused with no spectrum
+        # would be disquieting, so even though we just hit "Stop", go ahead and
+        # resume "Play"
+        self.ctl.vcr_controls.play()
+
         for b in self.buttons:
             self.ctl.gui.colorize_button(b, False)
         self.ctl.marquee.error("Auto-Raman measurement cancelled")
+
         self.restore_acquisition_parameters()
 
     def completion_callback(self):
-        # self.ctl.laser_control.refresh_laser_buttons()
         self.running = False
+        self.ctl.laser_control.clear_restriction(self.LASER_CONTROL_DISABLE_REASON)
         for b in self.buttons:
             self.ctl.gui.colorize_button(b, False)
         self.ctl.marquee.info("Auto-Raman measurement complete")

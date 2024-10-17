@@ -2964,7 +2964,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="7" column="0">
-                           <widget class="QCheckBox" name="checkBox_ee_bin_2x2">
+                           <widget class="QCheckBox" name="checkBox_ee_horiz_binning_enabled">
                             <property name="text">
                              <string />
                             </property>
@@ -2973,7 +2973,7 @@ QComboBox QListView
                           <item row="7" column="1">
                            <widget class="QLabel" name="label_219">
                             <property name="text">
-                             <string>Bin 2x2</string>
+                             <string>Enable Horizontal Binning</string>
                             </property>
                            </widget>
                           </item>
@@ -3090,21 +3090,6 @@ QComboBox QListView
                            <widget class="QLabel" name="label_46_2y">
                             <property name="text">
                              <string>Disable Laser Armed Indicator</string>
-                            </property>
-                           </widget>
-                          </item>
-
-                          <item row="16" column="0">
-                           <widget class="QCheckBox" name="checkBox_ee_ssc_enabled">
-                            <property name="text">
-                             <string />
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="16" column="1">
-                           <widget class="QLabel" name="label_46_2z">
-                            <property name="text">
-                             <string>SSC Enabled</string>
                             </property>
                            </widget>
                           </item>
@@ -4098,7 +4083,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="5" column="0">
-                           <widget class="QSpinBox" name="spinBox_ee_actual_horizontal_pixels">
+                           <widget class="QSpinBox" name="spinBox_ee_actual_pixels_horizontal">
                             <property name="minimumSize">
                              <size>
                               <width>125</width>
@@ -4717,6 +4702,9 @@ QComboBox QListView
                               <height>0</height>
                              </size>
                             </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
                            </widget>
                           </item>
                           <item row="12" column="1">
@@ -4730,13 +4718,17 @@ QComboBox QListView
                            <widget class="QSpinBox" name="spinBox_ee_laser_watchdog_sec">
                             <property name="minimumSize">
                              <size>
-                              <width>75</width>
+                              <width>125</width>
                               <height>0</height>
                              </size>
                             </property>
                             <property name="alignment">
                              <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
+                            <property name="keyboardTracking">
+                             <bool>false</bool>
+                            </property>
+
                             <property name="maximum">
                              <number>1200</number>
                             </property>
@@ -4756,13 +4748,17 @@ QComboBox QListView
                            <widget class="QSpinBox" name="spinBox_ee_light_source_type">
                             <property name="minimumSize">
                              <size>
-                              <width>75</width>
+                              <width>125</width>
                               <height>0</height>
                              </size>
                             </property>
                             <property name="alignment">
                              <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
+                            <property name="keyboardTracking">
+                             <bool>false</bool>
+                            </property>
+
                             <property name="maximum">
                              <number>255</number>
                             </property>
@@ -4775,6 +4771,88 @@ QComboBox QListView
                             </property>
                            </widget>
                           </item>
+
+                          
+                          <item row="15" column="0">
+                           <widget class="QSpinBox" name="spinBox_ee_power_timeout_sec">
+                            <property name="minimumSize">
+                             <size>
+                              <width>125</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                            <property name="keyboardTracking">
+                             <bool>false</bool>
+                            </property>
+
+                            <property name="maximum">
+                             <number>255</number>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="15" column="1">
+                           <widget class="QLabel" name="label_48a">
+                            <property name="text">
+                             <string>Power Timeout Sec</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="16" column="0">
+                           <widget class="QSpinBox" name="spinBox_ee_detector_timeout_sec">
+                            <property name="minimumSize">
+                             <size>
+                              <width>125</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                            <property name="keyboardTracking">
+                             <bool>false</bool>
+                            </property>
+                            <property name="maximum">
+                             <number>255</number>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="16" column="1">
+                           <widget class="QLabel" name="label_48b">
+                            <property name="text">
+                             <string>Detector Timeout Sec</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="17" column="0">
+                           <widget class="QSpinBox" name="spinBox_ee_horiz_binning_mode">
+                            <property name="minimumSize">
+                             <size>
+                              <width>125</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                            <property name="keyboardTracking">
+                             <bool>false</bool>
+                            </property>
+                            <property name="maximum">
+                             <number>255</number>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="17" column="1">
+                           <widget class="QLabel" name="label_48c">
+                            <property name="text">
+                             <string>Horizontal Binning Mode</string>
+                            </property>
+                           </widget>
+                          </item>
+
                          </layout>
                         </item>
                        </layout>
@@ -10227,6 +10305,16 @@ QComboBox QListView
                                     </property>
                                     <property name="text">
                                      <string>Batch</string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item>
+                                   <widget class="QRadioButton" name="radioButton_BatchCollection_laser_auto_raman">
+                                    <property name="toolTip">
+                                     <string>Use Auto-Raman for every measurement</string>
+                                    </property>
+                                    <property name="text">
+                                     <string>Auto-Raman</string>
                                     </property>
                                    </widget>
                                   </item>
@@ -20506,7 +20594,6 @@ li.checked::marker { content: "\2612"; }
   <tabstop>lineEdit_ee_linearity_coeff_3</tabstop>
   <tabstop>spinBox_ee_active_pixels_horizontal</tabstop>
   <tabstop>spinBox_ee_active_pixels_vertical</tabstop>
-  <tabstop>spinBox_ee_actual_horizontal_pixels</tabstop>
   <tabstop>spinBox_ee_roi_horizontal_start</tabstop>
   <tabstop>spinBox_ee_roi_horizontal_end</tabstop>
   <tabstop>spinBox_ee_roi_vertical_region_1_start</tabstop>
