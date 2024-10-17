@@ -294,24 +294,18 @@ class BatchCollection:
                 s += f"<p>The following batch will be run {self.batch_count} times, per <b>Batch Count</b>. "
             s += f"Successive batches will be timed to <i>start</i> {self.batch_period_sec}sec apart (<b>Batch Period</b>).</p>"
 
+            int_time = "the current" if self.laser_mode != "auto_raman" else "an individually optimized"
             s += f"""<p>Each batch will collect {self.measurement_count} measurements (<b>Measurement Count</b>).
-                     The measurements will all be acquired at the current integration time.  The measurements will be 
+                     The measurements will all be acquired at {int_time} integration time.  The measurements will be 
                      spaced to <i>start</i> {self.measurement_period_ms}ms apart (<b>Measurement Period</b>).</p>"""
-
-            timeout_sec = self.spinbox_collection_timeout.value()
-            if self.spinbox_collection_timeout.value() == 0:
-                s += "<p>Because <b>Collection Timeout</b> is zero, the collection will <i>not</i> be arbitrarily halted due to collection length.</p>"
-            else:
-                s += f"""<p>Because <b>Collection Timeout</b> is {timeout_sec}sec, the collection will be summarily halted after {timeout_sec}sec 
-                         of wall-clock time. This runtime will be enforced in addition to Batch Count, Measurement Count, Integration Time and other 
-                         settings affecting timing.</p>"""
 
             if self.laser_mode == "manual":
                 s += "<p>The laser will not be automatically turned on or off during the collection (<b>Laser Mode Manual</b>).</p>"
             elif self.laser_mode == "auto_raman":
-                s += """<p>Every measurement within the batch will use the standard ENLIGHTEN 'Auto-Raman' feature, 
-                           meaning acquisition parameters will be optimized according to the current Auto-Raman 
-                           configuration settings to generate an ideal averaged, dark-corrected Raman measurement.</p>"""
+                s += """<p>Each measurement within the batch will be collected via <b>Auto-Raman</b>, 
+                           meaning acquisition parameters will be optimized according to the configured 
+                           Auto-Raman settings to generate an ideal averaged, dark-corrected Raman 
+                           measurement.</p>"""
             else:
                 s += f"<p>The laser will be automatically turned on at the beginning of each {self.laser_mode} (<b>Laser Mode</b>). "
                 if self.dark_before_batch:
@@ -323,6 +317,14 @@ class BatchCollection:
                 s += "<p>The save bar will be cleared at the <i>start</i> of each new batch.</p>"
             if self.export_after_batch:
                 s += "<p>At the end of each batch, the save bar will be automatically exported.</p>"
+
+            timeout_sec = self.spinbox_collection_timeout.value()
+            if self.spinbox_collection_timeout.value() == 0:
+                s += "<p>Because <b>Collection Timeout</b> is zero, the collection will <i>not</i> be arbitrarily halted due to collection length.</p>"
+            else:
+                s += f"""<p>Because <b>Collection Timeout</b> is {timeout_sec}sec, the collection will be summarily halted after {timeout_sec}sec 
+                         of wall-clock time. This runtime will be enforced in addition to Batch Count, Measurement Count, Integration Time and other 
+                         settings affecting timing.</p>"""
 
         self.lb_explain.setToolTip(f"<html><body>{s}</body></html>")
 
