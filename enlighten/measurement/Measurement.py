@@ -1630,7 +1630,7 @@ class Measurement:
             log.error("build_row: unknown field %s" % field)
 
         if a is None:
-            return None
+            return
 
         row = []
 

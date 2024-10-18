@@ -152,13 +152,13 @@ class BatteryFeature:
         if spec is None:
             spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
-            return None
+            return
 
         if not spec.settings.eeprom.has_battery:
-            return None
+            return
 
         if spec.app_state.battery_data.empty():
-            return None
+            return
 
         (_, perc) = spec.app_state.battery_data.latest()
         return perc

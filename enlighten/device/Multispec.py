@@ -435,14 +435,12 @@ class Multispec:
 
     def current_spectrometer(self) -> Spectrometer:
         if self.device_id is None:
-            log.debug("Multispec.current_spectrometer: self.device_id is None")
-            return None
+            return
     
         if self.device_id in self.spectrometers:
             return self.spectrometers[self.device_id]
 
         log.error(f"Multispec.current_spectrometer: can't find self.device_id {self.device_id} in spectrometers {self.spectrometers}")
-        return None
 
     def update_widget(self):
         log.debug("update_widget start (%s)", self.device_id)
@@ -585,14 +583,14 @@ class Multispec:
     def get_combo_device_id(self) -> DeviceID:
         index = self.combo_spectrometer.currentIndex()
         if index < 0:
-            return None
+            return 
 
         label = str(self.combo_spectrometer.itemText(index))
         log.debug("get_combo_device_id: label = %s index = %d", label, index)
         m = re.match(r'^\s*(.*)\s+\((.*)\)\s*$', label)
         if not m:
             log.error("get_combo_device_id: can't parse %s", label)
-            return None
+            return
 
         serial = m.group(1)
         model  = m.group(2)
@@ -603,7 +601,6 @@ class Multispec:
                 return device_id 
 
         log.error("get_combo_device_id: can't find serial %s, model %s", serial, model)
-        return None
 
     ## If the selected MultiSpec spectrometer changes, update affected objects
     def combo_callback(self):
@@ -668,7 +665,6 @@ class Multispec:
             return pen
         except:
             log.error("unable to generate pen", exc_info=1)
-            return None
 
     def choose_color(self, spec, ignore_auto=False):
         if self.is_autocolor() and spec.wp_model_info is not None and not ignore_auto:

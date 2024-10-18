@@ -356,11 +356,8 @@ class Spectrometer:
             return
     
         pixel = self.converter.convert(spec=self, old_axis=self.ctl.graph.current_x_axis, new_axis=common.Axes.PIXELS, x=x)
-        if pixel is None:
-            log.error(f"get_new_pixel: failed to convert x {x}")
-            return None
-    
-        return min(max(round(pixel), 0), self.settings.pixels() - 1)
+        if pixel is not None:
+            return min(max(round(pixel), 0), self.settings.pixels() - 1)
 
     def clear_graph(self):
         """ erase, but do not delete, this graph curve from the graph """

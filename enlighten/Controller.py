@@ -242,6 +242,7 @@ class Controller:
         common.set_controller_instance(self)
 
         self.did_you_know.show()
+        self.configure_control_palette()
 
     def disconnect_device(self, spec=None, closing=False):
         if spec in self.other_devices:
@@ -2052,11 +2053,10 @@ class Controller:
     def get_last_processed_reading(self):
         spec = self.current_spectrometer()
         if not spec:
-            return None
+            return
 
         if spec.app_state and spec.app_state.processed_reading:
             return spec.app_state.processed_reading
-        return None
 
     # ##########################################################################
     #                                                                          #
@@ -2390,3 +2390,53 @@ class Controller:
         log.debug(s)
         log.debug('=' * len(s))
         log.debug("")
+
+    def configure_control_palette(self):
+        """
+        This is an experiment to see if we can easily add "collapse/expand" 
+        button to each widget in the Control Palette. If it worked, we'd move it
+        to a ui.ControlPalette class.
+
+                <widget class="QScrollArea" name="controlWidget_scrollArea">
+                 <widget class="QWidget" name="controlWidget_inner">
+                  <layout class="QVBoxLayout" name="controlWidget_inner_vbox">          /* iterate this */
+                   <item>                                                               
+                    <widget class="QFrame" name="frame_FactoryMode_Options">            /* finding these */
+                     <layout class="QVBoxLayout" name="verticalLayout_24">
+                      <item>
+                       <widget class="QLabel" name="label_hardware_capture_control">    /* place button to right of these */
+                        <property name="text">
+                         <string>Hardware Capture Control</string>                  
+                        </property>
+        """
+        vlayout = self.form.ui.controlWidget_inner_vbox
+        log.debug("iterating control palette")
+        for i in range(vlayout.count()):
+            w = vlayout.itemAt(i).widget()
+            if w is None:
+                continue
+
+            name = w.objectName()            
+            log.debug(f"  item {i} was {name}")
+
+            # todo: grab the first QLabel child within w; position new button to right of that
+
+            if False:
+                w.wpExpanded = True
+
+                button = QtWidgets.QPushButton()
+                button.setParent(w)
+                util.force_size(button, 20, 20)
+
+                icon = QtGui.QIcon()
+                icon.addPixmap(":/greys/images/grey_icons/down_triangle.svg")
+                button.setIcon(icon)
+                button.setIconSize(QtCore.QSize(10, 10))
+                button.move(100, 15)
+
+                def callback():
+                    w.wpExpanded = not w.wpExpanded
+                    log.debug(f"{name} wpExpanded {w.wpExpanded}")
+                    w.setVisible(w.wpExpanded)
+
+                button.clicked.connect(callback)

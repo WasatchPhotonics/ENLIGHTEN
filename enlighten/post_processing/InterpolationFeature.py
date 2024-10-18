@@ -245,7 +245,7 @@ class InterpolationFeature:
 
         if old_cropped_axis is None or old_detector_axis is None:
             log.debug("Old axis was none, returning none.")
-            return None
+            return
 
         processed = pr.get_processed()
         if processed is not None:

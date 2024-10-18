@@ -88,8 +88,6 @@ class RollingDataSet:
     def latest(self):
         if len(self.data) > 0:
             return self.data[-1]
-        else:
-            return None
 
     def get_csv_data(self, source_attr, spec_label):
         data_strings = [f"{source_attr},{spec_label},{x},{y}" for x,y in self.data]
