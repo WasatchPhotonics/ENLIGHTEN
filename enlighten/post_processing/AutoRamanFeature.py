@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 
 from wasatch.TakeOneRequest   import TakeOneRequest
 from wasatch.AutoRamanRequest import AutoRamanRequest 
@@ -31,6 +32,7 @@ class AutoRamanFeature:
         self.cb_config          = cfu.checkBox_auto_raman_config
         self.cb_retain_settings = cfu.checkBox_auto_raman_retain_settings
         self.cb_auto_save       = cfu.checkBox_auto_raman_auto_save
+        self.lb_elapsed         = cfu.label_auto_raman_elapsed
         self.fr_config          = cfu.frame_auto_raman_config
         self.buttons            = [ self.bt_measure, self.bt_convenience ]
 
@@ -40,6 +42,7 @@ class AutoRamanFeature:
         self.retain_settings = False
         self.prev_integration_time_ms = None
         self.prev_gain_db = None
+        self.request_time = None
 
         self.sb_max_ms                  = cfu.spinBox_auto_raman_max_ms           
         self.sb_start_integ_ms          = cfu.spinBox_auto_raman_start_integ_ms   
@@ -56,10 +59,12 @@ class AutoRamanFeature:
         self.sb_saturation              = cfu.spinBox_auto_raman_saturation       
         self.ds_drop_factor             = cfu.doubleSpinBox_auto_raman_drop_factor
         self.sb_laser_warning_delay_sec = cfu.spinBox_auto_raman_laser_warning_delay_sec
+        self.cb_onboard                 = cfu.checkBox_auto_raman_onboard
 
         self.cb_config          .clicked    .connect(self.update_config)
         self.cb_retain_settings .clicked    .connect(self.update_config)
         self.cb_auto_save       .clicked    .connect(self.update_config)
+        self.cb_onboard         .clicked    .connect(self.update_config)
 
         for b in self.buttons:
             b.clicked.connect(self.measure_callback)
@@ -96,6 +101,7 @@ class AutoRamanFeature:
         ctl.presets.register(self, "auto_raman_saturation"             , setter=self.set_saturation             , getter=self.get_saturation             )
         ctl.presets.register(self, "auto_raman_drop_factor"            , setter=self.set_drop_factor            , getter=self.get_drop_factor            )
         ctl.presets.register(self, "auto_raman_laser_warning_delay_sec", setter=self.set_laser_warning_delay_sec, getter=self.get_laser_warning_delay_sec)
+        ctl.presets.register(self, "auto_raman_onboard"                , setter=self.set_onboard                , getter=self.get_onboard                )
 
         self.init_from_config()
 
@@ -131,15 +137,17 @@ class AutoRamanFeature:
         self.cb_config         .setChecked(self.ctl.config.get_bool(s, "config"))
         self.cb_auto_save      .setChecked(self.ctl.config.get_bool(s, "auto_save"))
         self.cb_retain_settings.setChecked(self.ctl.config.get_bool(s, "retain_settings"))
+        self.cb_onboard        .setChecked(self.ctl.config.get_bool(s, "onboard"))
 
         self.update_visibility()
 
     def update_config(self):
-        self.update_visibility()
+        self.update_visibility() # sets .auto_save, .retain_settings etc
 
         self.ctl.config.set(self.SECTION, "config",          self.cb_config.isChecked())
         self.ctl.config.set(self.SECTION, "auto_save",       self.auto_save)
         self.ctl.config.set(self.SECTION, "retain_settings", self.retain_settings)
+        self.ctl.config.set(self.SECTION, "onboard",         self.get_onboard())
 
     ##
     # called by Controller.disconnect_device to ensure we turn this off between
@@ -218,8 +226,13 @@ class AutoRamanFeature:
         self.prev_gain_db = self.ctl.gain_db_feature.get_db()
 
         # define a TakeOneRequest with AutoRaman enabled
-        take_one_request = TakeOneRequest(auto_raman_request = self.generate_auto_raman_request())
+        log.debug("generating AutoRamanRequest")
+        auto_raman_request = self.generate_auto_raman_request()
+        log.debug(f"AutoRamanRequest {auto_raman_request}")
+        take_one_request = TakeOneRequest(auto_raman_request=auto_raman_request)
 
+        self.request_time = datetime.now()
+        log.debug("measure_callback: calling take_one.start with AutoRamanRequest {auto_raman_request}")
         self.ctl.take_one.start(completion_callback=self.completion_callback, stop_callback=self.stop_callback, template=take_one_request, save=self.auto_save)
 
     def generate_auto_raman_request(self):
@@ -238,7 +251,8 @@ class AutoRamanFeature:
             max_avg                 = self.get_max_avg       (),
             saturation              = self.get_saturation    (),
             drop_factor             = self.get_drop_factor   (),
-            laser_warning_delay_sec = self.get_laser_warning_delay_sec())
+            laser_warning_delay_sec = self.get_laser_warning_delay_sec(),
+            onboard                 = self.get_onboard       ())
 
     def stop_callback(self):
         self.running = False
@@ -273,9 +287,15 @@ class AutoRamanFeature:
 
     def completion_callback(self):
         self.running = False
+
+        if self.request_time:
+            elapsed_sec = (datetime.now() - self.request_time).total_seconds()
+            self.lb_elapsed.setText(f"{elapsed_sec:.2f}sec")
+
         self.ctl.laser_control.clear_restriction(self.LASER_CONTROL_DISABLE_REASON)
         for b in self.buttons:
             self.ctl.gui.colorize_button(b, False)
+
         self.ctl.marquee.info("Auto-Raman measurement complete")
 
     def process_reading(self, reading):
@@ -319,6 +339,7 @@ class AutoRamanFeature:
     def set_saturation             (self, value): self.sb_saturation             .setValue(int(value))
     def set_drop_factor            (self, value): self.ds_drop_factor            .setValue(float(value))
     def set_laser_warning_delay_sec(self, value): self.sb_laser_warning_delay_sec.setValue(int(value))
+    def set_onboard                (self, value): self.cb_onboard                .setChecked("true" == value.lower())
 
     def get_max_ms                 (self): return self.sb_max_ms                 .value()
     def get_start_integ_ms         (self): return self.sb_start_integ_ms         .value()
@@ -335,3 +356,4 @@ class AutoRamanFeature:
     def get_saturation             (self): return self.sb_saturation             .value()
     def get_drop_factor            (self): return self.ds_drop_factor            .value()
     def get_laser_warning_delay_sec(self): return self.sb_laser_warning_delay_sec.value()
+    def get_onboard                (self): return self.cb_onboard                .isChecked()

@@ -6,6 +6,9 @@
         - updated Did You Know
         - actually remembered to commit the new ReadingProgressBar class :-(
         - tidy ReadingProgressBar close
+        - added onboard
+        - added elapsed time
+        - catch exceptions in TakeOne callbacks
     - plugins
         - fixed imports
         - fixed overrides (e.g. Filters.SavitzkyGolay)
