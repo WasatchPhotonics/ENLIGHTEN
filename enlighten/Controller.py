@@ -470,7 +470,7 @@ class Controller:
         
         @param other_device: can be a BLEDevice from BLEManager
         """
-        # do we see any spectrometers on the bus?  (WasatchBus will pre-filter to
+        # do we see any spectrometers on the bus? (WasatchBus will pre-filter to
         # only valid spectrometer devices)
         if other_device is not None and other_device not in self.other_devices:
             self.other_devices.append(other_device)

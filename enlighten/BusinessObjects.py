@@ -346,15 +346,6 @@ class BusinessObjects:
         self.header("instantiating GainDBFeature")
         ctl.gain_db_feature = GainDBFeature(ctl)
 
-        self.header("instantiating BLEManager")
-        ctl.ble_manager = BLEManager(
-            marquee                     = ctl.marquee,
-            ble_button                  = cfu.pushButton_bleScan,
-            controller_connect          = ctl.connect_new,
-            controller_disconnect       = ctl.disconnect_device,
-            progress_bar                = cfu.readingProgressBar,
-            multispec                   = ctl.multispec)
-
         self.header("instantiating AutoRamanFeature")
         ctl.auto_raman = AutoRamanFeature(ctl)
 
@@ -447,6 +438,9 @@ class BusinessObjects:
 
         self.header("instantiating ReadingProgressBar")
         ctl.reading_progress_bar = ReadingProgressBar(ctl)
+
+        self.header("instantiating BLEManager")
+        ctl.ble_manager = BLEManager(ctl)
 
         self.header("done with Business Object creation")
 
