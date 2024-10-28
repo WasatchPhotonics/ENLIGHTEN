@@ -3,11 +3,12 @@ import asyncio
 import logging
 from queue import Queue
 
-from bleak import discover
+from bleak import BleakScanner, BleakClient
 from threading import Thread
 
 from enlighten import common
 from wasatch.DeviceID import DeviceID
+from wasatch.BLEScanner import BLEScanner
 
 if common.use_pyside2():
     from PySide2 import QtCore, QtGui
@@ -24,15 +25,18 @@ class BLEManager:
 
     @todo show progress indicator while reading EEPROM (~15sec)
     @todo show progress indicator while reading spectrum (~4sec)
+    @todo support connection to multiple BLE spectrometers
     """
 
     def __init__(self, ctl):
         self.ctl = ctl
+        cfu = ctl.form.ui
 
-        self.ble_button = ctl.form.ui.pushButton_bleScan
+        # used to initiate a search, and to indicate whether one or more a BLE 
+        # spectrometers are paired
+        self.ble_button = sfu.pushButton_bleScan
 
         self.scans_q = Queue()
-        self.loop = asyncio.new_event_loop()
 
         self.ble_device = None
         self.ble_present = False
@@ -41,12 +45,19 @@ class BLEManager:
         self.original_button_style = self.ble_button.styleSheet()
         self.selection_popup = BLESelector(parent=self.ble_button)
 
-        self.ble_button.clicked.connect(self.search_callback)
+        self.ble_button.clicked.connect(self.button_callback)
 
         self.ctl.reading_progress_bar.hide()
 
-        self.thread = Thread(target=self.make_async_loop, args=(self.loop,), daemon=True)
-        self.thread.start()
+        # create a thread in which to run BleakScanner, so we're not blocking 
+        # the GUI loop when the button is pressed
+        self.scan_loop = asyncio.new_event_loop()
+        self.scan_thread = Thread(target=self.make_async_loop, daemon=True)
+        self.scan_thread.start()
+
+    def make_scan_loop(self):
+        asyncio.set_event_loop(self.scan_loop)
+        self.scan_loop.run_forever()
 
     def check_complete_scans(self):
         if not self.scans_q.empty():
@@ -68,12 +79,7 @@ class BLEManager:
                 label.setAlignment(QtCore.Qt.AlignCenter)
                 self.selection_popup.layout.addWidget(label)
 
-    def make_async_loop(self, loop):
-        asyncio.set_event_loop(loop)
-        loop.run_forever()
-
     def stop(self):
-        log.debug(f"calling stop of async loop")
         self.ctl.marquee.info("Closing BLE spectrometers...", immediate=True)
         time.sleep(0.05)
         if self.ble_device_id is not None:
@@ -81,15 +87,17 @@ class BLEManager:
             self.ctl.multispec.set_disconnecting(self.ble_device_id, False)
             self.ble_device_id = None
 
-    def search_callback(self):
-        log.debug("Searching for BLE devices")
+    def button_callback(self):
+        log.debug("BLE button clicked")
         if self.ble_present:
-            log.debug("BLE clicked while device connected, disconnecting")
+            log.debug("disconnecting from BLE device")
             self.ble_present = False
             self.ctl.reading_progress_bar.hide()
             self.ble_button.setStyleSheet(self.original_button_style)
             self.stop()
             return
+
+        log.debug("Searching for BLE devices")
 
         # clear anything that might be in the pop up for available devices
         self.selection_popup.clear_plugin_layout(self.selection_popup.layout)
@@ -98,17 +106,25 @@ class BLEManager:
         # add the throbber for UI/UX
         self.selection_popup.add_throbber()
 
-        # Kick of the async search for BLE Devices and show the pop up
+        # Kick off the async search for BLE Devices and show the pop up
         log.debug("calling perform_discovery")
-        asyncio.run_coroutine_threadsafe(self.perform_discovery(), self.loop)
+        asyncio.run_coroutine_threadsafe(self.perform_discovery(), self.scan_loop)
         self.selection_popup.show()
+
+    async def perform_discovery(self):
+        """ This method is explicitly run in a separate thread under asyncio via scan_loop """
+
+        log.debug("starting discovery")
+        devices = await discover()
+        wp_devices = [dev for dev in devices if dev.name is not None and ("wp" in dev.name.lower())]
+        log.debug(f"adding wp_devices to scans_q: {wp_devices}")
+        self.scans_q.put(wp_devices)
 
     def connect_callback(self, btn, device):
         log.debug(f"Connecting to {device}")
         self.device = device
         self.selection_popup.hide()
 
-        #self.ble_device = BLEDevice(device, self.loop)
         self.ble_device_id = DeviceID(label=f"BLE:{device.address}:{device.name}")
 
         log.debug(f"calling connect_new with DeviceID {self.ble_device_id}")
@@ -123,14 +139,6 @@ class BLEManager:
             # '#2994d3', # the 'L' in ENLIGHTEN (cyan)
             # '#27c0a1', # the 'I' in ENLIGHTEN (bluegreen)
 
-    async def perform_discovery(self):
-        log.debug("starting discovery")
-        devices = await discover()
-        # log.debug(f"found devices {devices}")
-        wp_devices = [dev for dev in devices if dev.name is not None and ("wp" in dev.name.lower())]
-        log.debug(f"adding wp_devices to scans_q: {wp_devices}")
-        self.scans_q.put(wp_devices)
-
 class BLESelector(QDialog):
     """
     A pop-up window listing all discovered BLE devices.
@@ -138,10 +146,12 @@ class BLESelector(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("BLE Devices")
-        # self.setMinimumSize(300,100)
-        self.device_widgets = []
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
+
+        # MZ: is this actually needed? All it stores are handles to QPushButtons,
+        # which are already added to self.layout and so persisted there.
+        self.device_widgets = []
 
     def add_throbber(self):
         self.label = QLabel(self)
