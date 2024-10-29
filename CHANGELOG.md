@@ -1,10 +1,14 @@
 # Version History
 
-- 2024-??-?? 4.1.15
+- 2024-10-29 4.1.15
     - AutoRaman
         - added confirmation dialog
         - updated Did You Know
         - actually remembered to commit the new ReadingProgressBar class :-(
+        - support new onboard Auto-Raman opcode and parameters
+    - add horizontal binning mode BIN_4X2_AVG
+    - add more firmware version checks around new features to avoid breaking old FW
+    - start refresh of BLEDevice
 - 2024-10-16 4.1.14
     - AutoRaman
         - fixed "Stop" button
