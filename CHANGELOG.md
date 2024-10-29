@@ -9,6 +9,7 @@
     - add horizontal binning mode BIN_4X2_AVG
     - add more firmware version checks around new features to avoid breaking old FW
     - start refresh of BLEDevice
+    - update row-ordered CSV format to support ROI "NA", etc
 - 2024-10-16 4.1.14
     - AutoRaman
         - fixed "Stop" button
