@@ -102,26 +102,29 @@ class GainDBFeature:
     def reset(self):
         """ called by initialize_new_device a little after the other function """
         spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+        if not spec.settings.is_xs():
+            return
 
         # load gain_db from .ini, falling back to spec.settings.state (copied from EEPROM)
-        if spec:
-            sn = spec.settings.eeprom.serial_number
+        sn = spec.settings.eeprom.serial_number
 
-            db = 8
-            if self.ctl.config.has_option(sn, "gain_db"):
-                db = self.ctl.config.get_float(sn, "gain_db")
-            elif spec.settings.state.gain_db is not None:
-                db = spec.settings.state.gain_db
-            elif spec.settings.eeprom.detector_gain is not None:
-                db = spec.settings.eeprom.detector_gain
+        db = 8
+        if self.ctl.config.has_option(sn, "gain_db"):
+            db = self.ctl.config.get_float(sn, "gain_db")
+        elif spec.settings.state.gain_db is not None:
+            db = spec.settings.state.gain_db
+        elif spec.settings.eeprom.detector_gain is not None:
+            db = spec.settings.eeprom.detector_gain
 
-            self.set_db(db)
+        self.set_db(db)
 
-            # apply limits to SPINBOX
-            self.spinbox.blockSignals(True)
-            self.spinbox.setMinimum(self.MIN_GAIN_DB)
-            self.spinbox.setMaximum(self.MAX_GAIN_DB)
-            self.spinbox.blockSignals(False)
+        # apply limits to SPINBOX
+        self.spinbox.blockSignals(True)
+        self.spinbox.setMinimum(self.MIN_GAIN_DB)
+        self.spinbox.setMaximum(self.MAX_GAIN_DB)
+        self.spinbox.blockSignals(False)
 
     def _quiet_set(self, widget, value):
         """ Set the value of a widget without invoking the ValueChanged event """
