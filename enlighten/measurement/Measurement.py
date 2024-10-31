@@ -890,7 +890,7 @@ class Measurement:
         if field == "ble version":               return self.settings.ble_firmware_version
         if field == "laser power %":             return self.processed_reading.reading.laser_power_perc if self.processed_reading.reading is not None else 0
         if field == "device id":                 return str(self.settings.device_id)
-        if field == "note":                      return self.note
+        if field == "note":                      return self.note.replace(",", ";")
         if field == "prefix":                    return self.prefix
         if field == "suffix":                    return self.suffix
         if field == "session count":             return self.processed_reading.reading.session_count if self.processed_reading.reading is not None else 0
@@ -1273,28 +1273,24 @@ class Measurement:
     # Column-ordered CSV
     # ##########################################################################
 
-    ##
-    # Save the Measurement in a CSV file with the x-axis in one column, spectra
-    # in the next column and so on (similar layout as the Excel output).
-    #
-    # Note that currently this is NOT writing UTF-8 / Unicode, although KIA-
-    # generated labels are Unicode.  (Dieter doesn't seem to like Unicode CSV)
-    def save_csv_file_by_column(self, use_basename=False, ext="csv", delim=",", include_header=True, include_metadata=True, resave=False):
-        pr = self.processed_reading
-
-        if not self.ctl or not self.ctl.save_options:
-            log.error("Measurement.save* requires SaveOptions")
+    def csv_formatted(self, roi, prec, array, pixel, obey_roi=False):
+        """ Used by save_csv_file_by_column and save_csv_file_by_row """
+        if array is None:
             return
+        if roi and obey_roi:
+            if pixel < roi.start or pixel > roi.end:
+                return "NA"
+            else:
+                pixel -= roi.start
 
-        today_dir = self.generate_today_dir()
-        if use_basename:
-            pathname = "%s.%s" % (self.basename, ext)
-        else:
-            pathname = os.path.join(today_dir, "%s.%s" % (self.generate_basename(), ext))
+        if pixel < 0 or pixel >= len(array):
+            return "na"
 
-        if not self.verify_pathname(pathname, resave):
-            return
+        value = array[pixel]
+        return '%.*f' % (prec, value)
 
+    def get_csv_data(self, pr):
+        """ Used by save_csv_file_by_column and save_csv_file_by_row """
         roi = None
         stage = None
         if pr.interpolated:
@@ -1332,14 +1328,31 @@ class Measurement:
         else:
             pixels = len(processed)
 
-        if True:
-            log.debug(f"save_csv_file_by_column: stage {stage}, pixels {pixels}, " +
-                      f"wavelengths {None if wavelengths is None else len(wavelengths)}, " +
-                      f"wavenumbers {None if wavenumbers is None else len(wavenumbers)}, " +
-                      f"processed {None if processed is None else len(processed)}, " + 
-                      f"raw {None if raw is None else len(raw)}, " +
-                      f"dark {None if dark is None else len(dark)}, " +
-                      f"ref {None if reference is None else len(reference)}")
+        return roi, wavelengths, wavenumbers, processed, raw, dark, reference, pixels
+
+    ##
+    # Save the Measurement in a CSV file with the x-axis in one column, spectra
+    # in the next column and so on (similar layout as the Excel output).
+    #
+    # Note that currently this is NOT writing UTF-8 / Unicode, although KIA-
+    # generated labels are Unicode.  (Dieter doesn't seem to like Unicode CSV)
+    def save_csv_file_by_column(self, use_basename=False, ext="csv", delim=",", include_header=True, include_metadata=True, resave=False):
+        pr = self.processed_reading
+
+        if not self.ctl or not self.ctl.save_options:
+            log.error("Measurement.save* requires SaveOptions")
+            return
+
+        today_dir = self.generate_today_dir()
+        if use_basename:
+            pathname = "%s.%s" % (self.basename, ext)
+        else:
+            pathname = os.path.join(today_dir, "%s.%s" % (self.generate_basename(), ext))
+
+        if not self.verify_pathname(pathname, resave):
+            return
+
+        roi, wavelengths, wavenumbers, processed, raw, dark, reference, pixels = self.get_csv_data(pr)
 
         with open(pathname, "w", newline="", encoding='utf-8') as f:
 
@@ -1383,33 +1396,18 @@ class Measurement:
             if include_header:
                 out.writerow(headers)
 
-            def formatted(prec, array, pixel, obey_roi=False):
-                if array is None:
-                    return
-                if roi and obey_roi:
-                    if pixel < roi.start or pixel > roi.end:
-                        return "NA"
-                    else:
-                        pixel -= roi.start
-
-                if pixel < 0 or pixel >= len(array):
-                    return "na"
-
-                value = array[pixel]
-                return '%.*f' % (prec, value)
-
             # store extra precision for relative measurements
             precision = 5 if pr.reference is not None else 2
 
             for pixel in range(pixels):
                 values = []
                 if self.ctl.save_options.save_pixel():       values.append(pixel)
-                if self.ctl.save_options.save_wavelength():  values.append(formatted(2,         wavelengths, pixel))
-                if self.ctl.save_options.save_wavenumber():  values.append(formatted(2,         wavenumbers, pixel))
-                if self.ctl.save_options.save_processed():   values.append(formatted(precision, processed,   pixel, obey_roi=True))
-                if self.ctl.save_options.save_raw():         values.append(formatted(precision, raw,         pixel))
-                if self.ctl.save_options.save_dark():        values.append(formatted(precision, dark,        pixel))
-                if self.ctl.save_options.save_reference():   values.append(formatted(precision, reference,   pixel))
+                if self.ctl.save_options.save_wavelength():  values.append(self.csv_formatted(roi, 2,         wavelengths, pixel))
+                if self.ctl.save_options.save_wavenumber():  values.append(self.csv_formatted(roi, 2,         wavenumbers, pixel))
+                if self.ctl.save_options.save_processed():   values.append(self.csv_formatted(roi, precision, processed,   pixel, obey_roi=True))
+                if self.ctl.save_options.save_raw():         values.append(self.csv_formatted(roi, precision, raw,         pixel))
+                if self.ctl.save_options.save_dark():        values.append(self.csv_formatted(roi, precision, dark,        pixel))
+                if self.ctl.save_options.save_reference():   values.append(self.csv_formatted(roi, precision, reference,   pixel))
                 out.writerow(values)
 
         log.info("saved columnar %s", pathname)
@@ -1589,7 +1587,9 @@ class Measurement:
     ##
     # @see Scooby-Doo
     def write_row(self, csv_writer, field):
+        log.debug(f"write_row: field {field}")
         row = self.build_row(field)
+        log.debug(f"write_row: field {field} row {row}")
         if row is not None:
             csv_writer.writerow(row)
 
@@ -1601,46 +1601,53 @@ class Measurement:
     # array.
     def build_row(self, field):
         field = field.lower()
+        pr = self.processed_reading
+
+        roi, wavelengths, wavenumbers, processed, raw, dark, reference, pixels = self.get_csv_data(pr)
+        prec = 5 if pr.reference is not None else 2
 
         a = None
-        pr = self.processed_reading
-        prec = 5 if pr.reference is not None else 2
-        prefix_metadata = False
-
-        if field.lower() == "pixels":
-            a = list(range(self.settings.pixels()))
-            prec = 0
-        elif field.lower() == "wavelengths":
-            a = self.settings.wavelengths
-            prec = 2
-        elif field.lower() == "wavenumbers":
-            if self.settings.wavenumbers is None:
-                raise Exception("can't save wavenumbers without excitation")
-            a = self.settings.wavenumbers
-            prec = 2
-        elif field.lower() == "processed":
-            a = pr.processed
-        elif field.lower() == "dark":
-            a = pr.dark
-        elif field.lower() == "reference":
-            a = pr.reference
-        elif field.lower() == "raw":
-            a = pr.raw
+        fmt = None
+        if field == "pixels":
+            a = pr.get_pixel_axis()
+            fmt = lambda pixel: pixel
+        elif field == "wavelengths":
+            a = wavelengths
+            fmt = lambda pixel: self.csv_formatted(roi, 2, a, pixel)
+        elif field == "wavenumbers":
+            a = wavenumbers
+            fmt = lambda pixel: self.csv_formatted(roi, 2, a, pixel)
+        elif field == "processed":
+            a = processed
+            fmt = lambda pixel: self.csv_formatted(roi, prec, a, pixel, obey_roi=True)
+        elif field == "dark":
+            a = dark
+            fmt = lambda pixel: self.csv_formatted(roi, prec, a, pixel)
+        elif field == "reference":
+            a = reference
+            fmt = lambda pixel: self.csv_formatted(roi, prec, a, pixel)
+        elif field == "raw":
+            a = raw
+            fmt = lambda pixel: self.csv_formatted(roi, prec, a, pixel)
         else:
-            log.error("build_row: unknown field %s" % field)
+            log.error(f"build_row: unknown field {field}")
 
-        if a is None:
+        if a is None or fmt is None:
             return None
 
         row = []
 
         # don't repeat metadata for spectrum components
-        prefix_metadata = field.lower() not in ["dark", "reference", "raw"]
+        prefix_metadata = field not in ["dark", "reference", "raw"]
 
         # populate the prepended metadata fields per Dash format
         for header in self.CSV_HEADER_FIELDS:
-            if header == "Note" and field.lower() != "processed":
-                row.append(field)
+            if header == "Note": # and field != "processed":
+                if field == 'processed':
+                    note = self.get_metadata(header).strip()
+                    row.append(f"{field} ({note})" if note else field)
+                else:
+                    row.append(field)
             elif prefix_metadata or header in [ "Line Number" ]:
                 row.append(self.get_metadata(header))
             else:
@@ -1650,7 +1657,8 @@ class Measurement:
                 row.append('')
 
         # append the selected array
-        row.extend(['%.*f' % (prec, value) for value in a])
+        for pixel in range(pixels):
+            row.append(fmt(pixel))
 
         return row
 
