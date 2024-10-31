@@ -1,5 +1,8 @@
 # Version History
 
+- 2024-??-?? 4.1.16
+    - fixed bin_4x2_avg
+    - support new startup_laser_tec_setpoint EEPROM field
 - 2024-10-29 4.1.15
     - AutoRaman
         - added confirmation dialog

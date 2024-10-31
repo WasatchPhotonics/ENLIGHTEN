@@ -224,6 +224,7 @@ class EEPROMEditor:
         self.bind_spinBox         (cfu.spinBox_ee_baud_rate,                  "baud_rate")
         self.bind_spinBox         (cfu.spinBox_ee_detector_offset,            "detector_offset")
         self.bind_spinBox         (cfu.spinBox_ee_detector_offset_odd,        "detector_offset_odd")
+        self.bind_spinBox         (cfu.spinBox_ee_startup_laser_tec_setpoint, "startup_laser_tec_setpoint")
         self.bind_spinBox         (cfu.spinBox_ee_max_integration_time_ms,    "max_integration_time_ms")
         self.bind_spinBox         (cfu.spinBox_ee_max_temp_degC,              "max_temp_degC")
         self.bind_spinBox         (cfu.spinBox_ee_min_integration_time_ms,    "min_integration_time_ms")
