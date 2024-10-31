@@ -3445,7 +3445,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="26" column="1">
-                           <widget class="QLabel" name="label_161">
+                           <widget class="QLabel" name="label_161x">
                             <property name="text">
                              <string>Startup Laser TEC Setpoint (raw)</string>
                             </property>

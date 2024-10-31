@@ -1505,8 +1505,9 @@ class Measurement:
 
                 # you can neither delete nor rename spectra which were appended
                 # to an existing file
-                self.thumbnail_widget.disable_edit()
-                self.thumbnail_widget.disable_trash()
+                reason = "disabled when appending to existing file"
+                self.thumbnail_widget.disable_edit(reason=reason)
+                self.thumbnail_widget.disable_trash(reason=reason)
             else:
                 # we're creating a new file
                 verb = "saved"

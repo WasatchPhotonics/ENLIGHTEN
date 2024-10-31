@@ -49,6 +49,7 @@ class HelpFeature:
             Ctrl-C Copy to system clipboard
             Ctrl-D take/clear Dark
             Ctrl-E Edit last saved measurement
+            Ctrl-F Freeze axes
             Ctrl-G enter Gain
             Ctrl-H toggle between Hardware and scope
             Ctrl-L toggle Laser firing

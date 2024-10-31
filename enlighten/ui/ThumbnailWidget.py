@@ -60,6 +60,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
         self.curve = None
         self.old_name = None
         self.last_editted = None
+        self.rename_disabled = False
 
         ########################################################################
         # Widget styling
@@ -331,6 +332,8 @@ class ThumbnailWidget(QtWidgets.QFrame):
 
     ## the user clicked the "pencil" icon to edit the Thumbnail's label
     def rename_callback(self):
+        if self.rename_disabled:
+            return
 
         if self.last_editted and (datetime.now() - self.last_editted).total_seconds() < 1:
             log.debug("rename: debouncing re-click intended to end edit")
@@ -459,22 +462,33 @@ class ThumbnailWidget(QtWidgets.QFrame):
 
     ## Called by Measurement.save_csv_file_by_row to prevent attempts to rename
     # spectra appended as lines to an existing file.
-    def disable_edit(self):
+    def disable_edit(self, reason=None):
+        self.rename_disabled = True
         self.button_edit.setEnabled(False)
+        if reason:
+            self.button_edit.setToolTip(reason)
 
     ## Called by Measurement.save_csv_file_by_row to prevent attempts to delete
     # spectra appended as lines to an existing file. (All they can do is click
     # the eraser icon to remove the whole list, or click the trash icon on the
     # FIRST file to which other spectra were appended.)
-    def disable_trash(self):
-        self.button_trash.setVisible(False)
+    def disable_trash(self, reason):
+        self.button_trash.setEnabled(False)
+        if reason:
+            self.button_trash.setToolTip(reason)
 
     def generate_tooltip(self):
         # quick stats in first line
         proc = self.measurement.processed_reading.get_processed()
-        wt = f"Max {int(max(proc))}, Avg {int(sum(proc)/len(proc))}, Min {int(min(proc))}\n\n" if proc is not None else ""
+        if proc is None:
+            return
 
-        # followed by Measurement metadata
+        tt = f"Max {int(max(proc))}, Avg {int(sum(proc)/len(proc))}, Min {int(min(proc))}"
+        self.body.setToolTip(tt)
+        self.ctl.stylesheets.apply(self.body, "tooltip")
+
+        # append Measurement metadata to WhatsThis
+        wt = f"{tt}\n\n"
         metadata = self.measurement.get_all_metadata()
         for k in sorted(metadata):
             v = metadata[k]
@@ -483,4 +497,3 @@ class ThumbnailWidget(QtWidgets.QFrame):
                 if len(s) > 0:
                     wt += f"{k}: {s}\n"
         self.body.setWhatsThis(wt.strip())
-        # self.ctl.stylesheets.apply(self.body, "tooltip")
