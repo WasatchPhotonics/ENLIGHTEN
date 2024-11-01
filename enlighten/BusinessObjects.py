@@ -42,14 +42,15 @@ from enlighten.measurement.SaveOptions import SaveOptions
 from enlighten.network.BLEManager import BLEManager
 from enlighten.network.CloudManager import CloudManager
 from enlighten.post_processing.AbsorbanceFeature import AbsorbanceFeature
+from enlighten.post_processing.AutoRamanFeature import AutoRamanFeature
 from enlighten.post_processing.BaselineCorrection import BaselineCorrection
 from enlighten.post_processing.BoxcarFeature import BoxcarFeature
 from enlighten.post_processing.DarkFeature import DarkFeature
 from enlighten.post_processing.ElectricalDarkCorrectionFeature import ElectricalDarkCorrectionFeature
 from enlighten.post_processing.HorizROIFeature import HorizROIFeature
 from enlighten.post_processing.InterpolationFeature import InterpolationFeature
+from enlighten.post_processing.PixelCalibration import PixelCalibration
 from enlighten.post_processing.RamanIntensityCorrection import RamanIntensityCorrection
-from enlighten.post_processing.AutoRamanFeature import AutoRamanFeature
 from enlighten.post_processing.ReferenceFeature import ReferenceFeature
 from enlighten.post_processing.RichardsonLucy import RichardsonLucy
 from enlighten.post_processing.ScanAveragingFeature import ScanAveragingFeature
@@ -447,6 +448,9 @@ class BusinessObjects:
 
         self.header("instantiating ReadingProgressBar")
         ctl.reading_progress_bar = ReadingProgressBar(ctl)
+
+        self.header("instantiating PixelCalibration")
+        ctl.pixel_calibration = PixelCalibration(ctl)
 
         self.header("done with Business Object creation")
 

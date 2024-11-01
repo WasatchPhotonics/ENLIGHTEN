@@ -6,6 +6,7 @@
     - added ctrl-Freeze axes
     - added Thumbnail tooltips
     - improved 'locked Thumbnail' docs
+    - added PixelCalibration
 - 2024-10-29 4.1.15
     - AutoRaman
         - added confirmation dialog

@@ -654,6 +654,7 @@ class Controller:
                          self.baseline_correction,
                          self.status_bar,
                          self.edc,
+                         self.pixel_calibration,
                          self.kia_feature ]:
             feature.update_visibility()
 
@@ -888,7 +889,7 @@ class Controller:
         # finish initializing the GUI
         ########################################################################
 
-        # re-hide hidden curves
+        # update features whose visibility/appearance is affected by current spectrometer
         self.update_feature_visibility()
 
         # weight new curve
