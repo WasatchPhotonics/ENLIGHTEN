@@ -8,7 +8,7 @@ from threading import Thread
 
 from enlighten import common
 from wasatch.DeviceID import DeviceID
-from wasatch.BLEScanner import BLEScanner
+# from wasatch.BLEScanner import BLEScanner
 
 if common.use_pyside2():
     from PySide2 import QtCore, QtGui
@@ -34,7 +34,7 @@ class BLEManager:
 
         # used to initiate a search, and to indicate whether one or more a BLE 
         # spectrometers are paired
-        self.ble_button = sfu.pushButton_bleScan
+        self.ble_button = cfu.pushButton_bleScan
 
         self.scans_q = Queue()
 
@@ -52,7 +52,7 @@ class BLEManager:
         # create a thread in which to run BleakScanner, so we're not blocking 
         # the GUI loop when the button is pressed
         self.scan_loop = asyncio.new_event_loop()
-        self.scan_thread = Thread(target=self.make_async_loop, daemon=True)
+        self.scan_thread = Thread(target=self.make_scan_loop, daemon=True)
         self.scan_thread.start()
 
     def make_scan_loop(self):
