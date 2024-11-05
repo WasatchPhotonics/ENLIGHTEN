@@ -862,7 +862,7 @@ class Measurements:
             if pr is None:
                 pr = m.processed_reading
             if pr is None:
-                return None
+                return
 
             a = None
             if header == "processed":

@@ -61,7 +61,10 @@ class TakeOneFeature:
         # process the upcoming measurement
         if "start" in self.observers:
             for callback in self.observers["start"]:
-                callback()
+                try:
+                    callback()
+                except:
+                    log.critical("start: caught exception on observer callback {callback}", exc_info=1)
 
         take_one_request = TakeOneRequest(
             scans_to_average=self.ctl.scan_averaging.get_scans_to_average(), 
@@ -92,7 +95,10 @@ class TakeOneFeature:
         
         if self.stop_callback:
             log.debug(f"stop: notifying {self.stop_callback}")
-            self.stop_callback()
+            try:
+                self.stop_callback()
+            except:
+                log.critical("stop: caught exception on stop callback {self.stop_callback}", exc_info=1)
 
         self.reset()
 
@@ -157,14 +163,20 @@ class TakeOneFeature:
 
         if self.completion_callback:
             log.debug(f"complete: notifying {self.completion_callback}")
-            self.completion_callback()
+            try:
+                self.completion_callback()
+            except:
+                log.critical("complete: caught exception on completion callback {self.completion_callback}", exc_info=1)
 
         log.debug("complete: resetting")
         self.reset()
 
         if "complete" in self.observers:
             for callback in self.observers["complete"]:
-                callback()
+                try:
+                    callback()
+                except:
+                    log.critical("complete: caught exception on observer callback {callback}", exc_info=1)
 
         log.debug("complete: done")
 

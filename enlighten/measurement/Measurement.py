@@ -1634,7 +1634,7 @@ class Measurement:
             log.error(f"build_row: unknown field {field}")
 
         if a is None or fmt is None:
-            return None
+            return
 
         row = []
 

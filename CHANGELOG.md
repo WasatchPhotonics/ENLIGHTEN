@@ -12,7 +12,14 @@
         - added confirmation dialog
         - updated Did You Know
         - actually remembered to commit the new ReadingProgressBar class :-(
+        - tidy ReadingProgressBar close
+        - added onboard
+        - added elapsed time
+        - catch exceptions in TakeOne callbacks
         - support new onboard Auto-Raman opcode and parameters
+    - plugins
+        - fixed imports
+        - fixed overrides (e.g. Filters.SavitzkyGolay)
     - add horizontal binning mode BIN_4X2_AVG
     - add more firmware version checks around new features to avoid breaking old FW
     - start refresh of BLEDevice

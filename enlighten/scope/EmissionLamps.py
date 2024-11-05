@@ -107,7 +107,6 @@ class EmissionLamp:
         if wavelength in self.intensity:
             if self.intensity[wavelength] > 0:
                 return self.intensity[wavelength]
-        return None
 
     def get_intensity_scalar(self, max_intensity):
         max_relative_intensity = 0.5

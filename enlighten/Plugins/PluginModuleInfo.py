@@ -81,8 +81,9 @@ class PluginModuleInfo:
             log.error("invalid configuration")
             return False
 
-        log.debug("loaded EnlightenPluginConfiguration { name %s, has_other_graph %s, x_axis %s, y_axis %s, is_blocking %s, graph_type %s }",
-            self.config.name, self.config.has_other_graph, self.config.x_axis_label, self.config.y_axis_label, self.config.is_blocking, self.config.graph_type)
+        log.debug(f"loaded EnlightenPluginConfiguration: name {self.config.name}, has_other_graph {self.config.has_other_graph}, " +
+                  f"x_axis {self.config.x_axis_label}, y_axis {self.config.y_axis_label}, is_blocking {self.config.is_blocking}, " +
+                  f"block_enlighten {self.config.block_enlighten}, graph_type {self.config.graph_type}")
         return True
 
     def is_loaded(self):

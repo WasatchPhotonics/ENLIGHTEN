@@ -1,7 +1,7 @@
 import numpy as np
 import logging
 
-from EnlightenPlugin import *
+from EnlightenPlugin import EnlightenPluginBase
 
 log = logging.getLogger(__name__)
 
@@ -19,6 +19,7 @@ class Stats(EnlightenPluginBase):
 
     def get_configuration(self):
         self.name = "Statistics"
+        self.auto_enable = True
         self.field(name="Reset", datatype="button", callback=self.reset)
         self.reset()
 

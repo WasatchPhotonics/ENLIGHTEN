@@ -16737,8 +16737,39 @@ li.checked::marker { content: "\2612"; }
                              </property>
                             </widget>
                            </item>
+
+                           <item row="15" column="0">
+                            <widget class="QLabel" name="label_auto_raman_elapsed">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="layoutDirection">
+                              <enum>Qt::LayoutDirection::RightToLeft</enum>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="15" column="1">
+                            <widget class="QLabel" name="label_auto_raman_elapsed_name">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="layoutDirection">
+                              <enum>Qt::LayoutDirection::RightToLeft</enum>
+                             </property>
+                             <property name="text">
+                              <string>Elapsed Time</string>
+                             </property>
+                            </widget>
+                           </item>
                            
-                           <item row="15" column="0" colspan="2">
+                           
+                           <item row="16" column="0" colspan="2">
                             <widget class="QCheckBox" name="checkBox_auto_raman_retain_settings">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -16752,7 +16783,7 @@ li.checked::marker { content: "\2612"; }
                             </widget>
                            </item>
 
-                           <item row="16" column="0" colspan="2">
+                           <item row="17" column="0" colspan="2">
                             <widget class="QCheckBox" name="checkBox_auto_raman_auto_save">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -16762,6 +16793,20 @@ li.checked::marker { content: "\2612"; }
                              </property>
                              <property name="text">
                               <string>Automatically Save</string>
+                             </property>
+                            </widget>
+                           </item>
+
+                           <item row="18" column="0" colspan="2">
+                            <widget class="QCheckBox" name="checkBox_auto_raman_onboard">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="text">
+                              <string>Onboard</string>
                              </property>
                             </widget>
                            </item>

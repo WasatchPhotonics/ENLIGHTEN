@@ -60,7 +60,6 @@ class ModelInfo:
     def get_by_name(self, name):
         if name in self.models:
             return self.models[name]
-        return None
 
     def get_by_model(self, full_model):
         model = full_model.lower()

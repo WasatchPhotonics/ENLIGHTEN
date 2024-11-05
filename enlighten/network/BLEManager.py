@@ -3,11 +3,12 @@ import asyncio
 import logging
 from queue import Queue
 
-from bleak import discover
+from bleak import BleakScanner, BleakClient
 from threading import Thread
 
 from enlighten import common
 from wasatch.DeviceID import DeviceID
+# from wasatch.BLEScanner import BLEScanner
 
 if common.use_pyside2():
     from PySide2 import QtCore, QtGui
@@ -24,106 +25,119 @@ class BLEManager:
 
     @todo show progress indicator while reading EEPROM (~15sec)
     @todo show progress indicator while reading spectrum (~4sec)
+    @todo support connection to multiple BLE spectrometers
     """
 
-    def __init__(self, 
-                 marquee,
-                 ble_button, 
-                 controller_connect,
-                 controller_disconnect,
-                 progress_bar,
-                 multispec):
+    def __init__(self, ctl):
+        self.ctl = ctl
+        cfu = ctl.form.ui
+
+        # used to initiate a search, and to indicate whether one or more a BLE 
+        # spectrometers are paired
+        self.ble_button = cfu.pushButton_bleScan
+
         self.scans_q = Queue()
-        self.ble_present = False
-        self.marquee = marquee
-        self.multispec = multispec
-        self.ble_button = ble_button
-        self.progress_bar = progress_bar
-        self.ble_btn_stlye = ble_button.styleSheet()
-        self.controller_connect = controller_connect
-        self.controller_disconnect = controller_disconnect
-        self.selection_popup = BLESelector(parent=self.ble_button)
-        self.ble_button.clicked.connect(self.ble_btn_click)
-        self.ble_device_id = None
-        self.loop = asyncio.new_event_loop()
+
         self.ble_device = None
-        self.progress_bar.hide()
-        self.thread = Thread(target=self.make_async_loop, args=(self.loop,), daemon=True)
-        self.thread.start()
+        self.ble_present = False
+        self.ble_device_id = None
+
+        self.original_button_style = self.ble_button.styleSheet()
+        self.selection_popup = BLESelector(parent=self.ble_button)
+
+        self.ble_button.clicked.connect(self.button_callback)
+
+        self.ctl.reading_progress_bar.hide()
+
+        # create a thread in which to run BleakScanner, so we're not blocking 
+        # the GUI loop when the button is pressed
+        self.scan_loop = asyncio.new_event_loop()
+        self.scan_thread = Thread(target=self.make_scan_loop, daemon=True)
+        self.scan_thread.start()
+
+    def make_scan_loop(self):
+        asyncio.set_event_loop(self.scan_loop)
+        self.scan_loop.run_forever()
 
     def check_complete_scans(self):
-        log.debug(f"checking for scans and queue is empty {self.scans_q.empty()}")
         if not self.scans_q.empty():
+            log.debug(f"scan queue non-empty...checking for wp_devices")
             wp_devices = self.scans_q.get_nowait()
             self.selection_popup.clear_plugin_layout(self.selection_popup.layout)
             if wp_devices != []:
+                log.debug(f"found wp_devices {wp_devices}")
                 for d in wp_devices:
                     btn = QPushButton()
-                    btn.setText(str(d.name))
-                    log.debug(f"In complete scan found device {d}")
-                    btn.clicked.connect(lambda: self.ble_discover_click(btn, d))
+                    btn.setText(str(d.name)) # YOU ARE HERE
+                    log.debug(f"  found device {d}")
+                    btn.clicked.connect(lambda: self.connect_callback(btn, d))
                     self.selection_popup.device_widgets.append(btn)
                     self.selection_popup.layout.addWidget(btn)
             else:
-                label =  QLabel()
-                label.setText("No WP Devices found.")
+                label = QLabel()
+                label.setText("no wp_devices found")
                 label.setAlignment(QtCore.Qt.AlignCenter)
                 self.selection_popup.layout.addWidget(label)
 
-    def make_async_loop(self, loop):
-        asyncio.set_event_loop(loop)
-        loop.run_forever()
-
     def stop(self):
-        log.debug(f"calling stop of async loop")
-        self.marquee.info("Closing BLE spectrometers...", immediate=True)
+        self.ctl.marquee.info("Closing BLE spectrometers...", immediate=True)
         time.sleep(0.05)
         if self.ble_device_id is not None:
-            self.controller_disconnect(self.multispec.get_spectrometer(self.ble_device_id))
-            self.multispec.set_disconnecting(self.ble_device_id, False)
+            self.ctl.disconnect_device(self.ctl.multispec.get_spectrometer(self.ble_device_id))
+            self.ctl.multispec.set_disconnecting(self.ble_device_id, False)
             self.ble_device_id = None
 
-    def ble_btn_click(self):
-        log.debug("ble button clicked, creating task")
+    def button_callback(self):
+        log.debug("BLE button clicked")
         if self.ble_present:
-            log.debug("BLE btn clicked while device connected, disconnecting")
+            log.debug("disconnecting from BLE device")
             self.ble_present = False
-            self.progress_bar.hide()
-            self.ble_button.setStyleSheet(self.ble_btn_stlye)
+            self.ctl.reading_progress_bar.hide()
+            self.ble_button.setStyleSheet(self.original_button_style)
             self.stop()
             return
+
+        log.debug("Searching for BLE devices")
+
         # clear anything that might be in the pop up for available devices
         self.selection_popup.clear_plugin_layout(self.selection_popup.layout)
         self.selection_popup.device_widgets.clear()
+
         # add the throbber for UI/UX
         self.selection_popup.add_throbber()
-        log.debug("calling soon perform discovery")
-        # Kick of the async search for BLE Devices and show the pop up
-        asyncio.run_coroutine_threadsafe(self.perform_discovery(), self.loop)
+
+        # Kick off the async search for BLE Devices and show the pop up
+        log.debug("calling perform_discovery")
+        asyncio.run_coroutine_threadsafe(self.perform_discovery(), self.scan_loop)
         self.selection_popup.show()
 
-    def ble_discover_click(self, btn, device):
-        log.debug(f"ble device button clicked device is {device}")
-        self.device = device
-        self.selection_popup.hide()
-        self.perform_connect(btn, device)
-
-    def perform_connect(self, btn, device):
-        log.debug(f"called to perform connect on btn {btn} with text {btn.text()}")
-        #self.ble_device = BLEDevice(device, self.loop)
-        self.ble_device_id = DeviceID(label=f"BLE:{device.address}:{device.name}")
-        ok = self.controller_connect(self.ble_device_id)
-        self.ble_present = True
-        if ok:
-            self.ble_button.setStyleSheet("background-color: blue")
-
     async def perform_discovery(self):
+        """ This method is explicitly run in a separate thread under asyncio via scan_loop """
+
         log.debug("starting discovery")
         devices = await discover()
-        log.debug(f"found devices of {devices}")
         wp_devices = [dev for dev in devices if dev.name is not None and ("wp" in dev.name.lower())]
-        log.debug(f"wp_devices is {wp_devices}")
+        log.debug(f"adding wp_devices to scans_q: {wp_devices}")
         self.scans_q.put(wp_devices)
+
+    def connect_callback(self, btn, device):
+        log.debug(f"Connecting to {device}")
+        self.device = device
+        self.selection_popup.hide()
+
+        self.ble_device_id = DeviceID(label=f"BLE:{device.address}:{device.name}")
+
+        log.debug(f"calling connect_new with DeviceID {self.ble_device_id}")
+        ok = self.ctl.connect_new(self.ble_device_id)
+        log.debug(f"connect_new returned ok {ok}")
+        self.ble_present = True
+        if ok:
+            log.debug(f"updating button color")
+            self.ble_button.setStyleSheet("background-color: #4a5da9")
+            # '#6758c5', # the 'E' in ENLIGHTEN (violet)
+            # '#4a5da9', # the 'N' in ENLIGHTEN (blue)
+            # '#2994d3', # the 'L' in ENLIGHTEN (cyan)
+            # '#27c0a1', # the 'I' in ENLIGHTEN (bluegreen)
 
 class BLESelector(QDialog):
     """
@@ -132,15 +146,16 @@ class BLESelector(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("BLE Devices")
-        #self.setMinimumSize(300,100)
-        self.device_widgets = []
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
+
+        # MZ: is this actually needed? All it stores are handles to QPushButtons,
+        # which are already added to self.layout and so persisted there.
+        self.device_widgets = []
 
     def add_throbber(self):
         self.label = QLabel(self)
         self.label.setObjectName("label")
-        log.info(f"getting gif from path :gifs/images/throbbers/EnlightenIconGif.gif")
         self.movie = QtGui.QMovie(":gifs/images/throbbers/EnlightenIconGif.gif")
         self.label.setMovie(self.movie)
         self.movie.start()
@@ -148,8 +163,7 @@ class BLESelector(QDialog):
 
     def clear_plugin_layout(self, layout):
         """
-        Same as plugin Controller.
-        Need to clear all depending the layout recursively.
+        Same as PluginController, clear all descending the layout recursively.
         @see https://stackoverflow.com/questions/4528347/clear-all-widgets-in-a-layout-in-pyqt
         """
         if layout is None:

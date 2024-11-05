@@ -216,7 +216,7 @@ class Configuration:
         if not self.config.has_section(section):
             self.config.add_section(section)
         self.config.set(section, key, str(value))
-        log.debug("Configuration.set: (%s, %s, %s)", section, key, value)
+        # log.debug("Configuration.set: (%s, %s, %s)", section, key, value)
 
     def save(self):
         try:
