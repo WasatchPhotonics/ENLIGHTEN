@@ -1,12 +1,19 @@
 # Version History
 
-- 2024-??-?? 4.1.16
-    - fixed bin_4x2_avg
-    - support new startup_laser_tec_setpoint EEPROM field
-    - added ctrl-Freeze axes
-    - added Thumbnail tooltips
-    - improved 'locked Thumbnail' docs
-    - added PixelCalibration
+- 2024-11-05 4.1.16
+    - XS
+        - support new startup_laser_tec_setpoint EEPROM field
+        - added PixelCalibration
+        - add horizontal binning mode BIN_4X2_AVG
+        - add more firmware version checks around new features to avoid breaking old FW
+        - start refresh of BLEDevice
+    - GUI
+        - added ctrl-Freeze axes
+        - added Thumbnail tooltips
+        - improved 'locked Thumbnail' docs
+    - misc
+        - update row-ordered CSV format to support ROI "NA", etc
+        - fixed gain 0dB being accidentally written on non-XS devices
 - 2024-10-29 4.1.15
     - AutoRaman
         - added confirmation dialog
@@ -20,10 +27,6 @@
     - plugins
         - fixed imports
         - fixed overrides (e.g. Filters.SavitzkyGolay)
-    - add horizontal binning mode BIN_4X2_AVG
-    - add more firmware version checks around new features to avoid breaking old FW
-    - start refresh of BLEDevice
-    - update row-ordered CSV format to support ROI "NA", etc
 - 2024-10-16 4.1.14
     - AutoRaman
         - fixed "Stop" button
