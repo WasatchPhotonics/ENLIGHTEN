@@ -284,7 +284,13 @@ class DashFileParser:
                     continue
 
                 # line must be processed/raw/dark/reference
-                spectrum = [float(x) for x in row['remainder']]
+                spectrum = []
+                for x in row['remainder']:
+                    try:
+                        value = float(x)
+                    except:
+                        value = 0
+                    spectrum.append(value)
                 spec.update_processed_reading(note, spectrum)
 
         log.debug("done parsing %s", self.pathname)

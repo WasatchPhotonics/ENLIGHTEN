@@ -655,6 +655,7 @@ class Controller:
                          self.baseline_correction,
                          self.status_bar,
                          self.edc,
+                         self.pixel_calibration,
                          self.kia_feature ]:
             feature.update_visibility()
 
@@ -889,7 +890,7 @@ class Controller:
         # finish initializing the GUI
         ########################################################################
 
-        # re-hide hidden curves
+        # update features whose visibility/appearance is affected by current spectrometer
         self.update_feature_visibility()
 
         # weight new curve
@@ -1105,6 +1106,7 @@ class Controller:
         make_shortcut("Ctrl+C", self.graph.copy_to_clipboard_callback)
         make_shortcut("Ctrl+D", self.dark_feature.toggle)
         make_shortcut("Ctrl+E", self.measurements.rename_last_measurement)
+        make_shortcut("Ctrl+F", self.graph.toggle_lock_axes)
         make_shortcut("Ctrl+G", self.gain_db_feature.set_focus)
         make_shortcut("Ctrl+H", self.page_nav.toggle_hardware_and_scope)
         make_shortcut("Ctrl+L", self.laser_control.toggle_laser)

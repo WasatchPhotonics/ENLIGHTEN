@@ -3420,14 +3420,47 @@ QComboBox QListView
                             </property>
                            </widget>
                           </item>
+
+
                           <item row="26" column="0">
+                           <widget class="QSpinBox" name="spinBox_ee_startup_laser_tec_setpoint">
+                            <property name="minimumSize">
+                             <size>
+                              <width>125</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                            <property name="keyboardTracking">
+                             <bool>false</bool>
+                            </property>
+                            <property name="minimum">
+                             <number>0</number>
+                            </property>
+                            <property name="maximum">
+                             <number>4095</number>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="26" column="1">
+                           <widget class="QLabel" name="label_161x">
+                            <property name="text">
+                             <string>Startup Laser TEC Setpoint (raw)</string>
+                            </property>
+                           </widget>
+                          </item>
+                          
+
+                          <item row="27" column="0">
                            <widget class="QLabel" name="label_ee_format">
                             <property name="text">
                              <string>fmt</string>
                             </property>
                            </widget>
                           </item>
-                          <item row="26" column="1">
+                          <item row="27" column="1">
                            <widget class="QLabel" name="label_216">
                             <property name="text">
                              <string>Format</string>
@@ -17833,6 +17866,27 @@ li.checked::marker { content: "\2612"; }
                           </property>
                          </widget>
                         </item>
+
+                        <item>
+                         <widget class="QCheckBox" name="checkBox_enable_pixel_correction">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="toolTip">
+                           <string>Enable per-pixel intensity correction</string>
+                          </property>
+                          <property name="styleSheet">
+                           <string notr="true" />
+                          </property>
+                          <property name="text">
+                           <string>Pixel Correction</string>
+                          </property>
+                         </widget>
+                        </item>
+
                        </layout>
                       </widget>
                      </item>
