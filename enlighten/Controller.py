@@ -1117,6 +1117,8 @@ class Controller:
         make_shortcut("Ctrl+T", self.integration_time_feature.set_focus)
         make_shortcut("Ctrl+X", self.page_nav.toggle_expert)
         make_shortcut("Ctrl+*", self.auto_raman.measure_callback)
+        make_shortcut("Ctrl+,", self.multispec.select_prev_spectrometer)
+        make_shortcut("Ctrl+.", self.multispec.select_next_spectrometer)
 
         # Cursor
         make_shortcut(QtGui.QKeySequence.MoveToPreviousWord, self.cursor.dn_callback) # ctrl-left

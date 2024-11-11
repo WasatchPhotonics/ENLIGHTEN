@@ -522,6 +522,16 @@ class Multispec:
         # done
         self.update_widget()
 
+    def select_next_spectrometer(self):
+        index = self.combo_spectrometer.currentIndex()
+        count = self.combo_spectrometer.count()
+        self.combo_spectrometer.setCurrentIndex((index + 1) % count)
+
+    def select_prev_spectrometer(self):
+        index = self.combo_spectrometer.currentIndex()
+        count = self.combo_spectrometer.count()
+        self.combo_spectrometer.setCurrentIndex(index - 1 if index > 0 else count - 1)
+
     def get_combo_index(self, spec) -> int:
         label = spec.label
         for index in range(self.combo_spectrometer.count()):

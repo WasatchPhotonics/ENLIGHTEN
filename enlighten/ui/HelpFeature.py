@@ -61,6 +61,8 @@ class HelpFeature:
             Ctrl-X toggle eXpert mode
 
             Ctrl-* Auto-Raman
+            Ctrl-, Prev Spectrometer
+            Ctrl-. Next Spectrometer
             
             Ctrl-Up/Down step values
             Ctrl-Left/Right move Scope cursor"""))

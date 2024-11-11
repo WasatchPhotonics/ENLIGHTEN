@@ -1,5 +1,7 @@
 # Version History
 
+- 2024-??-?? 4.1.17
+    - added Ctrl-, and Ctrl-. to select previous and next spectrometer
 - 2024-11-05 4.1.16
     - XS
         - support new startup_laser_tec_setpoint EEPROM field
