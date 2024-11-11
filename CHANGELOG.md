@@ -5,6 +5,7 @@
         - added Ctrl-, and Ctrl-. to select previous and next spectrometer
         - added OEM/Multichannel plugin
         - persist integration time on locked spectrometers to enlighten.ini
+        - make Dark lockable
 - 2024-11-05 4.1.16
     - XS
         - support new startup_laser_tec_setpoint EEPROM field

@@ -28,7 +28,7 @@ class DarkFeature:
 
         self.populate_placeholder_scope_setup()
 
-        self.button_toggle              .clicked    .connect(self.toggle)
+        self.button_toggle              .clicked    .connect(self.toggle_callback)
         cfu.pushButton_dark_clear       .clicked    .connect(self.clear_callback)
         cfu.pushButton_dark_load        .clicked    .connect(self.load_callback)
         cfu.pushButton_dark_store       .clicked    .connect(self.store_callback)
@@ -89,19 +89,29 @@ class DarkFeature:
 
         self.ctl.gui.colorize_button(self.button_toggle, spec.app_state.has_dark())
 
-    def toggle(self):
-        spec = self.ctl.multispec.current_spectrometer()
+    def toggle_callback(self):
+        """ This function is here to eat positional callback args """
+        self.toggle()
+
+    def toggle(self, spec=None):
+        if spec is None and self.ctl.multispec.locked:
+            for spec in self.ctl.multispec.get_spectrometers():
+                self.toggle(spec=spec)
+            return
+
+        if spec is None:
+            spec = self.ctl.multispec.current_spectrometer()
         if spec is None or spec.app_state is None:
             return
 
         if spec.app_state.dark is None:
             log.debug("toggle: storing")
-            self.store()
+            self.store(spec=spec)
         else:
             log.debug("toggle: clearing")
-            self.clear()
+            self.clear(spec=spec)
 
-    def store(self, dark=None):
+    def store(self, dark=None, spec=None):
         """
         Store a new dark.  If one was passed, use that; otherwise take the latest
         recordable_dark from the current spectrometer.
@@ -115,7 +125,8 @@ class DarkFeature:
         
         @param dark: could come from Reading in BatchCollection
         """
-        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
 
@@ -140,8 +151,12 @@ class DarkFeature:
 
         self.display()
 
-    def clear(self, quiet=False):
-        spec = self.ctl.multispec.current_spectrometer()
+    def clear(self, quiet=False, spec=None):
+        if spec is None:
+            spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+
         spec.app_state.clear_dark()
         self.display()
         if not quiet:
