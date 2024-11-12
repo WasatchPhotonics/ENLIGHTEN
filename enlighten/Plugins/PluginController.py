@@ -131,6 +131,7 @@ class PluginController:
 
         self.next_request_id = 0
         self.autoload = None
+        self.use_other_graph = True # not yet used
 
     def __init__(self, ctl):
         self.ctl = ctl
@@ -628,16 +629,7 @@ class PluginController:
             # we're successfully initialized, so proceed
             self.module_name = module_name
 
-            # should we check config.has_other_graph?
-            log.debug("configuring graph_pos")
-            if config.has_other_graph:
-                self.lb_graph_pos.setVisible(True)
-                self.combo_graph_pos.setVisible(True)
-                self.combo_graph_pos.setEnabled(True)
-            else:
-                self.lb_graph_pos.setVisible(False)
-                self.combo_graph_pos.setVisible(False)
-                self.combo_graph_pos.setEnabled(False)
+            self.show_plugin_graph(config.has_other_graph)
 
             # set title
             log.debug("setting title")
@@ -738,6 +730,17 @@ class PluginController:
 
         log.debug("successfully reconfigured GUI for plugin %s", module_name)
         return True
+
+    def show_plugin_graph(self, flag):
+        """
+        @todo it would be neat if plugins themselves could toggle 
+              self.use_other_graph, but we'd need to move existing 
+              curves between graphs/legends via self.plugin_curves
+        """
+        self.use_plugin_graph = flag
+        self.lb_graph_pos.setVisible(flag)
+        self.combo_graph_pos.setVisible(flag)
+        self.combo_graph_pos.setEnabled(flag)
 
     def get_plugin_fields(self):
         """Used by the plugin to programmatically change fields"""
@@ -1076,7 +1079,7 @@ class PluginController:
 
                 # all plugin series are either on the main graph or the secondary
                 # graph -- currently we don't support per-series configuration
-                graph = self.graph_plugin if config.has_other_graph else self.ctl.graph
+                graph = self.graph_plugin if (config.has_other_graph and self.use_other_graph) else self.ctl.graph
 
                 # determine default x-axis for a series, if none is provided
                 x_from_label = None
@@ -1107,8 +1110,6 @@ class PluginController:
                 for name in to_remove:
                     del self.plugin_curves[name]
                 
-                #del self.plugin_curves[name]
-
                 # now graph every provided series (declared or otherwise)
                 for name in sorted(seriess):
                     log.debug(f"graphing series {name}")
@@ -1122,8 +1123,7 @@ class PluginController:
                         self.plugin_curves[name] = graph.add_curve(
                             name=name, 
                             pen=self.ctl.gui.make_pen(color=series.get("color")), 
-                            in_legend=series.get("in_legend", True)
-                        )
+                            in_legend=series.get("in_legend", True))
 
                     x_values = None
                     if isinstance(series, dict):
