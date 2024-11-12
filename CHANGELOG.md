@@ -7,6 +7,7 @@
         - persist integration time on locked spectrometers to enlighten.ini
         - make Dark lockable
     - plugins
+        - updated Analysis.Despiking
         - updated Analysis.PeakFinding
         - updated Prod.PixelNoise
 - 2024-11-05 4.1.16
