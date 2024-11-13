@@ -230,7 +230,7 @@ class Spectrometer:
         log.info(f"send_alert[{self.device.device_id}]: {setting} -> {value}")
         self.device.send_alert(setting, value)
 
-    ## send commands to device subprocess via (name, value) pickleable tuples
+    ## send commands to device thread via (name, value) pickleable tuples
     def change_device_setting(self, setting, value=0):
         if self.closing:
             return

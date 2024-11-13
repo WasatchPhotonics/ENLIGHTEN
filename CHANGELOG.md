@@ -1,7 +1,15 @@
 # Version History
 
 - 2024-??-?? 4.1.17
-    - added Ctrl-, and Ctrl-. to select previous and next spectrometer
+    - Multichannel testing
+        - added Ctrl-, and Ctrl-. to select previous and next spectrometer
+        - added OEM/Multichannel plugin
+        - persist integration time on locked spectrometers to enlighten.ini
+        - make Dark lockable
+    - plugins
+        - updated Analysis.Despiking
+        - updated Analysis.PeakFinding
+        - updated Prod.PixelNoise
 - 2024-11-05 4.1.16
     - XS
         - support new startup_laser_tec_setpoint EEPROM field

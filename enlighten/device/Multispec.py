@@ -262,6 +262,7 @@ class Multispec:
 
     def lock_callback(self):
         self.locked = not self.locked
+        log.info("locked now {self.locked}")
 
         self.ctl.gui.colorize_button(self.button_lock, self.locked)
         if self.locked:
@@ -688,7 +689,7 @@ class Multispec:
             self.seen_colors.add(color)
             return color
 
-    ## send commands to device subprocess via (name, value) pickleable tuples
+    ## send commands to device thread via (name, value) pickleable tuples
     def change_device_setting(self, setting, value=0, all_=False):
         try:
             if self.locked or all_:
