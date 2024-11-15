@@ -62,7 +62,8 @@ class EEPROMEditor:
             cfu.frame_eeprom_sub_1,
             cfu.frame_eeprom_sub_2,
             cfu.frame_eeprom_sub_3,
-            cfu.frame_eeprom_sub_4
+            cfu.frame_eeprom_sub_4,
+            cfu.frame_eeprom_sub_5
         ]
 
         # Start with a blank EEPROM.  We need this as a verification during the
@@ -162,15 +163,23 @@ class EEPROMEditor:
         self.bind_doubleSpinBox   (cfu.doubleSpinBox_ee_spline_max,           "spline_max")
         self.bind_doubleSpinBox   (cfu.doubleSpinBox_ee_avg_resolution,       "avg_resolution")
 
-        self.bind_lineEdit        (cfu.lineEdit_ee_adc_to_degC_coeff_0,       "adc_to_degC_coeffs", 0)
-        self.bind_lineEdit        (cfu.lineEdit_ee_adc_to_degC_coeff_1,       "adc_to_degC_coeffs", 1)
-        self.bind_lineEdit        (cfu.lineEdit_ee_adc_to_degC_coeff_2,       "adc_to_degC_coeffs", 2)
+        """                   <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_excitation_nm_float">
+                              <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_avg_resolution">
+        """
+
         self.bind_lineEdit        (cfu.lineEdit_ee_calibrated_by,             "calibrated_by")
         self.bind_lineEdit        (cfu.lineEdit_ee_calibration_date,          "calibration_date")
-        self.bind_lineEdit        (cfu.lineEdit_ee_degC_to_dac_coeff_0,       "degC_to_dac_coeffs", 0)
-        self.bind_lineEdit        (cfu.lineEdit_ee_degC_to_dac_coeff_1,       "degC_to_dac_coeffs", 1)
-        self.bind_lineEdit        (cfu.lineEdit_ee_degC_to_dac_coeff_2,       "degC_to_dac_coeffs", 2)
         self.bind_lineEdit        (cfu.lineEdit_ee_detector,                  "detector")
+        self.bind_lineEdit        (cfu.lineEdit_ee_model,                     "model")
+        self.bind_lineEdit        (cfu.lineEdit_ee_serial_number,             "serial_number")
+        self.bind_lineEdit        (cfu.lineEdit_ee_user_text,                 "user_text")
+        self.bind_lineEdit        (cfu.lineEdit_ee_product_configuration,     "product_configuration")
+
+        # Note that many double-precision floating-point values are rendered as 
+        # QLineEdits, instead of QDoubleSpinBox. That's because coefficients may
+        # include extremely tiny values (<1-e15) which should be entered, viewed
+        # and edited in scientific notation, and which do not make visual sense 
+        # in fixed-decimal format.
         self.bind_lineEdit        (cfu.lineEdit_ee_laser_power_coeff_0,       "laser_power_coeffs", 0)
         self.bind_lineEdit        (cfu.lineEdit_ee_laser_power_coeff_1,       "laser_power_coeffs", 1)
         self.bind_lineEdit        (cfu.lineEdit_ee_laser_power_coeff_2,       "laser_power_coeffs", 2)
@@ -180,23 +189,12 @@ class EEPROMEditor:
         self.bind_lineEdit        (cfu.lineEdit_ee_linearity_coeff_2,         "linearity_coeffs", 2)
         self.bind_lineEdit        (cfu.lineEdit_ee_linearity_coeff_3,         "linearity_coeffs", 3)
         self.bind_lineEdit        (cfu.lineEdit_ee_linearity_coeff_4,         "linearity_coeffs", 4)
-        self.bind_lineEdit        (cfu.lineEdit_ee_model,                     "model")
-        self.bind_lineEdit        (cfu.lineEdit_ee_serial_number,             "serial_number")
-        self.bind_lineEdit        (cfu.lineEdit_ee_user_text,                 "user_text")
-        self.bind_lineEdit        (cfu.lineEdit_ee_wavelength_coeff_0,        "wavelength_coeffs", 0)
-        self.bind_lineEdit        (cfu.lineEdit_ee_wavelength_coeff_1,        "wavelength_coeffs", 1)
-        self.bind_lineEdit        (cfu.lineEdit_ee_wavelength_coeff_2,        "wavelength_coeffs", 2)
-        self.bind_lineEdit        (cfu.lineEdit_ee_wavelength_coeff_3,        "wavelength_coeffs", 3)
-        self.bind_lineEdit        (cfu.lineEdit_ee_wavelength_coeff_4,        "wavelength_coeffs", 4)
-        self.bind_lineEdit        (cfu.lineEdit_ee_product_configuration,     "product_configuration")
-        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_0,   "raman_intensity_coeffs", 0)
-        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_1,   "raman_intensity_coeffs", 1)
-        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_2,   "raman_intensity_coeffs", 2)
-        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_3,   "raman_intensity_coeffs", 3)
-        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_4,   "raman_intensity_coeffs", 4)
-        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_5,   "raman_intensity_coeffs", 5)
-        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_6,   "raman_intensity_coeffs", 6)
-        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_7,   "raman_intensity_coeffs", 7)
+        self.bind_lineEdit        (cfu.lineEdit_ee_degC_to_dac_coeff_0,       "degC_to_dac_coeffs", 0)
+        self.bind_lineEdit        (cfu.lineEdit_ee_degC_to_dac_coeff_1,       "degC_to_dac_coeffs", 1)
+        self.bind_lineEdit        (cfu.lineEdit_ee_degC_to_dac_coeff_2,       "degC_to_dac_coeffs", 2)
+        self.bind_lineEdit        (cfu.lineEdit_ee_adc_to_degC_coeff_0,       "adc_to_degC_coeffs", 0)
+        self.bind_lineEdit        (cfu.lineEdit_ee_adc_to_degC_coeff_1,       "adc_to_degC_coeffs", 1)
+        self.bind_lineEdit        (cfu.lineEdit_ee_adc_to_degC_coeff_2,       "adc_to_degC_coeffs", 2)
         self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_0,               "spline_wavelengths", 0)
         self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_1,               "spline_wavelengths", 1)
         self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_2,               "spline_wavelengths", 2)
@@ -211,6 +209,33 @@ class EEPROMEditor:
         self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_11,              "spline_wavelengths", 11)
         self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_12,              "spline_wavelengths", 12)
         self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_13,              "spline_wavelengths", 13)
+
+        # These coefficients may have alternate values on Multi-Wavelength spectrometers
+        self.bind_lineEdit        (cfu.lineEdit_ee_wavelength_coeff_0,        "wavelength_coeffs", 0)
+        self.bind_lineEdit        (cfu.lineEdit_ee_wavelength_coeff_1,        "wavelength_coeffs", 1)
+        self.bind_lineEdit        (cfu.lineEdit_ee_wavelength_coeff_2,        "wavelength_coeffs", 2)
+        self.bind_lineEdit        (cfu.lineEdit_ee_wavelength_coeff_3,        "wavelength_coeffs", 3)
+        self.bind_lineEdit        (cfu.lineEdit_ee_wavelength_coeff_4,        "wavelength_coeffs", 4)
+        """ <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_wavecal_0">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_wavecal_1">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_wavecal_2">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_wavecal_3">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_wavecal_4"> """
+        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_0,   "raman_intensity_coeffs", 0)
+        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_1,   "raman_intensity_coeffs", 1)
+        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_2,   "raman_intensity_coeffs", 2)
+        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_3,   "raman_intensity_coeffs", 3)
+        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_4,   "raman_intensity_coeffs", 4)
+        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_5,   "raman_intensity_coeffs", 5)
+        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_6,   "raman_intensity_coeffs", 6)
+        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_7,   "raman_intensity_coeffs", 7)
+        """ <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_raman_intensity_coeff_0">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_raman_intensity_coeff_1">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_raman_intensity_coeff_2">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_raman_intensity_coeff_3">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_raman_intensity_coeff_4">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_raman_intensity_coeff_5">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_raman_intensity_coeff_6"> """
 
         for region in range(2, 5):
             for i in range(4):
@@ -229,8 +254,12 @@ class EEPROMEditor:
         self.bind_spinBox         (cfu.spinBox_ee_max_temp_degC,              "max_temp_degC")
         self.bind_spinBox         (cfu.spinBox_ee_min_integration_time_ms,    "min_integration_time_ms")
         self.bind_spinBox         (cfu.spinBox_ee_min_temp_degC,              "min_temp_degC")
-        self.bind_spinBox         (cfu.spinBox_ee_roi_horizontal_end,         "roi_horizontal_end")
-        self.bind_spinBox         (cfu.spinBox_ee_roi_horizontal_start,       "roi_horizontal_start")
+        self.bind_spinBox        ([cfu.spinBox_ee_roi_horizontal_end,         
+                                   cfu.spinBox_ee_sub5_roi_horizontal_end],   "roi_horizontal_end")
+        self.bind_spinBox        ([cfu.spinBox_ee_roi_horizontal_start,       
+                                   cfu.spinBox_ee_sub5_roi_horizontal_start], "roi_horizontal_start")
+        self.bind_spinBox        ([cfu.spinBox_ee_horiz_binning_mode,         
+                                   cfu.spinBox_ee_sub5_horiz_binning_mode],   "horiz_binning_mode")
         self.bind_spinBox         (cfu.spinBox_ee_roi_vertical_region_1_end,  "roi_vertical_region_1_end")
         self.bind_spinBox         (cfu.spinBox_ee_roi_vertical_region_1_start,"roi_vertical_region_1_start")
         self.bind_spinBox         (cfu.spinBox_ee_roi_vertical_region_2_end,  "roi_vertical_region_2_end")
@@ -261,7 +290,7 @@ class EEPROMEditor:
         self.bind_spinBox         (cfu.spinBox_ee_light_source_type,          "light_source_type")
         self.bind_spinBox         (cfu.spinBox_ee_power_timeout_sec,          "power_timeout_sec")
         self.bind_spinBox         (cfu.spinBox_ee_detector_timeout_sec,       "detector_timeout_sec")
-        self.bind_spinBox         (cfu.spinBox_ee_horiz_binning_mode,         "horiz_binning_mode")
+
         for region in range(2, 5):
             for node in ("start", "end"):
                 self.bind_spinBox(getattr(cfu, f"spinBox_ee_regions_{region}_horiz_{node}"), f"roi_horiz_region_{region}_{node}")
@@ -339,49 +368,15 @@ class EEPROMEditor:
             
         self.ctl.clipboard.copy_dict(table)
 
-    def create_callback(self, name, index=None):
+    def widget_callback(self, name, index=None):
         """
-        Dynamically create a new EEPROMEditor class method named for a given
-        EEPROM field (with optional index).
-        
-        Method names will look like this:
-        
-        - baud_rate_callback 
-        - raman_intensity_coeffs_5_callback
-        
-        The body of the callback function is a unique instance of the function
-        f() below, which is simply a pass-through to call widget_callback() with
-        the appropriate name and index.
-        
-        This is done so that each EEPROMEditor widget can be bound to a unique
-        callback method, allowing a change in any on-screen field to correctly
-        call widget_callback() with the name and index of the EEPROM attribute
-        to update.  There are probably other ways to do this, but this worked 
-        and was fun.
-        """
-        def f(*args):
-            # log.debug("f: relaying callback to widget_callback(%s)" % name)
-            self.widget_callback(name, index)
-
-        if index is None:
-            fullname = "%s_callback" % name
-        else:
-            fullname = "%s_%d_callback" % (name, index)
-
-        setattr(EEPROMEditor, fullname, f)
-        # log.debug("create_callback: created %s method" % fullname)
-
-        return f
-
-    def widget_callback(self, name, index=None, reset_from_eeprom=False):
-        """
-        The user has changed a value in the EEPROM editor, which we need to save 
-        back to the EEPROM object.
+        The user has changed a value in the enlighten.EEPROMEditor, which we need to save 
+        back to the wasatch.EEPROM object.
         
         I really want to use a single callback method for all the EEPROMEditor
         widgets.  I'm currently doing this by dynamically creating unique callback 
         methods for each widget, where each identifies itself via a 'name' 
-        parameter (see create_callback).
+        parameter.
         
         Another option would be to have EEPROMEditor extend QObject and then use
         QObject.sender():
@@ -391,90 +386,74 @@ class EEPROMEditor:
         instance, it doesn't matter if someone has reassigned eeprom.wavelength_coeffs
         to a new []...the widgets are bound to the NAME of the attribute, and can't
         be left hanging with a reference to an old referent.
-        
-        @param reset_from_eeprom[in] If True, copy EEPROM field -> widget; if False, copy widget -> EEPROM field.
-               To my knowledge, this field is ONLY added when called from LaserControlFeature.
         """
-        log.debug("callback triggered for widget %s (index %s, reset %s)", name, index, reset_from_eeprom)
+        log.debug("callback triggered for widget %s (index %s)", name, index)
 
         value = None
         try:
             if name in self.checkBoxes:
                 widget = self.checkBoxes[name]
-                if reset_from_eeprom:
-                    value = getattr(self.eeprom, name)
-                    widget.setValue(value)
-                else:
-                    value = widget.isChecked()
-                    setattr(self.eeprom, name, value)
+                value = widget.isChecked()
+                setattr(self.eeprom, name, value)
 
             elif name in self.doubleSpinBoxes:
                 widget = self.doubleSpinBoxes[name]
-                if reset_from_eeprom:
-                    value = getattr(self.eeprom, name)
-                    log.debug("widget_callback[doubleSpinBoxes]: setting widget.value <-- %g (%.9f)", value, value)
-                    widget.setValue(value)
-                else:
-                    value = float(widget.value())
-                    log.debug("widget_callback[doubleSpinBoxes]: widget.value() = %g (%.9f)", widget.value(), widget.value())
-                    setattr(self.eeprom, name, value)
+                value = float(widget.value())
+                log.debug("widget_callback[doubleSpinBoxes]: widget.value() = %g (%.9f)", widget.value(), widget.value())
+                setattr(self.eeprom, name, value)
 
             elif name in self.spinBoxes:
                 if index is None:
                     widget = self.spinBoxes[name]
-                    if reset_from_eeprom:
-                        value = getattr(self.eeprom, name)
-                        widget.setValue(value)
+                    if isinstance(widget, list):
+                        log.debug(f"widget_callback[spinBoxes]: processing multi-wavelength attribute {name}")
+                        for i, w in enumerate(widget):
+                            value = int(w.value())
+                            if i == 0:
+                                log.debug(f"widget_callback[spinBoxes]: setting eeprom.{name} to {value}")
+                                setattr(self.eeprom, name, value)
+                            log.debug(f"widget_callback[spinBoxes]: calling eeprom.multi_wavelength_calibration.set({name}, index {i}, value {value}")
+                            self.eeprom.multi_wavelength_calibration.set(name, value, index={i})
                     else:
                         value = int(widget.value())
                         setattr(self.eeprom, name, value)
                 else:
                     widget = self.spinBoxes[name][index]
                     array = getattr(self.eeprom, name)
-                    if reset_from_eeprom:
-                        widget.setValue(array[index])
-                    else:
-                        value = int(widget.value())
+                    value = int(widget.value())
 
-                        # adding bad_pixels
-                        while index >= len(array):
-                            log.debug("appending %s element %d to reach %d", name, len(array), index)
-                            array.append(-1)
+                    # adding bad_pixels
+                    while index >= len(array):
+                        log.debug("appending %s element %d to reach %d", name, len(array), index)
+                        array.append(-1)
 
-                        # store updated value
-                        array[index] = value
+                    # store updated value
+                    array[index] = value
                 
             elif name in self.lineEdits:
                 if index is None:
                     widget = self.lineEdits[name]
-                    if reset_from_eeprom:
-                        value = getattr(self.eeprom, name)
-                        widget.setText(str(value))
-                    else:
-                        value = widget.text()
-                        setattr(self.eeprom, name, value)
+                    value = widget.text()
+                    setattr(self.eeprom, name, value)
                 else:
                     # remember, we're assuming that all ARRAY lineEdits are FLOATS
                     widget = self.lineEdits[name][index]
                     array = getattr(self.eeprom, name)
-                    if reset_from_eeprom:
-                        widget.setText(self.sci_str(array[index]))
-                    else:
-                        value = float(widget.text())
+                    value = float(widget.text())
 
-                        # handle case where input array is None
-                        if array is None or type(array) is not list:
-                            log.debug("creating %s array", name)
-                            array = []
-                            setattr(self.eeprom, name, array)
+                    # handle case where input array is None
+                    if array is None or type(array) is not list:
+                        log.debug("creating %s array", name)
+                        array = []
+                        setattr(self.eeprom, name, array)
 
-                        # handle case where input array hasn't been sized
-                        while index >= len(array):
-                            log.debug("appending %s element %d", name, len(array) - 1)
-                            array.append(0)
+                    # handle case where input array hasn't been sized
+                    while index >= len(array):
+                        log.debug("appending %s element %d", name, len(array) - 1)
+                        array.append(0)
 
-                        # store updated value
-                        array[index] = value
+                    # store updated value
+                    array[index] = value
             else:
                 log.error("widget_callback: widget %s not of any recognized type", name)
                 return
@@ -663,15 +642,7 @@ class EEPROMEditor:
 
             log.debug("update_from_spec: spinboxes")
             for name in self.spinBoxes:
-                if not isinstance(self.spinBoxes[name], dict):
-                    # this is an int scalar
-                    value = getattr(self.eeprom, name)
-                    if value is not None:
-                        widget = self.spinBoxes[name]
-                        widget.setValue(int(value))
-                    else:
-                        log.debug("update_from_spec: spinbox int scalar %s is None", name)
-                else:
+                if isinstance(self.spinBoxes[name], dict):
                     # this is an array of ints like "bad_pixels"...which is variable-sized, unlike the coeffs :-/
                     for index in self.spinBoxes[name]:
                         array = getattr(self.eeprom, name)
@@ -682,6 +653,22 @@ class EEPROMEditor:
                                 widget.setValue(int(value))
                             else:
                                 log.debug("update_from_spec: spinbox int array %s %d is None", name, index)
+                elif isinstance(self.spinBoxes[name], list):
+                    # this is a multi-wavecal attribute like horizontal_roi_start
+                    for i, w in enumerate(self.spinBoxes[name]):
+                        value = self.eeprom.multi_wavelength_calibration.get(name, index=i)
+                        if value is not None:
+                            w.setValue(int(value))
+                        else:
+                            log.debug(f"update_from_spec: multi-wavelength spinbox name {name} index {i} is None")
+                else:
+                    # this is an int scalar
+                    value = getattr(self.eeprom, name)
+                    if value is not None:
+                        widget = self.spinBoxes[name]
+                        widget.setValue(int(value))
+                    else:
+                        log.debug("update_from_spec: spinbox int scalar %s is None", name)
         except:
             log.error("exception populating EEPROM numeric fields", exc_info=1)            
 
@@ -730,8 +717,8 @@ class EEPROMEditor:
                 frame.setVisible(True)
                 log.debug("visualizing frame %d", sub)
 
-        # subformat 3 extends subformat 1
-        if sub == 3:
+        # subformats 3 and 5 extend subformat 1
+        if sub in [3, 5]:
             self.subformat_frames[1].setVisible(True)
 
     def apply_filter(self, filter_text: str) -> None:
@@ -818,7 +805,7 @@ class EEPROMEditor:
             log.error("unknown EEPROM field: %s", name)
             return
         self.checkBoxes[name] = widget
-        widget.stateChanged.connect(self.create_callback(name))
+        widget.stateChanged.connect(lambda: self.widget_callback(name))
         widget.is_editable = self.eeprom.is_editable(name)
         self.widgets.append(widget)
 
@@ -827,7 +814,7 @@ class EEPROMEditor:
             log.error("unknown EEPROM field: %s", name)
             return
         self.doubleSpinBoxes[name] = widget
-        widget.valueChanged.connect(self.create_callback(name))
+        widget.valueChanged.connect(lambda: self.widget_callback(name))
         widget.is_editable = self.eeprom.is_editable(name)
         self.widgets.append(widget)
 
@@ -852,9 +839,17 @@ class EEPROMEditor:
         # downstream, the "auto-dedupping" in WasatchPhotonicsWrapper MAY
         # eliminate some of the incremental steps and retain only the the
         # final ones (depends on your typing speed...)
-        widget.valueChanged.connect(self.create_callback(name, index))
-        widget.is_editable = self.eeprom.is_editable(name)
-        self.widgets.append(widget)
+
+        if not isinstance(widget, list):
+            # Called like this:
+            # self.bind_spinBox([cfu.spinBox_ee_roi_horizontal_end,         
+            #                    cfu.spinBox_ee_sub5_roi_horizontal_end], name="roi_horizontal_end")
+            widget = [ widget ]
+
+        for w in widget:
+            w.valueChanged.connect(lambda: self.widget_callback(name, index))
+            w.is_editable = self.eeprom.is_editable(name)
+            self.widgets.append(w)
 
     def bind_lineEdit(self, widget, name, index=None, sub_index=None):
         if not hasattr(self.eeprom, name):
@@ -868,7 +863,7 @@ class EEPROMEditor:
                 self.lineEdits[name] = {}
             self.lineEdits[name][index] = widget
 
-        callback = self.create_callback(name, index)
+        callback = lambda: self.widget_callback(name, index)
         widget.editingFinished.connect(callback)
         widget.is_editable = self.eeprom.is_editable(name)
         self.widgets.append(widget)

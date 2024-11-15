@@ -515,11 +515,12 @@ class LaserControlFeature:
         if spec is None:
             return
 
-        value = self.ctl.form.ui.doubleSpinBox_excitation_nm.value()
+        cfu = self.ctl.form.ui
+
+        value = cfu.doubleSpinBox_excitation_nm.value()
         log.debug("changing current spectrometer's excitation to %.2f", value)
 
-        spec.settings.eeprom.excitation_nm_float = value
-        self.ctl.eeprom_editor.widget_callback("excitation_nm_float", reset_from_eeprom=True)
+        cfu.doubleSpinBox_ee_excitation_nm_float.setValue(value)
 
     # gets called by BatteryFeature when a new battery reading is received
     def battery_callback(self, perc, charging):

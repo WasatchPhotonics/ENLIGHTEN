@@ -6818,6 +6818,265 @@ QComboBox QListView
                     </layout>
                    </widget>
                   </item>
+
+                  
+                  <item>
+                   <widget class="QFrame" name="frame_eeprom_sub_5">
+                    <property name="frameShape">
+                     <enum>QFrame::Shape::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Shadow::Raised</enum>
+                    </property>
+                    <layout class="QVBoxLayout" name="verticalLayout_130x">
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                     <item>
+                      <widget class="QFrame" name="frame_eeprom_sub_multi_wavelength_white">
+                       <property name="frameShape">
+                        <enum>QFrame::Shape::StyledPanel</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Shadow::Raised</enum>
+                       </property>
+                       <property name="wpBox" stdset="0">
+                        <bool>false</bool>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_129x">
+                        <property name="leftMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="topMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="rightMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="bottomMargin">
+                         <number>0</number>
+                        </property>
+                        <item>
+                         <widget class="QFrame" name="frame_eeprom_sub_multi_wavelengths_black">
+                          <property name="frameShape">
+                           <enum>QFrame::Shape::StyledPanel</enum>
+                          </property>
+                          <property name="frameShadow">
+                           <enum>QFrame::Shadow::Raised</enum>
+                          </property>
+                          <property name="wpPanel" stdset="0">
+                           <bool>false</bool>
+                          </property>
+                          <layout class="QVBoxLayout" name="verticalLayout_128x">
+                           <item>
+                            <widget class="QLabel" name="label_199x">
+                             <property name="font">
+                              <font>
+                               <pointsize>10</pointsize>
+                               <bold>true</bold>
+                              </font>
+                             </property>
+                             <property name="text">
+                              <string>Multi-Wavelength Raman</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <layout class="QFormLayout" name="formLayout_4x">
+
+                             <item row="0" column="1"> <widget class="QLabel" name="label_24x"> <property name="text"> <string>2nd Excitation Wavelength (nm)</string> </property> </widget> </item>
+                             <item row="0" column="0">
+                              <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_excitation_nm_float">
+                               <property name="sizePolicy"> <sizepolicy hsizetype="Minimum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                               <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
+                               <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
+                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                               <property name="minimum"> <double>200</double> </property>
+                               <property name="maximum"> <double>2500</double> </property>
+                               <property name="value"> <double>784</double> </property>
+                              </widget>
+                             </item>
+
+                             <item row="1" column="1"> <widget class="QLabel" name="label_32x"> <property name="text"> <string>2nd Wavelength Coeff 0</string> </property> </widget> </item>
+                             <item row="1" column="0">
+                              <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_wavecal_0">
+                               <property name="sizePolicy"> <sizepolicy hsizetype="Minimum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                               <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
+                               <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
+                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                              </widget>
+                             </item>
+
+                             <item row="2" column="1"> <widget class="QLabel" name="label_34x"> <property name="text"> <string>2nd Wavelength Coeff 1</string> </property> </widget> </item>
+                             <item row="2" column="0">
+                              <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_wavecal_1">
+                               <property name="sizePolicy"> <sizepolicy hsizetype="Minimum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                               <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
+                               <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
+                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                              </widget>
+                             </item>
+
+                             <item row="3" column="1"> <widget class="QLabel" name="label_35x"> <property name="text"> <string>2nd Wavelength Coeff 2</string> </property> </widget> </item>
+                             <item row="3" column="0">
+                              <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_wavecal_2">
+                               <property name="sizePolicy"> <sizepolicy hsizetype="Minimum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                               <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
+                               <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
+                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                              </widget>
+                             </item>
+
+                             <item row="4" column="1"> <widget class="QLabel" name="label_36x"> <property name="text"> <string>2nd Wavelength Coeff 3</string> </property> </widget> </item>
+                             <item row="4" column="0">
+                              <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_wavecal_3">
+                               <property name="sizePolicy"> <sizepolicy hsizetype="Minimum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                               <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
+                               <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
+                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                              </widget>
+                             </item>
+
+                             <item row="5" column="1"> <widget class="QLabel" name="label_37x"> <property name="text"> <string>2nd Wavelength Coeff 4</string> </property> </widget> </item>
+                             <item row="5" column="0">
+                              <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_wavecal_4">
+                               <property name="sizePolicy"> <sizepolicy hsizetype="Minimum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                               <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
+                               <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
+                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                              </widget>
+                             </item>
+
+                             <item row="6" column="1"> <widget class="QLabel" name="label_38x"> <property name="text"> <string>2nd Horizontal ROI Start Pixel</string> </property> </widget> </item>
+                             <item row="6" column="0">
+                              <widget class="QSpinBox" name="spinBox_ee_sub5_roi_horizontal_start">
+                               <property name="sizePolicy"> <sizepolicy hsizetype="Maximum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                               <property name="minimumSize"> <size> <width>100</width> <height>0</height> </size> </property>
+                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                               <property name="value"> <number>-1</number> </property>
+                              </widget>
+                             </item>
+
+                             <item row="7" column="1"> <widget class="QLabel" name="label_39x"> <property name="text"> <string>2nd Horizontal ROI End Pixel</string> </property> </widget> </item>
+                             <item row="7" column="0">
+                              <widget class="QSpinBox" name="spinBox_ee_sub5_roi_horizontal_end">
+                               <property name="sizePolicy"> <sizepolicy hsizetype="Maximum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                               <property name="minimumSize"> <size> <width>100</width> <height>0</height> </size> </property>
+                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                               <property name="value"> <number>-1</number> </property>
+                              </widget>
+                             </item>
+
+                             <item row="8" column="1"> <widget class="QLabel" name="label_39aa"> <property name="text"> <string>2nd Average FWHM</string> </property> </widget> </item>
+                             <item row="8" column="0">
+                              <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_avg_resolution">
+                               <property name="sizePolicy"> <sizepolicy hsizetype="Minimum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                               <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
+                               <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
+                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                              </widget>
+                             </item>
+
+                             <item row="9" column="1"> <widget class="QLabel" name="label_39ab"> <property name="text"> <string>2nd Raman Intensity Coeff0</string> </property> </widget> </item>
+                             <item row="9" column="0">
+                              <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_raman_intensity_coeff_0">
+                               <property name="sizePolicy"> <sizepolicy hsizetype="Minimum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                               <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
+                               <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
+                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                              </widget>
+                             </item>
+
+                             <item row="10" column="1"> <widget class="QLabel" name="label_39ac"> <property name="text"> <string>2nd Raman Intensity Coeff1</string> </property> </widget> </item>
+                             <item row="10" column="0">
+                              <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_raman_intensity_coeff_1">
+                               <property name="sizePolicy"> <sizepolicy hsizetype="Minimum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                               <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
+                               <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
+                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                              </widget>
+                             </item>
+
+                             <item row="11" column="1"> <widget class="QLabel" name="label_39ad"> <property name="text"> <string>2nd Raman Intensity Coeff2</string> </property> </widget> </item>
+                             <item row="11" column="0">
+                              <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_raman_intensity_coeff_2">
+                               <property name="sizePolicy"> <sizepolicy hsizetype="Minimum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                               <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
+                               <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
+                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                              </widget>
+                             </item>
+
+                             <item row="12" column="1"> <widget class="QLabel" name="label_39ae"> <property name="text"> <string>2nd Raman Intensity Coeff3</string> </property> </widget> </item>
+                             <item row="12" column="0">
+                              <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_raman_intensity_coeff_3">
+                               <property name="sizePolicy"> <sizepolicy hsizetype="Minimum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                               <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
+                               <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
+                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                              </widget>
+                             </item>
+
+                             <item row="13" column="1"> <widget class="QLabel" name="label_39af"> <property name="text"> <string>2nd Raman Intensity Coeff4</string> </property> </widget> </item>
+                             <item row="13" column="0">
+                              <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_raman_intensity_coeff_4">
+                               <property name="sizePolicy"> <sizepolicy hsizetype="Minimum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                               <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
+                               <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
+                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                              </widget>
+                             </item>
+
+                             <item row="14" column="1"> <widget class="QLabel" name="label_39ag"> <property name="text"> <string>2nd Raman Intensity Coeff5</string> </property> </widget> </item>
+                             <item row="14" column="0">
+                              <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_raman_intensity_coeff_5">
+                               <property name="sizePolicy"> <sizepolicy hsizetype="Minimum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                               <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
+                               <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
+                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                              </widget>
+                             </item>
+
+                             <item row="15" column="1"> <widget class="QLabel" name="label_39ah"> <property name="text"> <string>2nd Raman Intensity Coeff6</string> </property> </widget> </item>
+                             <item row="15" column="0">
+                              <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_raman_intensity_coeff_6">
+                               <property name="sizePolicy"> <sizepolicy hsizetype="Minimum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                               <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
+                               <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
+                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                              </widget>
+                             </item>
+
+                             <item row="16" column="1"> <widget class="QLabel" name="label_39ai"> <property name="text"> <string>2nd Horizontal Binning Mode</string> </property> </widget> </item>
+                             <item row="16" column="0">
+                              <widget class="QSpinBox" name="spinBox_ee_sub5_horiz_binning_mode">
+                               <property name="sizePolicy"> <sizepolicy hsizetype="Maximum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                               <property name="minimumSize"> <size> <width>100</width> <height>0</height> </size> </property>
+                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                              </widget>
+                             </item>
+
+                            </layout>
+                           </item>
+                          </layout>
+                         </widget>
+                        </item>
+                       </layout>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+
                  </layout>
                 </widget>
                </item>
