@@ -413,7 +413,7 @@ class EEPROMEditor:
                                 log.debug(f"widget_callback[spinBoxes]: setting eeprom.{name} to {value}")
                                 setattr(self.eeprom, name, value)
                             log.debug(f"widget_callback[spinBoxes]: calling eeprom.multi_wavelength_calibration.set({name}, index {i}, value {value}")
-                            self.eeprom.multi_wavelength_calibration.set(name, value, index={i})
+                            self.eeprom.multi_wavelength_calibration.set(name, value, index=i)
                     else:
                         value = int(widget.value())
                         setattr(self.eeprom, name, value)

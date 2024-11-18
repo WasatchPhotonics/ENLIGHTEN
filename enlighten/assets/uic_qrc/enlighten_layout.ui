@@ -6886,7 +6886,7 @@ QComboBox QListView
                               </font>
                              </property>
                              <property name="text">
-                              <string>Multi-Wavelength Raman</string>
+                              <string>EEPROM Page 7 (Multi-Wavelength Raman)</string>
                              </property>
                             </widget>
                            </item>
