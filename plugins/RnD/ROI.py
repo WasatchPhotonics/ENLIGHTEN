@@ -22,6 +22,9 @@ class ROI(EnlightenPluginBase):
       +------------------------+
     - pressing "Save" will just save whatever is shown in the top graph
     - see ENG-0034 Rev 17+ for Subformat 5: Dual-Wavelength Raman
+
+    - top 785nm: (275, 475) (DB: 300-500), 755.2945 0.1831673 -5.324801e-05 1.981370e-08 -3.651564e-12 (or 759.2180 0.1659797 -2.717170e-05 3.396489e-09)
+    - bot 633nm: (700, 875) (DB: 700-900), 593.1948 0.1359748 -2.853866e-05 6.422492e-09 -6.287138e-13 (or 593.7395 0.1334855 -2.456576e-05 3.772129e-09)
     """
 
     def get_configuration(self):

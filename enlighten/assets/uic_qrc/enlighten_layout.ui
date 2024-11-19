@@ -3289,46 +3289,11 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="22" column="1">
-                           <layout class="QHBoxLayout" name="horizontalLayout_92">
-                            <item>
-                             <widget class="QLabel" name="label_31">
-                              <property name="text">
-                               <string>Detector Gain (InGaAs even)</string>
-                              </property>
-                             </widget>
-                            </item>
-                            <item>
-                             <spacer name="horizontalSpacer_10">
-                              <property name="orientation">
-                               <enum>Qt::Orientation::Horizontal</enum>
-                              </property>
-                              <property name="sizeHint" stdset="0">
-                               <size>
-                                <width>40</width>
-                                <height>20</height>
-                               </size>
-                              </property>
-                             </spacer>
-                            </item>
-                            <item>
-                             <widget class="QLabel" name="label_ee_detector_gain_hex">
-                              <property name="font">
-                               <font>
-                                <family>Courier</family>
-                               </font>
-                              </property>
-                              <property name="toolTip">
-                               <string>Uint16 binary representation sent to FPGA</string>
-                              </property>
-                              <property name="styleSheet">
-                               <string notr="true">color: #999;</string>
-                              </property>
-                              <property name="text">
-                               <string>0xabcd</string>
-                              </property>
-                             </widget>
-                            </item>
-                           </layout>
+                           <widget class="QLabel" name="label_31">
+                            <property name="text">
+                             <string>Detector Gain (InGaAs even)</string>
+                            </property>
+                           </widget>
                           </item>
                           <item row="23" column="0">
                            <widget class="QSpinBox" name="spinBox_ee_detector_offset">
@@ -3762,7 +3727,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="13" column="0">
-                           <widget class="QSpinBox" name="spinBox_ee_thermistor_resistance_298K">
+                           <widget class="QSpinBox" name="spinBox_ee_tec_r298">
                             <property name="minimumSize">
                              <size>
                               <width>125</width>
@@ -3784,7 +3749,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="14" column="0">
-                           <widget class="QSpinBox" name="spinBox_ee_thermistor_beta">
+                           <widget class="QSpinBox" name="spinBox_ee_tec_beta">
                             <property name="minimumSize">
                              <size>
                               <width>125</width>
@@ -5693,16 +5658,6 @@ QComboBox QListView
                                </property>
                               </widget>
                              </item>
-                             <item row="8" column="0">
-                              <widget class="QLineEdit" name="lineEdit_ee_raman_intensity_coeff_7">
-                               <property name="text">
-                                <string>0</string>
-                               </property>
-                               <property name="maxLength">
-                                <number>30</number>
-                               </property>
-                              </widget>
-                             </item>
                              <item row="1" column="1">
                               <widget class="QLabel" name="label_2">
                                <property name="text">
@@ -5749,13 +5704,6 @@ QComboBox QListView
                               <widget class="QLabel" name="label_195">
                                <property name="text">
                                 <string>Raman Intensity Coeff6</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="8" column="1">
-                              <widget class="QLabel" name="label_196">
-                               <property name="text">
-                                <string>Raman Intensity Coeff7</string>
                                </property>
                               </widget>
                              </item>
@@ -6345,476 +6293,6 @@ QComboBox QListView
                      <property name="bottomMargin">
                       <number>0</number>
                      </property>
-                     <item>
-                      <widget class="QFrame" name="frame_eeprom_sub_regions_white">
-                       <property name="frameShape">
-                        <enum>QFrame::Shape::StyledPanel</enum>
-                       </property>
-                       <property name="frameShadow">
-                        <enum>QFrame::Shadow::Raised</enum>
-                       </property>
-                       <property name="wpBox" stdset="0">
-                        <bool>false</bool>
-                       </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_129">
-                        <property name="leftMargin">
-                         <number>0</number>
-                        </property>
-                        <property name="topMargin">
-                         <number>0</number>
-                        </property>
-                        <property name="rightMargin">
-                         <number>0</number>
-                        </property>
-                        <property name="bottomMargin">
-                         <number>0</number>
-                        </property>
-                        <item>
-                         <widget class="QFrame" name="frame_eeprom_sub_regions_black">
-                          <property name="frameShape">
-                           <enum>QFrame::Shape::StyledPanel</enum>
-                          </property>
-                          <property name="frameShadow">
-                           <enum>QFrame::Shadow::Raised</enum>
-                          </property>
-                          <property name="wpPanel" stdset="0">
-                           <bool>false</bool>
-                          </property>
-                          <layout class="QVBoxLayout" name="verticalLayout_128">
-                           <item>
-                            <widget class="QLabel" name="label_199">
-                             <property name="font">
-                              <font>
-                               <pointsize>10</pointsize>
-                               <bold>true</bold>
-                              </font>
-                             </property>
-                             <property name="text">
-                              <string>Detector Regions</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item>
-                            <layout class="QFormLayout" name="formLayout_4">
-                             <item row="1" column="1">
-                              <widget class="QLabel" name="label_24">
-                               <property name="text">
-                                <string>ROI Region 2 Horiz Start</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="2" column="1">
-                              <widget class="QLabel" name="label_32">
-                               <property name="text">
-                                <string>ROI Region 2 Horiz End</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="3" column="1">
-                              <widget class="QLabel" name="label_34">
-                               <property name="text">
-                                <string>ROI Region 3 Horiz Start</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="4" column="1">
-                              <widget class="QLabel" name="label_35">
-                               <property name="text">
-                                <string>ROI Region 3 Horiz End</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="5" column="1">
-                              <widget class="QLabel" name="label_36">
-                               <property name="text">
-                                <string>ROI Region 4 Horiz Start</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="6" column="1">
-                              <widget class="QLabel" name="label_37">
-                               <property name="text">
-                                <string>ROI Region 4 Horiz End</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="7" column="1">
-                              <widget class="QLabel" name="label_38">
-                               <property name="text">
-                                <string>ROI Region 4 Vertical Start</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="8" column="1">
-                              <widget class="QLabel" name="label_39">
-                               <property name="text">
-                                <string>ROI Region 4 Vertical End</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="1" column="0">
-                              <widget class="QSpinBox" name="spinBox_ee_regions_2_horiz_start">
-                               <property name="minimumSize">
-                                <size>
-                                 <width>125</width>
-                                 <height>0</height>
-                                </size>
-                               </property>
-                               <property name="alignment">
-                                <set>Qt::AlignmentFlag::AlignCenter</set>
-                               </property>
-                               <property name="maximum">
-                                <number>2048</number>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="2" column="0">
-                              <widget class="QSpinBox" name="spinBox_ee_regions_2_horiz_end">
-                               <property name="minimumSize">
-                                <size>
-                                 <width>125</width>
-                                 <height>0</height>
-                                </size>
-                               </property>
-                               <property name="alignment">
-                                <set>Qt::AlignmentFlag::AlignCenter</set>
-                               </property>
-                               <property name="maximum">
-                                <number>2048</number>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="3" column="0">
-                              <widget class="QSpinBox" name="spinBox_ee_regions_3_horiz_start">
-                               <property name="minimumSize">
-                                <size>
-                                 <width>125</width>
-                                 <height>0</height>
-                                </size>
-                               </property>
-                               <property name="alignment">
-                                <set>Qt::AlignmentFlag::AlignCenter</set>
-                               </property>
-                               <property name="maximum">
-                                <number>2048</number>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="4" column="0">
-                              <widget class="QSpinBox" name="spinBox_ee_regions_3_horiz_end">
-                               <property name="minimumSize">
-                                <size>
-                                 <width>125</width>
-                                 <height>0</height>
-                                </size>
-                               </property>
-                               <property name="alignment">
-                                <set>Qt::AlignmentFlag::AlignCenter</set>
-                               </property>
-                               <property name="maximum">
-                                <number>2048</number>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="5" column="0">
-                              <widget class="QSpinBox" name="spinBox_ee_regions_4_horiz_start">
-                               <property name="minimumSize">
-                                <size>
-                                 <width>125</width>
-                                 <height>0</height>
-                                </size>
-                               </property>
-                               <property name="alignment">
-                                <set>Qt::AlignmentFlag::AlignCenter</set>
-                               </property>
-                               <property name="maximum">
-                                <number>2048</number>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="6" column="0">
-                              <widget class="QSpinBox" name="spinBox_ee_regions_4_horiz_end">
-                               <property name="minimumSize">
-                                <size>
-                                 <width>125</width>
-                                 <height>0</height>
-                                </size>
-                               </property>
-                               <property name="alignment">
-                                <set>Qt::AlignmentFlag::AlignCenter</set>
-                               </property>
-                               <property name="maximum">
-                                <number>2048</number>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="7" column="0">
-                              <widget class="QSpinBox" name="spinBox_ee_regions_4_vertical_start">
-                               <property name="minimumSize">
-                                <size>
-                                 <width>125</width>
-                                 <height>0</height>
-                                </size>
-                               </property>
-                               <property name="alignment">
-                                <set>Qt::AlignmentFlag::AlignCenter</set>
-                               </property>
-                               <property name="maximum">
-                                <number>1080</number>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="8" column="0">
-                              <widget class="QSpinBox" name="spinBox_ee_regions_4_vertical_end">
-                               <property name="minimumSize">
-                                <size>
-                                 <width>125</width>
-                                 <height>0</height>
-                                </size>
-                               </property>
-                               <property name="alignment">
-                                <set>Qt::AlignmentFlag::AlignCenter</set>
-                               </property>
-                               <property name="maximum">
-                                <number>1080</number>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="0" column="0">
-                              <widget class="QSpinBox" name="spinBox_ee_regions_count">
-                               <property name="minimumSize">
-                                <size>
-                                 <width>125</width>
-                                 <height>0</height>
-                                </size>
-                               </property>
-                               <property name="alignment">
-                                <set>Qt::AlignmentFlag::AlignCenter</set>
-                               </property>
-                               <property name="minimum">
-                                <number>1</number>
-                               </property>
-                               <property name="maximum">
-                                <number>4</number>
-                               </property>
-                               <property name="value">
-                                <number>1</number>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="0" column="1">
-                              <widget class="QLabel" name="label_40">
-                               <property name="text">
-                                <string>Region Count</string>
-                               </property>
-                              </widget>
-                             </item>
-                            </layout>
-                           </item>
-                           <item>
-                            <layout class="QGridLayout" name="gridLayout_4">
-                             <item row="0" column="3">
-                              <widget class="QLabel" name="label_204">
-                               <property name="text">
-                                <string>Coeff2</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="3" column="1">
-                              <widget class="QLineEdit" name="lineEdit_ee_regions_4_coeff_0">
-                               <property name="maximumSize">
-                                <size>
-                                 <width>80</width>
-                                 <height>16777215</height>
-                                </size>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="1" column="2">
-                              <widget class="QLineEdit" name="lineEdit_ee_regions_2_coeff_1">
-                               <property name="maximumSize">
-                                <size>
-                                 <width>80</width>
-                                 <height>16777215</height>
-                                </size>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="0" column="4">
-                              <widget class="QLabel" name="label_205">
-                               <property name="text">
-                                <string>Coeff3</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="3" column="3">
-                              <widget class="QLineEdit" name="lineEdit_ee_regions_4_coeff_2">
-                               <property name="maximumSize">
-                                <size>
-                                 <width>80</width>
-                                 <height>16777215</height>
-                                </size>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="0" column="2">
-                              <widget class="QLabel" name="label_203">
-                               <property name="text">
-                                <string>Coeff1</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="2" column="3">
-                              <widget class="QLineEdit" name="lineEdit_ee_regions_3_coeff_2">
-                               <property name="maximumSize">
-                                <size>
-                                 <width>80</width>
-                                 <height>16777215</height>
-                                </size>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="1" column="0">
-                              <widget class="QLabel" name="label_207">
-                               <property name="maximumSize">
-                                <size>
-                                 <width>30</width>
-                                 <height>16777215</height>
-                                </size>
-                               </property>
-                               <property name="text">
-                                <string>2</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="2" column="0">
-                              <widget class="QLabel" name="label_208">
-                               <property name="maximumSize">
-                                <size>
-                                 <width>30</width>
-                                 <height>16777215</height>
-                                </size>
-                               </property>
-                               <property name="text">
-                                <string>3</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="0" column="0">
-                              <widget class="QLabel" name="label_201">
-                               <property name="text">
-                                <string>Region</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="2" column="1">
-                              <widget class="QLineEdit" name="lineEdit_ee_regions_3_coeff_0">
-                               <property name="maximumSize">
-                                <size>
-                                 <width>80</width>
-                                 <height>16777215</height>
-                                </size>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="2" column="2">
-                              <widget class="QLineEdit" name="lineEdit_ee_regions_3_coeff_1">
-                               <property name="maximumSize">
-                                <size>
-                                 <width>80</width>
-                                 <height>16777215</height>
-                                </size>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="2" column="4">
-                              <widget class="QLineEdit" name="lineEdit_ee_regions_3_coeff_3">
-                               <property name="maximumSize">
-                                <size>
-                                 <width>80</width>
-                                 <height>16777215</height>
-                                </size>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="3" column="0">
-                              <widget class="QLabel" name="label_209">
-                               <property name="maximumSize">
-                                <size>
-                                 <width>30</width>
-                                 <height>16777215</height>
-                                </size>
-                               </property>
-                               <property name="text">
-                                <string>4</string>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="3" column="4">
-                              <widget class="QLineEdit" name="lineEdit_ee_regions_4_coeff_3">
-                               <property name="maximumSize">
-                                <size>
-                                 <width>80</width>
-                                 <height>16777215</height>
-                                </size>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="1" column="3">
-                              <widget class="QLineEdit" name="lineEdit_ee_regions_2_coeff_2">
-                               <property name="maximumSize">
-                                <size>
-                                 <width>80</width>
-                                 <height>16777215</height>
-                                </size>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="3" column="2">
-                              <widget class="QLineEdit" name="lineEdit_ee_regions_4_coeff_1">
-                               <property name="maximumSize">
-                                <size>
-                                 <width>80</width>
-                                 <height>16777215</height>
-                                </size>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="1" column="1">
-                              <widget class="QLineEdit" name="lineEdit_ee_regions_2_coeff_0">
-                               <property name="maximumSize">
-                                <size>
-                                 <width>80</width>
-                                 <height>16777215</height>
-                                </size>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="1" column="4">
-                              <widget class="QLineEdit" name="lineEdit_ee_regions_2_coeff_3">
-                               <property name="maximumSize">
-                                <size>
-                                 <width>80</width>
-                                 <height>16777215</height>
-                                </size>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="0" column="1">
-                              <widget class="QLabel" name="label_202">
-                               <property name="text">
-                                <string>Coeff0</string>
-                               </property>
-                              </widget>
-                             </item>
-                            </layout>
-                           </item>
-                          </layout>
-                         </widget>
-                        </item>
-                       </layout>
-                      </widget>
-                     </item>
                     </layout>
                    </widget>
                   </item>
@@ -6907,54 +6385,19 @@ QComboBox QListView
                              </item>
 
                              <item row="1" column="1"> <widget class="QLabel" name="label_32x"> <property name="text"> <string>2nd Wavelength Coeff 0</string> </property> </widget> </item>
-                             <item row="1" column="0">
-                              <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_wavecal_0">
-                               <property name="sizePolicy"> <sizepolicy hsizetype="Minimum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
-                               <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
-                               <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
-                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
-                              </widget>
-                             </item>
+                             <item row="1" column="0"> <widget class="QLineEdit" name="lineEdit_ee_sub5_wavelength_coeff_0"> <property name="text"> <string>0</string> </property> </widget> </item>
 
                              <item row="2" column="1"> <widget class="QLabel" name="label_34x"> <property name="text"> <string>2nd Wavelength Coeff 1</string> </property> </widget> </item>
-                             <item row="2" column="0">
-                              <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_wavecal_1">
-                               <property name="sizePolicy"> <sizepolicy hsizetype="Minimum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
-                               <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
-                               <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
-                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
-                              </widget>
-                             </item>
+                             <item row="2" column="0"> <widget class="QLineEdit" name="lineEdit_ee_sub5_wavelength_coeff_1"> <property name="text"> <string>0</string> </property> </widget> </item>
 
                              <item row="3" column="1"> <widget class="QLabel" name="label_35x"> <property name="text"> <string>2nd Wavelength Coeff 2</string> </property> </widget> </item>
-                             <item row="3" column="0">
-                              <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_wavecal_2">
-                               <property name="sizePolicy"> <sizepolicy hsizetype="Minimum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
-                               <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
-                               <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
-                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
-                              </widget>
-                             </item>
+                             <item row="3" column="0"> <widget class="QLineEdit" name="lineEdit_ee_sub5_wavelength_coeff_2"> <property name="text"> <string>0</string> </property> </widget> </item>
 
                              <item row="4" column="1"> <widget class="QLabel" name="label_36x"> <property name="text"> <string>2nd Wavelength Coeff 3</string> </property> </widget> </item>
-                             <item row="4" column="0">
-                              <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_wavecal_3">
-                               <property name="sizePolicy"> <sizepolicy hsizetype="Minimum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
-                               <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
-                               <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
-                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
-                              </widget>
-                             </item>
+                             <item row="4" column="0"> <widget class="QLineEdit" name="lineEdit_ee_sub5_wavelength_coeff_3"> <property name="text"> <string>0</string> </property> </widget> </item>
 
                              <item row="5" column="1"> <widget class="QLabel" name="label_37x"> <property name="text"> <string>2nd Wavelength Coeff 4</string> </property> </widget> </item>
-                             <item row="5" column="0">
-                              <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_wavecal_4">
-                               <property name="sizePolicy"> <sizepolicy hsizetype="Minimum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
-                               <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
-                               <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
-                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
-                              </widget>
-                             </item>
+                             <item row="5" column="0"> <widget class="QLineEdit" name="lineEdit_ee_sub5_wavelength_coeff_4"> <property name="text"> <string>0</string> </property> </widget> </item>
 
                              <item row="6" column="1"> <widget class="QLabel" name="label_38x"> <property name="text"> <string>2nd Horizontal ROI Start Pixel</string> </property> </widget> </item>
                              <item row="6" column="0">
@@ -6987,74 +6430,25 @@ QComboBox QListView
                              </item>
 
                              <item row="9" column="1"> <widget class="QLabel" name="label_39ab"> <property name="text"> <string>2nd Raman Intensity Coeff0</string> </property> </widget> </item>
-                             <item row="9" column="0">
-                              <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_raman_intensity_coeff_0">
-                               <property name="sizePolicy"> <sizepolicy hsizetype="Minimum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
-                               <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
-                               <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
-                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
-                              </widget>
-                             </item>
+                             <item row="9" column="0"> <widget class="QLineEdit" name="lineEdit_ee_sub5_raman_intensity_coeff_0"> <property name="text"> <string>0</string> </property> </widget> </item>
 
                              <item row="10" column="1"> <widget class="QLabel" name="label_39ac"> <property name="text"> <string>2nd Raman Intensity Coeff1</string> </property> </widget> </item>
-                             <item row="10" column="0">
-                              <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_raman_intensity_coeff_1">
-                               <property name="sizePolicy"> <sizepolicy hsizetype="Minimum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
-                               <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
-                               <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
-                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
-                              </widget>
-                             </item>
+                             <item row="10" column="0"> <widget class="QLineEdit" name="lineEdit_ee_sub5_raman_intensity_coeff_1"> <property name="text"> <string>0</string> </property> </widget> </item>
 
                              <item row="11" column="1"> <widget class="QLabel" name="label_39ad"> <property name="text"> <string>2nd Raman Intensity Coeff2</string> </property> </widget> </item>
-                             <item row="11" column="0">
-                              <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_raman_intensity_coeff_2">
-                               <property name="sizePolicy"> <sizepolicy hsizetype="Minimum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
-                               <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
-                               <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
-                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
-                              </widget>
-                             </item>
+                             <item row="11" column="0"> <widget class="QLineEdit" name="lineEdit_ee_sub5_raman_intensity_coeff_2"> <property name="text"> <string>0</string> </property> </widget> </item>
 
                              <item row="12" column="1"> <widget class="QLabel" name="label_39ae"> <property name="text"> <string>2nd Raman Intensity Coeff3</string> </property> </widget> </item>
-                             <item row="12" column="0">
-                              <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_raman_intensity_coeff_3">
-                               <property name="sizePolicy"> <sizepolicy hsizetype="Minimum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
-                               <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
-                               <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
-                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
-                              </widget>
-                             </item>
+                             <item row="12" column="0"> <widget class="QLineEdit" name="lineEdit_ee_sub5_raman_intensity_coeff_3"> <property name="text"> <string>0</string> </property> </widget> </item>
 
                              <item row="13" column="1"> <widget class="QLabel" name="label_39af"> <property name="text"> <string>2nd Raman Intensity Coeff4</string> </property> </widget> </item>
-                             <item row="13" column="0">
-                              <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_raman_intensity_coeff_4">
-                               <property name="sizePolicy"> <sizepolicy hsizetype="Minimum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
-                               <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
-                               <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
-                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
-                              </widget>
-                             </item>
+                             <item row="13" column="0"> <widget class="QLineEdit" name="lineEdit_ee_sub5_raman_intensity_coeff_4"> <property name="text"> <string>0</string> </property> </widget> </item>
 
                              <item row="14" column="1"> <widget class="QLabel" name="label_39ag"> <property name="text"> <string>2nd Raman Intensity Coeff5</string> </property> </widget> </item>
-                             <item row="14" column="0">
-                              <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_raman_intensity_coeff_5">
-                               <property name="sizePolicy"> <sizepolicy hsizetype="Minimum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
-                               <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
-                               <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
-                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
-                              </widget>
-                             </item>
+                             <item row="14" column="0"> <widget class="QLineEdit" name="lineEdit_ee_sub5_raman_intensity_coeff_5"> <property name="text"> <string>0</string> </property> </widget> </item>
 
                              <item row="15" column="1"> <widget class="QLabel" name="label_39ah"> <property name="text"> <string>2nd Raman Intensity Coeff6</string> </property> </widget> </item>
-                             <item row="15" column="0">
-                              <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_raman_intensity_coeff_6">
-                               <property name="sizePolicy"> <sizepolicy hsizetype="Minimum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
-                               <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
-                               <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
-                               <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
-                              </widget>
-                             </item>
+                             <item row="15" column="0"> <widget class="QLineEdit" name="lineEdit_ee_sub5_raman_intensity_coeff_6"> <property name="text"> <string>0</string> </property> </widget> </item>
 
                              <item row="16" column="1"> <widget class="QLabel" name="label_39ai"> <property name="text"> <string>2nd Horizontal Binning Mode</string> </property> </widget> </item>
                              <item row="16" column="0">
@@ -20932,6 +20326,7 @@ li.checked::marker { content: "\2612"; }
   <tabstop>lineEdit_ee_wavelength_coeff_1</tabstop>
   <tabstop>lineEdit_ee_wavelength_coeff_2</tabstop>
   <tabstop>lineEdit_ee_wavelength_coeff_3</tabstop>
+  <tabstop>lineEdit_ee_wavelength_coeff_4</tabstop>
   <tabstop>lineEdit_ee_degC_to_dac_coeff_0</tabstop>
   <tabstop>lineEdit_ee_degC_to_dac_coeff_1</tabstop>
   <tabstop>lineEdit_ee_degC_to_dac_coeff_2</tabstop>
@@ -20940,8 +20335,8 @@ li.checked::marker { content: "\2612"; }
   <tabstop>lineEdit_ee_adc_to_degC_coeff_0</tabstop>
   <tabstop>lineEdit_ee_adc_to_degC_coeff_1</tabstop>
   <tabstop>lineEdit_ee_adc_to_degC_coeff_2</tabstop>
-  <tabstop>spinBox_ee_thermistor_resistance_298K</tabstop>
-  <tabstop>spinBox_ee_thermistor_beta</tabstop>
+  <tabstop>spinBox_ee_tec_r298</tabstop>
+  <tabstop>spinBox_ee_tec_beta</tabstop>
   <tabstop>lineEdit_ee_calibration_date</tabstop>
   <tabstop>lineEdit_ee_calibrated_by</tabstop>
   <tabstop>lineEdit_ee_detector</tabstop>
