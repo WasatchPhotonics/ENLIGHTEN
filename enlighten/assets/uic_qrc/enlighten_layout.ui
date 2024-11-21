@@ -4368,7 +4368,7 @@ QComboBox QListView
                        <property name="wpPanel" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QFormLayout" name="formLayout_ee_page_3">
+                       <layout class="QFormLayout" name="formLayout_15">
                         <item row="0" column="0">
                          <widget class="QLabel" name="label_124">
                           <property name="font">
@@ -4383,7 +4383,7 @@ QComboBox QListView
                          </widget>
                         </item>
                         <item row="1" column="0">
-                         <layout class="QFormLayout" name="formLayout_15">
+                         <layout class="QFormLayout" name="formLayout_ee_page_3">
                           <property name="fieldGrowthPolicy">
                            <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
                           </property>
@@ -5584,7 +5584,7 @@ QComboBox QListView
                             </widget>
                            </item>
                            <item>
-                            <layout class="QFormLayout" name="formLayout_ee_page_6">
+                            <layout class="QFormLayout" name="formLayout_ee_sub1_page_6">
                              <property name="fieldGrowthPolicy">
                               <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
                              </property>
@@ -5800,7 +5800,7 @@ QComboBox QListView
                          </widget>
                         </item>
                         <item>
-                         <layout class="QFormLayout" name="formLayout_ee_page_7">
+                         <layout class="QFormLayout" name="formLayout_ee_sub3_page_7">
                           <item row="1" column="1">
                            <widget class="QLabel" name="label_4">
                             <property name="text">
@@ -6047,7 +6047,7 @@ QComboBox QListView
                             </widget>
                            </item>
                            <item>
-                            <layout class="QFormLayout" name="formLayout_ee_page_6_sub_2">
+                            <layout class="QFormLayout" name="formLayout_ee_sub2_page_6">
                              <item row="0" column="0">
                               <widget class="QSpinBox" name="spinBox_ee_spline_points">
                                <property name="minimumSize">
@@ -6369,7 +6369,7 @@ QComboBox QListView
                             </widget>
                            </item>
                            <item>
-                            <layout class="QFormLayout" name="formLayout_4x">
+                            <layout class="QFormLayout" name="formLayout_ee_sub5_page_7">
 
                              <item row="0" column="1"> <widget class="QLabel" name="label_24x"> <property name="text"> <string>2nd Excitation Wavelength (nm)</string> </property> </widget> </item>
                              <item row="0" column="0">

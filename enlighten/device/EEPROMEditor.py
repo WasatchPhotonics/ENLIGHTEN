@@ -32,11 +32,13 @@ class EEPROMAttribute:
             raise AttributeError(f"invalid EEPROMAttribute.qtype {self.qtype}")
 
         # were we only passed a single widget, or some sort of list?
+        self._all_widgets = []
         if widget is not None and widgets is None:
             # standard case for a regular scalar (e.g. serial_number)
             self.is_multi = False
             self.is_scalar = True
             self.widget = widget
+            self._all_widgets.append(widget)
             return # nothing more to do
         elif widget is None and widgets is None:
             raise AttributeError("EEPROMAttribute needs either widget or widgets populated")
@@ -72,6 +74,7 @@ class EEPROMAttribute:
             self.count = outer_len
             self.is_multi = False
             self.is_scalar = False
+            self._all_widgets.extend(widgets)
             log.debug("EEPROMAttribute: non-multi-wavelength array {name} of {outer_len} elements")
         else:
             self.is_multi = True
@@ -91,6 +94,9 @@ class EEPROMAttribute:
                 self.is_multi = True
                 self.is_scalar = False
                 self.count = inner_len 
+            
+            for L in widgets:
+                self._all_widgets.extend(L)
 
         log.debug(f"EEPROMAttribute: name {self.name}, is_multi {self.is_multi}, is_scalar {self.is_scalar}, count {self.count}")
 
@@ -127,6 +133,14 @@ class EEPROMAttribute:
             return float(widget.value())
         else:
             raise AttributeError(f"invalid EEPROMAttribute.qtype {self.qtype}")
+
+    def set_enabled(self, flag):
+        for w in self._all_widgets:
+            w.setEnabled(flag)
+            if flag:
+                w.setStyleSheet("background: #444; color: #ccc;")
+            else:
+                w.setStyleSheet("color: #eee;")
 
 class EEPROMEditor:
     """
@@ -167,16 +181,29 @@ class EEPROMEditor:
         self.attributes      = {}
         self.doubleSpinBoxes = {}
         self.lineEdits       = {}
-        self.widgets         = []
 
-        # mapping from eeprom.subformat to which widget should be visible
-        self.subformat_frames = [
-            None, # TODO: user_data_2 and user_data_3
-            cfu.frame_eeprom_sub_1,
-            cfu.frame_eeprom_sub_2,
-            cfu.frame_eeprom_sub_3,
-            cfu.frame_eeprom_sub_4,
-            cfu.frame_eeprom_sub_5
+        # mapping from eeprom.subformat to which frame(s) should be visible
+        self.subformat_frames = {
+            1: [ cfu.frame_eeprom_sub_1 ],
+            2: [ cfu.frame_eeprom_sub_2 ],
+            3: [ cfu.frame_eeprom_sub_3, cfu.frame_eeprom_sub_1 ],
+           #4: [ cfu.frame_eeprom_sub_4 ],
+            5: [ cfu.frame_eeprom_sub_5, cfu.frame_eeprom_sub_1 ],
+        } 
+
+        # Filterable layouts are `QFormLayout`s that are filtered by row based on the
+        # current search box text.
+        self.filterable_layouts: List[QtWidgets.QFormLayout] = [
+            cfu.formLayout_ee_page_0,
+            cfu.formLayout_ee_page_1,
+            cfu.formLayout_ee_page_2,
+            cfu.formLayout_ee_page_3,
+            cfu.formLayout_ee_page_4,
+            cfu.formLayout_ee_page_5,
+            cfu.formLayout_ee_sub1_page_6,
+            cfu.formLayout_ee_sub2_page_6,
+            cfu.formLayout_ee_sub3_page_7,
+            cfu.formLayout_ee_sub5_page_7
         ]
 
         # Start with a blank EEPROM.  We need this as a verification during the
@@ -220,20 +247,6 @@ class EEPROMEditor:
             "thermistor_beta":          "tec_beta",
             "thermistor_res_at298k":    "tec_r298",
             "wavecal_coeffs":           "wavelength_coeffs" }
-
-        # Filterable layouts are `QFormLayout`s that are filtered by row based on the
-        # current search box text.
-        self.filterable_layouts: List[QtWidgets.QFormLayout] = [
-            cfu.formLayout_15,
-            cfu.formLayout_ee_page_0,
-            cfu.formLayout_ee_page_1,
-            cfu.formLayout_ee_page_2,
-            cfu.formLayout_ee_page_4,
-            cfu.formLayout_ee_page_5,
-            cfu.formLayout_ee_page_6,
-            cfu.formLayout_ee_page_6_sub_2,
-            cfu.formLayout_ee_page_7
-        ]
 
     def add_attribute(self, qtype, name, widget=None, widgets=None):
         attr = EEPROMAttribute(name=name, qtype=qtype, widget=widget, widgets=widgets)
@@ -380,10 +393,15 @@ class EEPROMEditor:
 
         if attr.is_multi:
             for m in range(attr.calibrations):
-                for i, w in enumerate(attr.widgets[m]):
-                    log.debug(f"widget_callback: getting widget value for calibration {m}, index {i}")
-                    value = attr.get_widget_value(calibration=m, index=i)
-                    self.eeprom.multi_wavelength_calibration.set(name=attr.name, value=value, calbration=m, index=i)
+                if attr.is_scalar:
+                    log.debug(f"widget_callback: getting scalar widget value for calibration {m}")
+                    value = attr.get_widget_value(calibration=m)
+                    self.eeprom.multi_wavelength_calibration.set(name=attr.name, value=value, calibration=m)
+                else:
+                    for i, w in enumerate(attr.widgets[m]):
+                        log.debug(f"widget_callback: getting widget value for calibration {m}, index {i}")
+                        value = attr.get_widget_value(calibration=m, index=i)
+                        self.eeprom.multi_wavelength_calibration.set(name=attr.name, value=value, calibration=m, index=i)
         else:
             if attr.is_scalar:
                 log.debug(f"widget_callback: getting widget value for scalar")
@@ -478,20 +496,15 @@ class EEPROMEditor:
 
     def update_authentication(self):
         """ The user logged-in (or -out), so update what should be updated. """
-        for widget in self.widgets:
+        for name, attr in self.attributes.items():
             editable = False 
 
             if self.ctl.authentication.has_production_rights():
                 editable = True 
             elif self.ctl.authentication.has_advanced_rights():
-                editable = widget.is_editable   # both Advanced and OEM can edit "many"
+                editable = self.eeprom.is_editable(name)
 
-            widget.setEnabled(editable)
-
-            if editable:
-                widget.setStyleSheet("background: #444; color: #ccc;")
-            else:
-                widget.setStyleSheet("color: #eee;")
+            attr.set_enabled(editable)
 
     def update_fpga_option_display(self):
         spec = self.ctl.multispec.current_spectrometer()
@@ -562,7 +575,9 @@ class EEPROMEditor:
                             attr.widget.setValue(int(getattr(self.eeprom, attr.name)))
                         else:                                   # e.g. bad_pixels
                             for i, w in enumerate(attr.widgets):
-                                w.setValue(int(getattr(self.eeprom, attr.name)[i]))
+                                a = getattr(self.eeprom, attr.name)
+                                if i < len(a):
+                                    w.setValue(int(a[i]))
 
                 elif attr.qtype == "doublespinbox":
                     if attr.is_multi:
@@ -596,7 +611,9 @@ class EEPROMEditor:
                             attr.widget.setText(str(getattr(self.eeprom, attr.name)))
                         else:                                   # e.g. adc_to_degC, degC_to_dac, laser_power_coeffs
                             for i, w in enumerate(attr.widgets):
-                                w.setText(str(getattr(self.eeprom, attr.name)[i]))
+                                a = getattr(self.eeprom, attr.name)
+                                if i < len(a):
+                                    w.setText(str(a[i]))
             except:
                 log.error(f"update_from_spec: failed to update widget(s) for attr {attr}", exc_info=1)
 
@@ -610,37 +627,31 @@ class EEPROMEditor:
 
         # hide them all
         log.debug("updating subformat")
-        for frame in self.subformat_frames:
-            if frame is not None:
+        for subformat, frames in self.subformat_frames.items():
+            for frame in frames:
                 frame.setVisible(False)
 
         sub = self.eeprom.subformat
-
-        if sub < len(self.subformat_frames):
-            frame = self.subformat_frames[sub]
-            if frame:
+        if sub in self.subformat_frames:
+            log.debug("visualizing frames for subformat {sub}")
+            frames = self.subformat_frames[sub]
+            for frame in frames:
                 frame.setVisible(True)
-                log.debug("visualizing frame %d", sub)
+        else:
+            log.error("unsupported subformat {sub}")
 
-        # subformats 3 and 5 extend subformat 1
-        if sub in [3, 5]:
-            self.subformat_frames[1].setVisible(True)
-
-    def apply_filter(self, filter_text: str) -> None:
-        """
-        Hides all widgets to which the filter applies.
-        """
+    def apply_filter(self, filter_text):
+        """ Hides all EEPROM rows to which the filter applies """
         for layout in self.filterable_layouts:
             if isinstance(layout, QtWidgets.QFormLayout):
-                rows = [[None, None] for _ in range(0, layout.rowCount())]
+                rows = [[None, None] for _ in range(layout.rowCount())]
 
-                for i in range(0, layout.count()):
+                for i in range(layout.count()):
                     rowIndex, role = layout.getItemPosition(i)
                     rows[rowIndex][role.value] = layout.itemAt(i)
 
                 for i, row in enumerate(rows):
                     matches_filter = False
-
                     for cell in row:
                         if self.contains_text(cell, filter_text):
                             matches_filter = True
@@ -652,52 +663,37 @@ class EEPROMEditor:
                         for cell in row:
                             self.hide(cell)
 
-    @classmethod
-    def contains_text(cls, root: any, filter_text: str) -> bool:
-        """
-        Recursively searches `root` for any label containing the string `filter_text`.
-        """
+    def contains_text(self, root, filter_text):
+        """ Recursively searches `root` for any label containing the string `filter_text` """
         if isinstance(root, QtWidgets.QLayout):
             for i in range(0, root.count()):
-                if cls.contains_text(root.itemAt(i), filter_text):
+                if self.contains_text(root.itemAt(i), filter_text):
                     return True
-
-            return False
         elif isinstance(root, QtWidgets.QLayoutItem):
             widget = root.widget()
-
             if not isinstance(widget, QtWidgets.QLabel):
                 return False
 
-            return re.search(re.escape(filter_text), widget.text(), re.IGNORECASE)
-        else:
-            return False
+            label_text = widget.text()
+            match = re.search(re.escape(filter_text), label_text, re.IGNORECASE)
+            return match
 
-    @classmethod
-    def hide(cls, root: any) -> None:
-        """
-        Recursively hides all children of `root`.
-        """
+    def hide(self, root):
+        """ Recursively hides all children of `root`  """
         if isinstance(root, QtWidgets.QLayout):
             for i in range(0, root.count()):
-                cls.hide(root.itemAt(i))
+                self.hide(root.itemAt(i))
         elif isinstance(root, QtWidgets.QLayoutItem):
             widget = root.widget()
-
             if widget is not None:
                 widget.hide()
 
-    @classmethod
-    def show(cls, root: any) -> None:
-        """
-        Recursively shows all children of `root`.
-        """
+    def show(self, root):
         if isinstance(root, QtWidgets.QLayout):
             for i in range(0, root.count()):
-                cls.show(root.itemAt(i))
+                self.show(root.itemAt(i))
         elif isinstance(root, QtWidgets.QLayoutItem):
             widget = root.widget()
-
             if widget is not None:
                 widget.show()
 
@@ -716,7 +712,6 @@ class EEPROMEditor:
         log.debug(f"bind_checkbox: binding {attr}")
         attr.widget.stateChanged.connect(lambda state: self.widget_callback(attr, value=state, widget=attr.widget))
         attr.is_editable = self.eeprom.is_editable(attr.name)
-        self.widgets.append(attr.widget)
 
     def bind_spinbox(self, attr):
         """ Hoping to use this for both QSpinBox and QDoubleSpinBox widgets """
@@ -726,25 +721,21 @@ class EEPROMEditor:
                     log.debug(f"bind_spinbox: binding calibration {m} scalar: {attr}")
                     w = attr.widgets[m][0]
                     w.valueChanged.connect(lambda d: self.widget_callback(attr=attr, widget=w, calibration=m, value=d))
-                    self.widgets.append(w)
             else:
                 for m in range(attr.calibrations):
                     for i in range(attr.count):
                         log.debug(f"bind_spinbox: binding calibration {m} index {i}: {attr}")
                         w = attr.widgets[m][i]
                         w.valueChanged.connect(lambda d: self.widget_callback(attr=attr, widget=w, calibraton=m, index=i, value=d))
-                        self.widgets.append(w)
         else:
             if attr.is_scalar:
                 log.debug(f"bind_spinbox: binding scalar: {attr}")
                 attr.widget.valueChanged.connect(lambda d: self.widget_callback(attr=attr, widget=attr.widget, value=d))
-                self.widgets.append(attr.widget)
             else:
                 for i in range(attr.count):
                     log.debug(f"bind_spinbox: binding index {i}: {attr}")
                     w = attr.widgets[i]
                     w.valueChanged.connect(lambda d: self.widget_callback(attr=attr, widget=w, index=i, value=d))
-                    self.widgets.append(w)
                 
         attr.is_editable = self.eeprom.is_editable(attr.name)
 
@@ -755,25 +746,21 @@ class EEPROMEditor:
                     log.debug(f"bind_lineedit: binding calibration {m} scalar: {attr}")
                     w = attr.widgets[m][0]
                     w.editingFinished.connect(lambda: self.widget_callback(attr=attr, widget=w, calibration=m))
-                    self.widgets.append(w)
             else:
                 for m in range(attr.calibrations):
                     for i in range(attr.count):
                         log.debug(f"bind_lineedit: binding calibration {m}, index {i}: {attr}")
                         w = attr.widgets[m][i]
-                        w.editingFinished.connect(lambda: self.widget_callback(attr=attr, widget=w, calibraton=m, index=i))
-                        self.widgets.append(w)
+                        w.editingFinished.connect(lambda: self.widget_callback(attr=attr, widget=w, calibration=m, index=i))
         else:
             if attr.is_scalar:
                 log.debug(f"bind_lineedit: binding scalar: {attr}")
                 attr.widget.editingFinished.connect(lambda: self.widget_callback(attr=attr, widget=attr.widget))
-                self.widgets.append(attr.widget)
             else:
                 for i in range(attr.count):
                     log.debug(f"bind_lineedit: binding index {i}: {attr}")
                     w = attr.widgets[i]
                     w.editingFinished.connect(lambda: self.widget_callback(attr=attr, widget=w, index=i))
-                    self.widgets.append(w)
                 
         attr.is_editable = self.eeprom.is_editable(attr.name)
 
