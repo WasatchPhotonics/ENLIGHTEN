@@ -177,8 +177,8 @@ class AreaScanFeature:
         roi = spec.settings.get_vertical_roi()
         if roi is not None:
             log.debug("initializing ROI %s", roi)
-            self.sb_start.setValue(roi[0])
-            self.sb_stop .setValue(roi[1])
+            self.sb_start.setValue(roi.start)
+            self.sb_stop .setValue(roi.end)
         else:
             log.debug("spectrometer has no vertical ROI")
             self.sb_start.setValue(0)

@@ -127,6 +127,12 @@ class EnlightenPluginBase:
         @param title plot title, shown in legend
         @param color color of plot line
 
+        @note if you rely on the default x-axis, note that it is the full 
+              detector axis, and is neither interpolated nor cropped in 
+              horizontal ROI. Use ProcessedRequest.get_wavelengths() or
+              get_wavenumbers() for the axis in use for a particular
+              EnlightenPluginRequest.
+
         @todo add weight
         """
         in_legend = True
@@ -429,7 +435,7 @@ class EnlightenPluginConfiguration:
             is_blocking     = True,
             block_enlighten = False,
             streaming       = True,
-            auto_enable     = False,
+            auto_enable     = True,
             lock_enable     = False,
             events          = None,
             series_names    = None,

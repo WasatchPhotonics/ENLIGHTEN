@@ -443,7 +443,7 @@ class EEPROMEditor:
         elif "roi_vertical_region" in attr.name:
             spec = self.ctl.multispec.current_spectrometer()
             if spec is not None:
-                vert_roi = self.eeprom.get_vertical_roi()
+                vert_roi = self.settings.get_vertical_roi()
                 if vert_roi is not None:
                     spec.change_device_setting("vertical_binning", vert_roi)
 
@@ -638,7 +638,7 @@ class EEPROMEditor:
             for frame in frames:
                 frame.setVisible(True)
         else:
-            log.error("unsupported subformat {sub}")
+            log.error(f"unsupported subformat {sub}")
 
     def apply_filter(self, filter_text):
         """ Hides all EEPROM rows to which the filter applies """
