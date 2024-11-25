@@ -27,7 +27,7 @@ class RamanLines(EnlightenPluginBase):
     def process_request(self, request):
         unit = self.ctl.graph.get_x_axis_unit()
         if unit != "cm":
-            self.marquee_message = "Error: RamanLines requires wavenumber axis")
+            self.marquee_message = "Error: RamanLines requires wavenumber axis"
             return
 
         sample = request.fields["sample"]
