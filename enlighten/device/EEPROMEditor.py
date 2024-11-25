@@ -2,6 +2,7 @@ import re
 import json
 import logging
 import decimal
+from functools import partial
 
 from wasatch.EEPROM import EEPROM
 from enlighten import common
@@ -15,6 +16,21 @@ else:
 log = logging.getLogger(__name__)
 
 class EEPROMAttribute:
+
+    def dump(self, label=None):
+        log.debug(f"EEPROMAttribute: {label}")
+        log.debug(f"  name         {self.name}")
+        log.debug(f"  is_numeric   {self.is_numeric}")
+        log.debug(f"  is_scalar    {self.is_scalar}")
+        log.debug(f"  is_multi     {self.is_multi}")
+        log.debug(f"  is_editable  {self.is_editable}")
+        log.debug(f"  count        {self.count}")
+        log.debug(f"  calibrations {self.calibrations}")
+        log.debug(f"  qtype        {self.qtype}")
+        log.debug(f"")
+        log.debug(f"  widget       {self.widget}")
+        log.debug(f"  widgets      {self.widgets}")
+        log.debug(f"  all_widgets  {self._all_widgets}")
     
     def __init__(self, name, qtype, widget=None, widgets=None, is_numeric=True):
         self.name = name
@@ -25,6 +41,9 @@ class EEPROMAttribute:
         self.is_editable = False        # should this field be editable using the "wasatch" and "wasatchoem" passwords?
         self.count = 0                  # if this attribute is a list (non-scalar), how many elements does it have?
         self.calibrations = 0           # if this attribute is_multi, how many calibrations does it have?
+        self.widget = None
+        self.widgets = None
+        self._all_widgets = None
 
         # validate qtype
         self.qtype = qtype.lower().lstrip("q") # "lineedit", "spinbox", "doublespinbox"
@@ -75,22 +94,22 @@ class EEPROMAttribute:
             self.is_multi = False
             self.is_scalar = False
             self._all_widgets.extend(widgets)
-            log.debug("EEPROMAttribute: non-multi-wavelength array {name} of {outer_len} elements")
+            # log.debug(f"EEPROMAttribute: non-multi-wavelength array {name} of {outer_len} elements")
         else:
             self.is_multi = True
             self.calibrations = outer_len
             inner_len = len(widgets[0])
 
             if inner_len <= 0:
-                raise AttributeError("EEPROMAttribute: doesn't support empty inner list")
+                raise AttributeError(f"EEPROMAttribute: doesn't support empty inner list ({name})")
             elif inner_len == 1:
                 # e.g., excitation_nm_float or avg_resolution (doublespinbox), or roi_horizontal_start/end (spinbox)
                 self.is_multi = True
                 self.is_scalar = True
-                log.debug("EEPROMAttribute: name {name} appears to be multi-wavelength array of {self.calibrations} scalar elements")
+                # log.debug(f"EEPROMAttribute: name {name} appears to be multi-wavelength array of {self.calibrations} scalar elements")
             else:
                 # e.g., wavelength_coeffs or raman_intensity_coeffs (lineedit)
-                log.debug("EEPROMAttribute: name {name} appears to be multi-wavelength matrix with {self.calibrations} arrays of {inner_len} elements")
+                # log.debug(f"EEPROMAttribute: name {name} appears to be multi-wavelength matrix with {self.calibrations} arrays of {inner_len} elements")
                 self.is_multi = True
                 self.is_scalar = False
                 self.count = inner_len 
@@ -98,10 +117,10 @@ class EEPROMAttribute:
             for L in widgets:
                 self._all_widgets.extend(L)
 
-        log.debug(f"EEPROMAttribute: name {self.name}, is_multi {self.is_multi}, is_scalar {self.is_scalar}, count {self.count}")
+        # log.debug(f"EEPROMAttribute: name {self.name}, is_multi {self.is_multi}, is_scalar {self.is_scalar}, count {self.count}")
 
     def __repr__(self):
-        return (f"EEPROMAttribute<name {self.name}, is_multi {self.is_multi}, is_scalar {self.is_scalar}, count {self.count}>")
+        return (f"EEPROMAttribute<name {self.name}, qtype {self.qtype}, is_multi {self.is_multi}, is_scalar {self.is_scalar}, count {self.count}>")
 
     def get_widget_value(self, calibration=None, index=None):
         if calibration is None:
@@ -252,8 +271,6 @@ class EEPROMEditor:
         attr = EEPROMAttribute(name=name, qtype=qtype, widget=widget, widgets=widgets)
         self.attributes[name] = attr
 
-        log.debug("add_attribute: added {attr}")
-
         if qtype == "checkbox":
             self.bind_checkbox(attr)
         elif qtype in ["spinbox", "doublespinbox"]:
@@ -268,6 +285,11 @@ class EEPROMEditor:
         wasatch.EEPROM, and if so whether it's editable -- the field's VALUE is not
         (at this point in program flow) read from the EEPROM object or updated to 
         the widgets, until update_from_spec is called.
+
+        More to the point, bind() only gets called once, at application 
+        construction -- it is not re-called when switching or connecting 
+        spectrometers, therefore there is no point trying to do any value
+        initialization here.
 
         Note that many double-precision floating-point values are rendered as 
         QLineEdits, instead of QDoubleSpinBox. That's because coefficients may
@@ -384,36 +406,32 @@ class EEPROMEditor:
             
         self.ctl.clipboard.copy_dict(table)
 
-    def widget_callback(self, attr=None, widget=None, calibration=None, index=None, value=None):
+    def widget_callback(self, value=None, attr=None, widget=None, calibration=None, index=None):
         """
         The user has changed a value in the enlighten.EEPROMEditor, which we need to save 
         back to the wasatch.EEPROM object.
         """
-        log.debug(f"widget_callback: called for calibration {calibration}, index {index}, value {value}, widget {widget}, attr {attr}")
+        # log.debug(f"widget_callback: called for calibration {calibration}, index {index}, value {value}, widget {widget}, attr {attr}")
 
         if attr.is_multi:
-            for m in range(attr.calibrations):
-                if attr.is_scalar:
-                    log.debug(f"widget_callback: getting scalar widget value for calibration {m}")
-                    value = attr.get_widget_value(calibration=m)
-                    self.eeprom.multi_wavelength_calibration.set(name=attr.name, value=value, calibration=m)
-                else:
-                    for i, w in enumerate(attr.widgets[m]):
-                        log.debug(f"widget_callback: getting widget value for calibration {m}, index {i}")
-                        value = attr.get_widget_value(calibration=m, index=i)
-                        self.eeprom.multi_wavelength_calibration.set(name=attr.name, value=value, calibration=m, index=i)
+            if attr.is_scalar:
+                value = attr.get_widget_value(calibration=calibration)
+                self.eeprom.multi_wavelength_calibration.set(name=attr.name, value=value, calibration=calibration)
+            elif index is not None:
+                value = attr.get_widget_value(calibration=calibration, index=index)
+                self.eeprom.multi_wavelength_calibration.set(name=attr.name, value=value, calibration=calibration, index=index)
+            else:
+                raise AttributeError(f"widget_callback does not support multi, non-scalar attributes without index: {attr}")
         else:
             if attr.is_scalar:
-                log.debug(f"widget_callback: getting widget value for scalar")
                 value = attr.get_widget_value()
                 setattr(self.eeprom, attr.name, value)
             elif index is not None:
-                log.debug(f"widget_callback: getting widget value for index {index}")
                 value = attr.get_widget_value(index=index)
                 old = getattr(self.eeprom, attr.name)
                 old[index] = value
             else:
-                raise AttributeError(f"widget_callback does not support non-multi, non-scalar attributes with no index: {attr}")
+                raise AttributeError(f"widget_callback does not support non-multi, non-scalar attributes without index: {attr}")
 
         ####################################################################
         # name-based extra functionality 
@@ -428,7 +446,6 @@ class EEPROMEditor:
 
         # Detector
         elif self.updated_from_eeprom and ("detector_gain" in attr.name or "detector_offset" in attr.name):
-            log.debug("widget_callback: gain or offset updated post-init, so forcing those downstream")
             self.ctl.update_gain_and_offset(force=True)
 
         # SRM
@@ -583,9 +600,10 @@ class EEPROMEditor:
                     if attr.is_multi:
                         if attr.is_scalar:                      # e.g. excitation_nm_float, avg_resolution
                             for m in range(attr.calibrations):
-                                widget = attr.widgets[m][0]
-                                widget.setValue(float(self.eeprom.multi_wavelength_calibration.get(attr.name, m, default=0)))
-                        else:                                   
+                                widget = attr.widgets[m][0] # YOU ARE HERE, MAYBE? Is this actually a list-of-lists?
+                                value = float(self.eeprom.multi_wavelength_calibration.get(attr.name, m, default=0))
+                                widget.setValue(value)
+                        else:
                             for m in range(attr.calibrations):  # e.g. ??
                                 for i, w in enumerate(attr.widgets[m]):
                                     w.setValue(float(self.eeprom.multi_wavelength_calibration.get(attr.name, m, i, default=0)))
@@ -618,22 +636,22 @@ class EEPROMEditor:
                 log.error(f"update_from_spec: failed to update widget(s) for attr {attr}", exc_info=1)
 
         self.update_subformat()
+
         self.update_fpga_option_display()
 
         self.updated_from_eeprom = True
+        self.eeprom.dump()
 
     def update_subformat(self):
         """ Update our display of which (if any) frame representing page 6-7 fields is visible. """
 
         # hide them all
-        log.debug("updating subformat")
         for subformat, frames in self.subformat_frames.items():
             for frame in frames:
                 frame.setVisible(False)
 
         sub = self.eeprom.subformat
         if sub in self.subformat_frames:
-            log.debug("visualizing frames for subformat {sub}")
             frames = self.subformat_frames[sub]
             for frame in frames:
                 frame.setVisible(True)
@@ -710,32 +728,33 @@ class EEPROMEditor:
             raise AttributeError(f"{attr.name}: unknown EEPROM checkbox")
 
         log.debug(f"bind_checkbox: binding {attr}")
-        attr.widget.stateChanged.connect(lambda state: self.widget_callback(attr, value=state, widget=attr.widget))
+        attr.widget.stateChanged.connect(partial(self.widget_callback, attr=attr, widget=attr.widget))
         attr.is_editable = self.eeprom.is_editable(attr.name)
 
     def bind_spinbox(self, attr):
         """ Hoping to use this for both QSpinBox and QDoubleSpinBox widgets """
         if attr.is_multi:
             if attr.is_scalar:
-                for m in range(attr.calibrations):
-                    log.debug(f"bind_spinbox: binding calibration {m} scalar: {attr}")
+                for m in range(attr.calibrations): # YOU ARE HERE?
                     w = attr.widgets[m][0]
-                    w.valueChanged.connect(lambda d: self.widget_callback(attr=attr, widget=w, calibration=m, value=d))
+                    callback = partial(self.widget_callback, attr=attr, widget=w, calibration=m)
+                    log.debug(f"bind_spinbox: binding calibration {m} scalar: {attr} (widget {w}, callback {callback})")
+                    w.valueChanged.connect(callback)
             else:
                 for m in range(attr.calibrations):
                     for i in range(attr.count):
                         log.debug(f"bind_spinbox: binding calibration {m} index {i}: {attr}")
                         w = attr.widgets[m][i]
-                        w.valueChanged.connect(lambda d: self.widget_callback(attr=attr, widget=w, calibraton=m, index=i, value=d))
+                        w.valueChanged.connect(partial(self.widget_callback, attr=attr, widget=w, calibraton=m, index=i))
         else:
             if attr.is_scalar:
                 log.debug(f"bind_spinbox: binding scalar: {attr}")
-                attr.widget.valueChanged.connect(lambda d: self.widget_callback(attr=attr, widget=attr.widget, value=d))
+                attr.widget.valueChanged.connect(partial(self.widget_callback, attr=attr, widget=attr.widget))
             else:
                 for i in range(attr.count):
                     log.debug(f"bind_spinbox: binding index {i}: {attr}")
                     w = attr.widgets[i]
-                    w.valueChanged.connect(lambda d: self.widget_callback(attr=attr, widget=w, index=i, value=d))
+                    w.valueChanged.connect(partial(self.widget_callback, attr=attr, widget=w, index=i))
                 
         attr.is_editable = self.eeprom.is_editable(attr.name)
 
@@ -745,22 +764,22 @@ class EEPROMEditor:
                 for m in range(attr.calibrations):
                     log.debug(f"bind_lineedit: binding calibration {m} scalar: {attr}")
                     w = attr.widgets[m][0]
-                    w.editingFinished.connect(lambda: self.widget_callback(attr=attr, widget=w, calibration=m))
+                    w.editingFinished.connect(partial(self.widget_callback, attr=attr, widget=w, calibration=m))
             else:
                 for m in range(attr.calibrations):
                     for i in range(attr.count):
                         log.debug(f"bind_lineedit: binding calibration {m}, index {i}: {attr}")
                         w = attr.widgets[m][i]
-                        w.editingFinished.connect(lambda: self.widget_callback(attr=attr, widget=w, calibration=m, index=i))
+                        w.editingFinished.connect(partial(self.widget_callback, attr=attr, widget=w, calibration=m, index=i))
         else:
             if attr.is_scalar:
                 log.debug(f"bind_lineedit: binding scalar: {attr}")
-                attr.widget.editingFinished.connect(lambda: self.widget_callback(attr=attr, widget=attr.widget))
+                attr.widget.editingFinished.connect(partial(self.widget_callback, attr=attr, widget=attr.widget))
             else:
                 for i in range(attr.count):
                     log.debug(f"bind_lineedit: binding index {i}: {attr}")
                     w = attr.widgets[i]
-                    w.editingFinished.connect(lambda: self.widget_callback(attr=attr, widget=w, index=i))
+                    w.editingFinished.connect(partial(self.widget_callback, attr=attr, widget=w, index=i))
                 
         attr.is_editable = self.eeprom.is_editable(attr.name)
 

@@ -588,7 +588,7 @@ class PluginController:
                     container.append(pfw)
                 continue
 
-            log.debug(f"instantiating PluginFieldWidget with EnlightenPluginField {epf.name}")
+            log.debug(f"instantiating PluginFieldWidget with EnlightenPluginField {epf}")
             pfw = PluginFieldWidget(epf, self.ctl)
             container.append(pfw)
 

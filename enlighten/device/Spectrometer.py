@@ -103,8 +103,9 @@ class Spectrometer:
         log.debug(f"best-guess ModelInfo: {self.wp_model_info}")
 
         # prefer EEPROM for FWHM, or lookup from model
-        if self.settings.eeprom.avg_resolution > 0:
-            self.fwhm = self.settings.eeprom.avg_resolution
+        avg = self.settings.eeprom.multi_wavelength_calibration.get("avg_resolution")
+        if avg > 0:
+            self.fwhm = avg
             log.debug(f"using FWHM from EEPROM: {self.fwhm:.2f}")
         else:
             self.fwhm = ctl.model_info.model_fwhm.get_by_model(self.settings.full_model())
@@ -151,7 +152,7 @@ class Spectrometer:
             return
 
         # first get from EEPROM, if configured
-        avg = self.settings.eeprom.avg_resolution
+        avg = self.settings.eeprom.multi_wavelength_calibration.get("avg_resolution")
 
         # Assume Raman spectrometers are configured in wavenumber and others in wavelength.
         # If the matching unit was requested, return the configured value
@@ -323,7 +324,7 @@ class Spectrometer:
             return
     
         log.debug(f"left_region_changed_callback: setting roi_horizontal_start to pixel {pixel} based on region end {end}")
-        self.settings.eeprom.roi_horizontal_start = pixel
+        self.settings.eeprom.multi_wavelength_calibration.set("roi_horizontal_start", pixel)
         self.ctl.horiz_roi.update_regions(spec=self, left_pixel=pixel)
 
     def right_region_changed_callback(self):
@@ -334,7 +335,7 @@ class Spectrometer:
             return
     
         log.debug(f"right_region_changed_callback: setting roi_horizontal_end to pixel {pixel} based on region start {start}")
-        self.settings.eeprom.roi_horizontal_end = pixel
+        self.settings.eeprom.multi_wavelength_calibration.set("roi_horizontal_end", pixel)
         self.ctl.horiz_roi.update_regions(spec=self, right_pixel=pixel)
 
     def get_x_from_pixel(self, px):

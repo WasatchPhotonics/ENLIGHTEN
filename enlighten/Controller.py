@@ -645,6 +645,7 @@ class Controller:
         """
         for feature in [ self.accessory_control,
                          self.horiz_roi,
+                         self.graph,
                          self.laser_control,
                          self.laser_temperature,
                          self.laser_watchdog,
@@ -735,6 +736,7 @@ class Controller:
                             log.info(f"using cloud-recommended default of {local_name} {cloud_value}")
                             setattr(device.settings.eeprom, local_name, cloud_value)
 
+                # does not support MultiWavelengthCalibration
                 default_missing("excitation_nm_float", 0)
                 default_missing("wavelength_coeffs",  [0, 1, 0, 0])
                 default_missing("model", None, "wp_model")
@@ -1713,8 +1715,6 @@ class Controller:
             log.error("can't reprocess missing raw")
             return
         settings = measurement.settings
-        log.debug("reprocessing: settings.wavelength_coeffs: %s", str(settings.eeprom.wavelength_coeffs))
-        log.debug("reprocessing: settings.wavelengths: %s", str(settings.wavelengths))
 
         # create a fake Reading and push it back through with temporary
         # app_state overrides
@@ -2232,10 +2232,10 @@ class Controller:
         passed; then recompute wavelengths and wavenumbers no matter what, and 
         sync excitations.
         """
+
         cfu = self.form.ui
         spec = self.current_spectrometer()
         ee = spec.settings.eeprom
-
         spec.settings.update_wavecal(coeffs)
 
         if ee.wavelength_coeffs:

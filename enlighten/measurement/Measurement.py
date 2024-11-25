@@ -872,8 +872,8 @@ class Measurement:
         if field == "pixel count":               return self.settings.pixels()
         if field == "declared match":            return str(self.declared_match) if self.declared_match is not None else None
         if field == "declared score":            return self.declared_match.score if self.declared_match is not None else 0
-        if field == "roi pixel start":           return self.settings.eeprom.roi_horizontal_start
-        if field == "roi pixel end":             return self.settings.eeprom.roi_horizontal_end
+        if field == "roi pixel start":           return self.settings.eeprom.multi_wavelength_calibration.get("roi_horizontal_start")
+        if field == "roi pixel end":             return self.settings.eeprom.multi_wavelength_calibration.get("roi_horizontal_end")
         if field == "roi start line":            return self.settings.eeprom.roi_vertical_region_1_start
         if field == "roi stop line":             return self.settings.eeprom.roi_vertical_region_1_end
         if field == "cropped":                   return self.processed_reading.is_cropped()

@@ -126,6 +126,8 @@ class Marquee:
         if msg is None:
             return
 
+        is_error = "error" in msg.lower() or (benign is not None and not benign)
+
         self.reset_timers()
 
         self.persist = persist
@@ -136,36 +138,28 @@ class Marquee:
         if period_sec is not None and period_sec * 1000 > self.DRAWER_DURATION_MS:
             self.extra_ms = period_sec * 1000 - self.DRAWER_DURATION_MS
 
-        log.info(msg)
+        if is_error:
+            log.error(msg)
+        else:
+            log.info(msg)
+
         self.label.setText(msg)
         self.show()
 
-        self.show_immediate(benign)
+        if is_error:
+            self.show_immediate(benign=False)
+        else:
+            self.show_immediate(benign) # allow None to pass-through
 
-    ## 
-    # display an error warning to the user
-    #
-    # You can make errors show up as red "hazards" by defaulting benign
-    # to False.  I tried it but didn't really like it.  Too alarming.
-    #
-    # @public
-    def error(self, msg, persist=False, token=None, benign=False, immediate=False, extra_ms=0):
-        if msg is None:
-            return
-
-        self.reset_timers()
-
-        self.persist = persist
-        self.last_token = token
-        self.extra_ms = extra_ms
-
-        log.error(msg)
-        self.label.setText(msg)
-        self.show()
-
-        self.last_token = token
-
-        self.show_immediate(benign)
+    def error(self, msg, persist=False, token=None, benign=False, immediate=False, extra_ms=0, period_sec=None, link=None):
+        return self.info(msg        = msg, 
+                         persist    = persist, 
+                         token      = token, 
+                         benign     = benign, 
+                         immediate  = immediate, 
+                         extra_ms   = extra_ms, 
+                         period_sec = period_sec, 
+                         link       = link)
 
     def clear(self, token=None, force=False):
         if force or not self.persist or (token and token == self.last_token):

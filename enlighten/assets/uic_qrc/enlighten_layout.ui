@@ -20307,130 +20307,6 @@ li.checked::marker { content: "\2612"; }
   <tabstop>lineEdit_scope_capture_save_prefix</tabstop>
   <tabstop>lineEdit_scope_capture_save_suffix</tabstop>
   <tabstop>lineEdit_scope_capture_save_note</tabstop>
-  <tabstop>lineEdit_ee_serial_number</tabstop>
-  <tabstop>lineEdit_ee_model</tabstop>
-  <tabstop>spinBox_ee_baud_rate</tabstop>
-  <tabstop>checkBox_ee_has_cooling</tabstop>
-  <tabstop>checkBox_ee_has_battery</tabstop>
-  <tabstop>checkBox_ee_has_laser</tabstop>
-  <tabstop>doubleSpinBox_ee_excitation_nm_float</tabstop>
-  <tabstop>spinBox_ee_slit_size_um</tabstop>
-  <tabstop>spinBox_ee_startup_integration_time_ms</tabstop>
-  <tabstop>spinBox_ee_startup_temp_degC</tabstop>
-  <tabstop>spinBox_ee_startup_triggering_scheme</tabstop>
-  <tabstop>doubleSpinBox_ee_detector_gain</tabstop>
-  <tabstop>spinBox_ee_detector_offset</tabstop>
-  <tabstop>doubleSpinBox_ee_detector_gain_odd</tabstop>
-  <tabstop>spinBox_ee_detector_offset_odd</tabstop>
-  <tabstop>lineEdit_ee_wavelength_coeff_0</tabstop>
-  <tabstop>lineEdit_ee_wavelength_coeff_1</tabstop>
-  <tabstop>lineEdit_ee_wavelength_coeff_2</tabstop>
-  <tabstop>lineEdit_ee_wavelength_coeff_3</tabstop>
-  <tabstop>lineEdit_ee_wavelength_coeff_4</tabstop>
-  <tabstop>lineEdit_ee_degC_to_dac_coeff_0</tabstop>
-  <tabstop>lineEdit_ee_degC_to_dac_coeff_1</tabstop>
-  <tabstop>lineEdit_ee_degC_to_dac_coeff_2</tabstop>
-  <tabstop>spinBox_ee_max_temp_degC</tabstop>
-  <tabstop>spinBox_ee_min_temp_degC</tabstop>
-  <tabstop>lineEdit_ee_adc_to_degC_coeff_0</tabstop>
-  <tabstop>lineEdit_ee_adc_to_degC_coeff_1</tabstop>
-  <tabstop>lineEdit_ee_adc_to_degC_coeff_2</tabstop>
-  <tabstop>spinBox_ee_tec_r298</tabstop>
-  <tabstop>spinBox_ee_tec_beta</tabstop>
-  <tabstop>lineEdit_ee_calibration_date</tabstop>
-  <tabstop>lineEdit_ee_calibrated_by</tabstop>
-  <tabstop>lineEdit_ee_detector</tabstop>
-  <tabstop>lineEdit_ee_linearity_coeff_4</tabstop>
-  <tabstop>lineEdit_ee_linearity_coeff_0</tabstop>
-  <tabstop>lineEdit_ee_linearity_coeff_1</tabstop>
-  <tabstop>lineEdit_ee_linearity_coeff_2</tabstop>
-  <tabstop>lineEdit_ee_linearity_coeff_3</tabstop>
-  <tabstop>spinBox_ee_active_pixels_horizontal</tabstop>
-  <tabstop>spinBox_ee_active_pixels_vertical</tabstop>
-  <tabstop>spinBox_ee_roi_horizontal_start</tabstop>
-  <tabstop>spinBox_ee_roi_horizontal_end</tabstop>
-  <tabstop>spinBox_ee_roi_vertical_region_1_start</tabstop>
-  <tabstop>spinBox_ee_roi_vertical_region_1_end</tabstop>
-  <tabstop>spinBox_ee_roi_vertical_region_2_start</tabstop>
-  <tabstop>spinBox_ee_roi_vertical_region_2_end</tabstop>
-  <tabstop>spinBox_ee_roi_vertical_region_3_start</tabstop>
-  <tabstop>spinBox_ee_roi_vertical_region_3_end</tabstop>
-  <tabstop>lineEdit_ee_laser_power_coeff_0</tabstop>
-  <tabstop>lineEdit_ee_laser_power_coeff_1</tabstop>
-  <tabstop>lineEdit_ee_laser_power_coeff_2</tabstop>
-  <tabstop>lineEdit_ee_laser_power_coeff_3</tabstop>
-  <tabstop>lineEdit_ee_user_text</tabstop>
-  <tabstop>spinBox_ee_bad_pixel_0</tabstop>
-  <tabstop>spinBox_ee_bad_pixel_1</tabstop>
-  <tabstop>spinBox_ee_bad_pixel_2</tabstop>
-  <tabstop>spinBox_ee_bad_pixel_3</tabstop>
-  <tabstop>spinBox_ee_bad_pixel_4</tabstop>
-  <tabstop>spinBox_ee_bad_pixel_5</tabstop>
-  <tabstop>spinBox_ee_bad_pixel_6</tabstop>
-  <tabstop>spinBox_ee_bad_pixel_7</tabstop>
-  <tabstop>spinBox_ee_bad_pixel_8</tabstop>
-  <tabstop>spinBox_ee_bad_pixel_9</tabstop>
-  <tabstop>spinBox_ee_bad_pixel_10</tabstop>
-  <tabstop>spinBox_ee_bad_pixel_11</tabstop>
-  <tabstop>spinBox_ee_bad_pixel_12</tabstop>
-  <tabstop>spinBox_ee_bad_pixel_13</tabstop>
-  <tabstop>spinBox_ee_bad_pixel_14</tabstop>
-  <tabstop>pushButton_save_ini</tabstop>
-  <tabstop>pushButton_admin_login</tabstop>
-  <tabstop>tabWidget_advanced_features</tabstop>
-  <tabstop>checkBox_area_scan_enable</tabstop>
-  <tabstop>checkBox_save_raw</tabstop>
-  <tabstop>checkBox_save_dark</tabstop>
-  <tabstop>checkBox_save_csv</tabstop>
-  <tabstop>checkBox_save_wavelength</tabstop>
-  <tabstop>checkBox_save_pixel</tabstop>
-  <tabstop>checkBox_save_excel</tabstop>
-  <tabstop>checkBox_save_json</tabstop>
-  <tabstop>checkBox_save_cloud</tabstop>
-  <tabstop>pushButton_scope_setup_change_save_location</tabstop>
-  <tabstop>spinBox_BatchCollection_measurement_count</tabstop>
-  <tabstop>spinBox_BatchCollection_laser_warmup_ms</tabstop>
-  <tabstop>pushButton_dark_store</tabstop>
-  <tabstop>pushButton_reference_store</tabstop>
-  <tabstop>pushButton_dark_clear</tabstop>
-  <tabstop>pushButton_reference_clear</tabstop>
-  <tabstop>scrollArea_save_column</tabstop>
-  <tabstop>pushButton_erase_captures</tabstop>
-  <tabstop>pushButton_resize_captures</tabstop>
-  <tabstop>pushButton_resort_captures</tabstop>
-  <tabstop>scrollArea_scope_capture_save_design</tabstop>
-  <tabstop>scrollArea_scope_capture_save</tabstop>
-  <tabstop>pushButton_scope_capture_load</tabstop>
-  <tabstop>pushButton_export_session</tabstop>
-  <tabstop>comboBox_view</tabstop>
-  <tabstop>pushButton_expert</tabstop>
-  <tabstop>pushButton_raman</tabstop>
-  <tabstop>scrollArea_scope_capture_details</tabstop>
-  <tabstop>controlWidget_scrollArea</tabstop>
-  <tabstop>checkBox_enable_max_transmission</tabstop>
-  <tabstop>spinBox_max_transmission_perc</tabstop>
-  <tabstop>pushButton_laser_toggle</tabstop>
-  <tabstop>verticalSlider_laser_power</tabstop>
-  <tabstop>pushButton_laser_power_dn</tabstop>
-  <tabstop>pushButton_laser_power_up</tabstop>
-  <tabstop>doubleSpinBox_laser_power</tabstop>
-  <tabstop>slider_integration_time_ms</tabstop>
-  <tabstop>pushButton_integration_time_ms_dn</tabstop>
-  <tabstop>pushButton_integration_time_ms_up</tabstop>
-  <tabstop>spinBox_integration_time_ms</tabstop>
-  <tabstop>displayAxis_comboBox_axis</tabstop>
-  <tabstop>pushButton_scan_averaging_dn</tabstop>
-  <tabstop>spinBox_scan_averaging</tabstop>
-  <tabstop>pushButton_scan_averaging_up</tabstop>
-  <tabstop>pushButton_boxcar_half_width_dn</tabstop>
-  <tabstop>spinBox_boxcar_half_width</tabstop>
-  <tabstop>pushButton_boxcar_half_width_up</tabstop>
-  <tabstop>verticalSlider_detector_setpoint_degC</tabstop>
-  <tabstop>temperatureWidget_pushButton_detector_setpoint_up</tabstop>
-  <tabstop>spinBox_detector_setpoint_degC</tabstop>
-  <tabstop>systemStatusWidget_pushButton_hardware</tabstop>
-  <tabstop>systemStatusWidget_pushButton_light</tabstop>
-  <tabstop>systemStatusWidget_pushButton_temperature</tabstop>
  </tabstops>
  <resources>
   <include location="grey_icons.qrc" />
@@ -20438,7 +20314,6 @@ li.checked::marker { content: "\2612"; }
   <include location="spectrums.qrc" />
   <include location="devices.qrc" />
   <include location="darkstyle_icons.qrc" />
-  <include location="enlighten_icons.qrc" />
   <include location="enlighten_icons.qrc" />
  </resources>
  <connections />
