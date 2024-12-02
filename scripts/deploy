@@ -100,22 +100,6 @@ then
 fi
 
 ################################################################################
-# render documentation 
-################################################################################
-
-make doc
-rsync --archive --delete docs/doxygen/html/ $USERNAME@wasatchphotonics.com:www/api/ENLIGHTEN/
-scp docs/ENLIGHTEN_CHANGELOG.html $USERNAME@wasatchphotonics.com:www/binaries/apps/enlighten/README.html
-
-if $DOCS_ONLY
-then
-    exit 0
-fi
-echo
-
-mkdir -p releases
-
-################################################################################
 # validate release requirements
 ################################################################################
 
@@ -147,9 +131,40 @@ else
     exit 1
 fi
 
+# verify Wasatch.PY version is deployed to PyPi
+if [ -d ../Wasatch.PY ]
+then
+    WASATCH_PY_VERSION=`grep ^__version__ ../Wasatch.PY/wasatch/__init__.py | awk '{print $3}' | tr -d '"'`
+    if pip index versions wasatch 2>&1 | grep -q $WASATCH_PY_VERSION
+    then
+        echo "Wasatch.PY $WASATCH_PY_VERSION found in PyPi"
+    else
+        echo "Wasatch.PY $WASATCH_PY_VERSION not found in PyPi"
+        exit 1
+    fi
+else
+    echo "Apparently using Wasatch.PY from PyPi"
+fi
+
+################################################################################
+# render documentation 
+################################################################################
+
+make doc
+rsync --archive --delete docs/doxygen/html/ $USERNAME@wasatchphotonics.com:www/api/ENLIGHTEN/
+scp docs/ENLIGHTEN_CHANGELOG.html $USERNAME@wasatchphotonics.com:www/binaries/apps/enlighten/README.html
+
+if $DOCS_ONLY
+then
+    exit 0
+fi
+echo
+
 ################################################################################
 # upload binaries
 ################################################################################
+
+mkdir -p releases
 
 if $POST_WIN
 then

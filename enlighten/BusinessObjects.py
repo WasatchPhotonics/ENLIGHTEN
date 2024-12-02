@@ -28,7 +28,6 @@ from enlighten.device.LaserWatchdogFeature import LaserWatchdogFeature
 from enlighten.device.LaserTemperatureFeature import LaserTemperatureFeature
 from enlighten.device.AmbientTemperatureFeature import AmbientTemperatureFeature
 from enlighten.device.Multispec import Multispec
-from enlighten.device.RegionControlFeature import RegionControlFeature
 from enlighten.factory.DFUFeature import DFUFeature
 from enlighten.factory.FactoryStripChartFeature import FactoryStripChartFeature
 from enlighten.file_io.Configuration import Configuration
@@ -161,7 +160,6 @@ class BusinessObjects:
         ctl.raman_intensity_correction = None
         ctl.raman_shift_correction = None
         ctl.reference_feature = None
-        ctl.region_control = None
         ctl.resource_monitor = None
         ctl.richardson_lucy = None
         ctl.save_options = None
@@ -418,12 +416,6 @@ class BusinessObjects:
 
         self.header("instantiating HighGainModeFeature")
         ctl.high_gain_mode = HighGainModeFeature(ctl)
-
-        self.header("instantiating RegionControlFeature")
-        ctl.region_control = RegionControlFeature(
-            cb_enabled                  = cfu.checkBox_region_enabled,
-            multispec                   = ctl.multispec,
-            spinbox                     = cfu.spinBox_region)
 
         self.header("instantiating Sounds")
         ctl.sounds = Sounds(ctl)

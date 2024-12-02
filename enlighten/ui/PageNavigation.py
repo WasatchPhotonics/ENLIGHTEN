@@ -410,7 +410,6 @@ class PageNavigation:
         cfu.frame_post_processing.setVisible(flag)
         cfu.frame_baseline_correction.setVisible(flag)
         cfu.frame_area_scan_widget.setVisible(flag and not is_ingaas)
-        cfu.frame_region_control.setVisible(False) # spec.settings.is_imx()
 
     def set_operation_mode_common(self):
         if "mode" in self.observers:

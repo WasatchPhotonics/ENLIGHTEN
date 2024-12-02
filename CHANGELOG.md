@@ -1,6 +1,8 @@
 # Version History
 
-- 2024-??-?? 4.1.17
+- 2024-??-?? 4.1.18
+    - deprecated RegionControlFeature
+- 2024-11-25 4.1.17
     - Multichannel testing
         - added Ctrl-, and Ctrl-. to select previous and next spectrometer
         - added OEM/Multichannel plugin

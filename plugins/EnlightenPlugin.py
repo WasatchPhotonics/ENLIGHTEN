@@ -42,7 +42,7 @@ class EnlightenPluginBase:
         self._fields = []
         self.is_blocking = False
         self.block_enlighten = False
-        self.auto_enable = False
+        self.auto_enable = True
         self.lock_enable = False
         self.has_other_graph = False
         self.table = None
@@ -94,7 +94,8 @@ class EnlightenPluginBase:
             pl.write(f"{now} " + ' '.join([str(msg) for msg in msgs]) + "\n")
 
     def field(self, **kwargs):
-        self._fields.append(EnlightenPluginField(**kwargs))
+        epf = EnlightenPluginField(**kwargs)
+        self._fields.append(epf)
 
     def event(self, event, callback):
         self.events[event] = callback
@@ -126,6 +127,12 @@ class EnlightenPluginBase:
         @param y y values
         @param title plot title, shown in legend
         @param color color of plot line
+
+        @note if you rely on the default x-axis, note that it is the full 
+              detector axis, and is neither interpolated nor cropped in 
+              horizontal ROI. Use ProcessedRequest.get_wavelengths() or
+              get_wavenumbers() for the axis in use for a particular
+              EnlightenPluginRequest.
 
         @todo add weight
         """
@@ -429,7 +436,7 @@ class EnlightenPluginConfiguration:
             is_blocking     = True,
             block_enlighten = False,
             streaming       = True,
-            auto_enable     = False,
+            auto_enable     = True,
             lock_enable     = False,
             events          = None,
             series_names    = None,
@@ -552,6 +559,9 @@ class EnlightenPluginField:
         self.choices    = choices
         self.expert     = expert
         self.width      = width
+
+    def __repr__(self):
+        return f"EnlightenPluginField<name {self.name}, datatype {self.datatype}, direction {self.direction}, initial {self.initial}, expert {self.expert}, choices {self.choices}, callback {self.callback}>"
 
 ##
 # This is a "request" object sent by the ENLIGHTEN GUI to the plug-in, containing
