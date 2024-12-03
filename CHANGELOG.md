@@ -2,6 +2,8 @@
 
 - 2024-??-?? 4.1.18
     - deprecated RegionControlFeature
+    - XL Fixes
+        - fixed blank wavecal
 - 2024-11-25 4.1.17
     - Multichannel testing
         - added Ctrl-, and Ctrl-. to select previous and next spectrometer
