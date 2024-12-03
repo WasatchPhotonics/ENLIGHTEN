@@ -298,6 +298,11 @@ class Graph:
             a = list(range(spec.settings.pixels()))
             prec = False
 
+        if a is None:
+            log.error("update_combo_tooltip: no x-axis")
+            self.combo_axis.setToolTip("")
+            return
+
         tt = f"({a[0]:.2f}, {a[-1]:.2f}{unit})" if prec else f"({a[0]}, {a[-1]}{unit})" 
 
         roi = spec.settings.eeprom.get_horizontal_roi()

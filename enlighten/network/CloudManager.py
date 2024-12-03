@@ -136,7 +136,6 @@ class CloudManager:
                         log.info(f"using cloud-recommended default of {local_name} {cloud_value}")
                         eeprom.multi_wavelength_calibration.set(local_name, cloud_value)
 
-            # does not support MultiWavelengthCalibration
             default_missing("excitation_nm_float", 0)
             default_missing("wavelength_coeffs",  [0, 1, 0, 0, 0])
             default_missing("model", None, "wp_model")
@@ -146,6 +145,8 @@ class CloudManager:
             default_missing("invert_x_axis", False)
             default_missing("roi_horizontal_start", 0)
             default_missing("roi_horizontal_end", 0)
+            default_missing("roi_vertical_region_1_start", 0)
+            default_missing("roi_vertical_region_1_end", 0)
 
             eeprom.stubbed = False
 

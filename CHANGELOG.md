@@ -6,6 +6,7 @@
         - fixed blank wavecal
         - flag non-downloaded EEPROMs as "stubbed" to drive re-download attempts
         - Marquee updates during download
+        - support vertical ROI
 - 2024-11-25 4.1.17
     - Multichannel testing
         - added Ctrl-, and Ctrl-. to select previous and next spectrometer
