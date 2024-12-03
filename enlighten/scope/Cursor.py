@@ -225,12 +225,12 @@ class Cursor:
 
     def moved_callback(self, pos):
         x_axis = self.ctl.generate_x_axis() # assume selected spectrometer
-        log.debug(f"cursor moved callback x_axis len is {len(x_axis)}")
         if x_axis is None:
             log.error("moved_callback: no x_axis?!")
             self.ds_value.setEnabled(False)
             return
 
+        log.debug(f"cursor moved callback x_axis len is {len(x_axis)}")
         if x_axis[-1] - x_axis[0] == 0:
             log.error("moved_callback: invalid x_axis: %s", x_axis)
             self.ds_value.setEnabled(False)

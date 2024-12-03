@@ -302,8 +302,12 @@ class Graph:
 
         roi = spec.settings.eeprom.get_horizontal_roi()
         if roi:
-            tt += ", cropped to ROI "
-            tt += f"({a[roi.start]:.2f}, {a[roi.end]:.2f}{unit})" if prec else f"({a[roi.start]}, {a[roi.end]}{unit})"
+            try:
+                extra = ", cropped to ROI "
+                extra += f"({a[roi.start]:.2f}, {a[roi.end]:.2f}{unit})" if prec else f"({a[roi.start]}, {a[roi.end]}{unit})"
+                tt += extra
+            except:
+                log.error(f"update_combo_tooltip: invalid horizontal roi {roi}, unit {unit}, prec {prec}, array len {len(a)}")
 
         self.combo_axis.setToolTip(tt)
 

@@ -712,7 +712,13 @@ class Controller:
         ########################################################################
 
         if device.is_andor:
-            self.cloud_manager.download_andor_eeprom(device)
+            if device.settings.eeprom.stubbed:
+                log.debug("Andor EEPROM is stubbed, so attempting cloud download")
+                self.cloud_manager.download_andor_eeprom(device)
+            else:
+                log.debug("Andor EEPROM not stubbed, so sticking with cached file")
+
+            # only Andor units have a (readable) detector serial number
             cfu.label_detector_serial_number.setText(device.settings.eeprom.detector_serial_number)
         else:
             cfu.label_detector_serial_number.setText("")
