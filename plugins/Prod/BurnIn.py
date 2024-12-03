@@ -1,4 +1,4 @@
-from EnlightenPlugin import *
+from EnlightenPlugin import EnlightenPluginBase
 
 import os
 import random

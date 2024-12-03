@@ -132,6 +132,7 @@ class CloudManager:
         if andor_eeprom:
             log.debug(f"before defaults: andor_eeprom {andor_eeprom}")
 
+            # does not support MultiWavelengthCalibration
             self.default_missing("excitation_nm_float", 0)
             self.default_missing("wavelength_coeffs",  [0, 1, 0, 0, 0])
             self.default_missing("model", None, "wp_model")

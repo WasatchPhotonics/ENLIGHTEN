@@ -1,5 +1,86 @@
 # Version History
 
+- 2024-??-?? 4.1.18
+    - deprecated RegionControlFeature
+- 2024-11-25 4.1.17
+    - Multichannel testing
+        - added Ctrl-, and Ctrl-. to select previous and next spectrometer
+        - added OEM/Multichannel plugin
+        - persist integration time on locked spectrometers to enlighten.ini
+        - make Dark lockable
+    - plugins
+        - updated Analysis.Despiking
+        - updated Analysis.PeakFinding
+        - updated Prod.PixelNoise
+- 2024-11-05 4.1.16
+    - XS
+        - support new startup_laser_tec_setpoint EEPROM field
+        - added PixelCalibration
+        - add horizontal binning mode BIN_4X2_AVG
+        - add more firmware version checks around new features to avoid breaking old FW
+        - start refresh of BLEDevice
+    - GUI
+        - added ctrl-Freeze axes
+        - added Thumbnail tooltips
+        - improved 'locked Thumbnail' docs
+    - misc
+        - update row-ordered CSV format to support ROI "NA", etc
+        - fixed gain 0dB being accidentally written on non-XS devices
+- 2024-10-29 4.1.15
+    - AutoRaman
+        - added confirmation dialog
+        - updated Did You Know
+        - actually remembered to commit the new ReadingProgressBar class :-(
+        - tidy ReadingProgressBar close
+        - added onboard
+        - added elapsed time
+        - catch exceptions in TakeOne callbacks
+        - support new onboard Auto-Raman opcode and parameters
+    - plugins
+        - fixed imports
+        - fixed overrides (e.g. Filters.SavitzkyGolay)
+- 2024-10-16 4.1.14
+    - AutoRaman
+        - fixed "Stop" button
+        - release lock on manual laser control at completion
+- 2024-10-15 4.1.13
+    - AutoRaman
+        - fixed on X series
+        - added option in BatchCollection
+        - add flag to Measurement metadata
+        - indicate laser firing status via LaserControl and StatusIndicators
+    - added bin_4x2_interp
+    - added DYK (Ctrl-Up/Down)
+    - added Ctrl-backtick shortcut
+- 2024-10-14 4.1.12
+    - added bin_4x2
+- 2024-10-10 4.1.11
+    - fixed Ctrl-G gain shortcut 
+    - renamed "ROI Start/Stop Lines" in saved Measurements
+    - AutoRaman
+        - auto-save bugfix
+        - bugfix when NOT retaining settings
+        - fixed saved Measurement metadata when NOT retaining settings
+        - restore previous int/gain on cancel
+- 2024-10-10 4.1.10
+    - bumped revision to test updated wasatch.IMX385 class
+- 2024-10-09 4.1.9
+    - flipped IMX385 first pixel from red -> blue
+- 2024-10-09 4.1.8
+    - AutoRaman
+        - add "auto-save" checkbox (persisted)
+        - add "Retain Auto-Raman Settings" checkbox (persisted)
+        - add scan averaging to retained Auto-Raman settings
+        - if not retaining, still use (but don't store) averaged dark
+        - expose maxScansToAverage AutoRamanRequest option
+        - add Ctrl-* shortcut
+    - added "SSC Enabled" FeatureMask bit on EEPROM Editor
+- 2024-10-03 4.1.7
+    - EEPROMEditor
+        - added disable_ble_power
+        - added disable_laser_armed_indicator
+    - simplified Demo.SineAndScale plugin
+    - added BLE firmware version
 - 2024-09-27 4.1.6
     - fix AutoRaman Preset setters
 - 2024-09-19 4.1.5

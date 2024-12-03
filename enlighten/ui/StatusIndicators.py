@@ -10,21 +10,34 @@ else:
 
 log = logging.getLogger(__name__)
 
-## 
-# Encapsulates the 3 virtual status "LEDs" in the bottom-right of ENLIGHTEN's Scope view:
-# 
-# - hardware status 
-# - lamp/laser status
-# - detector temperature status 
-#
-# Each "LED" has three potential colors / states:
-#
-# - grey ("disconnected")
-# - green ("connected")
-# - orange ("warning")
-#
-# See WhatsThis for meanings.
 class StatusIndicators:
+    """
+    Encapsulates the 3 virtual status "LEDs" in the bottom-right of ENLIGHTEN's 
+    Scope view:
+
+    - hardware status 
+    - lamp/laser status
+    - detector temperature status 
+
+    Each "LED" has three potential colors / states:
+
+    - grey ("disconnected")
+    - green ("connected")
+    - orange ("warning")
+
+    See WhatsThis for meanings.
+
+    Note that this feature incapsulates its own QTimer and updates itself at 4Hz.
+    It does not update on received spectra (has no process_reading() method), but 
+    on scheduled updates does look at the most-recent ProcessedReading of the
+    currently selected spectrometer.
+
+    @todo Laser and temperature indicators should probably represent the UNION of
+          connected spectrometers, so if at least one is firing, or has unstable
+          temperature, that should probably be indicated. We could provide more
+          data on "which" spectrometers contribute to a particular reading via
+          tooltip.
+    """
 
     SLEEP_BETWEEN_UPDATES_MS = 250
     HARDWARE_WARNING_WINDOW_SEC = 3
@@ -38,6 +51,9 @@ class StatusIndicators:
         self.button_hardware    = cfu.systemStatusWidget_pushButton_hardware
         self.button_lamp        = cfu.systemStatusWidget_pushButton_light
         self.button_temperature = cfu.systemStatusWidget_pushButton_temperature
+
+        # can be used to force the laser warning to illuminate
+        self.force_laser_on = False
 
         def style(color, msg):
             return f"<p><span style='color:{color}; font-weight:bold'>{color.upper()}:</span> {msg}</p>"
@@ -135,7 +151,11 @@ class StatusIndicators:
             all_specs = self.ctl.multispec.get_spectrometers()
             if settings.eeprom.has_laser and len(all_specs) <= 1:
                 
-                if reading is None:
+                if self.force_laser_on:
+                    lamp = "warning"
+                    lamp_tt = "Laser is FIRING"
+                    
+                elif reading is None:
                     if settings.state.laser_enabled:
                         lamp = "warning"
                         lamp_tt = "laser enabled"
@@ -161,6 +181,7 @@ class StatusIndicators:
                     else:
                         lamp = "disconnected"
                         lamp_tt = "Laser is disarmed (cannot fire)"
+
             elif settings.eeprom.gen15 and len(all_specs) <= 1:
                 if settings.state.laser_enabled:
                     lamp = "warning"

@@ -43,11 +43,13 @@ class HelpFeature:
             Ctrl-3 Hardware View
             Ctrl-4 Log View
             Ctrl-5 Factory View
+            Ctrl-` next view (backtick)
             
             Ctrl-A Authenticate
             Ctrl-C Copy to system clipboard
             Ctrl-D take/clear Dark
             Ctrl-E Edit last saved measurement
+            Ctrl-F Freeze axes
             Ctrl-G enter Gain
             Ctrl-H toggle between Hardware and scope
             Ctrl-L toggle Laser firing
@@ -57,9 +59,13 @@ class HelpFeature:
             Ctrl-S Save measurement
             Ctrl-T enter integration Time
             Ctrl-X toggle eXpert mode
+
+            Ctrl-* Auto-Raman
+            Ctrl-, Prev Spectrometer
+            Ctrl-. Next Spectrometer
             
-            Ctrl-Left  move cursor
-            Ctrl-Right move cursor"""))
+            Ctrl-Up/Down step values
+            Ctrl-Left/Right move Scope cursor"""))
 
     def help_callback(self):
         url = self.HELP_URL

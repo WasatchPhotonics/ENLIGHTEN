@@ -230,7 +230,6 @@ class ColorNames:
         except:
             pass
         log.debug("color not found: %s", name)
-        return None
 
     def search(self, label):
         try:
@@ -239,4 +238,3 @@ class ColorNames:
                     return self.names[name]
         except:
             pass
-        return None

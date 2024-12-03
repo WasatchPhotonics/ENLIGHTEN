@@ -182,6 +182,8 @@ class Graph:
             for spec in self.ctl.multispec.get_spectrometers():
                 self.ctl.horiz_roi.update_regions(spec)
 
+        self.update_visibility()
+
     def update_marker(self):
         self.show_marker = self.cb_marker.isChecked()
         self.rescale_curves()
@@ -266,13 +268,44 @@ class Graph:
         self.update_visibility()
 
     def update_visibility(self):
+        spec = self.ctl.multispec.current_spectrometer()
+
         self.current_y_axis = common.Axes.COUNTS
         if self.ctl.multispec and self.intended_y_axis in [common.Axes.PERCENT, common.Axes.AU]:
-            spec = self.ctl.multispec.current_spectrometer()
             if spec and spec.app_state.reference is not None:
                 self.current_y_axis = self.intended_y_axis
 
         self.plot.setLabel(axis="left", text=common.AxesHelper.get_pretty_name(self.current_y_axis))
+        
+        self.update_combo_tooltip()
+
+    def update_combo_tooltip(self):
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            self.combo_axis.setToolTip("")
+            return
+
+        a = None
+        unit = self.get_x_axis_unit()
+        prec = True
+
+        if unit == "nm": 
+            a = spec.settings.wavelengths
+        elif unit == "cm": 
+            a = spec.settings.wavenumbers
+            unit += "⁻¹"
+        else: 
+            a = list(range(spec.settings.pixels()))
+            prec = False
+
+        tt = f"({a[0]:.2f}, {a[-1]:.2f}{unit})" if prec else f"({a[0]}, {a[-1]}{unit})" 
+
+        roi = spec.settings.eeprom.get_horizontal_roi()
+        if roi:
+            tt += ", cropped to ROI "
+            tt += f"({a[roi.start]:.2f}, {a[roi.end]:.2f}{unit})" if prec else f"({a[roi.start]}, {a[roi.end]}{unit})"
+
+        self.combo_axis.setToolTip(tt)
 
     ## 
     # This was originally used used by ThumbnailWidget, when clicking the "show 

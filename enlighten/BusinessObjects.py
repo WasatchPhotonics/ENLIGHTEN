@@ -28,7 +28,6 @@ from enlighten.device.LaserWatchdogFeature import LaserWatchdogFeature
 from enlighten.device.LaserTemperatureFeature import LaserTemperatureFeature
 from enlighten.device.AmbientTemperatureFeature import AmbientTemperatureFeature
 from enlighten.device.Multispec import Multispec
-from enlighten.device.RegionControlFeature import RegionControlFeature
 from enlighten.factory.DFUFeature import DFUFeature
 from enlighten.factory.FactoryStripChartFeature import FactoryStripChartFeature
 from enlighten.file_io.Configuration import Configuration
@@ -42,14 +41,15 @@ from enlighten.measurement.SaveOptions import SaveOptions
 from enlighten.network.BLEManager import BLEManager
 from enlighten.network.CloudManager import CloudManager
 from enlighten.post_processing.AbsorbanceFeature import AbsorbanceFeature
+from enlighten.post_processing.AutoRamanFeature import AutoRamanFeature
 from enlighten.post_processing.BaselineCorrection import BaselineCorrection
 from enlighten.post_processing.BoxcarFeature import BoxcarFeature
 from enlighten.post_processing.DarkFeature import DarkFeature
 from enlighten.post_processing.ElectricalDarkCorrectionFeature import ElectricalDarkCorrectionFeature
 from enlighten.post_processing.HorizROIFeature import HorizROIFeature
 from enlighten.post_processing.InterpolationFeature import InterpolationFeature
+from enlighten.post_processing.PixelCalibration import PixelCalibration
 from enlighten.post_processing.RamanIntensityCorrection import RamanIntensityCorrection
-from enlighten.post_processing.AutoRamanFeature import AutoRamanFeature
 from enlighten.post_processing.ReferenceFeature import ReferenceFeature
 from enlighten.post_processing.RichardsonLucy import RichardsonLucy
 from enlighten.post_processing.ScanAveragingFeature import ScanAveragingFeature
@@ -160,7 +160,6 @@ class BusinessObjects:
         ctl.raman_intensity_correction = None
         ctl.raman_shift_correction = None
         ctl.reference_feature = None
-        ctl.region_control = None
         ctl.resource_monitor = None
         ctl.richardson_lucy = None
         ctl.save_options = None
@@ -346,15 +345,6 @@ class BusinessObjects:
         self.header("instantiating GainDBFeature")
         ctl.gain_db_feature = GainDBFeature(ctl)
 
-        self.header("instantiating BLEManager")
-        ctl.ble_manager = BLEManager(
-            marquee                     = ctl.marquee,
-            ble_button                  = cfu.pushButton_bleScan,
-            controller_connect          = ctl.connect_new,
-            controller_disconnect       = ctl.disconnect_device,
-            progress_bar                = cfu.readingProgressBar,
-            multispec                   = ctl.multispec)
-
         self.header("instantiating AutoRamanFeature")
         ctl.auto_raman = AutoRamanFeature(ctl)
 
@@ -427,12 +417,6 @@ class BusinessObjects:
         self.header("instantiating HighGainModeFeature")
         ctl.high_gain_mode = HighGainModeFeature(ctl)
 
-        self.header("instantiating RegionControlFeature")
-        ctl.region_control = RegionControlFeature(
-            cb_enabled                  = cfu.checkBox_region_enabled,
-            multispec                   = ctl.multispec,
-            spinbox                     = cfu.spinBox_region)
-
         self.header("instantiating Sounds")
         ctl.sounds = Sounds(ctl)
 
@@ -447,6 +431,12 @@ class BusinessObjects:
 
         self.header("instantiating ReadingProgressBar")
         ctl.reading_progress_bar = ReadingProgressBar(ctl)
+
+        self.header("instantiating BLEManager")
+        ctl.ble_manager = BLEManager(ctl)
+
+        self.header("instantiating PixelCalibration")
+        ctl.pixel_calibration = PixelCalibration(ctl)
 
         self.header("done with Business Object creation")
 

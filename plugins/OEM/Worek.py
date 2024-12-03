@@ -4,7 +4,7 @@ import logging
 
 import time
 
-from EnlightenPlugin import *
+from EnlightenPlugin import EnlightenPluginBase
 
 log = logging.getLogger(__name__)
 
@@ -40,10 +40,6 @@ ChE_Blank_slope_label = "ChE Blank Slope"
 ChE_Sample_slope_label = "ChE Sample Slope"
 
 class Worek(EnlightenPluginBase):
-
-    def __init__(self, ctl):
-        super().__init__(ctl)
-        self.clear_graph()
 
     def start_recording(self):
         self.clear_graph()
@@ -86,79 +82,22 @@ class Worek(EnlightenPluginBase):
         return True
 
     def get_configuration(self):
+        self.name = "Worek"
+        self.is_blocking = False
+        self.has_other_graph = True
+        self.x_axis_label = "time (sec)"
 
-        fields = []
+        self.field(name="start new recording",     datatype="button", callback=self.start_recording)
+        self.field(name="stop recording",          datatype="button", callback=self.stop_recording)
+        self.field(name="ChE Activity Wavelength", datatype="float",  direction="input", minimum=0, maximum=10000, initial= 436)
+        self.field(name="Hb Content Wavelength",   datatype="float",  direction="input", minimum=0, maximum=10000, initial= 546)
+        self.field(name="blank start",             datatype="float",  direction="input", minimum=0, maximum=float("Inf"))
+        self.field(name="blank end",               datatype="float",  direction="input", minimum=0, maximum=float("Inf"))
+        self.field(name="sample start",            datatype="float",  direction="input", minimum=0, maximum=float("Inf"))
+        self.field(name="sample end",              datatype="float",  direction="input", minimum=0, maximum=float("Inf"))
+        self.field(name="Output Levels",           datatype="pandas", direction= "output")
 
-        # return a Pandas DataFrame for the GUI table
-        fields.append(EnlightenPluginField(
-            name        = "Output Levels", 
-            datatype    = "pandas", 
-            direction   = "output"))
-
-        fields.append(EnlightenPluginField(
-            name        = "start new recording", 
-            datatype    = "button", 
-            callback    = self.start_recording))
-
-        fields.append(EnlightenPluginField(
-            name        = "stop recording", 
-            datatype    = "button", 
-            callback    = self.stop_recording))
-
-        fields.append(EnlightenPluginField(
-            name        = "ChE Activity Wavelength", 
-            initial     = 436,
-            minimum     = 0,
-            maximum     = 10000,
-            datatype    = "float", 
-            direction   = "input"))
-        
-        fields.append(EnlightenPluginField(
-            name        = "Hb Content Wavelength", 
-            initial     = 546,
-            minimum     = 0,
-            maximum     = 10000,
-            datatype    = "float", 
-            direction   = "input"))
-
-        fields.append(EnlightenPluginField(
-            name        = "blank start", 
-            minimum     = 0,
-            maximum     = float("Inf"),
-            datatype    = "float", 
-            direction   = "input"))
-
-        fields.append(EnlightenPluginField(
-            name        = "blank end", 
-            minimum     = 0,
-            maximum     = float("Inf"),
-            datatype    = "float", 
-            direction   = "input"))
-
-        fields.append(EnlightenPluginField(
-            name        = "sample start", 
-            minimum     = 0,
-            maximum     = float("Inf"),
-            datatype    = "float", 
-            direction   = "input"))
-
-        fields.append(EnlightenPluginField(
-            name        = "sample end", 
-            minimum     = 0,
-            maximum     = float("Inf"),
-            datatype    = "float", 
-            direction   = "input"))
-
-        return EnlightenPluginConfiguration(
-            name             = "Worek", 
-            fields           = fields,
-            is_blocking      = False,
-            has_other_graph  = True,
-            series_names     = [ChE_label, Hb_label, ChE_Blank_slope_label, ChE_Sample_slope_label],
-            x_axis_label = "time (sec)")
-
-    def connect(self):
-        return super().connect()
+        self.clear_graph()
 
     def process_request(self, request):
         pr = request.processed_reading
@@ -175,15 +114,8 @@ class Worek(EnlightenPluginBase):
             self.ChEActivity.append(get_intensity_from_wavelength(ChE_wavelength, wl_arr, spectrum))
             self.HbContent.append(get_intensity_from_wavelength(Hb_wavelength, wl_arr, spectrum))
         
-        series = {}
-        series[ChE_label] = {
-            "x": np.array(self.sampleTimes),
-            "y": np.array(self.ChEActivity)
-        }       
-        series[Hb_label] = {
-            "x": np.array(self.sampleTimes),
-            "y": np.array(self.HbContent)
-        }
+        self.plot(title=ChE_label, x=np.array(self.sampleTimes), y=np.array(self.ChEActivity))
+        self.plot(title=Hb_label, x=np.array(self.sampleTimes), y=np.array(self.HbContent))
 
         blank_start = self.get_widget_from_name("blank start").value()
         blank_end = self.get_widget_from_name("blank end").value()
@@ -192,15 +124,8 @@ class Worek(EnlightenPluginBase):
 
         header = ["Sample (mE/min)", "Blank (mE/min)", "Hb (µmol/l Hb)", "Activity (µmol/l/min)", "AChE (mU/µmol Hb)" ]
         if self.graph_slope():
-            series[ChE_Blank_slope_label] = {
-                "x": np.array([blank_start, blank_end]),
-                "y": np.array([self.ChEActivityY1, self.ChEActivityY2])
-            }
-
-            series[ChE_Sample_slope_label] = {
-                "x": np.array([sample_start, sample_end]),
-                "y": np.array([self.ChEActivityY3, self.ChEActivityY4])
-            }
+            self.plot(title=ChE_Blank_slope_label, x=np.array([blank_start, blank_end]), y=np.array([self.ChEActivityY1, self.ChEActivityY2]))
+            self.plot(title=ChE_Sample_slope_label, x=np.array([sample_start, sample_end]), y=np.array([self.ChEActivityY3, self.ChEActivityY4]))
 
             sample = (self.ChEActivityY4 - self.ChEActivityY3) / (sample_end - sample_start) * 60 # convert mE/sec to mE/min
             blank = (self.ChEActivityY2 - self.ChEActivityY1) / (blank_end - blank_start) * 60 # convert mE/sec to mE/min
@@ -220,25 +145,9 @@ class Worek(EnlightenPluginBase):
             # - Hemoglobin concentration (applying formulas)
             # - Enzyme Activity (AChE, BChE)
             # - Erythrocyte AChE
-            dataframe = pd.DataFrame( 
-                [ sample, blank, HbC, Activity, AchE ],
-                index = header
-            )
+            dataframe = pd.DataFrame([ sample, blank, HbC, Activity, AchE ], index = header)
         else:
             # Show blank defaults if no slope is computed
-            dataframe = pd.DataFrame( 
-                [ "--", ] * len(header),
-                index = header
-            )
+            dataframe = pd.DataFrame([ "--", ] * len(header), index = header)
 
-        dataframe = dataframe.T
-
-        return EnlightenPluginResponse(request,
-            series = series,
-            outputs = {
-                # table (looks like a spreadsheet under the graph)
-                "Output Levels": dataframe,
-            })
-
-    def disconnect(self):
-        super().disconnect()
+        self.outputs["Output Levels"] = dataframe.T

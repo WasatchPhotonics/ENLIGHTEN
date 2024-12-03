@@ -1,56 +1,37 @@
 import numpy as np
 import logging
 
-from EnlightenPlugin import EnlightenPluginBase,    \
-                            EnlightenPluginField,    \
-                            EnlightenPluginResponse,  \
-                            EnlightenPluginConfiguration
+from EnlightenPlugin import EnlightenPluginBase
 
 log = logging.getLogger(__name__)
 
-##
-# A common operation is to characterize "detector noise" by taking 100 dark 
-# measurements, computing the standard deviation over time for each pixel, then 
-# taking the average for all pixels.
-#
-# This plugin simply generalizes that, allowing the user to pick their own number
-# of measurements (history buffer size).  Note that this doesn't enforce a 
-# requirement that the spectra must be "dark" (capped).
 class PixelNoise(EnlightenPluginBase):
+    """
+    A common operation is to characterize detector noise by taking 100 dark 
+    measurements, computing the standard deviation over time for each pixel, then 
+    taking the average for all pixels.
+    
+    This plugin simply generalizes that, allowing the user to pick their own number
+    of measurements (history buffer size).  Note that this doesn't enforce a 
+    requirement that the spectra must be "dark".
+    """
 
     def get_configuration(self):
-        fields = []
+        self.name = "Pixel Noise"
+        self.auto_enable = True
 
-        fields.append(EnlightenPluginField(name="History", direction="input", datatype="int", minimum=10, maximum=1000, initial=100,
-            tooltip="Number of spectra retained for noise computation"))
+        self.field(name="History", direction="input", datatype="int", minimum=10, maximum=1000, initial=100, tooltip="Number of spectra retained for noise computation")
+        self.field(name="Filled", datatype="int", initial=0, tooltip="Portion of potential history currently populated")
+        self.field(name="Mean", datatype="float", precision=2, tooltip="Average noise over all pixels over time")
+        self.field(name="Stdev", datatype="float", precision=2, tooltip="Standard deviation of noise over all pixels over time")
+        self.field(name="Min", datatype="float", precision=2, tooltip="Minimum noise of any pixel over time")
+        self.field(name="Max", datatype="float", precision=2, tooltip="Maximum noise of any pixel over time")
+        self.field(name="Clear", datatype="button", callback=self.reset, tooltip="Clear history")
 
-        fields.append(EnlightenPluginField(name="Filled", datatype="int", initial=0,
-            tooltip="Portion of potential history currently populated"))
-
-        fields.append(EnlightenPluginField(name="Mean", datatype="float", precision=2, 
-            tooltip="Average noise over all pixels over time"))
-
-        fields.append(EnlightenPluginField(name="Stdev", datatype="float", precision=2, 
-            tooltip="Standard deviation of noise over all pixels over time"))
-
-        fields.append(EnlightenPluginField(name="Min", datatype="float", precision=2, 
-            tooltip="Minimum noise of any pixel over time"))
-
-        fields.append(EnlightenPluginField(name="Max", datatype="float", precision=2, 
-            tooltip="Maximum noise of any pixel over time"))
-
-        fields.append(EnlightenPluginField(name="Clear", datatype="button", callback=self.reset,
-            tooltip="Clear history"))
-
-        return EnlightenPluginConfiguration(name="Pixel Noise", fields=fields)
-
-    def connect(self):
-        super().connect()
         self.reset()
-        return True
 
     def process_request(self, request):
-        spectrum = np.array(request.processed_reading.processed, dtype=np.float32)
+        spectrum = np.array(request.processed_reading.get_processed(), dtype=np.float32)
         history = request.fields["History"]
 
         if self.metrics is None:
@@ -58,16 +39,11 @@ class PixelNoise(EnlightenPluginBase):
         else:
             self.metrics.update(spectrum, history)
 
-        return EnlightenPluginResponse(request, outputs = {
-            "Mean"  : self.metrics.mean,
-            "Stdev" : self.metrics.stdev,
-            "Min"   : self.metrics.min,
-            "Max"   : self.metrics.max,
-            "Filled": self.metrics.height() 
-        })
-
-    def disconnect(self):
-        super().disconnect()
+        self.outputs = { "Mean"  : self.metrics.mean,
+                         "Stdev" : self.metrics.stdev,
+                         "Min"   : self.metrics.min,
+                         "Max"   : self.metrics.max,
+                         "Filled": self.metrics.height()}
 
     def reset(self):
         self.metrics = None
@@ -101,7 +77,7 @@ class Metrics:
         stdev = np.std(self.data, axis=0)
 
         self.mean   = np.mean(stdev)
-        self.stdev  = np.std (stdev) # stdev of the stdev
+        self.stdev  = np.std (stdev) # stdev of the stdevs
         self.min    = np.min (stdev)
         self.max    = np.max (stdev)
 

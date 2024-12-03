@@ -167,16 +167,15 @@ class LaserControlFeature:
                     self.configure_laser_power_controls_percent()
 
         # let them turn the laser on/off, nothing else (including watchdog)
-        for w in [ cfu.doubleSpinBox_excitation_nm,
-                   cfu.pushButton_laser_power_dn,
-                   cfu.pushButton_laser_power_up,
-                   cfu.verticalSlider_laser_power,
+        for w in [ cfu.checkBox_laser_watchdog,
+                   cfu.comboBox_laser_power_unit,
+                   cfu.comboBox_laser_tec_mode,
                    cfu.doubleSpinBox_excitation_nm,
                    cfu.doubleSpinBox_laser_power,
+                   cfu.pushButton_laser_power_dn,
+                   cfu.pushButton_laser_power_up,
                    cfu.spinBox_laser_watchdog_sec,
-                   cfu.checkBox_laser_watchdog,
-                   cfu.comboBox_laser_power_unit,
-                   cfu.comboBox_laser_tec_mode ]:
+                   cfu.verticalSlider_laser_power ]:
             w.setEnabled(not self.locked)
 
         self.refresh_laser_buttons()
@@ -334,11 +333,21 @@ class LaserControlFeature:
             self.configure_laser_power_controls_percent()
         self.ctl.form.ui.doubleSpinBox_laser_power.setValue(perc)
 
+    def update_laser_firing_indicators(self, flag):
+        self.refresh_laser_buttons(force_on=flag)
+        self.ctl.status_indicators.force_laser_on = flag
+
     # ##########################################################################
     # Private Methods
     # ##########################################################################
 
     def refresh_laser_buttons(self, force_on=False):
+        """ 
+        force_on means whether the button is red (indicate laser is enabled and 
+        firing) or grey (imply laser is not enabled and not firing). This doesn't
+        actually affect whether the button is clickable -- that is determined by
+        'allowed'.
+        """
         spec = self.ctl.multispec.current_spectrometer()
         cfu = self.ctl.form.ui
 
@@ -505,11 +514,15 @@ class LaserControlFeature:
         if spec is None:
             return
 
-        value = self.ctl.form.ui.doubleSpinBox_excitation_nm.value()
+        cfu = self.ctl.form.ui
+
+        value = cfu.doubleSpinBox_excitation_nm.value()
         log.debug("changing current spectrometer's excitation to %.2f", value)
 
-        spec.settings.eeprom.excitation_nm_float = value
-        self.ctl.eeprom_editor.widget_callback("excitation_nm_float", reset_from_eeprom=True)
+        spec.settings.eeprom.multi_wavelength_calibration.set("excitation_nm_float", value)
+
+        log.debug("calling Settings.update_wavecal")
+        spec.settings.update_wavecal()
 
     # gets called by BatteryFeature when a new battery reading is received
     def battery_callback(self, perc, charging):

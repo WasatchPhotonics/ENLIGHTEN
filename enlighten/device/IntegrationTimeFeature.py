@@ -132,7 +132,11 @@ class IntegrationTimeFeature:
 
         # persist integration time in .ini
         log.debug("integration time to config: %d", ms)
-        self.ctl.config.set(spec.settings.eeprom.serial_number, "integration_time_ms", ms)
+        if self.ctl.multispec.locked:
+            for foo in self.ctl.multispec.get_spectrometers():
+                self.ctl.config.set(foo.settings.eeprom.serial_number, "integration_time_ms", ms)
+        else:
+            self.ctl.config.set(spec.settings.eeprom.serial_number, "integration_time_ms", ms)
 
         # send changed integration time to hardware
         self.ctl.multispec.change_device_setting("integration_time_ms", ms)

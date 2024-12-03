@@ -15,13 +15,13 @@ class AxisConverter:
     def __init__(self, ctl):
         self.ctl = ctl
 
-        self.px_to_wavelen = lambda x, spec: wasatch_utils.pixel_to_wavelength(x, spec.settings.eeprom.wavelength_coeffs)
-        self.wavelen_to_wavenum = lambda x, spec: wasatch_utils.wavelength_to_wavenumber(x, spec.settings.eeprom.excitation_nm_float)
-        self.wavenum_to_wavelen = lambda x, spec: wasatch_utils.wavenumber_to_wavelength(spec.settings.eeprom.excitation_nm_float, x)
+        self.px_to_wavelen = lambda x, spec: wasatch_utils.pixel_to_wavelength(x, spec.settings.get_wavecal_coeffs())
+        self.wavelen_to_wavenum = lambda x, spec: wasatch_utils.wavelength_to_wavenumber(x, spec.settings.excitation())
+        self.wavenum_to_wavelen = lambda x, spec: wasatch_utils.wavenumber_to_wavelength(spec.settings.excitation(), x)
 
         # MZ: haven't thought through what this means:
         # "noticed you could walk the cursor for px_to_wavenum, think it's an off by 1 error due to the 2 searchsorted"
-        self.px_to_wavenum = lambda x, spec: wasatch_utils.wavelength_to_wavenumber(self.px_to_wavelen(x-1, spec), spec.settings.eeprom.excitation_nm_float)
+        self.px_to_wavenum = lambda x, spec: wasatch_utils.wavelength_to_wavenumber(self.px_to_wavelen(x-1, spec), spec.settings.excitation())
 
         self.conversions = {
             (common.Axes.PIXELS,      common.Axes.WAVELENGTHS): self.px_to_wavelen,

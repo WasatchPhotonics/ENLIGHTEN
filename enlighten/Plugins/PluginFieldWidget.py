@@ -45,7 +45,7 @@ class PluginFieldWidget(QtWidgets.QWidget):
         super().__init__()
         self.ctl = ctl
 
-        self.field_config = config
+        self.field_config = config # this is an EnlightenPluginField
         self.field_name   = config.name
         self.field_value  = config.initial
 
@@ -156,7 +156,7 @@ class PluginFieldWidget(QtWidgets.QWidget):
         selected_idx = 0
         for idx, choice in enumerate(choices):
             widget.addItem(choice)
-            if choice == self.field_config.initial:
+            if choice == self.field_value:
                 selected_idx = idx
 
         widget.setCurrentIndex(selected_idx)
