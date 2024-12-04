@@ -98,19 +98,67 @@ class CloudManager:
         """
 
         if not self.enabled():
+            self.ctl.marquee.error(f"enable cloud connectivity to download EEPROM for detector {detector_serial}")
             return {}
         if self.session is None or self.dynamo_resource is None:
             self.setup_connection()
         if self.session is None or detector_serial is None:
             return {}
 
-        log.debug(f"loading Andor EEPROM for detector {detector_serial}")
+        self.ctl.marquee.info(f"downloading EEPROM for detector {detector_serial}")
+
         andor_table = self.dynamo_resource.Table("andor_EEPROM")
         response = andor_table.get_item(Key={"detector_serial_number": detector_serial})
         eeprom_response = response["Item"]
         dict_response = dict(eeprom_response)
         util.normalize_decimal(dict_response)
         return dict_response
+
+    def download_andor_eeprom(self, device):
+        eeprom = device.settings.eeprom
+
+        # attempt to backfill missing EEPROM settings from cloud
+        # (allow overrides from local configuration file)
+        log.debug("attempting to download EEPROM")
+        andor_eeprom = self.get_andor_eeprom(eeprom.detector_serial_number)
+        if andor_eeprom:
+            log.debug(f"before defaults: andor_eeprom {andor_eeprom}")
+
+            def default_missing(local_name, empty_value=None, cloud_name=None):
+                if cloud_name is None:
+                    cloud_name = local_name
+                current_value = eeprom.multi_wavelength_calibration.get(local_name)
+                if current_value != empty_value:
+                    log.debug(f"keeping non-default {local_name} {current_value}")
+                else:
+                    if cloud_name in andor_eeprom:
+                        cloud_value = andor_eeprom[cloud_name]
+                        log.info(f"using cloud-recommended default of {local_name} {cloud_value}")
+                        eeprom.multi_wavelength_calibration.set(local_name, cloud_value)
+
+            default_missing("excitation_nm_float", 0)
+            default_missing("wavelength_coeffs",  [0, 1, 0, 0, 0])
+            default_missing("model", None, "wp_model")
+            default_missing("detector", "iDus")
+            default_missing("serial_number", eeprom.detector_serial_number, "wp_serial_number")
+            default_missing("raman_intensity_coeffs", [])
+            default_missing("invert_x_axis", False)
+            default_missing("roi_horizontal_start", 0)
+            default_missing("roi_horizontal_end", 0)
+            default_missing("roi_vertical_region_1_start", 0)
+            default_missing("roi_vertical_region_1_end", 0)
+
+            eeprom.stubbed = False
+
+            eeprom.raman_intensity_calibration_order = len(eeprom.raman_intensity_coeffs) - 1
+            log.debug(f"after defaults: andor_eeprom {andor_eeprom}")
+
+            log.debug(f"calling save_config with: {eeprom}")
+            device.change_setting("save_config", eeprom)
+
+            self.ctl.marquee.info(f"successfully downloaded EEPROM for {eeprom.serial_number}")
+        else:
+            log.error(f"Could not load Andor EEPROM for {eeprom.detector_serial_number}")
 
     def restore_callback(self):
         if not self.enabled():

@@ -140,7 +140,7 @@ then
         echo "Wasatch.PY $WASATCH_PY_VERSION found in PyPi"
     else
         echo "Wasatch.PY $WASATCH_PY_VERSION not found in PyPi"
-        exit 1
+        $IS_BETA || exit 1
     fi
 else
     echo "Apparently using Wasatch.PY from PyPi"

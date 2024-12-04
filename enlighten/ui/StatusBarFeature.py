@@ -151,7 +151,10 @@ class StatusBarFeature:
             self.set("Mean", f"{np.average(spectrum):.2f}")
 
             x_axis = self.ctl.generate_x_axis(cropped=pr.is_cropped())
-            if len(spectrum) != len(x_axis):
+            if x_axis is None:
+                # encountered when debugging XL cloud comms
+                log.error(f"process_reading: can't compute area w/o x_axis") 
+            elif len(spectrum) != len(x_axis):
                 # can happen when EEPROM is in bad state, or we've set a DetectorROI etc
                 log.error(f"process_reading: can't compute area (spectrum {len(spectrum)} != x_axis {len(x_axis)})")
             else:

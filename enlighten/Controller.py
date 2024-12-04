@@ -711,48 +711,14 @@ class Controller:
         # initialize from cloud
         ########################################################################
 
-        # @todo: this should all be encapsulated under network or CloudManager
         if device.is_andor:
-            # Note that currently we're doing this BEFORE determining if it's a 
-            # hotplug; ideally, we should only need to connect to the Cloud
-            # on hotplug.  
-
-            # attempt to backfill missing EEPROM settings from cloud
-            # (allow overrides from local configuration file)
-            log.debug("attempting to download Andor EEPROM")
-            andor_eeprom = self.cloud_manager.get_andor_eeprom(device.settings.eeprom.detector_serial_number)
-            if andor_eeprom:
-                log.debug(f"andor_eeprom = {andor_eeprom}")
-
-                def default_missing(local_name, empty_value=None, cloud_name=None):
-                    if cloud_name is None:
-                        cloud_name = local_name
-                    current_value = getattr(device.settings.eeprom, local_name) 
-                    if current_value != empty_value:
-                        log.debug(f"keeping non-default {local_name} {current_value}")
-                    else:
-                        if cloud_name in andor_eeprom:
-                            cloud_value = andor_eeprom[cloud_name]
-                            log.info(f"using cloud-recommended default of {local_name} {cloud_value}")
-                            setattr(device.settings.eeprom, local_name, cloud_value)
-
-                # does not support MultiWavelengthCalibration
-                default_missing("excitation_nm_float", 0)
-                default_missing("wavelength_coeffs",  [0, 1, 0, 0])
-                default_missing("model", None, "wp_model")
-                default_missing("detector", "iDus")
-                default_missing("serial_number", device.settings.eeprom.detector_serial_number, "wp_serial_number")
-                default_missing("raman_intensity_coeffs", [])
-                default_missing("invert_x_axis", False)
-
-                # device.settings.eeprom is a Wasatch.PY EEPROM() object
-                device.settings.eeprom.raman_intensity_calibration_order = len(device.settings.eeprom.raman_intensity_coeffs) - 1
-
-                log.debug(f"calling save_config with: {device.settings.eeprom}")
-                device.change_setting("save_config", device.settings.eeprom)
+            if device.settings.eeprom.stubbed:
+                log.debug("Andor EEPROM is stubbed, so attempting cloud download")
+                self.cloud_manager.download_andor_eeprom(device)
             else:
-                log.error(f"Could not load Andor EEPROM for {device.settings.eeprom.detector_serial_number}")
+                log.debug("Andor EEPROM not stubbed, so sticking with cached file")
 
+            # only Andor units have a (readable) detector serial number
             cfu.label_detector_serial_number.setText(device.settings.eeprom.detector_serial_number)
         else:
             cfu.label_detector_serial_number.setText("")

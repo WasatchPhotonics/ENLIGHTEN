@@ -104,7 +104,7 @@ class Spectrometer:
 
         # prefer EEPROM for FWHM, or lookup from model
         avg = self.settings.eeprom.multi_wavelength_calibration.get("avg_resolution")
-        if avg > 0:
+        if avg is not None and avg > 0:
             self.fwhm = avg
             log.debug(f"using FWHM from EEPROM: {self.fwhm:.2f}")
         else:

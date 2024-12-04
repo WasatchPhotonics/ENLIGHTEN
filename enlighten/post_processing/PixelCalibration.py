@@ -88,7 +88,10 @@ class PixelCalibration:
                 else:
                     raise ValueError("invalid calibration: no method")
             else:
-                raise ValueError(f"no PixelCalibration in {pathname}")
+                # this could happen, for instance, if an Andor CCD-xxxxx.json 
+                # file were loaded
+                log.debug(f"no PixelCalibration in {pathname}")
+                return
         except:
             log.error(f"failed to parse calibration from {pathname}", exc_info=1)
             self.enable_func = None
