@@ -363,13 +363,15 @@ class SaveOptions():
     def force_wavenumber(self):
         self.cb_wavenumber.setChecked(True)
 
-    ## Show the directory dialog selection, set the default save location
-    #  to the selected directory.
     def update_location(self):
+        """ 
+        Show the directory dialog selection, set the default save location to the 
+        selected directory.
+        """
         directory = self.ctl.file_manager.get_directory()
         if directory is None or 0 == len(directory):
-            log.debug("update_location: cancelled")
-            return
+            directory = self.ctl.config.get("SaveOptions", "save_location", default=common.get_default_data_dir())
+            log.debug(f"update_location: cancelled, reverting to {directory}")
         elif not os.path.isdir(directory):
             log.debug(f"update_location: not a directory: {directory}")
             return

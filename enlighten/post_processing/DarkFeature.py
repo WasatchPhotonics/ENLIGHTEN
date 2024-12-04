@@ -230,16 +230,28 @@ class DarkFeature:
         would provide better support for "Export" files, where the Measurement we want
         actually is buried within a larger set.
         """
-        m = self.ctl.measurement_factory.load_interpolated(self.settings())
+
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None or spec.app_state is None:
+            return
+
+        # use load_interpolated so that, regardless of the wavecal, pixel count 
+        # etc of the spectrometer which generated / saved the historical spectrum, 
+        # it will be interpolated at load to match the current spectrometer, such 
+        # that we can use its components with this device.
+        #
+        # A consequence of this design is that, even when loading a dark that was
+        # just saved, from the exact same spectrometer, interpolation will add 
+        # tiny deltas between the saved "original" dark and the loaded "interpolated" 
+        # dark. This is because interpolation is based on the wavelength listed in
+        # the saved measurement, and we normally only save those with 2-digit 
+        # precision. 
+        m = self.ctl.measurement_factory.load_interpolated(spec.settings)
         if m is None:
             return
 
         pr = m.processed_reading
         if pr.dark is None or len(pr.dark) == 0:
-            return
-
-        spec = self.ctl.multispec.current_spectrometer()
-        if spec is None or spec.app_state is None:
             return
 
         spec.app_state.dark = np.copy(pr.dark)
