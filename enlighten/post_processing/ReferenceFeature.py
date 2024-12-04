@@ -200,6 +200,7 @@ class ReferenceFeature:
 
         pr = m.processed_reading
         if pr.reference is None or len(pr.reference) == 0: 
+            self.ctl.marquee.error("loaded measurement does not have a reference spectrum")
             return
 
         spec.app_state.reference = np.copy(pr.reference)

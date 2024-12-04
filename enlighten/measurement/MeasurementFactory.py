@@ -435,6 +435,9 @@ class MeasurementFactory:
         # Interpolate the loaded spectrum component, because the Measurement we 
         # just loaded may have a different number of pixels than our current 
         # spectrometer, or may have been taken with a different wavecal.
+        #
+        # @todo consider comparing m.settings against settings and deciding if 
+        # interpolation is necessary / advisable
         m.interpolate(settings)
         return m
 

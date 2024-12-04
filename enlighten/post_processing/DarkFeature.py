@@ -252,6 +252,7 @@ class DarkFeature:
 
         pr = m.processed_reading
         if pr.dark is None or len(pr.dark) == 0:
+            self.ctl.marquee.error("loaded measurement does not have a dark spectrum")
             return
 
         spec.app_state.dark = np.copy(pr.dark)
