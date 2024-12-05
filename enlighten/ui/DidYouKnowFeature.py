@@ -222,30 +222,33 @@ class DidYouKnowFeature:
                 ROI be enabled. This is because NIST SRM standards are only certified
                 within a given spectral range, and it would be invalid to extrapolate
                 the correction factors outside the configured ROI.</p>""")
-        tip("Auto-Raman", "auto_raman", """
-             <p>Auto-Raman is a new feature supporting one-click Raman measurements.
-                You can only enable it when in Raman mode, when the VCR controls are "paused."</p>
-             <p>When Auto-Raman is enabled, pressing either the "Step" or "Step-and-Save" buttons
-                on the VCR panel will take exactly one averaged, dark-corrected Raman measurement.
-                If "Step" is clicked, the new measurement will simply be updated on the graph. If
-                "Step-and-Save" is clicked, the new measurement will automatically be saved to disk
-                and the Clipboard as well.</p>
-             <p><span style="color: #f84f21; font-weight: bold">It is vitally important to understand</span> 
-                that when Auto-Raman is enabled, clicking one of these buttons 
-                <span style="color: #f84f21; font-weight: bold">will automatically fire the laser</span>.</p>
+        tip("Auto-Raman", "auto_raman_tricolor", """
+             <p>Auto-Raman allows automated collection of optimized, averaged, dark-collected 
+                Raman measurements with a single click.</p>
              <p>When taking an automatic Raman measurement, ENLIGHTEN will do the following:</p>
              <ol>
-                <li>Disable the laser (if it was already on).</li>
-                <li>Take an averaged dark measurement. This will use whatever "scan averaging"
-                    was already configured. The new dark will be stored in ENLIGHTEN, and 
-                    overwrite any previous dark.</li>
-                <li><span style="color: #f84f21; font-weight: bold">Fire the laser.</span></li>
-                <li>Wait for a preconfigured "warm-up delay" to allow the laser to stabilize.</li>
-                <li>Take an averaged Raman sample measurement.</li>
-                <li><span style="color: #f84f21; font-weight: bold">Disable the laser.</span></li>
-                <li>Perform dark correction (subtract dark from sample).</li>
-                <li>Display and optionally save the new measurement.</li>
-             </ol>""")
+                <li><b>Enable the laser</b>, then allow the laser to stabilize.</li>
+                <li><b>Optimize acquisition parameters</b> to achieve a configured "target counts"
+                    in signal. This is done by first tuning integration time as "coarse adjustment,"
+                    then fine-tuning analog gain as "fine adjustment" (on XS spectrometers).</li>
+                <li><b>Optimize scan averaging</b> using the selected integration time and configured 
+                    "maximum measurement time."</li>
+                <li><b>Collect averaged Raman sample</b> measurements using the computed scan averaging.</li>
+                <li><b>Disable the laser,</b> including a throwaway integration to allow the detector to stabilize.</li>
+                <li><b>Collect averaged dark</b> measurement, using the same averaging and acquisition parameters.</li>
+                <li><b>Perform dark-correction</b> using the averaged sample and dark measurements.</li>
+                <li><b>Save</b> the new averaged, dark-corrected measurement to disk and the ENLIGHTEN Clipboard.</li>
+                <li><b>Pause display</b> until "Play" is pressed to resume free-running spectra.</li>
+             </ol>
+             <p>Note that Auto-Raman measurements will automatically enable the laser
+                during operation. While the measurement is being collected, the standard laser
+                on/off buttons will be disabled, as the laser is being controlled by the Auto-Raman
+                algorithm. If at any point you need to halt an Auto-Raman measurement, you can
+                do so by clicking the "Stop" button on the VCR-style controls.</p>
+             <p>Auto-Raman mode has a number of different options controlling its algorithm,
+                configurable in Expert mode (ctrl-X). Those include the ability to configure
+                automatic saving, and whether the optimized acquisition parameters and averaged
+                dark are then "retained" for use by the ongoing ENLIGHTEN session.</p>""")
         tip("JSON Output", "json", """
              <p>ENLIGHTEN's CSV file formats are specifically designed for convenience in Excel
                 and other spreadsheets. As such they are regrettably not terribly convenient for 
@@ -306,6 +309,10 @@ class DidYouKnowFeature:
                 size, see how close it is to filling, and empty it at any time.  Plus you can always 
                 open up the source code in <tt>EnlightenSpectra/plugins/Analysis/StatsBuffer.py</tt> 
                 to see how easy it is to write your own!</p>""")
+        tip("Ctrl-Up/Down Arrows", None, """
+             <p>You probably know you can change numeric values with the up/down arrow keys when
+                you've selected a numeric field. You can also use Ctrl-Up/Down to change the values
+                in larger jumps!</p>""")
         
         # collated
         # Edit ROI (lock axes)
@@ -334,7 +341,7 @@ class DidYouKnowFeature:
             <h3>EEPROM</h3>
 
             <li>active_pixels_horizontal <li>active_pixels_vertical    <li>avg_resolution
-            <li>bin_2x2                  <li>cutoff_filter_installed   <li>detector
+            <li>horiz_binning_enabled    <li>cutoff_filter_installed   <li>detector
             <li>detector_gain            <li>detector_offset           <li>excitation_nm_float
             <li>has_battery              <li>has_cooling               <li>has_laser
             <li>laser_warmup_sec         <li>max_laser_power_mW        <li>min_integration_time_ms

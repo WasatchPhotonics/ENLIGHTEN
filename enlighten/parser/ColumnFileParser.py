@@ -73,7 +73,7 @@ class ColumnFileParser:
                 setattr(m, k.lower(), self.metadata[k])
 
         # this parser only loads a single measurement, so the file is renamable
-        m.add_renamable(self.pathname)
+        m.add_pathname(self.pathname)
 
         return m
 
@@ -270,6 +270,11 @@ class ColumnFileParser:
             eeprom.wavelength_coeffs = coeffs
 
             # this will also render wavenumbers if possible
+            #
+            # Note that we're not calling Controller.update_wavecal, because we 
+            # don't want to change the "current" spectrometer or ENLIGHTEN's 
+            # settings -- this is just for the single file we just loaded.
+            log.debug("calling Settings.update_wavecal")
             self.settings.update_wavecal()
             log.debug("regenerated %d wavelengths (%.2f, %.2f) from coeffs", 
                 len(self.settings.wavelengths), self.settings.wavelengths[0], self.settings.wavelengths[-1])

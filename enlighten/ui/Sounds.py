@@ -74,7 +74,6 @@ class Sounds:
     def get(self, name):
         if name in self.sounds:
             return self.sounds[name]
-        return None
 
     def stop(self):
         if not self.is_enabled():

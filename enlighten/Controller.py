@@ -87,6 +87,7 @@ class Controller:
                 log_queue,
                 log_level         = "INFO",
                 max_memory_growth = 0,
+                max_thumbnails    = 500,
                 run_sec           = 0,
                 serial_number     = None,
                 stylesheet_path   = None,
@@ -95,7 +96,8 @@ class Controller:
                 splash            = None,
                 window_state      = None,
                 start_batch       = False,
-                plugin            = None
+                plugin            = None,
+                password          = None
             ):
         """
         All of the parameters are normally set via command-line arguments
@@ -106,6 +108,7 @@ class Controller:
         self.log_queue              = log_queue # currently needed for KnowItAll.Wrapper
         self.log_level              = log_level # passed to LoggingFeature and WasatchDeviceWrapper/Worker
         self.max_memory_growth      = max_memory_growth
+        self.max_thumbnails         = max_thumbnails
         self.run_sec                = run_sec
         self.dialog_open            = False
         self.serial_number_desired  = serial_number
@@ -114,6 +117,7 @@ class Controller:
         self.window_state           = window_state
         self.start_batch            = start_batch
         self.plugin                 = plugin 
+        self.password               = password
         self.spec_timeout           = 30
         self.splash                 = splash
         self.form                   = form
@@ -136,9 +140,9 @@ class Controller:
         log.info("Python version %s",        util.python_version())
         log.info(f"Operating system {sys.platform} {struct.calcsize('P')*8 } bit")
         if common.use_pyside2():
-            log.info("PySide version %s",        PySide2.__version__)
+            log.info("PySide version %s",    PySide2.__version__)
         else:
-            log.info("PySide version %s",        PySide6.__version__)
+            log.info("PySide version %s",    PySide6.__version__)
         log.info("PySide QtCore version %s", QtCore.__version__)
         log.info("QtCore version %s",        QtCore.qVersion())
 
@@ -238,6 +242,7 @@ class Controller:
         common.set_controller_instance(self)
 
         self.did_you_know.show()
+        self.configure_control_palette()
 
     def disconnect_device(self, spec=None, closing=False):
         if spec in self.other_devices:
@@ -250,7 +255,7 @@ class Controller:
 
         device_id = spec.device_id
         if spec.device.is_ble:
-            self.form.ui.readingProgressBar.setValue(0)
+            self.reading_progress_bar.hide()
         self.marquee.info("disconnecting %s" % spec.label)
         self.multispec.set_disconnecting(device_id, True)
 
@@ -465,7 +470,7 @@ class Controller:
         
         @param other_device: can be a BLEDevice from BLEManager
         """
-        # do we see any spectrometers on the bus?  (WasatchBus will pre-filter to
+        # do we see any spectrometers on the bus? (WasatchBus will pre-filter to
         # only valid spectrometer devices)
         if other_device is not None and other_device not in self.other_devices:
             self.other_devices.append(other_device)
@@ -597,9 +602,6 @@ class Controller:
 
                     # remove the "in-process" flag, as it's now in the "connected" list
                     # and fully initialized
-                    if device.is_ble:
-                        self.form.ui.readingProgressBar.show()
-
                     self.initialize_new_device(device)
 
                     self.multispec.remove_in_process(device_id)
@@ -643,6 +645,7 @@ class Controller:
         """
         for feature in [ self.accessory_control,
                          self.horiz_roi,
+                         self.graph,
                          self.laser_control,
                          self.laser_temperature,
                          self.laser_watchdog,
@@ -653,6 +656,7 @@ class Controller:
                          self.baseline_correction,
                          self.status_bar,
                          self.edc,
+                         self.pixel_calibration,
                          self.kia_feature ]:
             feature.update_visibility()
 
@@ -707,47 +711,14 @@ class Controller:
         # initialize from cloud
         ########################################################################
 
-        # @todo: this should all be encapsulated under network or CloudManager
         if device.is_andor:
-            # Note that currently we're doing this BEFORE determining if it's a 
-            # hotplug; ideally, we should only need to connect to the Cloud
-            # on hotplug.  
-
-            # attempt to backfill missing EEPROM settings from cloud
-            # (allow overrides from local configuration file)
-            log.debug("attempting to download Andor EEPROM")
-            andor_eeprom = self.cloud_manager.get_andor_eeprom(device.settings.eeprom.detector_serial_number)
-            if andor_eeprom:
-                log.debug(f"andor_eeprom = {andor_eeprom}")
-
-                def default_missing(local_name, empty_value=None, cloud_name=None):
-                    if cloud_name is None:
-                        cloud_name = local_name
-                    current_value = getattr(device.settings.eeprom, local_name) 
-                    if current_value != empty_value:
-                        log.debug(f"keeping non-default {local_name} {current_value}")
-                    else:
-                        if cloud_name in andor_eeprom:
-                            cloud_value = andor_eeprom[cloud_name]
-                            log.info(f"using cloud-recommended default of {local_name} {cloud_value}")
-                            setattr(device.settings.eeprom, local_name, cloud_value)
-
-                default_missing("excitation_nm_float", 0)
-                default_missing("wavelength_coeffs",  [0, 1, 0, 0])
-                default_missing("model", None, "wp_model")
-                default_missing("detector", "iDus")
-                default_missing("serial_number", device.settings.eeprom.detector_serial_number, "wp_serial_number")
-                default_missing("raman_intensity_coeffs", [])
-                default_missing("invert_x_axis", False)
-
-                # device.settings.eeprom is a Wasatch.PY EEPROM() object
-                device.settings.eeprom.raman_intensity_calibration_order = len(device.settings.eeprom.raman_intensity_coeffs) - 1
-
-                log.debug(f"calling save_config with: {device.settings.eeprom}")
-                device.change_setting("save_config", device.settings.eeprom)
+            if device.settings.eeprom.stubbed:
+                log.debug("Andor EEPROM is stubbed, so attempting cloud download")
+                self.cloud_manager.download_andor_eeprom(device)
             else:
-                log.error(f"Could not load Andor EEPROM for {device.settings.eeprom.detector_serial_number}")
+                log.debug("Andor EEPROM not stubbed, so sticking with cached file")
 
+            # only Andor units have a (readable) detector serial number
             cfu.label_detector_serial_number.setText(device.settings.eeprom.detector_serial_number)
         else:
             cfu.label_detector_serial_number.setText("")
@@ -811,6 +782,7 @@ class Controller:
         cfu.label_microcontroller_firmware_version.setText(spec.settings.microcontroller_firmware_version)
         cfu.label_fpga_firmware_version.setText(spec.settings.fpga_firmware_version)
         cfu.label_microcontroller_serial_number.setText(spec.settings.microcontroller_serial_number)
+        cfu.label_ble_firmware_version.setText(spec.settings.ble_firmware_version)
 
         ########################################################################
         # update EEPROM Editor
@@ -886,7 +858,7 @@ class Controller:
         # finish initializing the GUI
         ########################################################################
 
-        # re-hide hidden curves
+        # update features whose visibility/appearance is affected by current spectrometer
         self.update_feature_visibility()
 
         # weight new curve
@@ -1074,6 +1046,8 @@ class Controller:
         associated Business Objects (e.g. Ctrl-D within DarkFeature). However,
         it seems helpful to have all of these consolidated in one place to 
         ensure uniqueness.
+
+        Note the "Help" for this feature is currently in ui.HelpFeature.
         """
 
         self.shortcuts = {}
@@ -1093,12 +1067,14 @@ class Controller:
         make_shortcut("Ctrl+3", self.page_nav.set_view_hardware)
         make_shortcut("Ctrl+4", self.page_nav.set_view_logging)
         make_shortcut("Ctrl+5", self.page_nav.set_view_factory)
+        make_shortcut("Ctrl+`", self.page_nav.next_view)
 
         # Convenience
         make_shortcut("Ctrl+A", self.authentication.login) # authenticate, advanced
         make_shortcut("Ctrl+C", self.graph.copy_to_clipboard_callback)
         make_shortcut("Ctrl+D", self.dark_feature.toggle)
         make_shortcut("Ctrl+E", self.measurements.rename_last_measurement)
+        make_shortcut("Ctrl+F", self.graph.toggle_lock_axes)
         make_shortcut("Ctrl+G", self.gain_db_feature.set_focus)
         make_shortcut("Ctrl+H", self.page_nav.toggle_hardware_and_scope)
         make_shortcut("Ctrl+L", self.laser_control.toggle_laser)
@@ -1107,6 +1083,10 @@ class Controller:
         make_shortcut("Ctrl+R", self.reference_feature.toggle)
         make_shortcut("Ctrl+S", self.vcr_controls.save)
         make_shortcut("Ctrl+T", self.integration_time_feature.set_focus)
+        make_shortcut("Ctrl+X", self.page_nav.toggle_expert)
+        make_shortcut("Ctrl+*", self.auto_raman.measure_callback)
+        make_shortcut("Ctrl+,", self.multispec.select_prev_spectrometer)
+        make_shortcut("Ctrl+.", self.multispec.select_next_spectrometer)
 
         # Cursor
         make_shortcut(QtGui.QKeySequence.MoveToPreviousWord, self.cursor.dn_callback) # ctrl-left
@@ -1119,7 +1099,7 @@ class Controller:
     # save spectra
     # ##########################################################################
 
-    def save_current_spectra(self): # MZ: called by VCRControls.save?
+    def save_current_spectra(self, label=None): # MZ: called by VCRControls.save?
         """
         This is a GUI method (used as a callback) to generate one Measurement from
         the most-recent ProcessedReading of EACH connected spectrometer.
@@ -1131,9 +1111,9 @@ class Controller:
 
         if self.save_options.save_all_spectrometers():
             for spec in self.multispec.get_spectrometers():
-                self.measurements.create_from_spectrometer(spec=spec)
+                self.measurements.create_from_spectrometer(spec=spec, label=label)
         else:
-            self.measurements.create_from_spectrometer(spec=self.current_spectrometer())
+            self.measurements.create_from_spectrometer(spec=self.current_spectrometer(), label=label)
 
     # ##########################################################################
     # miscellaneous callbacks
@@ -1289,6 +1269,7 @@ class Controller:
                     msg = spec.device.acquire_status_message()
                     if msg is None:
                         break
+
                     self.process_status_message(msg)
                 except:
                     log.debug("Error reading or processing StatusMessage on %s", spec.device_id, exc_info=1)
@@ -1333,7 +1314,7 @@ class Controller:
 
     def attempt_reading(self, spec) -> None:
         """
-        Attempt to acquire a reading from the subprocess response queue,
+        Attempt to acquire a reading from the thread response queue,
         process and render data in the GUI.
         """
         cfu = self.form.ui
@@ -1417,7 +1398,8 @@ class Controller:
                 log.debug(f"TakeOneRequest missing: ignoring Reading without {spec.app_state.take_one_request}")
                 return
         else:
-            log.debug("not looking for any particular reading")
+            # log.debug("not looking for any particular reading")
+            pass
 
         if reading.failure is not None:
             # WasatchDeviceWrapper currently turns these into upstream poison-pills,
@@ -1439,12 +1421,10 @@ class Controller:
         spec.app_state.spec_timeout_prompt_shown = False
         spec.app_state.received_reading_at_current_integration_time = True
 
-        if spec.device.is_ble and acquired_reading.progress != 1:
-            cfu.readingProgressBar.setValue(acquired_reading.progress*100)
-            # got an incomplete ble reading so stop proceeding for now
-            return
-        elif spec.device.is_ble:
-            cfu.readingProgressBar.setValue(100)
+        if spec.device.is_ble:
+            self.reading_progress_bar.set(acquired_reading.progress)
+            if acquired_reading.progress < 100:
+                return
 
         # @todo need to update DetectorRegions so this will pass (use total_pixels)
 
@@ -1465,10 +1445,22 @@ class Controller:
         # application state, such that "normal" dark subtraction will occur within
         # ENLIGHTEN.
         if reading.dark is not None:
-            log.debug("attempt_reading: setting dark from Reading: %s", reading.dark)
-            self.dark_feature.store(dark=reading.dark)
 
-        # Scope Capture
+            # DO NOT blindly store dark if this was an Auto-Raman measurement;
+            # leave that to AutoRamanFeature.process_reading to determine. Note
+            # that while we do pass the Reading to AutoRamanFeature here, the
+            # Feature doesn't yet save the measurement, even if auto-save is 
+            # enabled, because (for instance) dark correction has not yet been
+            # applied; that is done automatically at the end of 
+            # Controller.process_reading by TakeOneFeature.
+            if reading.take_one_request is not None and reading.take_one_request.auto_raman_request:
+                self.auto_raman.process_reading(reading)
+            else:
+                log.debug("attempt_reading: setting dark from Reading: %s", reading.dark)
+                self.dark_feature.store(dark=reading.dark)
+
+        # Scope Capture -- note that this is where dark correction will be applied
+        log.debug("attempt_reading: passing new Reading to update_scope_graphs")
         self.update_scope_graphs(reading)
 
         # Area Scan
@@ -1480,6 +1472,8 @@ class Controller:
             # update laser status 
             if spec.settings.is_xs():
                 self.laser_control.process_reading(reading)
+
+        log.debug("attempt_reading: done")
 
     def acquire_reading(self, spec: Spectrometer) -> AcquiredReading:
         """
@@ -1519,8 +1513,7 @@ class Controller:
                 # We received an error from the device.  Don't do anything about it immediately;
                 # don't disconnect for instance.  It may or may not be a poison-pill...we're not
                 # even checking yet, because we want to let the user decide what to do.
-                log.debug("acquire_reading: prompting user to disposition error")
-                log.debug(f"response from spec was {spectrometer_response}")
+                log.error(f"response from spec was {spectrometer_response}")
 
                 self.seen_errors[spec][spectrometer_response.error_msg] += 1
                 error_count = self.seen_errors[spec][spectrometer_response.error_msg]
@@ -1529,6 +1522,7 @@ class Controller:
                     log.debug(f"temporarily ignoring brief glitch (seen_errors {error_count} <= {self.SPEC_ERROR_MAX_RETRY})")
                     return
 
+                log.debug("acquire_reading: prompting user to disposition error")
                 stay_connected = self.display_response_error(spec, spectrometer_response.error_msg)
                 log.debug(f"dialog disposition: stay_connected {stay_connected}")
 
@@ -1597,7 +1591,7 @@ class Controller:
     def process_status_message(self, msg):
         """
         Used to handle StatusMessage objects received from spectrometer
-        subprocesses (as opposed to the Readings we normally receive).
+        threads (as opposed to the Readings we normally receive).
         
         These are not common in the current architecture.  These were used
         initially to provide progress updates to the GUI when loading long series
@@ -1619,6 +1613,12 @@ class Controller:
 
         elif msg.setting == "marquee_error":
             self.marquee.error(msg.value) 
+
+        elif msg.setting == "progress_bar": 
+            self.reading_progress_bar.set(msg.value)
+
+        elif msg.setting == "laser_firing_indicators": 
+            self.laser_control.update_laser_firing_indicators(msg.value)
 
         else:
             log.debug("unsupported StatusMessage: %s", msg.setting)
@@ -1681,8 +1681,6 @@ class Controller:
             log.error("can't reprocess missing raw")
             return
         settings = measurement.settings
-        log.debug("reprocessing: settings.wavelength_coeffs: %s", str(settings.eeprom.wavelength_coeffs))
-        log.debug("reprocessing: settings.wavelengths: %s", str(settings.wavelengths))
 
         # create a fake Reading and push it back through with temporary
         # app_state overrides
@@ -1734,6 +1732,8 @@ class Controller:
         - post-process
         - apply business logic
         """
+
+        log.debug("process_reading: start")
 
         if settings is None:
             # we are NOT reprocessing
@@ -1791,8 +1791,13 @@ class Controller:
         # Dark Correction
         ########################################################################
 
-        if app_state is not None:
-            pr.correct_dark(spec.app_state.dark if dark is None else dark)
+        best_dark = dark                # use explicitly passed dark if given
+        if best_dark is None:
+            best_dark = reading.dark    # otherwise, what comes with Reading
+        if best_dark is None and app_state is not None:
+            best_dark = app_state.dark  # otherwise, what has been stored
+
+        pr.correct_dark(best_dark)
 
         ########################################################################
         # Cropping
@@ -1801,7 +1806,6 @@ class Controller:
         # This should be done before any processing that involves multiple
         # pixels, e.g. offset, boxcar, baseline correction, or Richardson-Lucy.
         # It should be done BEFORE interpolation.
-        log.debug("process_reading: calling horiz_roi.process")
         self.horiz_roi.process(pr)
 
         ########################################################################
@@ -1939,7 +1943,7 @@ class Controller:
         ########################################################################
 
         if selected and self.page_nav.doing_raman():
-            log.debug("process_reading: sending KIA request (reprocessing = %s)", reprocessing)
+            # log.debug("process_reading: sending KIA request (reprocessing = %s)", reprocessing)
             self.kia_feature.process(pr, settings)
 
         ########################################################################
@@ -1958,7 +1962,7 @@ class Controller:
             app_state.processed_reading = pr
 
         # were we only taking one measurement?
-        log.debug("calling TakeOneFeature.process")
+        # log.debug("calling TakeOneFeature.process")
         self.take_one.process(pr)
 
         # update on-screen ASTM peaks
@@ -2019,11 +2023,10 @@ class Controller:
     def get_last_processed_reading(self):
         spec = self.current_spectrometer()
         if not spec:
-            return None
+            return
 
         if spec.app_state and spec.app_state.processed_reading:
             return spec.app_state.processed_reading
-        return None
 
     # ##########################################################################
     #                                                                          #
@@ -2195,10 +2198,10 @@ class Controller:
         passed; then recompute wavelengths and wavenumbers no matter what, and 
         sync excitations.
         """
+
         cfu = self.form.ui
         spec = self.current_spectrometer()
         ee = spec.settings.eeprom
-
         spec.settings.update_wavecal(coeffs)
 
         if ee.wavelength_coeffs:
@@ -2275,12 +2278,7 @@ class Controller:
         return retval
 
     def perform_fpga_reset(self, spec=None):
-        if spec is None:
-            spec = self.multispec.current_spectrometer()
-        if spec is None:
-            return
-
-        spec.device.change_setting("reset_fpga", None)
+        self.multispec.change_device_setting("reset_fpga")
 
     def update_hardware_window(self):
         for spec in self.multispec.spectrometers.values():
@@ -2362,3 +2360,53 @@ class Controller:
         log.debug(s)
         log.debug('=' * len(s))
         log.debug("")
+
+    def configure_control_palette(self):
+        """
+        This is an experiment to see if we can easily add "collapse/expand" 
+        button to each widget in the Control Palette. If it worked, we'd move it
+        to a ui.ControlPalette class.
+
+                <widget class="QScrollArea" name="controlWidget_scrollArea">
+                 <widget class="QWidget" name="controlWidget_inner">
+                  <layout class="QVBoxLayout" name="controlWidget_inner_vbox">          /* iterate this */
+                   <item>                                                               
+                    <widget class="QFrame" name="frame_FactoryMode_Options">            /* finding these */
+                     <layout class="QVBoxLayout" name="verticalLayout_24">
+                      <item>
+                       <widget class="QLabel" name="label_hardware_capture_control">    /* place button to right of these */
+                        <property name="text">
+                         <string>Hardware Capture Control</string>                  
+                        </property>
+        """
+        vlayout = self.form.ui.controlWidget_inner_vbox
+        log.debug("iterating control palette")
+        for i in range(vlayout.count()):
+            w = vlayout.itemAt(i).widget()
+            if w is None:
+                continue
+
+            name = w.objectName()            
+            log.debug(f"  item {i} was {name}")
+
+            # todo: grab the first QLabel child within w; position new button to right of that
+
+            if False:
+                w.wpExpanded = True
+
+                button = QtWidgets.QPushButton()
+                button.setParent(w)
+                util.force_size(button, 20, 20)
+
+                icon = QtGui.QIcon()
+                icon.addPixmap(":/greys/images/grey_icons/down_triangle.svg")
+                button.setIcon(icon)
+                button.setIconSize(QtCore.QSize(10, 10))
+                button.move(100, 15)
+
+                def callback():
+                    w.wpExpanded = not w.wpExpanded
+                    log.debug(f"{name} wpExpanded {w.wpExpanded}")
+                    w.setVisible(w.wpExpanded)
+
+                button.clicked.connect(callback)

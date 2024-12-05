@@ -91,7 +91,7 @@ class Configuration:
 
         self.directory = common.get_default_data_dir()
         self.pathname  = os.path.join(self.directory, "enlighten.ini")
-        self.test_dir = os.path.join(self.directory, 'testSpectrometers')
+        self.test_dir = os.path.join(self.directory, 'testSpectrometers') # MZ: this doesn't belong in Configuration
 
         self.load_defaults()
         self.stub_missing()
@@ -216,7 +216,7 @@ class Configuration:
         if not self.config.has_section(section):
             self.config.add_section(section)
         self.config.set(section, key, str(value))
-        log.debug("Configuration.set: (%s, %s, %s)", section, key, value)
+        # log.debug("Configuration.set: (%s, %s, %s)", section, key, value)
 
     def save(self):
         try:

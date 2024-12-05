@@ -103,8 +103,9 @@ class Spectrometer:
         log.debug(f"best-guess ModelInfo: {self.wp_model_info}")
 
         # prefer EEPROM for FWHM, or lookup from model
-        if self.settings.eeprom.avg_resolution > 0:
-            self.fwhm = self.settings.eeprom.avg_resolution
+        avg = self.settings.eeprom.multi_wavelength_calibration.get("avg_resolution")
+        if avg is not None and avg > 0:
+            self.fwhm = avg
             log.debug(f"using FWHM from EEPROM: {self.fwhm:.2f}")
         else:
             self.fwhm = ctl.model_info.model_fwhm.get_by_model(self.settings.full_model())
@@ -151,7 +152,7 @@ class Spectrometer:
             return
 
         # first get from EEPROM, if configured
-        avg = self.settings.eeprom.avg_resolution
+        avg = self.settings.eeprom.multi_wavelength_calibration.get("avg_resolution")
 
         # Assume Raman spectrometers are configured in wavenumber and others in wavelength.
         # If the matching unit was requested, return the configured value
@@ -223,13 +224,19 @@ class Spectrometer:
         self.next_expected_acquisition_timestamp = future_time
         log.debug(f"reset_acquisition_timeout({self.device_id}): expecting next acquisition within {timeout_ms}  ms (by {future_time})")
 
-    ## send commands to device subprocess via (name, value) pickleable tuples
+    def send_alert(self, setting, value=True):
+        if self.closing:
+            return
+
+        log.info(f"send_alert[{self.device.device_id}]: {setting} -> {value}")
+        self.device.send_alert(setting, value)
+
+    ## send commands to device thread via (name, value) pickleable tuples
     def change_device_setting(self, setting, value=0):
         if self.closing:
             return
 
-        device_id = self.device.device_id
-        log.info(f"change_device_setting[{device_id}]: {setting} -> {value}")
+        log.info(f"change_device_setting[{self.device.device_id}]: {setting} -> {value}")
         self.device.change_setting(setting, value)
 
     def is_mock(self) -> bool:
@@ -317,7 +324,7 @@ class Spectrometer:
             return
     
         log.debug(f"left_region_changed_callback: setting roi_horizontal_start to pixel {pixel} based on region end {end}")
-        self.settings.eeprom.roi_horizontal_start = pixel
+        self.settings.eeprom.multi_wavelength_calibration.set("roi_horizontal_start", pixel)
         self.ctl.horiz_roi.update_regions(spec=self, left_pixel=pixel)
 
     def right_region_changed_callback(self):
@@ -328,7 +335,7 @@ class Spectrometer:
             return
     
         log.debug(f"right_region_changed_callback: setting roi_horizontal_end to pixel {pixel} based on region start {start}")
-        self.settings.eeprom.roi_horizontal_end = pixel
+        self.settings.eeprom.multi_wavelength_calibration.set("roi_horizontal_end", pixel)
         self.ctl.horiz_roi.update_regions(spec=self, right_pixel=pixel)
 
     def get_x_from_pixel(self, px):
@@ -350,8 +357,9 @@ class Spectrometer:
             return
     
         pixel = self.converter.convert(spec=self, old_axis=self.ctl.graph.current_x_axis, new_axis=common.Axes.PIXELS, x=x)
-        if pixel is None:
-            log.error(f"get_new_pixel: failed to convert x {x}")
-            return None
-    
-        return min(max(round(pixel), 0), self.settings.pixels() - 1)
+        if pixel is not None:
+            return min(max(round(pixel), 0), self.settings.pixels() - 1)
+
+    def clear_graph(self):
+        """ erase, but do not delete, this graph curve from the graph """
+        self.ctl.graph.set_data(curve=self.curve)

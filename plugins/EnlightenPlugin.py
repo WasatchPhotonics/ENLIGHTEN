@@ -42,7 +42,8 @@ class EnlightenPluginBase:
         self._fields = []
         self.is_blocking = False
         self.block_enlighten = False
-        self.auto_enable = False
+        self.auto_enable = None
+        self.streaming = True
         self.lock_enable = False
         self.has_other_graph = False
         self.table = None
@@ -50,7 +51,7 @@ class EnlightenPluginBase:
         self.y_axis_label = None
 
         self.series = {}
-        self.events = {}
+        self.overrides = {}
 
         # plugins can do everything
         self.ctl = ctl
@@ -60,29 +61,28 @@ class EnlightenPluginBase:
         if os.path.exists(self.logfile):
             os.remove(self.logfile)
 
-    def get_axis(self):
-        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVELENGTHS:
-            return self.settings.wavelengths
-        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVENUMBERS:
-            return self.settings.wavenumbers
-        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.PIXELS:
-            return range(len(self.spectrum))
+    def get_axis(self, processed_reading=None):
+        unit = self.ctl.graph.get_x_axis_unit()
+        if processed_reading:
+            if unit == "nm": return processed_reading.get_wavelengths()
+            if unit == "cm": return processed_reading.get_wavenumbers()
+            if unit == "px": return range(len(processed_reading.get_processed()))
+        else:
+            if unit == "nm": return self.settings.wavelengths
+            if unit == "cm": return self.settings.wavenumbers
+            if unit == "px": return range(len(self.spectrum))
 
     def get_axis_short_name(self):
-        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVELENGTHS:
-            return "wl"
-        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVENUMBERS:
-            return "wn"
-        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.PIXELS:
-            return "px"
+        unit = self.ctl.graph.get_x_axis_unit()
+        if unit == "nm": return "wl"
+        if unit == "cm": return "wn"
+        if unit == "px": return "px"
 
     def get_axis_name(self):
-        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVELENGTHS:
-            return "wavelengths"
-        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVENUMBERS:
-            return "wavenumbers"
-        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.PIXELS:
-            return "pixels"
+        unit = self.ctl.graph.get_x_axis_unit()
+        if unit == "nm": return "wavelengths"
+        if unit == "cm": return "wavenumbers"
+        if unit == "px": return "pixels"
 
     ### Begin functional-plugins backend ###
 
@@ -93,10 +93,8 @@ class EnlightenPluginBase:
             pl.write(f"{now} " + ' '.join([str(msg) for msg in msgs]) + "\n")
 
     def field(self, **kwargs):
-        self._fields.append(EnlightenPluginField(**kwargs))
-
-    def event(self, event, callback):
-        self.events[event] = callback
+        epf = EnlightenPluginField(**kwargs)
+        self._fields.append(epf)
 
     def output(self, name, value):
         self.outputs[name] = value
@@ -125,6 +123,14 @@ class EnlightenPluginBase:
         @param y y values
         @param title plot title, shown in legend
         @param color color of plot line
+
+        @note if you rely on the default x-axis, note that it is the full 
+              detector axis, and is neither interpolated nor cropped in 
+              horizontal ROI. Use ProcessedRequest.get_wavelengths() or
+              get_wavenumbers() for the axis in use for a particular
+              EnlightenPluginRequest.
+
+        @todo add weight
         """
         in_legend = True
 
@@ -149,6 +155,7 @@ class EnlightenPluginBase:
             i += 1
         title = title+suffix
 
+        # log.debug(f"creating series title {title} (suffix {suffix}, i {i})")
         self.series[title] = {
             "x": x,
             "y": y,
@@ -220,11 +227,11 @@ class EnlightenPluginBase:
             block_enlighten = self.block_enlighten,
             has_other_graph = self.has_other_graph,
             auto_enable = self.auto_enable,
+            streaming = self.streaming,
             lock_enable = self.lock_enable,
             series_names = [], # functional plugins define this on a frame-by-frame basis
             x_axis_label = self.x_axis_label,
             y_axis_label = self.y_axis_label,
-            events = self.events
         )
     
     def process_request_obj(self, request):
@@ -253,6 +260,7 @@ class EnlightenPluginBase:
             outputs = self.outputs,
             signals = self.signals,
             metadata = self.metadata,
+            overrides = self.overrides,
             message = self.marquee_message
         )
 
@@ -352,38 +360,11 @@ class EnlightenPluginBase:
 #           SimpleScaling, SineAndScale, StripChart
 #
 # ------------------------------------------------------------------------------
-# @par Events
-# 
-# Events allow your plug-in to receive real-time notifications when certain 
-# things happen in ENLIGHTEN.
-#
-# In a sense, the most basic event is pre-configured for every plugin: when 
-# a new ProcessedReading is read from the spectrometer and graphed, the plugin's
-# process_reading() callback is called with that reading.
-#
-# A major difference between processed_reading and other callbacks, though, is
-# that processed_readings are deliberately passed through ENLIGHTEN's 
-# PluginWorker in a threading.Thread via Python queue.Queues.  Event callbacks
-# (like button callbacks) occur in the main Qt GUI thread.  
-#
-# That means that if a plug-in takes 3sec to handle a callback event, the 
-# ENLIGHTEN GUI will "freeze" for 3 seconds.
-#
-# Supported events include:
-#
-# - "save": the user clicked the "Save" button 
-#
-# - under consideration:
-#   - "load": a measurement was loaded from disk 
-#   - "export": all thumbnails are exported to a single file
-#
-# Examples: SaveAsAngstrom
-#
-# ------------------------------------------------------------------------------
 # @par Streaming
 #
-# By default, all plug-ins support "streaming" spectra, which is what happens
-# when you click the "[x] Enable" checkbox in ENLIGHTEN's Plugin Control widget.
+# By default, all plug-ins support "streaming" spectra, where they receive and
+# process each new measurement read from the spectrometer.
+#
 # However, some plug-ins may not be designed or intended for that data rate
 # and prefer to be individually triggered by the "Process" button or other 
 # events.
@@ -403,8 +384,8 @@ class EnlightenPluginConfiguration:
     # @param series_names: ordered list of legend labels for graph series 
     #        (must match series names in EnlightenPluginReponse.data)
     # @param graph_type: "line" or "xy" (scatter)
-    # @param streaming: if True (default), display the "[x] Enable" checkbox
-    # @param auto_enable: automatically check Enabled 
+    # @param auto_enable: automatically check Enabled (DEPRECATED -- see streaming)
+    # @param streaming: whether plugin should automatically process every new spectrum
     # @param lock_enable: prevent disabling the plugin (provides "kiosk mode")
     # @param is_blocking: ENLIGHTEN should not send any further requests to the
     #        plug-in until the Response to the previous Request is received
@@ -415,7 +396,6 @@ class EnlightenPluginConfiguration:
     #        plugins.
     # @param multi_devices: True if the plug-in is designed to handle spectra 
     #        from multiple spectrometers (tracks requests by serial_number etc)
-    # @param events: a hash of supported event names to callbacks
     def __init__(self, 
             name, 
             fields          = None, 
@@ -424,10 +404,9 @@ class EnlightenPluginConfiguration:
             y_axis_label    = None, 
             is_blocking     = True,
             block_enlighten = False,
+            auto_enable     = None,  # legacy compatibility only
             streaming       = True,
-            auto_enable     = False,
             lock_enable     = False,
-            events          = None,
             series_names    = None,
             multi_devices   = False,
             graph_type      = "line"):  # "line" or "xy"
@@ -439,10 +418,9 @@ class EnlightenPluginConfiguration:
         self.y_axis_label    = y_axis_label
         self.is_blocking     = is_blocking
         self.block_enlighten = block_enlighten
-        self.streaming       = streaming
         self.auto_enable     = auto_enable
+        self.streaming       = streaming
         self.lock_enable     = lock_enable
-        self.events          = events
         self.multi_devices   = multi_devices
         self.series_names    = series_names
         self.graph_type      = graph_type
@@ -517,6 +495,7 @@ class EnlightenPluginField:
     # @param tooltip: mouseover string
     # @param stylesheet: optional stylesheet name
     # @param expert: only display in Expert mode
+    # @param width: field width in pixels
     def __init__(self, 
             name, 
             datatype    = "string", 
@@ -530,6 +509,7 @@ class EnlightenPluginField:
             callback    = None,
             stylesheet  = None,
             expert      = False,
+            width       = None,
             tooltip     = None):
 
         self.name       = name
@@ -545,6 +525,10 @@ class EnlightenPluginField:
         self.stylesheet = stylesheet
         self.choices    = choices
         self.expert     = expert
+        self.width      = width
+
+    def __repr__(self):
+        return f"EnlightenPluginField<name {self.name}, datatype {self.datatype}, direction {self.direction}, initial {self.initial}, expert {self.expert}, choices {self.choices}, callback {self.callback}>"
 
 ##
 # This is a "request" object sent by the ENLIGHTEN GUI to the plug-in, containing
@@ -576,32 +560,6 @@ class EnlightenPluginRequest:
     processed_reading: ProcessedReading = field(default_factory=ProcessedReading)
     creation_time: datetime.datetime = datetime.datetime.now()
     fields: list[EnlightenPluginField] = field(default_factory=list)
-
-##
-# This abstract base class provides information to the plugin about the current 
-# application state of ENLIGHTEN.  An instance of a concrete subclass of this
-# will be passed to connect().
-class EnlightenApplicationInfo:
-
-    def __init__(self):
-        pass
-
-    ## @return currently selected x-axis ("px", "nm" or "cm")
-    def get_x_axis_unit(self):
-        pass
-
-    ## @return e.g. C:\Users\mzieg\Documents\EnlightenSpectra
-    def get_save_path(self):
-        pass
-
-    def reference_is_dark_corrected(self):
-        return False
-
-    def read_measurements(self):
-        """
-        returns a list of dicts of the current measurements in the measurements clipobard.
-        """
-        return [{}]
 
 ##
 # After a plug-in has received an EnlightenPluginRequest and processed it, the 

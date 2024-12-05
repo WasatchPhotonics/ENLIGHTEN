@@ -29,6 +29,15 @@ class FileManager:
         self.file_loader_timer.setSingleShot(True)
         self.file_loader_timer.timeout.connect(self.file_loader_tick)
 
+    def save_dialog(self, filename=None, caption=None, dir_=None):
+        """ Prompt user to navigate to a folder and enter a filename to save a single file. """
+        if dir_ is None:
+            dir_ = self.ctl.save_options.generate_today_dir()
+        if filename is not None:
+            dir_ = os.path.join(dir_, filename)
+        result = QtWidgets.QFileDialog.getSaveFileName(parent=self.ctl.form, caption=caption, dir=dir_)
+        return result[0]
+
     def get_pathname(self, caption="Select file to load", filter_=None):
         if filter_ is None:
             filter_ = FileManager.FILTER
@@ -41,7 +50,7 @@ class FileManager:
         return pathname
 
     def get_directory(self):
-        dialog = QtWidgets.QFileDialog()
+        dialog = QtWidgets.QFileDialog(parent=self.ctl.form)
         dialog.setFileMode(QtWidgets.QFileDialog.Directory)
         dialog.setOption(QtWidgets.QFileDialog.ShowDirsOnly)
         return dialog.getExistingDirectory()

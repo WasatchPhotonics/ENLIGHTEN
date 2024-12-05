@@ -1,4 +1,4 @@
-from EnlightenPlugin import *
+from EnlightenPlugin import EnlightenPluginBase
 
 import logging
 log = logging.getLogger(__name__)
@@ -19,25 +19,21 @@ class RamanLines(EnlightenPluginBase):
         yet added that as a supported plugin input type.
         """
         self.name = "Raman Lines"
-        self.auto_enable = True
-
         self.samples = self.get_samples()
         self.field(name="sample", direction="input", datatype="combobox", choices=[k for k, v in self.samples.items()])
 
     def process_request(self, request):
         unit = self.ctl.graph.get_x_axis_unit()
         if unit != "cm":
-            self.marquee_message = "RamanLines disabled (requires wavenumber axis)"
+            self.marquee_message = "Error: RamanLines requires wavenumber axis"
             return
 
         sample = request.fields["sample"]
         if sample in self.samples:
             for p in self.generate_points(sample=sample):
-                self.plot(
-                    title = f"{sample} {p[0]:7.03f}cm⁻¹",
-                    x = [p[0], p[0]],
-                    y = [min(self.spectrum), p[1]]
-                )
+                self.plot(title = f"{sample} {p[0]:7.03f}cm⁻¹",
+                          x = [p[0], p[0]],
+                          y = [min(self.spectrum), p[1]])
 
     def generate_points(self, sample):
         """

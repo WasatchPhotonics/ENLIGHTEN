@@ -2,6 +2,7 @@ import re
 import json
 import logging
 import decimal
+from functools import partial
 
 from wasatch.EEPROM import EEPROM
 from enlighten import common
@@ -13,6 +14,152 @@ else:
     from PySide6 import QtGui, QtWidgets
 
 log = logging.getLogger(__name__)
+
+class EEPROMAttribute:
+
+    def dump(self, label=None):
+        log.debug(f"EEPROMAttribute: {label}")
+        log.debug(f"  name         {self.name}")
+        log.debug(f"  is_numeric   {self.is_numeric}")
+        log.debug(f"  is_scalar    {self.is_scalar}")
+        log.debug(f"  is_multi     {self.is_multi}")
+        log.debug(f"  is_editable  {self.is_editable}")
+        log.debug(f"  count        {self.count}")
+        log.debug(f"  calibrations {self.calibrations}")
+        log.debug(f"  qtype        {self.qtype}")
+        log.debug(f"")
+        log.debug(f"  widget       {self.widget}")
+        log.debug(f"  widgets      {self.widgets}")
+        log.debug(f"  all_widgets  {self._all_widgets}")
+    
+    def __init__(self, name, qtype, widget=None, widgets=None, is_numeric=True):
+        self.name = name
+        self.is_numeric = is_numeric    # for lineedit attributes, should this text field be treated as a float for get/set purposes?
+
+        self.is_scalar = False          # is this a array like wavelength_coeffs (lineedit) or bad_pixels (spinbox), or a scalar like excitation_nm_float or serial_number?
+        self.is_multi = False           # does this attribute support multiple values for different wavelength calibrations per subformat 5?
+        self.is_editable = False        # should this field be editable using the "wasatch" and "wasatchoem" passwords?
+        self.count = 0                  # if this attribute is a list (non-scalar), how many elements does it have?
+        self.calibrations = 0           # if this attribute is_multi, how many calibrations does it have?
+        self.widget = None
+        self.widgets = None
+        self._all_widgets = None
+
+        # validate qtype
+        self.qtype = qtype.lower().lstrip("q") # "lineedit", "spinbox", "doublespinbox"
+        if self.qtype not in ["checkbox", "spinbox", "doublespinbox", "lineedit"]:
+            raise AttributeError(f"invalid EEPROMAttribute.qtype {self.qtype}")
+
+        # were we only passed a single widget, or some sort of list?
+        self._all_widgets = []
+        if widget is not None and widgets is None:
+            # standard case for a regular scalar (e.g. serial_number)
+            self.is_multi = False
+            self.is_scalar = True
+            self.widget = widget
+            self._all_widgets.append(widget)
+            return # nothing more to do
+        elif widget is None and widgets is None:
+            raise AttributeError("EEPROMAttribute needs either widget or widgets populated")
+        elif widget is not None and widgets is not None:
+            raise AttributeError("EEPROMAttribute can only accept a widget OR widgets, but not both")
+
+        # apparently we were passed a list of widgets, whether single-calibration
+        # array, multi-wavelength scalar, or multi-wavelength array
+        self.widgets = widgets
+
+        ########################################################################
+        # infer is_multi and is_scalar from widgets list structure
+        ########################################################################
+
+        # Apparently we received a list of widgets, so figure out which type:
+        #
+        # - Multi-wavelength attributes are indicated by a list of lists, where 
+        #   the outer list is multi-wavelength index (default or 2nd), and the 
+        #   inner list is element index. By way of example, the multi-wavelength 
+        #   array wavelength_coeffs would be passed as 
+        #   [ [ c0, c1, c2, c3, c4 ], [ c0, c1, c2, c3, c4 ] ], and the multi-
+        #   wavelength scalar avg_resolution as [ [ fwhm ], [ fwhm ] ]
+        #
+        # - If a SINGLE-DEPTH list is passed, that would indicate an array 
+        #   attribute which is NOT multi-wavelength, such as laser_power_coeffs 
+        #   or adc_to_temp_coeffs.
+
+        outer_len = len(widgets)
+        nested_list = isinstance(widgets[0], list)
+
+        if not nested_list:
+            # e.g., adc_to_temp_coeffs (lineedit) or bad_pixels (spinbox)
+            self.count = outer_len
+            self.is_multi = False
+            self.is_scalar = False
+            self._all_widgets.extend(widgets)
+            # log.debug(f"EEPROMAttribute: non-multi-wavelength array {name} of {outer_len} elements")
+        else:
+            self.is_multi = True
+            self.calibrations = outer_len
+            inner_len = len(widgets[0])
+
+            if inner_len <= 0:
+                raise AttributeError(f"EEPROMAttribute: doesn't support empty inner list ({name})")
+            elif inner_len == 1:
+                # e.g., excitation_nm_float or avg_resolution (doublespinbox), or roi_horizontal_start/end (spinbox)
+                self.is_multi = True
+                self.is_scalar = True
+                # log.debug(f"EEPROMAttribute: name {name} appears to be multi-wavelength array of {self.calibrations} scalar elements")
+            else:
+                # e.g., wavelength_coeffs or raman_intensity_coeffs (lineedit)
+                # log.debug(f"EEPROMAttribute: name {name} appears to be multi-wavelength matrix with {self.calibrations} arrays of {inner_len} elements")
+                self.is_multi = True
+                self.is_scalar = False
+                self.count = inner_len 
+            
+            for L in widgets:
+                self._all_widgets.extend(L)
+
+        # log.debug(f"EEPROMAttribute: name {self.name}, is_multi {self.is_multi}, is_scalar {self.is_scalar}, count {self.count}")
+
+    def __repr__(self):
+        return (f"EEPROMAttribute<name {self.name}, qtype {self.qtype}, is_multi {self.is_multi}, is_scalar {self.is_scalar}, count {self.count}>")
+
+    def get_widget_value(self, calibration=None, index=None):
+        if calibration is None:
+            calibration = 0
+        if index is None:
+            index = 0
+        
+        # get the specified widget
+        widget = None
+        if self.is_multi:
+            widget = self.widgets[calibration][index]
+        else:
+            if self.is_scalar:
+                widget = self.widget
+            else:
+                widget = self.widgets[index]
+
+        # extract the value
+        if self.qtype == "lineedit": 
+            if self.is_numeric:
+                return float(widget.text())
+            else:
+                return str(widget.text())
+        elif self.qtype == "checkbox": 
+            return widget.isChecked()
+        elif self.qtype == "spinbox":
+            return int(widget.value())
+        elif self.qtype == "doublespinbox":
+            return float(widget.value())
+        else:
+            raise AttributeError(f"invalid EEPROMAttribute.qtype {self.qtype}")
+
+    def set_enabled(self, flag):
+        for w in self._all_widgets:
+            w.setEnabled(flag)
+            if flag:
+                w.setStyleSheet("background: #444; color: #ccc;")
+            else:
+                w.setStyleSheet("color: #eee;")
 
 class EEPROMEditor:
     """
@@ -50,19 +197,32 @@ class EEPROMEditor:
 
         self.updated_from_eeprom = False
 
-        self.checkBoxes      = {}
-        self.spinBoxes       = {}
+        self.attributes      = {}
         self.doubleSpinBoxes = {}
         self.lineEdits       = {}
-        self.widgets         = []
 
-        # mapping from eeprom.subformat to which widget should be visible
-        self.subformat_frames = [
-            None, # TODO: user_data_2 and user_data_3
-            cfu.frame_eeprom_sub_1,
-            cfu.frame_eeprom_sub_2,
-            cfu.frame_eeprom_sub_3,
-            cfu.frame_eeprom_sub_4
+        # mapping from eeprom.subformat to which frame(s) should be visible
+        self.subformat_frames = {
+            1: [ cfu.frame_eeprom_sub_1 ],
+            2: [ cfu.frame_eeprom_sub_2 ],
+            3: [ cfu.frame_eeprom_sub_3, cfu.frame_eeprom_sub_1 ],
+           #4: [ cfu.frame_eeprom_sub_4 ],
+            5: [ cfu.frame_eeprom_sub_5, cfu.frame_eeprom_sub_1 ],
+        } 
+
+        # Filterable layouts are `QFormLayout`s that are filtered by row based on the
+        # current search box text.
+        self.filterable_layouts: List[QtWidgets.QFormLayout] = [
+            cfu.formLayout_ee_page_0,
+            cfu.formLayout_ee_page_1,
+            cfu.formLayout_ee_page_2,
+            cfu.formLayout_ee_page_3,
+            cfu.formLayout_ee_page_4,
+            cfu.formLayout_ee_page_5,
+            cfu.formLayout_ee_sub1_page_6,
+            cfu.formLayout_ee_sub2_page_6,
+            cfu.formLayout_ee_sub3_page_7,
+            cfu.formLayout_ee_sub5_page_7
         ]
 
         # Start with a blank EEPROM.  We need this as a verification during the
@@ -77,51 +237,49 @@ class EEPROMEditor:
 
         self.ctl.authentication.register_observer(self.update_authentication)
         self.wpsc_translations = {
-            "slit_width": "slit_size_um",
-            "serial": "serial_number",
-            "inc_battery": "has_battery",
-            "inc_cooling": "has_cooling",
-            "inc_laser": "has_laser",
-            "calibration_by": "calibrated_by",
-            "startup_int_time_ms": "startup_integration_time_ms",
-            "startup_tempc": "startup_temp_degC",
-            "startup_trigger_mode": "startup_triggering_scheme",
-            "wavecal_coeffs": "wavelength_coeffs",
-            "temp_todac_coeffs": "degC_to_dac_coeffs",
-            "adc_to_temp_coeffs": "adc_to_degC_coeffs",
-            "detector_temp_max": "max_temp_degC",
-            "detector_temp_min": "min_temp_degC",
-            "thermistor_beta": "tec_beta",
-            "thermistor_res_at298k": "tec_r298",
-            "detector_name": "detector",
-            "actual_pixels_horiz": "actual_horizontal",
-            "active_pixels_horiz": "active_pixels_horizontal",
-            "active_pixels_vert": "active_pixels_vertical",
-            "roi_horiz_start": "roi_horizontal_start",
-            "roi_horiz_end": "roi_horizontal_end",
-            "max_laser_power_mw": "max_laser_power_mW",
-            "min_laser_power_mw": "min_laser_power_mW",
+            "active_pixels_horiz":      "active_pixels_horizontal",
+            "active_pixels_vert":       "active_pixels_vertical",
+            "actual_pixels_horiz":      "actual_pixels_horizontal",
+            "adc_to_temp_coeffs":       "adc_to_degC_coeffs",
+            "bin2x2":                   "horiz_binning_enabled",
+            "calibration_by":           "calibrated_by",
+            "detector_name":            "detector",
+            "detector_temp_max":        "max_temp_degC",
+            "detector_temp_min":        "min_temp_degC",
             "excitation_wavelength_nm": "excitation_nm",
-            "product_config": "product_configuration",
-            "rel_int_corr_order": "raman_intensity_calibration_order",
-            "bin2x2": "bin_2x2",
-            "flip_x_axis": "invert_x_axis",
-            }
+            "flip_x_axis":              "invert_x_axis",
+            "inc_battery":              "has_battery",
+            "inc_cooling":              "has_cooling",
+            "inc_laser":                "has_laser",
+            "max_laser_power_mw":       "max_laser_power_mW",
+            "min_laser_power_mw":       "min_laser_power_mW",
+            "product_config":           "product_configuration",
+            "rel_int_corr_order":       "raman_intensity_calibration_order",
+            "roi_horiz_end":            "roi_horizontal_end",
+            "roi_horiz_start":          "roi_horizontal_start",
+            "serial":                   "serial_number",
+            "slit_width":               "slit_size_um",
+            "startup_int_time_ms":      "startup_integration_time_ms",
+            "startup_tempc":            "startup_temp_degC",
+            "startup_trigger_mode":     "startup_triggering_scheme",
+            "temp_todac_coeffs":        "degC_to_dac_coeffs",
+            "thermistor_beta":          "tec_beta",
+            "thermistor_res_at298k":    "tec_r298",
+            "wavecal_coeffs":           "wavelength_coeffs" }
 
-        # Filterable layouts are `QFormLayout`s that are filtered by row based on the
-        # current search box text.
+    def add_attribute(self, qtype, name, is_numeric=None, widget=None, widgets=None):
+        if is_numeric is None:
+            is_numeric = qtype in ["spinbox", "doublespinbox"]
 
-        self.filterable_layouts: List[QtWidgets.QFormLayout] = [
-            cfu.formLayout_15,
-            cfu.formLayout_ee_page_0,
-            cfu.formLayout_ee_page_1,
-            cfu.formLayout_ee_page_2,
-            cfu.formLayout_ee_page_4,
-            cfu.formLayout_ee_page_5,
-            cfu.formLayout_ee_page_6,
-            cfu.formLayout_ee_page_6_sub_2,
-            cfu.formLayout_ee_page_7
-        ]
+        attr = EEPROMAttribute(name=name, qtype=qtype, is_numeric=is_numeric, widget=widget, widgets=widgets)
+        self.attributes[name] = attr
+
+        if qtype == "checkbox":
+            self.bind_checkbox(attr)
+        elif qtype in ["spinbox", "doublespinbox"]:
+            self.bind_spinbox(attr)
+        elif qtype == "lineedit":
+            self.bind_lineedit(attr)
 
     def bind(self):
         """
@@ -130,139 +288,78 @@ class EEPROMEditor:
         wasatch.EEPROM, and if so whether it's editable -- the field's VALUE is not
         (at this point in program flow) read from the EEPROM object or updated to 
         the widgets, until update_from_spec is called.
+
+        More to the point, bind() only gets called once, at application 
+        construction -- it is not re-called when switching or connecting 
+        spectrometers, therefore there is no point trying to do any value
+        initialization here.
+
+        Note that many double-precision floating-point values are rendered as 
+        QLineEdits, instead of QDoubleSpinBox. That's because coefficients may
+        include extremely tiny values (<1-e15) which should be entered, viewed
+        and edited in scientific notation, and which do not make visual sense 
+        in fixed-decimal format.
         """
         cfu = self.ctl.form.ui
 
-        # Type                    Widget                                      EEPROM field                     
-        self.bind_checkBox        (cfu.checkBox_ee_has_battery,               "has_battery")
-        self.bind_checkBox        (cfu.checkBox_ee_has_cooling,               "has_cooling")
-        self.bind_checkBox        (cfu.checkBox_ee_has_laser,                 "has_laser")
-        self.bind_checkBox        (cfu.checkBox_ee_invert_x_axis,             "invert_x_axis")
-        self.bind_checkBox        (cfu.checkBox_ee_bin_2x2,                   "bin_2x2")
-        self.bind_checkBox        (cfu.checkBox_ee_gen15,                     "gen15")
-        self.bind_checkBox        (cfu.checkBox_ee_cutoff_filter_installed,   "cutoff_filter_installed")
-        self.bind_checkBox        (cfu.checkBox_ee_hardware_even_odd,         "hardware_even_odd")
-        self.bind_checkBox        (cfu.checkBox_ee_sig_laser_tec,             "sig_laser_tec")
-        self.bind_checkBox        (cfu.checkBox_ee_has_interlock_feedback,    "has_interlock_feedback")
-        self.bind_checkBox        (cfu.checkBox_ee_has_shutter,               "has_shutter")
+        ########################################################################
+        # Scalar Attributes (no arrays, no multi-wavelength)
+        ########################################################################
 
-        # To be clear: we're editing the float version of excitation_nm.  Edits 
-        # are automatically rounded and re-saved to the integral version.  We 
-        # only "expose" one version (floating-point) to the user through 
-        # ENLIGHTEN, although they can see both in the raw EEPROM (but not via 
-        # ENLIGHTEN's EEPROM editor).
-        self.bind_doubleSpinBox   (cfu.doubleSpinBox_ee_excitation_nm_float,  "excitation_nm_float")
-        self.bind_doubleSpinBox   (cfu.doubleSpinBox_ee_max_laser_power_mW,   "max_laser_power_mW")
-        self.bind_doubleSpinBox   (cfu.doubleSpinBox_ee_min_laser_power_mW,   "min_laser_power_mW")
-        self.bind_doubleSpinBox   (cfu.doubleSpinBox_ee_detector_gain,        "detector_gain")
-        self.bind_doubleSpinBox   (cfu.doubleSpinBox_ee_detector_gain_odd,    "detector_gain_odd")
-        self.bind_doubleSpinBox   (cfu.doubleSpinBox_ee_spline_min,           "spline_min")
-        self.bind_doubleSpinBox   (cfu.doubleSpinBox_ee_spline_max,           "spline_max")
-        self.bind_doubleSpinBox   (cfu.doubleSpinBox_ee_avg_resolution,       "avg_resolution")
+        for name in [ "has_battery", "has_cooling", "has_laser", "invert_x_axis", "horiz_binning_enabled", 
+                      "gen15", "cutoff_filter_installed", "hardware_even_odd", "sig_laser_tec", 
+                      "has_interlock_feedback", "has_shutter", "disable_ble_power", "disable_laser_armed_indicator" ]:
+            self.add_attribute("checkbox", name, widget=getattr(cfu, f"checkBox_ee_{name}"))
 
-        self.bind_lineEdit        (cfu.lineEdit_ee_adc_to_degC_coeff_0,       "adc_to_degC_coeffs", 0)
-        self.bind_lineEdit        (cfu.lineEdit_ee_adc_to_degC_coeff_1,       "adc_to_degC_coeffs", 1)
-        self.bind_lineEdit        (cfu.lineEdit_ee_adc_to_degC_coeff_2,       "adc_to_degC_coeffs", 2)
-        self.bind_lineEdit        (cfu.lineEdit_ee_calibrated_by,             "calibrated_by")
-        self.bind_lineEdit        (cfu.lineEdit_ee_calibration_date,          "calibration_date")
-        self.bind_lineEdit        (cfu.lineEdit_ee_degC_to_dac_coeff_0,       "degC_to_dac_coeffs", 0)
-        self.bind_lineEdit        (cfu.lineEdit_ee_degC_to_dac_coeff_1,       "degC_to_dac_coeffs", 1)
-        self.bind_lineEdit        (cfu.lineEdit_ee_degC_to_dac_coeff_2,       "degC_to_dac_coeffs", 2)
-        self.bind_lineEdit        (cfu.lineEdit_ee_detector,                  "detector")
-        self.bind_lineEdit        (cfu.lineEdit_ee_laser_power_coeff_0,       "laser_power_coeffs", 0)
-        self.bind_lineEdit        (cfu.lineEdit_ee_laser_power_coeff_1,       "laser_power_coeffs", 1)
-        self.bind_lineEdit        (cfu.lineEdit_ee_laser_power_coeff_2,       "laser_power_coeffs", 2)
-        self.bind_lineEdit        (cfu.lineEdit_ee_laser_power_coeff_3,       "laser_power_coeffs", 3)
-        self.bind_lineEdit        (cfu.lineEdit_ee_linearity_coeff_0,         "linearity_coeffs", 0)
-        self.bind_lineEdit        (cfu.lineEdit_ee_linearity_coeff_1,         "linearity_coeffs", 1)
-        self.bind_lineEdit        (cfu.lineEdit_ee_linearity_coeff_2,         "linearity_coeffs", 2)
-        self.bind_lineEdit        (cfu.lineEdit_ee_linearity_coeff_3,         "linearity_coeffs", 3)
-        self.bind_lineEdit        (cfu.lineEdit_ee_linearity_coeff_4,         "linearity_coeffs", 4)
-        self.bind_lineEdit        (cfu.lineEdit_ee_model,                     "model")
-        self.bind_lineEdit        (cfu.lineEdit_ee_serial_number,             "serial_number")
-        self.bind_lineEdit        (cfu.lineEdit_ee_user_text,                 "user_text")
-        self.bind_lineEdit        (cfu.lineEdit_ee_wavelength_coeff_0,        "wavelength_coeffs", 0)
-        self.bind_lineEdit        (cfu.lineEdit_ee_wavelength_coeff_1,        "wavelength_coeffs", 1)
-        self.bind_lineEdit        (cfu.lineEdit_ee_wavelength_coeff_2,        "wavelength_coeffs", 2)
-        self.bind_lineEdit        (cfu.lineEdit_ee_wavelength_coeff_3,        "wavelength_coeffs", 3)
-        self.bind_lineEdit        (cfu.lineEdit_ee_wavelength_coeff_4,        "wavelength_coeffs", 4)
-        self.bind_lineEdit        (cfu.lineEdit_ee_product_configuration,     "product_configuration")
-        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_0,   "raman_intensity_coeffs", 0)
-        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_1,   "raman_intensity_coeffs", 1)
-        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_2,   "raman_intensity_coeffs", 2)
-        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_3,   "raman_intensity_coeffs", 3)
-        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_4,   "raman_intensity_coeffs", 4)
-        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_5,   "raman_intensity_coeffs", 5)
-        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_6,   "raman_intensity_coeffs", 6)
-        self.bind_lineEdit        (cfu.lineEdit_ee_raman_intensity_coeff_7,   "raman_intensity_coeffs", 7)
-        self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_0,               "spline_wavelengths", 0)
-        self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_1,               "spline_wavelengths", 1)
-        self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_2,               "spline_wavelengths", 2)
-        self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_3,               "spline_wavelengths", 3)
-        self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_4,               "spline_wavelengths", 4)
-        self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_5,               "spline_wavelengths", 5)
-        self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_6,               "spline_wavelengths", 6)
-        self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_7,               "spline_wavelengths", 7)
-        self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_8,               "spline_wavelengths", 8)
-        self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_9,               "spline_wavelengths", 9)
-        self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_10,              "spline_wavelengths", 10)
-        self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_11,              "spline_wavelengths", 11)
-        self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_12,              "spline_wavelengths", 12)
-        self.bind_lineEdit        (cfu.lineEdit_ee_spline_wl_13,              "spline_wavelengths", 13)
+        for name in [ "active_pixels_horizontal", "active_pixels_vertical", "actual_pixels_horizontal", 
+                      "slit_size_um", "baud_rate", "detector_offset", "detector_offset_odd", 
+                      "startup_laser_tec_setpoint", "startup_integration_time_ms", "startup_temp_degC", "startup_triggering_scheme",
+                      "min_integration_time_ms", "max_integration_time_ms", "max_temp_degC", "min_temp_degC",
+                      "roi_vertical_region_1_end",   "roi_vertical_region_1_start", 
+                      "roi_vertical_region_2_end",   "roi_vertical_region_2_start", 
+                      "roi_vertical_region_3_end",   "roi_vertical_region_3_start", 
+                      "tec_beta", "tec_r298", "raman_intensity_calibration_order", "subformat", "spline_points", "laser_warmup_sec",
+                      "untethered_library_type", "untethered_library_id", "untethered_scans_to_average", 
+                      "untethered_min_ramp_pixels", "untethered_min_peak_height", "untethered_match_threshold", "untethered_library_count",
+                      "laser_watchdog_sec", "light_source_type", "power_timeout_sec", "detector_timeout_sec" ]:
+            self.add_attribute("spinbox", name, widget=getattr(cfu, f"spinBox_ee_{name}"))
 
-        for region in range(2, 5):
-            for i in range(4):
-                self.bind_lineEdit(getattr(cfu, f"lineEdit_ee_regions_{region}_coeff_{i}"), f"roi_wavecal_region_{region}_coeffs", i)
+        for name in [ "max_laser_power_mW", "min_laser_power_mW", "detector_gain", "detector_gain_odd", "spline_min", "spline_max" ]:
+            self.add_attribute("doublespinbox", name, widget=getattr(cfu, f"doubleSpinBox_ee_{name}"))
 
-        self.bind_spinBox         (cfu.spinBox_ee_active_pixels_horizontal,   "active_pixels_horizontal")
-        self.bind_spinBox         (cfu.spinBox_ee_active_pixels_vertical,     "active_pixels_vertical")
-        self.bind_spinBox         (cfu.spinBox_ee_actual_horizontal_pixels,   "actual_horizontal")
-        for i in range(15):
-            self.bind_spinBox(getattr(cfu, f"spinBox_ee_bad_pixel_{i}"), "bad_pixels", i)
-        self.bind_spinBox         (cfu.spinBox_ee_baud_rate,                  "baud_rate")
-        self.bind_spinBox         (cfu.spinBox_ee_detector_offset,            "detector_offset")
-        self.bind_spinBox         (cfu.spinBox_ee_detector_offset_odd,        "detector_offset_odd")
-        self.bind_spinBox         (cfu.spinBox_ee_max_integration_time_ms,    "max_integration_time_ms")
-        self.bind_spinBox         (cfu.spinBox_ee_max_temp_degC,              "max_temp_degC")
-        self.bind_spinBox         (cfu.spinBox_ee_min_integration_time_ms,    "min_integration_time_ms")
-        self.bind_spinBox         (cfu.spinBox_ee_min_temp_degC,              "min_temp_degC")
-        self.bind_spinBox         (cfu.spinBox_ee_roi_horizontal_end,         "roi_horizontal_end")
-        self.bind_spinBox         (cfu.spinBox_ee_roi_horizontal_start,       "roi_horizontal_start")
-        self.bind_spinBox         (cfu.spinBox_ee_roi_vertical_region_1_end,  "roi_vertical_region_1_end")
-        self.bind_spinBox         (cfu.spinBox_ee_roi_vertical_region_1_start,"roi_vertical_region_1_start")
-        self.bind_spinBox         (cfu.spinBox_ee_roi_vertical_region_2_end,  "roi_vertical_region_2_end")
-        self.bind_spinBox         (cfu.spinBox_ee_roi_vertical_region_2_start,"roi_vertical_region_2_start")
-        self.bind_spinBox         (cfu.spinBox_ee_roi_vertical_region_3_end,  "roi_vertical_region_3_end")
-        self.bind_spinBox         (cfu.spinBox_ee_roi_vertical_region_3_start,"roi_vertical_region_3_start")
-        self.bind_spinBox         (cfu.spinBox_ee_slit_size_um,               "slit_size_um")
-        self.bind_spinBox         (cfu.spinBox_ee_startup_integration_time_ms,"startup_integration_time_ms")
-        self.bind_spinBox         (cfu.spinBox_ee_startup_temp_degC,          "startup_temp_degC")
-        self.bind_spinBox         (cfu.spinBox_ee_startup_triggering_scheme,  "startup_triggering_scheme")
-        self.bind_spinBox         (cfu.spinBox_ee_thermistor_beta,            "tec_beta")
-        self.bind_spinBox         (cfu.spinBox_ee_thermistor_resistance_298K, "tec_r298")
-        self.bind_spinBox         (cfu.spinBox_ee_raman_intensity_calibration_order, "raman_intensity_calibration_order")
-        self.bind_spinBox         (cfu.spinBox_ee_subformat,                  "subformat")
-        self.bind_spinBox         (cfu.spinBox_ee_spline_points,              "spline_points")
-        self.bind_spinBox         (cfu.spinBox_ee_laser_warmup_sec,           "laser_warmup_sec")
-        self.bind_spinBox         (cfu.spinBox_ee_untethered_library_type,    "untethered_library_type")
-        self.bind_spinBox         (cfu.spinBox_ee_untethered_library_id,      "untethered_library_id")
-        self.bind_spinBox         (cfu.spinBox_ee_untethered_scans_to_average,"untethered_scans_to_average")
-        self.bind_spinBox         (cfu.spinBox_ee_untethered_min_ramp_pixels, "untethered_min_ramp_pixels")
-        self.bind_spinBox         (cfu.spinBox_ee_untethered_min_peak_height, "untethered_min_peak_height")
-        self.bind_spinBox         (cfu.spinBox_ee_untethered_match_threshold, "untethered_match_threshold")
-        self.bind_spinBox         (cfu.spinBox_ee_untethered_library_count,   "untethered_library_count")
-        self.bind_spinBox         (cfu.spinBox_ee_regions_count,              "region_count")
-        self.bind_spinBox         (cfu.spinBox_ee_regions_4_vertical_start,   "roi_vertical_region_4_start")
-        self.bind_spinBox         (cfu.spinBox_ee_regions_4_vertical_end,     "roi_vertical_region_4_end")
-        self.bind_spinBox         (cfu.spinBox_ee_laser_watchdog_sec,         "laser_watchdog_sec")
-        self.bind_spinBox         (cfu.spinBox_ee_light_source_type,          "light_source_type")
-        for region in range(2, 5):
-            for node in ("start", "end"):
-                self.bind_spinBox(getattr(cfu, f"spinBox_ee_regions_{region}_horiz_{node}"), f"roi_horiz_region_{region}_{node}")
+        for name in [ "calibrated_by", "calibration_date", "detector", "model", "serial_number", "user_text", "product_configuration" ]:
+            self.add_attribute("lineedit", name, is_numeric=False, widget=getattr(cfu, f"lineEdit_ee_{name}"))
+
+        # Arrays (but still not multi-wavelength)
+        self.add_attribute("lineedit", "laser_power_coeffs", widgets=[ getattr(cfu, f"lineEdit_ee_laser_power_coeff_{i}") for i in range(4) ])
+        self.add_attribute("lineedit", "linearity_coeffs",   widgets=[ getattr(cfu, f"lineEdit_ee_linearity_coeff_{i}")   for i in range(5) ])
+        self.add_attribute("lineedit", "degC_to_dac_coeffs", widgets=[ getattr(cfu, f"lineEdit_ee_degC_to_dac_coeff_{i}") for i in range(3) ])
+        self.add_attribute("lineedit", "adc_to_degC_coeffs", widgets=[ getattr(cfu, f"lineEdit_ee_adc_to_degC_coeff_{i}") for i in range(3) ])
+        self.add_attribute("lineedit", "spline_wavelengths", widgets=[ getattr(cfu, f"lineEdit_ee_spline_wl_{i}")         for i in range(14) ])
+
+        self.add_attribute("spinbox", "bad_pixels", widgets=[ getattr(cfu, f"spinBox_ee_bad_pixel_{i}") for i in range(15) ])
+
+        ########################################################################
+        # Multi-Wavelength attributes
+        ########################################################################
+
+        self.add_attribute("doublespinbox", "excitation_nm_float", widgets=[[cfu.doubleSpinBox_ee_excitation_nm_float], [cfu.doubleSpinBox_ee_sub5_excitation_nm_float]])
+        self.add_attribute("doublespinbox", "avg_resolution",      widgets=[[cfu.doubleSpinBox_ee_avg_resolution],      [cfu.doubleSpinBox_ee_sub5_avg_resolution]])
+
+        self.add_attribute("lineedit", "wavelength_coeffs",      widgets=[ [ getattr(cfu, f"lineEdit_ee_wavelength_coeff_{i}") for i in range(5) ],
+                                                                           [ getattr(cfu, f"lineEdit_ee_sub5_wavelength_coeff_{i}") for i in range(5) ] ])
+        self.add_attribute("lineedit", "raman_intensity_coeffs", widgets=[ [ getattr(cfu, f"lineEdit_ee_raman_intensity_coeff_{i}") for i in range(7) ],
+                                                                           [ getattr(cfu, f"lineEdit_ee_sub5_raman_intensity_coeff_{i}") for i in range(7) ] ])
+
+        self.add_attribute("spinbox", "roi_horizontal_end",   widgets=[ [ cfu.spinBox_ee_roi_horizontal_end   ], [ cfu.spinBox_ee_sub5_roi_horizontal_end   ] ])
+        self.add_attribute("spinbox", "roi_horizontal_start", widgets=[ [ cfu.spinBox_ee_roi_horizontal_start ], [ cfu.spinBox_ee_sub5_roi_horizontal_start ] ])
+        self.add_attribute("spinbox", "horiz_binning_mode",   widgets=[ [ cfu.spinBox_ee_horiz_binning_mode   ], [ cfu.spinBox_ee_sub5_horiz_binning_mode   ] ])
+
+        ########################################################################
+        # Misc Cleanup
+        ########################################################################
 
         cfu.spinBox_ee_raman_intensity_calibration_order.setMaximum(EEPROM.MAX_RAMAN_INTENSITY_CALIBRATION_ORDER)
-
-        self.lb_gain_hex = cfu.label_ee_detector_gain_hex
 
         cfu.pushButton_eeprom_clipboard.clicked.connect(self.copy_to_clipboard)
         cfu.pushButton_importEEPROM.clicked.connect(self.import_eeprom)
@@ -282,37 +379,15 @@ class EEPROMEditor:
         # EEPROM fields
         ########################################################################
 
-        for name in self.checkBoxes:
-            table[name] = getattr(self.eeprom, name)
-
-        for name in self.doubleSpinBoxes:
-            table[name] = getattr(self.eeprom, name)
-
-        for name in self.spinBoxes:
-            if not isinstance(self.spinBoxes[name], dict):
-                table[name] = getattr(self.eeprom, name)
+        for name, attr in self.attributes.items():
+            if attr.is_multi:
+                for m in range(attr.calibrations):
+                    name = attr.name if m == 0 else f"{attr.name} #{m+1}"
+                    table[name] = getattr(self.eeprom, attr.name) # scalar or list
             else:
-                for index in self.spinBoxes[name]:
-                    array = getattr(self.eeprom, name)
-                    k = "%s[%0*d]" % (name, 1 if len(self.spinBoxes[name]) < 10 else 2, index)
-                    if array and index < len(array):
-                        table[k] = array[index]
-                    else:
-                        table[k] = ""
+                table[attr.name] = getattr(self.eeprom, attr.name) # whether scalar or list
 
-        for name in self.lineEdits:
-            if not isinstance(self.lineEdits[name], dict):
-                table[name] = getattr(self.eeprom, name)
-            else:
-                for index in self.lineEdits[name]:
-                    array = getattr(self.eeprom, name)
-                    k = "%s[%0*d]" % (name, 1 if len(self.lineEdits[name]) < 10 else 2, index)
-                    if array and index < len(array):
-                        table[k] = array[index]
-                    else:
-                        table[k] = ""
-
-        # read-only (don't appear in above lists)
+        # read-only (don't appear in above lists; not writeable even in admin mode)
         table["format"] = self.eeprom.format
 
         ########################################################################
@@ -325,220 +400,86 @@ class EEPROMEditor:
 
         spec = self.ctl.multispec.current_spectrometer()
         if spec:
-            for attr in [ "microcontroller_firmware_version", 
+            for name in [ "microcontroller_firmware_version", 
                           "fpga_firmware_version", 
+                          "ble_firmware_version", 
                           "microcontroller_serial_number", 
                           "detector_serial_number" ]:
-                table[attr] = getattr(spec.settings, attr) 
+                table[name] = getattr(spec.settings, name) 
             
         self.ctl.clipboard.copy_dict(table)
 
-    def create_callback(self, name, index=None):
+    def widget_callback(self, value=None, attr=None, widget=None, calibration=None, index=None):
         """
-        Dynamically create a new EEPROMEditor class method named for a given
-        EEPROM field (with optional index).
-        
-        Method names will look like this:
-        
-        - baud_rate_callback 
-        - raman_intensity_coeffs_5_callback
-        
-        The body of the callback function is a unique instance of the function
-        f() below, which is simply a pass-through to call widget_callback() with
-        the appropriate name and index.
-        
-        This is done so that each EEPROMEditor widget can be bound to a unique
-        callback method, allowing a change in any on-screen field to correctly
-        call widget_callback() with the name and index of the EEPROM attribute
-        to update.  There are probably other ways to do this, but this worked 
-        and was fun.
+        The user has changed a value in the enlighten.EEPROMEditor, which we need to save 
+        back to the wasatch.EEPROM object.
         """
-        def f(*args):
-            # log.debug("f: relaying callback to widget_callback(%s)" % name)
-            self.widget_callback(name, index)
+        # log.debug(f"widget_callback: called for calibration {calibration}, index {index}, value {value}, widget {widget}, attr {attr}")
 
-        if index is None:
-            fullname = "%s_callback" % name
+        if attr.is_multi:
+            if attr.is_scalar:
+                value = attr.get_widget_value(calibration=calibration)
+                self.eeprom.multi_wavelength_calibration.set(name=attr.name, value=value, calibration=calibration)
+            elif index is not None:
+                value = attr.get_widget_value(calibration=calibration, index=index)
+                self.eeprom.multi_wavelength_calibration.set(name=attr.name, value=value, calibration=calibration, index=index)
+            else:
+                raise AttributeError(f"widget_callback does not support multi, non-scalar attributes without index: {attr}")
         else:
-            fullname = "%s_%d_callback" % (name, index)
-
-        setattr(EEPROMEditor, fullname, f)
-        # log.debug("create_callback: created %s method" % fullname)
-
-        return f
-
-    def widget_callback(self, name, index=None, reset_from_eeprom=False):
-        """
-        The user has changed a value in the EEPROM editor, which we need to save 
-        back to the EEPROM object.
-        
-        I really want to use a single callback method for all the EEPROMEditor
-        widgets.  I'm currently doing this by dynamically creating unique callback 
-        methods for each widget, where each identifies itself via a 'name' 
-        parameter (see create_callback).
-        
-        Another option would be to have EEPROMEditor extend QObject and then use
-        QObject.sender():
-        https://www.blog.pythonlibrary.org/2013/04/10/pyside-connecting-multiple-widgets-to-the-same-slot/
-        
-        Note that because we're using getattr and setattr against the EEPROM 
-        instance, it doesn't matter if someone has reassigned eeprom.wavelength_coeffs
-        to a new []...the widgets are bound to the NAME of the attribute, and can't
-        be left hanging with a reference to an old referent.
-        
-        @param reset_from_eeprom[in] If True, copy EEPROM field -> widget; if False, copy widget -> EEPROM field.
-               To my knowledge, this field is ONLY added when called from LaserControlFeature.
-        """
-        log.debug("callback triggered for widget %s (index %s, reset %s)", name, index, reset_from_eeprom)
-
-        value = None
-        try:
-            if name in self.checkBoxes:
-                widget = self.checkBoxes[name]
-                if reset_from_eeprom:
-                    value = getattr(self.eeprom, name)
-                    widget.setValue(value)
-                else:
-                    value = widget.isChecked()
-                    setattr(self.eeprom, name, value)
-
-            elif name in self.doubleSpinBoxes:
-                widget = self.doubleSpinBoxes[name]
-                if reset_from_eeprom:
-                    value = getattr(self.eeprom, name)
-                    log.debug("widget_callback[doubleSpinBoxes]: setting widget.value <-- %g (%.9f)", value, value)
-                    widget.setValue(value)
-                else:
-                    value = float(widget.value())
-                    log.debug("widget_callback[doubleSpinBoxes]: widget.value() = %g (%.9f)", widget.value(), widget.value())
-                    setattr(self.eeprom, name, value)
-
-            elif name in self.spinBoxes:
-                if index is None:
-                    widget = self.spinBoxes[name]
-                    if reset_from_eeprom:
-                        value = getattr(self.eeprom, name)
-                        widget.setValue(value)
-                    else:
-                        value = int(widget.value())
-                        setattr(self.eeprom, name, value)
-                else:
-                    widget = self.spinBoxes[name][index]
-                    array = getattr(self.eeprom, name)
-                    if reset_from_eeprom:
-                        widget.setValue(array[index])
-                    else:
-                        value = int(widget.value())
-
-                        # adding bad_pixels
-                        while index >= len(array):
-                            log.debug("appending %s element %d to reach %d", name, len(array), index)
-                            array.append(-1)
-
-                        # store updated value
-                        array[index] = value
-                
-            elif name in self.lineEdits:
-                if index is None:
-                    widget = self.lineEdits[name]
-                    if reset_from_eeprom:
-                        value = getattr(self.eeprom, name)
-                        widget.setText(str(value))
-                    else:
-                        value = widget.text()
-                        setattr(self.eeprom, name, value)
-                else:
-                    # remember, we're assuming that all ARRAY lineEdits are FLOATS
-                    widget = self.lineEdits[name][index]
-                    array = getattr(self.eeprom, name)
-                    if reset_from_eeprom:
-                        widget.setText(self.sci_str(array[index]))
-                    else:
-                        value = float(widget.text())
-
-                        # handle case where input array is None
-                        if array is None or type(array) is not list:
-                            log.debug("creating %s array", name)
-                            array = []
-                            setattr(self.eeprom, name, array)
-
-                        # handle case where input array hasn't been sized
-                        while index >= len(array):
-                            log.debug("appending %s element %d", name, len(array) - 1)
-                            array.append(0)
-
-                        # store updated value
-                        array[index] = value
+            if attr.is_scalar:
+                value = attr.get_widget_value()
+                setattr(self.eeprom, attr.name, value)
+            elif index is not None:
+                value = attr.get_widget_value(index=index)
+                old = getattr(self.eeprom, attr.name)
+                old[index] = value
             else:
-                log.error("widget_callback: widget %s not of any recognized type", name)
-                return
+                raise AttributeError(f"widget_callback does not support non-multi, non-scalar attributes without index: {attr}")
 
-            if index is None:
-                log.debug("widget_callback: eeprom.%s -> %s", name, value)
-            else:
-                log.debug("widget_callback: eeprom.%s[%d] -> %s", name, index, value)
+        ####################################################################
+        # name-based extra functionality 
+        ####################################################################
 
-            ####################################################################
-            # name-based extra functionality 
-            ####################################################################
+        # these are pretty much all kludges...should create an observer pattern
+        # based on regex, e.g. "wavelength_coeffs|excitation_nm_float"
 
-            # these are pretty much all kludges...should create an observer pattern
-            # based on regex, e.g. "wavelength_coeffs|excitation_nm_float"
+        # Wavecal
+        if attr.name.startswith("wavelength_coeffs") or attr.name == "excitation_nm_float":
+            self.ctl.update_wavecal()
 
-            # Wavecal
-            if name.startswith("wavelength_coeffs") or name == "excitation_nm_float":
-                self.ctl.update_wavecal()
+        # Detector
+        elif self.updated_from_eeprom and ("detector_gain" in attr.name or "detector_offset" in attr.name):
+            self.ctl.update_gain_and_offset(force=True)
 
-            # Detector
-            elif self.updated_from_eeprom and ("detector_gain" in name or "detector_offset" in name):
-                log.debug("widget_callback: gain or offset updated post-init, so forcing those downstream")
-                self.ctl.update_gain_and_offset(force=True)
-                self.update_gain_in_hex()
+        # SRM
+        elif "raman_intensity" in attr.name and self.settings is not None:
+            self.settings.update_raman_intensity_factors()
 
-            # SRM
-            elif "raman_intensity" in name and self.settings is not None:
-                self.settings.update_raman_intensity_factors()
+        # subformat
+        elif attr.name == "subformat":
+            self.update_subformat()
 
-            # subformat
-            elif name == "subformat":
-                self.update_subformat()
+        # vertical ROI
+        elif "roi_vertical_region" in attr.name:
+            spec = self.ctl.multispec.current_spectrometer()
+            if spec is not None:
+                vert_roi = self.settings.get_vertical_roi()
+                if vert_roi is not None:
+                    spec.change_device_setting("vertical_binning", vert_roi)
 
-            elif "roi_vertical_region_1" in name:
-                spec = self.ctl.multispec.current_spectrometer()
-                if spec is not None:
-                    end = self.eeprom.roi_vertical_region_1_end
-                    start = self.eeprom.roi_vertical_region_1_start
-                    spec.change_device_setting("vertical_binning", (start, end))
+        # send "user" updates downstream (not when switching between spectrometers though)
+        if self.updated_from_eeprom:
+            self.ctl.eeprom_writer.send_to_subprocess()
 
-            # send "user" updates downstream (not when switching between spectrometers though)
-            if self.updated_from_eeprom:
-                self.ctl.eeprom_writer.send_to_subprocess()
+        ####################################################################
+        # update digest (highlight if changed)
+        ####################################################################
 
-            ####################################################################
-            # update digest (highlight if changed)
-            ####################################################################
-
-            self.update_digest()
-
-        except Exception:
-            log.error("widget_callback: caught exception for name '%s', index %s", name, index, exc_info=1)
-
-        # TODO: call Controller.change_setting("eeprom", self.eeprom) on 
-        #       successful value change?
-        #
-        # Before we do that, we better be DAMN sure we're sending to the right
-        # serial number (maybe send a (serial_number, eeprom) tuple).
+        self.update_digest()
 
     # ##########################################################################
     # methods
     # ##########################################################################
-
-    def update_gain_in_hex(self):
-        """ production request: display detector_gain in hex """
-        spec = self.ctl.multispec.current_spectrometer()
-        if spec is not None:
-            gain_uint16 = spec.settings.eeprom.float_to_uint16(spec.settings.eeprom.detector_gain)
-            self.lb_gain_hex.setText("0x%04x" % gain_uint16)
 
     def update_digest(self):
         """
@@ -575,20 +516,15 @@ class EEPROMEditor:
 
     def update_authentication(self):
         """ The user logged-in (or -out), so update what should be updated. """
-        for widget in self.widgets:
+        for name, attr in self.attributes.items():
             editable = False 
 
             if self.ctl.authentication.has_production_rights():
                 editable = True 
             elif self.ctl.authentication.has_advanced_rights():
-                editable = widget.is_editable   # both Advanced and OEM can edit "many"
+                editable = self.eeprom.is_editable(name)
 
-            widget.setEnabled(editable)
-
-            if editable:
-                widget.setStyleSheet("background: #444; color: #ccc;")
-            else:
-                widget.setStyleSheet("color: #eee;")
+            attr.set_enabled(editable)
 
     def update_fpga_option_display(self):
         spec = self.ctl.multispec.current_spectrometer()
@@ -626,8 +562,9 @@ class EEPROMEditor:
         self.settings = spec.settings
         self.eeprom = self.settings.eeprom
         self.updated_from_eeprom = False
+        cfu = self.ctl.form.ui
 
-        self.ctl.form.ui.label_ee_format.setText(str(self.eeprom.format))
+        cfu.label_ee_format.setText(str(self.eeprom.format))
         self.lb_digest.setText(str(self.eeprom.digest))
 
         # update the big serial number and graphic atop Hardware Setup
@@ -638,113 +575,104 @@ class EEPROMEditor:
         else:
             log.error(f"received pathname not in resources: {pathname}")
 
-        for name in self.checkBoxes:
-            value = getattr(self.eeprom, name)
-            if value is not None:
-                widget = self.checkBoxes[name]
-                widget.setChecked(True if value else False)
-            else:
-                log.debug("update_from_spec: checkbox bool %s is None", name)
+        for name, attr in self.attributes.items():
+            try:
+                if attr.qtype == "checkbox":
+                    attr.widget.setChecked(True if getattr(self.eeprom, attr.name) else False)
 
-        try:
-            log.debug("update_from_spec: doublespinboxes")
-            for name in self.doubleSpinBoxes:
-                value = getattr(self.eeprom, name)
-                if value is not None:
-                    log.debug("update_from_spec: %s -> %s", name, value)
-                    widget = self.doubleSpinBoxes[name]
-                    widget.setValue(float(value))
-                else:
-                    log.debug("update_from_spec: doublespinbox float %s is None", name)
-
-            log.debug("update_from_spec: spinboxes")
-            for name in self.spinBoxes:
-                if not isinstance(self.spinBoxes[name], dict):
-                    # this is an int scalar
-                    value = getattr(self.eeprom, name)
-                    if value is not None:
-                        widget = self.spinBoxes[name]
-                        widget.setValue(int(value))
+                elif attr.qtype == "spinbox":
+                    if attr.is_multi:
+                        if attr.is_scalar:                      # e.g. horiz_bin_method
+                            for m in range(attr.calibrations):
+                                widget = attr.widgets[m][0]
+                                widget.setValue(int(self.eeprom.multi_wavelength_calibration.get(attr.name, m, default=0)))
+                        else:                                   
+                            for m in range(attr.calibrations):  # e.g. ??
+                                for i, w in enumerate(attr.widgets[m]):
+                                    w.setValue(int(self.eeprom.multi_wavelength_calibration.get(attr.name, m, i, default=0)))
                     else:
-                        log.debug("update_from_spec: spinbox int scalar %s is None", name)
-                else:
-                    # this is an array of ints like "bad_pixels"...which is variable-sized, unlike the coeffs :-/
-                    for index in self.spinBoxes[name]:
-                        array = getattr(self.eeprom, name)
-                        if index < len(array):
-                            value = array[index]
-                            if value is not None:
-                                widget = self.spinBoxes[name][index]
-                                widget.setValue(int(value))
-                            else:
-                                log.debug("update_from_spec: spinbox int array %s %d is None", name, index)
-        except:
-            log.error("exception populating EEPROM numeric fields", exc_info=1)            
+                        if attr.is_scalar:                      # e.g. baud_rate
+                            attr.widget.setValue(int(getattr(self.eeprom, attr.name)))
+                        else:                                   # e.g. bad_pixels
+                            for i, w in enumerate(attr.widgets):
+                                a = getattr(self.eeprom, attr.name)
+                                if i < len(a):
+                                    w.setValue(int(a[i]))
 
-        log.debug("update_from_spec: lineEdits")
-        for name in self.lineEdits:
-            if not isinstance(self.lineEdits[name], dict):
-                # this is a string scalar
-                value = getattr(self.eeprom, name)
-                if value is not None:
-                    widget = self.lineEdits[name]
-                    widget.setText(str(value))
-                else:
-                    log.debug("update_from_spec: lineedit int scalar %s is None", name)
-            else:
-                # this is an array of floats edited as strings, like "wavelength_coeffs"
-                for index in self.lineEdits[name]:
-                    array = getattr(self.eeprom, name)
-                    if array:
-                        if index < len(array):
-                            value = array[index]
-                            widget = self.lineEdits[name][index]
-                            widget.setText(self.sci_str(value))
-                            continue
-                    log.debug("update_from_spec: could not update lineedit string array %s %d", name, index)
+                elif attr.qtype == "doublespinbox":
+                    if attr.is_multi:
+                        if attr.is_scalar:                      # e.g. excitation_nm_float, avg_resolution
+                            for m in range(attr.calibrations):
+                                widget = attr.widgets[m][0] # YOU ARE HERE, MAYBE? Is this actually a list-of-lists?
+                                value = float(self.eeprom.multi_wavelength_calibration.get(attr.name, m, default=0))
+                                widget.setValue(value)
+                        else:
+                            for m in range(attr.calibrations):  # e.g. ??
+                                for i, w in enumerate(attr.widgets[m]):
+                                    w.setValue(float(self.eeprom.multi_wavelength_calibration.get(attr.name, m, i, default=0)))
+                    else:
+                        if attr.is_scalar:                      # e.g. detector_gain, min/max_laser_power
+                            attr.widget.setValue(float(getattr(self.eeprom, attr.name)))
+                        else:                                   # e.g. ??
+                            for i, w in enumerate(attr.widgets):
+                                w.setValue(float(getattr(self.eeprom, attr.name)[i]))
+
+                elif attr.qtype == "lineedit":
+                    if attr.is_multi:
+                        if attr.is_scalar:                      # e.g. ??
+                            for m in range(attr.calibrations):
+                                widget = attr.widgets[m][0]
+                                widget.setText(str(self.eeprom.multi_wavelength_calibration.get(attr.name, m, default=0)))
+                        else:                                   
+                            for m in range(attr.calibrations):  # e.g. wavelength_coeffs, raman_intensity_coeffs
+                                for i, w in enumerate(attr.widgets[m]):
+                                    w.setText(str(self.eeprom.multi_wavelength_calibration.get(attr.name, m, i, default=0)))
+                    else:
+                        if attr.is_scalar:                      # e.g. ??
+                            attr.widget.setText(str(getattr(self.eeprom, attr.name)))
+                        else:                                   # e.g. adc_to_degC, degC_to_dac, laser_power_coeffs
+                            for i, w in enumerate(attr.widgets):
+                                a = getattr(self.eeprom, attr.name)
+                                if i < len(a):
+                                    w.setText(str(a[i]))
+            except:
+                log.error(f"update_from_spec: failed to update widget(s) for attr {attr}", exc_info=1)
 
         self.update_subformat()
-        self.update_gain_in_hex()
+
         self.update_fpga_option_display()
 
         self.updated_from_eeprom = True
+        self.eeprom.dump()
 
     def update_subformat(self):
         """ Update our display of which (if any) frame representing page 6-7 fields is visible. """
 
         # hide them all
-        log.debug("updating subformat")
-        for frame in self.subformat_frames:
-            if frame is not None:
+        for subformat, frames in self.subformat_frames.items():
+            for frame in frames:
                 frame.setVisible(False)
 
         sub = self.eeprom.subformat
-
-        if sub < len(self.subformat_frames):
-            frame = self.subformat_frames[sub]
-            if frame:
+        if sub in self.subformat_frames:
+            frames = self.subformat_frames[sub]
+            for frame in frames:
                 frame.setVisible(True)
-                log.debug("visualizing frame %d", sub)
+        else:
+            log.error(f"unsupported subformat {sub}")
 
-        # subformat 3 extends subformat 1
-        if sub == 3:
-            self.subformat_frames[1].setVisible(True)
-
-    def apply_filter(self, filter_text: str) -> None:
-        """
-        Hides all widgets to which the filter applies.
-        """
+    def apply_filter(self, filter_text):
+        """ Hides all EEPROM rows to which the filter applies """
         for layout in self.filterable_layouts:
-            if type(layout) == QtWidgets.QFormLayout:
-                rows = [[None, None] for _ in range(0, layout.rowCount())]
+            if isinstance(layout, QtWidgets.QFormLayout):
+                rows = [[None, None] for _ in range(layout.rowCount())]
 
-                for i in range(0, layout.count()):
+                for i in range(layout.count()):
                     rowIndex, role = layout.getItemPosition(i)
                     rows[rowIndex][role.value] = layout.itemAt(i)
 
                 for i, row in enumerate(rows):
                     matches_filter = False
-
                     for cell in row:
                         if self.contains_text(cell, filter_text):
                             matches_filter = True
@@ -756,52 +684,37 @@ class EEPROMEditor:
                         for cell in row:
                             self.hide(cell)
 
-    @classmethod
-    def contains_text(cls, root: any, filter_text: str) -> bool:
-        """
-        Recursively searches `root` for any label containing the string `filter_text`.
-        """
+    def contains_text(self, root, filter_text):
+        """ Recursively searches `root` for any label containing the string `filter_text` """
         if isinstance(root, QtWidgets.QLayout):
             for i in range(0, root.count()):
-                if cls.contains_text(root.itemAt(i), filter_text):
+                if self.contains_text(root.itemAt(i), filter_text):
                     return True
-
-            return False
         elif isinstance(root, QtWidgets.QLayoutItem):
             widget = root.widget()
-
             if not isinstance(widget, QtWidgets.QLabel):
                 return False
 
-            return re.search(re.escape(filter_text), widget.text(), re.IGNORECASE)
-        else:
-            return False
+            label_text = widget.text()
+            match = re.search(re.escape(filter_text), label_text, re.IGNORECASE)
+            return match
 
-    @classmethod
-    def hide(cls, root: any) -> None:
-        """
-        Recursively hides all children of `root`.
-        """
+    def hide(self, root):
+        """ Recursively hides all children of `root`  """
         if isinstance(root, QtWidgets.QLayout):
             for i in range(0, root.count()):
-                cls.hide(root.itemAt(i))
+                self.hide(root.itemAt(i))
         elif isinstance(root, QtWidgets.QLayoutItem):
             widget = root.widget()
-
             if widget is not None:
                 widget.hide()
 
-    @classmethod
-    def show(cls, root: any) -> None:
-        """
-        Recursively shows all children of `root`.
-        """
+    def show(self, root):
         if isinstance(root, QtWidgets.QLayout):
             for i in range(0, root.count()):
-                cls.show(root.itemAt(i))
+                self.show(root.itemAt(i))
         elif isinstance(root, QtWidgets.QLayoutItem):
             widget = root.widget()
-
             if widget is not None:
                 widget.show()
 
@@ -809,68 +722,69 @@ class EEPROMEditor:
     # Binding
     # ##########################################################################
 
-    def bind_checkBox(self, widget, name):
-        if not hasattr(self.eeprom, name):
-            log.error("unknown EEPROM field: %s", name)
-            return
-        self.checkBoxes[name] = widget
-        widget.stateChanged.connect(self.create_callback(name))
-        widget.is_editable = self.eeprom.is_editable(name)
-        self.widgets.append(widget)
+    def bind_checkbox(self, attr):
+        if not attr.is_scalar:
+            raise NotImplemented("{attr.name}: checkbox arrays not yet implemented")
+        if attr.is_multi:
+            raise NotImplemented("{attr.name}: multi-wavelength checkboxes not yet implemented")
+        if not hasattr(self.eeprom, attr.name):
+            raise AttributeError(f"{attr.name}: unknown EEPROM checkbox")
 
-    def bind_doubleSpinBox(self, widget, name):
-        if not hasattr(self.eeprom, name):
-            log.error("unknown EEPROM field: %s", name)
-            return
-        self.doubleSpinBoxes[name] = widget
-        widget.valueChanged.connect(self.create_callback(name))
-        widget.is_editable = self.eeprom.is_editable(name)
-        self.widgets.append(widget)
+        log.debug(f"bind_checkbox: binding {attr}")
+        attr.widget.stateChanged.connect(partial(self.widget_callback, attr=attr, widget=attr.widget))
+        attr.is_editable = self.eeprom.is_editable(attr.name)
 
-    def bind_spinBox(self, widget, name, index=None):
-        if not hasattr(self.eeprom, name):
-            log.error("unknown EEPROM field: %s", name)
-            return
-
-        if index is None:
-            self.spinBoxes[name] = widget
+    def bind_spinbox(self, attr):
+        """ Hoping to use this for both QSpinBox and QDoubleSpinBox widgets """
+        if attr.is_multi:
+            if attr.is_scalar:
+                for m in range(attr.calibrations): # YOU ARE HERE?
+                    w = attr.widgets[m][0]
+                    callback = partial(self.widget_callback, attr=attr, widget=w, calibration=m)
+                    log.debug(f"bind_spinbox: binding calibration {m} scalar: {attr} (widget {w}, callback {callback})")
+                    w.valueChanged.connect(callback)
+            else:
+                for m in range(attr.calibrations):
+                    for i in range(attr.count):
+                        log.debug(f"bind_spinbox: binding calibration {m} index {i}: {attr}")
+                        w = attr.widgets[m][i]
+                        w.valueChanged.connect(partial(self.widget_callback, attr=attr, widget=w, calibraton=m, index=i))
         else:
-            if name not in self.spinBoxes:
-                self.spinBoxes[name] = {}
-            self.spinBoxes[name][index] = widget
+            if attr.is_scalar:
+                log.debug(f"bind_spinbox: binding scalar: {attr}")
+                attr.widget.valueChanged.connect(partial(self.widget_callback, attr=attr, widget=attr.widget))
+            else:
+                for i in range(attr.count):
+                    log.debug(f"bind_spinbox: binding index {i}: {attr}")
+                    w = attr.widgets[i]
+                    w.valueChanged.connect(partial(self.widget_callback, attr=attr, widget=w, index=i))
+                
+        attr.is_editable = self.eeprom.is_editable(attr.name)
 
-        # note that we're not currently using anything like "editingFinished"
-        # with spinboxen, so intermediate changes will probably fire multiple
-        # events (if you try to type 1234, it may fire events with values of 1,
-        # 12, 123 and 1234 in sequence).  
-        #
-        # If those incremental changes get sent to the spectrometer process
-        # downstream, the "auto-dedupping" in WasatchPhotonicsWrapper MAY
-        # eliminate some of the incremental steps and retain only the the
-        # final ones (depends on your typing speed...)
-        widget.valueChanged.connect(self.create_callback(name, index))
-        widget.is_editable = self.eeprom.is_editable(name)
-        self.widgets.append(widget)
-
-    def bind_lineEdit(self, widget, name, index=None, sub_index=None):
-        if not hasattr(self.eeprom, name):
-            log.error("unknown EEPROM field: %s", name)
-            return
-
-        if index is None:
-            self.lineEdits[name] = widget
+    def bind_lineedit(self, attr):
+        if attr.is_multi:
+            if attr.is_scalar:
+                for m in range(attr.calibrations):
+                    log.debug(f"bind_lineedit: binding calibration {m} scalar: {attr}")
+                    w = attr.widgets[m][0]
+                    w.editingFinished.connect(partial(self.widget_callback, attr=attr, widget=w, calibration=m))
+            else:
+                for m in range(attr.calibrations):
+                    for i in range(attr.count):
+                        log.debug(f"bind_lineedit: binding calibration {m}, index {i}: {attr}")
+                        w = attr.widgets[m][i]
+                        w.editingFinished.connect(partial(self.widget_callback, attr=attr, widget=w, calibration=m, index=i))
         else:
-            if name not in self.lineEdits:
-                self.lineEdits[name] = {}
-            self.lineEdits[name][index] = widget
-
-        callback = self.create_callback(name, index)
-        widget.editingFinished.connect(callback)
-        widget.is_editable = self.eeprom.is_editable(name)
-        self.widgets.append(widget)
-
-        # MZ: I'm sure there's a better way to do this
-        widget.enlighten_trigger = callback
+            if attr.is_scalar:
+                log.debug(f"bind_lineedit: binding scalar: {attr}")
+                attr.widget.editingFinished.connect(partial(self.widget_callback, attr=attr, widget=attr.widget))
+            else:
+                for i in range(attr.count):
+                    log.debug(f"bind_lineedit: binding index {i}: {attr}")
+                    w = attr.widgets[i]
+                    w.editingFinished.connect(partial(self.widget_callback, attr=attr, widget=w, index=i))
+                
+        attr.is_editable = self.eeprom.is_editable(attr.name)
 
     def parse_wpsc_report(self, wpsc_report: dict) -> dict:
         eeprom_dump = wpsc_report["EEPROMDump"]

@@ -214,7 +214,7 @@ class ExportFileParser:
         # if only a single Measurement was found within the export (rare),
         # the file is renamable
         if len(self.measurements) == 1:
-            self.measurements[0].add_renamable(self.pathname)
+            self.measurements[0].add_pathname(self.pathname)
 
     def process_first_metadata(self, values):
         """

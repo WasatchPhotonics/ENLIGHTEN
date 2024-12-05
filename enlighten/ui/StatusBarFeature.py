@@ -33,6 +33,10 @@ class StatusBarFeature:
         
         self.widgets = {}
         self.menu_order = []
+
+        # @todo: it would be a lot easier to maintain this feature if we 
+        #        dynamically create these labels programmatically rather than 
+        #        define them in enlighten_layout.ui
         for trio in [ [ "Min",                  cfu.label_StatusBar_min_name,           cfu.label_StatusBar_min_value ],
                       [ "Max",                  cfu.label_StatusBar_max_name,           cfu.label_StatusBar_max_value ],
                       [ "Mean",                 cfu.label_StatusBar_mean_name,          cfu.label_StatusBar_mean_value ],
@@ -138,7 +142,7 @@ class StatusBarFeature:
         if pr is None:
             return
 
-        self.set("Spectrum Count", pr.session_count)
+        self.set("Spectrum Count", pr.reading.session_count)
         spectrum = pr.get_processed()
 
         if spectrum is not None:
@@ -147,7 +151,10 @@ class StatusBarFeature:
             self.set("Mean", f"{np.average(spectrum):.2f}")
 
             x_axis = self.ctl.generate_x_axis(cropped=pr.is_cropped())
-            if len(spectrum) != len(x_axis):
+            if x_axis is None:
+                # encountered when debugging XL cloud comms
+                log.error(f"process_reading: can't compute area w/o x_axis") 
+            elif len(spectrum) != len(x_axis):
                 # can happen when EEPROM is in bad state, or we've set a DetectorROI etc
                 log.error(f"process_reading: can't compute area (spectrum {len(spectrum)} != x_axis {len(x_axis)})")
             else:

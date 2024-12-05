@@ -197,7 +197,6 @@ def get_combobox_item_index(combobox, name):
     for i in range(combobox.count()):
         if combobox.itemText(i) == name:
             return i
-    return None
 
 ##
 # @todo move to GUI

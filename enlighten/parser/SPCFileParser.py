@@ -1,4 +1,3 @@
-import spc_spectra as spc
 import datetime
 import logging
 import os
@@ -8,6 +7,13 @@ import numpy as np
 from enlighten.measurement.Measurement import Measurement
 
 log = logging.getLogger(__name__)
+
+SUPPORTED = False
+try:
+    import spc_spectra as spc
+    SUPPORTED = True
+except:
+    log.critical("failed to import spc_spectra; unable to load GRAMS .spc files")
 
 ##
 # This is an SPC file parser, used to load and read SPC files in the ThermoScientific
@@ -40,6 +46,9 @@ class SPCFileParser:
     # 
     # @todo think about other things we could import from the file
     def parse(self):
+        if not SUPPORTED:
+            log.critical(f"unable to load GRAMS .spc files at this time")
+            return
 
         basename = os.path.basename(self.pathname)
 

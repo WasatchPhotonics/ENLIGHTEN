@@ -34,11 +34,10 @@ class InterpolationFeature:
 
         self.mutex = QtCore.QMutex()
         self.new_axis = None
-
-        self.init_from_config()
+        self.allowed = False
 
         self.bt_toggle          .clicked            .connect(self._toggle_callback)
-        self.cb_enabled         .stateChanged       .connect(self._update_widgets)
+        self.cb_enabled         .clicked            .connect(self._update_widgets)
         self.dsb_end            .valueChanged       .connect(self._update_widgets)
         self.dsb_incr           .valueChanged       .connect(self._update_widgets)
         self.dsb_start          .valueChanged       .connect(self._update_widgets)
@@ -67,6 +66,8 @@ class InterpolationFeature:
                 Note that interpolation is performed AFTER the horizontal ROI is
                 cropped."""))
 
+        self.init_from_config()
+
         self._update_widgets()
 
         self.update_visibility()
@@ -82,8 +83,14 @@ class InterpolationFeature:
         pass
 
     def _toggle_callback(self):
-        enabled = not self.cb_enabled.isChecked()
-        self.cb_enabled.setChecked(enabled)
+        if self.check_allowed():
+            self.enabled = not self.cb_enabled.isChecked()
+
+        self.cb_enabled.blockSignals(True)
+        self.cb_enabled.setChecked(self.enabled)
+        self.cb_enabled.blockSignals(False)
+
+        self._update_widgets()
 
     def __repr__(self):
         s = "InterpolationFeature<enabled %s, use %s, start %s, end %s, incr %s, axis %s>" % (
@@ -95,6 +102,20 @@ class InterpolationFeature:
             "None" if self.new_axis is None else f"({self.new_axis[0]}, {self.new_axis[-1]})")
         return s
 
+    def check_allowed(self):
+        self.enabled         = self.cb_enabled.isChecked()
+        self.use_wavelengths = self.rb_wavelength.isChecked()
+        self.use_wavenumbers = self.rb_wavenumber.isChecked()
+        self.start           = self.dsb_start.value()
+        self.end             = self.dsb_end.value()
+        self.incr            = self.dsb_incr.value()
+
+        self.allowed = self.incr > 0 and self.start < self.end and (self.end - self.start >= self.incr) and (self.use_wavelengths or self.use_wavenumbers)
+        if not self.allowed:
+            self.enabled = False
+
+        return self.allowed
+
     def _update_widgets(self):
         """
         Called once at init to set internal state (and apply NOOP to config).
@@ -103,13 +124,21 @@ class InterpolationFeature:
         
         self.mutex.lock()
 
-        self.enabled         = self.cb_enabled.isChecked()
-        self.use_wavelengths = self.rb_wavelength.isChecked()
-        self.use_wavenumbers = self.rb_wavenumber.isChecked()
-        self.start           = self.dsb_start.value()
-        self.end             = self.dsb_end.value()
-        self.incr            = self.dsb_incr.value()
+        # #431 -- validate interpolation settings
+        if not self.check_allowed():
+            self.cb_enabled.blockSignals(True)
+            self.cb_enabled.setChecked(False)
+            self.cb_enabled.blockSignals(False)
 
+            self.enabled = False
+            self.ctl.gui.colorize_button(self.bt_toggle, False)
+            self.bt_toggle.setEnabled(False)
+            self.bt_toggle.setToolTip("Interpolation cannot be enabled until configured in Settings")
+            self.new_axis = None
+            self.mutex.unlock()
+            return
+
+        self.bt_toggle.setEnabled(True)
         self.ctl.gui.colorize_button(self.bt_toggle, self.enabled)
         if self.enabled:
             self.bt_toggle.setToolTip(f"Disable x-axis interpolation")
@@ -161,15 +190,15 @@ class InterpolationFeature:
         """
 
         if self.new_axis is None:
-            log.error("new axis not provided, returning none")
+            log.debug("new axis not provided, returning none")
             return 
 
         if pr is None:
-            log.error("Interpolation requires a ProcessedReading")
+            log.debug("Interpolation requires a ProcessedReading")
             return 
 
         if not (self.use_wavelengths or self.use_wavenumbers):
-            log.error("Using neither wavelengths nor wavenumbers, returning none.")
+            log.debug("Using neither wavelengths nor wavenumbers, returning none.")
             return 
 
         old_interpolated = None
@@ -188,7 +217,7 @@ class InterpolationFeature:
 
         if self.use_wavelengths:
             if wavelengths is None:
-                log.error("Missing required wavelengths")
+                log.debug("Missing required wavelengths")
                 return
 
             interpolated.wavelengths = self.new_axis
@@ -202,7 +231,7 @@ class InterpolationFeature:
 
         elif self.use_wavenumbers:
             if wavenumbers is None:
-                log.error("Missing required wavenumbers")
+                log.debug("Missing required wavenumbers")
                 return
 
             interpolated.wavenumbers = self.new_axis
@@ -215,8 +244,8 @@ class InterpolationFeature:
                 interpolated.wavelengths = generate_wavelengths_from_wavenumbers(excitation=excitation, wavenumbers=interpolated.wavenumbers)
 
         if old_cropped_axis is None or old_detector_axis is None:
-            log.error("Old axis was none, returning none.")
-            return None
+            log.debug("Old axis was none, returning none.")
+            return
 
         processed = pr.get_processed()
         if processed is not None:
@@ -233,7 +262,7 @@ class InterpolationFeature:
                 interpolated.raw = np.interp(self.new_axis, old_detector_axis, raw)
                 log.debug(f"interpolated raw to {len(interpolated.raw)}")
             else:
-                log.error(f"process: len(old_detector_axis) {len(old_detector_axis)} != len(raw) ({len(raw)})")
+                log.debug(f"process: len(old_detector_axis) {len(old_detector_axis)} != len(raw) ({len(raw)})")
                 interpolated.raw = None
 
         dark = pr.get_dark()
@@ -242,7 +271,7 @@ class InterpolationFeature:
                 interpolated.dark = np.interp(self.new_axis, old_detector_axis, dark)
                 log.debug(f"interpolated dark to {len(interpolated.dark)}")
             else:
-                log.error(f"process: len(old_detector_axis) {len(old_detector_axis)} != len(dark) ({len(dark)})")
+                log.debug(f"process: len(old_detector_axis) {len(old_detector_axis)} != len(dark) ({len(dark)})")
                 interpolated.dark = None
 
         reference = pr.get_reference()
@@ -251,7 +280,7 @@ class InterpolationFeature:
                 interpolated.reference = np.interp(self.new_axis, old_detector_axis, reference)
                 log.debug(f"interpolated reference to {len(interpolated.reference)}")
             else:
-                log.error(f"process: len(old_detector_axis) {len(old_detector_axis)} != len(reference) ({len(reference)})")
+                log.debug(f"process: len(old_detector_axis) {len(old_detector_axis)} != len(reference) ({len(reference)})")
                 interpolated.reference = None
 
         if save:
@@ -264,9 +293,9 @@ class InterpolationFeature:
         log.debug("init_from_config")
         s = "interpolation"
 
-        self.cb_enabled    .setChecked (self.ctl.config.get_bool  (s, "enabled"))
-        self.dsb_end       .setValue   (self.ctl.config.get_float (s, "end"))
-        self.dsb_incr      .setValue   (self.ctl.config.get_float (s, "incr"))
-        self.dsb_start     .setValue   (self.ctl.config.get_float (s, "start"))
-        self.rb_wavelength .setChecked (self.ctl.config.get_bool  (s, "use_wavelengths"))
-        self.rb_wavenumber .setChecked (self.ctl.config.get_bool  (s, "use_wavenumbers"))
+        if self.ctl.config.has_option(s, "enabled"        ): self.cb_enabled    .setChecked (self.ctl.config.get_bool  (s, "enabled"))
+        if self.ctl.config.has_option(s, "end"            ): self.dsb_end       .setValue   (self.ctl.config.get_float (s, "end"))
+        if self.ctl.config.has_option(s, "incr"           ): self.dsb_incr      .setValue   (self.ctl.config.get_float (s, "incr"))
+        if self.ctl.config.has_option(s, "start"          ): self.dsb_start     .setValue   (self.ctl.config.get_float (s, "start"))
+        if self.ctl.config.has_option(s, "use_wavelengths"): self.rb_wavelength .setChecked (self.ctl.config.get_bool  (s, "use_wavelengths"))
+        if self.ctl.config.has_option(s, "use_wavenumbers"): self.rb_wavenumber .setChecked (self.ctl.config.get_bool  (s, "use_wavenumbers"))

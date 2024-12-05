@@ -142,6 +142,7 @@ class PageNavigation:
             who know what they are doing...use at your own risk."""))
 
         self.operation_mode = common.OperationModes.RAMAN
+        self.last_operation_mode = common.OperationModes.RAMAN
         self.current_view = -1 
         self.has_used_raman = False
         self.current_technique = self.combo_technique.currentIndex()
@@ -192,13 +193,13 @@ class PageNavigation:
     # Views
     # ##########################################################################
 
-    # parameterized method provided to ensure combo stays in sync
     def set_view(self, index):
-        log.debug(f"set_view: changing combo index to {index}")
         self.combo_view.setCurrentIndex(index)
 
+    def next_view(self):
+        self.combo_view.setCurrentIndex((self.combo_view.currentIndex() + 1) % self.combo_view.count())
+
     def update_technique_callback(self):
-        log.debug("technique callback triggered")
         tech = self.determine_current_technique()
         self.current_technique = tech
 
@@ -212,7 +213,6 @@ class PageNavigation:
     # called whenever the user changes the view via the GUI combobox
     def update_view_callback(self):
         self.current_view = self.determine_current_view()
-        log.debug("update_view_callback: current_view now %d", self.current_view)
 
         self.ctl.form.ui.frame_FactoryMode_Options.setVisible(self.doing_factory())
 
@@ -222,7 +222,6 @@ class PageNavigation:
         if self.doing_scope()           : return self.set_view_scope()
         if self.doing_log()             : return self.set_view_logging()
         
-        log.error("update_view_callback: unknown view: %s", self.current_view)
         self.set_view(common.Views.SCOPE)
 
     def toggle_hardware_and_scope(self):
@@ -232,7 +231,6 @@ class PageNavigation:
             self.set_view(common.Views.HARDWARE)
 
     def set_view_scope(self):
-        log.debug("set_view_scope")
         if self.current_view != common.Views.SCOPE:
             self.set_view(common.Views.SCOPE)
             return
@@ -241,7 +239,6 @@ class PageNavigation:
         self.set_main_page(common.Pages.SCOPE)
 
     def set_view_settings(self):
-        log.debug("set_view_settings")
         if self.current_view != common.Views.SETTINGS:
             self.set_view(common.Views.SETTINGS)
             return
@@ -250,7 +247,6 @@ class PageNavigation:
         self.set_main_page(common.Pages.SETTINGS)
 
     def set_view_hardware(self):
-        log.debug("set_view_hardware")
         if self.current_view != common.Views.HARDWARE:
             self.set_view(common.Views.HARDWARE)
             return
@@ -259,7 +255,6 @@ class PageNavigation:
         self.set_main_page(common.Pages.HARDWARE)
 
     def set_view_logging(self):
-        log.debug("set_view_logging")
         if self.current_view != common.Views.LOG:
             self.set_view(common.Views.LOG)
             return
@@ -268,7 +263,6 @@ class PageNavigation:
         self.set_main_page(common.Pages.LOG)
 
     def set_view_factory(self):
-        log.debug("set_view_factory")
         if not self.ctl.authentication.has_advanced_rights():
             self.ctl.authentication.login(switch_to_factory=True)
             return
@@ -304,7 +298,6 @@ class PageNavigation:
     # ##########################################################################
 
     def set_main_page(self, index):
-        log.debug(f"set_main_page: index {index}")
         self.stack_main.setCurrentIndex(index)
 
     def get_main_page(self):
@@ -333,7 +326,6 @@ class PageNavigation:
         self.set_technique_common(common.Techniques.REFLECTANCE_TRANSMISSION)
 
     def set_technique_common(self, technique):
-        log.debug("set_technique_common: technique %d", technique)
         self.ctl.form.ui.frame_transmission_options.setVisible(self.using_transmission())
 
         self.ctl.graph.reset_axes()
@@ -358,7 +350,7 @@ class PageNavigation:
                 self.ctl.marquee.error("Raman mode requires an excitation wavelength")
             return self.set_operation_mode_non_raman()
 
-        log.debug(f"raman mode operation set")
+        self.last_operation_mode = self.operation_mode
 
         self.ctl.graph.set_x_axis(common.Axes.WAVENUMBERS)
         self.ctl.graph.set_y_axis(common.Axes.COUNTS)
@@ -383,6 +375,7 @@ class PageNavigation:
         self.ctl.stylesheets.apply(self.button_non_raman, "center_rounded_active")
         self.ctl.stylesheets.apply(self.button_expert, "right_rounded_inactive")
 
+        self.last_operation_mode = self.operation_mode
         self.operation_mode = common.OperationModes.NON_RAMAN
 
         self.ctl.update_feature_visibility()
@@ -391,10 +384,10 @@ class PageNavigation:
         self.set_operation_mode_common()
 
     def set_operation_mode_expert(self):
-        log.debug("set_operation_mode_expert: start")
         self.ctl.stylesheets.apply(self.button_raman, "left_rounded_inactive")
         self.ctl.stylesheets.apply(self.button_non_raman, "center_rounded_inactive")
         self.ctl.stylesheets.apply(self.button_expert, "right_rounded_active")
+        self.last_operation_mode = self.operation_mode
         self.operation_mode = common.OperationModes.EXPERT
         self.ctl.update_feature_visibility()
         self.display_non_raman_technique()
@@ -417,12 +410,19 @@ class PageNavigation:
         cfu.frame_post_processing.setVisible(flag)
         cfu.frame_baseline_correction.setVisible(flag)
         cfu.frame_area_scan_widget.setVisible(flag and not is_ingaas)
-        cfu.frame_region_control.setVisible(False) # spec.settings.is_imx()
 
     def set_operation_mode_common(self):
         if "mode" in self.observers:
             for callback in self.observers["mode"]:
                 callback()
+
+    def toggle_expert(self):
+        if not self.doing_expert():
+            self.set_operation_mode_expert()
+        elif self.last_operation_mode == common.OperationModes.RAMAN:
+            self.set_operation_mode_raman()
+        else:
+            self.set_operation_mode_non_raman()
 
     def display_non_raman_technique(self):
         self.ctl.form.ui.frame_TechniqueWidget.show()

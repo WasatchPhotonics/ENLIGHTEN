@@ -1,7 +1,4 @@
-from EnlightenPlugin import *
-
-import logging
-log = logging.getLogger(__name__)
+from EnlightenPlugin import EnlightenPluginBase
 
 class EmissionLines(EnlightenPluginBase):
     """
@@ -14,30 +11,22 @@ class EmissionLines(EnlightenPluginBase):
     MIN_REL_INTENSITY = 0.2
 
     def get_configuration(self):
-        """
-        These would be better as a single drop-down combo box, but we haven't
-        yet added that as a supported plugin input type.
-        """
         self.name = "Emission Lines"
-        self.auto_enable = True
-
         self.lamps = self.get_lamps()
-        self.field(name="lamp", direction="input", datatype="combobox", choices=[k for k, v in self.lamps.items()])
+        self.field(name="lamp", direction="input", datatype="combobox", choices=[lamp for lamp in self.lamps])
 
     def process_request(self, request):
         unit = self.ctl.graph.get_x_axis_unit()
         if unit != "nm":
-            self.marquee_message = "EmissionLines disabled (requires wavelength axis)"
+            self.marquee_message = "Error: EmissionLines requires wavelength axis"
             return
 
         lamp = request.fields["lamp"]
         if lamp in self.lamps:
             for p in self.generate_points(lamp=lamp):
-                self.plot(
-                    title = f"{lamp} {p[0]:7.03f}cm⁻¹",
-                    x = [p[0], p[0]],
-                    y = [min(self.spectrum), p[1]]
-                )
+                self.plot(title = f"{lamp} {p[0]:7.03f}cm⁻¹",
+                          x = [p[0], p[0]],
+                          y = [min(self.spectrum), p[1]])
 
     def generate_points(self, lamp):
         """
@@ -45,18 +34,22 @@ class EmissionLines(EnlightenPluginBase):
         in wavelengths, bounded in y to match the min/max of the specified
         spectrum, of the specified lamp's emission lines.
         """
-        wavelengths = self.settings.wavelengths
-        x_lo = wavelengths[0]
-        x_hi = wavelengths[-1]
 
         if self.settings.eeprom.has_horizontal_roi():
             roi = self.settings.eeprom.get_horizontal_roi()
-            x_lo = wavelengths[roi.start]
-            x_hi = wavelengths[roi.end]
+            start = roi.start
+            end = roi.end
+        else:
+            start = 0
+            end = -1
+
+        wavelengths = self.settings.wavelengths
+        x_lo = wavelengths[start]
+        x_hi = wavelengths[end]
 
         # determine the vertical extent of the synthetic spectrum
-        y_lo = min(self.spectrum)
-        y_hi = max(self.spectrum)
+        y_lo = min(self.spectrum[start:end])
+        y_hi = max(self.spectrum[start:end])
 
         # determine which of this lamp's emission lines to visualize on the graph
         lines = self.lamps[lamp]
@@ -99,60 +92,85 @@ class EmissionLines(EnlightenPluginBase):
         """
         return {
             "Ar": {
-                 696.543: 1,
-                 706.722: .5,
-                 794.818: 1,
-                 800.616: 1,
-                 801.479: 1,
-                 810.369: 2,
-                 811.531: 4,
-                 826.452: 3,
-                 840.821: 3,
-                 842.465: 5,
-                 852.144: 2,
-                 866.794: 1,
-                 876.058: 0,
-                 879.947: 0,
-                 894.310: 0,
-                 912.297: 9,
-                 922.450: 2,
-                 935.422: 0,
-                 965.779: 1,
-                 978.450: 0,
-                1047.005: 0,
-                1066.660: 0,
-                1110.646: 0,
-                1148.811: 0,
-                1166.871: 0,
-                1171.949: 0,
-                1211.233: 0,
-                1213.974: 0,
-                1234.339: 0,
-                1240.283: 0,
-                1243.932: 0,
-                1248.766: 0,
-                1270.288: 0,
-                1273.342: 0,
-                1280.274: 0,
-                1295.666: 0,
-                1300.826: 0,
-                1322.811: 0,
-                1327.264: 0,
-                1331.321: 0,
-                1336.711: 0,
-                1350.419: 0,
-                1362.266: 0,
-                1367.855: 0,
-                1371.858: 0,
-                1382.572: 0,
-                1390.748: 0,
-                1409.364: 0,
-                1504.650: 0,
-                1517.269: 0,
-                1532.934: 0,
-                1598.949: 0,
-                1694.058: 0,
-                1704.288: 0,
+                 329.3640: 1,
+                 330.7228: 1,
+                 335.0924: 1,
+                 337.6436: 1,
+                 338.8531: 1,
+                 415.8590: 1,
+                 418.1884: 1,
+                 420.0674: 1,
+                 423.7220: 1,
+                 427.7528: 1,
+                 430.0650: 1,
+                 434.8064: 1,
+                 440.0986: 1,
+                 442.6001: 1,
+                 444.8879: 1,
+                 448.1811: 1,
+                 451.0733: 1,
+                 454.5052: 1,
+                 457.9350: 1,
+                 458.9898: 1,
+                 460.9567: 1,
+                 465.7901: 1,
+                 472.6868: 1,
+                 476.4865: 1,
+                 560.6733: 1,
+                 565.0704: 1,
+                 573.9520: 1,
+                 591.2085: 1,
+                 603.2127: 1,
+                 617.2278: 1,
+                 696.5431: 5,
+                 706.7218: 3,
+                 714.7042: 1,
+                 727.2936: 2,
+                 738.3980: 3,
+                 750.3869: 4,
+                 763.5106: 4,
+                 794.8176: 1,
+
+                 794.8176: 1,
+                 800.616:  1,
+                 801.479:  1,
+                 810.3693: 2,
+                 811.5311: 4,
+                 826.4522: 3,
+                 840.8210: 3,
+                 842.4648: 5,
+                 852.1442: 2,
+                 866.7944: 1,
+                 912.2967: 9,
+                 922.4499: 2,
+
+                 935.4220: 1,
+                 965.7786: 1,
+                 978.4503: 1,
+                1047.0054: 1,
+                1067.3565: 1,
+                1148.8109: 1,
+                1166.8710: 1,
+                1171.9488: 1,
+                1211.2326: 1,
+                1213.9738: 1,
+                1234.3393: 1,
+                1240.2827: 1,
+                1243.9321: 1,
+                1248.7663: 1,
+                1270.2281: 1,
+                1273.3418: 1,
+                1280.2739: 1,
+                1295.6659: 1,
+                1300.8264: 1,
+                1327.2640: 1,
+                1336.7111: 1,
+                1350.4191: 1,
+                1371.8577: 1,
+                1399.9890: 1,
+                1409.3640: 1,
+                1504.6500: 1,
+                1656.0460: 1
             },
             "Hg": {
                  253.652: 0,
@@ -293,18 +311,60 @@ class EmissionLines(EnlightenPluginBase):
                 1152.275: 0,
             },
             "Xe": {
-                 452.186: 1,
-                 462.420: 3,
-                 466.849: 4,
-                 469.097: 0,
-                 469.804: 1,
-                 473.415: 2,
-                 479.262: 0,
-                 480.702: 0,
-                 482.971: 0,
-                 484.329: 0,
-                 491.651: 0,
-                 492.315: 0,
+               # 452.186: 1,
+               # 462.420: 3,
+               # 466.849: 4,
+               # 469.097: 0,
+               # 469.804: 1,
+               # 473.415: 2,
+               # 479.262: 0,
+               # 480.702: 0,
+               # 482.971: 0,
+               # 484.329: 0,
+               # 491.651: 0,
+               # 492.315: 0,
+
+               # 497.271: 1,
+               # 508.062: 3,
+               # 519.137: 1,
+               # 526.044: 1,
+               # 526.195: 1,
+               # 529.222: 5,
+               # 531.387: 3,
+               # 533.933: 5,
+               # 537.239: 1,
+               # 541.915: 5,
+               # 543.896: 2,
+               # 546.039: 1,
+               # 547.261: 3,
+               # 553.107: 2,
+               # 566.756: 2,
+               # 572.691: 1,
+               # 575.103: 1,
+               # 594.553: 1,
+               # 597.646: 5,
+
+               # 603.620: 3,
+               # 605.115: 5,
+               # 609.350: 2,
+               # 609.759: 4,
+               # 610.143: 1,
+               # 619.407: 1,
+               # 627.082: 1,
+               # 627.754: 1,
+               # 634.396: 1,
+               # 635.635: 2,
+               # 651.283: 0,
+               # 659.501: 3,
+               # 659.725: 1,
+               # 669.432: 1,
+               # 680.574: 3,
+               # 694.211: 3,
+               # 699.088: 5,
+               # 714.903: 0,
+               # 716.483: 1,
+               # 730.180: 0,
+                 
                  733.930: 0,
                  738.600: 0,
                  739.379: 0,

@@ -182,6 +182,8 @@ class Graph:
             for spec in self.ctl.multispec.get_spectrometers():
                 self.ctl.horiz_roi.update_regions(spec)
 
+        self.update_visibility()
+
     def update_marker(self):
         self.show_marker = self.cb_marker.isChecked()
         self.rescale_curves()
@@ -266,13 +268,53 @@ class Graph:
         self.update_visibility()
 
     def update_visibility(self):
+        spec = self.ctl.multispec.current_spectrometer()
+
         self.current_y_axis = common.Axes.COUNTS
         if self.ctl.multispec and self.intended_y_axis in [common.Axes.PERCENT, common.Axes.AU]:
-            spec = self.ctl.multispec.current_spectrometer()
             if spec and spec.app_state.reference is not None:
                 self.current_y_axis = self.intended_y_axis
 
         self.plot.setLabel(axis="left", text=common.AxesHelper.get_pretty_name(self.current_y_axis))
+        
+        self.update_combo_tooltip()
+
+    def update_combo_tooltip(self):
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            self.combo_axis.setToolTip("")
+            return
+
+        a = None
+        unit = self.get_x_axis_unit()
+        prec = True
+
+        if unit == "nm": 
+            a = spec.settings.wavelengths
+        elif unit == "cm": 
+            a = spec.settings.wavenumbers
+            unit += "⁻¹"
+        else: 
+            a = list(range(spec.settings.pixels()))
+            prec = False
+
+        if a is None:
+            log.error("update_combo_tooltip: no x-axis")
+            self.combo_axis.setToolTip("")
+            return
+
+        tt = f"({a[0]:.2f}, {a[-1]:.2f}{unit})" if prec else f"({a[0]}, {a[-1]}{unit})" 
+
+        roi = spec.settings.eeprom.get_horizontal_roi()
+        if roi:
+            try:
+                extra = ", cropped to ROI "
+                extra += f"({a[roi.start]:.2f}, {a[roi.end]:.2f}{unit})" if prec else f"({a[roi.start]}, {a[roi.end]}{unit})"
+                tt += extra
+            except:
+                log.error(f"update_combo_tooltip: invalid horizontal roi {roi}, unit {unit}, prec {prec}, array len {len(a)}")
+
+        self.combo_axis.setToolTip(tt)
 
     ## 
     # This was originally used used by ThumbnailWidget, when clicking the "show 
@@ -295,7 +337,7 @@ class Graph:
                         # force cropping, as clearly y is cropped (likely loaded 
                         # from external file), and we really have no choice but to 
                         # use what was in effect when the Measurement was taken
-                        x = self.ctl.horiz_roi.crop(x, roi=roi, force=True)
+                        x = self.ctl.horiz_roi.crop(x, roi=roi)
 
             if len(y) != len(x):
                 log.error("unable to correct thumbnail widget by cropping (len(x) %d != len(y) %d)", len(x), len(y))
@@ -374,10 +416,13 @@ class Graph:
     # @see http://www.pyqtgraph.org/documentation/graphicsItems/plotdataitem.html
     def set_data(self, curve, y=None, x=None, label=None):
         if x is not None:
-            log.debug(f"set_data[{label}]: plotting {len(x)} x values {x[:3]} .. {x[-3:]}")
+            # log.debug(f"set_data[{label}]: plotting {len(x)} x values {x[:3]} .. {x[-3:]}")
+            pass
 
         if y is not None:
-            log.debug(f"set_data[{label}]: plotting {len(y)} y values {y[:3]} .. {y[-3:]}")
+            # log.debug(f"set_data[{label}]: plotting {len(y)} y values {y[:3]} .. {y[-3:]}")
+            pass
+
         self.update_curve_marker(curve)
         curve.setData(y=y, x=x)
 
@@ -461,14 +506,28 @@ class Graph:
             # iterate over every curve on the graph
             for curve in self.plot.listDataItems():
                 spectrum = curve.getData()[-1]
-                if spectrum is not None and len(spectrum) == len(x_axis):
-                    spectra.append(spectrum)
+                if spectrum is not None:
+                    if len(spectrum) == len(x_axis):
+                        spectra.append(spectrum)
+                    else:
+                        log.debug(f"not copying curve {curve} to clipboard because len(spectrum) {len(spectrum)} != len(x_axis) {len(x_axis)}")
+                else:
+                    log.debug(f"not copying curve {curve} to clipboard because spectrum is None")
         else:
             # multiple spectrometers, so x-axis and lengths can vary
             spectra = []
             for curve in self.plot.listDataItems():
-                spectra.append(curve.getData()[0])
-                spectra.append(curve.getData()[-1])
+                data = curve.getData()
+                x = data[0]
+                y = data[-1]
+                spectra.append(x)
+                spectra.append(y)
+
+        # ignore callbacks with only one column -- these may be specious callbacks 
+        # from empty plugin graph (x-axis only)
+        if len(spectra) < 2:
+            log.debug("declining to copy single-dimension array to clipboard")
+            return
 
         self.ctl.clipboard.copy_spectra(spectra)
 

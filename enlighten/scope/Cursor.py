@@ -15,13 +15,13 @@ class AxisConverter:
     def __init__(self, ctl):
         self.ctl = ctl
 
-        self.px_to_wavelen = lambda x, spec: wasatch_utils.pixel_to_wavelength(x, spec.settings.eeprom.wavelength_coeffs)
-        self.wavelen_to_wavenum = lambda x, spec: wasatch_utils.wavelength_to_wavenumber(x, spec.settings.eeprom.excitation_nm_float)
-        self.wavenum_to_wavelen = lambda x, spec: wasatch_utils.wavenumber_to_wavelength(spec.settings.eeprom.excitation_nm_float, x)
+        self.px_to_wavelen = lambda x, spec: wasatch_utils.pixel_to_wavelength(x, spec.settings.get_wavecal_coeffs())
+        self.wavelen_to_wavenum = lambda x, spec: wasatch_utils.wavelength_to_wavenumber(x, spec.settings.excitation())
+        self.wavenum_to_wavelen = lambda x, spec: wasatch_utils.wavenumber_to_wavelength(spec.settings.excitation(), x)
 
         # MZ: haven't thought through what this means:
         # "noticed you could walk the cursor for px_to_wavenum, think it's an off by 1 error due to the 2 searchsorted"
-        self.px_to_wavenum = lambda x, spec: wasatch_utils.wavelength_to_wavenumber(self.px_to_wavelen(x-1, spec), spec.settings.eeprom.excitation_nm_float)
+        self.px_to_wavenum = lambda x, spec: wasatch_utils.wavelength_to_wavenumber(self.px_to_wavelen(x-1, spec), spec.settings.excitation())
 
         self.conversions = {
             (common.Axes.PIXELS,      common.Axes.WAVELENGTHS): self.px_to_wavelen,
@@ -38,7 +38,12 @@ class AxisConverter:
             log.debug(f"conversion func is none so not updating x")
             return
 
-        new_x = conversion_func(x, spec)
+        try:
+            new_x = conversion_func(x, spec)
+        except:
+            log.error(f"invalid conversion from old_axis {old_axis} to new_axis {new_axis} for x {x}", exc_info=1)
+            new_x = x
+
         return new_x
 
     def wavenum_to_pixels(self, x, spec):
@@ -225,12 +230,12 @@ class Cursor:
 
     def moved_callback(self, pos):
         x_axis = self.ctl.generate_x_axis() # assume selected spectrometer
-        log.debug(f"cursor moved callback x_axis len is {len(x_axis)}")
         if x_axis is None:
             log.error("moved_callback: no x_axis?!")
             self.ds_value.setEnabled(False)
             return
 
+        log.debug(f"cursor moved callback x_axis len is {len(x_axis)}")
         if x_axis[-1] - x_axis[0] == 0:
             log.error("moved_callback: invalid x_axis: %s", x_axis)
             self.ds_value.setEnabled(False)

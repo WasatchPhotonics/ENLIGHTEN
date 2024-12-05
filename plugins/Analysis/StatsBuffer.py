@@ -2,7 +2,7 @@ import numpy as np
 import scipy.stats 
 import logging
 
-from EnlightenPlugin import *
+from EnlightenPlugin import EnlightenPluginBase
 
 log = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ class StatsBuffer(EnlightenPluginBase):
         self.series_names = ["Min", "Max", "Mean", "Median", "Mode", "Sigma.lo", "Sigma.hi"]
 
         for name in self.series_names:
-            self.field(name=name, datatype=bool, initial=True, direction="input", tooltip="Display {name}")
+            self.field(name=name, datatype=bool, initial=(name != "Mode"), direction="input", tooltip="Display {name}")
 
         self.field(name="History", direction="input", datatype=int, minimum=3, maximum=1000, initial=50, tooltip="Number of historical spectra retained for statistics")
         self.field(name="Filled", datatype=int, initial=0, tooltip="Portion of potential history currently populated")
@@ -42,7 +42,7 @@ class StatsBuffer(EnlightenPluginBase):
         self.metadata = {}
         self.overrides = {}
         try:
-            spectrum = np.array(request.processed_reading.processed, dtype=np.float32)
+            spectrum = np.array(request.processed_reading.get_processed(), dtype=np.float32)
             history = request.fields["History"]
 
             if self.metrics is None:
@@ -50,6 +50,7 @@ class StatsBuffer(EnlightenPluginBase):
             else:
                 self.metrics.update(spectrum, history)
 
+            x_values = self.get_axis(processed_reading=request.processed_reading)
             for name, y_values in zip(self.series_names, [ 
                     self.metrics.min,       # YOU MUST KEEP THIS
                     self.metrics.max,       # LIST SYNCHRONIZED
@@ -59,7 +60,7 @@ class StatsBuffer(EnlightenPluginBase):
                     self.metrics.sigma_lo, 
                     self.metrics.sigma_hi ]):
                 if request.fields[name] and y_values is not None: 
-                    self.plot(title=name, y=y_values)
+                    self.plot(title=name, y=y_values, x=x_values)
 
             if request.fields["Export Median"]:
                 self.overrides["recordable_dark"] = self.metrics.median  

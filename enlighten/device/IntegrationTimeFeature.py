@@ -111,7 +111,7 @@ class IntegrationTimeFeature:
     # This sets the spinbox, which should (passively) auto-sync the slider, and then sends
     # the new value downstream (to one if unlocked, all if locked), plus updates states
     # appropriately.
-    def set_ms(self, ms):
+    def set_ms(self, ms, quiet=False):
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
@@ -132,7 +132,11 @@ class IntegrationTimeFeature:
 
         # persist integration time in .ini
         log.debug("integration time to config: %d", ms)
-        self.ctl.config.set(spec.settings.eeprom.serial_number, "integration_time_ms", ms)
+        if self.ctl.multispec.locked:
+            for foo in self.ctl.multispec.get_spectrometers():
+                self.ctl.config.set(foo.settings.eeprom.serial_number, "integration_time_ms", ms)
+        else:
+            self.ctl.config.set(spec.settings.eeprom.serial_number, "integration_time_ms", ms)
 
         # send changed integration time to hardware
         self.ctl.multispec.change_device_setting("integration_time_ms", ms)
@@ -144,7 +148,8 @@ class IntegrationTimeFeature:
                 spec.reset_acquisition_timeout()
         else:
             spec.reset_acquisition_timeout()
-            spec.app_state.check_refs()
+            if not quiet:
+                spec.app_state.check_refs()
 
     def up_callback(self):
         util.incr_spinbox(self.spinbox)

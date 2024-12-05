@@ -23,6 +23,7 @@ class SaveAsAngstrom(EnlightenPluginBase):
 
     def get_configuration(self):
         self.name = "Save As Å/cm⁻¹"
+        self.streaming = False
 
         # register for save events via the plugin architecture
         self.events = { "save": self.save_measurement }

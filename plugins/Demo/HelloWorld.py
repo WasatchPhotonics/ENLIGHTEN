@@ -7,4 +7,4 @@ class HelloWorld(EnlightenPluginBase):
         self.field(name="Message", direction="output", datatype=str, tooltip="What the plugin outputs")
 
     def process_request(self, request):
-        self.output("Message", "Hello, World!")
+        self.outputs["Message"] = "Hello, World!"

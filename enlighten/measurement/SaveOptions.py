@@ -102,6 +102,7 @@ class SaveOptions():
         self.line_number  = 0
         self.last_prefix = None
         self.last_suffix = None
+        self.last_filename_template = self.DEFAULT_FILENAME_TEMPLATE
 
         # initialize
         self.directory = common.get_default_data_dir()
@@ -132,7 +133,7 @@ class SaveOptions():
         self.cb_wavelength      .stateChanged       .connect(self.update_widgets)
         self.cb_wavenumber      .stateChanged       .connect(self.update_widgets)
         self.le_label_template  .editingFinished    .connect(self.update_widgets)
-        self.le_filename_template.editingFinished   .connect(self.update_widgets)
+        self.le_filename_template.editingFinished   .connect(self.update_filename_template)
         self.le_note            .editingFinished    .connect(self.update_widgets)
         self.le_prefix          .editingFinished    .connect(self.update_widgets)
         self.le_suffix          .editingFinished    .connect(self.update_widgets)
@@ -173,7 +174,8 @@ class SaveOptions():
         if self.ctl.config.has_option(s, "label_template"):
             self.le_label_template.setText(self.ctl.config.get(s, "label_template"))
         if self.ctl.config.has_option(s, "filename_template"):
-            self.le_filename_template.setText(self.ctl.config.get(s, "filename_template"))
+            self.last_filename_template = self.ctl.config.get(s, "filename_template")
+            self.le_filename_template.setText(self.last_filename_template)
 
         self.le_prefix          .setText   (self.ctl.config.get(s, "prefix"))
         self.le_suffix          .setText   (self.ctl.config.get(s, "suffix"))
@@ -187,6 +189,39 @@ class SaveOptions():
     def init_checkbox(self, cb, option):
         value = self.ctl.config.get_bool("save", option)
         cb.setChecked(value)
+
+    def update_filename_template(self):
+        """
+        Check to see if template contains macros (which would allow the 
+        filename to change between measurements). [#429]
+
+        @todo Note that we're not actually validating that the macro is valid; 
+              this is another reason to create a TemplateFeature.
+        """
+        template = self.le_filename_template.text()
+        m = re.search(r"{(.*?)}", template)
+        if m:
+            log.debug(f"update_filename_template: found group {m.group(0)} in '{template}'")
+        else:
+            log.info(f"user tried to set filename template '{template}' with no macros")
+            result = common.msgbox(
+                title="Filename Template Warning", 
+                prompt="Setting a static filename template with no macros (i.e. " +
+                       "{measurment_id}) means that every saved measurement will " +
+                       "overwrite the previous file. Is that what you want?", 
+                informative_text="Macros which increase uniqueness include " +
+                       "{measurement id}, {session_count}, {date}, {time}, {file_timestamp}, " +
+                       "{YYYY}-{MM}-{DD}-{hh}_{mm}_{ss}.{ffffff}, etc.",
+                buttons="Yes|Cancel")
+
+            if result.lower() == "yes":
+                log.info("user confirms intent to overwrite previous measurements")
+            else:
+                log.debug("user decided not to do this; resetting to default filename template")
+                self.le_filename_template.setText(self.last_filename_template)
+
+        self.last_filename_template = self.le_filename_template.text()
+        self.update_widgets()
 
     ## Update widgets and config state when:
     #
@@ -328,11 +363,17 @@ class SaveOptions():
     def force_wavenumber(self):
         self.cb_wavenumber.setChecked(True)
 
-    ## Show the directory dialog selection, set the default save location
-    #  to the selected directory.
     def update_location(self):
+        """ 
+        Show the directory dialog selection, set the default save location to the 
+        selected directory.
+        """
         directory = self.ctl.file_manager.get_directory()
-        if directory is None:
+        if directory is None or 0 == len(directory):
+            directory = self.ctl.config.get("SaveOptions", "save_location", default=common.get_default_data_dir())
+            log.debug(f"update_location: cancelled, reverting to {directory}")
+        elif not os.path.isdir(directory):
+            log.debug(f"update_location: not a directory: {directory}")
             return
 
         self.directory = directory

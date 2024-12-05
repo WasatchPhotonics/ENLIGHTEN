@@ -1,10 +1,5 @@
-import logging
-
 from scipy.signal import savgol_filter
-
-from EnlightenPlugin import *
-
-log = logging.getLogger(__name__)
+from EnlightenPlugin import EnlightenPluginBase
 
 class SavitzkyGolay(EnlightenPluginBase):
     """
@@ -45,16 +40,16 @@ class SavitzkyGolay(EnlightenPluginBase):
         self.overrides = {}
 
     def process_request(self, request):
+        delta     = self.get_widget_from_name("Delta").value()
+        deriv     = self.get_widget_from_name("Deriv Order").value()
         win_len   = self.get_widget_from_name("Half-Width").value() * 2 + 1
         polyorder = min(self.get_widget_from_name("Poly Order").value(), win_len - 1)
-        deriv     = self.get_widget_from_name("Deriv Order").value()
-        delta     = self.get_widget_from_name("Delta").value()
 
         smoothed = savgol_filter(
-            x             = request.processed_reading.processed,
+            x = request.processed_reading.get_processed(),
             window_length = win_len,    # < len(x)
             polyorder     = polyorder,  # < win_len
             deriv         = deriv,      # >= 0
             delta         = delta)      # spacing if delta>1, default 1
 
-        return EnlightenPluginResponse(request, overrides = { "processed": smoothed } )
+        self.overrides["processed"] = smoothed

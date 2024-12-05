@@ -1,15 +1,16 @@
 #!/bin/bash
 #
 # Run supporting pyrcc files to generate resource files and future
-# designer conversions into python code. Run this from the home project
-# directory like:
-# <project root> $ ./scripts/rebuild_resources.sh
+# designer conversions into python code. Invoked from the repo root:
+# 
+# $ ./scripts/rebuild_resources.sh
+#   or 
+# $ sh scripts/rebuild_resources.sh
 
 QUICK=false
 PAUSE=false
 while [ "$1" != "" ]
 do
-    echo "evaluating arg '$1'"
     case $1 in
          --quick) QUICK=true; ;;
          --pause) PAUSE=true; ;;
@@ -37,7 +38,6 @@ UIC_OPTS=""
 RCC_OPTS=""
 PYTHON="python"
 
-# Change to Windows tool filenames if not on Linux
 if (uname -s | grep -q '^MINGW') || (uname -s | grep -q '^MSYS_NT')
 then
     # this line was needed when we moved to Qt5, because uic is now a python script 
@@ -75,22 +75,25 @@ else
         if uname -a | grep -qi darwin
         then
             OS="MacOS"
-            # PATH should include /usr/local/lib/python3.10/site-packages/PySide2 or equivalent
             if [ "$USE_PYSIDE_2" ]
             then
+                # PATH should include /usr/local/lib/python3.10/site-packages/PySide2 or equivalent
                 RCC=`which pyside2-rcc`
                 UIC=`which pyside2-uic`
 
-                # also check here:
+                # may be found here on some distributions:
+                # 
                 # RCC=/usr/local/lib/python3.10/site-packages/PySide2/rcc
                 # UIC=/usr/local/lib/python3.10/site-packages/PySide2/uic
             else
                 RCC=`which pyside6-rcc`
                 UIC=`which pyside6-uic`
             fi
+
+            # Note that we're now using 3.11 on Windows...
+            PYTHON="python3.10"
             TWO_TO_THREE=`which 2to3-3.10`
 
-            PYTHON="python3.10"
             UIC_OPTS="--generator python"
             RCC_OPTS="--generator python"
         else
@@ -113,12 +116,12 @@ echo "2to3        = $TWO_TO_THREE"
 echo
 
 FAILED=false
-if ! [ -f $RCC ]
+if ! [ -f "$RCC" ]
 then
     echo "Error: can't locate RCC: $RCC"
     FAILED=true
 fi
-if ! [ -f $UIC ]
+if ! [ -f "$UIC" ]
 then
     echo "Error: can't locate UIC: $UIC"
     FAILED=true
@@ -155,21 +158,22 @@ fi
 # Convert Qt files to Python
 ################################################################################
 
+# Process all of the QT Resource Files
 if ! $QUICK
 then
-    # Process all of the QT Resource Files
     for FILE in */assets/uic_qrc/*.qrc
     do 
         ROOT=$(echo $FILE | cut -d '.' -f 1)
         DEST=${ROOT}_rc.py
 
         echo -n "converting $FILE"
-        $RCC $FILE -o $DEST $RCC_OPTS
+        "$RCC" $FILE -o $DEST $RCC_OPTS
         echo "...done"
     done
     echo
 fi
 
+# Process all of the QT .ui (User Interface) forms
 for FILE in */assets/uic_qrc/*.ui
 do 
     BASENAME=$(echo $FILE | awk -F/ '{print $NF}')
@@ -182,9 +186,9 @@ do
         continue
     fi
 
-echo -n "converting $FILE"
-$UIC_PRE $UIC $FILE -o $DEST $UIC_OPTS && convertToPy3 $DEST
-echo "...done"
+    echo -n "converting $FILE"
+    $UIC_PRE "$UIC" $FILE -o $DEST $UIC_OPTS && convertToPy3 $DEST
+    echo "...done"
 done
 
 # make uic_qrc a valid Python module

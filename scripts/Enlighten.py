@@ -18,6 +18,8 @@ os.environ["BLINKA_FT232H"]="1" # used to allow SPI with FT232H
 
 from enlighten import common
 from enlighten.ui.BasicWindow import BasicWindow
+import splashscreens_rc
+
 from wasatch.DeviceID import DeviceID
 from wasatch   import applog
 
@@ -89,23 +91,24 @@ class EnlightenApplication:
         parser.add_argument("--log-append",        type=str, default="False",     help="append to existing logfile", choices=["False", "True", "LIMIT"])
         parser.add_argument("--logfile",           type=str,                      help="explicit path for the logfile")
         parser.add_argument("--max-memory-growth", type=int, default=0,           help="automatically exit after this percent memory growth (0 for never, 100 = doubling)")
+        parser.add_argument("--max-thumbnails",    type=int,                      help="maximum number of thumbnails in measurement clipboard", default=os.environ.get("ENLIGHTEN_MAX_THUMBNAILS", 500))
         parser.add_argument("--run-sec",           type=int, default=0,           help="automatically exit after this many seconds (0 for never)")
         parser.add_argument("--serial-number",     type=str,                      help="only connect to specified serial number")
         parser.add_argument("--set-all-dfu",       action="store_true",           help="set spectrometers to DFU mode as soon as they connect")
         parser.add_argument("--stylesheet-path",   type=str,                      help="path to CSS directory")
         parser.add_argument("--window-state",      type=str, default="maximized", help="window initial state", choices=["normal", "maximized", "fullscreen", "minimized"])
         parser.add_argument("--plugin",            type=str,                      help="plugin name to start enabled")
+        parser.add_argument("--password",          type=str,                      help="authentication password", default=os.environ.get("ENLIGHTEN_PASSWORD"))
         parser.add_argument("--start-batch",       action="store_true",           help="start a Batch Collection as soon as a spectrometer connects")
 
         return parser
 
     def run(self):
         # instantiate form (a QMainWindow with name "MainWindow")
-        # UI needs to be imported here in order to access QResources for the splash screen
         self.form = BasicWindow(title="ENLIGHTEN™ %s" % common.VERSION)
 
-        pixmap = QPixmap(":/application/images/splash.png")
-        pixmap = pixmap.scaled(pixmap.width()/2, pixmap.height()/2) # eyeballed, default seemed to take whole screen
+        pixmap = QPixmap(":/splashscreens/Enlighten-loading-90p.png")
+        pixmap = pixmap.scaled(pixmap.width()/2, pixmap.height()/2)
         self.splash = QSplashScreen()
         self.splash.setPixmap(pixmap)
         self.splash.show()
@@ -118,10 +121,14 @@ class EnlightenApplication:
             append_arg=str(self.args.log_append)
         )
 
+        # now that we've configured the logger, redirect stdout to our logger
+        # (so we can use Tensorflow without a console window)
+        sys.stdout = common.FakeOutputHandle("FakeStdout")
+
         # This violates convention but Controller has so many imports that it 
-        # takes a while to import. This needs to occur here because the Qt app 
-        # needs to be made before the splash screen. So it has to occur in this 
-        # function after both the app creation and splash screen creation.
+        # takes a while to import. We're choosing to import it here, AFTER
+        # displaying the splash screen, so you have something pretty to look at
+        # while we load all those BusinessObjects.
         from enlighten.Controller import Controller
 
         log.debug("platform = %s", platform.platform())
@@ -132,6 +139,7 @@ class EnlightenApplication:
             log_level         = self.args.log_level,
             log_queue         = self.main_logger.log_queue,
             max_memory_growth = self.args.max_memory_growth,
+            max_thumbnails    = self.args.max_thumbnails,
             run_sec           = self.args.run_sec,
             serial_number     = self.args.serial_number,
             stylesheet_path   = self.args.stylesheet_path,
@@ -140,6 +148,7 @@ class EnlightenApplication:
             splash            = self.splash,
             window_state      = self.args.window_state,
             start_batch       = self.args.start_batch,
+            password          = self.args.password,
             plugin            = self.args.plugin)
 
         # This requires explanation.  This is obviously a Qt "connect" binding,

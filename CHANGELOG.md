@@ -1,8 +1,182 @@
 # Version History
 
+- 2024-??-?? 4.1.19
+    - [#506] added robustness to Save Location change cancel
+    - [#509] fix "Load Dark" and "Load Reference"
+    - fix EEPROMEditor bug
+    - [#387] Plugin cleanup
+        - deprecated EnlightenApplicationInfo
+        - deprecated plugin "[x] Enable" checkbox
+        - hide graph combo unless has_other_graph
+        - redefined EnlightenPluginConfiguration (EPC) .streaming
+        - moved EPC.auto_enable to internal (support legacy plugins)
+        - added EnlightenPlugin.get_axis(processed_request)
+        - disabled HTTPServer (needs ported from gpcharts to matplotlib)
+        - deprecated EnlightenBasePlugin.events (use ctl to register formal observers)
+- 2024-12-03 4.1.18
+    - deprecated RegionControlFeature
+    - XL fixes
+        - fixed blank wavecal
+        - flag non-downloaded EEPROMs as "stubbed" to drive re-download attempts
+        - Marquee updates during download
+        - support vertical ROI
+- 2024-11-25 4.1.17
+    - Multichannel testing
+        - added Ctrl-, and Ctrl-. to select previous and next spectrometer
+        - added OEM/Multichannel plugin
+        - persist integration time on locked spectrometers to enlighten.ini
+        - make Dark lockable
+    - plugins
+        - updated Analysis.Despiking
+        - updated Analysis.PeakFinding
+        - updated Prod.PixelNoise
+- 2024-11-05 4.1.16
+    - XS
+        - support new startup_laser_tec_setpoint EEPROM field
+        - added PixelCalibration
+        - add horizontal binning mode BIN_4X2_AVG
+        - add more firmware version checks around new features to avoid breaking old FW
+        - start refresh of BLEDevice
+    - GUI
+        - added ctrl-Freeze axes
+        - added Thumbnail tooltips
+        - improved 'locked Thumbnail' docs
+    - misc
+        - update row-ordered CSV format to support ROI "NA", etc
+        - fixed gain 0dB being accidentally written on non-XS devices
+- 2024-10-29 4.1.15
+    - AutoRaman
+        - added confirmation dialog
+        - updated Did You Know
+        - actually remembered to commit the new ReadingProgressBar class :-(
+        - tidy ReadingProgressBar close
+        - added onboard
+        - added elapsed time
+        - catch exceptions in TakeOne callbacks
+        - support new onboard Auto-Raman opcode and parameters
+    - plugins
+        - fixed imports
+        - fixed overrides (e.g. Filters.SavitzkyGolay)
+- 2024-10-16 4.1.14
+    - AutoRaman
+        - fixed "Stop" button
+        - release lock on manual laser control at completion
+- 2024-10-15 4.1.13
+    - AutoRaman
+        - fixed on X series
+        - added option in BatchCollection
+        - add flag to Measurement metadata
+        - indicate laser firing status via LaserControl and StatusIndicators
+    - added bin_4x2_interp
+    - added DYK (Ctrl-Up/Down)
+    - added Ctrl-backtick shortcut
+- 2024-10-14 4.1.12
+    - added bin_4x2
+- 2024-10-10 4.1.11
+    - fixed Ctrl-G gain shortcut 
+    - renamed "ROI Start/Stop Lines" in saved Measurements
+    - AutoRaman
+        - auto-save bugfix
+        - bugfix when NOT retaining settings
+        - fixed saved Measurement metadata when NOT retaining settings
+        - restore previous int/gain on cancel
+- 2024-10-10 4.1.10
+    - bumped revision to test updated wasatch.IMX385 class
+- 2024-10-09 4.1.9
+    - flipped IMX385 first pixel from red -> blue
+- 2024-10-09 4.1.8
+    - AutoRaman
+        - add "auto-save" checkbox (persisted)
+        - add "Retain Auto-Raman Settings" checkbox (persisted)
+        - add scan averaging to retained Auto-Raman settings
+        - if not retaining, still use (but don't store) averaged dark
+        - expose maxScansToAverage AutoRamanRequest option
+        - add Ctrl-* shortcut
+    - added "SSC Enabled" FeatureMask bit on EEPROM Editor
+- 2024-10-03 4.1.7
+    - EEPROMEditor
+        - added disable_ble_power
+        - added disable_laser_armed_indicator
+    - simplified Demo.SineAndScale plugin
+    - added BLE firmware version
+- 2024-09-27 4.1.6
+    - fix AutoRaman Preset setters
+- 2024-09-19 4.1.5
+    - icon colors
+- 2024-09-18 4.1.4
+    - add ui.ReadingProgressBar
+    - AutoRaman
+        - clear graph at measurement start
+        - add convenience icon
+        - support configurable Laser Warning Delay
+        - apply ScrollStealFilter to config fields
+- 2024-09-16 4.1.3
+    - laser control locking
+        - allow unlocking after locking
+        - include laser TEC mode
+- 2024-09-12 4.1.2
+    - allow plugins to specify field width
+    - redesigned Auto-Raman mode
+        - button automatically appears in Laser Control Widget when spectrum is paused (if in Raman mode)
+        - "configure" checkbox exposes Auto-Raman settings
+        - wasatch.AutoRaman class streams status messages to Marquee
+        - LEFT TO DO (#474)
+            - proper ProgressBar?
+            - update battery, temperatures etc
+            - migrate BatchCollection
+    - fixed "Reset FPGA" button
+    - added Ctrl-X toggle eXpert mode
+- 2024-08-29 4.1.1
+    - ensure metadata 'stomped' by plugins appear in exports
+    - fix interpolation defaults and persistence
+    - reduce extraneous Raman Intensity Correction messages
+    - allow user to "cancel" selection of new Save Directory
+- 2024-08-22 4.1.0
+    - public release
+
 ## 4.0 GUI and Plugin Refactoring
 
-- 2024-??-?? 4.0.63
+- 2024-08-22 4.0.68
+    - change StatusBar frame count from ProcessedReading to Reading.session_count
+    - clarified BatchCollection "explain this" re: collection timeout
+    - [#462] fix system clipboard copy after connecting to plugin
+    - [#460] fix issues loading saved spectra
+        - fix logging bug in MeasurementFactory
+        - fixed missed calls to add_renamable from #452
+        - fix bug graphing loaded .json measurements
+    - enlighten_ubuntu_launcher.sh
+        - fixed curl
+        - added python3.7-dev
+- 2024-07-19 4.0.67
+    - [#452] don't prompt when re-labeling thumbnails
+    - [#454] fix issue renaming .spc files
+    - [#455] fix basename issue when multiple thumbnails have the same label
+    - [#456] laser power unit combobox should disappear when leaving expert mode
+    - [#450] indicate when laser in LaserWarningDelay state
+- 2024-06-28 4.0.66
+    - [#389] add Preset to metadata
+    - [#406] handle whitespace in developer path
+    - [#408] support --password cmd-line arg and ENLIGHTEN_PASSWORD environment variable
+    - [#420] allow user to navigate to target directory when saving exports
+    - [#426] support --max-thumbnails cmd-line arg and ENLIGHTEN_MAX_THUMBNAILS environment variable
+    - [#428] verify before overwriting files
+    - [#429] confirm when user configures "static" filename template
+    - [#431] validate interpolation inputs
+    - [#432] fixed scan averaging in BatchCollection
+    - [#446] update theming docs
+    - added hidden scipy imports for superman
+- 2026-06-01 4.0.65
+    - allow plugins to override Label metadata
+- 2024-06-19 4.0.64
+    - move pywin32 and spc_spectra to requirements.txt
+    - try to remove console on Win11
+        - add --noconsole to pyinstaller
+        - add FakeOutputHandle to keep Tensorflow happy in absence of sys.stdout
+    - struggle with Microsoft Defender Antivirus
+        - played with Python 3.12, rolled-back to 3.11
+    - accept bizarre 1min+ delay on first Tensorflow initialization post-install/compilation
+- 2024-05-30 4.0.63
+    - add default FWHM
     - plugins
         - Exporters/SaveAsAngstrom: modernized, simplified
         - Demo/EventResponse: modernized, simplified, renamed Demo/Buttons

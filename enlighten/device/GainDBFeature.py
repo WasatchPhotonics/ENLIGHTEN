@@ -25,12 +25,6 @@ class GainDBFeature:
     persisted through EEPROM anymore than is, say, momentary integration time
     used to update startupIntegrationTimeMS.
     
-    Note that although the SiG can actually handle gain in increments of 0.1dB,
-    and our FunkyFloat type can support increments of 1/256 dB, the widget is
-    currently implemented as an integral QSpinBox (not QDoubleSpinBox), so
-    UI precision is currently 1dB.
-    
-    @todo support UI gain resolution of 0.1 dB
     @see additional notes in wasatch.SpectrometerState
     """
 
@@ -42,20 +36,23 @@ class GainDBFeature:
         self.ctl = ctl
         cfu = ctl.form.ui
 
+        self.spinbox = cfu.doubleSpinBox_gain 
+
         self.widgets = [
             cfu.pushButton_gain_dn,
             cfu.pushButton_gain_up,
             cfu.label_gainWidget_title,
             cfu.slider_gain,
-            cfu.doubleSpinBox_gain ]
+            self.spinbox ]
 
         self.locked = False # when Locked, don't show on-screen even in Expert mode
+        self.visible = False
 
         # bindings
+        self.spinbox.valueChanged.connect(self._sync_spinbox_to_slider_callback)
+        self.spinbox.installEventFilter(ScrollStealFilter(self.spinbox))
         cfu.slider_gain.valueChanged.connect(self._sync_slider_to_spinbox_callback)
         cfu.slider_gain.installEventFilter(MouseWheelFilter(cfu.slider_gain))
-        cfu.doubleSpinBox_gain.valueChanged.connect(self._sync_spinbox_to_slider_callback)
-        cfu.doubleSpinBox_gain.installEventFilter(ScrollStealFilter(cfu.doubleSpinBox_gain))
         cfu.pushButton_gain_up.clicked.connect(self._up_callback)
         cfu.pushButton_gain_dn.clicked.connect(self._dn_callback)
 
@@ -77,21 +74,21 @@ class GainDBFeature:
         """
 
         if self.locked:
-            visible = False
+            self.visible = False
         else:
             spec = self.ctl.multispec.current_spectrometer()
             if spec is None:
-                visible = False
+                self.visible = False
             else:
-                visible = spec.settings.is_micro() and self.ctl.page_nav.doing_expert()
+                self.visible = spec.settings.is_micro() and self.ctl.page_nav.doing_expert()
 
         # normally we'd do this at the enclosing frame, but gain is currently 
         # nested within the detectorControlWidget, and a sub-frame breaks the
         # CSS, so...just disappear the widgets for now
         for w in self.widgets:
-            w.setVisible(visible)
+            w.setVisible(self.visible)
 
-        return visible
+        return self.visible
 
     def init_hotplug(self):
         """ called by initialize_new_device on hotplug, BEFORE reading / applying .ini """
@@ -105,26 +102,29 @@ class GainDBFeature:
     def reset(self):
         """ called by initialize_new_device a little after the other function """
         spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+        if not spec.settings.is_xs():
+            return
 
         # load gain_db from .ini, falling back to spec.settings.state (copied from EEPROM)
-        if spec:
-            sn = spec.settings.eeprom.serial_number
+        sn = spec.settings.eeprom.serial_number
 
-            db = 8
-            if self.ctl.config.has_option(sn, "gain_db"):
-                db = self.ctl.config.get_float(sn, "gain_db")
-            elif spec.settings.state.gain_db is not None:
-                db = spec.settings.state.gain_db
-            elif spec.settings.eeprom.detector_gain is not None:
-                db = spec.settings.eeprom.detector_gain
+        db = 8
+        if self.ctl.config.has_option(sn, "gain_db"):
+            db = self.ctl.config.get_float(sn, "gain_db")
+        elif spec.settings.state.gain_db is not None:
+            db = spec.settings.state.gain_db
+        elif spec.settings.eeprom.detector_gain is not None:
+            db = spec.settings.eeprom.detector_gain
 
-            self.set_db(db)
+        self.set_db(db)
 
-            # apply limits to SPINBOX
-            self.ctl.form.ui.doubleSpinBox_gain.blockSignals(True)
-            self.ctl.form.ui.doubleSpinBox_gain.setMinimum(self.MIN_GAIN_DB)
-            self.ctl.form.ui.doubleSpinBox_gain.setMaximum(self.MAX_GAIN_DB)
-            self.ctl.form.ui.doubleSpinBox_gain.blockSignals(False)
+        # apply limits to SPINBOX
+        self.spinbox.blockSignals(True)
+        self.spinbox.setMinimum(self.MIN_GAIN_DB)
+        self.spinbox.setMaximum(self.MAX_GAIN_DB)
+        self.spinbox.blockSignals(False)
 
     def _quiet_set(self, widget, value):
         """ Set the value of a widget without invoking the ValueChanged event """
@@ -133,12 +133,16 @@ class GainDBFeature:
         widget.blockSignals(False)
 
     def set_focus(self):
-        self.spinbox.setFocus()
-        self.spinbox.selectAll()
+        if self.visible:
+            self.spinbox.setFocus()
+            self.spinbox.selectAll()
 
-    def set_db(self, db):
+    def set_db(self, db, quiet=False):
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
+            return
+
+        if not spec.settings.is_xs():
             return
 
         db = float(db)
@@ -153,27 +157,28 @@ class GainDBFeature:
         self.ctl.multispec.change_device_setting("detector_gain", db)
 
         # ensure both gain widgets are correct, without generating additional events
-        self._quiet_set(self.ctl.form.ui.doubleSpinBox_gain, db)
+        self._quiet_set(self.spinbox, db)
         self._quiet_set(self.ctl.form.ui.slider_gain, db)
 
-        spec.app_state.check_refs()
+        if not quiet:
+            spec.app_state.check_refs()
 
     def _up_callback(self):
-        util.incr_spinbox(self.ctl.form.ui.doubleSpinBox_gain)
-        self.set_db(self.ctl.form.ui.doubleSpinBox_gain.value())
+        util.incr_spinbox(self.spinbox)
+        self.set_db(self.spinbox.value())
 
     def _dn_callback(self):
-        util.decr_spinbox(self.ctl.form.ui.doubleSpinBox_gain)
-        self.set_db(self.ctl.form.ui.doubleSpinBox_gain.value())
+        util.decr_spinbox(self.spinbox)
+        self.set_db(self.spinbox.value())
 
     def _sync_slider_to_spinbox_callback(self):
         self.set_db(self.ctl.form.ui.slider_gain.value()) 
 
     def _sync_spinbox_to_slider_callback(self):
-        self.set_db(self.ctl.form.ui.doubleSpinBox_gain.value())
+        self.set_db(self.spinbox.value())
 
     def get_db(self):
-        return self.ctl.form.ui.doubleSpinBox_gain.value()
+        return self.spinbox.value()
 
     def set_db_callback(self, value):
         """ used by Presets """

@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="splashscreens">
+    <file alias="Enlighten-loading-90p.png">images/splashscreens/Enlighten-loading-90p.png</file>
+  </qresource>
+</RCC>

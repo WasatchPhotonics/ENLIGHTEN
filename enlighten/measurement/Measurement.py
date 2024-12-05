@@ -98,7 +98,7 @@ log = logging.getLogger(__name__)
 #
 # - What if you were appending measurements to one big CSV?
 # - What if you loaded the measurement for comparison from archival spectra?
-# - What if you loeaded the measurement from a big export file?
+# - What if you loaded the measurement from a big export file?
 #
 # My current decision is that we will retain the historical ability to rename
 # any file(s) saved from the given Measurement IFF the files were CREATED
@@ -222,8 +222,8 @@ class Measurement:
                            'Baseline Correction Algo',
                            'ROI Pixel Start',
                            'ROI Pixel End',
-                           'ROI Vertical Pixel Start',
-                           'ROI Vertical Pixel End',
+                           'ROI Start Line',
+                           'ROI Stop Line',
                            'CCD C4',
                            'Slit Width',
                            'Cropped',
@@ -239,8 +239,11 @@ class Measurement:
                            'Device ID',
                            'FW Version',
                            'FPGA Version',
+                           'BLE Version',
                            'Prefix',
                            'Suffix',
+                           'Preset',
+                           'Auto-Raman',
                            'Session Count',
                            'Plugin Name']
 
@@ -255,7 +258,7 @@ class Measurement:
         self.label                    = None
         self.measurement_id           = None
         self.processed_reading        = None
-        self.renamable_files          = set()
+        self.pathname_by_ext          = {}
         self.renamed_manually         = False
         self.settings                 = None
         self.source_pathname          = None
@@ -401,12 +404,13 @@ class Measurement:
     def replace_processed_reading(self, pr):
         self.processed_reading = pr
         self.timestamp = datetime.datetime.now()
-        self.renamable_files = set()
+        self.pathname_by_ext = {}
         self.generate_id()
         self.generate_label()
 
-    def add_renamable(self, pathname):
-        self.renamable_files.add(pathname)
+    def add_pathname(self, pathname):
+        ext = pathname.split(".")[-1]
+        self.pathname_by_ext[ext] = pathname
 
     def generate_id(self):
         # It is unlikely that the same serial number will ever generate multiple
@@ -420,9 +424,11 @@ class Measurement:
         ts = self.timestamp.strftime("%Y%m%d-%H%M%S-%f")
         self.measurement_id = f"{ts}-{sn}"
 
-        # note that this is the wrapped filename exclusive of extension 
-        # ({prefix}-{filename_template}-{suffix})
-        self.basename = self.generate_basename() 
+        # Note that this is the wrapped filename exclusive of extension 
+        # ({prefix}-{filename_template}-{suffix}). If the user later renames
+        # the thumbnail, the manually-entered label (possibly suffixed with -n
+        # in case of duplicates) will be stored as the new self.basename.
+        self.generate_basename() 
 
     def generate_label(self):
         if self.label is not None:
@@ -523,15 +529,27 @@ class Measurement:
 
     # Note that this wraps the prefix and suffix around the expanded template.
     # Prefix and Suffix are not retained in manually-renamed measurements (ctrl-E).
+    #
+    # YOU ARE HERE - bar-2 is not being saved as self.basename.
+    #                self.label is "bar", and subsequent calls
+    #                to "resave" are going to overwrite / recreate bar.csv, not 
+    #                bar-2.csv.
     def generate_basename(self):
-        if self.ctl is None or self.ctl.save_options is None:
-            return self.measurement_id
-        else:
-            if self.renamed_manually and self.ctl.save_options.allow_rename_files():
-                return util.normalize_filename(self.label)
+        if self.basename is None:
+            if self.ctl is None or self.ctl.save_options is None:
+                self.basename = self.measurement_id
+
+            elif self.renamed_manually and self.ctl.save_options.allow_rename_files() and len(self.pathname_by_ext) > 0:
+                # return whatever we last used when saving the file
+                ext = sorted(keys(self.pathname_by_ext))[0]
+                pathname = self.pathname_by_ext[ext]
+                _, filename = os.path.split(pathname)
+                self.basename, _ = os.path.splitext(filename)
+                
             else:
                 basename = self.expand_template(self.ctl.save_options.filename_template())
-                return self.ctl.save_options.wrap_name(basename, self.prefix, self.suffix)
+                self.basename = self.ctl.save_options.wrap_name(basename, self.prefix, self.suffix)
+        return self.basename
 
     def dump(self):
         log.debug("Measurement:")
@@ -541,7 +559,7 @@ class Measurement:
         log.debug("  timestamp:             %s", self.timestamp)
         log.debug("  settings:              %s", self.settings)
         log.debug("  source_pathname:       %s", self.source_pathname)
-        log.debug("  renamable_files:       %s", self.renamable_files)
+        log.debug("  pathnames:             %s", self.pathname_by_ext)
 
         pr = self.processed_reading
         if pr is not None:
@@ -575,13 +593,13 @@ class Measurement:
             self.measurement_id, from_disk, update_parent)
 
         if from_disk:
-            for pathname in self.renamable_files:
+            for ext, pathname in self.pathname_by_ext.items():
                 try:
                     os.remove(pathname)
-                    log.debug("removed %s", pathname)
+                    log.debug("removed %s %s", ext.upper(), pathname)
                 except:
                     pass
-            self.renamable_files = set()
+            self.pathname_by_ext = {}
 
         if update_parent:
             # This deletion request came from within the Measurement (presumably
@@ -638,7 +656,8 @@ class Measurement:
         # rename the underlying file(s)
         if self.ctl:
             if self.ctl.save_options.allow_rename_files() or self.ctl.save_options.filename_as_label():
-                self.rename_files()
+                if not self.rename_files():
+                    return
 
         # re-apply trace with new legend
         if was_displayed:
@@ -648,7 +667,7 @@ class Measurement:
             self.renamed_manually = True
 
         # re-save (update metadata on disk)
-        self.save()
+        self.save(resave=True)
 
     ##
     # The measurement has been relabled (say, "cyclohexane").  So if
@@ -677,22 +696,20 @@ class Measurement:
     # 4. It could have been generated from live data and APPENDED to an
     #    existing file (typically row-ordered CSV).
     #    - Renaming considered NOT POSSIBLE
+    #
+    # @returns True on success
     def rename_files(self):
-        if not self.renamable_files:
-            return log.error("Measurement %s has no renamable files", self.measurement_id)
+        if not self.pathname_by_ext:
+            log.error("Measurement %s has no renamable files", self.measurement_id)
+            return False
 
         exts = {}
-        for pathname in self.renamable_files:
-            m = re.match(r"^(.*[/\\])?([^/\\]+)\.([^./\\]+)$", pathname)
+        for ext, pathname in self.pathname_by_ext.items():
+            m = re.match(r"^(.*[/\\])?([^/\\]+)\.[^./\\]+$", pathname)
             if m:
                 basedir  = m.group(1)
                 basename = m.group(2)
-                ext      = m.group(3)
-                if ext in exts:
-                    return log.error("found multiple renamable_files with extension %s: %s", ext, self.renamable_files)
                 exts[ext] = (basedir, basename)
-            else:
-                return log.error("renamable_file w/o extension: %s", pathname)
 
         # determine what suffix we're going to use, if any
 
@@ -716,7 +733,7 @@ class Measurement:
             n += 1
 
         # apparently there's no conflict for any extension using suffix 'n'
-        self.renamable_files = set()
+        self.pathname_by_ext = {}
         for ext in exts:
             (basedir, basename) = exts[ext]
 
@@ -730,52 +747,58 @@ class Measurement:
             try:
                 log.debug(f"renaming {old_pathname} -> {new_pathname}")
                 os.rename(old_pathname, new_pathname)
-                self.add_renamable(new_pathname)
+                self.add_pathname(new_pathname)
             except:
-                return log.error("Failed to rename %s -> %s", old_pathname, new_pathname, exc_info=1)
+                log.error("Failed to rename %s -> %s", old_pathname, new_pathname, exc_info=1)
+                return False
+
+        log.debug(f"rename_files: saving new basename {new_basename}")
+        self.basename = new_basename
+
+        return True
 
     ## @todo cloud etc
-    def save(self):
+    def save(self, resave=False):
         saved = False
         if not self.ctl:
             return
 
         if self.ctl.save_options.save_csv():
-            self.save_csv_file()
+            self.save_csv_file(resave=resave)
             saved = True
 
         if self.ctl.save_options.save_text():
-            self.save_txt_file()
+            self.save_txt_file(resave=resave)
             saved = True
 
         if self.ctl.save_options.save_excel():
-            self.save_excel_file()
+            self.save_excel_file(resave=resave)
             saved = True
 
         if self.ctl.save_options.save_json():
-            self.save_json_file()
+            self.save_json_file(resave=resave)
             saved = True
 
         if self.ctl.save_options.save_spc():
-            self.save_spc_file()
+            self.save_spc_file(resave=resave)
             saved = True
 
         if self.ctl.save_options.save_dx():
-            self.save_dx_file()
+            self.save_dx_file(resave=resave)
             saved = True
 
         if not saved:
             if self.ctl.measurements:
                 self.ctl.measurements.ctl.marquee.error("No save formats selected -- spectrum not saved to disk")
 
-    def save_csv_file(self):
+    def save_csv_file(self, resave=False):
         if self.ctl is None:
-            self.save_csv_file_by_column()
+            self.save_csv_file_by_column(resave=resave)
         else:
             if self.ctl.save_options is not None and self.ctl.save_options.save_by_row():
-                self.save_csv_file_by_row()
+                self.save_csv_file_by_row(resave=resave)
             else:
-                self.save_csv_file_by_column()
+                self.save_csv_file_by_column(resave=resave)
 
     ##
     # This function is provided because legacy Dash and ENLIGHTEN saved row-
@@ -793,10 +816,6 @@ class Measurement:
         orig = field
         field = field.lower()
 
-        # if this field has already been computed, use cached
-        if orig in self.metadata:
-            return self.metadata[orig]
-
         # allow plugins to stomp standard metadata
         if self.processed_reading.plugin_metadata is not None:
             pm = self.processed_reading.plugin_metadata
@@ -805,7 +824,25 @@ class Measurement:
                     log.debug(f"get_metadata: stomping {k} from plugin metadata {v}")
                     return v
 
+        # if this field has already been computed, use cached
+        if orig in self.metadata:
+            return self.metadata[orig]
+
         wavecal = self.settings.get_wavecal_coeffs()
+
+        # use Auto-Raman settings, even if not "retained"
+        if (self.processed_reading.reading and
+            self.processed_reading.reading.take_one_request and
+            self.processed_reading.reading.take_one_request.auto_raman_request):
+            if field == "auto-raman":            return True
+            if field == "integration time":      return self.processed_reading.reading.new_integration_time_ms
+            if field == "scan averaging":        return self.processed_reading.reading.sum_count
+            if field == "ccd gain":              return self.processed_reading.reading.new_gain_db if self.settings.is_sig() else self.settings.eeprom.detector_gain
+        else: 
+            if field == "auto-raman":            return False
+            if field == "integration time":      return self.settings.state.integration_time_ms
+            if field == "scan averaging":        return self.settings.state.scans_to_average
+            if field == "ccd gain":              return self.settings.state.gain_db if self.settings.is_sig() else self.settings.eeprom.detector_gain
 
         if field == "enlighten version":         return common.VERSION
         if field == "measurement id":            return self.measurement_id
@@ -813,10 +850,8 @@ class Measurement:
         if field == "model":                     return self.settings.full_model()
         if field == "label":                     return self.label
         if field == "detector":                  return self.settings.eeprom.detector
-        if field == "scan averaging":            return self.settings.state.scans_to_average
         if field == "boxcar":                    return self.settings.state.boxcar_half_width
         if field == "line number":               return self.ctl.save_options.line_number if (self.ctl and self.ctl.save_options) else 0
-        if field == "integration time":          return self.settings.state.integration_time_ms
         if field == "timestamp":                 return self.timestamp
         if field == "blank":                     return self.settings.eeprom.serial_number # for Multispec
         if field == "temperature":               return self.processed_reading.reading.detector_temperature_degC if self.processed_reading.reading is not None else -99
@@ -828,7 +863,6 @@ class Measurement:
         if field == "ccd c3":                    return 0 if len(wavecal) < 4 else wavecal[3]
         if field == "ccd c4":                    return 0 if len(wavecal) < 5 else wavecal[4]
         if field == "ccd offset":                return self.settings.eeprom.detector_offset # even
-        if field == "ccd gain":                  return self.settings.state.gain_db if self.settings.is_sig() else self.settings.eeprom.detector_gain # even
         if field == "ccd offset odd":            return self.settings.eeprom.detector_offset_odd
         if field == "ccd gain odd":              return self.settings.eeprom.detector_gain_odd
         if field == "high gain mode":            return self.settings.state.high_gain_mode_enabled
@@ -838,10 +872,10 @@ class Measurement:
         if field == "pixel count":               return self.settings.pixels()
         if field == "declared match":            return str(self.declared_match) if self.declared_match is not None else None
         if field == "declared score":            return self.declared_match.score if self.declared_match is not None else 0
-        if field == "roi pixel start":           return self.settings.eeprom.roi_horizontal_start
-        if field == "roi pixel end":             return self.settings.eeprom.roi_horizontal_end
-        if field == "roi vertical pixel start":  return self.settings.eeprom.roi_vertical_region_1_start
-        if field == "roi vertical pixel end":    return self.settings.eeprom.roi_vertical_region_1_end
+        if field == "roi pixel start":           return self.settings.eeprom.multi_wavelength_calibration.get("roi_horizontal_start")
+        if field == "roi pixel end":             return self.settings.eeprom.multi_wavelength_calibration.get("roi_horizontal_end")
+        if field == "roi start line":            return self.settings.eeprom.roi_vertical_region_1_start
+        if field == "roi stop line":             return self.settings.eeprom.roi_vertical_region_1_end
         if field == "cropped":                   return self.processed_reading.is_cropped()
         if field == "interpolated":              return self.ctl.interp.enabled if self.ctl else False
         if field == "raman intensity corrected": return self.processed_reading.raman_intensity_corrected
@@ -853,13 +887,15 @@ class Measurement:
         if field == "battery %":                 return self.processed_reading.reading.battery_percentage if self.processed_reading.reading is not None else 0
         if field == "fw version":                return self.settings.microcontroller_firmware_version
         if field == "fpga version":              return self.settings.fpga_firmware_version
+        if field == "ble version":               return self.settings.ble_firmware_version
         if field == "laser power %":             return self.processed_reading.reading.laser_power_perc if self.processed_reading.reading is not None else 0
         if field == "device id":                 return str(self.settings.device_id)
-        if field == "note":                      return self.note
+        if field == "note":                      return self.note.replace(",", ";")
         if field == "prefix":                    return self.prefix
         if field == "suffix":                    return self.suffix
-        if field == "session count":             return self.processed_reading.reading.session_count
+        if field == "session count":             return self.processed_reading.reading.session_count if self.processed_reading.reading is not None else 0
         if field == "plugin name":               return self.plugin_name
+        if field == "preset":                    return self.ctl.presets.selected_preset
 
         if field == "laser power mw":
             if (self.processed_reading.reading is not None and 
@@ -926,7 +962,7 @@ class Measurement:
     # wavenumber, raw), and only substitute the "NA" for cropped values in 
     # "processed." Instead, this currently just outputs the cropped versions of 
     # everything.
-    def save_excel_file(self):
+    def save_excel_file(self, resave=False):
         pr          = self.processed_reading
 
         processed   = pr.get_processed()
@@ -1038,10 +1074,13 @@ class Measurement:
 
         today_dir = self.generate_today_dir()
         pathname = os.path.join(today_dir, "%s.xls" % self.generate_basename())
+        if not self.verify_pathname(pathname, resave):
+            return
+
         try:
             wbk.save(pathname)
             log.info("saved %s", pathname)
-            self.add_renamable(pathname)
+            self.add_pathname(pathname)
         except Exception:
             log.critical("Problem saving workbook: %s", pathname, exc_info=1)
 
@@ -1103,7 +1142,7 @@ class Measurement:
         s = json.dumps(m, sort_keys=True, indent=2, default=str)
         return util.clean_json(s)
 
-    def save_spc_file(self, use_basename=False) -> None:
+    def save_spc_file(self, use_basename=False, resave=False):
         today_dir = self.generate_today_dir()
         current_x = self.ctl.graph.current_x_axis
         log_text = f"Exported from Wasatch Photonics ENLIGHTEN.\nDevice {self.spec.label}"
@@ -1111,6 +1150,9 @@ class Measurement:
             pathname = "%s.spc" % self.basename
         else:
             pathname = os.path.join(today_dir, "%s.spc" % self.generate_basename())
+        if not self.verify_pathname(pathname, resave):
+            return
+
         if current_x == common.Axes.WAVELENGTHS:
             spc_writer = SPCFileWriter.SPCFileWriter(SPCFileType.TXVALS,
                                       x_units = SPCXType.SPCXNMetr,
@@ -1146,6 +1188,8 @@ class Measurement:
             log.error(f"current x axis doesn't match vaild values. Aborting SPC save")
             return
 
+        self.add_pathname(pathname)
+
     ##
     # Save the Measurement in a JSON file for simplified programmatic parsing.
     # in the next column and so on (similar layout as the Excel output).
@@ -1154,26 +1198,30 @@ class Measurement:
     # of what x-axis and ProcessedReading fields to include, because there is
     # little benefit to removing them from individual files. We can always add
     # this later if requested.
-    def save_json_file(self, use_basename=False):
+    def save_json_file(self, use_basename=False, resave=False):
         today_dir = self.generate_today_dir()
         if use_basename:
             pathname = "%s.json" % self.basename
         else:
             pathname = os.path.join(today_dir, "%s.json" % self.generate_basename())
+        if not self.verify_pathname(pathname, resave):
+            return
 
         s = self.to_json()
         with open(pathname, "w", encoding='utf-8') as f:
             f.write(s)
 
         log.info("saved JSON %s", pathname)
-        self.add_renamable(pathname)
+        self.add_pathname(pathname)
 
-    def save_dx_file(self, use_basename=False):
+    def save_dx_file(self, use_basename=False, resave=False):
         if use_basename:
             pathname = self.basename + ".dx"
         else:
             today_dir = self.generate_today_dir()
             pathname = os.path.join(today_dir, self.generate_basename() + ".dx")
+        if not self.verify_pathname(pathname, resave):
+            return
 
         data = {
             'title': self.label,
@@ -1217,7 +1265,7 @@ class Measurement:
         jcamp.jcamp_writefile(pathname, data)
 
         log.info("saved JCAMP-DX %s", pathname)
-        self.add_renamable(pathname)
+        self.add_pathname(pathname)
 
         return pathname
 
@@ -1225,25 +1273,24 @@ class Measurement:
     # Column-ordered CSV
     # ##########################################################################
 
-    ##
-    # Save the Measurement in a CSV file with the x-axis in one column, spectra
-    # in the next column and so on (similar layout as the Excel output).
-    #
-    # Note that currently this is NOT writing UTF-8 / Unicode, although KIA-
-    # generated labels are Unicode.  (Dieter doesn't seem to like Unicode CSV)
-    def save_csv_file_by_column(self, use_basename=False, ext="csv", delim=",", include_header=True, include_metadata=True):
-        pr = self.processed_reading
-
-        if not self.ctl or not self.ctl.save_options:
-            log.error("Measurement.save* requires SaveOptions")
+    def csv_formatted(self, roi, prec, array, pixel, obey_roi=False):
+        """ Used by save_csv_file_by_column and save_csv_file_by_row """
+        if array is None:
             return
+        if roi and obey_roi:
+            if pixel < roi.start or pixel > roi.end:
+                return "NA"
+            else:
+                pixel -= roi.start
 
-        today_dir = self.generate_today_dir()
-        if use_basename:
-            pathname = "%s.%s" % (self.basename, ext)
-        else:
-            pathname = os.path.join(today_dir, "%s.%s" % (self.generate_basename(), ext))
+        if pixel < 0 or pixel >= len(array):
+            return "na"
 
+        value = array[pixel]
+        return '%.*f' % (prec, value)
+
+    def get_csv_data(self, pr):
+        """ Used by save_csv_file_by_column and save_csv_file_by_row """
         roi = None
         stage = None
         if pr.interpolated:
@@ -1281,14 +1328,31 @@ class Measurement:
         else:
             pixels = len(processed)
 
-        if True:
-            log.debug(f"save_csv_file_by_column: stage {stage}, pixels {pixels}, " +
-                      f"wavelengths {None if wavelengths is None else len(wavelengths)}, " +
-                      f"wavenumbers {None if wavenumbers is None else len(wavenumbers)}, " +
-                      f"processed {None if processed is None else len(processed)}, " + 
-                      f"raw {None if raw is None else len(raw)}, " +
-                      f"dark {None if dark is None else len(dark)}, " +
-                      f"ref {None if reference is None else len(reference)}")
+        return roi, wavelengths, wavenumbers, processed, raw, dark, reference, pixels
+
+    ##
+    # Save the Measurement in a CSV file with the x-axis in one column, spectra
+    # in the next column and so on (similar layout as the Excel output).
+    #
+    # Note that currently this is NOT writing UTF-8 / Unicode, although KIA-
+    # generated labels are Unicode.  (Dieter doesn't seem to like Unicode CSV)
+    def save_csv_file_by_column(self, use_basename=False, ext="csv", delim=",", include_header=True, include_metadata=True, resave=False):
+        pr = self.processed_reading
+
+        if not self.ctl or not self.ctl.save_options:
+            log.error("Measurement.save* requires SaveOptions")
+            return
+
+        today_dir = self.generate_today_dir()
+        if use_basename:
+            pathname = "%s.%s" % (self.basename, ext)
+        else:
+            pathname = os.path.join(today_dir, "%s.%s" % (self.generate_basename(), ext))
+
+        if not self.verify_pathname(pathname, resave):
+            return
+
+        roi, wavelengths, wavenumbers, processed, raw, dark, reference, pixels = self.get_csv_data(pr)
 
         with open(pathname, "w", newline="", encoding='utf-8') as f:
 
@@ -1332,37 +1396,22 @@ class Measurement:
             if include_header:
                 out.writerow(headers)
 
-            def formatted(prec, array, pixel, obey_roi=False):
-                if array is None:
-                    return
-                if roi and obey_roi:
-                    if pixel < roi.start or pixel > roi.end:
-                        return "NA"
-                    else:
-                        pixel -= roi.start
-
-                if pixel < 0 or pixel >= len(array):
-                    return "na"
-
-                value = array[pixel]
-                return '%.*f' % (prec, value)
-
             # store extra precision for relative measurements
             precision = 5 if pr.reference is not None else 2
 
             for pixel in range(pixels):
                 values = []
                 if self.ctl.save_options.save_pixel():       values.append(pixel)
-                if self.ctl.save_options.save_wavelength():  values.append(formatted(2,         wavelengths, pixel))
-                if self.ctl.save_options.save_wavenumber():  values.append(formatted(2,         wavenumbers, pixel))
-                if self.ctl.save_options.save_processed():   values.append(formatted(precision, processed,   pixel, obey_roi=True))
-                if self.ctl.save_options.save_raw():         values.append(formatted(precision, raw,         pixel))
-                if self.ctl.save_options.save_dark():        values.append(formatted(precision, dark,        pixel))
-                if self.ctl.save_options.save_reference():   values.append(formatted(precision, reference,   pixel))
+                if self.ctl.save_options.save_wavelength():  values.append(self.csv_formatted(roi, 2,         wavelengths, pixel))
+                if self.ctl.save_options.save_wavenumber():  values.append(self.csv_formatted(roi, 2,         wavenumbers, pixel))
+                if self.ctl.save_options.save_processed():   values.append(self.csv_formatted(roi, precision, processed,   pixel, obey_roi=True))
+                if self.ctl.save_options.save_raw():         values.append(self.csv_formatted(roi, precision, raw,         pixel))
+                if self.ctl.save_options.save_dark():        values.append(self.csv_formatted(roi, precision, dark,        pixel))
+                if self.ctl.save_options.save_reference():   values.append(self.csv_formatted(roi, precision, reference,   pixel))
                 out.writerow(values)
 
         log.info("saved columnar %s", pathname)
-        self.add_renamable(pathname)
+        self.add_pathname(pathname)
 
     # ##########################################################################
     # TXT
@@ -1371,8 +1420,8 @@ class Measurement:
     ##
     # This is essentially the same as column-ordered CSV, but with no metadata,
     # no header row and no commas. (per proj "Pioneer")
-    def save_txt_file(self, use_basename=False):
-        self.save_csv_file_by_column(use_basename, ext="txt", delim=" ", include_header=False, include_metadata=False)
+    def save_txt_file(self, use_basename=False, resave=False):
+        self.save_csv_file_by_column(use_basename=use_basename, ext="txt", delim=" ", include_header=False, include_metadata=False, resave=resave)
 
     # ##########################################################################
     # Row-ordered CSV
@@ -1411,10 +1460,11 @@ class Measurement:
     # generated labels are Unicode.
     #
     # Note that Measurements saved while "appending" are NOT considered renamable
-    # at the file level, while Measurements saved to individual files are.
+    # at the file level, while Measurements saved to individual files are. 
     #
     # @todo support .cropped, .interpolated
-    def save_csv_file_by_row(self):
+    # @todo consider how to properly support verify_pathname and resave
+    def save_csv_file_by_row(self, resave=False):
         sn = self.settings.eeprom.serial_number
 
         if self.ctl.save_options.append() and self.ctl.save_options.append_pathname is not None and os.path.exists(self.ctl.save_options.append_pathname):
@@ -1434,7 +1484,7 @@ class Measurement:
             if os.path.exists(pathname):
                 os.remove(pathname)
             self.appending = False
-            self.add_renamable(pathname)
+            self.add_pathname(pathname)
 
         file_header = Measurement.generate_dash_file_header([sn])
 
@@ -1455,8 +1505,9 @@ class Measurement:
 
                 # you can neither delete nor rename spectra which were appended
                 # to an existing file
-                self.thumbnail_widget.disable_edit()
-                self.thumbnail_widget.disable_trash()
+                reason = "disabled when appending to existing file"
+                self.thumbnail_widget.disable_edit(reason=reason)
+                self.thumbnail_widget.disable_trash(reason=reason)
             else:
                 # we're creating a new file
                 verb = "saved"
@@ -1537,7 +1588,9 @@ class Measurement:
     ##
     # @see Scooby-Doo
     def write_row(self, csv_writer, field):
+        log.debug(f"write_row: field {field}")
         row = self.build_row(field)
+        log.debug(f"write_row: field {field} row {row}")
         if row is not None:
             csv_writer.writerow(row)
 
@@ -1549,46 +1602,53 @@ class Measurement:
     # array.
     def build_row(self, field):
         field = field.lower()
+        pr = self.processed_reading
+
+        roi, wavelengths, wavenumbers, processed, raw, dark, reference, pixels = self.get_csv_data(pr)
+        prec = 5 if pr.reference is not None else 2
 
         a = None
-        pr = self.processed_reading
-        prec = 5 if pr.reference is not None else 2
-        prefix_metadata = False
-
-        if field.lower() == "pixels":
-            a = list(range(self.settings.pixels()))
-            prec = 0
-        elif field.lower() == "wavelengths":
-            a = self.settings.wavelengths
-            prec = 2
-        elif field.lower() == "wavenumbers":
-            if self.settings.wavenumbers is None:
-                raise Exception("can't save wavenumbers without excitation")
-            a = self.settings.wavenumbers
-            prec = 2
-        elif field.lower() == "processed":
-            a = pr.processed
-        elif field.lower() == "dark":
-            a = pr.dark
-        elif field.lower() == "reference":
-            a = pr.reference
-        elif field.lower() == "raw":
-            a = pr.raw
+        fmt = None
+        if field == "pixels":
+            a = pr.get_pixel_axis()
+            fmt = lambda pixel: pixel
+        elif field == "wavelengths":
+            a = wavelengths
+            fmt = lambda pixel: self.csv_formatted(roi, 2, a, pixel)
+        elif field == "wavenumbers":
+            a = wavenumbers
+            fmt = lambda pixel: self.csv_formatted(roi, 2, a, pixel)
+        elif field == "processed":
+            a = processed
+            fmt = lambda pixel: self.csv_formatted(roi, prec, a, pixel, obey_roi=True)
+        elif field == "dark":
+            a = dark
+            fmt = lambda pixel: self.csv_formatted(roi, prec, a, pixel)
+        elif field == "reference":
+            a = reference
+            fmt = lambda pixel: self.csv_formatted(roi, prec, a, pixel)
+        elif field == "raw":
+            a = raw
+            fmt = lambda pixel: self.csv_formatted(roi, prec, a, pixel)
         else:
-            log.error("build_row: unknown field %s" % field)
+            log.error(f"build_row: unknown field {field}")
 
-        if a is None:
-            return None
+        if a is None or fmt is None:
+            return
 
         row = []
 
         # don't repeat metadata for spectrum components
-        prefix_metadata = field.lower() not in ["dark", "reference", "raw"]
+        prefix_metadata = field not in ["dark", "reference", "raw"]
 
         # populate the prepended metadata fields per Dash format
         for header in self.CSV_HEADER_FIELDS:
-            if header == "Note" and field.lower() != "processed":
-                row.append(field)
+            if header == "Note": # and field != "processed":
+                if field == 'processed':
+                    note = self.get_metadata(header).strip()
+                    row.append(f"{field} ({note})" if note else field)
+                else:
+                    row.append(field)
             elif prefix_metadata or header in [ "Line Number" ]:
                 row.append(self.get_metadata(header))
             else:
@@ -1598,7 +1658,8 @@ class Measurement:
                 row.append('')
 
         # append the selected array
-        row.extend(['%.*f' % (prec, value) for value in a])
+        for pixel in range(pixels):
+            row.append(fmt(pixel))
 
         return row
 
@@ -1610,7 +1671,7 @@ class Measurement:
 
         # re-save files using current SaveOptions (will store new label, overwriting old files with old name)
         # (these will definitely be in TODAY directory, regardless of where they were loaded from)
-        self.save()
+        self.save(resave=True)
 
         # close-out the pending button click on the thumbnail (basically just
         # turns the button back from red to gray)
@@ -1681,3 +1742,25 @@ class Measurement:
             pr.processed = np.interp(new_x, old_x, pr.processed)
 
         log.debug("interpolation complete")
+
+    def verify_pathname(self, pathname, resave=False):
+        if resave:
+            return True
+        if not os.path.exists(pathname):
+            return True
+
+        if self.ctl.config.has_option("Measurement", "overwrite_existing"):
+            return self.ctl.config.get_bool("Measurement", "overwrite_existing")
+
+        result = self.ctl.gui.msgbox_with_checkbox(
+            title="Confirm Overwrite",
+            text=f"The following pathname already exists. Do you wish to overwrite it?\n{pathname}",
+            checkbox_text="Never show again")
+
+        if not result["ok"]:
+            return False
+
+        if result["checked"]:
+            self.ctl.config.set("Measurement", "overwrite_existing", True)
+
+        return True

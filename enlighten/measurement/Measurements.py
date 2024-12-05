@@ -28,8 +28,6 @@ log = logging.getLogger(__name__)
 # of ThumbnailWidgets which fill the left-hand capture column in the GUI.
 class Measurements:
 
-    MAX_MEASUREMENT_COUNT = 500
-
     # I see no need to deepcopy this Singleton (and this allows us to deepcopy
     # Measurements freely).
     def __deepcopy__(self, memo):
@@ -226,7 +224,7 @@ class Measurements:
     ##
     # Use the MeasurementFactory to instantiate a new Measurement, including
     # ThumbnailWidget, from the given spectrometer's latest ProcessedReading.
-    def create_from_spectrometer(self, spec):
+    def create_from_spectrometer(self, spec, label=None):
         if spec is None or spec.app_state.processed_reading is None:
             msgbox("No spectra to save.", "Error")
             return
@@ -237,7 +235,8 @@ class Measurements:
         # using the current "collapsed" state
         measurement = self.ctl.measurement_factory.create_from_spectrometer(
             spec = spec,
-            is_collapsed = self.is_collapsed)
+            is_collapsed = self.is_collapsed,
+            label = label)
 
         self.add(measurement)
 
@@ -251,7 +250,7 @@ class Measurements:
             return
 
         # enforce resource limits
-        while self.count() >= Measurements.MAX_MEASUREMENT_COUNT:
+        while self.count() >= self.ctl.max_thumbnails:
             log.debug("enforcing resource limits")
             self.delete_oldest()
 
@@ -352,6 +351,9 @@ class Measurements:
             log.warn("no measurements to export")
             return
 
+        # by default, all Sessions are stored in ~/EnlightenSpectra
+        directory = common.get_default_data_dir()
+
         ########################################################################
         # Generate pathname
         ########################################################################
@@ -374,16 +376,23 @@ class Measurements:
                     title = "Export",
                     label_text = "Enter export filename",
                     lineedit_text = default_filename,
+                    extra_button_label = "Browse",
                     checkbox_text = "Only export displayed traces")
                 log.debug(f"msgbox result: {result}")
                 filename = result["lineedit"]
                 visible_only = result["checked"]
-                if not (result["ok"] and filename):
+                if not result["ok"]:
                     log.info("cancelling export")
                     return
 
-        # currently, all Sessions are stored in ~/EnlightenSpectra
-        directory = common.get_default_data_dir()
+                # if the user clicked 'Browse', let them navigate to where they want the export saved [#420]
+                if result["extra_button_clicked"] or not filename:
+                    pathname = self.ctl.file_manager.save_dialog(filename=filename, caption="Select where to save your exported measurements")
+                    directory, filename = os.path.split(pathname)
+
+                if not filename:
+                    log.info("cancelling export")
+                    return
 
         # warn user if they are about to overwrite an existing file
         # it looks like only risk is for .csv and .json extensions
@@ -663,6 +672,9 @@ class Measurements:
 
         # count spectrometers (S1, S2)
         settingss = self._get_spectrometer_settings(visible_only)
+        if len(settingss) < 1:
+            common.msgbox("No spectra to export!")
+            return
 
         # count x-axis headers (px, wl)
         x_headers = []
@@ -850,7 +862,7 @@ class Measurements:
             if pr is None:
                 pr = m.processed_reading
             if pr is None:
-                return None
+                return
 
             a = None
             if header == "processed":

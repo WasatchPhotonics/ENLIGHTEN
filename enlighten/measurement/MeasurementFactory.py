@@ -53,7 +53,7 @@ class MeasurementFactory:
 
     ## Create a Measurement from a Spectrometer, using its most-recent 
     #  ProcessedReading.
-    def create_from_spectrometer(self, spec, is_collapsed, generate_thumbnail=True, save=True):
+    def create_from_spectrometer(self, spec, is_collapsed, generate_thumbnail=True, save=True, label=None):
         log.debug("creating Measurement from spec %s", spec.label)
 
         # instantiate the Measurement
@@ -79,6 +79,9 @@ class MeasurementFactory:
                     observer(measurement=measurement, event="save")
             except:
                 msgbox("Failed to dispatch save file.\n\n"+traceback.format_exc(), "Error")
+
+        if label is not None:
+            measurement.update_label(label, manual=True)
         
         return measurement
     
@@ -240,8 +243,8 @@ class MeasurementFactory:
             elif pathname.lower().endswith(".spc"):
                 measurements = self.create_from_spc_file(pathname)
         except:
-            msgbox("failed to parse file %s" % pathname)
-            log.error("failed to parse file %s", pathname, exc_info=1)
+            log.error(f"failed to parse file {pathname}", exc_info=1)
+            msgbox(f"failed to parse file {pathname}")
 
         if measurements is None:
             return
@@ -255,7 +258,7 @@ class MeasurementFactory:
 
         for m in measurements:
             for observer in self.observers:
-                observer(measurement=m,event="load")
+                observer(measurement=m, event="load")
 
         return measurements
 
@@ -432,6 +435,9 @@ class MeasurementFactory:
         # Interpolate the loaded spectrum component, because the Measurement we 
         # just loaded may have a different number of pixels than our current 
         # spectrometer, or may have been taken with a different wavecal.
+        #
+        # @todo consider comparing m.settings against settings and deciding if 
+        # interpolation is necessary / advisable
         m.interpolate(settings)
         return m
 
