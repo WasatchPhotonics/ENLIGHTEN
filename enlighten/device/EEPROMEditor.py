@@ -267,8 +267,11 @@ class EEPROMEditor:
             "thermistor_res_at298k":    "tec_r298",
             "wavecal_coeffs":           "wavelength_coeffs" }
 
-    def add_attribute(self, qtype, name, widget=None, widgets=None):
-        attr = EEPROMAttribute(name=name, qtype=qtype, widget=widget, widgets=widgets)
+    def add_attribute(self, qtype, name, is_numeric=None, widget=None, widgets=None):
+        if is_numeric is None:
+            is_numeric = qtype in ["spinbox", "doublespinbox"]
+
+        attr = EEPROMAttribute(name=name, qtype=qtype, is_numeric=is_numeric, widget=widget, widgets=widgets)
         self.attributes[name] = attr
 
         if qtype == "checkbox":
@@ -325,7 +328,7 @@ class EEPROMEditor:
             self.add_attribute("doublespinbox", name, widget=getattr(cfu, f"doubleSpinBox_ee_{name}"))
 
         for name in [ "calibrated_by", "calibration_date", "detector", "model", "serial_number", "user_text", "product_configuration" ]:
-            self.add_attribute("lineedit", name, widget=getattr(cfu, f"lineEdit_ee_{name}"))
+            self.add_attribute("lineedit", name, is_numeric=False, widget=getattr(cfu, f"lineEdit_ee_{name}"))
 
         # Arrays (but still not multi-wavelength)
         self.add_attribute("lineedit", "laser_power_coeffs", widgets=[ getattr(cfu, f"lineEdit_ee_laser_power_coeff_{i}") for i in range(4) ])

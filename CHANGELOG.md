@@ -3,6 +3,7 @@
 - 2024-??-?? 4.1.19
     - [#506] added robustness to Save Location change cancel
     - [#509] fix "Load Dark" and "Load Reference"
+    - fix EEPROMEditor bug
 - 2024-12-03 4.1.18
     - deprecated RegionControlFeature
     - XL fixes
