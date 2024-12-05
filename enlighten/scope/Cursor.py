@@ -283,3 +283,6 @@ class Cursor:
         self.cursor.setValue(midpoint)
         log.debug("centering: midpoint of (%.2f, %.2f) is %.2f", x_axis[0], x_axis[-1], midpoint)
 
+    def get_x_pos(self):
+        return self.cursor.getXPos()
+
