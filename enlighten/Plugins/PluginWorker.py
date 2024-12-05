@@ -72,7 +72,7 @@ class PluginWorker(threading.Thread):
                     plugin.clear_event_responses()
                 except Exception as e:
                     # If an error occurs default assume not implemented so stop trying
-                    log.debug (f"Error {e} trying to handle event responses, ignoring future attempts")
+                    log.debug(f"{e} trying to handle event responses, ignoring future attempts")
                     self.has_event_responses = False
 
             if self.request_queue.empty():

@@ -30,7 +30,6 @@ def getY(x, domain, codomain):
     return codomain[0]
 
 def get_intensity_from_wavelength(wavelength, wavelengths, spectrum):
-
     return getY(wavelength, wavelengths, spectrum)
 
 ChE_label = "ChE Activity"

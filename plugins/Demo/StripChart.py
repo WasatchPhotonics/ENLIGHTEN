@@ -1,7 +1,7 @@
 import logging
 import datetime
 
-from EnlightenPlugin import EnlightenPluginBase,    \
+from EnlightenPlugin import EnlightenPluginBase
                             EnlightenPluginField,    \
                             EnlightenPluginResponse,  \
                             EnlightenPluginConfiguration

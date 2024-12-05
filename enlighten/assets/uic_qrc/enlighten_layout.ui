@@ -18109,25 +18109,6 @@ li.checked::marker { content: "\2612"; }
                          </widget>
                         </item>
                         <item>
-                         <widget class="QCheckBox" name="checkBox_plugin_enabled">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="toolTip">
-                           <string>Activates the plugin to process readings</string>
-                          </property>
-                          <property name="styleSheet">
-                           <string notr="true" />
-                          </property>
-                          <property name="text">
-                           <string>Enabled</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
                          <widget class="QFrame" name="frame_plugin_fields">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">

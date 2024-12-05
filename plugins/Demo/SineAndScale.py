@@ -11,9 +11,8 @@ class SineAndScale(EnlightenPluginBase):
 
     def get_configuration(self):
         self.name = "Sine Wave"
-        self.auto_enable = True
 
-        self.field(name="Step",  datatype="float", direction="input", initial=10, maximum=100, minimum=-100, step=10)
+        self.field(name="Step", datatype="float", direction="input", initial=10, maximum=100, minimum=-100, step=10)
         self.field(name="Negate", datatype="bool", direction="input")
 
         self.sin_progress = 0

@@ -53,7 +53,6 @@ class Multichannel(EnlightenPluginBase):
 
     def get_configuration(self):
         self.name = "Multichannel"
-        self.auto_enable = True
 
         self.field(name="Trigger Spec", datatype=str, direction="output")
         self.field(name="Fan Spec", datatype=str, direction="output")

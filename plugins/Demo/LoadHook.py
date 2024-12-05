@@ -5,7 +5,7 @@ from EnlightenPlugin import EnlightenPluginBase
 log = logging.getLogger(__name__)
 
 class LoadHook(EnlightenPluginBase):
-    """ Demostration plugin showing how to hook into ENLIGHTEN's "load" event. """
+    """ Demonstration plugin showing how to hook into ENLIGHTEN's "load" event. """
 
     def get_configuration(self):
         self.counter = 0

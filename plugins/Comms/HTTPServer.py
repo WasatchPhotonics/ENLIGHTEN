@@ -9,10 +9,7 @@ import socketserver
 
 from gpcharts import figure
 
-from EnlightenPlugin import EnlightenPluginBase,    \
-                            EnlightenPluginField,    \
-                            EnlightenPluginResponse,  \
-                            EnlightenPluginConfiguration
+from EnlightenPlugin import EnlightenPluginBase
 
 log = logging.getLogger(__name__)
 
@@ -41,59 +38,31 @@ class HTTPServer(EnlightenPluginBase):
     # handles.  Note this must be in UTF-8 bytes, not a Python string.
     latest_html = None
 
-    def __init__(self, ctl):
-        super().__init__(ctl)
-        self.thread = None
-
     def get_configuration(self):
-        fields = []
-
-        fields.append(EnlightenPluginField(
-            name="URL", 
-            initial=f"http://localhost:{HTTPServer.PORT}", 
-            tooltip="Browse here to see spectra"))
-
-        fields.append(EnlightenPluginField(
-            name="Refresh",
-            direction="input",
-            datatype="int",
-            initial=5,
-            minimum=0,
-            maximum=30,
-            tooltip="Seconds to auto-refresh (0 to disable)"))
-
-        fields.append(EnlightenPluginField(
-            name="Open URL", 
-            datatype='button', 
-            callback=self.button_callback, 
-            tooltip="Click to open URL"))
-
-        return EnlightenPluginConfiguration(
-            name = "HTTP Server",
-            fields = fields)
-
-    ##
-    # @see https://docs.python.org/3/library/socketserver.html
-    # @see https://docs.python.org/3/library/http.server.html
-    def connect(self):
-        super().connect()
+        self.name = "HTTP Server"
+        self.field(name="URL", initial=f"http://localhost:{HTTPServer.PORT}", tooltip="Browse here to see spectra")
+        self.field(name="Refresh", direction="input", datatype=int, initial=5, minimum=0, maximum=30, tooltip="Seconds to auto-refresh (0 to disable)")
+        self.field(name="Open URL", datatype='button', callback=self.button_callback, tooltip="Click to open URL")
 
         self.hostname = socket.gethostname()
         self.ip = socket.gethostbyname(self.hostname)
         log.debug("hostname {self.hostname} has IP {self.ip}")
 
+        # @see https://docs.python.org/3/library/socketserver.html
+        # @see https://docs.python.org/3/library/http.server.html
         HTTPServer.latest_html = HTTPServer.INITIALIZING
         self.httpd = socketserver.TCPServer(("", HTTPServer.PORT), MyHandler)
         self.thread = ServerThread(self.httpd)
         self.thread.start()
-        return True
 
-    ## 
-    # @see https://github.com/Dfenestrator/GooPyCharts
-    # @todo save to EnlightenSpectra/plugins
     def process_request(self, request):
-        spectrum    = np.array(request.processed_reading.processed, dtype=np.float32).round(2).tolist()
-        wavelengths = np.array(request.settings.wavelengths, dtype=np.float32).round(2)
+        """
+        @see https://github.com/Dfenestrator/GooPyCharts
+        @todo save to EnlightenSpectra/plugins
+        """
+        pr = request.processed_reading
+        spectrum    = np.array(pr.get_processed(),   dtype=np.float32).round(2).tolist()
+        wavelengths = np.array(pr.get_wavelengths(), dtype=np.float32).round(2)
         refresh     = request.fields["Refresh"]
 
         fig = figure(title=request.settings.eeprom.serial_number, xlabel='Wavelength (nm)', ylabel='Intensity (counts)')
@@ -104,11 +73,11 @@ class HTTPServer(EnlightenPluginBase):
             html = re.sub("<head>", f'<head><meta http-equiv="refresh" content="{refresh}"/>', html)
         HTTPServer.latest_html = html.encode("utf-8")
 
-        return EnlightenPluginResponse(request, outputs = { 'URL': self.get_url() })
+        self.outputs["URL"] = self.get_url()
 
     def disconnect(self):
         if self.httpd is not None:
-            log.debug("closing httpd")
+            log.info("closing httpd")
             self.httpd.shutdown()
         self.thread = None 
         super().disconnect()
@@ -131,19 +100,21 @@ class ServerThread(threading.Thread):
     def run(self):
         self.httpd.serve_forever()
 
-##
-# This HTTPRequestHandler doesn't care what GET request comes in; it sends the 
-# latest Google Chart to the client regardless.
 class MyHandler(http.server.BaseHTTPRequestHandler):
+    """
+    This HTTPRequestHandler doesn't care what GET request comes in; it sends the 
+    latest Google Chart to the client regardless.
+    """
     def do_HEAD(self):
         self.send_response(200)
         self.send_header("Content-type", "text/html")
         self.end_headers()
 
-    ##
-    # @see https://stackoverflow.com/a/7647695/6436775
-    # @see https://docs.python.org/3/library/http.server.html#http.server.BaseHTTPRequestHandler.wfile
     def do_GET(self):
+        """
+        @see https://stackoverflow.com/a/7647695/6436775
+        @see https://docs.python.org/3/library/http.server.html#http.server.BaseHTTPRequestHandler.wfile
+        """
         self.send_response(200)
         self.send_header("Content-type", "text/html")
         self.end_headers()

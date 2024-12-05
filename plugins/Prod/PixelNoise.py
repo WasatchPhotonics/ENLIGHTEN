@@ -18,15 +18,14 @@ class PixelNoise(EnlightenPluginBase):
 
     def get_configuration(self):
         self.name = "Pixel Noise"
-        self.auto_enable = True
 
         self.field(name="History", direction="input", datatype="int", minimum=10, maximum=1000, initial=100, tooltip="Number of spectra retained for noise computation")
-        self.field(name="Filled", datatype="int", initial=0, tooltip="Portion of potential history currently populated")
-        self.field(name="Mean", datatype="float", precision=2, tooltip="Average noise over all pixels over time")
-        self.field(name="Stdev", datatype="float", precision=2, tooltip="Standard deviation of noise over all pixels over time")
-        self.field(name="Min", datatype="float", precision=2, tooltip="Minimum noise of any pixel over time")
-        self.field(name="Max", datatype="float", precision=2, tooltip="Maximum noise of any pixel over time")
-        self.field(name="Clear", datatype="button", callback=self.reset, tooltip="Clear history")
+        self.field(name="Filled",  datatype="int",    initial=0,   tooltip="Portion of potential history currently populated")
+        self.field(name="Mean",    datatype="float",  precision=2, tooltip="Average noise over all pixels over time")
+        self.field(name="Stdev",   datatype="float",  precision=2, tooltip="Standard deviation of noise over all pixels over time")
+        self.field(name="Min",     datatype="float",  precision=2, tooltip="Minimum noise of any pixel over time")
+        self.field(name="Max",     datatype="float",  precision=2, tooltip="Maximum noise of any pixel over time")
+        self.field(name="Clear",   datatype="button", callback=self.reset, tooltip="Clear history")
 
         self.reset()
 
@@ -43,7 +42,7 @@ class PixelNoise(EnlightenPluginBase):
                          "Stdev" : self.metrics.stdev,
                          "Min"   : self.metrics.min,
                          "Max"   : self.metrics.max,
-                         "Filled": self.metrics.height()}
+                         "Filled": self.metrics.height() }
 
     def reset(self):
         self.metrics = None

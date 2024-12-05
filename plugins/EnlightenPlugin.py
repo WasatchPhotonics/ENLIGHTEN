@@ -42,7 +42,8 @@ class EnlightenPluginBase:
         self._fields = []
         self.is_blocking = False
         self.block_enlighten = False
-        self.auto_enable = True
+        self.auto_enable = None
+        self.streaming = True
         self.lock_enable = False
         self.has_other_graph = False
         self.table = None
@@ -62,28 +63,22 @@ class EnlightenPluginBase:
             os.remove(self.logfile)
 
     def get_axis(self):
-        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVELENGTHS:
-            return self.settings.wavelengths
-        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVENUMBERS:
-            return self.settings.wavenumbers
-        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.PIXELS:
-            return range(len(self.spectrum))
+        unit = self.ctl.graph.get_x_axis_unit()
+        if unit == "nm": return self.settings.wavelengths
+        if unit == "cm": return self.settings.wavenumbers
+        if unit == "px": return range(len(self.spectrum))
 
     def get_axis_short_name(self):
-        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVELENGTHS:
-            return "wl"
-        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVENUMBERS:
-            return "wn"
-        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.PIXELS:
-            return "px"
+        unit = self.ctl.graph.get_x_axis_unit()
+        if unit == "nm": return "wl"
+        if unit == "cm": return "wn"
+        if unit == "px": return "px"
 
     def get_axis_name(self):
-        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVELENGTHS:
-            return "wavelengths"
-        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.WAVENUMBERS:
-            return "wavenumbers"
-        if self.ctl.form.ui.displayAxis_comboBox_axis.currentIndex() == common.Axes.PIXELS:
-            return "pixels"
+        unit = self.ctl.graph.get_x_axis_unit()
+        if unit == "nm": return "wavelengths"
+        if unit == "cm": return "wavenumbers"
+        if unit == "px": return "pixels"
 
     ### Begin functional-plugins backend ###
 
@@ -159,6 +154,7 @@ class EnlightenPluginBase:
             i += 1
         title = title+suffix
 
+        # log.debug(f"creating series title {title} (suffix {suffix}, i {i})")
         self.series[title] = {
             "x": x,
             "y": y,
@@ -230,6 +226,7 @@ class EnlightenPluginBase:
             block_enlighten = self.block_enlighten,
             has_other_graph = self.has_other_graph,
             auto_enable = self.auto_enable,
+            streaming = self.streaming,
             lock_enable = self.lock_enable,
             series_names = [], # functional plugins define this on a frame-by-frame basis
             x_axis_label = self.x_axis_label,
@@ -393,8 +390,9 @@ class EnlightenPluginBase:
 # ------------------------------------------------------------------------------
 # @par Streaming
 #
-# By default, all plug-ins support "streaming" spectra, which is what happens
-# when you click the "[x] Enable" checkbox in ENLIGHTEN's Plugin Control widget.
+# By default, all plug-ins support "streaming" spectra, where they receive and
+# process each new measurement read from the spectrometer.
+#
 # However, some plug-ins may not be designed or intended for that data rate
 # and prefer to be individually triggered by the "Process" button or other 
 # events.
@@ -414,8 +412,8 @@ class EnlightenPluginConfiguration:
     # @param series_names: ordered list of legend labels for graph series 
     #        (must match series names in EnlightenPluginReponse.data)
     # @param graph_type: "line" or "xy" (scatter)
-    # @param streaming: if True (default), display the "[x] Enable" checkbox
-    # @param auto_enable: automatically check Enabled 
+    # @param auto_enable: automatically check Enabled (DEPRECATED -- see streaming)
+    # @param streaming: whether plugin should automatically process every new spectrum
     # @param lock_enable: prevent disabling the plugin (provides "kiosk mode")
     # @param is_blocking: ENLIGHTEN should not send any further requests to the
     #        plug-in until the Response to the previous Request is received
@@ -435,8 +433,8 @@ class EnlightenPluginConfiguration:
             y_axis_label    = None, 
             is_blocking     = True,
             block_enlighten = False,
+            auto_enable     = None,  # legacy compatibility only
             streaming       = True,
-            auto_enable     = True,
             lock_enable     = False,
             events          = None,
             series_names    = None,
@@ -450,8 +448,8 @@ class EnlightenPluginConfiguration:
         self.y_axis_label    = y_axis_label
         self.is_blocking     = is_blocking
         self.block_enlighten = block_enlighten
-        self.streaming       = streaming
         self.auto_enable     = auto_enable
+        self.streaming       = streaming
         self.lock_enable     = lock_enable
         self.events          = events
         self.multi_devices   = multi_devices
