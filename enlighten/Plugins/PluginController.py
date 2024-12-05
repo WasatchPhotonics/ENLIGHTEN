@@ -488,18 +488,24 @@ class PluginController:
 
     ##
     # The user clicked the "process" button on the control panel indicating
-    # "please process the current spectrum".
+    # "please process the current spectra".
     def button_process_callback(self):
         log.debug("user pressed process button")
-        spec = self.ctl.multispec.current_spectrometer()
-        if spec is None or spec.app_state is None:
-            return
-        pr = spec.app_state.processed_reading
-        if pr is None:
-            return
-    
-        self.button_process.setEnabled(False)
-        self.process_reading(pr, spec.settings, spec, manual=True)
+
+        if self.config.multi_devices:
+            for spec in self.ctl.multispec.get_spectrometers():
+                if spec is not None and spec.app_state is not None:
+                    pr = spec.app_state.processed_reading
+                    if pr is not None:
+                        self.button_process.setEnabled(False)
+                        self.process_reading(pr, spec.settings, spec, manual=True)
+        else:
+            spec = self.ctl.multispec.current_spectrometer()
+            if spec is not None and spec.app_state is not None:
+                pr = spec.app_state.processed_reading
+                if pr is not None:
+                    self.button_process.setEnabled(False)
+                    self.process_reading(pr, spec.settings, spec, manual=True)
 
     # ##########################################################################
     # PluginWorker

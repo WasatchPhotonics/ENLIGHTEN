@@ -44,6 +44,7 @@ class EnlightenPluginBase:
         self.block_enlighten = False
         self.auto_enable = None
         self.streaming = True
+        self.multi_devices = False
         self.lock_enable = False
         self.has_other_graph = False
         self.table = None
@@ -228,6 +229,7 @@ class EnlightenPluginBase:
             has_other_graph = self.has_other_graph,
             auto_enable = self.auto_enable,
             streaming = self.streaming,
+            multi_devices = self.multi_devices,
             lock_enable = self.lock_enable,
             series_names = [], # functional plugins define this on a frame-by-frame basis
             x_axis_label = self.x_axis_label,
