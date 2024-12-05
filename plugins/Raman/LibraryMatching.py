@@ -1,11 +1,7 @@
 import re
 import os
-import time
-import copy
-import numpy as np
 import pandas as pd
 import logging
-import datetime
 
 from PySide6 import QtWidgets
 from functools import cmp_to_key
@@ -15,7 +11,6 @@ from scipy.interpolate import interp1d
 from enlighten import common
 from EnlightenPlugin import EnlightenPluginBase
 
-from wasatch import utils
 from wasatch.CSVLoader import CSVLoader
 
 log = logging.getLogger(__name__)
@@ -234,7 +229,6 @@ class LibraryMatching(EnlightenPluginBase):
 
         maxwidth = 20
         lines = []
-        line = ""
         while s != "":
             if len(s) > maxwidth:
                 t = s[:maxwidth]
@@ -309,7 +303,7 @@ class Pearson:
                 scores.append(result["Score"])
             return compounds, scores
 
-        except Exception as ex:
+        except Exception:
             log.debug(f"caught exception during Pearson.process", exc_info=1)
             return None, None
 
@@ -331,7 +325,6 @@ class Pearson:
 
         pd_spectrum = pd.DataFrame({"Wavenumber": wavenumbers, "Intensity": spectrum})
         pd_spectrum = pd_spectrum.dropna()
-        spectrum_length = len(pd_spectrum["Wavenumber"].to_numpy())
 
         # we need to find the overlap
         spectrum_min_wavenumber = pd_spectrum["Wavenumber"].min()

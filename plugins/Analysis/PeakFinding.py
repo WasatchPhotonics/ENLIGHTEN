@@ -27,7 +27,6 @@ class PeakFinding(EnlightenPluginBase):
         wavelengths = pr.get_wavelengths()
         wavenumbers = pr.get_wavenumbers()
         pixels      = pr.get_pixel_axis()
-        settings    = request.settings
 
         # find x-coordinates of peaks in pixel space 
         (peak_x, _) = scipy.signal.find_peaks(

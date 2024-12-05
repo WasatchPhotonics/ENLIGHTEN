@@ -21,7 +21,7 @@ from enlighten.scope.Graph import Graph
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 
 # this is in ../../plugins
-from EnlightenPlugin import *
+from EnlightenPlugin import EnlightenPluginRequest
 
 if common.use_pyside2():
     from PySide2 import QtWidgets, QtCore
@@ -419,8 +419,8 @@ class PluginController:
             module_config = self.get_current_configuration()
             streaming = module_config.streaming
             log.debug(f"connected_callback: streaming defaulting to {streaming}")
-            if module_config.auto_enable is not None and isinstance(module_config.auto_enable, bool) and module_config.auto_enable == False:
-                log.debug(f"connected_callback: something set auto_enable {auto_enable}, so disabling streaming")
+            if module_config.auto_enable is not None and isinstance(module_config.auto_enable, bool) and not module_config.auto_enable:
+                log.debug(f"connected_callback: something set auto_enable {module_config.auto_enable}, so disabling streaming")
                 streaming = False
 
             log.debug(f"connected_callback: streaming {module_config.streaming}, auto_enable {module_config.auto_enable}")

@@ -1,5 +1,3 @@
-import logging
-
 from EnlightenPlugin import EnlightenPluginBase
 
 class SimpleScaling(EnlightenPluginBase):

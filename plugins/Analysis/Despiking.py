@@ -24,7 +24,6 @@ class Despiking(EnlightenPluginBase):
         spiky_spectra = pr.get_processed()
         log.debug(f"got spiky_spectra {spiky_spectra}")
 
-        settings = request.settings
         tau_outlier_criteria = request.fields["tau"]
         window_size_m = request.fields["window size"]
 

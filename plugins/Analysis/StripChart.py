@@ -36,7 +36,6 @@ class StripChart(EnlightenPluginBase):
         serial     = eeprom.serial_number
         pr         = request.processed_reading
         reading    = pr.reading
-        spectrum   = pr.get_processed()
 
         window_sec = request.fields["Window (sec)"]
         show_curs  = request.fields["Cursor"] 

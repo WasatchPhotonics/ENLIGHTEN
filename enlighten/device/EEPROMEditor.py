@@ -724,9 +724,9 @@ class EEPROMEditor:
 
     def bind_checkbox(self, attr):
         if not attr.is_scalar:
-            raise NotImplemented("{attr.name}: checkbox arrays not yet implemented")
+            raise NotImplementedError("{attr.name}: checkbox arrays not yet implemented")
         if attr.is_multi:
-            raise NotImplemented("{attr.name}: multi-wavelength checkboxes not yet implemented")
+            raise NotImplementedError("{attr.name}: multi-wavelength checkboxes not yet implemented")
         if not hasattr(self.eeprom, attr.name):
             raise AttributeError(f"{attr.name}: unknown EEPROM checkbox")
 

@@ -1317,7 +1317,6 @@ class Controller:
         Attempt to acquire a reading from the thread response queue,
         process and render data in the GUI.
         """
-        cfu = self.form.ui
         if spec is None:
             return
 

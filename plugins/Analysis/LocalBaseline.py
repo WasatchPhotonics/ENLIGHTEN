@@ -2,9 +2,7 @@ import logging
 import pandas as pd
 import numpy as np
 
-import time
-
-from EnlightenPlugin import *
+from EnlightenPlugin import EnlightenPluginBase
 
 log = logging.getLogger(__name__)
 
@@ -49,10 +47,6 @@ class LocalBaseline(EnlightenPluginBase):
     def process_request(self, request):
         pr = request.processed_reading
         spectrum = pr.get_processed()
-
-        # if given a number: produce formatted number (ex: 1,000,000)
-        # if given a string: it's a placeholder, just return it
-        format_int = lambda i: f"{int(i):,}" if type(i) != str else i
 
         # firstonly(i, "some string") will only have a value if i==0.
         # Used with self.plot to avoid over-defining the legend

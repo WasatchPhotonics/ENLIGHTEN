@@ -541,7 +541,7 @@ class Measurement:
 
             elif self.renamed_manually and self.ctl.save_options.allow_rename_files() and len(self.pathname_by_ext) > 0:
                 # return whatever we last used when saving the file
-                ext = sorted(keys(self.pathname_by_ext))[0]
+                ext = sorted(self.pathname_by_ext.keys())[0]
                 pathname = self.pathname_by_ext[ext]
                 _, filename = os.path.split(pathname)
                 self.basename, _ = os.path.splitext(filename)
@@ -831,9 +831,8 @@ class Measurement:
         wavecal = self.settings.get_wavecal_coeffs()
 
         # use Auto-Raman settings, even if not "retained"
-        if (self.processed_reading.reading and
-            self.processed_reading.reading.take_one_request and
-            self.processed_reading.reading.take_one_request.auto_raman_request):
+        reading = self.processed_reading.reading
+        if (reading and reading.take_one_request and reading.take_one_request.auto_raman_request):
             if field == "auto-raman":            return True
             if field == "integration time":      return self.processed_reading.reading.new_integration_time_ms
             if field == "scan averaging":        return self.processed_reading.reading.sum_count
@@ -854,7 +853,7 @@ class Measurement:
         if field == "line number":               return self.ctl.save_options.line_number if (self.ctl and self.ctl.save_options) else 0
         if field == "timestamp":                 return self.timestamp
         if field == "blank":                     return self.settings.eeprom.serial_number # for Multispec
-        if field == "temperature":               return self.processed_reading.reading.detector_temperature_degC if self.processed_reading.reading is not None else -99
+        if field == "temperature":               return reading.detector_temperature_degC if reading else -99
         if field == "technique":                 return self.technique
         if field == "baseline correction algo":  return self.baseline_correction_algo
         if field == "ccd c0":                    return 0 if len(wavecal) < 1 else wavecal[0]
@@ -868,7 +867,7 @@ class Measurement:
         if field == "high gain mode":            return self.settings.state.high_gain_mode_enabled
         if field == "laser wavelength":          return self.settings.excitation()
         if field == "laser enable":              return self.settings.state.laser_enabled 
-        if field == "laser temperature":         return self.processed_reading.reading.laser_temperature_degC if self.processed_reading.reading is not None else -99
+        if field == "laser temperature":         return reading.laser_temperature_degC if reading else -99
         if field == "pixel count":               return self.settings.pixels()
         if field == "declared match":            return str(self.declared_match) if self.declared_match is not None else None
         if field == "declared score":            return self.declared_match.score if self.declared_match is not None else 0
@@ -884,38 +883,25 @@ class Measurement:
         if field == "slit width":                return self.settings.eeprom.slit_size_um
         if field == "wavenumber correction":     return self.settings.state.wavenumber_correction
         if field == "electrical dark correction":return self.ctl.edc.enabled
-        if field == "battery %":                 return self.processed_reading.reading.battery_percentage if self.processed_reading.reading is not None else 0
+        if field == "battery %":                 return reading.battery_percentage if reading else 0
         if field == "fw version":                return self.settings.microcontroller_firmware_version
         if field == "fpga version":              return self.settings.fpga_firmware_version
         if field == "ble version":               return self.settings.ble_firmware_version
-        if field == "laser power %":             return self.processed_reading.reading.laser_power_perc if self.processed_reading.reading is not None else 0
+        if field == "laser power %":             return reading.laser_power_perc if reading else 0
         if field == "device id":                 return str(self.settings.device_id)
         if field == "note":                      return self.note.replace(",", ";")
         if field == "prefix":                    return self.prefix
         if field == "suffix":                    return self.suffix
-        if field == "session count":             return self.processed_reading.reading.session_count if self.processed_reading.reading is not None else 0
+        if field == "session count":             return reading.session_count if reading else 0
         if field == "plugin name":               return self.plugin_name
         if field == "preset":                    return self.ctl.presets.selected_preset
-
-        if field == "laser power mw":
-            if (self.processed_reading.reading is not None and 
-                    self.processed_reading.reading.laser_power_mW is not None and 
-                    self.processed_reading.reading.laser_power_mW > 0):
-                return self.processed_reading.reading.laser_power_mW
-            else:
-                return ""
+        if field == "laser power mw":            return reading.laser_power_mW if (reading and reading.laser_power_mW is not None and reading.laser_power_mW > 0) else ""
 
         log.error("Unknown CSV header field: %s", field)
         return ""
 
     def get_extra_header_fields(self):
-        fields = copy.copy(Measurement.EXTRA_HEADER_FIELDS)
-
-        # if self.spec is not None:
-        #     if self.settings.eeprom.multi_wavecal is not None:
-        #         fields.append("Position")
-
-        return fields
+        return copy.copy(Measurement.EXTRA_HEADER_FIELDS)
 
     def get_all_metadata(self) -> dict:
         md = {}
