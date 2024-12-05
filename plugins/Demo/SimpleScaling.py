@@ -10,11 +10,14 @@ class SimpleScaling(EnlightenPluginBase):
 
     def get_configuration(self):
         self.name = "Scaling"
-        self.field(name="Factor", datatype="float", initial=2, maximum=15, minimum=-5, step=0.25, direction="input")
-            series_names = ["Scaled"])
+        self.field(name="Factor", datatype=float, initial=2, maximum=15, minimum=-5, step=0.25, direction="input")
 
     def process_request(self, request):
+        pr = request.processed_reading
         scale_factor = request.fields["Factor"]
-        spectrum = request.processed_reading.processed
+
+        spectrum = pr.get_processed()
         scaled = [ i * scale_factor for i in spectrum ]
-        self.plot(title="Scaled", { 'y': scaled })
+
+        x_axis = self.get_axis(processed_reading=pr)
+        self.plot(title="Scaled", y=scaled, x=x_axis)
