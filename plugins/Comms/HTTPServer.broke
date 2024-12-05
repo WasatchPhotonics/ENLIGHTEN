@@ -17,6 +17,7 @@ log = logging.getLogger(__name__)
 # A simple plug-in that spawns a webserver publishing the latest
 # spectrum at port 8000.
 #
+# @todo port from gpcharts to matplotlib (circumvent current 'past' dependency)
 # @todo use settings.eeprom.serial_number to cache latest spectra per connected 
 #       spectrometer, so chart can have multiple traces
 # @todo frame spectra with WasatchPhotonics logo, product links etc

@@ -11,6 +11,7 @@
         - redefined EnlightenPluginConfiguration (EPC) .streaming
         - moved EPC.auto_enable to internal (support legacy plugins)
         - added EnlightenPlugin.get_axis(processed_request)
+        - disabled HTTPServer (needs ported from gpcharts to matplotlib)
 - 2024-12-03 4.1.18
     - deprecated RegionControlFeature
     - XL fixes
