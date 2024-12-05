@@ -13,7 +13,7 @@
         - added EnlightenPlugin.get_axis(processed_request)
         - disabled HTTPServer (needs ported from gpcharts to matplotlib)
         - deprecated EnlightenBasePlugin.events (use ctl to register formal observers)
-        - updated Cary Academy's StripChart
+        - updated Cary Academy's StripChart (multiple spectrometers and Cursor)
         - merged in Raman.LibraryMatching
 - 2024-12-03 4.1.18
     - deprecated RegionControlFeature

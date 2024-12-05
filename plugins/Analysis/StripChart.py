@@ -9,7 +9,8 @@ class StripChart(EnlightenPluginBase):
     """
     Simple plug-in showing how to implement a strip chart (rolling time window), as
     well as demonstrating non-spectral metadata that can be extracted from 
-    wasatch.ProcessedReading and wasatch.Reading.
+    wasatch.ProcessedReading and wasatch.Reading (as well as other ENLIGHTEN
+    business objects, like Cursor).
     
     @author Cary Academy Interns, 2024
     @todo this is an example of a plug-in that would benefit from multiple y-axes
@@ -25,37 +26,45 @@ class StripChart(EnlightenPluginBase):
         self.x_axis_label = "Time (Sec)"
 
         self.field(name="Window (sec)", datatype=int, direction="input", initial=10, maximum=30, minimum=1, step=1)
+        self.field(name="Cursor",  datatype=bool, direction="input", initial=False)
         self.field(name="Battery", datatype=bool, direction="input", initial=False)
-        self.field(name="Det °C", datatype=bool, direction="input", initial=False)
+        self.field(name="Det °C",  datatype=bool, direction="input", initial=False)
 
     def process_request(self, request):
+        spec       = request.spec
         eeprom     = request.settings.eeprom
         serial     = eeprom.serial_number
         pr         = request.processed_reading
         reading    = pr.reading
+        spectrum   = pr.get_processed()
 
         window_sec = request.fields["Window (sec)"]
+        show_curs  = request.fields["Cursor"] 
         show_batt  = request.fields["Battery"] 
         show_temp  = request.fields["Det °C"]
 
-        spectrum    = pr.get_processed()
-        wavelengths = pr.get_wavelengths()
-        wavenumbers = pr.get_wavenumbers()
-        cursor_x = self.ctl.cursor.get_x_pos() # not used
-
+        ########################################################################
         # add these to our rolling window
+        ########################################################################
+
+        # track this spectrometer if we haven't seen it before
         if serial not in self.data:
             self.data[serial] = {}
 
+        # collect data for this timestamp
         now = datetime.datetime.now()
-        batt = reading.battery_percentage if eeprom.has_battery else None
-        temp = reading.detector_temperature_degC if eeprom.has_cooling else None
-        self.data[serial][now] = HardwareState(batt, temp)
+
+        cursor_x, cursor_y = self.ctl.cursor.get_pos(spec) 
+        batt_perc = reading.battery_percentage if eeprom.has_battery else None
+        det_temp_degC = reading.detector_temperature_degC if eeprom.has_cooling else None
+
+        self.data[serial][now] = HardwareState(cursor=cursor_y, battery=batt_perc, temp=det_temp_degC)
 
         # Note that not all spectrometers have batteries, or temperature readout, so
-        # only graph data we find in readings.
+        # only graph data we actually found
 
         for sn in sorted(self.data.keys()):
+            series_curs = Series()
             series_batt = Series()
             series_temp = Series()
 
@@ -66,19 +75,17 @@ class StripChart(EnlightenPluginBase):
                     continue
 
                 state = self.data[sn][t]
-                if show_batt and state.battery is not None:
-                    series_batt.add(-sec_ago, state.battery)
-                if show_temp and state.temp is not None:
-                    series_temp.add(-sec_ago, state.temp)
+                if show_curs and state.cursor  is not None: series_curs.add(-sec_ago, state.cursor)
+                if show_batt and state.battery is not None: series_batt.add(-sec_ago, state.battery)
+                if show_temp and state.temp    is not None: series_temp.add(-sec_ago, state.temp)
         
-            if show_batt and len(series_batt.x) > 0:
-                self.plot(y=series_batt.y, x=series_batt.x, title=f"{sn} Battery")
-
-            if show_temp and len(series_temp.x) > 0:
-                self.plot(y=series_temp.y, x=series_temp.x, title=f"{sn} Det °C")
+            if len(series_curs.x): self.plot(y=series_curs.y, x=series_curs.x, title=f"{sn} Cursor")
+            if len(series_batt.x): self.plot(y=series_batt.y, x=series_batt.x, title=f"{sn} Battery")
+            if len(series_temp.x): self.plot(y=series_temp.y, x=series_temp.x, title=f"{sn} Det °C")
 
 class HardwareState:
-    def __init__(self, battery=None, temp=None):
+    def __init__(self, cursor=None, battery=None, temp=None):
+        self.cursor = cursor
         self.battery = battery
         self.temp = temp
 
