@@ -303,6 +303,12 @@ class EnlightenPluginBase:
     def disconnect(self):
         pass
 
+    def get_field_widget(self, field_name):
+        plugin_ctl = self.ctl.plugin_controller
+        for pfw in plugin_ctl.plugin_field_widgets:
+            if pfw.field_config.name == field_name:
+                return pfw.field_widget
+
 ##
 # This class specifies the configuration of an entire EnlightenPlugin.
 #
