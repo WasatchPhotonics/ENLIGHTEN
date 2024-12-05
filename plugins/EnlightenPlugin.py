@@ -51,7 +51,6 @@ class EnlightenPluginBase:
         self.y_axis_label = None
 
         self.series = {}
-        self.events = {}
         self.overrides = {}
 
         # plugins can do everything
@@ -96,9 +95,6 @@ class EnlightenPluginBase:
     def field(self, **kwargs):
         epf = EnlightenPluginField(**kwargs)
         self._fields.append(epf)
-
-    def event(self, event, callback):
-        self.events[event] = callback
 
     def output(self, name, value):
         self.outputs[name] = value
@@ -236,7 +232,6 @@ class EnlightenPluginBase:
             series_names = [], # functional plugins define this on a frame-by-frame basis
             x_axis_label = self.x_axis_label,
             y_axis_label = self.y_axis_label,
-            events = self.events
         )
     
     def process_request_obj(self, request):
@@ -365,34 +360,6 @@ class EnlightenPluginBase:
 #           SimpleScaling, SineAndScale, StripChart
 #
 # ------------------------------------------------------------------------------
-# @par Events
-# 
-# Events allow your plug-in to receive real-time notifications when certain 
-# things happen in ENLIGHTEN.
-#
-# In a sense, the most basic event is pre-configured for every plugin: when 
-# a new ProcessedReading is read from the spectrometer and graphed, the plugin's
-# process_reading() callback is called with that reading.
-#
-# A major difference between processed_reading and other callbacks, though, is
-# that processed_readings are deliberately passed through ENLIGHTEN's 
-# PluginWorker in a threading.Thread via Python queue.Queues.  Event callbacks
-# (like button callbacks) occur in the main Qt GUI thread.  
-#
-# That means that if a plug-in takes 3sec to handle a callback event, the 
-# ENLIGHTEN GUI will "freeze" for 3 seconds.
-#
-# Supported events include:
-#
-# - "save": the user clicked the "Save" button 
-#
-# - under consideration:
-#   - "load": a measurement was loaded from disk 
-#   - "export": all thumbnails are exported to a single file
-#
-# Examples: SaveAsAngstrom
-#
-# ------------------------------------------------------------------------------
 # @par Streaming
 #
 # By default, all plug-ins support "streaming" spectra, where they receive and
@@ -429,7 +396,6 @@ class EnlightenPluginConfiguration:
     #        plugins.
     # @param multi_devices: True if the plug-in is designed to handle spectra 
     #        from multiple spectrometers (tracks requests by serial_number etc)
-    # @param events: a hash of supported event names to callbacks
     def __init__(self, 
             name, 
             fields          = None, 
@@ -441,7 +407,6 @@ class EnlightenPluginConfiguration:
             auto_enable     = None,  # legacy compatibility only
             streaming       = True,
             lock_enable     = False,
-            events          = None,
             series_names    = None,
             multi_devices   = False,
             graph_type      = "line"):  # "line" or "xy"
@@ -456,7 +421,6 @@ class EnlightenPluginConfiguration:
         self.auto_enable     = auto_enable
         self.streaming       = streaming
         self.lock_enable     = lock_enable
-        self.events          = events
         self.multi_devices   = multi_devices
         self.series_names    = series_names
         self.graph_type      = graph_type

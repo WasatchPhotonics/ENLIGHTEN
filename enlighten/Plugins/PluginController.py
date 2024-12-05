@@ -184,10 +184,6 @@ class PluginController:
         self.combo_module.currentIndexChanged.connect(self.combo_module_callback)
         self.combo_graph_pos.currentIndexChanged.connect(self.graph_pos_callback)
 
-        # events
-        log.debug("registering observer on MeasurementFactory")
-        self.ctl.measurement_factory.register_observer(self.events_factory_callback)
-
         # filter scroll-steal
         for combo in [ self.combo_module, self.combo_graph_pos ]:
             combo.installEventFilter(ScrollStealFilter(combo))
@@ -1217,34 +1213,6 @@ class PluginController:
         for signal in response.signals:
             log.debug(f"applying signal: {signal}")
             eval(signal)
-
-    ############################################################################
-    # events                                                                   #
-    ############################################################################
-
-    ##
-    # If there is a connected plugin, and if it has an events hash, and if that
-    # hash has a 'save' callback, then relay the data.
-    def events_factory_callback(self, measurement, event):
-        log.debug(f"received Measurement from event {event}")
-
-        if event == "pre-save" and self.enabled:
-            measurement.plugin_name = self.module_name
-
-        config = self.get_current_configuration()
-        if config is None or config.events is None:
-            return
-
-        callback = config.events.get(event, None)
-        if callback is None:
-            return
-
-        log.debug("cloning measurement")
-        m = measurement.clone()
-        # log.debug("pickle.dumps: %s", pickle.dumps(m))
-
-        log.debug(f"passing measurement to {callback}")
-        callback(measurement = m)
 
     ############################################################################
     # utility                                                                  #
