@@ -62,11 +62,16 @@ class EnlightenPluginBase:
         if os.path.exists(self.logfile):
             os.remove(self.logfile)
 
-    def get_axis(self):
+    def get_axis(self, processed_reading=None):
         unit = self.ctl.graph.get_x_axis_unit()
-        if unit == "nm": return self.settings.wavelengths
-        if unit == "cm": return self.settings.wavenumbers
-        if unit == "px": return range(len(self.spectrum))
+        if processed_reading:
+            if unit == "nm": return processed_reading.get_wavelengths()
+            if unit == "cm": return processed_reading.get_wavenumbers()
+            if unit == "px": return range(len(processed_reading.get_processed()))
+        else:
+            if unit == "nm": return self.settings.wavelengths
+            if unit == "cm": return self.settings.wavenumbers
+            if unit == "px": return range(len(self.spectrum))
 
     def get_axis_short_name(self):
         unit = self.ctl.graph.get_x_axis_unit()
@@ -591,32 +596,6 @@ class EnlightenPluginRequest:
     processed_reading: ProcessedReading = field(default_factory=ProcessedReading)
     creation_time: datetime.datetime = datetime.datetime.now()
     fields: list[EnlightenPluginField] = field(default_factory=list)
-
-##
-# This abstract base class provides information to the plugin about the current 
-# application state of ENLIGHTEN.  An instance of a concrete subclass of this
-# will be passed to connect().
-class EnlightenApplicationInfo:
-
-    def __init__(self):
-        pass
-
-    ## @return currently selected x-axis ("px", "nm" or "cm")
-    def get_x_axis_unit(self):
-        pass
-
-    ## @return e.g. C:\Users\mzieg\Documents\EnlightenSpectra
-    def get_save_path(self):
-        pass
-
-    def reference_is_dark_corrected(self):
-        return False
-
-    def read_measurements(self):
-        """
-        returns a list of dicts of the current measurements in the measurements clipobard.
-        """
-        return [{}]
 
 ##
 # After a plug-in has received an EnlightenPluginRequest and processed it, the 

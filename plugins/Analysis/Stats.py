@@ -23,7 +23,7 @@ class Stats(EnlightenPluginBase):
         self.reset()
 
     def process_request(self, request):
-        spectrum = request.processed_reading.processed
+        spectrum = request.processed_reading.get_processed()
 
         if self.metrics is None:
             self.metrics = Metrics(spectrum)
@@ -34,9 +34,10 @@ class Stats(EnlightenPluginBase):
                 log.error("Unable to update Stats", exc_info=1)
                 self.reset()
 
-        self.plot(title="Stats.Min", y=self.metrics.min)
-        self.plot(title="Stats.Max", y=self.metrics.max)
-        self.plot(title="Stats.Avg", y=self.metrics.avg)
+        x_values = self.get_axis(processed_reading=request.processed_reading)
+        self.plot(title="Stats.Min", y=self.metrics.min, x=x_values)
+        self.plot(title="Stats.Max", y=self.metrics.max, x=x_values)
+        self.plot(title="Stats.Avg", y=self.metrics.avg, x=x_values)
 
     def reset(self):
         self.metrics = None
