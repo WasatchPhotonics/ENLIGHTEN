@@ -621,6 +621,7 @@ class PluginController:
             # we're successfully initialized, so proceed
             self.module_name = module_name
 
+            log.debug("configure_gui_for_module: configuring graph")
             self.show_plugin_graph(config.has_other_graph)
 
             # set title
@@ -727,6 +728,7 @@ class PluginController:
               self.use_other_graph, but we'd need to move existing 
               curves between graphs/legends via self.plugin_curves
         """
+        log.debug(f"show_plugin_graph: flag {flag}")
         self.use_plugin_graph = flag
         self.lb_graph_pos.setVisible(flag)
         self.combo_graph_pos.setVisible(flag)
@@ -782,8 +784,8 @@ class PluginController:
         self.plugin_plot = pyqtgraph.PlotWidget(name=f"{config.name}")
         if self.ctl.grid is not None and self.ctl.grid.enabled:
             self.plugin_plot.showGrid(True, True)
-        self.combo_graph_pos.setVisible(True)
-        self.lb_graph_pos.setVisible(True)
+        self.combo_graph_pos.setVisible(config.has_other_graph)
+        self.lb_graph_pos.setVisible(config.has_other_graph)
         self.plugin_plot_legend = self.plugin_plot.addLegend()
 
         self.graph_plugin = Graph(

@@ -38,7 +38,12 @@ class AxisConverter:
             log.debug(f"conversion func is none so not updating x")
             return
 
-        new_x = conversion_func(x, spec)
+        try:
+            new_x = conversion_func(x, spec)
+        except:
+            log.error(f"invalid conversion from old_axis {old_axis} to new_axis {new_axis} for x {x}", exc_info=1)
+            new_x = x
+
         return new_x
 
     def wavenum_to_pixels(self, x, spec):

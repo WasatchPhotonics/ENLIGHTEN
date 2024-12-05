@@ -4,6 +4,10 @@
     - [#506] added robustness to Save Location change cancel
     - [#509] fix "Load Dark" and "Load Reference"
     - fix EEPROMEditor bug
+    - [#387] deprecate plugin "[x] Enable" checkbox
+        - redefined EnlightenPluginConfiguration (EPC) .streaming
+        - moved EPC.auto_enable to internal (support legacy plugins)
+        - hide graph combo unless has_other_graph
 - 2024-12-03 4.1.18
     - deprecated RegionControlFeature
     - XL fixes
