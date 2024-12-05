@@ -16,6 +16,10 @@ class EventHooks(EnlightenPluginBase):
 
         self.ctl.measurement_factory.register_observer(self.factory_callback)
 
+    def disconnect(self):
+        self.ctl.measurement_factory.unregister_observer(self.factory_callback)
+        super().disconnect()
+
     def process_request(self, request):
         self.outputs["Save Count"] = self.counts["save"]
         self.outputs["Load Count"] = self.counts["load"]
