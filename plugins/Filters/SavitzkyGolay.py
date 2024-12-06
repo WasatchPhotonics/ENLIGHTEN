@@ -1,10 +1,5 @@
-import logging
-
 from scipy.signal import savgol_filter
-
 from EnlightenPlugin import EnlightenPluginBase
-
-log = logging.getLogger(__name__)
 
 class SavitzkyGolay(EnlightenPluginBase):
     """
@@ -51,7 +46,7 @@ class SavitzkyGolay(EnlightenPluginBase):
         polyorder = min(self.get_widget_from_name("Poly Order").value(), win_len - 1)
 
         smoothed = savgol_filter(
-            x             = request.processed_reading.get_processed(),
+            x = request.processed_reading.get_processed(),
             window_length = win_len,    # < len(x)
             polyorder     = polyorder,  # < win_len
             deriv         = deriv,      # >= 0

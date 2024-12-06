@@ -1,8 +1,26 @@
 # Version History
 
-- 2024-??-?? 4.1.19
-    - [#506] added robustness to Save Location change cancel
-    - [#509] fix "Load Dark" and "Load Reference"
+- 2024-12-06 4.1.19
+    - [#506] added robustness to Save Location "change, then cancel"
+    - [#509] fix "Load Dark/Reference"
+        - moved both to Expert mode
+    - EEPROMEditor
+        - bugfixes
+        - center all QLineEdits
+        - clamp numerics to 8 significant figures
+    - [#387] Plugin cleanup
+        - deprecated EnlightenApplicationInfo
+        - deprecated plugin "[x] Enable" checkbox
+        - hide graph combo unless has_other_graph
+        - redefined EnlightenPluginConfiguration (EPC) .streaming
+        - moved EPC.auto_enable to internal (support legacy plugins)
+        - added EnlightenPlugin.get_axis(processed_request)
+        - disabled HTTPServer (needs ported from gpcharts to matplotlib)
+        - deprecated EnlightenBasePlugin.events (use ctl to register formal observers)
+        - updated Cary Academy's StripChart (multiple spectrometers and Cursor)
+        - merged in Raman.LibraryMatching (with MatchingLibrary)
+    - deprecated Raman Intensity Calibration Order (hardcoded 5th-order)
+    - fixed Raman Intensity Correction (broke in 4.1.17)
 - 2024-12-03 4.1.18
     - deprecated RegionControlFeature
     - XL fixes

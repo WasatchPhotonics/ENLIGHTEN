@@ -61,7 +61,6 @@ class BurnIn(EnlightenPluginBase):
 
     def get_configuration(self):
         self.name = "Burn-In"
-        self.auto_enable = True
 
         self.init_defaults()
 

@@ -19,8 +19,6 @@ class RamanLines(EnlightenPluginBase):
         yet added that as a supported plugin input type.
         """
         self.name = "Raman Lines"
-        self.auto_enable = True
-
         self.samples = self.get_samples()
         self.field(name="sample", direction="input", datatype="combobox", choices=[k for k, v in self.samples.items()])
 
@@ -33,11 +31,9 @@ class RamanLines(EnlightenPluginBase):
         sample = request.fields["sample"]
         if sample in self.samples:
             for p in self.generate_points(sample=sample):
-                self.plot(
-                    title = f"{sample} {p[0]:7.03f}cm⁻¹",
-                    x = [p[0], p[0]],
-                    y = [min(self.spectrum), p[1]]
-                )
+                self.plot(title = f"{sample} {p[0]:7.03f}cm⁻¹",
+                          x = [p[0], p[0]],
+                          y = [min(self.spectrum), p[1]])
 
     def generate_points(self, sample):
         """

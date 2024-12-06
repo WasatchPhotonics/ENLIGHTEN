@@ -6,3 +6,8 @@ class LockSettings(EnlightenPluginBase):
     def get_configuration(self):
         self.ctl.gain_db_feature.set_locked(True)
         self.ctl.laser_control.set_locked(True)
+
+    def disconnect(self):
+        self.ctl.gain_db_feature.set_locked(False)
+        self.ctl.laser_control.set_locked(False)
+        super().disconnect()

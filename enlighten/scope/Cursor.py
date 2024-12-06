@@ -38,7 +38,12 @@ class AxisConverter:
             log.debug(f"conversion func is none so not updating x")
             return
 
-        new_x = conversion_func(x, spec)
+        try:
+            new_x = conversion_func(x, spec)
+        except:
+            log.error(f"invalid conversion from old_axis {old_axis} to new_axis {new_axis} for x {x}", exc_info=1)
+            new_x = x
+
         return new_x
 
     def wavenum_to_pixels(self, x, spec):
@@ -177,34 +182,13 @@ class Cursor:
     def update(self):
         if not self.cb_enable.isChecked():
             return
-
         if self.ctl.multispec is None:
             return
 
-        spec = self.ctl.multispec.current_spectrometer()
-        if spec is None:
-            return
-
         try:
-            # Get precise cursor value as drawn on screen using chart x-axis
-            x = self.cursor.getXPos()
-
-            # MZ: Note that we're taking x-axis and spectrum FROM THE GRAPH, not
-            #     from "state" or "history" or anything.  That's probably the right
-            #     thing to do for a graph cursor.
-            curve = spec.curve
-            x_axis   = curve.getData()[ 0]
-            spectrum = curve.getData()[-1] 
-            log.debug(f"in update x axis from graph is len {len(x_axis)}")
-
-            # Find the CLOSEST index on the x-axis to the cursor's x-index
-            # https://stackoverflow.com/questions/2566412/find-nearest-value-in-numpy-array
-            #
-            # MZ: seems it would be worth offering interpolation here?
-            x = np.abs(x_axis - x).argmin() 
-            y = spectrum[x]
-
-            # display the corresponding spectral value
+            x, y = self.get_pos()
+            if x is None or y is None:
+                return
             for callback in self.observers:
                 callback(x, y)
         except:
@@ -278,3 +262,23 @@ class Cursor:
         self.cursor.setValue(midpoint)
         log.debug("centering: midpoint of (%.2f, %.2f) is %.2f", x_axis[0], x_axis[-1], midpoint)
 
+    def get_pos(self, spec=None):
+        if spec is None:
+            spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return None, None
+
+        curve = spec.curve
+        xp = self.cursor.getXPos()
+
+        x_axis = curve.getData()[0]
+        spectrum = curve.getData()[-1] 
+        if x_axis is None or spectrum is None:
+            return None, None
+
+        x = np.abs(x_axis - xp).argmin() 
+        y = spectrum[x]
+
+        # log.debug(f"x {x:.2f}, y {y:.2f}, spec {spec}, curve {curve}")
+
+        return x, y

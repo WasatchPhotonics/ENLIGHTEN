@@ -258,7 +258,7 @@ class MeasurementFactory:
 
         for m in measurements:
             for observer in self.observers:
-                observer(measurement=m,event="load")
+                observer(measurement=m, event="load")
 
         return measurements
 

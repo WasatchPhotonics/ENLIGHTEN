@@ -21,7 +21,7 @@ from enlighten.scope.Graph import Graph
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 
 # this is in ../../plugins
-from EnlightenPlugin import *
+from EnlightenPlugin import EnlightenPluginRequest
 
 if common.use_pyside2():
     from PySide2 import QtWidgets, QtCore
@@ -44,7 +44,6 @@ log = logging.getLogger(__name__)
 #
 # - [1] when you FIRST select a plugin, it will:
 #   - show the unchecked cb_connected
-#   - hide the unchecked cb_enabled
 #   - load the module
 #   - instantiate the plugin
 #   - call plugin.get_configuration()
@@ -87,7 +86,6 @@ log = logging.getLogger(__name__)
 # Notes:
 # - cb_connected determines
 #       - whether combo_module is enabled, and worker exists
-# - cb_enabled determines whether we actively push readings to the request_queue
 # - combo_module determines how the GUI is currently configured
 #
 # @par Apologia
@@ -143,7 +141,6 @@ class PluginController:
         # widgets
         self.button_process             = cfu.pushButton_plugin_process
         self.cb_connected               = cfu.checkBox_plugin_connected
-        self.cb_enabled                 = cfu.checkBox_plugin_enabled
         self.combo_graph_pos            = cfu.comboBox_plugin_graph_pos
         self.combo_module               = cfu.comboBox_plugin_module
         self.frame_control              = cfu.frame_plugin_control
@@ -156,7 +153,7 @@ class PluginController:
 
         # start up check examples exist
         self.directory = common.get_default_data_dir()
-        self.stub_plugin()
+        self.create_plugins_folder()
 
         # initialize GUI
         self.frame_control.setVisible(False)
@@ -167,7 +164,6 @@ class PluginController:
         self.button_process.setEnabled(False)
         self.cb_connected.setEnabled(False)
         self.cb_connected.setChecked(False)
-        self.cb_enabled.setChecked(False)
         self.combo_graph_pos.setCurrentIndex(0) # bottom
 
         # configure our search directories
@@ -185,14 +181,12 @@ class PluginController:
         # bindings
         self.button_process.clicked.connect(self.button_process_callback)
         self.cb_connected.clicked.connect(self.connected_callback)
-        self.cb_enabled.clicked.connect(self.enabled_callback)
         self.combo_module.currentIndexChanged.connect(self.combo_module_callback)
         self.combo_graph_pos.currentIndexChanged.connect(self.graph_pos_callback)
 
-        # events
-        log.debug("registering observer on MeasurementFactory")
-        self.combo_module.installEventFilter(ScrollStealFilter(self.combo_module))
-        self.ctl.measurement_factory.register_observer(self.events_factory_callback)
+        # filter scroll-steal
+        for combo in [ self.combo_module, self.combo_graph_pos ]:
+            combo.installEventFilter(ScrollStealFilter(combo))
 
         self.timer = QtCore.QTimer() 
         self.timer.setSingleShot(True)
@@ -221,7 +215,7 @@ class PluginController:
 
         self.timer.start(1000) # 1Hz
 
-    def stub_plugin(self):
+    def create_plugins_folder(self):
         """Create the plugins folder if it does not exist"""
         log.debug(f"starting plugin stub")
         plugin_dst = os.path.join(self.directory, "plugins")
@@ -368,7 +362,7 @@ class PluginController:
         module_name = self.combo_module.currentText()
 
         if module_name not in self.module_infos:
-            log.error(f"user somehow attempted to connect to invalid module {module_name}")
+            log.error(f"connected_callback: user somehow attempted to connect to invalid module {module_name}")
             self.cb_connected.setEnabled(False)
             self.cb_connected.setChecked(False)
             return
@@ -390,12 +384,12 @@ class PluginController:
                 self.ctl.config.set("plugins", "suppress_warning", True)
 
         if connected:
-            log.debug("we just connected")
+            log.debug("connected_callback: we just connected")
             self.ctl.marquee.info(f"Connecting to plug-in {module_name}...", immediate=True)
 
-            log.debug("reconfiguring GUI for %s", module_name)
+            log.debug("connected_callback: reconfiguring GUI for %s", module_name)
             if not self.configure_gui_for_module(module_name):
-                log.error("unable to configure GUI for module, disconnecting")
+                log.error("connected_callback: unable to configure GUI for module, disconnecting")
                 self.cb_connected.setChecked(False)
                 self.do_post_disconnect()
                 return
@@ -414,53 +408,52 @@ class PluginController:
                 connected_ok = self.run_worker()
             except:
                 # if this has good info, would be worth popping-up a MsgBox
-                log.error("exception spawning PluginWorker", exc_info=1)
+                log.error("connected_callback: exception spawning PluginWorker", exc_info=1)
 
             if not connected_ok:
-                log.error("failed to run worker, disconnecting")
+                log.error("connected_callback: failed to run worker, disconnecting")
                 self.cb_connected.setChecked(False)
                 self.do_post_disconnect()
                 return
 
             module_config = self.get_current_configuration()
-            if module_config.auto_enable:
-                # this plugin has requested to auto-enable on connect
-                log.debug("auto-enabling")
-                self.cb_enabled.setEnabled(not module_config.lock_enable)
-                self.cb_enabled.setChecked(True)
-                self.button_process.setEnabled(False)
+            streaming = module_config.streaming
+            log.debug(f"connected_callback: streaming defaulting to {streaming}")
+            if module_config.auto_enable is not None and isinstance(module_config.auto_enable, bool) and not module_config.auto_enable:
+                log.debug(f"connected_callback: something set auto_enable {module_config.auto_enable}, so disabling streaming")
+                streaming = False
+
+            log.debug(f"connected_callback: streaming {module_config.streaming}, auto_enable {module_config.auto_enable}")
+            if streaming:
+                # this plugin should receive "streaming" inputs from ENLIGHTEN
+                log.debug("connected_callback: enabling streaming")
+                self.button_process.setVisible(False)
                 self.enabled = True
             else:
                 # allow the user to enable the plugin
-                self.cb_enabled.setEnabled(True)
-                self.cb_enabled.setChecked(False)
+                log.debug("connected_callback: NOT streaming")
+                self.button_process.setVisible(True)
                 self.button_process.setEnabled(True)
+                self.enabled = False
 
             # for some reason, this doesn't work from within configure_gui_for_module
             self.graph_pos_callback()
 
-            log.debug("successfully connected")
+            log.debug("connected_callback: successfully connected")
         else:
             log.debug("we just disconnected")
             self.do_post_disconnect()
 
+        log.debug("connected_callback: done")
+
     def do_post_disconnect(self):
         log.debug("do_post_disconnect: start")
-        self.cb_enabled.setChecked(False)
-        self.cb_enabled.setEnabled(False)
         self.button_process.setEnabled(False)
         self.combo_graph_pos.setEnabled(False)
         self.combo_module.setEnabled(True)
         self.cancel_worker()
         self.clear_previous_layout()
         log.debug("do_post_disconnect: done")
-
-    # need to do very little -- just open/close the gate on processing requests,
-    # plus set the "process" button to the opposite state
-    def enabled_callback(self):
-        self.enabled = self.cb_enabled.isChecked()
-        if self.button_process is not None:     # MZ: when would that be none?
-            self.button_process.setEnabled(not self.enabled)
 
     ## The user changed the combobox indicating where the "second graph" should appear
     # @see Controller.populate_placeholder_scope_capture
@@ -495,18 +488,24 @@ class PluginController:
 
     ##
     # The user clicked the "process" button on the control panel indicating
-    # "please process the current spectrum".
+    # "please process the current spectra".
     def button_process_callback(self):
         log.debug("user pressed process button")
-        spec = self.ctl.multispec.current_spectrometer()
-        if spec is None or spec.app_state is None:
-            return
-        pr = spec.app_state.processed_reading
-        if pr is None:
-            return
-    
-        self.button_process.setEnabled(False)
-        self.process_reading(pr, spec.settings, spec, manual=True)
+
+        if self.config.multi_devices:
+            for spec in self.ctl.multispec.get_spectrometers():
+                if spec is not None and spec.app_state is not None:
+                    pr = spec.app_state.processed_reading
+                    if pr is not None:
+                        self.button_process.setEnabled(False)
+                        self.process_reading(pr, spec.settings, spec, manual=True)
+        else:
+            spec = self.ctl.multispec.current_spectrometer()
+            if spec is not None and spec.app_state is not None:
+                pr = spec.app_state.processed_reading
+                if pr is not None:
+                    self.button_process.setEnabled(False)
+                    self.process_reading(pr, spec.settings, spec, manual=True)
 
     # ##########################################################################
     # PluginWorker
@@ -605,13 +604,8 @@ class PluginController:
         self.frame_fields.setVisible(False)
         self.clear_previous_layout()
 
-        # if we just selected a module, we should not yet be connected, therefore
-        # we can't and shouldn't be enabled
-        self.cb_enabled.setChecked(False)
-        self.cb_enabled.setEnabled(False)
-
         if module_name not in self.module_infos:
-            log.error("configure_gui: invalid module")
+            log.error(f"configure_gui_for_module: invalid module {module_name}")
             self.cb_connected.setEnabled(False)
             return False
 
@@ -621,7 +615,7 @@ class PluginController:
 
         try:
             # import the module
-            log.debug("importing the module")
+            log.debug("configure_gui_for_module: importing the module")
             if not module_info.load():
                 return False
             config = module_info.config
@@ -629,10 +623,11 @@ class PluginController:
             # we're successfully initialized, so proceed
             self.module_name = module_name
 
+            log.debug("configure_gui_for_module: configuring graph")
             self.show_plugin_graph(config.has_other_graph)
 
             # set title
-            log.debug("setting title")
+            log.debug("configure_gui_for_module: setting title")
             self.lb_title.setText(config.name)
 
             # set tooltip (really doesn't look that good)
@@ -640,21 +635,21 @@ class PluginController:
             #     self.frame_control.setToolTip(config.tooltip)
 
             # delete any previously-displayed plugin widgets
-            log.debug("clearing layout")
+            log.debug("configure_gui_for_module: clearing layout")
             self.clear_plugin_layout(self.plugin_fields_layout)
 
             # prepare to create the EnlightenPluginFields for this plugin
-            log.debug("instantiating fields")
+            log.debug("configure_gui_for_module: instantiating fields")
             self.panda_field = None
             self.plugin_field_widgets = []
 
-            log.debug("populating vlayout")
+            log.debug("configure_gui_for_module: populating vlayout")
             self.vlayout_fields.addLayout(self.plugin_fields_layout)
 
             added_group = []
             if isinstance(config.fields, dict):
                 self.plugin_field_widgets = []
-                log.debug("trying to add stack widget because dict for the fields")
+                log.debug("configure_gui_for_module: trying to add stack widget because dict for the fields")
                 self.select_vbox = QtWidgets.QVBoxLayout()
                 self.stacked_widget = QtWidgets.QStackedWidget()
                 self.widget_selector = QtWidgets.QComboBox()
@@ -677,12 +672,12 @@ class PluginController:
                 self.select_vbox.addWidget(self.stacked_widget)
                 self.plugin_fields_layout.addLayout(self.select_vbox)
             else:
-                log.debug(f"Non dict epf, performing standard layout")
+                log.debug(f"configure_gui_for_module: Non dict epf, performing standard layout")
                 self.process_widgets(config.fields, self.plugin_field_widgets)
 
                 # note these are PluginFieldWidgets, NOT EnlightenPluginFields
-                log.debug("adding fields")
                 for pfw in self.plugin_field_widgets:
+                    log.debug(f"configure_gui_for_module: adding pfw {pfw.field_name}")
                     if pfw.field_config.datatype == "radio":
                         group_box = pfw.field_config.group
                         layout = pfw.field_config.layout
@@ -692,14 +687,15 @@ class PluginController:
                             added_group.append(group_box)
                         layout.addLayout(pfw.get_display_element())
                     else:
-                        self.plugin_fields_layout.addLayout(pfw.get_display_element())
+                        item = pfw.get_display_element()
+                        self.plugin_fields_layout.addLayout(item)
 
             # configure initial visibility
             self.update_field_visibility()
 
             if self.panda_field:
                 # pandas ignores Expert visibility
-                log.debug("creating output table")
+                log.debug("configure_gui_for_module: creating output table")
                 self.create_output_table()
 
             # configure graph series
@@ -709,18 +705,15 @@ class PluginController:
 
                     # note that these are all treated as lines 
                     # (EnlightenPluginConfiguration.graph_type pertains to graph_plugin)
-                    log.debug("adding series to main graph")
+                    log.debug("configure_gui_for_module: adding series to main graph")
                     for name in config.series_names:
                         # keep reference to curve objects so we can later delete them
-                        log.info(f"adding curve on main graph: {name}")
+                        log.info(f"configure_gui_for_module: adding curve on main graph: {name}")
                         self.create_graph_curves(name, self.ctl.graph)
 
-            # configure streaming support
-            self.cb_enabled.setVisible(config.streaming)
-
-            log.debug("done activating module %s", module_name)
+            log.debug("configure_gui_for_module: done activating module %s", module_name)
         except:
-            log.error(f"Error activating module {module_name}", exc_info=1)
+            log.error(f"configure_gui_for_module: Error activating module {module_name}", exc_info=1)
             self.frame_control.setVisible(False)
             self.display_exception(
                 f"An exception occurred while configuring the GUI for module {module_name}", 
@@ -728,7 +721,7 @@ class PluginController:
             # @todo self.unconnectable.add(module_name)
             return False
 
-        log.debug("successfully reconfigured GUI for plugin %s", module_name)
+        log.debug("configure_gui_for_module: successfully reconfigured GUI for plugin %s", module_name)
         return True
 
     def show_plugin_graph(self, flag):
@@ -737,6 +730,7 @@ class PluginController:
               self.use_other_graph, but we'd need to move existing 
               curves between graphs/legends via self.plugin_curves
         """
+        log.debug(f"show_plugin_graph: flag {flag}")
         self.use_plugin_graph = flag
         self.lb_graph_pos.setVisible(flag)
         self.combo_graph_pos.setVisible(flag)
@@ -792,8 +786,8 @@ class PluginController:
         self.plugin_plot = pyqtgraph.PlotWidget(name=f"{config.name}")
         if self.ctl.grid is not None and self.ctl.grid.enabled:
             self.plugin_plot.showGrid(True, True)
-        self.combo_graph_pos.setVisible(True)
-        self.lb_graph_pos.setVisible(True)
+        self.combo_graph_pos.setVisible(config.has_other_graph)
+        self.lb_graph_pos.setVisible(config.has_other_graph)
         self.plugin_plot_legend = self.plugin_plot.addLegend()
 
         self.graph_plugin = Graph(
@@ -1007,7 +1001,7 @@ class PluginController:
     # @todo split-out outputs, series into their own methods
     def handle_response(self, response, orig_pr=None):
 
-        log.debug("handling response")
+        log.debug("handle_response: start")
 
         config = self.get_current_configuration()
         if config is None:
@@ -1019,10 +1013,10 @@ class PluginController:
                 return
 
             request = response.request
-            log.debug("handling response to request %d", request.request_id)
+            log.debug(f"handle_response: request {request.request_id}")
 
             if not PluginValidator.validate_response(response):
-                log.error("invalid EnlightenPluginResponse")
+                log.error("handle_response: invalid EnlightenPluginResponse")
                 self.release_block(request)
                 return
 
@@ -1040,7 +1034,7 @@ class PluginController:
             outputs = response.outputs
             if outputs is not None:
                 
-                log.debug("plugin response has output")
+                log.debug("handle_response: plugin response has output")
 
                 # handle scalar outputs
                 for pfw in self.plugin_field_widgets:
@@ -1062,7 +1056,7 @@ class PluginController:
                     if not self.table_view:
                         self.create_output_table()
 
-                    log.debug("functional-plugin using panda table")
+                    log.debug("handle_response: functional-plugin using panda table")
                     dataframe = response.outputs["Table"]
                     model = TableModel(dataframe)
                     self.table_view.setModel(model)
@@ -1075,7 +1069,7 @@ class PluginController:
 
             seriess = response.series
             if seriess is not None:
-                log.debug("graphing series")
+                log.debug("handle_response: graphing seriess")
 
                 # all plugin series are either on the main graph or the secondary
                 # graph -- currently we don't support per-series configuration
@@ -1084,7 +1078,7 @@ class PluginController:
                 # determine default x-axis for a series, if none is provided
                 x_from_label = None
                 if config.x_unit is not None:
-                    log.debug(f"took default x-axis from label ({config.x_unit})")
+                    log.debug(f"handle_response: took default x-axis from label ({config.x_unit})")
                     x_from_label = self.ctl.generate_x_axis(unit=config.x_unit)
                 x_live = self.ctl.generate_x_axis()
 
@@ -1094,32 +1088,35 @@ class PluginController:
                 # first blank any missing series, this happens quickly, immediately blanking the graph
                 to_remove = []
                 for name in self.plugin_curves:
+                    # log.debug(f"handle_response: found existing curve {name}")
                     series = seriess.get(name, None)
                     if series is None:
-                        log.debug(f"configured series {name} missing")
+                        log.debug(f"handle_response: configured series {name} missing")
                         if name in self.plugin_curves:
+                            # log.debug(f"handle_response: removing curve {name}")
                             graph.remove_curve(name)
                             to_remove.append(name)
                         else:
-                            log.debug(f"configured series {name} missing curve?")
+                            log.debug(f"handle_response: configured series {name} missing curve?")
                 
                 # now perform the slower option of removing from configuration
                 # this happens slowly, ~.2 sec per curve, enough that you would
                 # see them being removed one by one if this was included in the
                 # above loop
                 for name in to_remove:
+                    # log.debug(f"handle_response: deleting curve {name}")
                     del self.plugin_curves[name]
                 
                 # now graph every provided series (declared or otherwise)
                 for name in sorted(seriess):
-                    log.debug(f"graphing series {name}")
+                    log.debug(f"handle_response: graphing series {name}")
                     series = seriess.get(name, None)
 
                     if name not in self.plugin_curves:
 
                         # SB: functional plugins use exclusively undeclared curves
 
-                        log.debug(f"found undeclared curve {name}...adding. in_legend={series.get('in_legend', True)}")
+                        log.debug(f"handle_response: found undeclared curve {name}...adding. in_legend={series.get('in_legend', True)}")
                         self.plugin_curves[name] = graph.add_curve(
                             name=name, 
                             pen=self.ctl.gui.make_pen(color=series.get("color")), 
@@ -1129,24 +1126,24 @@ class PluginController:
                     if isinstance(series, dict):
                         y_values = series.get('y', None)
                         if y_values is None:
-                            log.error(f"series {name} missing y")
+                            log.error(f"handle_response: series {name} missing y")
                             graph.set_data(self.plugin_curves[name], y=[], x=[])
                             continue
-                        log.debug("taking x_values from dict")
+                        # log.debug("handle_response: taking x_values from dict")
                         x_values = series.get('x', None)
                     else:
                         y_values = series
 
-                    if x_values is not None:
-                        log.debug(f"x_values is {x_values[0]}..{x_values[-1]}")
+                    # if x_values is not None:
+                    #     log.debug(f"handle_response: x_values is {x_values[0]}..{x_values[-1]}")
 
                     if y_values == [] or y_values is None:
-                        log.error(f"Received response with no y_values for series {name}")
+                        log.error(f"handle_response: eceived response with no y_values for series {name}")
                         continue
                         
                     if x_values is None:
                         # determine appropriate x-axis
-                        log.debug("x_values is None, so determining appropriate x_axis")
+                        # log.debug("handle_response: x_values is None, so determining appropriate x_axis")
 
                         if x_from_label is not None and len(y_values) == len(x_from_label):
                             # use default x-axis implied by x-axis label if sizing permits
@@ -1158,11 +1155,11 @@ class PluginController:
                             # default to datapoints
                             x_values = np.array(list(range(len(y_values))), dtype=np.float32)
 
-                    log.debug(f"updating curve {name}") # (x = %s, y = %s)", x_values, y_values)
+                    # log.debug(f"handle_response: updating curve {name}") # (x = %s, y = %s)", x_values, y_values)
                     try:
                         graph.set_data(self.plugin_curves[name], y=y_values, x=x_values)
                     except:
-                        log.error(f"Failed to update curve {name}", exc_info=1)
+                        log.error(f"handle_response: Failed to update curve {name}", exc_info=1)
 
             ####################################################################
             # handle metadata and overrides                                    #
@@ -1186,7 +1183,7 @@ class PluginController:
             self.apply_signals(response) 
 
         except:
-            log.error(f"error handling response", exc_info=1)
+            log.error(f"handle_response: caught exception", exc_info=1)
 
     def apply_overrides(self, orig_pr, response):
         if orig_pr is None:
@@ -1222,34 +1219,6 @@ class PluginController:
         for signal in response.signals:
             log.debug(f"applying signal: {signal}")
             eval(signal)
-
-    ############################################################################
-    # events                                                                   #
-    ############################################################################
-
-    ##
-    # If there is a connected plugin, and if it has an events hash, and if that
-    # hash has a 'save' callback, then relay the data.
-    def events_factory_callback(self, measurement, event):
-        log.debug(f"received Measurement from event {event}")
-
-        if event == "pre-save" and self.enabled:
-            measurement.plugin_name = self.module_name
-
-        config = self.get_current_configuration()
-        if config is None or config.events is None:
-            return
-
-        callback = config.events.get(event, None)
-        if callback is None:
-            return
-
-        log.debug("cloning measurement")
-        m = measurement.clone()
-        # log.debug("pickle.dumps: %s", pickle.dumps(m))
-
-        log.debug(f"passing measurement to {callback}")
-        callback(measurement = m)
 
     ############################################################################
     # utility                                                                  #

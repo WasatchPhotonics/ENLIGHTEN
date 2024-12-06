@@ -53,7 +53,6 @@ class Multichannel(EnlightenPluginBase):
 
     def get_configuration(self):
         self.name = "Multichannel"
-        self.auto_enable = True
 
         self.field(name="Trigger Spec", datatype=str, direction="output")
         self.field(name="Fan Spec", datatype=str, direction="output")
@@ -82,7 +81,7 @@ class Multichannel(EnlightenPluginBase):
         # triggering and fan control, then perform that scan now.
         if self.trigger_spec is None or self.fan_spec is None:
             for spec in self.ctl.multispec.get_spectrometers():
-                m = re.match("pos=(\d+);\s*feature=(\S+)", spec.settings.eeprom.user_text)
+                m = re.match(r"pos=(\d+);\s*feature=(\S+)", spec.settings.eeprom.user_text)
                 if m:
                     pos = int(m.group(1))
                     feature = m.group(2).lower()

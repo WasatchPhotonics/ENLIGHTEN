@@ -9,9 +9,8 @@ log = logging.getLogger(__name__)
 class Despiking(EnlightenPluginBase):
 
     def get_configuration(self):
-        self.name = "Despiking Plugin"
+        self.name = "Despiking"
         self.has_other_graph = True
-        self.auto_enable = True
 
         self.field(name="window size", datatype="int", initial=7, minimum=2, maximum=30, direction="input")
         self.field(name="tau", datatype="float", initial=7, minimum=0.1, maximum=300, step=0.1, direction="input")
@@ -25,7 +24,6 @@ class Despiking(EnlightenPluginBase):
         spiky_spectra = pr.get_processed()
         log.debug(f"got spiky_spectra {spiky_spectra}")
 
-        settings = request.settings
         tau_outlier_criteria = request.fields["tau"]
         window_size_m = request.fields["window size"]
 
@@ -70,9 +68,9 @@ class Despiking(EnlightenPluginBase):
         """
         indicator_func = lambda score, tau: 1 if abs(score) < tau else 0
 
-        log.debug(f"candidate idx are {candidate_idxs}")
+        # log.debug(f"candidate indexes are {candidate_idxs}")
         for index in candidate_idxs:
-            log.debug(f"calculation for index {index}")
+            # log.debug(f"calculation for index {index}")
             left_idx_bound = index - m
             right_idx_bound = index + m
 
@@ -96,20 +94,20 @@ class Despiking(EnlightenPluginBase):
                 window_idx += 1
 
             # algorithm calculations
-            log.debug(f"zs window {zs_window}, spectra_window {spectra_window}")
+            # log.debug(f"zs window {zs_window}, spectra_window {spectra_window}")
             w_calc = list(map(lambda x : indicator_func(x,tau), zs_window))
             w = sum(w_calc)
 
-            log.debug(f"w values were calculated as {w_calc} sum is {w}")
+            # log.debug(f"w values were calculated as {w_calc} sum is {w}")
             main_calc = list(map(lambda x: x[1]*indicator_func(x[0],tau), zip(zs_window, spectra_window)))
             main_sum = sum(main_calc)
 
-            log.debug(f"main values were calculated as {main_calc} sum is {main_sum}")
+            # log.debug(f"main values were calculated as {main_calc} sum is {main_sum}")
             if w == 0:
                 continue
                 log.debug(f"W VALUE WAS 0")
 
             averaged_value = (1/w)*main_sum
 
-            log.debug(f"assigning value {averaged_value} to spiky point with original value {spectra[index]}")
+            # log.debug(f"assigning value {averaged_value} to spiky point with original value {spectra[index]}")
             spectra[index] = averaged_value

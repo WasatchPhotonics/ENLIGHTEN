@@ -5707,26 +5707,6 @@ QComboBox QListView
                                </property>
                               </widget>
                              </item>
-                             <item row="0" column="0">
-                              <widget class="QSpinBox" name="spinBox_ee_raman_intensity_calibration_order">
-                               <property name="minimumSize">
-                                <size>
-                                 <width>125</width>
-                                 <height>0</height>
-                                </size>
-                               </property>
-                               <property name="alignment">
-                                <set>Qt::AlignmentFlag::AlignCenter</set>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="0" column="1">
-                              <widget class="QLabel" name="label_200x">
-                               <property name="text">
-                                <string>Raman Intensity Calibration Order</string>
-                               </property>
-                              </widget>
-                             </item>
                             </layout>
                            </item>
                           </layout>
@@ -18105,25 +18085,6 @@ li.checked::marker { content: "\2612"; }
                           </property>
                           <property name="alignment">
                            <set>Qt::AlignmentFlag::AlignCenter</set>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QCheckBox" name="checkBox_plugin_enabled">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="toolTip">
-                           <string>Activates the plugin to process readings</string>
-                          </property>
-                          <property name="styleSheet">
-                           <string notr="true" />
-                          </property>
-                          <property name="text">
-                           <string>Enabled</string>
                           </property>
                          </widget>
                         </item>

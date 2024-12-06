@@ -1,8 +1,5 @@
 from EnlightenPlugin import EnlightenPluginBase
 
-import logging
-log = logging.getLogger(__name__)
-
 class EmissionLines(EnlightenPluginBase):
     """
     A simple plug-in to add emission lines from standard gas lamps to the current
@@ -14,15 +11,9 @@ class EmissionLines(EnlightenPluginBase):
     MIN_REL_INTENSITY = 0.2
 
     def get_configuration(self):
-        """
-        These would be better as a single drop-down combo box, but we haven't
-        yet added that as a supported plugin input type.
-        """
         self.name = "Emission Lines"
-        self.auto_enable = True
-
         self.lamps = self.get_lamps()
-        self.field(name="lamp", direction="input", datatype="combobox", choices=[k for k, v in self.lamps.items()])
+        self.field(name="lamp", direction="input", datatype="combobox", choices=[lamp for lamp in self.lamps])
 
     def process_request(self, request):
         unit = self.ctl.graph.get_x_axis_unit()
@@ -33,11 +24,9 @@ class EmissionLines(EnlightenPluginBase):
         lamp = request.fields["lamp"]
         if lamp in self.lamps:
             for p in self.generate_points(lamp=lamp):
-                self.plot(
-                    title = f"{lamp} {p[0]:7.03f}cm⁻¹",
-                    x = [p[0], p[0]],
-                    y = [min(self.spectrum), p[1]]
-                )
+                self.plot(title = f"{lamp} {p[0]:7.03f}cm⁻¹",
+                          x = [p[0], p[0]],
+                          y = [min(self.spectrum), p[1]])
 
     def generate_points(self, lamp):
         """

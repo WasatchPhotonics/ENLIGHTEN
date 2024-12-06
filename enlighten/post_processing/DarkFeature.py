@@ -87,6 +87,8 @@ class DarkFeature:
         if spec is None:
             return
 
+        self.ctl.form.ui.pushButton_dark_load.setVisible(self.ctl.page_nav.doing_expert())
+
         self.ctl.gui.colorize_button(self.button_toggle, spec.app_state.has_dark())
 
     def toggle_callback(self):

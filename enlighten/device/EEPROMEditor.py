@@ -9,9 +9,9 @@ from enlighten import common
 from typing import List
 
 if common.use_pyside2():
-    from PySide2 import QtGui, QtWidgets
+    from PySide2 import QtGui, QtWidgets, QtCore
 else:
-    from PySide6 import QtGui, QtWidgets
+    from PySide6 import QtGui, QtWidgets, QtCore
 
 log = logging.getLogger(__name__)
 
@@ -30,7 +30,7 @@ class EEPROMAttribute:
         log.debug(f"")
         log.debug(f"  widget       {self.widget}")
         log.debug(f"  widgets      {self.widgets}")
-        log.debug(f"  all_widgets  {self._all_widgets}")
+        log.debug(f"  all_widgets  {self.all_widgets}")
     
     def __init__(self, name, qtype, widget=None, widgets=None, is_numeric=True):
         self.name = name
@@ -43,7 +43,7 @@ class EEPROMAttribute:
         self.calibrations = 0           # if this attribute is_multi, how many calibrations does it have?
         self.widget = None
         self.widgets = None
-        self._all_widgets = None
+        self.all_widgets = None
 
         # validate qtype
         self.qtype = qtype.lower().lstrip("q") # "lineedit", "spinbox", "doublespinbox"
@@ -51,13 +51,13 @@ class EEPROMAttribute:
             raise AttributeError(f"invalid EEPROMAttribute.qtype {self.qtype}")
 
         # were we only passed a single widget, or some sort of list?
-        self._all_widgets = []
+        self.all_widgets = []
         if widget is not None and widgets is None:
             # standard case for a regular scalar (e.g. serial_number)
             self.is_multi = False
             self.is_scalar = True
             self.widget = widget
-            self._all_widgets.append(widget)
+            self.all_widgets.append(widget)
             return # nothing more to do
         elif widget is None and widgets is None:
             raise AttributeError("EEPROMAttribute needs either widget or widgets populated")
@@ -93,7 +93,7 @@ class EEPROMAttribute:
             self.count = outer_len
             self.is_multi = False
             self.is_scalar = False
-            self._all_widgets.extend(widgets)
+            self.all_widgets.extend(widgets)
             # log.debug(f"EEPROMAttribute: non-multi-wavelength array {name} of {outer_len} elements")
         else:
             self.is_multi = True
@@ -115,7 +115,7 @@ class EEPROMAttribute:
                 self.count = inner_len 
             
             for L in widgets:
-                self._all_widgets.extend(L)
+                self.all_widgets.extend(L)
 
         # log.debug(f"EEPROMAttribute: name {self.name}, is_multi {self.is_multi}, is_scalar {self.is_scalar}, count {self.count}")
 
@@ -154,7 +154,7 @@ class EEPROMAttribute:
             raise AttributeError(f"invalid EEPROMAttribute.qtype {self.qtype}")
 
     def set_enabled(self, flag):
-        for w in self._all_widgets:
+        for w in self.all_widgets:
             w.setEnabled(flag)
             if flag:
                 w.setStyleSheet("background: #444; color: #ccc;")
@@ -254,7 +254,6 @@ class EEPROMEditor:
             "max_laser_power_mw":       "max_laser_power_mW",
             "min_laser_power_mw":       "min_laser_power_mW",
             "product_config":           "product_configuration",
-            "rel_int_corr_order":       "raman_intensity_calibration_order",
             "roi_horiz_end":            "roi_horizontal_end",
             "roi_horiz_start":          "roi_horizontal_start",
             "serial":                   "serial_number",
@@ -267,8 +266,11 @@ class EEPROMEditor:
             "thermistor_res_at298k":    "tec_r298",
             "wavecal_coeffs":           "wavelength_coeffs" }
 
-    def add_attribute(self, qtype, name, widget=None, widgets=None):
-        attr = EEPROMAttribute(name=name, qtype=qtype, widget=widget, widgets=widgets)
+    def add_attribute(self, qtype, name, is_numeric=None, widget=None, widgets=None):
+        if is_numeric is None:
+            is_numeric = qtype in ["spinbox", "doublespinbox"]
+
+        attr = EEPROMAttribute(name=name, qtype=qtype, is_numeric=is_numeric, widget=widget, widgets=widgets)
         self.attributes[name] = attr
 
         if qtype == "checkbox":
@@ -315,7 +317,7 @@ class EEPROMEditor:
                       "roi_vertical_region_1_end",   "roi_vertical_region_1_start", 
                       "roi_vertical_region_2_end",   "roi_vertical_region_2_start", 
                       "roi_vertical_region_3_end",   "roi_vertical_region_3_start", 
-                      "tec_beta", "tec_r298", "raman_intensity_calibration_order", "subformat", "spline_points", "laser_warmup_sec",
+                      "tec_beta", "tec_r298", "subformat", "spline_points", "laser_warmup_sec", 
                       "untethered_library_type", "untethered_library_id", "untethered_scans_to_average", 
                       "untethered_min_ramp_pixels", "untethered_min_peak_height", "untethered_match_threshold", "untethered_library_count",
                       "laser_watchdog_sec", "light_source_type", "power_timeout_sec", "detector_timeout_sec" ]:
@@ -325,7 +327,7 @@ class EEPROMEditor:
             self.add_attribute("doublespinbox", name, widget=getattr(cfu, f"doubleSpinBox_ee_{name}"))
 
         for name in [ "calibrated_by", "calibration_date", "detector", "model", "serial_number", "user_text", "product_configuration" ]:
-            self.add_attribute("lineedit", name, widget=getattr(cfu, f"lineEdit_ee_{name}"))
+            self.add_attribute("lineedit", name, is_numeric=False, widget=getattr(cfu, f"lineEdit_ee_{name}"))
 
         # Arrays (but still not multi-wavelength)
         self.add_attribute("lineedit", "laser_power_coeffs", widgets=[ getattr(cfu, f"lineEdit_ee_laser_power_coeff_{i}") for i in range(4) ])
@@ -355,8 +357,6 @@ class EEPROMEditor:
         ########################################################################
         # Misc Cleanup
         ########################################################################
-
-        cfu.spinBox_ee_raman_intensity_calibration_order.setMaximum(EEPROM.MAX_RAMAN_INTENSITY_CALIBRATION_ORDER)
 
         cfu.pushButton_eeprom_clipboard.clicked.connect(self.copy_to_clipboard)
         cfu.pushButton_importEEPROM.clicked.connect(self.import_eeprom)
@@ -619,19 +619,25 @@ class EEPROMEditor:
                         if attr.is_scalar:                      # e.g. ??
                             for m in range(attr.calibrations):
                                 widget = attr.widgets[m][0]
-                                widget.setText(str(self.eeprom.multi_wavelength_calibration.get(attr.name, m, default=0)))
+                                value = self.eeprom.multi_wavelength_calibration.get(attr.name, m, default=0)
+                                widget.setText(str(value))
                         else:                                   
                             for m in range(attr.calibrations):  # e.g. wavelength_coeffs, raman_intensity_coeffs
                                 for i, w in enumerate(attr.widgets[m]):
-                                    w.setText(str(self.eeprom.multi_wavelength_calibration.get(attr.name, m, i, default=0)))
+                                    value = self.eeprom.multi_wavelength_calibration.get(attr.name, m, i, default=0)
+                                    w.setText(f"{value:.8g}")
                     else:
-                        if attr.is_scalar:                      # e.g. ??
-                            attr.widget.setText(str(getattr(self.eeprom, attr.name)))
-                        else:                                   # e.g. adc_to_degC, degC_to_dac, laser_power_coeffs
+                        if attr.is_scalar:                      # e.g. serial_number, model
+                            value = self.eeprom.multi_wavelength_calibration.get(attr.name)
+                            attr.widget.setText(str(value))
+                        else:                                   # e.g. adc_to_degC, degC_to_dac, laser_power_coeffs, linearity_coeffs
+                            a = self.eeprom.multi_wavelength_calibration.get(attr.name)
                             for i, w in enumerate(attr.widgets):
-                                a = getattr(self.eeprom, attr.name)
                                 if i < len(a):
-                                    w.setText(str(a[i]))
+                                    value = a[i]
+                                    w.setText(f"{value:.8g}")
+                                else:
+                                    w.setText("0")
             except:
                 log.error(f"update_from_spec: failed to update widget(s) for attr {attr}", exc_info=1)
 
@@ -721,9 +727,9 @@ class EEPROMEditor:
 
     def bind_checkbox(self, attr):
         if not attr.is_scalar:
-            raise NotImplemented("{attr.name}: checkbox arrays not yet implemented")
+            raise NotImplementedError("{attr.name}: checkbox arrays not yet implemented")
         if attr.is_multi:
-            raise NotImplemented("{attr.name}: multi-wavelength checkboxes not yet implemented")
+            raise NotImplementedError("{attr.name}: multi-wavelength checkboxes not yet implemented")
         if not hasattr(self.eeprom, attr.name):
             raise AttributeError(f"{attr.name}: unknown EEPROM checkbox")
 
@@ -782,6 +788,8 @@ class EEPROMEditor:
                     w.editingFinished.connect(partial(self.widget_callback, attr=attr, widget=w, index=i))
                 
         attr.is_editable = self.eeprom.is_editable(attr.name)
+        for w in attr.all_widgets:
+            w.setAlignment(QtCore.Qt.AlignCenter)
 
     def parse_wpsc_report(self, wpsc_report: dict) -> dict:
         eeprom_dump = wpsc_report["EEPROMDump"]
