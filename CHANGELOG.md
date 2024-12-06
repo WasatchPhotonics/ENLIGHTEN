@@ -1,8 +1,9 @@
 # Version History
 
 - 2024-??-?? 4.1.19
-    - [#506] added robustness to Save Location change cancel
+    - [#506] added robustness to Save Location "change, then cancel"
     - [#509] fix "Load Dark" and "Load Reference"
+        - moved both to Expert mode
     - fix EEPROMEditor bug
     - [#387] Plugin cleanup
         - deprecated EnlightenApplicationInfo
@@ -15,6 +16,8 @@
         - deprecated EnlightenBasePlugin.events (use ctl to register formal observers)
         - updated Cary Academy's StripChart (multiple spectrometers and Cursor)
         - merged in Raman.LibraryMatching
+    - deprecated Raman Intensity Calibration Order (hardcoded 6th-order)
+    - fixed Raman Intensity Correction (broke in 4.1.17)
 - 2024-12-03 4.1.18
     - deprecated RegionControlFeature
     - XL fixes

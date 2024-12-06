@@ -155,7 +155,10 @@ class EEPROMAttribute:
 
     def set_enabled(self, flag):
         for w in self._all_widgets:
+            # if self.qtype == "lineedit":
+            #     w.setReadOnly(flag)
             w.setEnabled(flag)
+
             if flag:
                 w.setStyleSheet("background: #444; color: #ccc;")
             else:
@@ -254,7 +257,7 @@ class EEPROMEditor:
             "max_laser_power_mw":       "max_laser_power_mW",
             "min_laser_power_mw":       "min_laser_power_mW",
             "product_config":           "product_configuration",
-            "rel_int_corr_order":       "raman_intensity_calibration_order",
+           #"rel_int_corr_order":       "raman_intensity_calibration_order",
             "roi_horiz_end":            "roi_horizontal_end",
             "roi_horiz_start":          "roi_horizontal_start",
             "serial":                   "serial_number",
@@ -318,7 +321,7 @@ class EEPROMEditor:
                       "roi_vertical_region_1_end",   "roi_vertical_region_1_start", 
                       "roi_vertical_region_2_end",   "roi_vertical_region_2_start", 
                       "roi_vertical_region_3_end",   "roi_vertical_region_3_start", 
-                      "tec_beta", "tec_r298", "raman_intensity_calibration_order", "subformat", "spline_points", "laser_warmup_sec",
+                      "tec_beta", "tec_r298", "subformat", "spline_points", "laser_warmup_sec", # "raman_intensity_calibration_order",
                       "untethered_library_type", "untethered_library_id", "untethered_scans_to_average", 
                       "untethered_min_ramp_pixels", "untethered_min_peak_height", "untethered_match_threshold", "untethered_library_count",
                       "laser_watchdog_sec", "light_source_type", "power_timeout_sec", "detector_timeout_sec" ]:
@@ -359,7 +362,7 @@ class EEPROMEditor:
         # Misc Cleanup
         ########################################################################
 
-        cfu.spinBox_ee_raman_intensity_calibration_order.setMaximum(EEPROM.MAX_RAMAN_INTENSITY_CALIBRATION_ORDER)
+        # cfu.spinBox_ee_raman_intensity_calibration_order.setMaximum(EEPROM.MAX_RAMAN_INTENSITY_CALIBRATION_ORDER)
 
         cfu.pushButton_eeprom_clipboard.clicked.connect(self.copy_to_clipboard)
         cfu.pushButton_importEEPROM.clicked.connect(self.import_eeprom)

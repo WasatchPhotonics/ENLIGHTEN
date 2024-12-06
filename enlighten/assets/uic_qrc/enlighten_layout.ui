@@ -5707,26 +5707,6 @@ QComboBox QListView
                                </property>
                               </widget>
                              </item>
-                             <item row="0" column="0">
-                              <widget class="QSpinBox" name="spinBox_ee_raman_intensity_calibration_order">
-                               <property name="minimumSize">
-                                <size>
-                                 <width>125</width>
-                                 <height>0</height>
-                                </size>
-                               </property>
-                               <property name="alignment">
-                                <set>Qt::AlignmentFlag::AlignCenter</set>
-                               </property>
-                              </widget>
-                             </item>
-                             <item row="0" column="1">
-                              <widget class="QLabel" name="label_200x">
-                               <property name="text">
-                                <string>Raman Intensity Calibration Order</string>
-                               </property>
-                              </widget>
-                             </item>
                             </layout>
                            </item>
                           </layout>
