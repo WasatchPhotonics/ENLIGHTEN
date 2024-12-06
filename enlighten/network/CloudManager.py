@@ -150,7 +150,6 @@ class CloudManager:
 
             eeprom.stubbed = False
 
-            eeprom.raman_intensity_calibration_order = len(eeprom.raman_intensity_coeffs) - 1
             log.debug(f"after defaults: andor_eeprom {andor_eeprom}")
 
             log.debug(f"calling save_config with: {eeprom}")
