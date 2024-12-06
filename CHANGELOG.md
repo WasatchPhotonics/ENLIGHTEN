@@ -18,7 +18,7 @@
         - disabled HTTPServer (needs ported from gpcharts to matplotlib)
         - deprecated EnlightenBasePlugin.events (use ctl to register formal observers)
         - updated Cary Academy's StripChart (multiple spectrometers and Cursor)
-        - merged in Raman.LibraryMatching
+        - merged in Raman.LibraryMatching (with MatchingLibrary)
     - deprecated Raman Intensity Calibration Order (hardcoded 5th-order)
     - fixed Raman Intensity Correction (broke in 4.1.17)
 - 2024-12-03 4.1.18

@@ -153,7 +153,7 @@ class PluginController:
 
         # start up check examples exist
         self.directory = common.get_default_data_dir()
-        self.stub_plugin()
+        self.create_plugins_folder()
 
         # initialize GUI
         self.frame_control.setVisible(False)
@@ -215,7 +215,7 @@ class PluginController:
 
         self.timer.start(1000) # 1Hz
 
-    def stub_plugin(self):
+    def create_plugins_folder(self):
         """Create the plugins folder if it does not exist"""
         log.debug(f"starting plugin stub")
         plugin_dst = os.path.join(self.directory, "plugins")

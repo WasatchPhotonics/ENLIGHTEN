@@ -1,5 +1,6 @@
 import re
 import os
+import shutil
 import pandas as pd
 import logging
 
@@ -33,9 +34,15 @@ class LibraryMatching(EnlightenPluginBase):
         self.add_next_to_library = False
         self.metadata_cache = {}
 
+        self.soft_install_matching_library()
         self.pearson = Pearson(self)
 
         self.configure_fields()
+        self.ctl.measurement_factory.register_observer(self.factory_callback)
+
+    def disconnect(self):
+        self.ctl.measurement_factory.unregister_observer(self.factory_callback)
+        super().disconnect()
 
     def configure_fields(self):
         path = self.get_library_dir_from_ini()
@@ -56,7 +63,7 @@ class LibraryMatching(EnlightenPluginBase):
         self.field(name="Save to Library",
                    direction="input",
                    datatype="button",
-                   callback=self.add_to_library_step_one,
+                   callback=self.add_to_library,
                    tooltip="Add the current spectrum to the matching library")
 
         self.field(name="Results", datatype="pandas", tooltip="table of matching compounds")
@@ -153,18 +160,25 @@ class LibraryMatching(EnlightenPluginBase):
 
         self.set_library_dir(path)
 
-    def add_to_library_step_one(self):
+    def add_to_library(self):
         if self.library_dir is None or not os.path.isdir(self.library_dir):
-            log.debug(f"can't add_to_library_step_one w/o library_dir {self.library_dir}")
+            log.debug(f"can't add_to_library w/o library_dir {self.library_dir}")
             return
 
         self.add_next_to_library = True
 
-        log.debug("add_to_library_step_one: triggering save...")
+        log.debug("add_to_library: triggering save...")
         self.ctl.vcr_controls.save()
 
-    def add_to_library_step_two(self, m):
-        log.debug("add_to_library_step_two: start")
+    def factory_callback(self, measurement, event):
+        if event != "save":
+            return
+
+        if not self.add_next_to_library:
+            return
+
+        # MeasurementFactory has just saved this Measurement
+        m = measurement
         self.add_next_to_library = False
 
         # find the current .csv pathname
@@ -175,14 +189,12 @@ class LibraryMatching(EnlightenPluginBase):
         log.debug(f"old pathname was {old_pathname}")
 
         # get label
-        log.debug(f"calling msgbox_with_lineedit")
         result = self.ctl.gui.msgbox_with_lineedit(
             title="Add to Library",
             lineedit_text=m.label,
             label_text="Enter a simple name for your new library compound\n" +
                        "(don't include file extension). Letters, numbers\n" +
                        "and spaces work best.")
-        log.debug(f"back from msgbox_with_lineedit")
 
         label = result["lineedit"].strip()
         log.debug(f"new label is {label}")
@@ -201,13 +213,35 @@ class LibraryMatching(EnlightenPluginBase):
         with open(new_pathname, "w") as outfile:
             with open(old_pathname, "r") as infile:
                 for line in infile:
-                    if re.match(r"Label,", line):
+                    if re.match(r"^Label,", line):
                         outfile.write(f"Label,{label}\n")
                     else:
                         outfile.write(line)
 
         log.debug("bouncing engines")
         self.pearson.reset()
+
+    def soft_install_matching_library(self):
+        """
+        If ~/EnlightenSpectra/MatchingLibrary does not exist, populate it from 
+        the distribution plugins/Raman/MatchingLibrary. If it already exists,
+        leave it alone.
+        """
+
+        dst = os.path.join(self.ctl.save_options.get_directory(), "MatchingLibrary")
+        if os.path.exists(dst):
+            log.debug(f"{dst} already exists")
+            return
+
+        src = os.path.join(os.getcwd(), "plugins", "Raman", "MatchingLibrary")
+        log.error(f"checking for src {src}")
+        if not os.path.exists(src):
+            log.error(f"{src} not found")
+            return
+
+        # src exists, but not dst, so perform the copy
+        log.debug(f"performing recursive copy from {src} to {dst}")
+        shutil.copytree(src, dst)
 
     def colorize_button_field(self, field_name, active, tooltip):
         button = self.get_field_widget(field_name)
