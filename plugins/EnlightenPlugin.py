@@ -217,6 +217,7 @@ class EnlightenPluginBase:
     #### End functional-plugins backend ####
 
     ### Begin backwards compatible object-returning wrappers ###
+
     def get_configuration_obj(self):
         config = self.get_configuration()
         if config: return config

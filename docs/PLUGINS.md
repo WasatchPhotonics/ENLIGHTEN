@@ -7,12 +7,11 @@ wish, including seeing their processed spectra appear on the graph alongside (or
 instead of) ENLIGHTEN's own.
 
 Python is a powerful data-processing language, and plug-ins are free to use 
-popular mathematical libraries and frameworks, including Numpy, Pandas and SciPy.
-In fact, Pandas dataframes may be output and displayed directly on the ENLIGHTEN
-GUI.
+popular mathematical libraries and frameworks, including Numpy, Pandas, SciPy
+and Tensorflow. In fact, Pandas dataframes may be output and displayed directly 
+on the ENLIGHTEN GUI.
 
 ## Quick Start
-
 
 ![Screenshot of Hello Graph plugin. Shows a duplicate of the main scope graph.](images/hello-graph-screenshot.png)
 
@@ -39,24 +38,29 @@ class hello_graph(EnlightenPluginBase):
 See EnlightenPlugin.py for more information about these functions and parameters.
 
 ### inline parameters
+
 - self.name
+- self.streaming
 - self.is_blocking
+- self.blocks_enlighten
 - self.has_other_graph
 - self.table
 - self.x_axis_label
 - self.y_axis_label
 
+### API functions
+
+- field
+- get_widget_from_name
+- plot
+
 ### helper functions
+
 - get_axis
 - to_pixel
 - wavelength_to_pixel
 - wavenumber_to_pixel
 - area_under_curve
-
-### api functions
-- field
-- get_widget_from_name
-- plot
 
 ## More Information
 
@@ -72,7 +76,8 @@ especially:
 
 - EnlightenPlugin.EnlightenPluginBase
 
-EnlightenPlugin is a single Python file stored in plugins in the source distribution, and installed to EnlightenSpectra/plugins on Windows.
+EnlightenPlugin is a single Python file stored in plugins in the source 
+distribution, and installed to EnlightenSpectra/plugins on Windows.
 
 ## Internal
 
@@ -84,7 +89,6 @@ namespace, especially:
 - enlighten.Plugins.PluginModuleInfo.PluginModuleInfo
 - enlighten.Plugins.PluginFieldWidget.PluginFieldWidget
 - enlighten.Plugins.PluginGraphSeries.PluginGraphSeries
-- enlighten.Plugins.EnlightenApplicationInfoReal.EnlightenApplicationInfoReal
 - enlighten.Plugins.PluginValidator.PluginValidator
 - enlighten.Plugins.TableModel.TableModel
 
@@ -92,33 +96,43 @@ Some of the external symbols are now handled internally.
 
 - EnlightenPlugin.EnlightenPluginConfiguration
 - EnlightenPlugin.EnlightenPluginField
-- EnlightenPlugin.EnlightenPluginDependency
-- EnlightenPlugin.EnlightenApplicationInfo
 - EnlightenPlugin.EnlightenPluginRequest
 - EnlightenPlugin.EnlightenPluginResponse
 
 ## Backlog
 
-### Testing
+### Documentation
 
-- PeakFinding w/o excitation (no wavenumbers)
-- vignetting
-- interpolated
+- ENLIGHTEN Plugin Developer's Guide
+- ENLIGHTEN Plugin Cookbook ("I'd like to...")
+    - add a new series to the main graph
+    - add a new series on the secondary graph
+    - modify the standard graph series on-screen
+    - modify the standard graph series such that it is saved to disk and clipboard
+    - save spectra in a custom format
+    - load spectra from a custom format
+    - send spectra to another program
+    - send spectra to another program for processing, then display the result in ENLIGHTEN
+    - process the spectrum in R
+    - ...?
 
-### Misc
+### Desired Plugins
+
+- Measurements.DataManager
+    - merge a bunch of individual CSV into a single export file
+    - split an export file into individual CSV
+    - convert existing files (for instance between row/column CSV, JCAMP-DX, 
+      GRAMS SPC etc)
+    - extract columns from existing export (e.g., "just Processed columns where 
+      label is Acetaminophen")
+- Network.SaveToCloud
+- Network.QueryCloud
+
+### Desired Plugin Features
 
 - should probably let the "Save" button save measurements graphed on the Plugin 
   "other graph" (.csv and thumbnails), and let thumbnails be added as traces
 - for every graph series (not on other\_graph), add "[x] (color) name"
-- consider graphing Pandas
-- EnlightenSeriesConfiguration
-    - graph (main, other)
-    - type (line, xy)
-    - color
-    - pen (color, dash, size)
-    - symbol (https://www.geeksforgeeks.org/pyqtgraph-symbols/)
-    - secondary y-axis
-- consider persistence 
 
 ### R
 
