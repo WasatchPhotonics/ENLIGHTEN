@@ -77,6 +77,7 @@ class ReferenceFeature:
 
         for widget in self.visibility_widgets:
             widget.setVisible(visible)
+        self.ctl.form.ui.pushButton_reference_load.setVisible(self.ctl.page_nav.doing_expert())
 
         if visible:
             self.ctl.gui.colorize_button(self.button_toggle, spec.app_state.has_reference())

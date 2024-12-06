@@ -644,20 +644,21 @@ class Controller:
         all Business Objects are instantiated), etc.
         """
         for feature in [ self.accessory_control,
-                         self.horiz_roi,
+                         self.auto_raman,
+                         self.baseline_correction,
+                         self.dark_feature,
+                         self.edc,
                          self.graph,
+                         self.horiz_roi,
+                         self.kia_feature,
                          self.laser_control,
                          self.laser_temperature,
                          self.laser_watchdog,
-                         self.auto_raman,
+                         self.pixel_calibration,
                          self.raman_intensity_correction,
                          self.raman_shift_correction,
                          self.reference_feature,
-                         self.baseline_correction,
-                         self.status_bar,
-                         self.edc,
-                         self.pixel_calibration,
-                         self.kia_feature ]:
+                         self.status_bar ]:
             feature.update_visibility()
 
     # ##########################################################################

@@ -9,9 +9,9 @@ from enlighten import common
 from typing import List
 
 if common.use_pyside2():
-    from PySide2 import QtGui, QtWidgets
+    from PySide2 import QtGui, QtWidgets, QtCore
 else:
-    from PySide6 import QtGui, QtWidgets
+    from PySide6 import QtGui, QtWidgets, QtCore
 
 log = logging.getLogger(__name__)
 
@@ -30,7 +30,7 @@ class EEPROMAttribute:
         log.debug(f"")
         log.debug(f"  widget       {self.widget}")
         log.debug(f"  widgets      {self.widgets}")
-        log.debug(f"  all_widgets  {self._all_widgets}")
+        log.debug(f"  all_widgets  {self.all_widgets}")
     
     def __init__(self, name, qtype, widget=None, widgets=None, is_numeric=True):
         self.name = name
@@ -43,7 +43,7 @@ class EEPROMAttribute:
         self.calibrations = 0           # if this attribute is_multi, how many calibrations does it have?
         self.widget = None
         self.widgets = None
-        self._all_widgets = None
+        self.all_widgets = None
 
         # validate qtype
         self.qtype = qtype.lower().lstrip("q") # "lineedit", "spinbox", "doublespinbox"
@@ -51,13 +51,13 @@ class EEPROMAttribute:
             raise AttributeError(f"invalid EEPROMAttribute.qtype {self.qtype}")
 
         # were we only passed a single widget, or some sort of list?
-        self._all_widgets = []
+        self.all_widgets = []
         if widget is not None and widgets is None:
             # standard case for a regular scalar (e.g. serial_number)
             self.is_multi = False
             self.is_scalar = True
             self.widget = widget
-            self._all_widgets.append(widget)
+            self.all_widgets.append(widget)
             return # nothing more to do
         elif widget is None and widgets is None:
             raise AttributeError("EEPROMAttribute needs either widget or widgets populated")
@@ -93,7 +93,7 @@ class EEPROMAttribute:
             self.count = outer_len
             self.is_multi = False
             self.is_scalar = False
-            self._all_widgets.extend(widgets)
+            self.all_widgets.extend(widgets)
             # log.debug(f"EEPROMAttribute: non-multi-wavelength array {name} of {outer_len} elements")
         else:
             self.is_multi = True
@@ -115,7 +115,7 @@ class EEPROMAttribute:
                 self.count = inner_len 
             
             for L in widgets:
-                self._all_widgets.extend(L)
+                self.all_widgets.extend(L)
 
         # log.debug(f"EEPROMAttribute: name {self.name}, is_multi {self.is_multi}, is_scalar {self.is_scalar}, count {self.count}")
 
@@ -154,11 +154,8 @@ class EEPROMAttribute:
             raise AttributeError(f"invalid EEPROMAttribute.qtype {self.qtype}")
 
     def set_enabled(self, flag):
-        for w in self._all_widgets:
-            # if self.qtype == "lineedit":
-            #     w.setReadOnly(flag)
+        for w in self.all_widgets:
             w.setEnabled(flag)
-
             if flag:
                 w.setStyleSheet("background: #444; color: #ccc;")
             else:
@@ -625,19 +622,25 @@ class EEPROMEditor:
                         if attr.is_scalar:                      # e.g. ??
                             for m in range(attr.calibrations):
                                 widget = attr.widgets[m][0]
-                                widget.setText(str(self.eeprom.multi_wavelength_calibration.get(attr.name, m, default=0)))
+                                value = self.eeprom.multi_wavelength_calibration.get(attr.name, m, default=0)
+                                widget.setText(str(value))
                         else:                                   
                             for m in range(attr.calibrations):  # e.g. wavelength_coeffs, raman_intensity_coeffs
                                 for i, w in enumerate(attr.widgets[m]):
-                                    w.setText(str(self.eeprom.multi_wavelength_calibration.get(attr.name, m, i, default=0)))
+                                    value = self.eeprom.multi_wavelength_calibration.get(attr.name, m, i, default=0)
+                                    w.setText(f"{value:.8g}")
                     else:
-                        if attr.is_scalar:                      # e.g. ??
-                            attr.widget.setText(str(getattr(self.eeprom, attr.name)))
-                        else:                                   # e.g. adc_to_degC, degC_to_dac, laser_power_coeffs
+                        if attr.is_scalar:                      # e.g. serial_number, model
+                            value = self.eeprom.multi_wavelength_calibration.get(attr.name)
+                            attr.widget.setText(str(value))
+                        else:                                   # e.g. adc_to_degC, degC_to_dac, laser_power_coeffs, linearity_coeffs
+                            a = self.eeprom.multi_wavelength_calibration.get(attr.name)
                             for i, w in enumerate(attr.widgets):
-                                a = getattr(self.eeprom, attr.name)
                                 if i < len(a):
-                                    w.setText(str(a[i]))
+                                    value = a[i]
+                                    w.setText(f"{value:.8g}")
+                                else:
+                                    w.setText("0")
             except:
                 log.error(f"update_from_spec: failed to update widget(s) for attr {attr}", exc_info=1)
 
@@ -788,6 +791,8 @@ class EEPROMEditor:
                     w.editingFinished.connect(partial(self.widget_callback, attr=attr, widget=w, index=i))
                 
         attr.is_editable = self.eeprom.is_editable(attr.name)
+        for w in attr.all_widgets:
+            w.setAlignment(QtCore.Qt.AlignCenter)
 
     def parse_wpsc_report(self, wpsc_report: dict) -> dict:
         eeprom_dump = wpsc_report["EEPROMDump"]

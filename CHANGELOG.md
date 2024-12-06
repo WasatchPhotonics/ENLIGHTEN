@@ -2,9 +2,12 @@
 
 - 2024-??-?? 4.1.19
     - [#506] added robustness to Save Location "change, then cancel"
-    - [#509] fix "Load Dark" and "Load Reference"
+    - [#509] fix "Load Dark/Reference"
         - moved both to Expert mode
-    - fix EEPROMEditor bug
+    - EEPROMEditor
+        - bugfixes
+        - center all QLineEdits
+        - clamp numerics to 8 significant figures
     - [#387] Plugin cleanup
         - deprecated EnlightenApplicationInfo
         - deprecated plugin "[x] Enable" checkbox
@@ -16,7 +19,7 @@
         - deprecated EnlightenBasePlugin.events (use ctl to register formal observers)
         - updated Cary Academy's StripChart (multiple spectrometers and Cursor)
         - merged in Raman.LibraryMatching
-    - deprecated Raman Intensity Calibration Order (hardcoded 6th-order)
+    - deprecated Raman Intensity Calibration Order (hardcoded 5th-order)
     - fixed Raman Intensity Correction (broke in 4.1.17)
 - 2024-12-03 4.1.18
     - deprecated RegionControlFeature
