@@ -429,11 +429,15 @@ class PluginController:
                 log.debug("connected_callback: enabling streaming")
                 self.button_process.setVisible(False)
                 self.enabled = True
-            else:
+            elif module_config.process_requests:
                 # allow the user to enable the plugin
-                log.debug("connected_callback: NOT streaming")
+                log.debug("connected_callback: not streaming")
                 self.button_process.setVisible(True)
                 self.button_process.setEnabled(True)
+                self.enabled = False
+            else:
+                log.debug("connected_callback: not processing requests")
+                self.button_process.setVisible(False)
                 self.enabled = False
 
             # for some reason, this doesn't work from within configure_gui_for_module

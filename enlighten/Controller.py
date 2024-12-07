@@ -223,8 +223,9 @@ class Controller:
 
         self.page_nav.post_init()
 
+        self.other_device_ids = set()
+
         self.header("Controller ctor done")
-        self.other_devices = []
 
         # init is done so display the GUI and destory the splash screen
         if self.window_state == "minimized":
@@ -245,8 +246,8 @@ class Controller:
         self.configure_control_palette()
 
     def disconnect_device(self, spec=None, closing=False):
-        if spec in self.other_devices:
-            self.other_devices.remove(spec)
+        if spec.device_id in self.other_device_ids:
+            self.other_device_ids.remove(spec.device_id)
         if spec is None:
             spec = self.current_spectrometer()
         if spec is None:
@@ -458,7 +459,7 @@ class Controller:
         # down the connection process).
         self.bus_timer.start(self.BUS_TIMER_SLEEP_MS)
 
-    def connect_new(self, other_device=None):
+    def connect_new(self, other_device_id=None):
         """
         If there are any visible spectrometers that ENLIGHTEN has not yet
         connected to, try to connect to them.  Only connect one device per pass;
@@ -468,13 +469,14 @@ class Controller:
         on the bus or not, and whether any or all of them have already connected
         or not.
         
-        @param other_device: can be a BLEDevice from BLEManager
+        @param other_device_id: can point to a BLEDevice from BLEManager, 
+               TCPDevice from Network.WISP plugin, etc
         """
         # do we see any spectrometers on the bus? (WasatchBus will pre-filter to
         # only valid spectrometer devices)
-        if other_device is not None and other_device not in self.other_devices:
-            self.other_devices.append(other_device)
-        self.bus.device_ids.extend(self.other_devices)
+        if other_device_id is not None and other_device_id not in self.other_device_ids:
+            self.other_device_ids.append(other_device_id)
+        self.bus.device_ids.extend(self.other_device_ids)
 
         # MZ/ED: If DeviceFinderUSB.USE_MONITORING is True, I had to disable this call to remove_all:
         if self.bus.is_empty() and self.multispec.count() > 0 and not DeviceFinderUSB.USE_MONITORING:
@@ -548,8 +550,8 @@ class Controller:
         ####################################################################
         
         self.bus.device_ids.remove(new_device_id)
-        if new_device_id in self.other_devices:
-            self.other_devices.remove(new_device_id)
+        if new_device_id in self.other_device_ids:
+            self.other_device_ids.remove(new_device_id)
 
         # attempt to connect the device
         if new_device_id.is_andor():
@@ -557,25 +559,32 @@ class Controller:
         else:
             self.marquee.info(f"connecting to {new_device_id}", persist=True)
         
-        log.debug("connect_new: instantiating WasatchDeviceWrapper with %s", new_device_id)
-        device = WasatchDeviceWrapper(
-            device_id = new_device_id,
-            log_level = self.log_level)
+        log.debug(f"connect_new: instantiating WasatchDeviceWrapper with {new_device_id}")
+        device = WasatchDeviceWrapper(device_id=new_device_id, log_level=self.log_level)
 
         # flag that an attempt to connect to the device is ongoing
-        self.header("connect_new: setting in-process: %s" % new_device_id)
+        self.header(f"connect_new: setting in-process {new_device_id}")
         self.multispec.set_in_process(new_device_id, device)
 
         log.debug("connect_new: calling WasatchDeviceWrapper.connect()")
         if not device.connect():
-            log.critical("connect_new: can't connect to device_id, giving up: %s", new_device_id)
+            log.critical(f"connect_new: giving up, can't connect to {new_device_id}")
             self.multispec.set_gave_up(new_device_id)
             return
 
-        ####################################################################
+        ########################################################################
         # Yay, a new spectrometer has connected!
-        # Continue on and have the bus poll for settings
-        ####################################################################
+        ########################################################################
+
+        # The new spectrometer is connected at the bus level, but is not yet
+        # displaying anything in ENLIGHTEN. We need to load the new device's
+        # EEPROM, and take a throwaway spectrum to make everything is copacetic.
+        #
+        # That will be done by the new WrapperWorker (in its own thread). When
+        # it is done, check_ready_initialize will detect the device is ready
+        # via WasatchDeviceWrapper.poll_settings, and will then call 
+        # Controller.initialize_new_device to make the new spectrometer "current"
+        # in ENLIGHTEN.
 
         return True
 
@@ -586,7 +595,7 @@ class Controller:
         """
         in_process_specs = list(self.multispec.in_process.items()) 
         for device_id, device in in_process_specs:
-            if device is None or type(device) is bool:
+            if device is None or isinstance(device, bool):
                 log.debug("check_ready_initialize: ignoring {device_id} ({device})")
                 continue
 
@@ -614,6 +623,7 @@ class Controller:
                 # didn't get settings so check for timeout
                 if device.connect_start_time + datetime.timedelta(seconds=self.spec_timeout) < datetime.datetime.now():
                     log.error(f"{device_id} settings timed out, giving up on the spec")
+                    self.marquee.error(f"Failed to connect to {device_id}")
                     disconnect_device = True
 
             if disconnect_device:
