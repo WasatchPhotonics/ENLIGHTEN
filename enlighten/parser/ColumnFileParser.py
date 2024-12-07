@@ -279,6 +279,10 @@ class ColumnFileParser:
             log.debug("regenerated %d wavelengths (%.2f, %.2f) from coeffs", 
                 len(self.settings.wavelengths), self.settings.wavelengths[0], self.settings.wavelengths[-1])
             pr.wavelengths = self.settings.wavelengths
+        else:
+            log.debug("no wavelength data found")
+            pr.wavelengths = None
+            self.settings.wavelengths = None
 
         # take pre-generated wavenumbers if we weren't able to generate them ourselves
         if (self.settings.wavenumbers is None 
@@ -290,6 +294,22 @@ class ColumnFileParser:
             log.debug("loaded %d wavenumbers (%.2f, %.2f) from file", 
                 len(self.settings.wavenumbers), self.settings.wavenumbers[0], self.settings.wavenumbers[-1])
         pr.wavenumbers = self.settings.wavenumbers
+
+        # Huge parts of ENLIGHTEN are designed to assume that _all_ spectrometers
+        # (and spectra) have a wavelength axis, even if only "some" have a 
+        # wavenumber axis. To make things flow better downstream, ensure loaded
+        # Raman-only spectra has a wavelength axis.
+        #
+        # We could "pick" an excitation (785nm) and reverse the artificial 
+        # wavelength axis out of the wavenumber data, but that would be so 
+        # "realistic" as to be misleading. Currently going with a clearly-
+        # artificial wavelength axis to make it clear that it was fake.
+        if pr.wavenumbers and not pr.wavelengths:
+            pixels = len(pr.wavenumbers)
+            self.settings.eeprom.active_pixels_horizontal = pixels
+            pr.wavelengths = list(range(pixels))
+            self.settings.wavelengths = pr.wavelengths 
+            log.debug(f"only wavenumbers found, so generating artificial wavelength axis (0, {pixels-1})")
 
     def get_wavecal_coeffs_from_metadata(self):
         try:
