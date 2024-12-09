@@ -40,7 +40,7 @@ class PluginWorker(threading.Thread):
             log.debug(f"plugin {module_name} connecting")
             ok = plugin.connect()
         except:
-            log.critical("PluginWorker[%s] caught exception", exc_info=1)
+            log.critical(f"PluginWorker[{module_name}] caught exception", exc_info=1)
             # retain exception trace so caller can display to script author
             self.error_message = traceback.format_exc()
 
@@ -59,7 +59,7 @@ class PluginWorker(threading.Thread):
 
             request = self.request_queue.get_nowait()
             if request is None:
-                log.critical("PluginWorker[%s] received poison-pill", module_name)
+                log.critical(f"PluginWorker[{module_name}] received poison-pill")
                 plugin.disconnect()
                 break
 
@@ -75,7 +75,7 @@ class PluginWorker(threading.Thread):
             # t------------------------------------>
             #              B1  B2  B3  B4  B5  B6...
             #
-            log.debug("PluginWorker[%s] sending request %d", module_name, request.request_id)
+            log.debug(f"PluginWorker[{module_name}] sending request {request.request_id}")
             response = None
             try:
                 # make the following available to plugin utility functions (functional-api)
@@ -85,8 +85,7 @@ class PluginWorker(threading.Thread):
                 log.debug("about to call plugin's process request")
                 response = plugin.process_request_obj(request)
             except:
-                log.critical("PluginWorker[%s] caught exception processing request %d, closing",
-                    module_name, request.request_id, exc_info=1)
+                log.critical(f"PluginWorker[{module_name}] caught exception processing request {request.request_id}, closing", exc_info=1)
                 self.error_message = traceback.format_exc()
                 shutdown = True
 
@@ -99,7 +98,7 @@ class PluginWorker(threading.Thread):
                 self.response_queue.put_nowait(None)
                 break
 
-            log.debug("PluginWorker[%s] received response for request %d", module_name, response.request.request_id)
+            log.debug(f"PluginWorker[{module_name}] received response for request {response.request.request_id}")
             self.response_queue.put_nowait(response)
 
-        log.info("PluginWorker[%s] done", module_name)
+        log.info(f"PluginWorker[{module_name}] done")

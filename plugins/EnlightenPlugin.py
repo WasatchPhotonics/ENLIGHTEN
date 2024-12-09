@@ -44,6 +44,7 @@ class EnlightenPluginBase:
         self.block_enlighten = False
         self.auto_enable = None
         self.streaming = True
+        self.process_requests = True
         self.multi_devices = False
         self.lock_enable = False
         self.has_other_graph = False
@@ -101,12 +102,14 @@ class EnlightenPluginBase:
         self.outputs[name] = value
 
     def get_plugin_field(self, name):
+        """ get the associated enlighten.Plugins.PluginFieldWidget (which IS a QWidget, mind you) """
         plugin_ctl = self.ctl.plugin_controller
         for pfw in plugin_ctl.plugin_field_widgets:
             if name == pfw.field_name:
                 return pfw
 
     def get_widget_from_name(self, name):
+        """ get the associated QLabel, QSpinBox, etc """
         pfw = self.get_plugin_field(name)
         if pfw:
             return pfw.field_widget
@@ -230,6 +233,7 @@ class EnlightenPluginBase:
             has_other_graph = self.has_other_graph,
             auto_enable = self.auto_enable,
             streaming = self.streaming,
+            process_requests = self.process_requests,
             multi_devices = self.multi_devices,
             lock_enable = self.lock_enable,
             series_names = [], # functional plugins define this on a frame-by-frame basis
@@ -304,12 +308,6 @@ class EnlightenPluginBase:
     def disconnect(self):
         pass
 
-    def get_field_widget(self, field_name):
-        plugin_ctl = self.ctl.plugin_controller
-        for pfw in plugin_ctl.plugin_field_widgets:
-            if pfw.field_config.name == field_name:
-                return pfw.field_widget
-
 ##
 # This class specifies the configuration of an entire EnlightenPlugin.
 #
@@ -378,7 +376,12 @@ class EnlightenPluginBase:
 # and prefer to be individually triggered by the "Process" button or other 
 # events.
 #
-# Examples: SaveAsAngstrom
+# Examples: Demo.SaveAsAngstrom
+#
+# Other plugins may not be designed to process spectra at all. In that case,
+# set process_requests to false.
+#
+# Examples: Network.WISP
 #
 # @see EnlightenPluginField
 class EnlightenPluginConfiguration:
@@ -395,6 +398,9 @@ class EnlightenPluginConfiguration:
     # @param graph_type: "line" or "xy" (scatter)
     # @param auto_enable: automatically check Enabled (DEPRECATED -- see streaming)
     # @param streaming: whether plugin should automatically process every new spectrum
+    # @param process_requests: whether plugin is designed to process spectra (if 
+    #        false, process_requests will not be called and "Process" button won't
+    #        be added)
     # @param lock_enable: prevent disabling the plugin (provides "kiosk mode")
     # @param is_blocking: ENLIGHTEN should not send any further requests to the
     #        plug-in until the Response to the previous Request is received
@@ -415,6 +421,7 @@ class EnlightenPluginConfiguration:
             block_enlighten = False,
             auto_enable     = None,  # legacy compatibility only
             streaming       = True,
+            process_requests= True,
             lock_enable     = False,
             series_names    = None,
             multi_devices   = False,
@@ -429,6 +436,7 @@ class EnlightenPluginConfiguration:
         self.block_enlighten = block_enlighten
         self.auto_enable     = auto_enable
         self.streaming       = streaming
+        self.process_requests= process_requests
         self.lock_enable     = lock_enable
         self.multi_devices   = multi_devices
         self.series_names    = series_names

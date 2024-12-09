@@ -244,7 +244,16 @@ class LibraryMatching(EnlightenPluginBase):
         shutil.copytree(src, dst)
 
     def colorize_button_field(self, field_name, active, tooltip):
-        button = self.get_field_widget(field_name)
+        """
+        It's kind of fascinating that this actually works. Note that 
+        get_plugin_field returns a PluginFieldWidget, NOT the actual QPushButton.
+        However, PluginFieldWidget extends QWidget, which has a layout, and that
+        layout contains (in this case) a QPushButton. Applying the tooltip and 
+        CSS to the parent widget apparently updates the subordinate widget 
+        through the 'parent' relationship.
+        """
+        button = self.get_plugin_field(field_name)
+        log.debug(f"colorize_button_field: button {button}")
         if button:
             button.setToolTip(tooltip)
             color = "red" if active else "gray"
