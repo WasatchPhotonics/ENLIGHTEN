@@ -21,11 +21,46 @@ log = logging.getLogger(__name__)
 
 class BLEManager:
     """
-    Special features required to support and interface with BLE-based spectrometers.
+    Allows user to connect to nearby wasatch.BLEDevices.
 
-    @todo show progress indicator while reading EEPROM (~15sec)
-    @todo show progress indicator while reading spectrum (~4sec)
-    @todo support connection to multiple BLE spectrometers
+    @par Connection
+
+    +-----------------------+
+    | BLE Spectrometers [x] |
+    +-----------------------+
+    | [Connect]    [Rescan] |
+    |                       |
+    | RSSI Serial Number    |
+    | )))  WP-01234         |
+    | )    WP-01228         |
+    | ))   WP-01499         |
+    +-----------------------+
+
+    Goals:
+    - provide a button that pops-up a dialog listing advertised localNames
+    - scan should begin as soon as dialog opens
+    - allow the background Bleak discovery scan to update the dialog roughly 1/sec (probably using Queue)
+    - colorize the selected item when user clicks the row
+    - when user clicks "Connect"
+        - construct DeviceID with non-serializable .bleak_device populated 
+          (as passed to detection_callback by BleakScanner, then to BLEManager 
+          through Queue)
+        - add new DeviceID to Controller.other_device_ids
+        - close dialog
+    - list should be sorted in "discovery" order -- don't "sort" list, as we 
+      don't want rows to move while user is trying to click on them
+
+    @par Architecture
+
+    - wasatch.BLEDeviceFinder
+        - runs 30sec scan, generating callback with (DeviceID, rssi) of new/updated devices
+        - this is where BleakScanner lives
+
+    - wasatch.BLEDevice
+        - constructor takes DeviceID 
+            - expects device_id.bleak_device to hold populated bleak.backends.device.BLEDevice
+        - connect() returns SpectrometerResponse(True) after SpectrometerSettings.EEPROM parsed
+
     """
 
     def __init__(self, ctl):
@@ -103,9 +138,6 @@ class BLEManager:
         self.selection_popup.clear_plugin_layout(self.selection_popup.layout)
         self.selection_popup.device_widgets.clear()
 
-        # add the throbber for UI/UX
-        self.selection_popup.add_throbber()
-
         # Kick off the async search for BLE Devices and show the pop up
         log.debug("calling perform_discovery")
         asyncio.run_coroutine_threadsafe(self.perform_discovery(), self.scan_loop)
@@ -145,21 +177,13 @@ class BLESelector(QDialog):
     """
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("BLE Devices")
+        self.setWindowTitle("BLE Spectrometers")
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
 
         # MZ: is this actually needed? All it stores are handles to QPushButtons,
         # which are already added to self.layout and so persisted there.
         self.device_widgets = []
-
-    def add_throbber(self):
-        self.label = QLabel(self)
-        self.label.setObjectName("label")
-        self.movie = QtGui.QMovie(":gifs/images/throbbers/EnlightenIconGif.gif")
-        self.label.setMovie(self.movie)
-        self.movie.start()
-        self.layout.addWidget(self.label)
 
     def clear_plugin_layout(self, layout):
         """

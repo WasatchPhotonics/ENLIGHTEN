@@ -1,5 +1,8 @@
 # Version History
 
+- 2024-12-06 4.1.20
+    - Merged LibraryMatching into one graph
+    * Need to: make chart-vs-table line draggable
 - 2024-12-06 4.1.19
     - [#506] added robustness to Save Location "change, then cancel"
     - [#509] fix "Load Dark/Reference"

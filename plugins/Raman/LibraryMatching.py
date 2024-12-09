@@ -27,7 +27,6 @@ class LibraryMatching(EnlightenPluginBase):
 
     def get_configuration(self):
         self.name = "Library Matching"
-        self.has_other_graph = True
         self.is_blocking = True
 
         self.library_dir = None
