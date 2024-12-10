@@ -1,5 +1,3 @@
-![Ubuntu 22.04 Screenshot](images/screenshot-ubuntu-22.04.png)
-
 # Ubuntu Linux Installation Instructions
 
 These are the latest steps for installing ENLIGHTEN on Ubuntu. If you are interested in running on a Raspberry Pi, please see [Raspberry Pi Build Instructions](https://github.com/WasatchPhotonics/ENLIGHTEN/blob/main/docs/BUILD_RPI.md).
@@ -31,3 +29,5 @@ $ ./enlighten_ubuntu_launcher.sh
 A video showing the basic process is posted here:
 
 - https://www.youtube.com/watch?v=RKpM3YETon4
+
+![Ubuntu 22.04 Screenshot](images/screenshot-ubuntu-22.04.png)
