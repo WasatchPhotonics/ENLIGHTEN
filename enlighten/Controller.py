@@ -246,8 +246,6 @@ class Controller:
         self.configure_control_palette()
 
     def disconnect_device(self, spec=None, closing=False):
-        if spec.device_id in self.other_device_ids:
-            self.other_device_ids.remove(spec.device_id)
         if spec is None:
             spec = self.current_spectrometer()
         if spec is None:
@@ -255,8 +253,10 @@ class Controller:
             return False
 
         device_id = spec.device_id
-        if spec.device.is_ble:
-            self.reading_progress_bar.hide()
+
+        if device_id in self.other_device_ids:
+            self.other_device_ids.remove(device_id)
+
         self.marquee.info("disconnecting %s" % spec.label)
         self.multispec.set_disconnecting(device_id, True)
 

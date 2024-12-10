@@ -6,14 +6,14 @@ from queue import Queue
 from threading import Thread
 
 from enlighten import common
-from wasatch.DeviceID import DeviceID
+from wasatch.DeviceFinderBLE import DeviceFinderBLE
 
 if common.use_pyside2():
     from PySide2 import QtCore, QtGui
-    from PySide2.QtWidgets import QDialog, QPushButton, QVBoxLayout, QHBoxLayout, QTableWidget, QLabel
+    from PySide2.QtWidgets import QDialog, QPushButton, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QLabel
 else:
     from PySide6 import QtCore, QtGui
-    from PySide6.QtWidgets import QDialog, QPushButton, QVBoxLayout, QHBoxLayout, QTableWidget, QLabel
+    from PySide6.QtWidgets import QDialog, QPushButton, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QLabel
 
 log = logging.getLogger(__name__)
 
@@ -69,6 +69,7 @@ class BLEManager:
         # this is the button above the main graph stating "BLE", used to display
         # the BLESelector dialog
         self.bt_show_selector = cfu.pushButton_show_ble_selector
+        self.progress_bar = cfu.readingProgressBar
 
         self.device_id_queue = Queue() # queue of wasatch.DeviceID
 
@@ -80,6 +81,9 @@ class BLEManager:
         self.ble_selector = BLESelector(ble_manager=self, parent=self.bt_show_selector)
 
         self.bt_show_selector.clicked.connect(self.show_selector_callback)
+
+        # @todo move to AutoRaman
+        self.progress_bar.hide()
 
         # create a persistent thread in which to run BleakScanner, so we're not 
         # blocking the GUI loop when the button is pressed
@@ -98,13 +102,9 @@ class BLEManager:
         QTimer and can futz with GUI widgets.
         """
         while not self.device_id_queue.empty():
-            (device_id, rssi) = self.device_id_queue.get_nowait()
-            if device_id in self.known_devices:
-                log.debug(f"poll_device_id_queue: updating {device_id}, rssi {rssi}")
-                self.ble_selector.update_device_id(device_id, rssi)
-            else:
-                log.debug(f"poll_device_id_queue: adding {device_id}, rssi {rssi}")
-                self.ble_selector.add_device_id(device_id, rssi)
+            device_id = self.device_id_queue.get_nowait()
+            log.debug(f"poll_device_id_queue: add_to_table {device_id}")
+            self.ble_selector.add_to_table(device_id)
 
     def stop(self):
         """ Called by Controller at application shutdown """
@@ -131,20 +131,16 @@ class BLEManager:
         # Kick off the async search for BLE Devices. This is an async function, 
         # but we're not awaiting it -- let it run in its own time.
         log.debug("calling perform_discovery")
-        # asyncio.run_coroutine_threadsafe(self.perform_discovery(), self.scan_loop)
+        self.perform_discovery()
+
+    def perform_discovery(self):
+        log.debug("perform_discovery: start")
+        device_finder = DeviceFinderBLE(self.device_id_queue)
 
         asyncio.run_coroutine_threadsafe(
-            self.perform_discovery(), 
+            device_finder.search_for_devices(),
             self.scan_loop)
 
-    async def perform_discovery(self):
-        """ This method is explicitly run in a separate thread under asyncio via scan_loop """
-
-        log.debug("perform_discovery: start")
-        devices = await discover() # came from Bleak, since deprecated
-        wp_devices = [dev for dev in devices if dev.name is not None and ("wp" in dev.name.lower())]
-        log.debug(f"adding wp_devices to device_id_queue: {wp_devices}")
-        self.device_id_queue.put(wp_devices)
         log.debug("perform_discovery: done")
 
     def rescan_callback(self):
@@ -214,9 +210,9 @@ class BLESelector(QDialog):
         self.bt_connect.clicked.connect(ble_manager.connect_callback)
         self.bt_rescan.clicked.connect(ble_manager.rescan_callback)
 
-        self.clear()
+        self.reset()
 
-    def clear(self):
+    def reset(self):
         self.table.clear()
         self.serial_number_to_row = {}
         self.selected_serial_number = None
@@ -227,22 +223,24 @@ class BLESelector(QDialog):
         self.selected_serial_number = item.text()
         log.debug(f"user selected {self.selected_serial_number}")
 
-    def add_device_id(self, device_id):
-        row = self.table.rowCount())
-        self.serial_number_to_row[device_id.serial_number] = row
-
-        self.table.insertRow(row)
-        self.table.setItem(row, 0, QLabel(f"{device_id.rssi:0.2f}"))
-        self.table.setItem(row, 1, QLabel(f"{device_id.serial_number}"))
-
-    def update_device_id(self, device_id):
+    def add_to_table(self, device_id):
+        log.debug("add_to_table: start")
         sn = device_id.serial_number
-        row = self.serial_number_to_row.get(sn, None)
-        if row is None:
-            # could add, carping instead to find bugs
-            log.error("tried to update unknown serial number {sn}")
-            return
 
-        rssi = f"{device_id.rssi:0.2f}"
-        log.debug("updating rssi on {sn} to {rssi}")
-        self.table.setItem(row, 0, QLabel(rssi))
+        try:
+            log.debug(f"add_to_table: sn {sn}")
+            if sn in self.serial_number_to_row:
+                row = self.serial_number_to_row.get(sn)
+                self.table.setItem(row, 0, item=QTableWidgetItem(f"{device_id.rssi:0.2f}"))
+            else:
+                row = self.table.rowCount()
+                self.serial_number_to_row[sn] = row
+
+                log.debug(f"inserting row {row}")
+                self.table.insertRow(row)
+                self.table.setItem(row, 0, QTableWidgetItem(f"{device_id.rssi:0.2f}"))
+                self.table.setItem(row, 1, QTableWidgetItem(sn))
+        except:
+            log.error("exception updating QTableWidget", exc_info=1)
+
+        log.debug("add_to_table: done")
