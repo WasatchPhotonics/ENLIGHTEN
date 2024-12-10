@@ -1,8 +1,8 @@
 # Linux Runtime
 
-These are the latest steps for installing ENLIGHTEN on Linux.
+These are the latest steps for installing ENLIGHTEN on Ubuntu. If you are interested in running on a Raspberry Pi, please see [Raspberry Pi Build Instructions](https://github.com/WasatchPhotonics/ENLIGHTEN/blob/main/docs/BUILD_RPI.md).
 
-The following process was tested from fresh Ubuntu VMs (18 LTS and 22.04 LTS tested) running under Parallels 19.3.0 on MacOS 14.4.1.
+The following process was tested from fresh Ubuntu VMs (18 LTS and 22.04 LTS tested) running under Parallels 20.1.2 on MacOS 15.1.1.
 
 1. Open a terminal. (Ctrl+Alt+T)
 
