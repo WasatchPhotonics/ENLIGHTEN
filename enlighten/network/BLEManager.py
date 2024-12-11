@@ -110,13 +110,11 @@ class BLEManager:
                 log.debug(f"poll_device_id_queue: scan is complete")
                 self.bt_rescan.setEnabled(True)
             else:
-                log.debug(f"poll_device_id_queue: add_to_table {device_id}")
                 self.ble_selector.add_to_table(device_id)
                 self.bt_rescan.setEnabled(False)
                 self.bt_connect.setEnabled(True)
 
     def show_selector_callback(self):
-        log.debug("showing BLESelector")
         self.ble_selector.show()
         self.ble_selector.reset()
 
@@ -136,16 +134,13 @@ class BLEManager:
             self.scan_loop)
 
     def rescan_callback(self):
-        log.debug("user clicked [rescan]")
         self.start_scan()
 
     def connect_callback(self):
-        log.debug(f"User clicked Connect")
         device_id = self.ble_selector.selected_device_id
         if device_id is None:
             return
 
-        log.debug(f"Connecting to {device_id}")
         self.ble_selector.reset()
         self.ble_selector.hide()
 
@@ -178,7 +173,6 @@ class BLESelector(QDialog):
         self.setLayout(self.layout)
 
         try:
-            log.debug("init: constructing table")
             # add horizontal layout with [Connect] and [Rescan] buttons
             button_layout = QHBoxLayout()
             self.bt_connect = QPushButton(text="Connect", parent=self)
@@ -189,6 +183,7 @@ class BLESelector(QDialog):
 
             # add QTableWidget with RSSI and Serial Number columns
             self.table = QTableWidget(1, 2, self)
+            self.table.horizontalHeader().setStretchLastSection(True)
             self.layout.addWidget(self.table)
             self.table.cellClicked.connect(self.cellClicked_callback)
 
@@ -200,8 +195,8 @@ class BLESelector(QDialog):
         except:
             log.error("exception constructing table", exc_info=1)
 
+        self.init_stylesheet()
         self.reset()
-        log.debug("init: done")
 
     def reset(self):
         self.table.clear()
@@ -221,9 +216,7 @@ class BLESelector(QDialog):
             self.table.clearSelection()
             return
 
-        log.debug(f"user clicked row {row}, column {column}")
         self.table.selectRow(row)
-
         device_id = self.row_to_device_id.get(row, None)
         if device_id is None:
             log.error(f"row {row} has no DeviceID?!")
@@ -232,11 +225,9 @@ class BLESelector(QDialog):
         log.debug("user selected {device_id}")
 
     def add_to_table(self, device_id):
-        log.debug("add_to_table: start")
         sn = device_id.serial_number
 
         try:
-            log.debug(f"add_to_table: sn {sn}")
             if sn in self.serial_number_to_row:
                 row = self.serial_number_to_row[sn]
                 self.table.setItem(row, 0, QTableWidgetItem(f"{device_id.rssi:0.2f}"))
@@ -246,7 +237,6 @@ class BLESelector(QDialog):
                 self.table.insertRow(row)
                 self.table.setItem(row, 0, QTableWidgetItem(f"{device_id.rssi:0.2f}"))
                 self.table.setItem(row, 1, QTableWidgetItem(sn))
-                log.debug(f"inserted row {row}")
 
                 # update mappings
                 self.serial_number_to_row[sn] = row
@@ -254,4 +244,27 @@ class BLESelector(QDialog):
         except:
             log.error("exception updating QTableWidget", exc_info=1)
 
-        log.debug("add_to_table: done")
+    def init_stylesheet(self):
+        """ I tried to apply these through enlighten.css, but couldn't figure it out """
+        self.setStyleSheet("""
+            QTableView::hover,
+            QTableView::item::hover 
+            {
+                background-color: hsl(0, 0%, 13%);
+                border: none;
+                color: #F0F0F0;
+                gridline-color: #ccc;
+            }
+
+            QTableView:selected
+            {
+                background: hsl(0, 0%, 36%);
+                border: none;
+            }
+
+            QTableView::item:pressed
+            {
+                background-color: hsl(0, 0%, 70%);
+                border: none;
+            }
+        """)

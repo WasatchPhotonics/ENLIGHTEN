@@ -2062,6 +2062,34 @@ QComboBox QListView
     border-radius: 5px;
 }
 
+QDialog QTableView::hover
+{
+    background-color: hsl(0, 0%, 13%);
+    border: none;
+    color: #F0F0F0;
+    gridline-color: #ccc;
+}
+
+QDialog QTableView::item::hover 
+{
+    background-color: hsl(0, 0%, 13%);
+    border: none;
+    color: #F0F0F0;
+    gridline-color: #ccc;
+}
+
+QDialog QTableView:selected
+{
+    background: hsl(0, 0%, 36%);
+    border: none;
+}
+
+QDialog QTableView::item:pressed
+{
+    background-color: hsl(0, 0%, 70%);
+    border: none;
+}
+            
 /* END: enlighten/assets/stylesheets/default/enlighten.css */
 </string>
   </property>
