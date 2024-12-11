@@ -73,10 +73,6 @@ class BLEManager:
 
         self.device_id_queue = Queue() # queue of wasatch.DeviceID
 
-        self.ble_device = None
-        self.connected = False
-        self.ble_device_id = None
-
         self.original_button_style = self.bt_show_selector.styleSheet()
         self.ble_selector = BLESelector(ble_manager=self, parent=self.bt_show_selector)
 
@@ -96,6 +92,13 @@ class BLEManager:
         asyncio.set_event_loop(self.scan_loop)
         self.scan_loop.run_forever()
 
+    def update_visibility(self):
+        return
+
+    def stop(self):
+        """ Called by Controller at application shutdown """
+        self.scan_thread.stop()
+
     def poll_device_id_queue(self):
         """ 
         This is ticked by Controller.tick_bus_listener, meaning it runs inside a
@@ -103,71 +106,52 @@ class BLEManager:
         """
         while not self.device_id_queue.empty():
             device_id = self.device_id_queue.get_nowait()
-            log.debug(f"poll_device_id_queue: add_to_table {device_id}")
-            self.ble_selector.add_to_table(device_id)
-
-    def stop(self):
-        """ Called by Controller at application shutdown """
-        self.ctl.marquee.info("Closing BLE spectrometers...", immediate=True)
-        time.sleep(0.05)
-        if self.ble_device_id is not None:
-            self.ctl.disconnect_device(self.ctl.multispec.get_spectrometer(self.ble_device_id))
-            self.ctl.multispec.set_disconnecting(self.ble_device_id, False)
-            self.ble_device_id = None
+            if device_id is None:
+                log.debug(f"poll_device_id_queue: scan is complete")
+                self.bt_rescan.setEnabled(True)
+            else:
+                log.debug(f"poll_device_id_queue: add_to_table {device_id}")
+                self.ble_selector.add_to_table(device_id)
+                self.bt_rescan.setEnabled(False)
+                self.bt_connect.setEnabled(True)
 
     def show_selector_callback(self):
-        log.debug("BLE button clicked")
-        if self.connected:
-            log.debug("disconnecting from BLE device")
-            self.connected = False
-            self.bt_show_selector.setStyleSheet(self.original_button_style)
-            self.stop()
-            return
-
         log.debug("showing BLESelector")
-        self.ble_selector.reset()
         self.ble_selector.show()
+        self.ble_selector.reset()
+
+        # we're starting a scan, so disable "Rescan" button
+        self.bt_rescan.setEnabled(False)
+
+        # the table starts empty, so disable "Connect" button
+        self.bt_connect.setEnabled(False)
 
         # Kick off the async search for BLE Devices. This is an async function, 
         # but we're not awaiting it -- let it run in its own time.
-        log.debug("calling perform_discovery")
-        self.perform_discovery()
-
-    def perform_discovery(self):
-        log.debug("perform_discovery: start")
         device_finder = DeviceFinderBLE(self.device_id_queue)
 
+        log.debug("starting scan")
         asyncio.run_coroutine_threadsafe(
             device_finder.search_for_devices(),
             self.scan_loop)
-
-        log.debug("perform_discovery: done")
 
     def rescan_callback(self):
         log.debug("user clicked [rescan]")
         self.start_scan()
 
     def connect_callback(self):
-        self.ble_device_id = self.ble_selector.selected_device_id
-        if self.ble_device_id is None:
+        log.debug(f"User clicked Connect")
+        device_id = self.ble_selector.selected_device_id
+        if device_id is None:
             return
 
-        log.debug(f"Connecting to {self.ble_device_id}")
-        self.ble_selector.hide()
+        log.debug(f"Connecting to {device_id}")
         self.ble_selector.reset()
+        self.ble_selector.hide()
 
         # add this DeviceID to the Controller's list of "external" (non-USB) 
         # device IDs to check
-        self.ctl.other_device_ids.append(self.ble_device_id)
-
-        ok = self.ctl.connect_new(self.ble_device_id)
-        self.connected = True
-
-    def update_visibility(self):
-        if self.connected:
-            self.bt_show_selector.setStyleSheet("background-color: #4a5da9")
-        else:
-            self.bt_show_selector.setStyleSheet(self.original_button_style)
+        self.ctl.other_device_ids.append(device_id)
 
 class BLESelector(QDialog):
     """
@@ -193,35 +177,59 @@ class BLESelector(QDialog):
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
 
-        # add horizontal layout with [Connect] and [Rescan] buttons
-        button_layout = QHBoxLayout()
-        self.bt_connect = QPushButton(text="Connect", parent=self)
-        self.bt_rescan = QPushButton(text="Rescan", parent=self)
-        button_layout.addWidget(self.bt_connect)
-        button_layout.addWidget(self.bt_rescan)
-        self.layout.addLayout(button_layout)
+        try:
+            log.debug("init: constructing table")
+            # add horizontal layout with [Connect] and [Rescan] buttons
+            button_layout = QHBoxLayout()
+            self.bt_connect = QPushButton(text="Connect", parent=self)
+            self.bt_rescan = QPushButton(text="Rescan", parent=self)
+            button_layout.addWidget(self.bt_connect)
+            button_layout.addWidget(self.bt_rescan)
+            self.layout.addLayout(button_layout)
 
-        # add QTableWidget with RSSI and Serial Number columns
-        self.table = QTableWidget(0, 2, self)
-        self.table.setHorizontalHeaderLabels(["RSSI", "Serial Number"])
-        self.layout.addWidget(self.table)
-        self.table.cellClicked.connect(self.cellClicked_callback)
+            # add QTableWidget with RSSI and Serial Number columns
+            self.table = QTableWidget(1, 2, self)
+            self.layout.addWidget(self.table)
+            self.table.cellClicked.connect(self.cellClicked_callback)
 
-        self.bt_connect.clicked.connect(ble_manager.connect_callback)
-        self.bt_rescan.clicked.connect(ble_manager.rescan_callback)
+            self.bt_connect.clicked.connect(ble_manager.connect_callback)
+            self.bt_rescan.clicked.connect(ble_manager.rescan_callback)
+
+            self.table.verticalHeader().hide()
+            self.table.horizontalHeader().hide()
+        except:
+            log.error("exception constructing table", exc_info=1)
 
         self.reset()
+        log.debug("init: done")
 
     def reset(self):
         self.table.clear()
+
+        self.table.setItem(0, 0, QTableWidgetItem("RSSI"))
+        self.table.setItem(0, 1, QTableWidgetItem("Serial Number"))
+
         self.serial_number_to_row = {}
-        self.selected_serial_number = None
+        self.row_to_device_id = {}
+        self.selected_device_id = None
 
     def cellClicked_callback(self, row, column):
+        """ The user clicked a table cell, so highlight the whole row (and capture the DeviceID) """
+        self.selected_device_id = None
+
+        if row == 0:
+            self.table.clearSelection()
+            return
+
         log.debug(f"user clicked row {row}, column {column}")
-        item = self.table.item(row, 1)
-        self.selected_serial_number = item.text()
-        log.debug(f"user selected {self.selected_serial_number}")
+        self.table.selectRow(row)
+
+        device_id = self.row_to_device_id.get(row, None)
+        if device_id is None:
+            log.error(f"row {row} has no DeviceID?!")
+
+        self.selected_device_id = device_id
+        log.debug("user selected {device_id}")
 
     def add_to_table(self, device_id):
         log.debug("add_to_table: start")
@@ -230,16 +238,19 @@ class BLESelector(QDialog):
         try:
             log.debug(f"add_to_table: sn {sn}")
             if sn in self.serial_number_to_row:
-                row = self.serial_number_to_row.get(sn)
-                self.table.setItem(row, 0, item=QTableWidgetItem(f"{device_id.rssi:0.2f}"))
+                row = self.serial_number_to_row[sn]
+                self.table.setItem(row, 0, QTableWidgetItem(f"{device_id.rssi:0.2f}"))
             else:
+                # insert new row
                 row = self.table.rowCount()
-                self.serial_number_to_row[sn] = row
-
-                log.debug(f"inserting row {row}")
                 self.table.insertRow(row)
                 self.table.setItem(row, 0, QTableWidgetItem(f"{device_id.rssi:0.2f}"))
                 self.table.setItem(row, 1, QTableWidgetItem(sn))
+                log.debug(f"inserted row {row}")
+
+                # update mappings
+                self.serial_number_to_row[sn] = row
+                self.row_to_device_id[row] = device_id
         except:
             log.error("exception updating QTableWidget", exc_info=1)
 
