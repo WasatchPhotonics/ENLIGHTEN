@@ -246,13 +246,14 @@ class Controller:
         self.configure_control_palette()
 
     def disconnect_device(self, spec=None, closing=False):
-        if spec.device_id in self.other_device_ids:
-            self.other_device_ids.remove(spec.device_id)
         if spec is None:
             spec = self.current_spectrometer()
         if spec is None:
             log.error("disconnect_device: no more devices")
             return False
+
+        if spec.device_id in self.other_device_ids:
+            self.other_device_ids.remove(spec.device_id)
 
         device_id = spec.device_id
         if spec.device.is_ble:
