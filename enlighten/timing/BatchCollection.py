@@ -550,9 +550,9 @@ class BatchCollection:
         if not self.running:
             return
 
-        # don't take a measurement and end the batch if timeout occurred
+        # end the batch if timeout occurred
         if self.collection_timeout is not None and datetime.datetime.now() > self.collection_timeout:
-            log.info(f"collection timeout reach, not performing next measurement and completing batch. measurement count is {self.measurement_count}")
+            log.error(f"collection timeout")
             self.complete_batch()
             return
 
@@ -561,7 +561,7 @@ class BatchCollection:
             self.stop()
             return
 
-        self.ctl.save_options.multipart_suffix = "B%d %d-of-%d" % (self.current_batch_count + 1, self.current_measurement_count + 1, self.measurement_count)
+        self.update_suffix()
 
         # compute (but don't yet schedule) next start-time now, so that the
         # measurement period can be "start-to-start"
@@ -569,6 +569,11 @@ class BatchCollection:
 
         # when this event completes, VCRControls will call our save_complete method
         self.ctl.vcr_controls.step_save(self.save_complete, take_one_template=self.take_one_template)
+
+    def update_suffix(self):
+        suffix = f"B{self.current_batch_count + 1} {self.current_measurement_count + 1}-of-{self.measurement_count}"
+        log.debug(f"suffix {suffix}")
+        self.ctl.save_options.multipart_suffix = suffix
 
     def process(self, pr, spec):
         """
@@ -584,7 +589,7 @@ class BatchCollection:
             return
 
         if tor.readings_target is None or tor.readings_target <= 0:
-            log.error("process: impossible...any 'single' TakeOneRequests should have been processed and cleared back in Controller.attempt_reading: {tor}")
+            log.error("process: should be impossible...any 'single' TakeOneRequests should have been processed and cleared back in Controller.attempt_reading: {tor}")
             spec.app_state.take_one_request = None
             return
 
@@ -592,9 +597,8 @@ class BatchCollection:
             spec.app_state.take_one_request = None
             return
 
-        # don't take a measurement and end the batch if timeout occurred
         if self.collection_timeout is not None and datetime.datetime.now() > self.collection_timeout:
-            log.info(f"collection timeout reach, not performing next measurement and completing batch. measurement count is {self.measurement_count}")
+            log.error(f"collection timeout")
             self.complete_batch()
             return
 
@@ -603,10 +607,8 @@ class BatchCollection:
             self.stop()
             return
 
-        log.debug("process: it looks like this was a valid TakeMany Fast-Batch measurement, so save it")
-
-        log.debug(f"process: measurement count {self.current_measurement_count+1}-of-self.measurement_count {self.measurement_count}, reading {tor.readings_current}-of-{tor.readings_target}")
-        self.ctl.save_options.multipart_suffix = "B%d %d-of-%d" % (self.current_batch_count + 1, self.current_measurement_count + 1, self.measurement_count)
+        # it looks like this was a valid TakeMany Fast-Batch measurement, so save it
+        self.update_suffix()
         self.ctl.vcr_controls.save()
         self.save_complete()
 

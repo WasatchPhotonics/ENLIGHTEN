@@ -1398,7 +1398,7 @@ class Controller:
 
         # are we waiting on a SPECIFIC Reading (or series of Readings)?
         if spec.app_state.take_one_request:
-            # is this that Rreading?
+            # is this that Reading?
             if reading.take_one_request:
                 if reading.take_one_request.request_id == spec.app_state.take_one_request.request_id:
                     log.debug(f"TakeOneRequest matched: {spec.app_state.take_one_request}")
