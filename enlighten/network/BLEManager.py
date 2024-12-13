@@ -96,8 +96,13 @@ class BLEManager:
         return
 
     def stop(self):
-        """ Called by Controller at application shutdown """
-        self.scan_thread.stop()
+        """ 
+        Called by Controller at application shutdown.
+
+        There is currently no way to tell self.scan_thread or self.scan_loop to
+        stop, but I'm not sure this is a problem.
+        """
+        return
 
     def poll_device_id_queue(self):
         """ 
@@ -108,21 +113,21 @@ class BLEManager:
             device_id = self.device_id_queue.get_nowait()
             if device_id is None:
                 log.debug(f"poll_device_id_queue: scan is complete")
-                self.bt_rescan.setEnabled(True)
+                self.ble_selector.set_rescan_enabled(True)
             else:
                 self.ble_selector.add_to_table(device_id)
-                self.bt_rescan.setEnabled(False)
-                self.bt_connect.setEnabled(True)
+                self.ble_selector.set_rescan_enabled(False)
+                self.ble_selector.set_connect_enabled(True)
 
     def show_selector_callback(self):
         self.ble_selector.show()
         self.ble_selector.reset()
 
         # we're starting a scan, so disable "Rescan" button
-        self.bt_rescan.setEnabled(False)
+        self.ble_selector.set_rescan_enabled(False)
 
         # the table starts empty, so disable "Connect" button
-        self.bt_connect.setEnabled(False)
+        self.ble_selector.set_connect_enabled(False)
 
         # Kick off the async search for BLE Devices. This is an async function, 
         # but we're not awaiting it -- let it run in its own time.
@@ -132,9 +137,6 @@ class BLEManager:
         asyncio.run_coroutine_threadsafe(
             device_finder.search_for_devices(),
             self.scan_loop)
-
-    def rescan_callback(self):
-        self.start_scan()
 
     def connect_callback(self):
         device_id = self.ble_selector.selected_device_id
@@ -146,7 +148,7 @@ class BLEManager:
 
         # add this DeviceID to the Controller's list of "external" (non-USB) 
         # device IDs to check
-        self.ctl.other_device_ids.append(device_id)
+        self.ctl.other_device_ids.add(device_id)
 
 class BLESelector(QDialog):
     """
@@ -188,7 +190,7 @@ class BLESelector(QDialog):
             self.table.cellClicked.connect(self.cellClicked_callback)
 
             self.bt_connect.clicked.connect(ble_manager.connect_callback)
-            self.bt_rescan.clicked.connect(ble_manager.rescan_callback)
+            self.bt_rescan.clicked.connect(ble_manager.show_selector_callback)
 
             self.table.verticalHeader().hide()
             self.table.horizontalHeader().hide()
@@ -198,8 +200,15 @@ class BLESelector(QDialog):
         self.init_stylesheet()
         self.reset()
 
+    def set_rescan_enabled(self, flag):
+        self.bt_rescan.setEnabled(flag)
+
+    def set_connect_enabled(self, flag):
+        self.bt_connect.setEnabled(flag)
+
     def reset(self):
         self.table.clear()
+        self.table.setRowCount(1)
 
         self.table.setItem(0, 0, QTableWidgetItem("RSSI"))
         self.table.setItem(0, 1, QTableWidgetItem("Serial Number"))
@@ -256,7 +265,8 @@ class BLESelector(QDialog):
                 gridline-color: #ccc;
             }
 
-            QTableView:selected
+            QTableView:selected,
+            QTableView::item::selected:hover 
             {
                 background: hsl(0, 0%, 36%);
                 border: none;
