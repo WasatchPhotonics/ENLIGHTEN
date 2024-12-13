@@ -147,7 +147,7 @@ class WpModelInfo:
             self.name = name
         else:
             self.name = re.sub("_", "-", type(self).__name__)
-        log.debug("WpModelInfo: instantiated %s", self.name)
+        # log.debug("WpModelInfo: instantiated {self.name}")
 
         self.has_excitation = excitation != 0
 
