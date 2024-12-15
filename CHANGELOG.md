@@ -1,5 +1,7 @@
 # Version History
 
+- 2024-??-?? 4.1.20
+    - [#511] support graphing of loaded spectra with only wavenumber axis
 - 2024-12-06 4.1.19
     - [#506] added robustness to Save Location "change, then cancel"
     - [#509] fix "Load Dark/Reference"
