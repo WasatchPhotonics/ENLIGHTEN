@@ -20,7 +20,20 @@
 # It has been tested on Windows 11 version 10.0.22631
 ################################################################################
 
-import platform, sys, os, subprocess
+import subprocess
+import platform
+import argparse
+import sys
+import os
+
+from datetime import datetime
+
+print(f"{datetime.now()} Bootstrap.py starting")
+
+parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument("--rebuild", action="store_true", help="rebuild environment even if previous run detected")
+parser.add_argument("--virtspec", action="store_true", help="support virtual spectrometers")
+args = parser.parse_args()
 
 if platform.system() != 'Windows':
     print("This program is intended for the Windows operating system.")
@@ -34,48 +47,44 @@ if not (sys.version_info.major==3 and sys.version_info.minor==11):
     print("This program is intended for Python 3.11.")
     exit(1)
 
-virtspec = False
-if len(sys.argv) >= 2 and sys.argv[1] == "virtspec":
-    virtspec = True
+rebuild = args.rebuild and not (os.path.exists('.env') or 
+                                os.path.exists("enlighten/assets/uic_qrc/enlighten_layout.py"))
 
-if not os.path.exists('.env'):
-    os.mkdir('.env')
+if rebuild:
+    if not os.path.exists('.env'):
+        os.mkdir('.env')
 
-print("Creating environment...")
-
-os.system(sys.executable + " -m venv .env/enlighten")
-
-print("Activating environment...")
+    print(f"{datetime.now()} Creating environment...")
+    os.system(sys.executable + " -m venv .env/enlighten")
 
 env_python = ".env/enlighten/Scripts/python"
 
-print("Installing dependencies")
+if rebuild:
+    print(f"{datetime.now()} Installing dependencies")
+    installer = subprocess.Popen([env_python, '-m', 'pip', 'install', '-r', 'requirements.txt'])
+    installer.wait()
 
-installer = subprocess.Popen([env_python, '-m', 'pip', 'install', '-r', 'requirements.txt'])
-installer.wait()
-
-print("Installing special dependencies")
-
-installer_special = subprocess.Popen([env_python, '-m', 'pip', 'install', 'pywin32', 'spc_spectra', 'jcamp'])
-installer_special.wait()
-
-print("Setting PYTHONPATH")
+    print(f"{datetime.now()} Installing special dependencies")
+    installer_special = subprocess.Popen([env_python, '-m', 'pip', 'install', 'pywin32', 'spc_spectra', 'jcamp'])
+    installer_special.wait()
 
 os.environ["PYTHONPATH"] = "..\\Wasatch.PY;..\\jcamp;plugins;.;enlighten\\assets\\uic_qrc"
+print(f"{datetime.now()} PYTHONPATH = {os.environ['PYTHONPATH']}")
 
-print("(Re)building UI")
+if rebuild:
+    print(f"{datetime.now()} (Re)building UI")
+    os.environ["VIRTUAL_ENV"] = ".env\\enlighten"
+    ui_script = subprocess.Popen(["sh", "scripts/rebuild_resources.sh"])
+    ui_script.wait()
 
-os.environ["VIRTUAL_ENV"] = ".env\\enlighten"
-ui_script = subprocess.Popen(["sh", "scripts/rebuild_resources.sh"])
-ui_script.wait()
+    if args.virtspec:
+        print("*** Use virtual spectrometer ***")
+        uninstall_pyusb = subprocess.Popen([env_python, '-m', 'pip', 'uninstall', 'pyusb'])
+        uninstall_pyusb.wait()
+        os.environ["PYTHONPATH"] = "..\\pyusb-virtSpec;..\\Wasatch.PY;..\\jcamp;plugins;.;enlighten\\assets\\uic_qrc"
 
-if virtspec:
-    print("*** Use virtual spectrometer ***")
-    uninstall_pyusb = subprocess.Popen([env_python, '-m', 'pip', 'uninstall', 'pyusb'])
-    uninstall_pyusb.wait()
-    os.environ["PYTHONPATH"] = "..\\pyusb-virtSpec;..\\Wasatch.PY;..\\jcamp;plugins;.;enlighten\\assets\\uic_qrc"
-
-print("Run Enlighten")
-
+print(f"{datetime.now()} Running Enlighten")
 enlighten = subprocess.Popen([env_python, "scripts\\Enlighten.py"])
 enlighten.wait()
+
+print(f"{datetime.now()} Enlighten done")
