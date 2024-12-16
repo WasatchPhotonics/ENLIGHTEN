@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from enlighten import common
 
 if common.use_pyside2():
