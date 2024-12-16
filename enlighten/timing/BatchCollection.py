@@ -69,7 +69,7 @@ class BatchCollection:
     the and the number of events, rather than the number of spectra saved, is the
     count.
     
-    @par Untimed Collections
+    @par Untimed Collections (Fast-Batch [#516])
     
     Some users don't wish to impose fixed timing, and just want to collect and save
     measurement_count spectra at the defined integration time.
@@ -81,8 +81,10 @@ class BatchCollection:
     
     Therefore, if measurement_period_ms is ZERO, this class will not run any internal
     timers, but will simply collect "measurement_count" spectra from each contributing
-    spectrometer. In this use-case, Controller.attempt_reading() calls
-    BatchCollection.consider_for_save(), circumventing the QTimers.
+    spectrometer. 
+
+    This is still done via a "TakeOneRequest", but it's really more of a 
+    "TakeOne[Batch]" than "TakeOne[Reading]".
     
     @par Laser Control
     
@@ -424,8 +426,26 @@ class BatchCollection:
             # whether we're in "save_all" or not.
             self.ctl.laser_control.set_laser_enable(False, all_=True)
 
-        log.debug("scheduling first tick in %d ms", sleep_ms)
-        self.timer_measurement.start(sleep_ms)
+        if self.measurement_period_ms > 0:
+            # there is a defined measurement period, so use a QTimer to initiate
+            # each individual measurement with its own short-lived TakeOneRequest
+            # (standard timed Batch Collection)
+
+            log.debug("scheduling first tick in %d ms", sleep_ms)
+            self.timer_measurement.start(sleep_ms)
+        else:
+            # There is no measurement period, so we want to collect these 
+            # as fast as possible, from consecutive streamed free-running 
+            # Readings. Indicate this downstream by generating a SINGLE 
+            # TakeOneRequest with readings_target and readings_current 
+            # populated, so WasatchDevice can keep count for us.
+            
+            take_one_streaming = TakeOneRequest(self.take_one_template)
+            take_one_streaming.readings_target = self.measurement_count
+            take_one_streaming.readings_current = 0
+
+            self.ctl.multispec.change_device_setting("take_one_request", take_one_streaming)
+            self.ctl.multispec.set_app_state("take_one_request", take_one_streaming)
 
     ##
     # Tempting to render SaveOptions.label_template in here...not sure how that 
@@ -465,6 +485,9 @@ class BatchCollection:
 
         # batches end in paused state
         self.ctl.vcr_controls.pause()
+
+        self.ctl.multispec.change_device_setting("take_one_request", None)
+        self.ctl.multispec.set_app_state("take_one_request", None)
 
         # export if requested
         if self.export_after_batch:
@@ -527,9 +550,9 @@ class BatchCollection:
         if not self.running:
             return
 
-        # don't take a measurement and end the batch if timeout occurred
+        # end the batch if timeout occurred
         if self.collection_timeout is not None and datetime.datetime.now() > self.collection_timeout:
-            log.info(f"collection timeout reach, not performing next measurement and completing batch. measurement count is {self.measurement_count}")
+            log.error(f"collection timeout")
             self.complete_batch()
             return
 
@@ -538,7 +561,7 @@ class BatchCollection:
             self.stop()
             return
 
-        self.ctl.save_options.multipart_suffix = "B%d %d-of-%d" % (self.current_batch_count + 1, self.current_measurement_count + 1, self.measurement_count)
+        self.update_suffix()
 
         # compute (but don't yet schedule) next start-time now, so that the
         # measurement period can be "start-to-start"
@@ -547,8 +570,55 @@ class BatchCollection:
         # when this event completes, VCRControls will call our save_complete method
         self.ctl.vcr_controls.step_save(self.save_complete, take_one_template=self.take_one_template)
 
+    def update_suffix(self):
+        suffix = f"B{self.current_batch_count + 1} {self.current_measurement_count + 1}-of-{self.measurement_count}"
+        log.debug(f"suffix {suffix}")
+        self.ctl.save_options.multipart_suffix = suffix
+
+    def process(self, pr, spec):
+        """
+        This is similar to tick_measurement, except it's driven by 
+        Controller.process_reading when we're not using QTimers and are streaming
+        multiple Readings from a single TakeOneRequest.
+        """
+        tor = pr.reading.take_one_request
+        if tor is None:
+            return
+
+        if spec is None:
+            return
+
+        if tor.readings_target is None or tor.readings_target <= 0:
+            log.error("process: should be impossible...any 'single' TakeOneRequests should have been processed and cleared back in Controller.attempt_reading: {tor}")
+            spec.app_state.take_one_request = None
+            return
+
+        if not self.running:
+            spec.app_state.take_one_request = None
+            return
+
+        if self.collection_timeout is not None and datetime.datetime.now() > self.collection_timeout:
+            log.error(f"collection timeout")
+            self.complete_batch()
+            return
+
+        # if user unchecked "enabled", stop
+        if not self.enabled:
+            self.stop()
+            return
+
+        # it looks like this was a valid TakeMany Fast-Batch measurement, so save it
+        self.update_suffix()
+        self.ctl.vcr_controls.save()
+        self.save_complete()
+
+        log.debug("process: done")
+
     def save_complete(self):
-        """ A VCRControls "step_save" event has completed. """
+        """ 
+        A VCRControls "step_save" event has completed (or we just manually saved
+        a TakeMany Fast-Batch Measurement). 
+        """
 
         self.ctl.save_options.multipart_suffix = None
 

@@ -46,8 +46,6 @@ class PluginModuleInfo:
 
         self.ctl = ctl
 
-        log.debug("instantiated %s", str(self))
-
     ##
     # Import the selected Python module containing the plugin class.
     #
