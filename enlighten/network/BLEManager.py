@@ -7,6 +7,7 @@ from threading import Thread
 
 from enlighten import common
 from wasatch.DeviceFinderBLE import DeviceFinderBLE
+from wasatch.BLEDevice       import BLEDevice # for get_run_loop
 
 if common.use_pyside2():
     from PySide2 import QtCore, QtGui
@@ -46,20 +47,6 @@ class BLEManager:
             - expects device_id.bleak_device to hold populated bleak.backends.device.BLEDevice
         - connect() returns SpectrometerResponse(True) after SpectrometerSettings.EEPROM parsed
 
-    @par Threading
-
-    self.scan_loop runs forever inside self.scan_thread. They are created when ENLIGHTEN is 
-    launched and exit at shutdown.
-
-     _self.scan_thread__
-    | self.scan_loop    |
-    |___________________|
-
-    self.scan_loop is passed in the call to perform_discovery (kick-off a scan), as the 
-    loop in which perform_discovery runs:
-
-        asyncio.run_coroutine_threadsafe(self.perform_discovery(), self.scan_loop)
-
     """
 
     def __init__(self, ctl):
@@ -83,14 +70,7 @@ class BLEManager:
 
         # create a persistent thread in which to run BleakScanner, so we're not 
         # blocking the GUI loop when the button is pressed
-
-        self.scan_loop = asyncio.new_event_loop()
-        self.scan_thread = Thread(target=self.make_scan_loop, daemon=True)
-        self.scan_thread.start()
-
-    def make_scan_loop(self):
-        asyncio.set_event_loop(self.scan_loop)
-        self.scan_loop.run_forever()
+        self.scan_loop = BLEDevice.get_run_loop()
 
     def update_visibility(self):
         return
