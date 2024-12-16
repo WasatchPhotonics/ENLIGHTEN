@@ -2,11 +2,25 @@
 
 This document attempts to maintain a common build process for both
 Windows 10 and Windows 11.  Note that released installers are currently
-always built from Windows 10 (but work on Windows 11).
+always built from Windows 11 (but are believed to work on Windows 10).
 
 ## Dependencies
 
-The following installation sequence is recommended:
+The default supported Python version is 3.11. The latest binary installer for 
+Python 3.11 on Windows can be found here:
+
+- https://www.python.org/downloads/windows/
+  (e.g. https://www.python.org/ftp/python/3.11.9/python-3.11.9-amd64.exe)
+
+By default, this will put Python 3.11 someplace like:
+
+    /c/Users/mzieg/AppData/Local/Programs/Python/Python311/python
+    /c/Users/mzieg/AppData/Local/Programs/Python/Python311/python/Scripts
+
+You will need to update your Windows %PATH% to make sure those directories
+are high in your search order.
+
+Other than Python, the following installation sequence is recommended:
 
 - [Git for Windows](https://git-scm.com/download/win)
     - select "Use Git and optional Unix tools from the Command Prompt"
@@ -21,6 +35,26 @@ Windows environments have additional dependencies if you need KnowItAll support:
 
 See [MAINTENANCE](MAINTENANCE.md) for temporary changes or workarounds to
 the build process.
+
+## New Bootstrap Scripts
+
+For Windows 11, you should then be able to install all Python dependencies, and 
+run the program from source like this (assuming you've cloned ENLIGHTEN to 
+%HOME%\work\code\enlighten):
+
+    C> cd %HOME%\work\code\enlighten
+    C> python scripts\bootstrap\win11\bootstrap.py
+
+In Windows 10, the following should work (but is not tested as regularly):
+
+    C> cd %HOME%\work\code\enlighten
+    C> python scripts\bootstrap\win10\bootstrap.py
+
+# OLD INSTRUCTIONS (retained for searchability)
+
+These are older setup instructions from before the new win11\bootstrap.py script
+was available. Until all development stations are fully updated and the script
+rigorously tested, these instructions are maintained for legacy support.
 
 ## Create Virtual Environment
 
