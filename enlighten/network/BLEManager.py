@@ -71,7 +71,7 @@ class BLEManager:
         self.bt_show_selector = cfu.pushButton_show_ble_selector
         self.progress_bar = cfu.readingProgressBar
 
-        self.device_id_queue = Queue() # queue of wasatch.DeviceID
+        self.discovered_device_queue = Queue() # queue of wasatch.DeviceFinderBLE.DiscoveredBLEDevices
 
         self.original_button_style = self.bt_show_selector.styleSheet()
         self.ble_selector = BLESelector(ble_manager=self, parent=self.bt_show_selector)
@@ -104,21 +104,6 @@ class BLEManager:
         """
         return
 
-    def poll_device_id_queue(self):
-        """ 
-        This is ticked by Controller.tick_bus_listener, meaning it runs inside a
-        QTimer and can futz with GUI widgets.
-        """
-        while not self.device_id_queue.empty():
-            device_id = self.device_id_queue.get_nowait()
-            if device_id is None:
-                log.debug(f"poll_device_id_queue: scan is complete")
-                self.ble_selector.set_rescan_enabled(True)
-            else:
-                self.ble_selector.add_to_table(device_id)
-                self.ble_selector.set_rescan_enabled(False)
-                self.ble_selector.set_connect_enabled(True)
-
     def show_selector_callback(self):
         self.ble_selector.show()
         self.ble_selector.reset()
@@ -129,19 +114,37 @@ class BLEManager:
         # the table starts empty, so disable "Connect" button
         self.ble_selector.set_connect_enabled(False)
 
+        self.device_finder = DeviceFinderBLE(self.discovered_device_queue)
+
         # Kick off the async search for BLE Devices. This is an async function, 
         # but we're not awaiting it -- let it run in its own time.
-        device_finder = DeviceFinderBLE(self.device_id_queue)
-
         log.debug("starting scan")
         asyncio.run_coroutine_threadsafe(
-            device_finder.search_for_devices(),
+            self.device_finder.search_for_devices(),
             self.scan_loop)
+
+    def poll_discovered_device_queue(self):
+        """ 
+        This is ticked by Controller.tick_bus_listener, meaning it runs inside a
+        QTimer and can futz with GUI widgets.
+        """
+        while not self.discovered_device_queue.empty():
+            discovered_device = self.discovered_device_queue.get_nowait()
+            if discovered_device is None:
+                log.debug(f"poll_discovered_device_queue: scan is complete")
+                self.ble_selector.set_rescan_enabled(True)
+            else:
+                self.ble_selector.add_to_table(discovered_device)
+                self.ble_selector.set_rescan_enabled(False)
+                self.ble_selector.set_connect_enabled(True)
 
     def connect_callback(self):
         device_id = self.ble_selector.selected_device_id
         if device_id is None:
             return
+
+        self.device_finder.stop_scanning()
+        self.device_finder = None
 
         self.ble_selector.reset()
         self.ble_selector.hide()
@@ -160,9 +163,9 @@ class BLESelector(QDialog):
     | [Connect]    [Rescan] |
     |                       |
     | RSSI Serial Number    |
-    | )))  WP-01234         |
-    | )    WP-01228         |
-    | ))   WP-01499         |
+    | ***  WP-01234         |
+    | *    WP-01228         |
+    | **   WP-01499         |
     +-----------------------+
     """
     def __init__(self, ble_manager, parent=None):
@@ -218,7 +221,10 @@ class BLESelector(QDialog):
         self.selected_device_id = None
 
     def cellClicked_callback(self, row, column):
-        """ The user clicked a table cell, so highlight the whole row (and capture the DeviceID) """
+        """ 
+        The user clicked a table cell, so highlight the whole row (and cache the
+        DeviceID for BLEManager.connect_callback).
+        """
         self.selected_device_id = None
 
         if row == 0:
@@ -233,25 +239,38 @@ class BLESelector(QDialog):
         self.selected_device_id = device_id
         log.debug("user selected {device_id}")
 
-    def add_to_table(self, device_id):
-        sn = device_id.serial_number
+    def add_to_table(self, discovered_device):
+        """
+        @param discovered_device: a wasatch.DeviceFinderBLE.DiscoveredBLEDevice
+        """
+        device_id = discovered_device.device_id
+        rssi = discovered_device.rssi
+        serial_number = device_id.serial_number
+
+        rssi_str = f"{rssi:0.2f}"
+        rssi_str = self.rssi_to_bars(rssi)
 
         try:
-            if sn in self.serial_number_to_row:
-                row = self.serial_number_to_row[sn]
-                self.table.setItem(row, 0, QTableWidgetItem(f"{device_id.rssi:0.2f}"))
+            if serial_number in self.serial_number_to_row:
+                # we've seen this device before, so just update the previous RSSI
+                row = self.serial_number_to_row[serial_number]
+                self.table.setItem(row, 0, QTableWidgetItem(rssi_str))
             else:
-                # insert new row
+                # new device, so insert new row
                 row = self.table.rowCount()
                 self.table.insertRow(row)
-                self.table.setItem(row, 0, QTableWidgetItem(f"{device_id.rssi:0.2f}"))
-                self.table.setItem(row, 1, QTableWidgetItem(sn))
+                self.table.setItem(row, 0, QTableWidgetItem(rssi_str))
+                self.table.setItem(row, 1, QTableWidgetItem(serial_number))
 
                 # update mappings
-                self.serial_number_to_row[sn] = row
+                self.serial_number_to_row[serial_number] = row
                 self.row_to_device_id[row] = device_id
         except:
             log.error("exception updating QTableWidget", exc_info=1)
+
+    def rssi_to_bars(self, rssi):
+        cnt = 3 if rssi > -60 else 2 if rssi > -85 else 1
+        return "🛜" * cnt # 📶
 
     def init_stylesheet(self):
         """ I tried to apply these through enlighten.css, but couldn't figure it out """

@@ -440,7 +440,7 @@ class Controller:
         self.bus.update()
 
         # refresh the list of visible spectrometers on the BLE list
-        self.ble_manager.poll_device_id_queue()
+        self.ble_manager.poll_discovered_device_queue()
 
         self.multispec.check_ejected_unplugged(self.bus.device_ids)
 
