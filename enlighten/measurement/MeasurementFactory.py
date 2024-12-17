@@ -60,7 +60,10 @@ class MeasurementFactory:
         try:
             measurement = Measurement(self.ctl, spec = spec)
         except:
-            msgbox("Failed to create measurement\n\n"+traceback.format_exc(), "Error")
+            msg = "Failed to create measurement\n\n"+traceback.format_exc()
+            log.error(msg)
+            msgbox(msg, "Error")
+            return
 
         log.debug("created Measurement %s from reading %d", measurement.measurement_id, measurement.processed_reading.reading.session_count)
 
@@ -68,7 +71,8 @@ class MeasurementFactory:
             try:
                 self.create_thumbnail(measurement, is_collapsed)
             except:
-                msgbox("Failed to create thumbnail.\n\n"+traceback.format_exc(), "Error")
+                msg = "Failed to create thumbnail.\n\n"+traceback.format_exc()
+                msgbox(msg, "Error")
 
         if save:
             try:
@@ -78,7 +82,8 @@ class MeasurementFactory:
                 for observer in self.observers:
                     observer(measurement=measurement, event="save")
             except:
-                msgbox("Failed to dispatch save file.\n\n"+traceback.format_exc(), "Error")
+                msg = "Failed to dispatch save file.\n\n"+traceback.format_exc()
+                msgbox(msg, "Error")
 
         if label is not None:
             measurement.update_label(label, manual=True)

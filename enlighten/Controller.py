@@ -55,6 +55,9 @@ class AcquiredReading():
         self.disconnect = disconnect
         self.progress = progress
 
+    def __repr__(self):
+        return f"AcquiredReading <disconnect {self.disconnect}, progress {self.progress}, reading {self.reading}>"
+
 class Controller:
     """
     Main application controller class for ENLIGHTEN.
@@ -1347,22 +1350,19 @@ class Controller:
             return
 
         if acquired_reading is None or acquired_reading.reading is None:
-            log.debug("attempt_reading(%s): no reading available", device_id)
+            log.debug(f"attempt_reading({device_id}): no reading available")
             if self.vcr_controls.paused or self.batch_collection.running or not spec.is_acquisition_timeout():
                 return
 
             if self.external_trigger.is_enabled():
-                log.debug("attempt_reading(%s): ignoring timeout while externally triggered")
                 return
 
             if spec.settings.state.area_scan_enabled:
-                log.debug("attempt_reading(%s): ignoring timeout in area scan")
                 return
 
             now = datetime.datetime.now()
             if spec.settings.state.ignore_timeouts_until is not None and \
                     spec.settings.state.ignore_timeouts_until > now:
-                log.debug("attempt_reading(%s): temporarily ignoring timeouts")
                 return
             spec.settings.state.ignore_timeouts_until = None
 
@@ -1431,11 +1431,6 @@ class Controller:
         spec.app_state.missed_reading_count = 0
         spec.app_state.spec_timeout_prompt_shown = False
         spec.app_state.received_reading_at_current_integration_time = True
-
-        if spec.device.is_ble:
-            self.reading_progress_bar.set(acquired_reading.progress)
-            if acquired_reading.progress < 100:
-                return
 
         # @todo need to update DetectorRegions so this will pass (use total_pixels)
 
@@ -1508,13 +1503,14 @@ class Controller:
         if spec is None or device is None:
             # silently ignore...this should be rare, and likely indicates a delay
             # during initial connection or tear-down
-            log.error("acquiring reading from missing device?")
+            log.error("acquire_reading: acquiring reading from missing device?")
             return 
 
         device_id = spec.device_id
 
         try:
             spectrometer_response = device.acquire_data()
+
             if spectrometer_response.poison_pill:
                 log.error(f"acquire_reading: received poison-pill from spectrometer: {spectrometer_response}") # disposition AFTER displaying user message
 
@@ -1524,7 +1520,6 @@ class Controller:
                 # We received an error from the device.  Don't do anything about it immediately;
                 # don't disconnect for instance.  It may or may not be a poison-pill...we're not
                 # even checking yet, because we want to let the user decide what to do.
-                log.error(f"response from spec was {spectrometer_response}")
 
                 self.seen_errors[spec][spectrometer_response.error_msg] += 1
                 error_count = self.seen_errors[spec][spectrometer_response.error_msg]
@@ -1559,7 +1554,7 @@ class Controller:
             if spectrometer_response.poison_pill:
                 # the user hasn't [yet] decided to disconnect, but we can't really "do anything" with data that's
                 # coming from a spectrometer throwing poison-pills, so for now treat it as a keepalive
-                log.debug("received poison-pill from spectrometer, but the user has not [yet] opted to disconnect")
+                log.debug("acquire_reading: received poison-pill from spectrometer, but the user has not [yet] opted to disconnect")
                 return 
 
             if spectrometer_response.keep_alive:
