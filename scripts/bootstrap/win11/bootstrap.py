@@ -47,8 +47,8 @@ if not (sys.version_info.major==3 and sys.version_info.minor==11):
     print("This program is intended for Python 3.11.")
     exit(1)
 
-rebuild = args.rebuild and not (os.path.exists('.env') or 
-                                os.path.exists("enlighten/assets/uic_qrc/enlighten_layout.py"))
+rebuild = args.rebuild or not (os.path.exists('.env') and
+                               os.path.exists("enlighten/assets/uic_qrc/enlighten_layout.py"))
 
 if rebuild:
     if not os.path.exists('.env'):
