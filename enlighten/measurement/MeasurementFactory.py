@@ -72,6 +72,7 @@ class MeasurementFactory:
                 self.create_thumbnail(measurement, is_collapsed)
             except:
                 msg = "Failed to create thumbnail.\n\n"+traceback.format_exc()
+                log.error(msg)
                 msgbox(msg, "Error")
 
         if save:
@@ -83,6 +84,7 @@ class MeasurementFactory:
                     observer(measurement=measurement, event="save")
             except:
                 msg = "Failed to dispatch save file.\n\n"+traceback.format_exc()
+                log.error(msg)
                 msgbox(msg, "Error")
 
         if label is not None:

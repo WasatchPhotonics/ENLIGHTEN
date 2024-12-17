@@ -319,7 +319,6 @@ class Controller:
         for feature in [ self.batch_collection,
                          self.status_indicators,
                          self.plugin_controller,
-                         self.ble_manager,
                          self.logging_feature ]:
             feature.stop()
 
@@ -659,7 +658,6 @@ class Controller:
         for feature in [ self.accessory_control,
                          self.auto_raman,
                          self.baseline_correction,
-                         self.ble_manager,
                          self.dark_feature,
                          self.edc,
                          self.graph,
@@ -1355,14 +1353,17 @@ class Controller:
                 return
 
             if self.external_trigger.is_enabled():
+                log.debug(f"attempt_reading({device_id}): ignoring timeout while externally triggered")
                 return
 
             if spec.settings.state.area_scan_enabled:
+                log.debug(f"attempt_reading({device_id}): ignoring timeout in area scan")
                 return
 
             now = datetime.datetime.now()
             if spec.settings.state.ignore_timeouts_until is not None and \
                     spec.settings.state.ignore_timeouts_until > now:
+                log.debug(f"attempt_reading({device_id}): temporarily ignoring timeouts")
                 return
             spec.settings.state.ignore_timeouts_until = None
 

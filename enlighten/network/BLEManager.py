@@ -5,7 +5,7 @@ from queue import Queue
 
 from threading import Thread
 
-from enlighten import common
+from enlighten import common, util
 from wasatch.DeviceFinderBLE import DeviceFinderBLE
 from wasatch.BLEDevice       import BLEDevice # for get_run_loop
 
@@ -20,69 +20,25 @@ log = logging.getLogger(__name__)
 
 class BLEManager:
     """
-    Allows user to connect to nearby wasatch.BLEDevices.
+    Provides GUI allowing user to select a Wasatch BLE spectrometer for connection.
 
-    Goals:
-    - provide a button that pops-up a dialog listing advertised localNames
-    - scan should begin as soon as dialog opens
-    - allow the background Bleak discovery scan to update the dialog roughly 1/sec (probably using Queue)
-    - colorize the selected item when user clicks the row
-    - when user clicks "Connect"
-        - construct DeviceID with non-serializable .bleak_device populated 
-          (as passed to detection_callback by BleakScanner, then to BLEManager 
-          through Queue)
-        - add new DeviceID to Controller.other_device_ids
-        - close dialog
-    - list should be sorted in "discovery" order -- don't "sort" list, as we 
-      don't want rows to move while user is trying to click on them
-
-    @par Architecture
-
-    - wasatch.BLEDeviceFinder
-        - runs 30sec scan, generating callback with (DeviceID, rssi) of new/updated devices
-        - this is where BleakScanner lives
-
-    - wasatch.BLEDevice
-        - constructor takes DeviceID 
-            - expects device_id.bleak_device to hold populated bleak.backends.device.BLEDevice
-        - connect() returns SpectrometerResponse(True) after SpectrometerSettings.EEPROM parsed
-
+    @see detailed BLE architecture in wasatch.BLEDevice
     """
 
     def __init__(self, ctl):
         self.ctl = ctl
         cfu = ctl.form.ui
 
-        # this is the button above the main graph stating "BLE", used to display
-        # the BLESelector dialog
-        self.bt_show_selector = cfu.pushButton_show_ble_selector
-        self.progress_bar = cfu.readingProgressBar
+        self.discovered_device_queue = Queue() # holds wasatch.DeviceFinderBLE.DiscoveredBLEDevices
 
-        self.discovered_device_queue = Queue() # queue of wasatch.DeviceFinderBLE.DiscoveredBLEDevices
-
-        self.original_button_style = self.bt_show_selector.styleSheet()
-        self.ble_selector = BLESelector(ble_manager=self, parent=self.bt_show_selector)
-
-        self.bt_show_selector.clicked.connect(self.show_selector_callback)
+        self.ble_selector = BLESelector(ble_manager=self, parent=cfu.pushButton_show_ble_selector)
+        cfu.pushButton_show_ble_selector.clicked.connect(self.show_selector_callback)
 
         # @todo move to AutoRaman
-        self.progress_bar.hide()
+        cfu.readingProgressBar.hide()
 
-        # create a persistent thread in which to run BleakScanner, so we're not 
-        # blocking the GUI loop when the button is pressed
+        # grab an asyncio run_loop in which to call DeviceFinderBLE's async methods
         self.scan_loop = BLEDevice.get_run_loop()
-
-    def update_visibility(self):
-        return
-
-    def stop(self):
-        """ 
-        Called by Controller at application shutdown.
-
-        There is currently no way to tell self.scan_thread or self.scan_loop to
-        stop, but I'm not sure this is a problem.
-        """
-        return
 
     def show_selector_callback(self):
         self.ble_selector.show()
@@ -250,7 +206,8 @@ class BLESelector(QDialog):
 
     def rssi_to_bars(self, rssi):
         cnt = 3 if rssi > -60 else 2 if rssi > -85 else 1
-        return "🛜" * cnt # 📶
+        bullet = util.get_bullet()
+        return bullet * cnt # 🛜 📶
 
     def init_stylesheet(self):
         """ I tried to apply these through enlighten.css, but couldn't figure it out """
