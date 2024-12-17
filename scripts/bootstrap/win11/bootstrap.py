@@ -33,6 +33,8 @@ print(f"{datetime.now()} Bootstrap.py starting")
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument("--rebuild", action="store_true", help="rebuild environment even if previous run detected")
 parser.add_argument("--virtspec", action="store_true", help="support virtual spectrometers")
+parser.add_argument("--arg", action="append", help="take multiple name=value args to pass-on to ENLIGHTEN")
+parser.epilog = "Example: $ python scripts/bootstrap/win11/bootstrap.py --rebuild --arg log-level=debug"
 args = parser.parse_args()
 
 if platform.system() != 'Windows':
@@ -83,8 +85,11 @@ if rebuild:
         uninstall_pyusb.wait()
         os.environ["PYTHONPATH"] = "..\\pyusb-virtSpec;..\\Wasatch.PY;..\\jcamp;plugins;.;enlighten\\assets\\uic_qrc"
 
-print(f"{datetime.now()} Running Enlighten")
-enlighten = subprocess.Popen([env_python, "scripts\\Enlighten.py"])
+cmd = [env_python, "scripts\\Enlighten.py"]
+for arg in args.arg:
+    cmd.append(f"--{arg}")
+print(f"{datetime.now()} Running: {cmd}")
+enlighten = subprocess.Popen(cmd)
 enlighten.wait()
 
 print(f"{datetime.now()} Enlighten done")

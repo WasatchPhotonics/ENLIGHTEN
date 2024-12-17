@@ -136,7 +136,9 @@ class BLESelector(QDialog):
         except:
             log.error("exception constructing table", exc_info=1)
 
-        self.init_stylesheet()
+        # @todo move to enlighten.css 
+        self.setStyleSheet("""QTableView::item::selected, QTableView::item::selected:hover { background: darkblue; color: silver }""")
+
         self.reset()
 
     def set_rescan_enabled(self, flag):
@@ -208,29 +210,3 @@ class BLESelector(QDialog):
         cnt = 3 if rssi > -60 else 2 if rssi > -85 else 1
         bullet = util.get_bullet()
         return bullet * cnt # 🛜 📶
-
-    def init_stylesheet(self):
-        """ I tried to apply these through enlighten.css, but couldn't figure it out """
-        self.setStyleSheet("""
-            QTableView::hover,
-            QTableView::item::hover 
-            {
-                background-color: hsl(0, 0%, 13%);
-                border: none;
-                color: #F0F0F0;
-                gridline-color: #ccc;
-            }
-
-            QTableView:selected,
-            QTableView::item::selected:hover 
-            {
-                background: hsl(0, 0%, 36%);
-                border: none;
-            }
-
-            QTableView::item:pressed
-            {
-                background-color: hsl(0, 0%, 70%);
-                border: none;
-            }
-        """)
