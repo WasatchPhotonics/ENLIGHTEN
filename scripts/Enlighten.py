@@ -187,7 +187,6 @@ class EnlightenApplication:
         self.exit_code = self.controller.exit_code
         print("EnlightenApplication.closeEvent: exit_code %d" % self.exit_code)
 
-
         # shutdown the logger
         self.main_logger.close()
         time.sleep(1)
@@ -229,20 +228,20 @@ class EnlightenApplication:
                     # ... and if it is, minimize it
                     ctypes.windll.user32.ShowWindow(console_window, 2)  # SW_SHOWMINIMIZED
 
-    def run_from_root(self, pathname):
+    def chdir(self, script_path):
         """
         ENLIGHTEN loads various settings from its own enlighten/assets/
         example_code distribution, which it accesses through relative
         paths, and it can't find those if run from another directory.
         """
-        if pathname.endswith(".py"):
+        if script_path.endswith(".py"):
             # run as "python path/to/scripts/enlighten.py", so want "path/to"
-            root_dir = os.path.join(os.path.dirname(pathname), "..")
+            root_dir = os.path.join(os.path.dirname(script_path), "..")
         else:
             # presumably some kind of compiled executable
-            root_dir = os.path.dirname(pathname)
+            root_dir = os.path.dirname(script_path)
 
-        log.debug(f"trying to run from {root_dir}")
+        log.debug(f"chdir to {root_dir}")
         try:
             os.chdir(root_dir)
         except:
@@ -251,7 +250,7 @@ class EnlightenApplication:
 def main(argv):
     enlighten = EnlightenApplication()
     enlighten.parse_args(argv[1:])
-    enlighten.run_from_root(argv[0])
+    enlighten.chdir(script_path=argv[0])
     enlighten.hide_console()
     try:
         ec = enlighten.run()

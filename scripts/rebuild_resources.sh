@@ -91,8 +91,8 @@ else
             fi
 
             # Note that we're now using 3.11 on Windows...
-            PYTHON="python3.10"
-            TWO_TO_THREE=`which 2to3-3.10`
+            PYTHON="python3.11"
+            TWO_TO_THREE=`which 2to3-3.11`
 
             UIC_OPTS="--generator python"
             RCC_OPTS="--generator python"
