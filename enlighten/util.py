@@ -121,9 +121,10 @@ def undent(s):
 # Date/Time Helpers
 ################################################################################
 
-def is_today(mon, day):
+def is_today(mon, day, year=None):
     today = date.today()
-    then = date(today.year, mon, day)
+    year = year if year else today.year
+    then = date(year, mon, day)
     return today == then
     
 def get_bullet():
@@ -132,6 +133,8 @@ def get_bullet():
     elif is_today( 3, 17): return "☘️"
     elif is_today( 2, 14): return "❤️"
     elif is_today(12, 31): return "🎉"
+    elif is_today(11, 27, 2025) or is_today(11, 26, 2026) or is_today(11, 25, 2027): return "🦃"
+    elif is_today( 3, 20, 2025) or is_today( 4,  5, 2026) or is_today( 3, 28, 2027): return "🐰"
     else: return "🟢"
 
 ################################################################################
