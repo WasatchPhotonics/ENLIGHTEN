@@ -733,7 +733,7 @@ class EEPROMEditor:
         if not hasattr(self.eeprom, attr.name):
             raise AttributeError(f"{attr.name}: unknown EEPROM checkbox")
 
-        log.debug(f"bind_checkbox: binding {attr}")
+        # log.debug(f"bind_checkbox: binding {attr}")
         attr.widget.stateChanged.connect(partial(self.widget_callback, attr=attr, widget=attr.widget))
         attr.is_editable = self.eeprom.is_editable(attr.name)
 
@@ -744,21 +744,21 @@ class EEPROMEditor:
                 for m in range(attr.calibrations): # YOU ARE HERE?
                     w = attr.widgets[m][0]
                     callback = partial(self.widget_callback, attr=attr, widget=w, calibration=m)
-                    log.debug(f"bind_spinbox: binding calibration {m} scalar: {attr} (widget {w}, callback {callback})")
+                    # log.debug(f"bind_spinbox: binding calibration {m} scalar: {attr} (widget {w}, callback {callback})")
                     w.valueChanged.connect(callback)
             else:
                 for m in range(attr.calibrations):
                     for i in range(attr.count):
-                        log.debug(f"bind_spinbox: binding calibration {m} index {i}: {attr}")
+                        # log.debug(f"bind_spinbox: binding calibration {m} index {i}: {attr}")
                         w = attr.widgets[m][i]
                         w.valueChanged.connect(partial(self.widget_callback, attr=attr, widget=w, calibraton=m, index=i))
         else:
             if attr.is_scalar:
-                log.debug(f"bind_spinbox: binding scalar: {attr}")
+                # log.debug(f"bind_spinbox: binding scalar: {attr}")
                 attr.widget.valueChanged.connect(partial(self.widget_callback, attr=attr, widget=attr.widget))
             else:
                 for i in range(attr.count):
-                    log.debug(f"bind_spinbox: binding index {i}: {attr}")
+                    # log.debug(f"bind_spinbox: binding index {i}: {attr}")
                     w = attr.widgets[i]
                     w.valueChanged.connect(partial(self.widget_callback, attr=attr, widget=w, index=i))
                 
@@ -768,22 +768,22 @@ class EEPROMEditor:
         if attr.is_multi:
             if attr.is_scalar:
                 for m in range(attr.calibrations):
-                    log.debug(f"bind_lineedit: binding calibration {m} scalar: {attr}")
+                    # log.debug(f"bind_lineedit: binding calibration {m} scalar: {attr}")
                     w = attr.widgets[m][0]
                     w.editingFinished.connect(partial(self.widget_callback, attr=attr, widget=w, calibration=m))
             else:
                 for m in range(attr.calibrations):
                     for i in range(attr.count):
-                        log.debug(f"bind_lineedit: binding calibration {m}, index {i}: {attr}")
+                        # log.debug(f"bind_lineedit: binding calibration {m}, index {i}: {attr}")
                         w = attr.widgets[m][i]
                         w.editingFinished.connect(partial(self.widget_callback, attr=attr, widget=w, calibration=m, index=i))
         else:
             if attr.is_scalar:
-                log.debug(f"bind_lineedit: binding scalar: {attr}")
+                # log.debug(f"bind_lineedit: binding scalar: {attr}")
                 attr.widget.editingFinished.connect(partial(self.widget_callback, attr=attr, widget=attr.widget))
             else:
                 for i in range(attr.count):
-                    log.debug(f"bind_lineedit: binding index {i}: {attr}")
+                    # log.debug(f"bind_lineedit: binding index {i}: {attr}")
                     w = attr.widgets[i]
                     w.editingFinished.connect(partial(self.widget_callback, attr=attr, widget=w, index=i))
                 

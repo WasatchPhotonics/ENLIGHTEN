@@ -27,12 +27,12 @@ class LibraryMatching(EnlightenPluginBase):
 
     def get_configuration(self):
         self.name = "Library Matching"
-        self.has_other_graph = True
         self.is_blocking = True
 
         self.library_dir = None
         self.add_next_to_library = False
         self.metadata_cache = {}
+        self.laser_warning_issued = False
 
         self.soft_install_matching_library()
         self.pearson = Pearson(self)
@@ -72,6 +72,11 @@ class LibraryMatching(EnlightenPluginBase):
         pr = request.processed_reading
         wavenumbers = pr.get_wavenumbers()
         spectrum = pr.get_processed()
+        reading = pr.reading
+
+        if not reading.laser_enabled and not self.laser_warning_issued:
+            self.ctl.marquee.error("LibraryMatching plugin requires Raman spectra with the laser enabled")
+            self.laser_warning_issued = True
 
         self.outputs = {
             "Compound": "None",
