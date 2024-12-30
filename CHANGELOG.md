@@ -1,5 +1,7 @@
 # Version History
-
+- 2024-??-?? 4.1.21
+    - plugins
+        - Add color matching plugin    
 - 2024-??-?? 4.1.20
     - Win11 build
         - merged in Samie's new scripts/win11/bootstrap.py
