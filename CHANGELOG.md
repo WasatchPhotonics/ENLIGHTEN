@@ -1,6 +1,7 @@
 # Version History
-
 - 2024-??-?? 4.1.20
+    - plugins
+        - Add color matching plugin
     - Win11 build
         - merged in Samie's new scripts/win11/bootstrap.py
         - temporarily deprecated ability to save in SPC format (will chase down later)
