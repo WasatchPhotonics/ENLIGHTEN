@@ -1047,6 +1047,10 @@ SPECTROMETER_CALIBRATION_FACTOR=[
 0.9120024753827068,
 ]
 
+# Corresponding wavelengths for SPECTROMETER_CALIBRATION_FACTOR
+# Allows calibration to be interpolated over different wavelength
+# ranges, which will occur when the spectra is altered (cropped,
+# interpolated, ect.)
 SPECTROMETER_CALIBRATION_WAVELENGTHS=[
 372.6589050292969,
 373.1050050240266,
