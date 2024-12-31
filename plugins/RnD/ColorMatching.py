@@ -2087,9 +2087,6 @@ COLOR_MODEL_ALIASES = {
 
 class ColorMatching(EnlightenPluginBase):
 
-        def disconnect(self):
-            super().disconnect()
-
         def get_configuration(self):
 
             self.name = f"ColorMatching {COLOR_PLUGIN_VERSION}"
