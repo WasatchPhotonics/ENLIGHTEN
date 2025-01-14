@@ -2050,6 +2050,9 @@ class Controller:
         """
         cfu = self.form.ui
         spec = self.current_spectrometer()
+        if spec is None:
+            log.error("set_from_ini_file: spectrometer has disconnected")
+            return
 
         if not spec.settings.eeprom.is_valid_serial_number():
             log.error(f"invalid serial number: {spec.settings.eeprom.serial_number}")
