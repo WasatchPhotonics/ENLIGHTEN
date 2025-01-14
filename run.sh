@@ -1,10 +1,10 @@
 #!/bin/sh
 
-# for POSIX development environments
-#export PYTHONUTF8=1
-#export QT_AUTO_SCREEN_SCALE_FACTOR=1
-
 export PYTHONPATH=.:plugins:enlighten/assets/uic_qrc:../Wasatch.PY:../spyc_writer/src:../jcamp
-python scripts/Enlighten.py --log-level debug 1>enlighten.out 2>enlighten.err
+
+python -u scripts/bootstrap/win11/bootstrap.py --force --arg log-level=debug 2>enlighten.err 1>enlighten.out
+
 cat enlighten.err
-egrep -i traceback enlighten.out
+
+# https://askubuntu.com/a/849016
+cat enlighten.out | sed -n '/^Traceback/,/^[^ ]/p'
