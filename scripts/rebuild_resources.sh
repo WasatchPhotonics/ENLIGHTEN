@@ -9,11 +9,13 @@
 
 QUICK=false
 PAUSE=false
+BOOTSTRAP=false
 while [ "$1" != "" ]
 do
     case $1 in
          --quick) QUICK=true; ;;
          --pause) PAUSE=true; ;;
+         --bootstrap) BOOTSTRAP=true; ;;
     esac
     shift
 done
@@ -28,6 +30,17 @@ function convertToPy3()
         $TWO_TO_THREE -w $DEST > /dev/null 2>&1
     fi
 }
+
+################################################################################
+# Check invocation
+################################################################################
+
+if ! $BOOTSTRAP
+then
+    echo "Warning: this script should normally be run automatically by one of the scripts"
+    echo "under scripts/bootstrap, e.g. scripts/bootstrap/win11/bootstrap.py"
+    echo
+fi
 
 ################################################################################
 # Tailor to the operating system

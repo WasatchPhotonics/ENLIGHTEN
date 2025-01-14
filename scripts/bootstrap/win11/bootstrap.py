@@ -92,7 +92,7 @@ print(f"{datetime.now()} PYTHONPATH = {os.environ['PYTHONPATH']}")
 if rebuild:
     print(f"{datetime.now()} (Re)building UI")
     os.environ["VIRTUAL_ENV"] = fix_path(f"{env_dir}\\enlighten")
-    ui_script = subprocess.Popen(["sh", "scripts/rebuild_resources.sh"])
+    ui_script = subprocess.Popen(["sh", "scripts/rebuild_resources.sh", "--bootstrap"])
     ui_script.wait()
 
     if args.virtspec:
