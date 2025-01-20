@@ -1,5 +1,5 @@
 # Version History
-- 2024-??-?? 4.1.20
+- 2024-01-20 4.1.20
     - Merged LibraryMatching into one graph
     - plugins
         - Add color matching plugin
