@@ -1,7 +1,8 @@
 # Version History
-
 - 2024-??-?? 4.1.20
     - Merged LibraryMatching into one graph
+    - plugins
+        - Add color matching plugin
     - Win11 build
         - merged in Samie's spiffy new scripts/win11/bootstrap.py
         - temporarily deprecated ability to save in SPC format (will chase down later)
