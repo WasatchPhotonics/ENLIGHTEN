@@ -34,10 +34,32 @@ is_win = platform.system() == 'Windows'
 def fix_path(path):
     return path if is_win else path.replace("\\", "/").replace(";", ":")
 
+def check_if_ui_rebuild_needed():
+    checkfile = "enlighten/assets/uic_qrc/__init__.py"
+    print(f"checking {checkfile}")
+    if not os.path.exists(checkfile):
+        return True
+
+    last_rebuild_time = os.path.getmtime(checkfile)
+    path = "enlighten/assets/uic_qrc"
+    for filename in os.listdir(path):
+        if filename.endswith(".ui") or filename.endswith(".qrc"):
+            pathname = os.path.join(path, filename)
+            mtime = os.path.getmtime(pathname)
+            if mtime > last_rebuild_time:
+                print(f"rebuild required ({pathname} newer than {checkfile}")
+                return True
+
+    pathname = "enlighten/assets/stylesheets/dark/enlighten.css"
+    if os.path.getmtime(pathname) > last_rebuild_time:
+        print(f"rebuild required ({pathname} newer than {checkfile}")
+        return True
+
 print(f"{datetime.now()} Bootstrap.py starting")
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument("--rebuild", action="store_true", help="rebuild environment even if previous run detected")
+parser.add_argument("--rebuild-env", action="store_true", help="rebuild environment even if previous run detected")
+parser.add_argument("--rebuild-ui", action="store_true", help="rebuild Qt files even if source files unchanged")
 parser.add_argument("--force", action="store_true", help="ignore script warnings")
 parser.add_argument("--virtspec", action="store_true", help="support virtual spectrometers")
 parser.add_argument("--arg", action="append", help="take multiple name=value args to pass-on to ENLIGHTEN")
@@ -57,10 +79,17 @@ if not (sys.version_info.major==3 and sys.version_info.minor==11) and not args.f
     exit(1)
 
 env_dir = '.env'
-rebuild = args.rebuild or not (os.path.exists(env_dir) and
-                               os.path.exists("enlighten/assets/uic_qrc/enlighten_layout.py"))
+rebuild_ui = args.rebuild_ui
+rebuild_env = args.rebuild_env or not (os.path.exists(env_dir) and
+                                       os.path.exists("enlighten/assets/uic_qrc/enlighten_layout.py"))
 
-if rebuild:
+if rebuild_env:
+    rebuild_ui = True
+if not rebuild_ui:
+    rebuild_ui = check_if_ui_rebuild_needed()
+print(f"rebuild_ui {rebuild_ui}")
+
+if rebuild_env:
     if args.force:
         shutil.rmtree(env_dir)
     if not os.path.exists(env_dir):
@@ -74,7 +103,7 @@ if is_win:
 else:
     env_python = f"{env_dir}/enlighten/bin/python"
 
-if rebuild:
+if rebuild_env:
     print(f"{datetime.now()} Installing dependencies")
     installer = subprocess.Popen([env_python, '-m', 'pip', 'install', '-r', 'requirements.txt'])
     installer.wait()
@@ -89,17 +118,17 @@ if rebuild:
 os.environ["PYTHONPATH"] = fix_path("..\\Wasatch.PY;..\\jcamp;plugins;.;enlighten\\assets\\uic_qrc")
 print(f"{datetime.now()} PYTHONPATH = {os.environ['PYTHONPATH']}")
 
-if rebuild:
+if rebuild_ui:
     print(f"{datetime.now()} (Re)building UI")
     os.environ["VIRTUAL_ENV"] = fix_path(f"{env_dir}\\enlighten")
     ui_script = subprocess.Popen(["sh", "scripts/rebuild_resources.sh", "--bootstrap"])
     ui_script.wait()
 
-    if args.virtspec:
-        print("*** Use virtual spectrometer ***")
-        uninstall_pyusb = subprocess.Popen([env_python, '-m', 'pip', 'uninstall', 'pyusb'])
-        uninstall_pyusb.wait()
-        os.environ["PYTHONPATH"] = fix_path("..\\pyusb-virtSpec;..\\Wasatch.PY;..\\jcamp;plugins;.;enlighten\\assets\\uic_qrc")
+if args.virtspec:
+    print("*** Use virtual spectrometer ***")
+    uninstall_pyusb = subprocess.Popen([env_python, '-m', 'pip', 'uninstall', 'pyusb'])
+    uninstall_pyusb.wait()
+    os.environ["PYTHONPATH"] = fix_path("..\\pyusb-virtSpec;..\\Wasatch.PY;..\\jcamp;plugins;.;enlighten\\assets\\uic_qrc")
 
 cmd = [env_python, fix_path("scripts\\Enlighten.py")]
 if args.arg:
