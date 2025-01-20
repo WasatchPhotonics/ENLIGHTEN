@@ -12595,7 +12595,7 @@ QComboBox QListView
                             </spacer>
                            </item>
                            <item>
-                            <widget class="QPushButton" name="pushButton_bleScan">
+                            <widget class="QPushButton" name="pushButton_show_ble_selector">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                                <horstretch>5</horstretch>

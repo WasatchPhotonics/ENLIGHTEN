@@ -1,10 +1,15 @@
 # Version History
 - 2024-??-?? 4.1.20
+    - Merged LibraryMatching into one graph
     - plugins
         - Add color matching plugin
     - Win11 build
-        - merged in Samie's new scripts/win11/bootstrap.py
+        - merged in Samie's spiffy new scripts/win11/bootstrap.py
         - temporarily deprecated ability to save in SPC format (will chase down later)
+        - added scripts/make_windows_installer.bat
+    - BLE
+        - refactored BLEManager
+        - refactored wasatch.BLEDevice and wasatch.DeviceFinderBLE
 - 2024-12-06 4.1.19
     - [#506] added robustness to Save Location "change, then cancel"
     - [#509] fix "Load Dark/Reference"
