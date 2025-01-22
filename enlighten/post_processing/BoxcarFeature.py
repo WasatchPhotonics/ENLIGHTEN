@@ -43,6 +43,10 @@ class BoxcarFeature:
         self.update_from_gui()
 
     def update_from_gui(self):
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+
         value = self.spinbox.value()
 
         # save boxcar to application state
@@ -53,7 +57,7 @@ class BoxcarFeature:
         # else just current_spectrometer
 
         # persist boxcar in .ini
-        self.ctl.config.set(self.ctl.multispec.current_spectrometer().settings.eeprom.serial_number, "boxcar_half_width", value)
+        self.ctl.config.set(spec.settings.eeprom.serial_number, "boxcar_half_width", value)
 
         if value > 0:
             self.spinbox.setToolTip("boxcar half-width of %d pixels (%d-pixel moving average)" % (value, value * 2 + 1))
