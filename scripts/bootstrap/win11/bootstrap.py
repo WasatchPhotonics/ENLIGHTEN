@@ -36,7 +36,6 @@ def fix_path(path):
 
 def check_if_ui_rebuild_needed():
     checkfile = "enlighten/assets/uic_qrc/__init__.py"
-    print(f"checking {checkfile}")
     if not os.path.exists(checkfile):
         return True
 
@@ -87,7 +86,6 @@ if rebuild_env:
     rebuild_ui = True
 if not rebuild_ui:
     rebuild_ui = check_if_ui_rebuild_needed()
-print(f"rebuild_ui {rebuild_ui}")
 
 if rebuild_env:
     if args.force:
