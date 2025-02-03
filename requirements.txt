@@ -29,6 +29,7 @@ qimage2ndarray
 matplotlib
 pyserial
 colour-science
+colour
 # spc_spectra
 
 pywin32 ; sys_platform == 'win32'
