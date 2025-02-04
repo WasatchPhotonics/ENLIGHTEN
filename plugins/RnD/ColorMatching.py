@@ -2136,7 +2136,7 @@ class ColorMatching(EnlightenPluginBase):
                        datatype=bool,
                        initial=True,
                        expert=False,
-                       tooltip="Apply hard coded (relative) spectral intensity calibration")
+                       tooltip="Apply hard coded (relative) spectral intensity calibration. Note: only intended for use with WP-0453")
 
             self.field(name="Normalize Output",
                        direction="input",
