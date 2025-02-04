@@ -2093,7 +2093,7 @@ class ColorMatching(EnlightenPluginBase):
             self.has_other_graph = False
             self.auto_enable = True
             self.is_blocking = True
-            self.block_enlighten = False
+            self.block_enlighten = True
 
             self.field(
                 name="Color Model",
@@ -2136,7 +2136,15 @@ class ColorMatching(EnlightenPluginBase):
                        datatype=bool,
                        initial=True,
                        expert=False,
-                       tooltip="Apply hard coded (relative) spectral intensity calibration")
+                       tooltip="Apply hard coded (relative) spectral intensity calibration. Note: only intended for use with WP-0453.")
+
+            self.field(name="Normalize Output",
+                       direction="input",
+                       datatype=bool,
+                       initial=True,
+                       expert=False,
+                       tooltip="Normalize XYZ (0-100), RGB (0-1), and sRGB (0-255) values.")
+
 
             log.debug(f"{self.name} started")
 
@@ -2158,6 +2166,7 @@ class ColorMatching(EnlightenPluginBase):
             colorspace_alias = request.fields["Color Model"]
             colorspace_model = COLOR_MODEL_ALIASES[colorspace_alias]
             apply_calibration = request.fields["Apply Calibration"]
+            normalize_output = request.fields["Normalize Output"]
 
             if apply_calibration:
 
@@ -2167,6 +2176,8 @@ class ColorMatching(EnlightenPluginBase):
 
             wavelength_interp = np.arange(int(min(wavelength)), int(max(wavelength))+1, 1)
             spectral_interp = np.interp(wavelength_interp, wavelength,spectrum)
+
+            spectral_interp[ spectral_interp < 0] = 0
 
             spectral_data = {w: c for w, c in zip(wavelength_interp, spectral_interp)}
 
@@ -2180,16 +2191,25 @@ class ColorMatching(EnlightenPluginBase):
             xy = colour.XYZ_to_xy(XYZ)
             cct = colour.xy_to_CCT(xy)
 
-            XYZ_n = (XYZ/max(XYZ))
-            RGB_n = (RGB/max(RGB))*100
-            sRGB_n = (sRGB/max(sRGB))*255
+            if normalize_output:
+                XYZ = (XYZ/max(XYZ))*100
+                RGB = (RGB/max(RGB))
+                sRGB = (sRGB/max(sRGB))*255
 
             self.outputs = {
-                "XYZ": f"{XYZ_n[0]:.2f}, {XYZ_n[1]:.2f}, {XYZ_n[2]:.2f}",
-                "RGB": f"{RGB_n[0]:.2f}, {RGB_n[1]:.2f}, {RGB_n[2]:.2f}",
-                "sRGB": f"{sRGB_n[0]:.2f}, {sRGB_n[1]:.2f}, {sRGB_n[2]:.2f}",
-                "Color Temp": f"{cct:.1f} K"
+                "XYZ": f"{XYZ[0]:.2f},{XYZ[1]:.2f},{XYZ[2]:.2f}",
+                "RGB": f"{RGB[0]:.2f},{RGB[1]:.2f},{RGB[2]:.2f}",
+                "sRGB": f"{sRGB[0]:.2f},{sRGB[1]:.2f},{sRGB[2]:.2f}",
+                "Color Temp": f"{cct:.0f} K",
             }
+
+            save_metadata = {"XYZ": f"{XYZ[0]:.2f} {XYZ[1]:.2f} {XYZ[2]:.2f}",
+                             "RGB": f"{RGB[0]:.2f} {RGB[1]:.2f} {RGB[2]:.2f}",
+                             "sRGB": f"{sRGB[0]:.2f} {sRGB[1]:.2f} {sRGB[2]:.2f}",
+                             "Color Temp": f"{cct:.1f} K",
+                             }
+
+            self.metadata.update(save_metadata)
 
             if apply_calibration:
                 self.plot(x=wavelength_interp,
