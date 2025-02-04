@@ -2,6 +2,8 @@
 - 2024-??-?? 4.1.21
     - added counter to Analysis/Stats
     - PixelCalibration example data
+    - plugins
+        - Add save color values feature to color matching plugin 
 - 2025-01-20 4.1.20
     - Merged LibraryMatching into one graph
     - plugins
