@@ -17,7 +17,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>ENLIGHTEN™</string>
+   <string>ENLIGHTEN</string>
   </property>
   <property name="windowIcon">
    <iconset resource="enlighten_icons.qrc">
@@ -12595,7 +12595,7 @@ QComboBox QListView
                             </spacer>
                            </item>
                            <item>
-                            <widget class="QPushButton" name="pushButton_bleScan">
+                            <widget class="QPushButton" name="pushButton_show_ble_selector">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                                <horstretch>5</horstretch>

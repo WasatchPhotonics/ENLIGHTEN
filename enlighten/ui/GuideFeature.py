@@ -84,7 +84,7 @@ class GuideFeature:
                 log.debug(f"ignoring duplicate queued tip: {msg}")
                 return
 
-        tip = Tip(msg=f"💡 {msg}", persist=persist, token=token, period_sec=period_sec, link=link)
+        tip = Tip(msg=msg, persist=persist, token=token, period_sec=period_sec, link=link)
         log.debug(f"suggest: queued {msg}")
         self.queue.append(tip)
 

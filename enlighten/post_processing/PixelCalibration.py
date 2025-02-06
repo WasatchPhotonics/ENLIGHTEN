@@ -11,6 +11,8 @@ class PixelCalibration:
     Support any additional pixel calibrations we may want to create which for 
     whatever reason need an external file and can't be kept on the EEPROM.
 
+    @see assets/enlighten/example_data/pixel_calibration/WP-00929.json
+
     @todo persist enable in enlighten.ini
     """
 

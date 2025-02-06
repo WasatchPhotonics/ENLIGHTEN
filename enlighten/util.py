@@ -11,6 +11,7 @@ import re
 import os
 
 from collections import namedtuple
+from datetime import date
 from decimal import Decimal
 
 log = logging.getLogger(__name__)
@@ -115,6 +116,26 @@ def undent(s):
                 result += "\n"
             result += line
     return result
+
+################################################################################
+# Date/Time Helpers
+################################################################################
+
+def is_today(mon, day, year=None):
+    today = date.today()
+    year = year if year else today.year
+    then = date(year, mon, day)
+    return today == then
+    
+def get_bullet():
+    if   is_today(12, 25): return "🎄"
+    elif is_today(10, 31): return "🎃"
+    elif is_today( 3, 17): return "☘️"
+    elif is_today( 2, 14): return "❤️"
+    elif is_today(12, 31): return "🎉"
+    elif is_today(11, 27, 2025) or is_today(11, 26, 2026) or is_today(11, 25, 2027): return "🦃"
+    elif is_today( 3, 20, 2025) or is_today( 4,  5, 2026) or is_today( 3, 28, 2027): return "🐰"
+    else: return "🟢"
 
 ################################################################################
 # File Helpers
