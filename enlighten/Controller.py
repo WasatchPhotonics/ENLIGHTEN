@@ -255,6 +255,9 @@ class Controller:
             log.error("disconnect_device: no more devices")
             return False
 
+        if spec.device_id in self.other_device_ids:
+            self.other_device_ids.remove(spec.device_id)
+
         device_id = spec.device_id
 
         if device_id in self.other_device_ids:
@@ -1397,15 +1400,25 @@ class Controller:
 
         reading = acquired_reading.reading
 
-        # are we waiting on a SPECIFIC reading?
+        # are we waiting on a SPECIFIC Reading (or series of Readings)?
         if spec.app_state.take_one_request:
-            # is this that reading?
+            # is this that Reading?
             if reading.take_one_request:
                 if reading.take_one_request.request_id == spec.app_state.take_one_request.request_id:
                     log.debug(f"TakeOneRequest matched: {spec.app_state.take_one_request}")
                 else:
                     log.critical(f"TakeOneRequest mismatch: expected {spec.app_state.take_one_request} but received {reading.take_one_request}...clearing")
-                spec.app_state.take_one_request = None
+                
+                # is this part of a "TakeMany" Fast-Batch?
+                if reading.take_one_request.readings_target:
+                    # let this go through to Controller.process_reading, which 
+                    # can then send it to BatchCollection to do "whatever needs 
+                    # doing" with it (including clearing app_state when 
+                    # appropriate)
+                    log.debug("attempt_reading: NOT clearing app_state.take_one_request for TakeMany Fast-Batch Reading")
+                else:
+                    log.debug("attempt_reading: clearing app_state.take_one_request")
+                    spec.app_state.take_one_request = None
             else:
                 log.debug(f"TakeOneRequest missing: ignoring Reading without {spec.app_state.take_one_request}")
                 return
@@ -1971,6 +1984,9 @@ class Controller:
         # were we only taking one measurement?
         # log.debug("calling TakeOneFeature.process")
         self.take_one.process(pr)
+
+        # was this part of a TakeMany Fast-Batch series?
+        self.batch_collection.process(pr, spec)
 
         # update on-screen ASTM peaks
         if selected and self.page_nav.doing_raman():

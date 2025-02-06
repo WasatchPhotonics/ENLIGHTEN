@@ -273,11 +273,11 @@ class PluginController:
                     filename = os.path.basename(file)
                     package = os.path.basename(folder)
                     if filename.endswith('.py') and filename != "EnlightenPlugin.py" and not filename.startswith("_"):
-                        log.debug(f"find_all_plugins:   package {package}, filename {filename}, file {file}") # package Demo, filename BlockNullOdd.py
+                        # log.debug(f"find_all_plugins:   package {package}, filename {filename}, file {file}") # package Demo, filename BlockNullOdd.py
                         module_info = PluginModuleInfo(pathname=file, package=package, filename=filename, ctl=self.ctl)
                         full_module_name = module_info.full_module_name
                         if full_module_name not in module_infos:
-                            log.debug(f"find_all_plugins:     added module {full_module_name}")
+                            log.debug(f"    added module {full_module_name}")
                             module_infos[full_module_name] = module_info
                         else:
                             log.debug("    skipping duplicate module_name %s", full_module_name)
