@@ -5,6 +5,7 @@
     - added counter to Analysis/Stats
     - initial Analysis/Tail draft
     - PixelCalibration example data
+    - when disabling laser controls on low battery, disable laser as well
     - plugins
         - add save color values feature to RnD.ColorMatching plugin 
         - add Analysis.Tail plugin

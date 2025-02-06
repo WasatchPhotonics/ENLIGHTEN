@@ -533,6 +533,8 @@ class LaserControlFeature:
             self.clear_restriction("low battery")
         else:
             self.set_restriction("low battery")
+            log.debug("since battery is low, make sure laser is OFF")
+            self.set_laser_enable(False)
 
     def clear_restriction(self, reason):
         if reason in self.restrictions:
