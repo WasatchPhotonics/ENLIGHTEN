@@ -1,5 +1,7 @@
 # Version History
+
 - 2024-02-06 4.1.21
+    - [#511] support graphing of loaded spectra with only wavenumber axis
     - added counter to Analysis/Stats
     - initial Analysis/Tail draft
     - PixelCalibration example data
