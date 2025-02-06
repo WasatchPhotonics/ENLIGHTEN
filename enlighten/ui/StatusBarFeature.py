@@ -150,17 +150,17 @@ class StatusBarFeature:
             self.set("Max", f"{np.max(spectrum):.2f}")
             self.set("Mean", f"{np.average(spectrum):.2f}")
 
-            x_axis = self.ctl.generate_x_axis(cropped=pr.is_cropped())
-            if x_axis is None:
-                # encountered when debugging XL cloud comms
-                log.error(f"process_reading: can't compute area w/o x_axis") 
-            elif len(spectrum) != len(x_axis):
-                # can happen when EEPROM is in bad state, or we've set a DetectorROI etc
-                log.error(f"process_reading: can't compute area (spectrum {len(spectrum)} != x_axis {len(x_axis)})")
-            else:
+            try:
+                unit = self.ctl.graph.get_x_axis_unit()
+                if   unit == "nm": x_axis = pr.get_wavelengths()
+                elif unit == "cm": x_axis = pr.get_wavenumbers()
+                else:              x_axis = pr.get_pixel_axis()
+
                 # note that unit will vary depending on x-axis
-                area = 0 if x_axis is None else np.trapz(spectrum, x_axis)
+                area = np.trapz(spectrum, x_axis)
                 self.set("Area", f"{area:.3e}")
+            except:
+                log.error("can't compute area under the curve", exc_info=1)
 
     # ##########################################################################
     # callbacks

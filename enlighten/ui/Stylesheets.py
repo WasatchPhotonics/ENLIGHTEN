@@ -76,10 +76,8 @@ class Stylesheets:
         self.set_theme("dark" if flag else "light")
 
     def update_widgets(self):
-        log.debug("update_widgets: start ---------------------")
         for widget, style_name in self.widget_last_style.items():
             self.apply(widget, style_name)
-        log.debug("update_widgets: done ----------------------")
 
     ##
     # Load all the CSS stylesheets of the installed distribution into a dict, 

@@ -68,6 +68,7 @@ log = logging.getLogger(__name__)
 #
 # @note fair bit of Controller can probably be moved into here
 # @note seems save to deepcopy and pass to plugins
+# @note .curve is created in MultiSpec.add
 # @todo consider moving to enlighten.device
 class Spectrometer:
     

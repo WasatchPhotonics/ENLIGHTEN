@@ -13,16 +13,32 @@ from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 
 log = logging.getLogger(__name__)
 
-##
-# Creates an appropriate Qt GUI widget corresponding to a single input or output
-# EnlightenPluginField, and manages the data updates between the plugin field
-# and its GUI counterpart.
-# 
-# @note since this extends QWidget, we want to be careful creating attributes 
-#       with names like .name, .value, .config or .widget that could override 
-#       parent attributes
-# @todo add QtWidgets.ComboBox
 class PluginFieldWidget(QtWidgets.QWidget):
+    """
+    Creates an appropriate Qt GUI widget corresponding to a single input or output
+    EnlightenPluginField, and manages the data updates between the plugin field
+    and its GUI counterpart.
+    
+    @note since this extends QWidget, we want to be careful creating attributes 
+          with names like .name, .value, .config or .widget that could override 
+          parent attributes
+
+    It is important to understand what this class is. It may help to think of it
+    as QPluginField, because it does extend QWidget and is fundamentally a Qt GUI
+    object.
+
+    Every PluginFieldWidget (PFW) is a QWidget. It has a QHBoxLayout, whose parent
+    is this widget. The layout will typically hold two horizontal elements:
+
+    - a QLabel containing the user-visible name of the field (.label_widget)
+    - a QSpinBox, QCheckBox, QLineEdit, or other type of QWidget containing the
+      user-visible (and maybe user-editable) value of the field.
+
+    For "output" PFWs, the value field is also a QLabel.
+
+    For PFWs of type "button", the horizontal layout only contains a single
+    QPushButton, since the button is a self-labeling input.
+    """
 
     ## class attribute
     datatype_to_widgets = {

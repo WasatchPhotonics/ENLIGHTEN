@@ -55,6 +55,9 @@ class AcquiredReading():
         self.disconnect = disconnect
         self.progress = progress
 
+    def __repr__(self):
+        return f"AcquiredReading <disconnect {self.disconnect}, progress {self.progress}, reading {self.reading}>"
+
 class Controller:
     """
     Main application controller class for ENLIGHTEN.
@@ -223,8 +226,9 @@ class Controller:
 
         self.page_nav.post_init()
 
+        self.other_device_ids = set()
+
         self.header("Controller ctor done")
-        self.other_devices = []
 
         # init is done so display the GUI and destory the splash screen
         if self.window_state == "minimized":
@@ -245,17 +249,20 @@ class Controller:
         self.configure_control_palette()
 
     def disconnect_device(self, spec=None, closing=False):
-        if spec in self.other_devices:
-            self.other_devices.remove(spec)
         if spec is None:
             spec = self.current_spectrometer()
         if spec is None:
             log.error("disconnect_device: no more devices")
             return False
 
+        if spec.device_id in self.other_device_ids:
+            self.other_device_ids.remove(spec.device_id)
+
         device_id = spec.device_id
-        if spec.device.is_ble:
-            self.reading_progress_bar.hide()
+
+        if device_id in self.other_device_ids:
+            self.other_device_ids.remove(device_id)
+
         self.marquee.info("disconnecting %s" % spec.label)
         self.multispec.set_disconnecting(device_id, True)
 
@@ -315,7 +322,6 @@ class Controller:
         for feature in [ self.batch_collection,
                          self.status_indicators,
                          self.plugin_controller,
-                         self.ble_manager,
                          self.logging_feature ]:
             feature.stop()
 
@@ -439,7 +445,7 @@ class Controller:
         self.bus.update()
 
         # refresh the list of visible spectrometers on the BLE list
-        self.ble_manager.check_complete_scans()
+        self.ble_manager.poll_discovered_device_queue()
 
         self.multispec.check_ejected_unplugged(self.bus.device_ids)
 
@@ -458,7 +464,7 @@ class Controller:
         # down the connection process).
         self.bus_timer.start(self.BUS_TIMER_SLEEP_MS)
 
-    def connect_new(self, other_device=None):
+    def connect_new(self, other_device_id=None):
         """
         If there are any visible spectrometers that ENLIGHTEN has not yet
         connected to, try to connect to them.  Only connect one device per pass;
@@ -468,13 +474,14 @@ class Controller:
         on the bus or not, and whether any or all of them have already connected
         or not.
         
-        @param other_device: can be a BLEDevice from BLEManager
+        @param other_device_id: can point to a BLEDevice from BLEManager, 
+               TCPDevice from Network.WISP plugin, etc
         """
         # do we see any spectrometers on the bus? (WasatchBus will pre-filter to
         # only valid spectrometer devices)
-        if other_device is not None and other_device not in self.other_devices:
-            self.other_devices.append(other_device)
-        self.bus.device_ids.extend(self.other_devices)
+        if other_device_id is not None and other_device_id not in self.other_device_ids:
+            self.other_device_ids.append(other_device_id)
+        self.bus.device_ids.extend(self.other_device_ids)
 
         # MZ/ED: If DeviceFinderUSB.USE_MONITORING is True, I had to disable this call to remove_all:
         if self.bus.is_empty() and self.multispec.count() > 0 and not DeviceFinderUSB.USE_MONITORING:
@@ -548,8 +555,8 @@ class Controller:
         ####################################################################
         
         self.bus.device_ids.remove(new_device_id)
-        if new_device_id in self.other_devices:
-            self.other_devices.remove(new_device_id)
+        if new_device_id in self.other_device_ids:
+            self.other_device_ids.remove(new_device_id)
 
         # attempt to connect the device
         if new_device_id.is_andor():
@@ -557,25 +564,32 @@ class Controller:
         else:
             self.marquee.info(f"connecting to {new_device_id}", persist=True)
         
-        log.debug("connect_new: instantiating WasatchDeviceWrapper with %s", new_device_id)
-        device = WasatchDeviceWrapper(
-            device_id = new_device_id,
-            log_level = self.log_level)
+        log.debug(f"connect_new: instantiating WasatchDeviceWrapper with {new_device_id}")
+        device = WasatchDeviceWrapper(device_id=new_device_id, log_level=self.log_level)
 
         # flag that an attempt to connect to the device is ongoing
-        self.header("connect_new: setting in-process: %s" % new_device_id)
+        self.header(f"connect_new: setting in-process {new_device_id}")
         self.multispec.set_in_process(new_device_id, device)
 
         log.debug("connect_new: calling WasatchDeviceWrapper.connect()")
         if not device.connect():
-            log.critical("connect_new: can't connect to device_id, giving up: %s", new_device_id)
+            log.critical(f"connect_new: giving up, can't connect to {new_device_id}")
             self.multispec.set_gave_up(new_device_id)
             return
 
-        ####################################################################
+        ########################################################################
         # Yay, a new spectrometer has connected!
-        # Continue on and have the bus poll for settings
-        ####################################################################
+        ########################################################################
+
+        # The new spectrometer is connected at the bus level, but is not yet
+        # displaying anything in ENLIGHTEN. We need to load the new device's
+        # EEPROM, and take a throwaway spectrum to make everything is copacetic.
+        #
+        # That will be done by the new WrapperWorker (in its own thread). When
+        # it is done, check_ready_initialize will detect the device is ready
+        # via WasatchDeviceWrapper.poll_settings, and will then call 
+        # Controller.initialize_new_device to make the new spectrometer "current"
+        # in ENLIGHTEN.
 
         return True
 
@@ -586,7 +600,7 @@ class Controller:
         """
         in_process_specs = list(self.multispec.in_process.items()) 
         for device_id, device in in_process_specs:
-            if device is None or type(device) is bool:
+            if device is None or isinstance(device, bool):
                 log.debug("check_ready_initialize: ignoring {device_id} ({device})")
                 continue
 
@@ -614,6 +628,7 @@ class Controller:
                 # didn't get settings so check for timeout
                 if device.connect_start_time + datetime.timedelta(seconds=self.spec_timeout) < datetime.datetime.now():
                     log.error(f"{device_id} settings timed out, giving up on the spec")
+                    self.marquee.error(f"Failed to connect to {device_id}")
                     disconnect_device = True
 
             if disconnect_device:
@@ -1336,22 +1351,22 @@ class Controller:
             return
 
         if acquired_reading is None or acquired_reading.reading is None:
-            log.debug("attempt_reading(%s): no reading available", device_id)
+            log.debug(f"attempt_reading({device_id}): no reading available")
             if self.vcr_controls.paused or self.batch_collection.running or not spec.is_acquisition_timeout():
                 return
 
             if self.external_trigger.is_enabled():
-                log.debug("attempt_reading(%s): ignoring timeout while externally triggered")
+                log.debug(f"attempt_reading({device_id}): ignoring timeout while externally triggered")
                 return
 
             if spec.settings.state.area_scan_enabled:
-                log.debug("attempt_reading(%s): ignoring timeout in area scan")
+                log.debug(f"attempt_reading({device_id}): ignoring timeout in area scan")
                 return
 
             now = datetime.datetime.now()
             if spec.settings.state.ignore_timeouts_until is not None and \
                     spec.settings.state.ignore_timeouts_until > now:
-                log.debug("attempt_reading(%s): temporarily ignoring timeouts")
+                log.debug(f"attempt_reading({device_id}): temporarily ignoring timeouts")
                 return
             spec.settings.state.ignore_timeouts_until = None
 
@@ -1385,15 +1400,25 @@ class Controller:
 
         reading = acquired_reading.reading
 
-        # are we waiting on a SPECIFIC reading?
+        # are we waiting on a SPECIFIC Reading (or series of Readings)?
         if spec.app_state.take_one_request:
-            # is this that reading?
+            # is this that Reading?
             if reading.take_one_request:
                 if reading.take_one_request.request_id == spec.app_state.take_one_request.request_id:
                     log.debug(f"TakeOneRequest matched: {spec.app_state.take_one_request}")
                 else:
                     log.critical(f"TakeOneRequest mismatch: expected {spec.app_state.take_one_request} but received {reading.take_one_request}...clearing")
-                spec.app_state.take_one_request = None
+                
+                # is this part of a "TakeMany" Fast-Batch?
+                if reading.take_one_request.readings_target:
+                    # let this go through to Controller.process_reading, which 
+                    # can then send it to BatchCollection to do "whatever needs 
+                    # doing" with it (including clearing app_state when 
+                    # appropriate)
+                    log.debug("attempt_reading: NOT clearing app_state.take_one_request for TakeMany Fast-Batch Reading")
+                else:
+                    log.debug("attempt_reading: clearing app_state.take_one_request")
+                    spec.app_state.take_one_request = None
             else:
                 log.debug(f"TakeOneRequest missing: ignoring Reading without {spec.app_state.take_one_request}")
                 return
@@ -1420,11 +1445,6 @@ class Controller:
         spec.app_state.missed_reading_count = 0
         spec.app_state.spec_timeout_prompt_shown = False
         spec.app_state.received_reading_at_current_integration_time = True
-
-        if spec.device.is_ble:
-            self.reading_progress_bar.set(acquired_reading.progress)
-            if acquired_reading.progress < 100:
-                return
 
         # @todo need to update DetectorRegions so this will pass (use total_pixels)
 
@@ -1497,13 +1517,14 @@ class Controller:
         if spec is None or device is None:
             # silently ignore...this should be rare, and likely indicates a delay
             # during initial connection or tear-down
-            log.error("acquiring reading from missing device?")
+            log.error("acquire_reading: acquiring reading from missing device?")
             return 
 
         device_id = spec.device_id
 
         try:
             spectrometer_response = device.acquire_data()
+
             if spectrometer_response.poison_pill:
                 log.error(f"acquire_reading: received poison-pill from spectrometer: {spectrometer_response}") # disposition AFTER displaying user message
 
@@ -1513,7 +1534,6 @@ class Controller:
                 # We received an error from the device.  Don't do anything about it immediately;
                 # don't disconnect for instance.  It may or may not be a poison-pill...we're not
                 # even checking yet, because we want to let the user decide what to do.
-                log.error(f"response from spec was {spectrometer_response}")
 
                 self.seen_errors[spec][spectrometer_response.error_msg] += 1
                 error_count = self.seen_errors[spec][spectrometer_response.error_msg]
@@ -1548,7 +1568,7 @@ class Controller:
             if spectrometer_response.poison_pill:
                 # the user hasn't [yet] decided to disconnect, but we can't really "do anything" with data that's
                 # coming from a spectrometer throwing poison-pills, so for now treat it as a keepalive
-                log.debug("received poison-pill from spectrometer, but the user has not [yet] opted to disconnect")
+                log.debug("acquire_reading: received poison-pill from spectrometer, but the user has not [yet] opted to disconnect")
                 return 
 
             if spectrometer_response.keep_alive:
@@ -1965,6 +1985,9 @@ class Controller:
         # log.debug("calling TakeOneFeature.process")
         self.take_one.process(pr)
 
+        # was this part of a TakeMany Fast-Batch series?
+        self.batch_collection.process(pr, spec)
+
         # update on-screen ASTM peaks
         if selected and self.page_nav.doing_raman():
             self.raman_shift_correction.update()
@@ -2043,6 +2066,9 @@ class Controller:
         """
         cfu = self.form.ui
         spec = self.current_spectrometer()
+        if spec is None:
+            log.error("set_from_ini_file: spectrometer has disconnected")
+            return
 
         if not spec.settings.eeprom.is_valid_serial_number():
             log.error(f"invalid serial number: {spec.settings.eeprom.serial_number}")

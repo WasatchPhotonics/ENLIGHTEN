@@ -19,6 +19,7 @@ class Stats(EnlightenPluginBase):
 
     def get_configuration(self):
         self.name = "Statistics"
+        self.field(name="Count", datatype=int, direction="output")
         self.field(name="Reset", datatype="button", callback=self.reset)
         self.reset()
 
@@ -38,6 +39,7 @@ class Stats(EnlightenPluginBase):
         self.plot(title="Stats.Min", y=self.metrics.min, x=x_values)
         self.plot(title="Stats.Max", y=self.metrics.max, x=x_values)
         self.plot(title="Stats.Avg", y=self.metrics.avg, x=x_values)
+        self.outputs["Count"] = self.metrics.cnt
 
     def reset(self):
         self.metrics = None
@@ -51,10 +53,10 @@ class Metrics:
         self.sum = np.array(spectrum, dtype=np.float64) 
 
     def update(self, spectrum):
-        # rollover so sum doesn't exceed max_double
+        # rollover so sum can't exceed sys.float_info.max
         if self.cnt == 1e15:
-            self.cnt /= 10
-            self.sum /= 10
+            self.cnt = int(self.cnt / 10)
+            self.sum /= 10.0
         self.cnt += 1 
         self.min = np.minimum(self.min, spectrum)
         self.max = np.maximum(self.max, spectrum)

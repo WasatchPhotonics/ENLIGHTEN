@@ -1,7 +1,24 @@
 # Version History
 
-- 2024-??-?? 4.1.20
+- 2024-02-06 4.1.21
     - [#511] support graphing of loaded spectra with only wavenumber axis
+    - added counter to Analysis/Stats
+    - initial Analysis/Tail draft
+    - PixelCalibration example data
+    - plugins
+        - add save color values feature to RnD.ColorMatching plugin 
+        - add Analysis.Tail plugin
+- 2025-01-20 4.1.20
+    - Merged LibraryMatching into one graph
+    - plugins
+        - Add color matching plugin
+    - Win11 build
+        - merged in Samie's spiffy new scripts/win11/bootstrap.py
+        - temporarily deprecated ability to save in SPC format (will chase down later)
+        - added scripts/make_windows_installer.bat
+    - BLE
+        - refactored BLEManager
+        - refactored wasatch.BLEDevice and wasatch.DeviceFinderBLE
 - 2024-12-06 4.1.19
     - [#506] added robustness to Save Location "change, then cancel"
     - [#509] fix "Load Dark/Reference"
