@@ -1,10 +1,11 @@
 # Version History
-- 2024-??-?? 4.1.21
+- 2024-02-06 4.1.21
     - added counter to Analysis/Stats
     - initial Analysis/Tail draft
     - PixelCalibration example data
     - plugins
-        - Add save color values feature to color matching plugin 
+        - add save color values feature to RnD.ColorMatching plugin 
+        - add Analysis.Tail plugin
 - 2025-01-20 4.1.20
     - Merged LibraryMatching into one graph
     - plugins
