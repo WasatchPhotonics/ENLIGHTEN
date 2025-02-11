@@ -2163,6 +2163,10 @@ class ColorMatching(EnlightenPluginBase):
             wavelength = np.array(request.processed_reading.get_wavelengths(), dtype=np.float64)
             spectrum = np.array(request.processed_reading.get_processed(), dtype=np.float64)
 
+            if min(wavelength) >= 780:
+                self.ctl.marquee.error(f"{self.name} requires wavelength range starting below 780nm")
+                return
+
             colorspace_alias = request.fields["Color Model"]
             colorspace_model = COLOR_MODEL_ALIASES[colorspace_alias]
             apply_calibration = request.fields["Apply Calibration"]
