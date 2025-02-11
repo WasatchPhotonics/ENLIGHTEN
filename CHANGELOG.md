@@ -1,6 +1,7 @@
 # Version History
 
 - 2024-02-11 4.1.22
+    - updated Wasatch.PY to 2.2.17 to resolve broken Batch Collection and TakeOne buttons
     - plugins
         - RnD.ColorMatching: more robust handling of missing calibration
         - support error Marquee messages
