@@ -1,4 +1,5 @@
 import webbrowser
+import datetime
 
 from enlighten import common
 
@@ -95,11 +96,13 @@ class Marquee:
         self.label.linkActivated.connect(self.link_activated_callback)
 
         self.extra_ms = 0
+        self.next_clear = None
         
         # could probably use one, keeping separate for now
         self.clear_timer = QtCore.QTimer()
         self.clear_timer.setSingleShot(True)
         self.clear_timer.timeout.connect(self.tick_clear)
+        self.clear_timer.start(1000)
 
     def stop(self):
         self.toast_timer.stop()
@@ -127,8 +130,6 @@ class Marquee:
             return
 
         is_error = "error" in msg.lower() or (benign is not None and not benign)
-
-        self.reset_timers()
 
         self.persist = persist
         self.last_token = token
@@ -181,25 +182,18 @@ class Marquee:
         self.frame.setAutoFillBackground(True)
         self.showing_something = False
 
-    def reset_timers(self):
-        """ Deliberately does not interact with Toast """
-        self.clear_timer.stop()
-
     def schedule_clear(self, immediate=False):
-        self.reset_timers()
-
         if immediate:
             self.hide()
+            self.next_clear = None
         elif not self.persist:
             when_ms = self.DRAWER_DURATION_MS + self.extra_ms
-            self.clear_timer.start(when_ms)
+            self.next_clear = datetime.datetime.now() + datetime.timedelta(milliseconds=when_ms)
 
     def close_callback(self):
         self.schedule_clear(immediate=True)
 
     def show_immediate(self, benign=None):
-        self.clear_timer.stop()
-
         # we're not currently using this, and it messes with themes at the moment
         if benign is not None:
             self.ctl.stylesheets.set_benign(self.inner, benign)
@@ -210,7 +204,12 @@ class Marquee:
         self.ctl.app.processEvents()
 
     def tick_clear(self):
-        self.hide()
+        if self.next_clear is not None:
+            now = datetime.datetime.now()
+            if now >= self.next_clear:
+                self.hide()
+                self.next_clear = None
+        self.clear_timer.start(200)
 
     def link_activated_callback(self, link):
         log.debug("activated link: [%s]", link)

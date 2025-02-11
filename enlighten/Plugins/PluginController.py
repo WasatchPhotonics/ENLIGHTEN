@@ -1029,7 +1029,10 @@ class PluginController:
             ####################################################################
 
             if response.message is not None:
-                self.ctl.marquee.info(response.message, period_sec=5)
+                if "error" in response.message.lower():
+                    self.ctl.marquee.error(response.message, period_sec=5)
+                else:
+                    self.ctl.marquee.info(response.message, period_sec=5)
 
             ####################################################################
             # handle outputs                                                   #

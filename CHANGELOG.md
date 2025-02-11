@@ -1,5 +1,10 @@
 # Version History
 
+- 2024-02-11 4.1.22
+    - plugins
+        - RnD.ColorMatching: more robust handling of missing calibration
+        - support error Marquee messages
+    - Marquee: re-use single QTimer, to reduce start/stop events
 - 2024-02-06 4.1.21
     - [#511] support graphing of loaded spectra with only wavenumber axis
     - added counter to Analysis/Stats
