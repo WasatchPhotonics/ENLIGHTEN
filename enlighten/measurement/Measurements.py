@@ -737,7 +737,6 @@ class Measurements:
 
         # roll-in any plugin metadata appearing in any measurement
         for m in export_measurements:
-            m.processed_reading.dump()
             if m.processed_reading.plugin_metadata is not None:
                 for k in sorted(m.processed_reading.plugin_metadata.keys()):
                     if k not in fields:
