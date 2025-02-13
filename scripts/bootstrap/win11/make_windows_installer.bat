@@ -77,6 +77,7 @@ pyinstaller ^
     --hidden-import="scipy._lib.array_api_compat.numpy.fft" ^
     --hidden-import="scipy.special._special_ufuncs" ^
     --hidden-import="scipy.special.cython_special" ^
+    --hidden-import="colour" ^
     --hidden-import="tensorflow" ^
     --hidden-import="tensorflow.python.data.ops.shuffle_op" ^
     --add-data="support_files/libusb_drivers/amd64/libusb0.dll:." ^
