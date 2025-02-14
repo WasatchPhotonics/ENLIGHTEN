@@ -1,5 +1,9 @@
 # Version History
 
+- ????-??-?? x.x.x
+    - docs
+        - Update install instructions for RPi 4 and PySide6 
+
 - 2024-02-11 4.1.22
     - updated Wasatch.PY to 2.2.17 to resolve broken Batch Collection and TakeOne buttons
     - plugins

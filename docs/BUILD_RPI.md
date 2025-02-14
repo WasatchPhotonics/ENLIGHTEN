@@ -8,7 +8,80 @@ the build process.
 
 # Packaged dependencies
 
-PySide6 doesn't seem to have made it to RPi yet, so reverting to PySide2 
+## Raspberry Pi 4 / Debian Bookworm 64 bit
+
+PySide6 is available as a wheel on 64 bit Bookworm, simplifying installation instructions.
+
+Clone ENLIGHTEN and Wasatch.PY into parallel directories.
+
+    git clone https://github.com/WasatchPhotonics/ENLIGHTEN.git
+    git clone https://github.com/WasatchPhotonics/Wasatch.PY.git
+
+Create a virtual environment including system packages
+
+    python -m venv venv --system-site-packages
+
+Activate the virtual environment
+
+    . venv/bin/activate
+
+Install the following dependencies listed in the requirements.txt (note: PyQt5 is included in system packages
+so isn't included):
+
+    numpy
+    tensorflow==2.13.1
+    PySide6
+    pygtail 
+    pyusb 
+    pefile 
+    pyinstaller==6.10.0
+    pywavelets 
+    superman 
+    pyqtgraph 
+    libusb 
+    seabreeze==2.7.0
+    boto3 
+    bleak 
+    pyftdi 
+    adafruit-blinka
+    SPyC_Writer
+    crcmod
+    pandas
+    pexpect
+    pip
+    psutil
+    scipy
+    xlwt
+    qimage2ndarray
+    2to3
+    matplotlib
+    pyserial
+    colour-science
+
+If you run into any issues while installing a dependency, use specify the version referenced in 
+in the `Installed PIP packages` appendix below.
+
+Build the GUI by calling: 
+    
+    . scripts/rebuild_resources.sh
+
+Add the following to your path:
+
+    export PYTHONPATH=".:plugins:../Wasatch.PY:enlighten/assets/uic_qrc"
+
+Copy the `10-wasatch.rules` rules file to set appropriate permissions for usb access 
+(you will need to restart or reload after this):
+
+    sudo cp -vf Wasatch.PY/udev/10-wasatch.rules /etc/udev/rules.d
+
+Launch ENLIGHTEN:
+
+    python -u scripts/Enlighten.py
+
+
+## PySide2 Instructions
+
+PySide6 isn't available on all RPi distros, so you may need to use PySide2 
 [instructions](https://www.raspberrypi.org/forums/viewtopic.php?p=1485265&sid=eb447c56004ea941be4aaefa2f837108#p1485265).
 
 These are all the packages I installed via apt:
