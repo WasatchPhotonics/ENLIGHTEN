@@ -4,6 +4,7 @@ import platform
 import argparse
 import logging
 import signal
+import psutil
 import time
 import sys
 import os
@@ -124,6 +125,18 @@ class EnlightenApplication:
         # now that we've configured the logger, redirect stdout to our logger
         # (so we can use Tensorflow without a console window)
         sys.stdout = common.FakeOutputHandle("FakeStdout")
+
+        if "windows" in platform.platform().lower():
+            enlightens = []
+            for process in psutil.process_iter(['pid', 'name']):
+                proc_pid = process.info['pid']
+                proc_name = process.info['name']
+                if "enlighten.exe" in proc_name.lower():
+                    enlightens.append(f"pid {proc_pid} {proc_name}")
+            if len(enlightens) > 1:
+                log.critical(f"too many ENLIGHTENs, exiting: {enlightens}")
+                common.msgbox("Too many ENLIGHTEN™s detected, exiting", title="ENLIGHTEN™ Tribble Detector", detail="\n".join(enlightens))
+                return 1
 
         # This violates convention but Controller has so many imports that it 
         # takes a while to import. We're choosing to import it here, AFTER
