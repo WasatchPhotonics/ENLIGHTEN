@@ -1,5 +1,8 @@
 # Version History
 
+- 2024-??-?? 4.1.23
+    - update plugins.Analysis.Stats to allow user to dynamically change whether 
+      to process externally loaded spectra
 - 2024-02-11 4.1.22
     - updated Wasatch.PY to 2.2.17 to resolve broken Batch Collection and TakeOne buttons
     - plugins
