@@ -40,26 +40,14 @@ class PeakFinding(EnlightenPluginBase):
         wavenumbers = pr.get_wavenumbers()
         pixels      = pr.get_pixel_axis()
 
-        width      = request.fields["Width"]
-        height     = request.fields["Height"]
-        distance   = request.fields["Distance"]
-        threshold  = request.fields["Threshold"]
-        prominence = request.fields["Prominence"]
-
-        if width      < 1: width = None
-        if height     < 1: height = None
-        if distance   < 1: distance = None
-        if threshold  < 1: threshold = None
-        if prominence < 1: prominence = None
-
         # find x-coordinates of peaks in pixel space 
         (peak_x, props) = scipy.signal.find_peaks(
             processed, 
-            width      = width,
-            height     = height,
-            distance   = distance,
-            threshold  = threshold,
-            prominence = prominence)
+            width      = request.fields["Width"     ] if request.fields["Width"     ] else None,
+            height     = request.fields["Height"    ] if request.fields["Height"    ] else None,
+            distance   = request.fields["Distance"  ] if request.fields["Distance"  ] else None,
+            threshold  = request.fields["Threshold" ] if request.fields["Threshold" ] else None,
+            prominence = request.fields["Prominence"] if request.fields["Prominence"] else None)
         log.debug(f"find_peaks -> peak_x {peak_x}, props {props}")
 
         peak_y = [ processed[x] for x in peak_x ]
