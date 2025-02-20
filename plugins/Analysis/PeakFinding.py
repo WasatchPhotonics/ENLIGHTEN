@@ -20,7 +20,7 @@ class PeakFinding(EnlightenPluginBase):
         self.field(name="Height",     direction="input",  datatype=int, initial=  0, maximum=50000, minimum=0, step=500, tooltip="scipy.signal.find_peaks.height: Required height of peaks. (<1 to disable)")
         self.field(name="Distance",   direction="input",  datatype=int, initial=  0, maximum=  200, minimum=0, step= 10, tooltip="scipy.signal.find_peaks.distance: Required minimal horizontal distance in samples (pixels) between neighbouring peaks. Smaller peaks are removed first until the condition is fulfilled for all remaining peaks. (<1 to disable)")
         self.field(name="Threshold",  direction="input",  datatype=int, initial=  0, maximum=30000, minimum=0, step=500, tooltip="scipy.signal.find_peaks.threshold: Required threshold of peaks, the vertical distance to its neighboring samples. (<1 to disable)")
-        self.field(name="Prominence", direction="input",  datatype=int, initial=  0, maximum= 5000, minimum=0, step=100, tooltip="scipy.signal.find_peaks.prominence: Required prominence of peaks. (<1 to disable)")
+        self.field(name="Prominence", direction="input",  datatype=int, initial=200, maximum= 5000, minimum=0, step=100, tooltip="scipy.signal.find_peaks.prominence: Required prominence of peaks. (<1 to disable)")
 
         self.field(name="Peak Count", direction="output", datatype=int)
         self.field(name="Peak Table", direction="output", datatype="pandas")

@@ -12,6 +12,23 @@ import logging
 
 log = logging.getLogger(__name__)
 
+class Message:
+    def __init__(self, msg, persist=False, token=None, benign=None, immediate=False, extra_ms=0, period_sec=None, link=None):
+        self.msg = msg
+        self.persist = persist # leave message on-screen until explicitly cleared or replaced
+        self.token = token
+        self.benign = benign
+        self.immediate = immediate
+        self.extra_ms = extra_ms
+        self.period_sec = period_sec
+        self.link = link
+
+    def is_error(self):
+        return self.benign == False or "error" in self.msg.lower()
+
+    def __repr__(self):
+        return f"Marquee.Message: persist {self.persist}, token {self.token}, benign {self.benign}, immediate {self.immediate}, extra_ms {self.extra_ms}, period_sec {self.period_sec}, link {self.link}, msg {self.msg}"
+
 class Marquee:
     """
     Encapsulate access to the "message display area" visible along the top of the 
@@ -20,8 +37,6 @@ class Marquee:
     Messages are normally shown for 3sec and then removed.  If 'persist' is set, 
     message will remain until overwritten.
     
-    Also provides a button-less "toast" notification that auto-fades over 2sec.
-
     This class is more complicated than it needs to be for two reasons:
 
     1. The Marquee used to be animated, with gradual slide-out drawers and such.
@@ -41,11 +56,7 @@ class Marquee:
     """
     
     ORIG_HEIGHT = 36
-
     DRAWER_DURATION_MS = 3000
-    TOAST_DURATION_MS  = 3000
-    TOAST_FADE_STEP_MS =   75
-    TOAST_FADE_STEP_OPACITY_PERCENT = 0.05  # fade x% of original opacity each step
 
     def __init__(self, ctl):
         self.ctl = ctl
@@ -64,22 +75,7 @@ class Marquee:
 
         cfu.pushButton_marquee_close.clicked.connect(self.close_callback)
 
-        ########################################################################
-        # for pop-ups
-        ########################################################################
-
-        self.toast_timer = QtCore.QTimer()
-        self.toast_timer.setSingleShot(True)
-        self.toast_timer.timeout.connect(self.fade_toast)
-        self.toast_dialog = None
-        self.toast_opacity = 1.0
-
-        ########################################################################
-        # for message drawer
-        ########################################################################
-
-        # leave message on-screen until explicitly cleared or replaced
-        self.persist = False
+        self.current_message = None
 
         # allows "message types / sources" to be associated, for instance so the
         # message "Tip: enable baseline correction" with token "enable_baseline_correction"
@@ -88,29 +84,21 @@ class Marquee:
         # the currently-displayed message has that tag
         self.last_token = None
 
-        self.link = None
-        self.showing_something = False
-
         # Shouldn't need this, but getting around a "ShellExecute error 5"
         self.label.setOpenExternalLinks(False)
         self.label.linkActivated.connect(self.link_activated_callback)
 
-        self.extra_ms = 0
-        self.next_clear = None
+        self.next_clear_timestamp = None
+        self.next_message = None
         
         # could probably use one, keeping separate for now
-        self.clear_timer = QtCore.QTimer()
-        self.clear_timer.setSingleShot(True)
-        self.clear_timer.timeout.connect(self.tick_clear)
-        self.clear_timer.start(1000)
+        self.timer = QtCore.QTimer()
+        self.timer.setSingleShot(True)
+        self.timer.timeout.connect(self.tick)
+        self.timer.start(1000)
 
     def stop(self):
-        self.toast_timer.stop()
-        self.clear_timer.stop()
-
-    # ##########################################################################
-    # Message Drawer
-    # ##########################################################################
+        self.timer.stop()
 
     ## 
     # display an info message to the user
@@ -129,28 +117,11 @@ class Marquee:
         if msg is None:
             return
 
-        is_error = "error" in msg.lower() or (benign is not None and not benign)
-
-        self.persist = persist
-        self.last_token = token
-        self.extra_ms = extra_ms
-        self.link = link
-
-        if period_sec is not None and period_sec * 1000 > self.DRAWER_DURATION_MS:
-            self.extra_ms = period_sec * 1000 - self.DRAWER_DURATION_MS
-
-        if is_error:
-            log.error(msg)
-        else:
-            log.info(msg)
-
-        self.label.setText(msg)
-        self.show()
-
-        if is_error:
-            self.show_immediate(benign=False)
-        else:
-            self.show_immediate(benign) # allow None to pass-through
+        if benign and self.showing_error():
+            log.info(f"info: hiding due to error: {msg}")
+            return
+            
+        self.next_message = Message(msg, persist=persist, token=token, benign=benign, immediate=immediate, extra_ms=extra_ms, period_sec=period_sec, link=link)
 
     def error(self, msg, persist=False, token=None, benign=False, immediate=False, extra_ms=0, period_sec=None, link=None):
         return self.info(msg        = msg, 
@@ -162,95 +133,86 @@ class Marquee:
                          period_sec = period_sec, 
                          link       = link)
 
-    def clear(self, token=None, force=False):
-        if force or not self.persist or (token and token == self.last_token):
-            self.schedule_clear(immediate=True)
+    def showing_something(self):
+        return self.current_message is not None
 
-    def show(self):
-        op = QtWidgets.QGraphicsOpacityEffect(self.frame)
-        op.setOpacity(1)
-        self.frame.setGraphicsEffect(op)
-        self.frame.setAutoFillBackground(True)
-        self.showing_something = True
+    def showing_error(self):
+        if self.current_message:
+            return not self.current_message.benign
+            
+    def persist(self): 
+        if self.current_message: 
+            return self.current_message.persist
+
+    def last_token(self): 
+        if self.current_message: 
+            return self.current_message.token
+
+    def extra_ms(self): 
+        ms = 0
+        if self.current_message: 
+            ms = self.current_message.extra_ms
+            if self.current_message.period_sec is not None:
+                if self.current_message.period_sec * 1000 > self.DRAWER_DURATION_MS:
+                    ms = self.current_message.period_sec * 1000 - self.DRAWER_DURATION_MS
+        return ms
+
+    def link(self):
+        if self.current_message:
+            return self.current_message.link
+
+    def clear(self, token=None, force=False):
+        if force or not self.persist() or (token and token == self.last_token()):
+            self.schedule_clear(immediate=True)
 
     def hide(self):
         self.label.clear()
+        self.current_message = None
         
         op = QtWidgets.QGraphicsOpacityEffect(self.frame)
         op.setOpacity(0)
         self.frame.setGraphicsEffect(op)
         self.frame.setAutoFillBackground(True)
-        self.showing_something = False
 
     def schedule_clear(self, immediate=False):
         if immediate:
             self.hide()
-            self.next_clear = None
-        elif not self.persist:
-            when_ms = self.DRAWER_DURATION_MS + self.extra_ms
-            self.next_clear = datetime.datetime.now() + datetime.timedelta(milliseconds=when_ms)
+            self.next_clear_timestamp = None
+        elif not self.persist():
+            when_ms = self.DRAWER_DURATION_MS + self.extra_ms()
+            self.next_clear_timestamp = datetime.datetime.now() + datetime.timedelta(milliseconds=when_ms)
 
     def close_callback(self):
         self.schedule_clear(immediate=True)
 
-    def show_immediate(self, benign=None):
-        # we're not currently using this, and it messes with themes at the moment
-        if benign is not None:
-            self.ctl.stylesheets.set_benign(self.inner, benign)
-        else:
-            self.ctl.stylesheets.apply(self.inner, self.default_css, raw=True)
+    def tick(self):
+        next_ = self.next_message
+        if next_:
+            self.next_message = None
+            self.current_message = next_
+            self.label.setText(next_.msg)
 
-        self.schedule_clear()
-        self.ctl.app.processEvents()
+            op = QtWidgets.QGraphicsOpacityEffect(self.frame)
+            op.setOpacity(1)
+            self.frame.setGraphicsEffect(op)
+            self.frame.setAutoFillBackground(True)
 
-    def tick_clear(self):
-        if self.next_clear is not None:
+            if next_.is_error():
+                self.ctl.stylesheets.set_benign(self.inner, False)
+            else:
+                self.ctl.stylesheets.apply(self.inner, self.default_css, raw=True)
+
+            self.schedule_clear()
+
+        elif self.next_clear_timestamp:
             now = datetime.datetime.now()
-            if now >= self.next_clear:
+            if now >= self.next_clear_timestamp:
                 self.hide()
-                self.next_clear = None
-        self.clear_timer.start(200)
+                self.next_clear_timestamp = None
+
+        # tick Marquee at 10Hz
+        self.timer.start(100)
 
     def link_activated_callback(self, link):
-        log.debug("activated link: [%s]", link)
+        log.info(f"activated link: {link}")
         webbrowser.open(link)
-
-    # ##########################################################################
-    # Pop-up Toasts (unrelated to message drawer, consider separate class)
-    # ##########################################################################
-
-    ##
-    # Show a pop-up (non-modal) dialog box which auto-fades and closes (but can
-    # be immediately dismissed by the user)
-    #
-    # @public
-    def toast(self, msg, persist=False, error=False):
-        log.info("toast: %s", msg)
-        dialog = QtWidgets.QMessageBox(parent=self.ctl.form)
-        dialog.setIcon(QtWidgets.QMessageBox.Critical if error else QtWidgets.QMessageBox.Information)
-        dialog.setWindowTitle("Notification")
-        dialog.setText(msg)
-        if not (persist or error):
-            self.toast_dialog = dialog
-            self.toast_timer.start(self.TOAST_DURATION_MS)
-            self.toast_opacity = 1.0
-        dialog.exec() 
-
-    ## 
-    # Recursively calls itself until opacity is zero.
-    # @private
-    def fade_toast(self):
-        if self.toast_dialog is None:
-            return
-
-        try:
-            self.toast_opacity -= Marquee.TOAST_FADE_STEP_OPACITY_PERCENT
-            if self.toast_opacity > 0.0:
-                self.toast_dialog.setWindowOpacity(self.toast_opacity)
-                self.toast_timer.start(Marquee.TOAST_FADE_STEP_MS)
-            else:
-                self.toast_dialog.close()
-                self.toast_dialog = None
-        except:
-            log.error("exception fading toast dialog", exc_info=1)
-            self.toast_dialog = None
