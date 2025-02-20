@@ -1,9 +1,15 @@
 # Version History
 
 - 2024-??-?? 4.1.23
-    - update plugins.Analysis.Stats to allow user to dynamically change whether 
-      to process externally loaded spectra
-    - update plugins.Analysis.Peakfinding with more params and copy button
+    - plugins
+        - Analysis.Stats 
+            - allow user to dynamically change multi_devices
+        - Analysis.Peakfinding 
+            - add params 
+            - add copy button
+        - Analysis.Tail
+            - simplified
+            - add DidYouKnow
     - Marquee 
         - made threadsafe for plugins
         - removed toast

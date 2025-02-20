@@ -266,6 +266,10 @@ class DidYouKnowFeature:
              <p>Although the related Note field does not automatically appear in any filenames or
                 labels, it <i>can</i> be automatically inserted into those, anywhere you want, by using
                 the <b>{note}</b> template notation.</p>""")
+        tip("Analysis.Tail", "tail", """
+             <p>The Analysis.Tail plugin shows a 5-deep history of recent spectra, letting you clearly
+                observe changes in recent measurements. The history is colored with a "heat-map"
+                from oldest (red) to newest (blue).</p>""")
         tip("Library Matching", "library_matching", """
                 <p>Loading the plugin for the first time will install the
                 example library in your EnlightenSpectra/MatchingLibrary. You can check the current
