@@ -266,6 +266,11 @@ class DidYouKnowFeature:
              <p>Although the related Note field does not automatically appear in any filenames or
                 labels, it <i>can</i> be automatically inserted into those, anywhere you want, by using
                 the <b>{note}</b> template notation.</p>""")
+        tip("Analysis.StripChart", "strip_chart", """
+             <p>The Analysis.StripChart plugin allows you to configure one or more time-based "strip charts"
+                in a secondary graph, graphing hardware metrics like detector temperature or battery charge,
+                or the intensity at the current scope "Cursor" (assuming you've dragged it to a wavelength
+                or wavenumber of interest).</p>""")
         tip("Analysis.Tail", "tail", """
              <p>The Analysis.Tail plugin shows a 5-deep history of recent spectra, letting you clearly
                 observe changes in recent measurements. The history is colored with a "heat-map"
