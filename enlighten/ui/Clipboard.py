@@ -53,6 +53,11 @@ class Clipboard:
         self.ctl.app.clipboard().setText(s)
         self.ctl.marquee.info("copied %d rows to clipboard" % rows)
 
+    def copy_dataframe(self, df):
+        s = df.to_csv(sep="\t")
+        self.ctl.app.clipboard().setText(s)
+        self.ctl.marquee.info("copied dataframe to clipboard")
+
     def copy_table_widget(self, table):
         """
         Copies the contents of a QTableWidget to the clipboard as tab-delimited lines.

@@ -266,6 +266,33 @@ class DidYouKnowFeature:
              <p>Although the related Note field does not automatically appear in any filenames or
                 labels, it <i>can</i> be automatically inserted into those, anywhere you want, by using
                 the <b>{note}</b> template notation.</p>""")
+        tip("Analysis.StripChart", "strip_chart", """
+             <p>The Analysis.StripChart plugin allows you to configure one or more time-based "strip charts"
+                in a secondary graph, graphing hardware metrics like detector temperature or battery charge,
+                or the intensity at the current scope "Cursor" (assuming you've dragged it to a wavelength
+                or wavenumber of interest).</p>""")
+        tip("Analysis.Tail", "tail", """
+             <p>The Analysis.Tail plugin shows a 5-deep history of recent spectra, letting you clearly
+                observe changes in recent measurements. The history is colored with a "heat-map"
+                from oldest (red) to newest (blue).</p>""")
+        tip("Library Matching", "library_matching", """
+                <p>Loading the plugin for the first time will install the
+                example library in your EnlightenSpectra/MatchingLibrary. You can check the current
+                library path by moving the mouse over the Select Library button.
+                Point the plugin to a different library by clicking on the Select Library button and
+                navigating to a different library folder. A red Select Library button indicates that a
+                library is loaded.</p>
+             <p>A display of the best-match library spectrum will be overlaid onto the matched sample
+                spectrum and labelled as Library Spectrum. The plugin continuously matches the latest
+                spectrum shown in the graph window against the library.</p>
+             <p>A list of multiple top match results above the minimum score threshold is shown as a table
+                below the spectra. The number of top matches shown in this table can be adjusted in the field
+                next to Max. Results. Increasing the minimum score threshold will reduce False Positive Rate,
+                but potentially increase False Negative Rate.</p>
+             <p>To add the current spectrum to the library, click Save to Library. A small box opens
+                asking for the compound name to be used in the library for this compound. Enter the name of the
+                compound and click OK. The spectrum will be saved to the (user) library and is automatically
+                available for matching. All user spectra are saved to the folder EnlightenSpectra/MatchingLibrary/AdditionalSpectra.</p>""")
         tip("Raman Lines", "raman_lines", """
              <p><b>Raman.RamanLines</b> is a built-in "sample" plugin, showing some of the fun and 
                 useful things you can do with ENLIGHTEN's Python-based plug-in architecture.</p>

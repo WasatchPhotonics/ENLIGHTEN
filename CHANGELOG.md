@@ -1,5 +1,18 @@
 # Version History
 
+- 2024-??-?? 4.1.23
+    - plugins
+        - Analysis.Stats 
+            - allow user to dynamically change multi_devices
+        - Analysis.Peakfinding 
+            - add params 
+            - add copy button
+        - Analysis.Tail
+            - simplified
+            - add DidYouKnow
+    - Marquee 
+        - made threadsafe for plugins
+        - removed toast
 - 2024-02-11 4.1.22
     - updated Wasatch.PY to 2.2.17 to resolve broken Batch Collection and TakeOne buttons
     - plugins
