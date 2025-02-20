@@ -1,5 +1,9 @@
 # Version History
 
+- 2025-??-?? 4.1.24
+    - MatchingLibrary
+        - deprecated spectra lacking provenance
+        - added fresh 785X
 - 2025-02-20 4.1.23
     - plugins
         - Analysis.Stats 
