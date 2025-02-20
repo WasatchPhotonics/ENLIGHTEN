@@ -1,6 +1,6 @@
 # Version History
 
-- 2024-??-?? 4.1.23
+- 2025-02-20 4.1.23
     - plugins
         - Analysis.Stats 
             - allow user to dynamically change multi_devices
@@ -13,13 +13,13 @@
     - Marquee 
         - made threadsafe for plugins
         - removed toast
-- 2024-02-11 4.1.22
+- 2025-02-11 4.1.22
     - updated Wasatch.PY to 2.2.17 to resolve broken Batch Collection and TakeOne buttons
     - plugins
         - RnD.ColorMatching: more robust handling of missing calibration
         - support error Marquee messages
     - Marquee: re-use single QTimer, to reduce start/stop events
-- 2024-02-06 4.1.21
+- 2025-02-06 4.1.21
     - [#511] support graphing of loaded spectra with only wavenumber axis
     - added counter to Analysis/Stats
     - initial Analysis/Tail draft
