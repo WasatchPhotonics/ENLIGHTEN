@@ -14,8 +14,17 @@ log = logging.getLogger(__name__)
 
 class Message:
     def __init__(self, msg, persist=False, token=None, benign=None, immediate=False, extra_ms=0, period_sec=None, link=None):
+        """
+        @param persist leave message on-screen until explicitly cleared or replaced
+        @param token allows "message types / sources" to be associated, for 
+                    instance so the message "Tip: enable baseline correction" 
+                    with token "enable_baseline_correction" allows different 
+                    objects to cancel (close) open messages tagged 
+                    "enable_baseline_correction" when that condition has been 
+                    satisfied, IF the currently-displayed message has that tag
+        """
         self.msg = msg
-        self.persist = persist # leave message on-screen until explicitly cleared or replaced
+        self.persist = persist 
         self.token = token
         self.benign = benign
         self.immediate = immediate
@@ -77,12 +86,6 @@ class Marquee:
 
         self.current_message = None
 
-        # allows "message types / sources" to be associated, for instance so the
-        # message "Tip: enable baseline correction" with token "enable_baseline_correction"
-        # allows different objects to cancel (close) open messages tagged 
-        # "enable_baseline_correction" when that condition has been satisfied, IF 
-        # the currently-displayed message has that tag
-        self.last_token = None
 
         # Shouldn't need this, but getting around a "ShellExecute error 5"
         self.label.setOpenExternalLinks(False)
