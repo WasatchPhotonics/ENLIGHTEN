@@ -716,16 +716,16 @@ class PluginController:
         if not self.panda_field:
             return
 
-        log.debug("adding CopyDataframeToClipboard button")
+        b = QtWidgets.QPushButton()
+        b.setText("Copy to Clipboard")
+        b.setMinimumHeight(30) 
+        b.pressed.connect(self.copy_dataframe_to_clipboard)
+        b.setToolTip("Copy table to Clipboard")
+
         hbox = QtWidgets.QHBoxLayout()
-        item = QtWidgets.QPushButton()
-        item.setText("Copy to Clipboard")
-        item.setMinimumHeight(30) 
-        item.pressed.connect(self.copy_dataframe_to_clipboard)
-        item.setToolTip("Copy table to Clipboard")
-        hbox.addWidget(item)
+        hbox.addWidget(b)
+
         self.plugin_fields_layout.addLayout(hbox)
-        log.debug("add CopyDataframeToClipboard done")
 
     def copy_dataframe_to_clipboard(self):
         if self.dataframe is not None:
