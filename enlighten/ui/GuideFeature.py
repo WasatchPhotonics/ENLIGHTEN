@@ -127,7 +127,7 @@ class GuideFeature:
             return self._reset_timer()
 
         # don't stomp other Marquee messages (Guide tips are lowest-priority)
-        if self.ctl.marquee.showing_something:
+        if self.ctl.marquee.showing_something():
             log.debug("tick: waiting for Marquee to clear")
             return self._reset_timer()
 

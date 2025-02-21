@@ -36,6 +36,7 @@ class EnlightenPluginBase:
     
     def __init__(self, ctl):
         self.error_message = None
+        self._config = None
 
         # these can be set by functional-plugins to autogenerate EPC
         self.name = None
@@ -222,24 +223,26 @@ class EnlightenPluginBase:
     ### Begin backwards compatible object-returning wrappers ###
 
     def get_configuration_obj(self):
-        config = self.get_configuration()
-        if config: return config
+        if self._config is None:
+            self._config = self.get_configuration()
 
-        return EnlightenPluginConfiguration(
-            name = self.name, 
-            fields = self._fields,
-            is_blocking = self.is_blocking,
-            block_enlighten = self.block_enlighten,
-            has_other_graph = self.has_other_graph,
-            auto_enable = self.auto_enable,
-            streaming = self.streaming,
-            process_requests = self.process_requests,
-            multi_devices = self.multi_devices,
-            lock_enable = self.lock_enable,
-            series_names = [], # functional plugins define this on a frame-by-frame basis
-            x_axis_label = self.x_axis_label,
-            y_axis_label = self.y_axis_label,
-        )
+        if self._config is None:
+            self._config = EnlightenPluginConfiguration(
+                name = self.name, 
+                fields = self._fields,
+                is_blocking = self.is_blocking,
+                block_enlighten = self.block_enlighten,
+                has_other_graph = self.has_other_graph,
+                auto_enable = self.auto_enable,
+                streaming = self.streaming,
+                process_requests = self.process_requests,
+                multi_devices = self.multi_devices,
+                lock_enable = self.lock_enable,
+                series_names = [], # functional plugins define this on a frame-by-frame basis
+                x_axis_label = self.x_axis_label,
+                y_axis_label = self.y_axis_label)
+
+        return self._config
     
     def process_request_obj(self, request):
 

@@ -20,11 +20,13 @@ class Stats(EnlightenPluginBase):
     def get_configuration(self):
         self.name = "Statistics"
         self.field(name="Count", datatype=int, direction="output")
+        self.field(name="All", datatype=bool, direction="input", callback=self.callback_all, tooltip="Process spectra from all connected spectrometers")
         self.field(name="Reset", datatype="button", callback=self.reset)
         self.reset()
 
     def process_request(self, request):
         spectrum = request.processed_reading.get_processed()
+        
 
         if self.metrics is None:
             self.metrics = Metrics(spectrum)
@@ -43,6 +45,20 @@ class Stats(EnlightenPluginBase):
 
     def reset(self):
         self.metrics = None
+
+    def callback_all(self):
+        """ 
+        Allow user to dynamically decide whether to support multiple 
+        spectrometers, including loaded spectra.
+
+        Doing this as a callback rather than checking request.fields["All"] 
+        within process_request because if All is not _already_ checked, 
+        process_request may not be called for loaded spectra (so there's no 
+        chance to check the field value).
+        """
+        config = self.get_configuration_obj()
+        checked = self.get_widget_from_name("All").isChecked()
+        config.multi_devices = checked
 
 class Metrics:
     def __init__(self, spectrum):

@@ -333,8 +333,7 @@ class AreaScanFeature:
         log.debug("saving csv %s", pathname_csv)
         np.savetxt(pathname_csv, self.data, fmt="%d", delimiter=",")
 
-        # don't use .info, as Hardware Capture doesn't include the Drawer
-        self.marquee.toast("saved %s" % basename)
+        self.marquee.info("saved %s" % basename)
 
     # ##########################################################################
     # private methods
