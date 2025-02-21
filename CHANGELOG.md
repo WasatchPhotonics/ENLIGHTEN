@@ -7,6 +7,7 @@
         - MatchingLibrary
             - deprecated spectra lacking provenance
             - added fresh 785X
+    - move external triggering to 'expert'
     - docs
         - Update install instructions for RPi 4 and PySide6 
 - 2025-02-20 4.1.23
@@ -23,7 +24,6 @@
         - made threadsafe for plugins
         - removed toast
 - 2025-02-11 4.1.22
->>>>>>> main
     - updated Wasatch.PY to 2.2.17 to resolve broken Batch Collection and TakeOne buttons
     - plugins
         - RnD.ColorMatching: more robust handling of missing calibration
