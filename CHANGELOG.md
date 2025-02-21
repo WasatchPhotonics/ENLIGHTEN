@@ -1,9 +1,12 @@
 # Version History
 
 - 2025-??-?? 4.1.24
-    - MatchingLibrary
-        - deprecated spectra lacking provenance
-        - added fresh 785X
+    - plugins
+        - automatically add "Copy to Clipboard" button for plugins generating a dataframe
+        - properly clear widget on disconnection
+        - MatchingLibrary
+            - deprecated spectra lacking provenance
+            - added fresh 785X
     - docs
         - Update install instructions for RPi 4 and PySide6 
 - 2025-02-20 4.1.23
