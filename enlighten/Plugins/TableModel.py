@@ -40,4 +40,3 @@ class TableModel(QtCore.QAbstractTableModel):
 
             if orientation == Qt.Vertical:
                 return str(self._df.index[section])
-

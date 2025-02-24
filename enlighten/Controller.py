@@ -663,6 +663,7 @@ class Controller:
                          self.baseline_correction,
                          self.dark_feature,
                          self.edc,
+                         self.external_trigger,
                          self.graph,
                          self.horiz_roi,
                          self.kia_feature,

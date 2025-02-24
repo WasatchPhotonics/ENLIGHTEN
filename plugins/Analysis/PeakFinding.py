@@ -26,13 +26,6 @@ class PeakFinding(EnlightenPluginBase):
         self.field(name="Peak Table", direction="output", datatype="pandas")
         self.field(name="Transpose",  direction="input",  datatype=bool, initial=True)
 
-        self.field(name="Copy", datatype="button", callback=self.copy_to_clipboard, tooltip="Copy peaks to clipboard")
-
-    def copy_to_clipboard(self):
-        if self.dataframe is None:
-            return
-        self.ctl.clipboard.copy_dataframe(self.dataframe)
-
     def process_request(self, request):
         pr          = request.processed_reading
         processed   = pr.get_processed()

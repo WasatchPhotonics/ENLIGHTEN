@@ -108,6 +108,7 @@ class PluginController:
         self.graph_plugin     = None  # second enlighten.ui.Graph object associated with self.plugin_chart
         self.table_view       = None  # where panda_field gets displayed
         self.panda_field      = None  # if the plugin provided an export of type "pandas", this points to it
+        self.dataframe        = None  # cache for copy button
 
         self.module_infos     = None  # will hold and cache all the metadata (PluginModuleInfo) about each plugin we know about
         self.module_name      = None  # the string module name of the selected plugin
@@ -361,6 +362,8 @@ class PluginController:
         log.debug("connected_callback: start")
         module_name = self.combo_module.currentText()
 
+        self.hide_widget()
+
         if module_name not in self.module_infos:
             log.error(f"connected_callback: user somehow attempted to connect to invalid module {module_name}")
             self.cb_connected.setEnabled(False)
@@ -575,6 +578,7 @@ class PluginController:
                 if self.panda_field:
                     log.error(f"ignoring extra pandas field {epf.name}")
                 else:
+                    log.debug(f"process_widgets: panda_field = {epf.name}")
                     self.panda_field = epf
                 # no dynamic widget for pandas fields...they use the TableView
                 continue
@@ -595,6 +599,11 @@ class PluginController:
             pfw = PluginFieldWidget(epf, self.ctl)
             container.append(pfw)
 
+    def hide_widget(self):
+        self.frame_control.setVisible(False)
+        self.frame_fields.setVisible(False)
+        self.clear_previous_layout()
+
     ##
     # This may or may not be the first time this plugin has been selected, so
     # make sure the module is loaded, instantiated and we have its configuration,
@@ -604,9 +613,7 @@ class PluginController:
     def configure_gui_for_module(self, module_name):
         log.debug("configure_gui_for_module: module_name = %s", module_name)
 
-        self.frame_control.setVisible(False)
-        self.frame_fields.setVisible(False)
-        self.clear_previous_layout()
+        self.hide_widget()
 
         if module_name not in self.module_infos:
             log.error(f"configure_gui_for_module: invalid module {module_name}")
@@ -644,6 +651,7 @@ class PluginController:
 
             # prepare to create the EnlightenPluginFields for this plugin
             log.debug("configure_gui_for_module: instantiating fields")
+            self.dataframe = None
             self.panda_field = None
             self.plugin_field_widgets = []
 
@@ -651,48 +659,23 @@ class PluginController:
             self.vlayout_fields.addLayout(self.plugin_fields_layout)
 
             added_group = []
-            if isinstance(config.fields, dict):
-                self.plugin_field_widgets = []
-                log.debug("configure_gui_for_module: trying to add stack widget because dict for the fields")
-                self.select_vbox = QtWidgets.QVBoxLayout()
-                self.stacked_widget = QtWidgets.QStackedWidget()
-                self.widget_selector = QtWidgets.QComboBox()
-                self.widget_selector.activated[int].connect(self.stacked_widget.setCurrentIndex)
-                for k, list_epf in config.fields.items():
-                    self.widget_selector.addItem(str(k))
-                    list_pfw = []
-                    self.process_widgets(list_epf, list_pfw)
-                    key_page = QtWidgets.QWidget()
-                    key_page_layout = QtWidgets.QVBoxLayout()
-                    for pfw in list_pfw:
-                        # Not organizing values sent back to the plugin
-                        # Just send all the field values as a flat list
-                        self.plugin_field_widgets.append(pfw) 
-                        key_page_layout.addLayout(pfw.get_display_element())
-                    key_page.setLayout(key_page_layout)
-                    self.stacked_widget.addWidget(key_page)
+            log.debug(f"configure_gui_for_module: Non dict epf, performing standard layout")
+            self.process_widgets(config.fields, self.plugin_field_widgets) # sets panda_field
 
-                self.select_vbox.addWidget(self.widget_selector)
-                self.select_vbox.addWidget(self.stacked_widget)
-                self.plugin_fields_layout.addLayout(self.select_vbox)
-            else:
-                log.debug(f"configure_gui_for_module: Non dict epf, performing standard layout")
-                self.process_widgets(config.fields, self.plugin_field_widgets)
-
-                # note these are PluginFieldWidgets, NOT EnlightenPluginFields
-                for pfw in self.plugin_field_widgets:
-                    log.debug(f"configure_gui_for_module: adding pfw {pfw.field_name}")
-                    if pfw.field_config.datatype == "radio":
-                        group_box = pfw.field_config.group
-                        layout = pfw.field_config.layout
-                        if group_box not in added_group:
-                            self.plugin_fields_layout.addWidget(group_box)
-                            group_box.setLayout(layout)
-                            added_group.append(group_box)
-                        layout.addLayout(pfw.get_display_element())
-                    else:
-                        item = pfw.get_display_element()
-                        self.plugin_fields_layout.addLayout(item)
+            # note these are PluginFieldWidgets, NOT EnlightenPluginFields
+            for pfw in self.plugin_field_widgets:
+                log.debug(f"configure_gui_for_module: adding pfw {pfw.field_name}")
+                if pfw.field_config.datatype == "radio":
+                    group_box = pfw.field_config.group
+                    layout = pfw.field_config.layout
+                    if group_box not in added_group:
+                        self.plugin_fields_layout.addWidget(group_box)
+                        group_box.setLayout(layout)
+                        added_group.append(group_box)
+                    layout.addLayout(pfw.get_display_element())
+                else:
+                    item = pfw.get_display_element()
+                    self.plugin_fields_layout.addLayout(item)
 
             # configure initial visibility
             self.update_field_visibility()
@@ -701,6 +684,7 @@ class PluginController:
                 # pandas ignores Expert visibility
                 log.debug("configure_gui_for_module: creating output table")
                 self.create_output_table()
+                self.add_copy_dataframe_to_clipboard_button()
 
             # configure graph series
             if config.series_names is not None and len(config.series_names) > 0:
@@ -728,6 +712,25 @@ class PluginController:
         log.debug("configure_gui_for_module: successfully reconfigured GUI for plugin %s", module_name)
         return True
 
+    def add_copy_dataframe_to_clipboard_button(self):
+        if not self.panda_field:
+            return
+
+        b = QtWidgets.QPushButton()
+        b.setText("Copy to Clipboard")
+        b.setMinimumHeight(30) 
+        b.pressed.connect(self.copy_dataframe_to_clipboard)
+        b.setToolTip("Copy table to Clipboard")
+
+        hbox = QtWidgets.QHBoxLayout()
+        hbox.addWidget(b)
+
+        self.plugin_fields_layout.addLayout(hbox)
+
+    def copy_dataframe_to_clipboard(self):
+        if self.dataframe is not None:
+            self.ctl.clipboard.copy_dataframe(self.dataframe)
+        
     def show_plugin_graph(self, flag):
         """
         @todo it would be neat if plugins themselves could toggle 
@@ -1057,6 +1060,7 @@ class PluginController:
                         # log.debug(f"pandas dataframe {self.panda_field.name} = %s", dataframe)
                         model = TableModel(dataframe)
                         self.table_view.setModel(model)
+                        self.dataframe = dataframe
 
                 # handle functional-plugin Pandas output
                 if "Table" in response.outputs.keys():
@@ -1067,6 +1071,7 @@ class PluginController:
                     dataframe = response.outputs["Table"]
                     model = TableModel(dataframe)
                     self.table_view.setModel(model)
+                    self.dataframe = dataframe
 
             self.release_block(request)
 
