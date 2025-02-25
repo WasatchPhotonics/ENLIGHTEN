@@ -4,6 +4,8 @@ import logging
 import textwrap
 import configparser
 
+# I think we're importing these modules so we can access their static class 
+# functions before Controller's constructor is yet complete.
 from enlighten.data.ColorNames import ColorNames
 from enlighten.measurement.SaveOptions import SaveOptions
 
