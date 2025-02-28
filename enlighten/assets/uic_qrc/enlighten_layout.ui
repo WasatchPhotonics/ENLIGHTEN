@@ -15481,6 +15481,36 @@ li.checked::marker { content: "\2612"; }
                          </widget>
                         </item>
                         <item>
+
+                         <widget class="QComboBox" name="comboBox_presets">
+                          <property name="font">
+                           <font>
+                            <pointsize>10</pointsize>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="toolTip">
+                           <string>Presets allow you to save and re-apply key acquisition parameters including integration time, gain dB, scan averaging, boxcar, baseline subtraction and Raman intensity correction.</string>
+                          </property>
+                          <item>
+                           <property name="text">
+                            <string>Select One</string>
+                           </property>
+                          </item>
+                          <item>
+                           <property name="text">
+                            <string>Create new...</string>
+                           </property>
+                          </item>
+                          <item>
+                           <property name="text">
+                            <string>Remove...</string>
+                           </property>
+                          </item>
+                         </widget>
+
+                        </item>
+                        <item>
                          <widget class="QCheckBox" name="checkBox_auto_raman_config">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -19015,143 +19045,7 @@ li.checked::marker { content: "\2612"; }
                  </layout>
                 </widget>
                </item>
-               <item>
-                <widget class="QFrame" name="frame_presets">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="lineWidth">
-                  <number>1</number>
-                 </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_56x">
-                  <property name="leftMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>0</number>
-                  </property>
-                  <item>
-                   <widget class="QLabel" name="label_presets">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <bold>true</bold>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>Settings Presets</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QFrame" name="frame_presets_white">
-                    <property name="lineWidth">
-                     <number>1</number>
-                    </property>
-                    <property name="wpBox" stdset="0">
-                     <bool>false</bool>
-                    </property>
-                    <layout class="QGridLayout" name="grid_presets" rowstretch="0" columnstretch="0">
-                     <property name="sizeConstraint">
-                      <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
-                     </property>
-                     <property name="leftMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="topMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="rightMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="bottomMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="spacing">
-                      <number>0</number>
-                     </property>
-                     <item row="0" column="0">
-                      <widget class="QFrame" name="frame_presets_black">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>0</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>16777215</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="lineWidth">
-                        <number>1</number>
-                       </property>
-                       <property name="wpGrad" stdset="0">
-                        <bool>false</bool>
-                       </property>
-                       <layout class="QHBoxLayout" name="horizontalLayout_37x">
-                        <item>
-                         <layout class="QVBoxLayout" name="verticalLayout_57x">
-                          <item>
-                           <widget class="QComboBox" name="comboBox_presets">
-                            <property name="font">
-                             <font>
-                              <pointsize>10</pointsize>
-                              <bold>true</bold>
-                             </font>
-                            </property>
-                            <property name="toolTip">
-                             <string>Presets allow you to save and re-apply key acquisition parameters including integration time, gain dB, scan averaging, boxcar, baseline subtraction and Raman intensity correction.</string>
-                            </property>
-                            <item>
-                             <property name="text">
-                              <string>Select One</string>
-                             </property>
-                            </item>
-                            <item>
-                             <property name="text">
-                              <string>Create new...</string>
-                             </property>
-                            </item>
-                            <item>
-                             <property name="text">
-                              <string>Remove...</string>
-                             </property>
-                            </item>
-                           </widget>
-                          </item>
-                         </layout>
-                        </item>
-                       </layout>
-                      </widget>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
+
                <item>
                 <widget class="QFrame" name="frame_area_scan_widget">
                  <property name="sizePolicy">

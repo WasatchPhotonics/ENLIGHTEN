@@ -424,7 +424,7 @@ class SaveOptions():
         self.le_note.setFocus()
         self.le_note.selectAll()
 
-    # static
+    @staticmethod
     def get_default_configuration():
         return {
             "order": "col",

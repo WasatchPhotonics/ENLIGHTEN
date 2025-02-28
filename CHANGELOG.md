@@ -8,6 +8,10 @@
             - deprecated spectra lacking provenance
             - added fresh 785X
     - move external triggering to 'expert'
+    - populate laser metadata when saving AutoRaman
+    - Presets
+        - defined 3 initial "Good", "Better", "Best" Presets for AutoRamanFeature
+        - moving Preset ComboBox to Laser widget
     - docs
         - Update install instructions for RPi 4 and PySide6 
 - 2025-02-20 4.1.23

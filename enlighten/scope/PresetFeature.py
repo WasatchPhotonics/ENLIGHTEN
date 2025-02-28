@@ -64,7 +64,7 @@ class PresetFeature:
         self.combo = ctl.form.ui.comboBox_presets
         self.selected_preset = None
 
-        self.presets = {} # { "Winchester bottles": { "IntegrationTimeFeature": { "integration_time_ms": "2000" } } }
+        self.presets = self.get_default_configuration() # { "Winchester bottles": { "IntegrationTimeFeature": { "integration_time_ms": "2000" } } }
         self.observers = {} # { <IntegrationTimeFeature>: { "integration_time_ms": { "get": IntegrationTimeFeature.get_ms, "set": IntegrationTimeFeature.set_ms } } }
 
         self.load_config()
@@ -99,6 +99,37 @@ class PresetFeature:
                 continue
             preset, feature, attr = tok
             self.store(preset, feature, attr, config.get(self.SECTION, k))
+
+    def get_default_configuration(self):
+        return {
+            "Best": {
+                "AutoRamanFeature": {
+                    "auto_raman_max_ms": 10_000,
+                    "auto_raman_start_gain_db": 8,
+                    "auto_raman_max_integ_ms": 2_000,
+                    "auto_raman_min_counts": 40_000,
+                    "auto_raman_max_avg": 20
+                },
+            },
+            "Better": {
+                "AutoRamanFeature": {
+                    "auto_raman_max_ms": 5_000,
+                    "auto_raman_start_gain_db": 8,
+                    "auto_raman_max_integ_ms": 2_000,
+                    "auto_raman_min_counts": 35_000,
+                    "auto_raman_max_avg": 10
+                },
+            },
+            "Good": {
+                "AutoRamanFeature": {
+                    "auto_raman_max_ms": 2_000,
+                    "auto_raman_start_gain_db": 16,
+                    "auto_raman_max_integ_ms": 1_000,
+                    "auto_raman_min_counts": 30_000,
+                    "auto_raman_max_avg": 4 
+                }
+            }
+        }
 
     def store(self, preset, feature, attr, value):
         """ Store the given value in a local dict tree (NOT Configuration) """
