@@ -208,6 +208,13 @@ class RamanShiftCorrectionFeature:
             self.combo.addItem(name)
             if self.compound_name is not None and self.compound_name == name:
                 self.combo.setCurrentIndex(self.combo.count() - 1)
+        self.update_tooltip()
+
+    def update_tooltip(self):
+        tt = "Raman Shift Correction"
+        if self.compound_name is not None:
+            tt += f" using {self.compound_name}"
+        self.button.setToolTip(tt)
 
     ## the selected compound in the comboBox was changed, so do something
     def combo_callback(self):
@@ -218,6 +225,7 @@ class RamanShiftCorrectionFeature:
         else:
             self.compound_name = None
         log.debug("compound = %s", self.compound_name)
+        self.update_tooltip()
         self.update()
 
     ## the user toggled whether the selected ASTM compound graph should be visualized
@@ -423,7 +431,7 @@ class RamanShiftCorrectionFeature:
         ########################################################################
 
         if spec.settings.state.wavenumber_correction != 0:
-            self.marquee.info("Cleared wavenumber correction")
+            self.marquee.info("Cleared Raman shift correction")
             spec.settings.set_wavenumber_correction(0)
             self.update_visibility()
             return

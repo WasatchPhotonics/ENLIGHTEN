@@ -1,6 +1,6 @@
 # Version History
 
-- 2025-??-?? 4.1.24
+- 2025-02-28 4.1.24
     - plugins
         - automatically add "Copy to Clipboard" button for plugins generating a dataframe
         - properly clear widget on disconnection
@@ -9,6 +9,7 @@
             - added fresh 785X
     - move external triggering to 'expert'
     - populate laser metadata when saving AutoRaman
+    - display selected ASTM compound in Raman Shift Correction tooltip
     - Presets
         - defined 3 initial "Good", "Better", "Best" Presets for AutoRamanFeature
         - moving Preset ComboBox to Laser widget
