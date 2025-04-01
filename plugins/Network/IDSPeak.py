@@ -15,7 +15,9 @@ class IDSPeak(EnlightenPluginBase):
         self.streaming = False
         self.process_requests = False
 
-        self.field(name="Connect", direction="input", datatype="button", callback=self.connect_callback, tooltip="Attempt to connect to an IDS camera via the IDSPeak SDK")
+        # self.field(name="Connect", direction="input", datatype="button", callback=self.connect_callback, tooltip="Attempt to connect to an IDS camera via the IDSPeak SDK")
+
+        self.connect_callback()
 
     def connect_callback(self):
         device_id = DeviceID(label="IDSPeak")

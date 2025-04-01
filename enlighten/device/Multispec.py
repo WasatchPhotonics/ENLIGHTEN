@@ -67,7 +67,7 @@ class Multispec:
 
         # There's a bunch of stuff here that I think would more cleanly go into 
         # SpectrometerApplicationState...
-        self.strip_features = []
+        self.strip_features = [] # this may mean "StripChart"?
         self.spec_laser_temp_curves = {}
         self.spec_hardware_live_curves = {}
         self.spec_detector_temp_curves = {}
