@@ -93,6 +93,7 @@ class AreaScanFeature:
         self.image = None
         self.name = "Area_Scan"
         self.last_received_time = None
+        self.curve_live = None
 
         # create widgets we can't / don't pass in
         self.create_widgets()
@@ -130,7 +131,7 @@ class AreaScanFeature:
         # PyQtChart to hold the "summed" graph beneath
         # (why not just put graphicsscene atop scope chart...?)
         self.chart_live = pyqtgraph.PlotWidget(name="Area Scan Live")
-        #self.curve_live = chart_live.plot([], pen=self.ctl.gui.make_pen(widget="area_scan_live"))
+        self.curve_live = self.chart_live.plot([], pen=self.ctl.gui.make_pen(widget="area_scan_live"))
         self.layout_live.addWidget(self.chart_live)
 
     def add_spec_curve(self, spec):
@@ -212,42 +213,44 @@ class AreaScanFeature:
             return
 
         log.debug(f"trying to process area scan read")
-        if reading.area_scan_row_count < 1:
-            return
-
-        # check that we 
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return self.disable()
 
         log.debug("process_reading")
         if reading.area_scan_image is not None:
+            # just display the picture we've already got
             self.process_reading_with_area_scan_image(reading)
 
-        elif spec.settings.state.area_scan_fast and reading.area_scan_data is not None:
-            self.update_progress_bar()
-
-            log.debug("rendering frame of area_scan_fast")
-            self.data = None
-            rows = len(reading.area_scan_data)
-            for i in range(rows):
-                spectrum = reading.area_scan_data[i]
-                row = spectrum[0]
-                spectrum[0] = spectrum[1]
-                self.process_spectrum(spectrum, row=row)
-
-            self.finish_update()
-
-            # update the on-screen frame counter
-            self.frame_count += 1
-            self.lb_frame_count.setText(str(self.frame_count))
         else:
-            # slow mode
-            spectrum = reading.spectrum
-            row = reading.area_scan_row_count
-            log.debug(f"slow mode: using row {row} of spectrum {spectrum[:10]}")
-            self.process_spectrum(spectrum, row=row)
-            self.finish_update()
+            # assemble line by line
+            if reading.area_scan_row_count < 1:
+                return
+
+            if spec.settings.state.area_scan_fast and reading.area_scan_data is not None:
+                self.update_progress_bar()
+
+                log.debug("rendering frame of area_scan_fast")
+                self.data = None
+                rows = len(reading.area_scan_data)
+                for i in range(rows):
+                    spectrum = reading.area_scan_data[i]
+                    row = spectrum[0]
+                    spectrum[0] = spectrum[1]
+                    self.process_spectrum(spectrum, row=row)
+
+                self.finish_update()
+
+                # update the on-screen frame counter
+                self.frame_count += 1
+                self.lb_frame_count.setText(str(self.frame_count))
+            else:
+                # slow mode
+                spectrum = reading.spectrum
+                row = reading.area_scan_row_count
+                log.debug(f"slow mode: using row {row} of spectrum {spectrum[:10]}")
+                self.process_spectrum(spectrum, row=row)
+                self.finish_update()
 
     # ##########################################################################
     # callbacks
@@ -406,14 +409,47 @@ class AreaScanFeature:
             self.data[index] = spectrum
 
     def process_reading_with_area_scan_image(self, reading):
+        log.debug("process_reading_with_area_scan_image: start")
         spectrum = reading.spectrum
         asi = reading.area_scan_image
 
-        qimage = QtGui.QImage(asi.data, asi.width, asi.height, QtGui.QImage.Format_RGB32)
+        try:
+            log.debug("process_reading_with_area_scan_image: generating QImage")
+            self.image = QtGui.QImage(asi.data, asi.width, asi.height, QtGui.QImage.Format_RGB32)
 
-        self.scene.clear()
-        self.scene.set_image(qimage) # @see display.py::on_image_received
-        self.ctl.set_curve_data(self.curve_live, spectrum, label="AreaScanFeature.process_png")
+            if self.image is None:
+                log.error(f"unable to convert AreaScanImage {asi} to QImage")
+                log.error(f"AreaScanImage data {asi.data}")
+                return
+
+            log.debug("process_reading_with_area_scan_image: generating QPixmap")
+            qpixmap = QtGui.QPixmap(self.image)
+
+            """
+            TypeError: 'PySide6.QtGui.QPixmap.__init__' called with wrong argument types:
+              PySide6.QtGui.QPixmap.__init__(NoneType)
+            Supported signatures:
+              PySide6.QtGui.QPixmap.__init__()
+              PySide6.QtGui.QPixmap.__init__(PySide6.QtGui.QImage)
+              PySide6.QtGui.QPixmap.__init__(PySide6.QtGui.QPixmap)
+              PySide6.QtGui.QPixmap.__init__(PySide6.QtCore.QSize)
+              PySide6.QtGui.QPixmap.__init__(Union[str, bytes, os.PathLike[str]], Union[bytes, bytearray, memoryview, NoneType] = None, PySide6.QtCore.Qt.ImageConversionFlag = Instance(Qt.AutoColor))
+              PySide6.QtGui.QPixmap.__init__(Iterable)
+              PySide6.QtGui.QPixmap.__init__(int, int)
+            """
+
+            log.debug("process_reading_with_area_scan_image: scaling QPixmap")
+            qpixmap = qpixmap.scaledToWidth(self.frame_image.width())
+
+            log.debug("process_reading_with_area_scan_image: setting QImage")
+            self.scene.clear()
+            self.scene.addPixmap(qpixmap)
+
+            self.ctl.set_curve_data(self.curve_live, spectrum, label="AreaScanFeature.process_png")
+        except Exception as ex:
+            log.error("process_reading_with_area_scan: caught {ex}", exc_info=1)
+
+        log.debug("process_reading_with_area_scan_image: done")
 
     def update_curve_color(self, spec):
         """ Required callback for Multispec.strip_features? """
