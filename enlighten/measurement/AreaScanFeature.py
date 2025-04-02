@@ -414,7 +414,7 @@ class AreaScanFeature:
         asi = reading.area_scan_image
 
         try:
-            log.debug("process_reading_with_area_scan_image: generating QImage")
+            log.debug(f"process_reading_with_area_scan_image: generating QImage from asi: {asi}")
             self.image = QtGui.QImage(asi.data, asi.width, asi.height, QtGui.QImage.Format_RGB32)
 
             if self.image is None:
@@ -425,21 +425,8 @@ class AreaScanFeature:
             log.debug("process_reading_with_area_scan_image: generating QPixmap")
             qpixmap = QtGui.QPixmap(self.image)
 
-            """
-            TypeError: 'PySide6.QtGui.QPixmap.__init__' called with wrong argument types:
-              PySide6.QtGui.QPixmap.__init__(NoneType)
-            Supported signatures:
-              PySide6.QtGui.QPixmap.__init__()
-              PySide6.QtGui.QPixmap.__init__(PySide6.QtGui.QImage)
-              PySide6.QtGui.QPixmap.__init__(PySide6.QtGui.QPixmap)
-              PySide6.QtGui.QPixmap.__init__(PySide6.QtCore.QSize)
-              PySide6.QtGui.QPixmap.__init__(Union[str, bytes, os.PathLike[str]], Union[bytes, bytearray, memoryview, NoneType] = None, PySide6.QtCore.Qt.ImageConversionFlag = Instance(Qt.AutoColor))
-              PySide6.QtGui.QPixmap.__init__(Iterable)
-              PySide6.QtGui.QPixmap.__init__(int, int)
-            """
-
-            log.debug("process_reading_with_area_scan_image: scaling QPixmap")
-            qpixmap = qpixmap.scaledToWidth(self.frame_image.width())
+            # log.debug("process_reading_with_area_scan_image: scaling QPixmap")
+            # qpixmap = qpixmap.scaledToWidth(self.frame_image.width())
 
             log.debug("process_reading_with_area_scan_image: setting QImage")
             self.scene.clear()
