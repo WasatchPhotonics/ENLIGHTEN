@@ -19204,7 +19204,7 @@ li.checked::marker { content: "\2612"; }
                            </widget>
                           </item>
                           <item row="1" column="0">
-                           <widget class="QCheckBox" name="checkBox_area_scan_fast">
+                           <widget class="QCheckBox" name="checkBox_area_scan_normalize">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                               <horstretch>0</horstretch>
@@ -19225,7 +19225,7 @@ li.checked::marker { content: "\2612"; }
                              </sizepolicy>
                             </property>
                             <property name="text">
-                             <string>Fast Mode</string>
+                             <string>Normalize</string>
                             </property>
                            </widget>
                           </item>

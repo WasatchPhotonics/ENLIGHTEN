@@ -4,6 +4,9 @@
     - IDS
         - added IDSPeak plugin
         - update AreaScan to support .png files
+    - Area Scan
+        - deprecated 'Fast' checkbox
+        - added 'Normalize' checkbox
 - 2025-02-28 4.1.24
     - plugins
         - automatically add "Copy to Clipboard" button for plugins generating a dataframe

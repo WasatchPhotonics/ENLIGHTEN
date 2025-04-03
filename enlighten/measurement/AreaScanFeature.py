@@ -5,6 +5,8 @@ import pyqtgraph
 import numpy as np
 import qimage2ndarray
 
+from PIL import Image, ImageStat
+
 from enlighten import common
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 
@@ -33,13 +35,6 @@ class AreaScanFeature:
     to a single ACQUIRE opcode; 64 ACQUIRE requests had to be sent to read-out an
     entire 64-row detector. Each line came from a separate integration (one line
     per frame).
-
-    @par Fast Mode
-
-    When in "Fast Area Scan Mode," the detector sends out all 64 lines (or the 
-    height of the detector) in response to a single ACQUIRE. The software only
-    needs to send one ACQUIRE for the frame, and then repeatedly block on 
-    get_spectrum() until all lines are read.
 
     @par Continuous Area Scan (IMX385)
 
@@ -70,7 +65,7 @@ class AreaScanFeature:
 
         self.bt_save            = cfu.pushButton_area_scan_save
         self.cb_enable          = cfu.checkBox_area_scan_enable
-        self.cb_fast            = cfu.checkBox_area_scan_fast
+        self.cb_normalize       = cfu.checkBox_area_scan_normalize
         self.frame_image        = cfu.frame_area_scan_image
         self.frame_live         = cfu.frame_area_scan_live
         self.graphics_view      = cfu.graphicsView_area_scan
@@ -85,6 +80,7 @@ class AreaScanFeature:
         self.data = None
         self.enabled = False
         self.visible = False
+        self.normalize = False
         self.start_line = 0
         self.stop_line = 63
         self.ignored = 0
@@ -99,15 +95,15 @@ class AreaScanFeature:
         self.create_widgets()
         self.ctl.multispec.register_strip_feature(self)
 
-        self.cb_fast.setChecked(True)
+        self.cb_normalize.setChecked(False)
         self.progress_bar.setVisible(False)
 
-        self.bt_save    .clicked        .connect(self.save_callback)
-        self.cb_fast    .stateChanged   .connect(self.fast_callback)
-        self.cb_enable  .stateChanged   .connect(self.enable_callback)
-        self.sb_start   .valueChanged   .connect(self.roi_callback)
-        self.sb_stop    .valueChanged   .connect(self.roi_callback)
-        self.sb_delay_ms.valueChanged   .connect(self.delay_callback)
+        self.bt_save     .clicked        .connect(self.save_callback)
+        self.cb_normalize.stateChanged   .connect(self.normalize_callback)
+        self.cb_enable   .stateChanged   .connect(self.enable_callback)
+        self.sb_start    .valueChanged   .connect(self.roi_callback)
+        self.sb_stop     .valueChanged   .connect(self.roi_callback)
+        self.sb_delay_ms .valueChanged   .connect(self.delay_callback)
 
         self.progress_bar_timer = QtCore.QTimer()
         self.progress_bar_timer.timeout.connect(self.tick_progress_bar)
@@ -189,18 +185,14 @@ class AreaScanFeature:
             self.sb_start.setValue(0)
             self.sb_stop .setValue(spec.settings.eeprom.active_pixels_vertical - 1)
 
-        # Fast Area Scan not yet available on SiG
         if spec.settings.is_imx():
-            self.cb_fast.setChecked(False)
             self.sb_start.setEnabled(True)
             self.sb_stop.setEnabled(True)
             self.sb_delay_ms.setEnabled(False)
         else:
             # Hamamatsu
-            self.cb_fast.setChecked(True)
             self.sb_start.setEnabled(False)
             self.sb_stop.setEnabled(False)
-        self.cb_fast.setEnabled(False)
 
         self.frame_count = 0 # could move to app_settings
 
@@ -227,7 +219,7 @@ class AreaScanFeature:
             if reading.area_scan_row_count < 1:
                 return
 
-            if spec.settings.state.area_scan_fast and reading.area_scan_data is not None:
+            if reading.area_scan_data is not None:
                 self.update_progress_bar()
 
                 log.debug("rendering frame of area_scan_fast")
@@ -244,13 +236,6 @@ class AreaScanFeature:
                 # update the on-screen frame counter
                 self.frame_count += 1
                 self.lb_frame_count.setText(str(self.frame_count))
-            else:
-                # slow mode
-                spectrum = reading.spectrum
-                row = reading.area_scan_row_count
-                log.debug(f"slow mode: using row {row} of spectrum {spectrum[:10]}")
-                self.process_spectrum(spectrum, row=row)
-                self.finish_update()
 
     # ##########################################################################
     # callbacks
@@ -274,14 +259,12 @@ class AreaScanFeature:
 
         self.update_from_gui()
 
-    def fast_callback(self):
-        """ The user clicked "[x] fast" on the widget """
+    def normalize_callback(self):
+        """ The user clicked "[x] normalize" on the widget """
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return self.disable()
-
-        spec.settings.state.area_scan_fast = self.cb_fast.isChecked()
-        spec.change_device_setting("area_scan_fast", spec.settings.state.area_scan_fast)
+        self.normalize = self.cb_normalize.isChecked()
 
     def disable(self):
         log.debug("disabling area scan")
@@ -422,9 +405,11 @@ class AreaScanFeature:
             # qpixmap = qpixmap.scaledToWidth(self.frame_image.width())
 
             log.debug("process_reading_with_area_scan_image: generating QPixmap")
-            self.scene.clear()
             if asi.pathname_png is not None:
+                if self.normalize:
+                    self.normalize_png(asi.pathname_png)
                 qpixmap = QtGui.QPixmap(asi.pathname_png)
+                self.scene.clear()
                 self.scene.addPixmap(qpixmap)
 
             self.ctl.set_curve_data(self.curve_live, spectrum, label="AreaScanFeature.process_reading_with_area_scan_image")
@@ -432,6 +417,19 @@ class AreaScanFeature:
             log.error("process_reading_with_area_scan: {ex}", exc_info=1)
 
         log.debug("process_reading_with_area_scan_image: done")
+
+    def normalize_png(self, pathname_png):
+        try:
+            img = Image.open(pathname_png).convert('L')
+            stat = ImageStat.Stat(img)
+            mean_brightness = stat.mean[0]
+            img_array = np.array(img)
+            normalized_img_array = img_array / mean_brightness * 100 
+            normalized_img = Image.fromarray(np.uint8(normalized_img_array))
+            normalized_img.save(pathname_png)
+            log.debug(f"normalized {pathname_png}")
+        except Exception as ex:
+            log.error(f"normalize_png: caught {ex}", exc_info=1)
 
     def update_curve_color(self, spec):
         """ Required callback for Multispec.strip_features? """
