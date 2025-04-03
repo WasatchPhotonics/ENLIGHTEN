@@ -414,27 +414,22 @@ class AreaScanFeature:
         asi = reading.area_scan_image
 
         try:
-            log.debug(f"process_reading_with_area_scan_image: generating QImage from asi: {asi}")
-            self.image = QtGui.QImage(asi.data, asi.width, asi.height, QtGui.QImage.Format_RGB32)
-
-            if self.image is None:
-                log.error(f"unable to convert AreaScanImage {asi} to QImage")
-                log.error(f"AreaScanImage data {asi.data}")
-                return
-
-            log.debug("process_reading_with_area_scan_image: generating QPixmap")
-            qpixmap = QtGui.QPixmap(self.image)
-
+            # log.debug(f"process_reading_with_area_scan_image: generating QImage from asi: {asi}")
+            # self.image = QtGui.QImage(asi.data, asi.width, asi.height, QtGui.QImage.Format_RGB32)
+            # qpixmap = QtGui.QPixmap(self.image)
+            #
             # log.debug("process_reading_with_area_scan_image: scaling QPixmap")
             # qpixmap = qpixmap.scaledToWidth(self.frame_image.width())
 
-            log.debug("process_reading_with_area_scan_image: setting QImage")
+            log.debug("process_reading_with_area_scan_image: generating QPixmap")
             self.scene.clear()
-            self.scene.addPixmap(qpixmap)
+            if asi.pathname_png is not None:
+                qpixmap = QtGui.QPixmap(asi.pathname_png)
+                self.scene.addPixmap(qpixmap)
 
-            self.ctl.set_curve_data(self.curve_live, spectrum, label="AreaScanFeature.process_png")
+            self.ctl.set_curve_data(self.curve_live, spectrum, label="AreaScanFeature.process_reading_with_area_scan_image")
         except Exception as ex:
-            log.error("process_reading_with_area_scan: caught {ex}", exc_info=1)
+            log.error("process_reading_with_area_scan: {ex}", exc_info=1)
 
         log.debug("process_reading_with_area_scan_image: done")
 

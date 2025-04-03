@@ -1,5 +1,9 @@
 # Version History
 
+- 2025-??-?? 4.1.25
+    - IDS
+        - added IDSPeak plugin
+        - update AreaScan to support .png files
 - 2025-02-28 4.1.24
     - plugins
         - automatically add "Copy to Clipboard" button for plugins generating a dataframe
