@@ -24,7 +24,7 @@ class EmissionLines(EnlightenPluginBase):
         lamp = request.fields["lamp"]
         if lamp in self.lamps:
             for p in self.generate_points(lamp=lamp):
-                self.plot(title = f"{lamp} {p[0]:7.03f}cm⁻¹",
+                self.plot(title = f"{lamp} {p[0]:7.03f}nm",
                           x = [p[0], p[0]],
                           y = [min(self.spectrum), p[1]])
 
