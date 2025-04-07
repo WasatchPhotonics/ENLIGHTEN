@@ -397,20 +397,28 @@ class AreaScanFeature:
         asi = reading.area_scan_image
 
         try:
-            # log.debug(f"process_reading_with_area_scan_image: generating QImage from asi: {asi}")
-            # self.image = QtGui.QImage(asi.data, asi.width, asi.height, QtGui.QImage.Format_RGB32)
-            # qpixmap = QtGui.QPixmap(self.image)
-            #
-            # log.debug("process_reading_with_area_scan_image: scaling QPixmap")
-            # qpixmap = qpixmap.scaledToWidth(self.frame_image.width())
-
-            log.debug("process_reading_with_area_scan_image: generating QPixmap")
             if asi.pathname_png is not None:
                 if self.normalize:
                     self.normalize_png(asi.pathname_png)
                 qpixmap = QtGui.QPixmap(asi.pathname_png)
                 self.scene.clear()
                 self.scene.addPixmap(qpixmap)
+
+                spec = self.ctl.multispec.current_spectrometer()
+                if spec is not None:
+                    scale = 1
+                    if asi.height is not None and asi.height_orig is not None:
+                        scale = 1.0 * asi.height / asi.height_orig
+                        
+                    start_line = spec.settings.eeprom.roi_vertical_region_1_start
+                    stop_line = spec.settings.eeprom.roi_vertical_region_1_end
+
+                    x = qpixmap.width() - 1
+
+                    for line in [start_line, stop_line]:
+                        y = scale * line
+                        log.debug(f"line {line}, scale {scale}, y {y}")
+                        self.scene.addLine(0, y, x, y)
 
             self.ctl.set_curve_data(self.curve_live, spectrum, label="AreaScanFeature.process_reading_with_area_scan_image")
         except Exception as ex:

@@ -7,6 +7,7 @@
     - Area Scan
         - deprecated 'Fast' checkbox
         - added 'Normalize' checkbox
+        - trying to add start/stop lines to image
     - plugins
         - added update_visibility method to handle spectrometer hotswaps etc
         - fixed Prod.EmissionLines unit
