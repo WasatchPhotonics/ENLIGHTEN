@@ -938,6 +938,7 @@ class Controller:
                          self.laser_control,
                          self.laser_temperature,
                          self.laser_watchdog,
+                         self.plugin_controller,
                          self.raman_shift_correction,
                          self.raman_intensity_correction,
                          self.reference_feature,

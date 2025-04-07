@@ -304,6 +304,13 @@ class EnlightenPluginBase:
     # @returns an EnlightenPluginResponse
     def process_request(self, request):
         return EnlightenPluginResponse(request)
+
+    def update_visibility(self):
+        """
+        Something has happened which might cause the plugin to wish to refresh 
+        its visible state -- perhaps a new spectrometer was connected.
+        """
+        pass
         
     ##
     # Called when ENLIGHTEN is shutting down.  Release any resources you have.

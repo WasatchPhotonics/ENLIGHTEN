@@ -916,6 +916,34 @@ class PluginController:
         log.debug(f"get_current_settings: plugin_fields = {plugin_fields}")
         return plugin_fields
 
+    def update_visibility(self):
+        """
+        Something has changed in ENLIGHTEN which might cause a plugin to need to
+        update its visual state -- perhaps a new spectrometer was connected.
+        """
+        log.debug("update_visibility: called")
+
+        log.debug("update_visibility: getting configuration")
+        config = self.get_current_configuration()
+        if config is None:
+            log.debug("update_visibility: no config")
+            return 
+
+        log.debug("update_visibility: getting module_info")
+        module_info = self.get_current_module_info()
+        if module_info is None:
+            log.debug("update_visibility: no module_info")
+            return
+           
+        log.debug("update_visibility: getting module_info instance")
+        plugin = module_info.instance
+        if plugin is None:
+            log.debug("update_visibility: no instance")
+            return
+
+        log.debug("update_visibility: calling plugin.update_visibility")
+        plugin.update_visibility()
+
     ##
     # Processes any queued responses, then sends the new request.
     #

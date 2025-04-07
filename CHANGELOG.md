@@ -8,6 +8,7 @@
         - deprecated 'Fast' checkbox
         - added 'Normalize' checkbox
     - plugins
+        - added update_visibility method to handle spectrometer hotswaps etc
         - fixed Prod.EmissionLines unit
 - 2025-02-28 4.1.24
     - plugins
