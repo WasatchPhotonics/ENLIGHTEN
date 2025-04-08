@@ -5,6 +5,8 @@ import pyqtgraph
 import numpy as np
 import qimage2ndarray
 
+from PIL import Image, ImageStat
+
 from enlighten import common
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 
@@ -23,65 +25,62 @@ class AreaScanFeature:
     This feature is primarily for manufacturing use.  It is not currently 
     very robust or efficient.
 
-    @par Fast Mode
+    In ALL of the following historical implementations, one pixel is "stomped" 
+    by the firmware with the original line index to aid in visual reconstruction
+    of the 2D image. Unless otherwise specified, that is pixel 0.
+
+    @par Slow Mode (Legacy)
 
     Early AreaScan implementations in firmware sent out a single line in response
     to a single ACQUIRE opcode; 64 ACQUIRE requests had to be sent to read-out an
-    entire 64-row detector.  When in "Fast Area Scan Mode," the detector sends
-    out all 64 lines (or the height of the detector) in response to a single
-    ACQUIRE.
+    entire 64-row detector. Each line came from a separate integration (one line
+    per frame).
 
-    @todo give Graph awareness of the four plugin locations (top, left, right, 
-          bottom), so that other features can use them; have AreaScanFeature claim
-          "top", so when in use, PluginController only allows left/right/bottom.
+    @par Continuous Area Scan (IMX385)
+
+    Once the firmware is set into Area Scan mode, the STM32 will stream an
+    endless sequence of ACQUIRE signals into the FPGA. Each time the FPGA 
+    receives one, it will read-out the next line to firmware and the host,
+    wrapping-around when one frame completes and automatically beginning the
+    next one. This continues until the spectrometer is taken out of Area Scan
+    mode.
+
+    @par Frame
+
+    With IDS cameras, the vender drivers will automatically collect full-frame
+    images from the camera, such that vertical binning is performed in software.
+    On such devices, when Area Scan is enabled, Wasatch.PY will automatically
+    include each full-frame image along with the vertically binned spectrum,
+    so the image can be directly displayed in ENLIGHTEN.
+
     """
 
     # ##########################################################################
     # Lifecycle
     # ##########################################################################
 
-    def __init__(self,
-            bt_save,
-            cb_enable,
-            cb_fast,
-            frame_image,
-            frame_live,
-            graphics_view,
-            gui,
-            layout_live,
-            lb_current,
-            lb_frame_count,
-            marquee,
-            multispec,
-            progress_bar,
-            save_options,
-            sb_start,
-            sb_stop,
-            sb_delay_ms,
-            set_curve_data):
+    def __init__(self, ctl):
+        self.ctl = ctl
+        cfu = ctl.form.ui
 
-        self.bt_save            = bt_save
-        self.cb_enable          = cb_enable
-        self.cb_fast            = cb_fast
-        self.frame_image        = frame_image
-        self.frame_live         = frame_live
-        self.graphics_view      = graphics_view
-        self.gui                = gui
-        self.layout_live        = layout_live
-        self.lb_current         = lb_current
-        self.lb_frame_count     = lb_frame_count
-        self.marquee            = marquee
-        self.multispec          = multispec
-        self.progress_bar       = progress_bar
-        self.save_options       = save_options
-        self.sb_start           = sb_start
-        self.sb_stop            = sb_stop
-        self.sb_delay_ms        = sb_delay_ms
-        self.set_curve_data     = set_curve_data
+        self.bt_save            = cfu.pushButton_area_scan_save
+        self.cb_enable          = cfu.checkBox_area_scan_enable
+        self.cb_normalize       = cfu.checkBox_area_scan_normalize
+        self.frame_image        = cfu.frame_area_scan_image
+        self.frame_live         = cfu.frame_area_scan_live
+        self.graphics_view      = cfu.graphicsView_area_scan
+        self.layout_live        = cfu.layout_area_scan_live
+        self.lb_current         = cfu.label_area_scan_current_line
+        self.lb_frame_count     = cfu.label_area_scan_frame_count
+        self.progress_bar       = cfu.progressBar_area_scan
+        self.sb_start           = cfu.spinBox_area_scan_start_line
+        self.sb_stop            = cfu.spinBox_area_scan_stop_line
+        self.sb_delay_ms        = cfu.spinBox_area_scan_delay_ms
 
         self.data = None
         self.enabled = False
         self.visible = False
+        self.normalize = False
         self.start_line = 0
         self.stop_line = 63
         self.ignored = 0
@@ -90,20 +89,24 @@ class AreaScanFeature:
         self.image = None
         self.name = "Area_Scan"
         self.last_received_time = None
+        self.curve_live = None
+
+        self.pen_start = self.ctl.gui.make_pen(color="green")
+        self.pen_stop = self.ctl.gui.make_pen(color="red")
 
         # create widgets we can't / don't pass in
         self.create_widgets()
-        self.multispec.register_strip_feature(self)
+        self.ctl.multispec.register_strip_feature(self)
 
-        self.cb_fast.setChecked(True)
+        self.cb_normalize.setChecked(False)
         self.progress_bar.setVisible(False)
 
-        self.bt_save    .clicked        .connect(self.save_callback)
-        self.cb_fast    .stateChanged   .connect(self.fast_callback)
-        self.cb_enable  .stateChanged   .connect(self.enable_callback)
-        self.sb_start   .valueChanged   .connect(self.roi_callback)
-        self.sb_stop    .valueChanged   .connect(self.roi_callback)
-        self.sb_delay_ms.valueChanged   .connect(self.delay_callback)
+        self.bt_save     .clicked        .connect(self.save_callback)
+        self.cb_normalize.stateChanged   .connect(self.normalize_callback)
+        self.cb_enable   .stateChanged   .connect(self.enable_callback)
+        self.sb_start    .valueChanged   .connect(self.roi_callback)
+        self.sb_stop     .valueChanged   .connect(self.roi_callback)
+        self.sb_delay_ms .valueChanged   .connect(self.delay_callback)
 
         self.progress_bar_timer = QtCore.QTimer()
         self.progress_bar_timer.timeout.connect(self.tick_progress_bar)
@@ -127,36 +130,36 @@ class AreaScanFeature:
         # PyQtChart to hold the "summed" graph beneath
         # (why not just put graphicsscene atop scope chart...?)
         self.chart_live = pyqtgraph.PlotWidget(name="Area Scan Live")
-        #self.curve_live = chart_live.plot([], pen=self.gui.make_pen(widget="area_scan_live"))
+        self.curve_live = self.chart_live.plot([], pen=self.ctl.gui.make_pen(widget="area_scan_live"))
         self.layout_live.addWidget(self.chart_live)
 
     def add_spec_curve(self, spec):
-        if self.multispec.check_hardware_curve_present(self.name, spec.device_id):
+        if self.ctl.multispec.check_hardware_curve_present(self.name, spec.device_id):
             log.info(f"Adding spec curve {spec} already present, returning")
             return
         curve = self.chart_live.plot([], pen=spec.curve.opts['pen'],name=str(spec.label))
-        self.multispec.register_hardware_feature_curve(self.name, spec.device_id, curve)
+        self.ctl.multispec.register_hardware_feature_curve(self.name, spec.device_id, curve)
 
     def remove_spec_curve(self, spec):
         log.info(f"spec removal from graph called for spec {spec}")
-        if not self.multispec.check_hardware_curve_present(self.name, spec.device_id):
+        if not self.ctl.multispec.check_hardware_curve_present(self.name, spec.device_id):
             log.info(f"Removing spec curve {spec} already deleted, returning")
             return
 
-        cur_curve = self.multispec.get_hardware_feature_curve(self.name, spec.device_id)
+        cur_curve = self.ctl.multispec.get_hardware_feature_curve(self.name, spec.device_id)
 
         # remove current curve from graph
         for curve in self.chart_live.listDataItems():
             if curve.name() == cur_curve.name():
                 self.chart_live.removeItem(curve)
 
-        self.multispec.remove_hardware_curve(self.name, spec.device_id)
+        self.ctl.multispec.remove_hardware_curve(self.name, spec.device_id)
         log.info(f"finished removing spec {spec}")
 
 
     def disconnect(self):
         log.debug("disconnecting")
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is not None:
             if self.enabled and spec.settings.state.area_scan_enabled:
                 self.cb_enable.setChecked(False)
@@ -168,11 +171,12 @@ class AreaScanFeature:
 
     ## @todo mess with is_supported etc if appropriate
     def update_visibility(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return self.disable()
 
-        self.frame_live.setVisible(not (self.enabled and spec.settings.is_imx()))
+        # self.frame_live.setVisible(not (self.enabled and spec.settings.is_imx()))
+        self.frame_live.setVisible(True)
 
         roi = spec.settings.get_vertical_roi()
         if roi is not None:
@@ -184,18 +188,14 @@ class AreaScanFeature:
             self.sb_start.setValue(0)
             self.sb_stop .setValue(spec.settings.eeprom.active_pixels_vertical - 1)
 
-        # Fast Area Scan not yet available on SiG
         if spec.settings.is_imx():
-            self.cb_fast.setChecked(False)
             self.sb_start.setEnabled(True)
             self.sb_stop.setEnabled(True)
             self.sb_delay_ms.setEnabled(False)
         else:
             # Hamamatsu
-            self.cb_fast.setChecked(True)
             self.sb_start.setEnabled(False)
             self.sb_stop.setEnabled(False)
-        self.cb_fast.setEnabled(False)
 
         self.frame_count = 0 # could move to app_settings
 
@@ -204,47 +204,41 @@ class AreaScanFeature:
             return
 
         if not self.enabled:
-            self.set_curve_data(self.multispec.get_hardware_feature_curve(self.name, reading.device_id), y=reading.spectrum, label="AreaScanFeature.process_reading")
+            self.ctl.set_curve_data(self.ctl.multispec.get_hardware_feature_curve(self.name, reading.device_id), y=reading.spectrum, label="AreaScanFeature.process_reading")
             return
 
         log.debug(f"trying to process area scan read")
-        if reading.area_scan_row_count < 1:
-            return
-
-        # check that we 
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return self.disable()
 
-        # if spec.settings.state.area_scan_enabled:
-        #     log.debug("area scan enabled, but not for spec")
-        #     return
-
         log.debug("process_reading")
-        if spec.settings.state.area_scan_fast and reading.area_scan_data is not None:
-            self.update_progress_bar()
+        if reading.area_scan_image is not None:
+            # just display the picture we've already got
+            self.process_reading_with_area_scan_image(reading)
 
-            log.debug("rendering frame of area_scan_fast")
-            self.data = None
-            rows = len(reading.area_scan_data)
-            for i in range(rows):
-                spectrum = reading.area_scan_data[i]
-                row = spectrum[0]
-                spectrum[0] = spectrum[1]
-                self.process_spectrum(spectrum, row=row)
-
-            self.finish_update()
-
-            # update the on-screen frame counter
-            self.frame_count += 1
-            self.lb_frame_count.setText(str(self.frame_count))
         else:
-            # slow mode
-            spectrum = reading.spectrum
-            row = reading.area_scan_row_count
-            log.debug(f"slow mode: using row {row} of spectrum {spectrum[:10]}")
-            self.process_spectrum(spectrum, row=row)
-            self.finish_update()
+            # assemble line by line
+            if reading.area_scan_row_count < 1:
+                return
+
+            if reading.area_scan_data is not None:
+                self.update_progress_bar()
+
+                log.debug("rendering frame of area_scan_fast")
+                self.data = None
+                rows = len(reading.area_scan_data)
+                for i in range(rows):
+                    spectrum = reading.area_scan_data[i]
+                    row = spectrum[0]
+                    spectrum[0] = spectrum[1]
+                    self.process_spectrum(spectrum, row=row)
+
+                self.finish_update()
+
+                # update the on-screen frame counter
+                self.frame_count += 1
+                self.lb_frame_count.setText(str(self.frame_count))
 
     # ##########################################################################
     # callbacks
@@ -252,7 +246,7 @@ class AreaScanFeature:
 
     def delay_callback(self):
         """ the user changed the delay_ms spinner """
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return self.disable()
 
@@ -262,20 +256,18 @@ class AreaScanFeature:
 
     def roi_callback(self):
         """ the user changed the start/stop lines """
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return self.disable()
 
         self.update_from_gui()
 
-    def fast_callback(self):
-        """ The user clicked "[x] fast" on the widget """
-        spec = self.multispec.current_spectrometer()
+    def normalize_callback(self):
+        """ The user clicked "[x] normalize" on the widget """
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return self.disable()
-
-        spec.settings.state.area_scan_fast = self.cb_fast.isChecked()
-        spec.change_device_setting("area_scan_fast", spec.settings.state.area_scan_fast)
+        self.normalize = self.cb_normalize.isChecked()
 
     def disable(self):
         log.debug("disabling area scan")
@@ -287,7 +279,7 @@ class AreaScanFeature:
 
     def enable_callback(self):
         """ The user clicked "[x] enable" on the widget """
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return self.disable()
 
@@ -314,11 +306,11 @@ class AreaScanFeature:
             self.ignored = 0
 
     def save_callback(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return self.disable()
 
-        today_dir = self.save_options.generate_today_dir()
+        today_dir = self.ctl.save_options.generate_today_dir()
         basename = "area-scan-%s-%s" % (datetime.datetime.now().strftime("%Y%m%d-%H%M%S"),
                                         spec.settings.eeprom.serial_number)
 
@@ -333,7 +325,7 @@ class AreaScanFeature:
         log.debug("saving csv %s", pathname_csv)
         np.savetxt(pathname_csv, self.data, fmt="%d", delimiter=",")
 
-        self.marquee.info("saved %s" % basename)
+        self.ctl.marquee.info("saved %s" % basename)
 
     # ##########################################################################
     # private methods
@@ -341,7 +333,7 @@ class AreaScanFeature:
 
     def update_from_gui(self):
         """ update the area scan parameters from the GUI widgets """
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return self.disable()
 
@@ -402,19 +394,73 @@ class AreaScanFeature:
             index = row - self.start_line # absolute (detector) vs ROI (image)
             self.data[index] = spectrum
 
+    def process_reading_with_area_scan_image(self, reading):
+        log.debug("process_reading_with_area_scan_image: start")
+        spectrum = reading.spectrum
+        asi = reading.area_scan_image
+        self.resize(area_scan_image=asi)
+
+        try:
+            if asi.pathname_png is not None:
+                if self.normalize:
+                    self.normalize_png(asi.pathname_png)
+                qpixmap = QtGui.QPixmap(asi.pathname_png)
+                self.scene.clear()
+                self.scene.addPixmap(qpixmap)
+
+                spec = self.ctl.multispec.current_spectrometer()
+                if spec is not None:
+                    scale = 1
+                    if asi.height is not None and asi.height_orig is not None:
+                        scale = 1.0 * asi.height / asi.height_orig
+                        
+                    start_line = spec.settings.eeprom.roi_vertical_region_1_start
+                    stop_line = spec.settings.eeprom.roi_vertical_region_1_end
+
+                    x = qpixmap.width() - 1
+
+                    self.scene.addLine(0, scale*start_line, x, scale*start_line, self.pen_start)
+                    self.scene.addLine(0, scale*stop_line,  x, scale*stop_line,  self.pen_stop)
+
+            self.ctl.set_curve_data(self.curve_live, spectrum)
+        except Exception as ex:
+            log.error("process_reading_with_area_scan: {ex}", exc_info=1)
+
+        log.debug("process_reading_with_area_scan_image: done")
+
+    def normalize_png(self, pathname_png):
+        try:
+            img = Image.open(pathname_png).convert('L')
+            stat = ImageStat.Stat(img)
+            mean_brightness = stat.mean[0]
+            img_array = np.array(img)
+            normalized_img_array = img_array / mean_brightness * 100 
+            normalized_img = Image.fromarray(np.uint8(normalized_img_array))
+            normalized_img.save(pathname_png)
+            log.debug(f"normalized {pathname_png}")
+        except Exception as ex:
+            log.error(f"normalize_png: caught {ex}", exc_info=1)
+
     def update_curve_color(self, spec):
-        curve = self.multispec.get_hardware_feature_curve(self.name, spec.device_id)
+        """ Required callback for Multispec.strip_features? """
+        curve = self.ctl.multispec.get_hardware_feature_curve(self.name, spec.device_id)
         if curve is None:
             return
         curve.opts["pen"] = spec.color
 
-    def resize(self):
-        spec = self.multispec.current_spectrometer()
+    def resize(self, area_scan_image=None):
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return self.disable()
 
-        data_h = self.stop_line - self.start_line + 1
-        data_w = spec.settings.pixels()
+        if area_scan_image is None:
+            # data_h = self.stop_line - self.start_line + 1
+            data_h = spec.settings.eeprom.active_pixels_vertical
+            data_w = spec.settings.pixels()
+        else:
+            data_h = area_scan_image.height
+            data_w = area_scan_image.width
+
         log.debug("resize: data_w = %d, data_h = %d (start %d, stop %d)", data_w, data_h, self.start_line, self.stop_line)
         self.data = np.zeros((data_h, data_w), dtype=np.float32)
 
@@ -441,4 +487,4 @@ class AreaScanFeature:
 
         # vertically bin the on-screen image for the "live" spectrum
         total = np.sum(self.data, axis=0)
-        self.set_curve_data(self.curve_live, total, label="AreaScanFeature.finish_update")
+        self.ctl.set_curve_data(self.curve_live, total, label="AreaScanFeature.finish_update")

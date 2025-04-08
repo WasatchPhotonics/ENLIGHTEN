@@ -368,25 +368,7 @@ class BusinessObjects:
         ctl.grid = GridFeature(ctl)
 
         self.header("instantiating AreaScanFeature")
-        ctl.area_scan = AreaScanFeature(
-            bt_save                     = cfu.pushButton_area_scan_save,
-            cb_enable                   = cfu.checkBox_area_scan_enable,
-            cb_fast                     = cfu.checkBox_area_scan_fast,
-            frame_image                 = cfu.frame_area_scan_image,
-            frame_live                  = cfu.frame_area_scan_live,
-            graphics_view               = cfu.graphicsView_area_scan,
-            gui                         = ctl.gui,
-            layout_live                 = cfu.layout_area_scan_live,
-            lb_current                  = cfu.label_area_scan_current_line,
-            lb_frame_count              = cfu.label_area_scan_frame_count,
-            marquee                     = ctl.marquee,
-            multispec                   = ctl.multispec,
-            progress_bar                = cfu.progressBar_area_scan,
-            save_options                = ctl.save_options,
-            sb_start                    = cfu.spinBox_area_scan_start_line,
-            sb_stop                     = cfu.spinBox_area_scan_stop_line,
-            sb_delay_ms                 = cfu.spinBox_area_scan_delay_ms,
-            set_curve_data              = ctl.set_curve_data)
+        ctl.area_scan = AreaScanFeature(ctl)
 
         self.header("instantiating RamanShiftCorrectionFeature")
         ctl.raman_shift_correction = RamanShiftCorrectionFeature(

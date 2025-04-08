@@ -26,6 +26,11 @@ class GainDBFeature:
     used to update startupIntegrationTimeMS.
     
     @see additional notes in wasatch.SpectrometerState
+
+    @todo currently re-using this class for IDSPeak cameras, even though they
+          seem to treat gain as a scalar rather than dB. Possibly we should
+          continue to pass gain as dB all the way through the pipeline and
+          only linearize it in IDSDevice?
     """
 
     # for IMX385
@@ -80,7 +85,7 @@ class GainDBFeature:
             if spec is None:
                 self.visible = False
             else:
-                self.visible = spec.settings.is_micro() and self.ctl.page_nav.doing_expert()
+                self.visible = (spec.settings.is_micro() or spec.settings.is_ids()) and self.ctl.page_nav.doing_expert()
 
         # normally we'd do this at the enclosing frame, but gain is currently 
         # nested within the detectorControlWidget, and a sub-frame breaks the
@@ -110,7 +115,11 @@ class GainDBFeature:
         # load gain_db from .ini, falling back to spec.settings.state (copied from EEPROM)
         sn = spec.settings.eeprom.serial_number
 
-        db = 8
+        if spec.settings.is_xs():
+            db = 8.0
+        elif spec.settings.is_ids():
+            db = 0.0
+
         if self.ctl.config.has_option(sn, "gain_db"):
             db = self.ctl.config.get_float(sn, "gain_db")
         elif spec.settings.state.gain_db is not None:
@@ -142,7 +151,7 @@ class GainDBFeature:
         if spec is None:
             return
 
-        if not spec.settings.is_xs():
+        if not (spec.settings.is_xs() or spec.settings.is_ids()):
             return
 
         db = float(db)
@@ -153,8 +162,13 @@ class GainDBFeature:
         # persist gain_db in .ini
         self.ctl.config.set(spec.settings.eeprom.serial_number, "gain_db", db)
 
-        # send gain update message to device
-        self.ctl.multispec.change_device_setting("detector_gain", db)
+        # send gain update message to device 
+
+        # TODO: support "gain_db" in FeatureIdentificationDevice for XS
+        if spec.settings.is_xs():
+            self.ctl.multispec.change_device_setting("detector_gain", db)
+        elif spec.settings.is_ids():
+            self.ctl.multispec.change_device_setting("gain_db", db)
 
         # ensure both gain widgets are correct, without generating additional events
         self._quiet_set(self.spinbox, db)

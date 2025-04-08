@@ -6,6 +6,8 @@ class FactoryStripChartFeature:
     """
     This class manages the set of strip-charts on the Factory View which graph 
     device characteristics against a time axis.
+
+    Should AreaScanFeature be in here somewhere?
     """
 
     def __init__(self, ctl):
