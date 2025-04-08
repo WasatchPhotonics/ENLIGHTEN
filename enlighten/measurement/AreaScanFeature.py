@@ -91,6 +91,9 @@ class AreaScanFeature:
         self.last_received_time = None
         self.curve_live = None
 
+        self.pen_start = self.ctl.gui.make_pen(color="green")
+        self.pen_stop = self.ctl.gui.make_pen(color="red")
+
         # create widgets we can't / don't pass in
         self.create_widgets()
         self.ctl.multispec.register_strip_feature(self)
@@ -395,6 +398,7 @@ class AreaScanFeature:
         log.debug("process_reading_with_area_scan_image: start")
         spectrum = reading.spectrum
         asi = reading.area_scan_image
+        self.resize(area_scan_image=asi)
 
         try:
             if asi.pathname_png is not None:
@@ -415,12 +419,10 @@ class AreaScanFeature:
 
                     x = qpixmap.width() - 1
 
-                    for line in [start_line, stop_line]:
-                        y = scale * line
-                        log.debug(f"line {line}, scale {scale}, y {y}")
-                        self.scene.addLine(0, y, x, y)
+                    self.scene.addLine(0, scale*start_line, x, scale*start_line, self.pen_start)
+                    self.scene.addLine(0, scale*stop_line,  x, scale*stop_line,  self.pen_stop)
 
-            self.ctl.set_curve_data(self.curve_live, spectrum, label="AreaScanFeature.process_reading_with_area_scan_image")
+            self.ctl.set_curve_data(self.curve_live, spectrum)
         except Exception as ex:
             log.error("process_reading_with_area_scan: {ex}", exc_info=1)
 
@@ -446,13 +448,19 @@ class AreaScanFeature:
             return
         curve.opts["pen"] = spec.color
 
-    def resize(self):
+    def resize(self, area_scan_image=None):
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return self.disable()
 
-        data_h = self.stop_line - self.start_line + 1
-        data_w = spec.settings.pixels()
+        if area_scan_image is None:
+            # data_h = self.stop_line - self.start_line + 1
+            data_h = spec.settings.eeprom.active_pixels_vertical
+            data_w = spec.settings.pixels()
+        else:
+            data_h = area_scan_image.height
+            data_w = area_scan_image.width
+
         log.debug("resize: data_w = %d, data_h = %d (start %d, stop %d)", data_w, data_h, self.start_line, self.stop_line)
         self.data = np.zeros((data_h, data_w), dtype=np.float32)
 
