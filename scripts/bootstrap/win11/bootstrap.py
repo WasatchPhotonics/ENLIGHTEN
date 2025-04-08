@@ -30,6 +30,7 @@ import os
 from datetime import datetime
 
 is_win = platform.system() == 'Windows'
+is_mac = platform.system() == 'Darwin'
 
 def fix_path(path):
     return path if is_win else path.replace("\\", "/").replace(";", ":")
@@ -65,12 +66,12 @@ parser.add_argument("--arg", action="append", help="take multiple name=value arg
 parser.epilog = "Example: $ python scripts/bootstrap/win11/bootstrap.py --rebuild --arg log-level=debug"
 args = parser.parse_args()
 
-if not (is_win or args.force):
-    print("This program is intended for the Windows operating system.")
+if not (is_win or is_mac or args.force):
+    print("This program has only been tested on Win11 and MacOS (Intel/ARM)...add --force to use on other environments.")
     exit(1)
 
 if (is_win and sys.getwindowsversion().build < 22000) and not args.force:
-    print("This program is intended for Windows 11 or later versions.")
+    print("On Windows, this program is intended for Windows 11 or later versions.")
     exit(1)
 
 if not (sys.version_info.major==3 and sys.version_info.minor==11) and not args.force:

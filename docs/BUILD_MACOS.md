@@ -4,6 +4,36 @@ We used to be able to get MacOS running with Miniconda, but we moved to Homebrew
 after problems with PySide2. Even though we've now moved to PySide6, we're
 currently sticking with Homebrew until a reason presents itself to move back.
 
+## ARM Mac
+
+    $ brew install python@3.11
+    $ brew install python-tk@3.11
+    $ brew install libusb
+
+    $ alias python=python3.11
+    $ alias pip=pip3.11
+
+    $ git clone git@github.com:WasatchPhotonics/Enlighten.git 
+    $ git clone git@github.com:WasatchPhotonics/Wasatch.PY.git 
+    $ git clone git@github.com:WasatchPhotonics/SPyC_Writer.git
+    $ git clone git@github.com:WasatchPhotonics/jcamp.git
+
+    $ cd enlighten
+
+Now do one of these. Either use the scripted VENV approach (recommended):
+
+    $ python scripts/bootstrap/win11/bootstrap.py
+    (yes, that says "win11", but it has been tested to work on MacOS)
+
+Or you can perform equivalent steps using your system's global Python environment:
+
+    $ export PYTHONPATH=.:plugins:enlighten/assets/uic_qrc:../Wasatch.PY:../spyc_writer/src:../jcamp
+    $ pip install -r requirements.txt
+    $ scripts/rebuild_resources.sh 
+    $ python scripts/Enlighten.py --log-level debug 1>enlighten.out 2>enlighten.err
+
+## Intel Mac
+
 Testing was conducted from an Intel Mac (Ventura 13.4.1(c)) using MacOS 14 Sonoma
 and Homebrew.  See the "Appendix: Homebrew" at the bottom of this file for 
 a list of the homebrew and pip packages I had installed.  I'm afraid I have not
@@ -24,6 +54,19 @@ the build process.
 
     $ pip install pyinstaller
     $ brew install platypus
+
+## Authenticate Platypus
+
+I had to do a little extra work to get playpus to run, even after installing with Homebrew:
+
+    $ cd /Applications/Platypus.app/Contents/Resources
+    $ gunzip platypus_clt.gz
+    $ ./platypus_clt --help     # will generate error
+    (go to Settings -> Security and Privacy)
+    (scroll down to where it says "platypus was blocked to protect your Mac")
+    (click "Open Anyway")
+    (verify you can now run the platypus command-line app)
+    $ ./platypus_clt --help     # should now work
 
 ## Run pyinstaller
 
