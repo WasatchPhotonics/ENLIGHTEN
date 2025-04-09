@@ -23,9 +23,10 @@ important caveats:
 4. If you EDIT or CHANGE an EXISTING plugin, without renaming it, YOUR WORK MAY 
    BE OVERWRITTEN when you re-install ENLIGHTEN.
 
-Therefore, we recommend you put all your custom plugins in a subfolder (module) 
-of your own devising, like EnlightenSpectra/plugs/MyPlugins.  Such a folder will
-never be deleted or overwritten by future ENLIGHTEN installers.
+We recommend you put all your custom plugins into the "User" folder,
+(EnlightenSpectra/plugins/User), or that you create a new folder with your
+company name (i.e. EnlightenSpectra/plugins/ACME). This way, your new or 
+modified plugins will never be overwritten by future ENLIGHTEN updates.
 
 Obviously, we also recommend that you put your own plugins under revision-control
 (GitHub / GitLab are free!) to avoid any "unfortunate mishaps."
