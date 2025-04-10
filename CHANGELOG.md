@@ -1,5 +1,9 @@
 # Version History
 
+- 2025-??-?? 4.1.26
+    - Scan Averaging
+        - changing in ENLIGHTEN will automatically disable onboard scan averaging
+          in XS (including any persistent onboard AutoRaman effects)
 - 2025-04-08 4.1.25
     - IDS
         - added IDSPeak plugin

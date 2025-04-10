@@ -65,6 +65,9 @@ class ScanAveragingFeature:
     def update_from_gui(self):
         value = int(self.spinbox.value())
         self.ctl.multispec.set_state("scans_to_average", value)
+
+        # note: ORDER MATTERS in these two, because they BOTH will set SpectrometerState.scans_to_average
+        self.ctl.multispec.change_device_setting("onboard_scans_to_average", 1)
         self.ctl.multispec.change_device_setting("scans_to_average", value)
 
         spec = self.ctl.multispec.current_spectrometer()

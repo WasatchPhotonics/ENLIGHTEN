@@ -400,33 +400,69 @@ class AreaScanFeature:
         asi = reading.area_scan_image
         self.resize(area_scan_image=asi)
 
+        # YOU ARE HERE
+        if asi.pathname_png is not None:
+            self.process_reading_with_area_scan_image_png(reading)
+        elif asi.data is not None:
+            self.process_reading_with_area_scan_image_data(reading)
+
+        if reading.spectrum is not None:
+            self.ctl.set_curve_data(self.curve_live, reading.spectrum)
+
+    def process_reading_with_area_scan_image_data(self, reading):
+        """ we have received a Reading with an AreaScanImage with .data populated (implicitly a NumPy array) """
+        log.debug("process_reading_with_area_scan_image_data: start")
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+
         try:
-            if asi.pathname_png is not None:
-                if self.normalize:
-                    self.normalize_png(asi.pathname_png)
-                qpixmap = QtGui.QPixmap(asi.pathname_png)
-                self.scene.clear()
-                self.scene.addPixmap(qpixmap)
+            asi = reading.area_scan_image
+            h, w = asi.data.shape
 
-                spec = self.ctl.multispec.current_spectrometer()
-                if spec is not None:
-                    scale = 1
-                    if asi.height is not None and asi.height_orig is not None:
-                        scale = 1.0 * asi.height / asi.height_orig
-                        
-                    start_line = spec.settings.eeprom.roi_vertical_region_1_start
-                    stop_line = spec.settings.eeprom.roi_vertical_region_1_end
+            # normalize and scale to (0, 255)
+            lo = np.min(asi.data)
+            hi = np.max(asi.data)
+            normalized = (asi.data - lo) / (hi - lo)
+            scaled = normalized * 255
 
-                    x = qpixmap.width() - 1
+            qimage = QtGui.QImage(scaled.data, w, h, w, QtGui.QImage.Format_Grayscale8)
+            qpixmap = QtGui.QPixmap.fromImage(qimage)
 
-                    self.scene.addLine(0, scale*start_line, x, scale*start_line, self.pen_start)
-                    self.scene.addLine(0, scale*stop_line,  x, scale*stop_line,  self.pen_stop)
+            self.scene.clear()
+            self.scene.addPixmap(qpixmap)
 
-            self.ctl.set_curve_data(self.curve_live, spectrum)
+            # @todo consider adding vertical ROI lines like below
+        except:
+            log.error("failed to convert AreaScanImage.data into QPixmap", exc_info=1)
+
+    def process_reading_with_area_scan_image_png(self, reading):
+        log.debug("process_reading_with_area_scan_image_png: start")
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+
+        asi = reading.area_scan_image
+        try:
+            if self.normalize:
+                self.normalize_png(asi.pathname_png)
+            qpixmap = QtGui.QPixmap(asi.pathname_png)
+            self.scene.clear()
+            self.scene.addPixmap(qpixmap)
+
+            scale = 1
+            if asi.height is not None and asi.height_orig is not None:
+                scale = 1.0 * asi.height / asi.height_orig
+                
+            start_line = spec.settings.eeprom.roi_vertical_region_1_start
+            stop_line = spec.settings.eeprom.roi_vertical_region_1_end
+
+            x = qpixmap.width() - 1
+
+            self.scene.addLine(0, scale*start_line, x, scale*start_line, self.pen_start)
+            self.scene.addLine(0, scale*stop_line,  x, scale*stop_line,  self.pen_stop)
         except Exception as ex:
             log.error("process_reading_with_area_scan: {ex}", exc_info=1)
-
-        log.debug("process_reading_with_area_scan_image: done")
 
     def normalize_png(self, pathname_png):
         try:

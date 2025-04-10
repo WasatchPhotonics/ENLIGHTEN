@@ -293,9 +293,13 @@ class PluginController:
         self.combo_module.clear()
         self.combo_module.addItem("Select a plugin")
         found = False
-        for module_name in sorted(self.module_infos):
-            # log.debug("adding %s", module_name)
+        for index, module_name in enumerate(sorted(self.module_infos.keys())):
+            # can't do this because we haven't instantiated all the plugins 
+            # because instantiation is expensive :-(
+            # tt = self.module_infos[module_name].instance.tooltip
+            # log.debug(f"adding index {index}, name {module_name} (tt {tt})")
             self.combo_module.addItem(module_name)
+            # self.combo_module.setItemData(index, tt, QtCore.ToolTipRole)
             if module_name == previous_selection:
                 found = True
 
