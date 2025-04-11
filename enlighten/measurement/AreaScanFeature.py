@@ -395,12 +395,10 @@ class AreaScanFeature:
             self.data[index] = spectrum
 
     def process_reading_with_area_scan_image(self, reading):
-        log.debug("process_reading_with_area_scan_image: start")
         spectrum = reading.spectrum
         asi = reading.area_scan_image
         self.resize(area_scan_image=asi)
 
-        # YOU ARE HERE
         if asi.pathname_png is not None:
             self.process_reading_with_area_scan_image_png(reading)
         elif asi.data is not None:
@@ -411,7 +409,6 @@ class AreaScanFeature:
 
     def process_reading_with_area_scan_image_data(self, reading):
         """ we have received a Reading with an AreaScanImage with .data populated (implicitly a NumPy array) """
-        log.debug("process_reading_with_area_scan_image_data: start")
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
@@ -419,17 +416,13 @@ class AreaScanFeature:
         try:
             asi = reading.area_scan_image
             h, w = asi.data.shape
-            log.debug(f"prwasid: received (height {h}, width {w}) AreaScanImage data {asi.data}")
 
             # normalize and scale to (0, 255)
             lo = np.min(asi.data)
             hi = np.max(asi.data)
             normalized = (asi.data - lo) / (hi - lo)
-            log.debug(f"prwasid: normalized {normalized}")
             scaled = normalized * 65535
-            log.debug(f"prwasid: scaled {scaled}")
             scaled_ushort = scaled.astype(np.uint16)
-            log.debug(f"prwasid: scaled {scaled_ushort}")
 
             qimage = QtGui.QImage(scaled_ushort.data, w, h, w*2, QtGui.QImage.Format_Grayscale16)
             qpixmap = QtGui.QPixmap.fromImage(qimage)
@@ -442,7 +435,6 @@ class AreaScanFeature:
             log.error("failed to convert AreaScanImage.data into QPixmap", exc_info=1)
 
     def process_reading_with_area_scan_image_png(self, reading):
-        log.debug("process_reading_with_area_scan_image_png: start")
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
@@ -478,7 +470,6 @@ class AreaScanFeature:
             normalized_img_array = img_array / mean_brightness * 100 
             normalized_img = Image.fromarray(np.uint8(normalized_img_array))
             normalized_img.save(pathname_png)
-            log.debug(f"normalized {pathname_png}")
         except Exception as ex:
             log.error(f"normalize_png: caught {ex}", exc_info=1)
 
