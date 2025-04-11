@@ -301,7 +301,6 @@ class Controller:
         log.debug("disconnect_device[%s]: removing from Multispec", device_id)
         self.detector_temperature.remove_spec_curve(spec)
         self.laser_temperature.remove_spec_curve(spec)
-        self.area_scan.remove_spec_curve(spec)
         if not self.multispec.remove(spec):
             log.error("disconnect_device[%s]: failed to remove from Multispec", device_id)
             return False
@@ -893,10 +892,6 @@ class Controller:
                 self.battery_feature.add_spec_curve(spec)
             if spec.settings.is_xs() or spec.settings.is_gen15():
                 self.ambient_temperature.add_spec_curve(spec)
-            # This plots on the live graph on the hardware capture page
-            # This graph is held by the area scan object and is a 1D spectra
-            # Not the scan waterfall that is a 2D layout
-            self.area_scan.add_spec_curve(spec)
 
         # scope capture buttons
         if hotplug:
@@ -1251,9 +1246,6 @@ class Controller:
             self.acquisition_timer.start(self.ACQUISITION_TIMER_SLEEP_MS + (50 * (self.multispec.count() - 1)))
 
     def tick_status(self):
-        if self.area_scan.enabled:
-            return
-
         if self.shutting_down:
             return
 
@@ -1485,11 +1477,11 @@ class Controller:
         log.debug("attempt_reading: passing new Reading to update_scope_graphs")
         self.update_scope_graphs(reading)
 
-        # Area Scan
-        self.area_scan.process_reading(reading)
-
         # active spectrometer gets additional processing
         if self.multispec.is_selected(device_id):
+
+            # Area Scan
+            self.area_scan.process_reading(reading)
 
             # update laser status 
             if spec.settings.is_xs():

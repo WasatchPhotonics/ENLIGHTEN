@@ -1,6 +1,10 @@
 # Version History
 
 - 2025-??-?? 4.1.26
+    - Area Scan
+        - R0 Area Scan works with new FW
+        - R0 vertical ROI works with new FW
+        - added green/red vertical ROI lines for Hamamatsu
     - Scan Averaging
         - changing in ENLIGHTEN will automatically disable onboard scan averaging
           in XS (including any persistent onboard AutoRaman effects)

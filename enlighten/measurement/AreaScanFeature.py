@@ -96,7 +96,6 @@ class AreaScanFeature:
 
         # create widgets we can't / don't pass in
         self.create_widgets()
-        self.ctl.multispec.register_strip_feature(self)
 
         self.cb_normalize.setChecked(False)
         self.progress_bar.setVisible(False)
@@ -125,37 +124,12 @@ class AreaScanFeature:
         # QGraphicsScene used to hold the Area Scan image
         self.scene = QtWidgets.QGraphicsScene(parent=self.frame_image) 
         self.graphics_view.setScene(self.scene)
-        #self.graphics_view.setViewportMargins(0, -20, 0, -20) # L, T, R, B
 
         # PyQtChart to hold the "summed" graph beneath
         # (why not just put graphicsscene atop scope chart...?)
         self.chart_live = pyqtgraph.PlotWidget(name="Area Scan Live")
         self.curve_live = self.chart_live.plot([], pen=self.ctl.gui.make_pen(widget="area_scan_live"))
         self.layout_live.addWidget(self.chart_live)
-
-    def add_spec_curve(self, spec):
-        if self.ctl.multispec.check_hardware_curve_present(self.name, spec.device_id):
-            log.info(f"Adding spec curve {spec} already present, returning")
-            return
-        curve = self.chart_live.plot([], pen=spec.curve.opts['pen'],name=str(spec.label))
-        self.ctl.multispec.register_hardware_feature_curve(self.name, spec.device_id, curve)
-
-    def remove_spec_curve(self, spec):
-        log.info(f"spec removal from graph called for spec {spec}")
-        if not self.ctl.multispec.check_hardware_curve_present(self.name, spec.device_id):
-            log.info(f"Removing spec curve {spec} already deleted, returning")
-            return
-
-        cur_curve = self.ctl.multispec.get_hardware_feature_curve(self.name, spec.device_id)
-
-        # remove current curve from graph
-        for curve in self.chart_live.listDataItems():
-            if curve.name() == cur_curve.name():
-                self.chart_live.removeItem(curve)
-
-        self.ctl.multispec.remove_hardware_curve(self.name, spec.device_id)
-        log.info(f"finished removing spec {spec}")
-
 
     def disconnect(self):
         log.debug("disconnecting")
@@ -200,45 +174,17 @@ class AreaScanFeature:
         self.frame_count = 0 # could move to app_settings
 
     def process_reading(self, reading):
-        if reading is None or reading.spectrum is None:
+        if reading is None:
             return
 
-        if not self.enabled:
-            self.ctl.set_curve_data(self.ctl.multispec.get_hardware_feature_curve(self.name, reading.device_id), y=reading.spectrum, label="AreaScanFeature.process_reading")
+        if not self.enabled and reading.spectrum is not None:
+            # area scan isn't running, so just update the "live" spectrum from 
+            # the latest reading
+            self.ctl.set_curve_data(self.curve_live, y=reading.spectrum)
             return
 
-        log.debug(f"trying to process area scan read")
-        spec = self.ctl.multispec.current_spectrometer()
-        if spec is None:
-            return self.disable()
-
-        log.debug("process_reading")
         if reading.area_scan_image is not None:
-            # just display the picture we've already got
             self.process_reading_with_area_scan_image(reading)
-
-        else:
-            # assemble line by line
-            if reading.area_scan_row_count < 1:
-                return
-
-            if reading.area_scan_data is not None:
-                self.update_progress_bar()
-
-                log.debug("rendering frame of area_scan_fast")
-                self.data = None
-                rows = len(reading.area_scan_data)
-                for i in range(rows):
-                    spectrum = reading.area_scan_data[i]
-                    row = spectrum[0]
-                    spectrum[0] = spectrum[1]
-                    self.process_spectrum(spectrum, row=row)
-
-                self.finish_update()
-
-                # update the on-screen frame counter
-                self.frame_count += 1
-                self.lb_frame_count.setText(str(self.frame_count))
 
     # ##########################################################################
     # callbacks
@@ -417,7 +363,7 @@ class AreaScanFeature:
             asi = reading.area_scan_image
             h, w = asi.data.shape
 
-            # normalize and scale to (0, 255)
+            # normalize and scale
             lo = np.min(asi.data)
             hi = np.max(asi.data)
             normalized = (asi.data - lo) / (hi - lo)
@@ -430,11 +376,18 @@ class AreaScanFeature:
             self.scene.clear()
             self.scene.addPixmap(qpixmap)
 
+            start_line = spec.settings.eeprom.roi_vertical_region_1_start
+            stop_line = spec.settings.eeprom.roi_vertical_region_1_end
+
+            self.scene.addLine(-10, start_line, qpixmap.width() + 10, start_line, self.pen_start)
+            self.scene.addLine(-10, stop_line,  qpixmap.width() + 10, stop_line,  self.pen_stop)
+
             # @todo consider adding vertical ROI lines like below
         except:
-            log.error("failed to convert AreaScanImage.data into QPixmap", exc_info=1)
+            log.error("failed to render AreaScanImage data", exc_info=1)
 
     def process_reading_with_area_scan_image_png(self, reading):
+        """ we have received a Reading with an AreaScanImage with pathname_png populated """
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
@@ -454,12 +407,10 @@ class AreaScanFeature:
             start_line = spec.settings.eeprom.roi_vertical_region_1_start
             stop_line = spec.settings.eeprom.roi_vertical_region_1_end
 
-            x = qpixmap.width() - 1
-
-            self.scene.addLine(0, scale*start_line, x, scale*start_line, self.pen_start)
-            self.scene.addLine(0, scale*stop_line,  x, scale*stop_line,  self.pen_stop)
-        except Exception as ex:
-            log.error("process_reading_with_area_scan: {ex}", exc_info=1)
+            self.scene.addLine(-10, scale*start_line, qpixmap.width() + 10, scale*start_line, self.pen_start)
+            self.scene.addLine(-10, scale*stop_line,  qpixmap.width() + 10, scale*stop_line,  self.pen_stop)
+        except:
+            log.error("failed to display PNG", exc_info=1)
 
     def normalize_png(self, pathname_png):
         try:
@@ -519,4 +470,4 @@ class AreaScanFeature:
 
         # vertically bin the on-screen image for the "live" spectrum
         total = np.sum(self.data, axis=0)
-        self.ctl.set_curve_data(self.curve_live, total, label="AreaScanFeature.finish_update")
+        self.ctl.set_curve_data(self.curve_live, total)
