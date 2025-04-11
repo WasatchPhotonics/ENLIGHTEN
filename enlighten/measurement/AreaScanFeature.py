@@ -419,14 +419,19 @@ class AreaScanFeature:
         try:
             asi = reading.area_scan_image
             h, w = asi.data.shape
+            log.debug(f"prwasid: received (height {h}, width {w}) AreaScanImage data {asi.data}")
 
             # normalize and scale to (0, 255)
             lo = np.min(asi.data)
             hi = np.max(asi.data)
             normalized = (asi.data - lo) / (hi - lo)
-            scaled = normalized * 255
+            log.debug(f"prwasid: normalized {normalized}")
+            scaled = normalized * 65535
+            log.debug(f"prwasid: scaled {scaled}")
+            scaled_ushort = scaled.astype(np.uint16)
+            log.debug(f"prwasid: scaled {scaled_ushort}")
 
-            qimage = QtGui.QImage(scaled.data, w, h, w, QtGui.QImage.Format_Grayscale8)
+            qimage = QtGui.QImage(scaled_ushort.data, w, h, w*2, QtGui.QImage.Format_Grayscale16)
             qpixmap = QtGui.QPixmap.fromImage(qimage)
 
             self.scene.clear()
