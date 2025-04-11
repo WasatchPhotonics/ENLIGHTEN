@@ -1,5 +1,15 @@
 # Version History
 
+- 2025-04-11 4.1.26
+    - Area Scan
+        - R0 Area Scan works with new FW
+        - R0 vertical ROI works with new FW
+        - added green/red vertical ROI lines for Hamamatsu
+    - Logging
+        - [x] firmware option now available on Logging View (XS only)
+    - Scan Averaging
+        - changing scans-to-average in ENLIGHTEN will automatically disable 
+          onboard averaging in XS (including any persistent AutoRaman settings)
 - 2025-04-08 4.1.25
     - IDS
         - added IDSPeak plugin

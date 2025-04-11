@@ -26,18 +26,24 @@ class LoggingFeature:
         self.ctl = ctl
         cfu = ctl.form.ui
 
-        self.cb_paused  = cfu.checkBox_logging_pause
-        self.cb_verbose = cfu.checkBox_verbose_logging
-        self.te_log     = cfu.textEdit_log
+        self.cb_paused   = cfu.checkBox_logging_pause
+        self.cb_verbose  = cfu.checkBox_logging_verbose
+        self.cb_firmware = cfu.checkBox_logging_firmware
+        self.te_log      = cfu.textEdit_log
 
-        self.cb_verbose.setVisible(True) # MZ: when would this be False?
+        # self.cb_verbose.setVisible(True)
+        self.cb_firmware.setVisible(False)
 
         self.timer = QtCore.QTimer()
         self.timer.setSingleShot(True)
         self.timer.timeout.connect(self.tick)
         self.timer.start(LoggingFeature.TIMER_SLEEP_MS)
 
+        self.logging_firmware = False
+        self.firmware_log = []
+
         self.cb_verbose                         .stateChanged   .connect(self.verbose_callback)
+        self.cb_firmware                        .stateChanged   .connect(self.firmware_callback)
         cfu.pushButton_copy_log_to_clipboard    .clicked        .connect(self.copy_to_clipboard)
 
         # if verbose logging was specified at the command-line OR 
@@ -55,8 +61,33 @@ class LoggingFeature:
 
         self.timer.start(LoggingFeature.TIMER_SLEEP_MS)
 
+    def update_visibility(self):
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+
+        if spec.settings.is_xs():
+            self.cb_firmware.setVisible(True)
+        else:
+            spec.settings.state.firmware_logging_enabled = False
+            self.cb_firmware.setVisible(False)
+            self.cb_firmware.setChecked(False)
+            self.logging_firmware = False
+
     def stop(self):
         self.timer.stop()
+
+    def firmware_callback(self):
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None or not spec.settings.is_xs():
+            self.logging_firmware = False
+            spec.settings.state.firmware_logging_enabled = False
+            return
+
+        enabled = self.cb_firmware.isChecked()
+        self.logging_firmware = enabled                        # prepare to receive
+        spec.settings.state.firmware_logging_enabled = enabled # prepare to send
+        log.debug("logging_firmware {enabled}")
 
     def verbose_callback(self):
         enabled = self.cb_verbose.isChecked()
@@ -80,19 +111,39 @@ class LoggingFeature:
 
     def tick(self):
         # need to run all the time to populate Hardware Status Indicator :-(
-        lines = None
         if not self.paused():
-            try:
-                # is there a less memory-intensive way to do this?
-                # maybe implement ring-buffer inside the loop...
-                lines = []
-                for line in Pygtail(applog.get_location(), encoding="utf-8"):
-                    lines.append(line)
-                self.process(lines)
-            except IOError:
-                log.warn("Cannot tail log file")
+            if self.logging_firmware:
+                self.update_firmware_log()
+            else:
+                self.update_enlighten_log()
 
         self.timer.start(self.TIMER_SLEEP_MS)
+
+    def process_new_firmware_log(self, lines):
+        self.firmware_log.extend(lines)
+
+        # only retain the most-recent 500 lines
+        self.firmware_log = self.firmware_log[-500:]
+
+    def update_firmware_log(self):
+        # @todo: use a threadsafe list/queue
+        lines = self.firmware_log
+
+        self.te_log.clear()
+        for line in lines:
+            self.te_log.append(self.format(line))
+        self.te_log.moveCursor(QtGui.QTextCursor.End)
+
+    def update_enlighten_log(self):
+        # is there a less memory-intensive way to do this?
+        # maybe implement ring-buffer inside the loop...
+        try:
+            lines = []
+            for line in Pygtail(applog.get_location(), encoding="utf-8"):
+                lines.append(line)
+            self.process(lines)
+        except IOError:
+            log.warn("Cannot tail log file")
 
     def process(self, lines):
         if lines is None or lines == []:
