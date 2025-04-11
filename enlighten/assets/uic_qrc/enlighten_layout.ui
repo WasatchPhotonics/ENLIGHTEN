@@ -13734,7 +13734,7 @@ QComboBox QListView
             <number>0</number>
            </property>
            <item>
-            <widget class="QCheckBox" name="checkBox_verbose_logging">
+            <widget class="QCheckBox" name="checkBox_logging_verbose">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -13762,6 +13762,13 @@ QComboBox QListView
             <widget class="QCheckBox" name="checkBox_logging_pause">
              <property name="text">
               <string>pause logging</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkBox_logging_firmware">
+             <property name="text">
+              <string>firmware</string>
              </property>
             </widget>
            </item>

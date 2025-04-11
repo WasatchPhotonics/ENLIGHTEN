@@ -669,6 +669,7 @@ class Controller:
                          self.laser_control,
                          self.laser_temperature,
                          self.laser_watchdog,
+                         self.logging_feature,
                          self.pixel_calibration,
                          self.raman_intensity_correction,
                          self.raman_shift_correction,
@@ -1633,6 +1634,9 @@ class Controller:
 
         elif msg.setting == "laser_firing_indicators": 
             self.laser_control.update_laser_firing_indicators(msg.value)
+
+        elif msg.setting == "firmware_log": 
+            self.logging_feature.process_new_firmware_log(msg.value)
 
         else:
             log.debug("unsupported StatusMessage: %s", msg.setting)
