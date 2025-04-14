@@ -18,6 +18,7 @@ class HardwareFileOutputManager:
         self.cb_output = cfu.checkBox_feature_file_capture
         self.spin_timeout = cfu.spinBox_hardware_capture_timeout
 
+        self.enabled = False
         self.output_timeout = None
         
         self.cb_output.toggled.connect(self.cb_callback)
@@ -33,6 +34,7 @@ class HardwareFileOutputManager:
         self.features.append(feature_obj)
 
     def enable_output(self):
+        self.enabled = True
         current_time = datetime.datetime.now()
         time_info = f"{current_time.isoformat(sep='-',timespec='hours')}-{current_time.minute}-{current_time.second}-"
         self.hardware_dir = os.path.join(common.get_default_data_dir(), "hardware_captures", f"{time_info}hardware_capture")
@@ -60,6 +62,7 @@ class HardwareFileOutputManager:
             self.cb_output.setChecked(False)
 
     def disable_output(self):
+        self.enabled = False
         self.output_timeout = None
         for file_obj in self.file_map.values():
             file_obj.close()
