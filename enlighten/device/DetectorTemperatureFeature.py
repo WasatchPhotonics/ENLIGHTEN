@@ -169,11 +169,16 @@ class DetectorTemperatureFeature:
             log.error(f"Either app_state: {app_state} or reading: {reading} was None, returning")
             return
 
+        log.debug(f"process_reading: reading {reading}")
+        if reading.spectrum is None:
+            log.debug("process_reading: not using reading without spectrum")
+            return
+
         # add the measurement to the moving window
         app_state.detector_temperatures_degC.add(reading.detector_temperature_degC)
         app_state.detector_temperature_degC_latest = reading.detector_temperature_degC
 
-        log.debug("detector_temperature_degC = %s", reading.detector_temperature_degC)
+        log.debug(f"detector_temperature_degC = {reading.detector_temperature_degC}")
 
         # update the primary label
         if spec == current_spec:

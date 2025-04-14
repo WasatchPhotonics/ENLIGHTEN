@@ -133,11 +133,17 @@ class StatusBarFeature:
     # Update any fields we can get to from inside the class (not waiting on
     # external notifications).
     #
+    # This is Called by the end of Controller.process_reading
+    #
     # If we ever create a "ReadingProcessor" or something that handles all new
     # Reading objects, we could always subscribe to notifications from that (as
     # would Graph, KnowItAll, PluginManager etc).
-    # 
-    # Called by the end of Controller.process_reading
+    #
+    # Note that there are many other things on the StatusBar which aren't updated
+    # here, like Detector Temperature, Battery etc. Many of those are updated by
+    # HardwareStatusBarFeature, which while ticking the "strip charts" on the 
+    # Factory View, ends up ticking the Feature objects owning both the strip
+    # charts and the StatusBar scalars.
     def process_reading(self, pr):
         if pr is None:
             return

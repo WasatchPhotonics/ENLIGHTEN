@@ -410,20 +410,28 @@ class Controller:
         high frequencies...this seems okay for now.
         """
         for spec in self.multispec.get_spectrometers():
+            if spec.app_state.paused:
+                log.debug("declining to re-process paused result") # will corrupt running averages
+                continue
+
             pr = spec.app_state.processed_reading
             if pr:
-                reading = pr.reading
-                if reading:
-                    for feature in [ self.detector_temperature,
-                                     self.laser_temperature,
-                                     self.ambient_temperature,
-                                     self.battery_feature ]:
-                        feature.process_reading(spec, reading) 
+                self.process_hardware_strip_reading(spec, pr.reading)
 
-        if self.page_nav.get_current_view() == common.Views.HARDWARE or self.form.ui.checkBox_feature_file_capture.isChecked():
-            self.hard_strip_timer.start(self.form.ui.spinBox_integration_time_ms.value())
+        sleep_ms = 1000
+        if self.page_nav.get_current_view() == common.Views.HARDWARE or self.hardware_file_manager.enabled:
+            sleep_ms = self.integration_time_feature.get_ms()
+        self.hard_strip_timer.start(sleep_ms)
+
+    def process_hardware_strip_reading(self, spec, reading):
+        if reading is None:
             return
-        self.hard_strip_timer.start(1000)
+
+        for feature in [ self.detector_temperature,
+                         self.laser_temperature,
+                         self.ambient_temperature,
+                         self.battery_feature ]:
+            feature.process_reading(spec, reading) 
 
     def tick_bus_listener(self):
         """
@@ -1341,10 +1349,6 @@ class Controller:
             self.disconnect_device(spec)
             return
 
-        # we collected the reading (to clear the queue), but don't do anything with it
-        if spec.app_state.paused and not (self.batch_collection.running or spec.app_state.take_one_request):
-            return
-
         if acquired_reading is None or acquired_reading.reading is None:
             log.debug(f"attempt_reading({device_id}): no reading available")
             if self.vcr_controls.paused or self.batch_collection.running or not spec.is_acquisition_timeout():
@@ -1394,6 +1398,12 @@ class Controller:
             return
 
         reading = acquired_reading.reading
+
+        # we collected the reading (to clear the queue), but don't do anything with it
+        if spec.app_state.paused and not (self.batch_collection.running or spec.app_state.take_one_request):
+            # pull out any useful metadata (detector temperature etc), but stop before graphing
+            self.process_hardware_strip_reading(spec, reading)
+            return
 
         # are we waiting on a SPECIFIC Reading (or series of Readings)?
         if spec.app_state.take_one_request:
