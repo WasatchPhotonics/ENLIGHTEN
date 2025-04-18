@@ -139,7 +139,7 @@ then
     echo "Error: can't locate UIC: $UIC"
     FAILED=true
 fi
-if ! [ -f $TWO_TO_THREE ]
+if ! [ -f "$TWO_TO_THREE" ]
 then
     echo "Error: can't locate 2to3: $TWO_TO_THREE"
     FAILED=true
