@@ -2,7 +2,7 @@ import logging
 
 from enlighten import common
 
-import did_you_know_rc
+from enlighten.assets.uic_qrc import did_you_know_rc
 assert did_you_know_rc
 
 if common.use_pyside2():

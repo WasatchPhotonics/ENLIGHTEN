@@ -21,7 +21,7 @@ from enlighten.scope.Graph import Graph
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 
 # this is in ../../plugins
-from EnlightenPlugin import EnlightenPluginRequest
+from enlighten.plugins.EnlightenPlugin import EnlightenPluginRequest
 
 if common.use_pyside2():
     from PySide2 import QtWidgets, QtCore

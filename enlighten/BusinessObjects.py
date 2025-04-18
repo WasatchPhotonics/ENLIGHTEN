@@ -12,7 +12,7 @@ else:
 log = logging.getLogger(__name__)
 
 from enlighten.KnowItAll.Feature import Feature as KIAFeature
-from enlighten.Plugins.PluginController import PluginController
+from enlighten.plugins.PluginController import PluginController
 from enlighten.data.ModelInfo import ModelInfo
 from enlighten.device.AccessoryControlFeature import AccessoryControlFeature
 from enlighten.device.BatteryFeature import BatteryFeature
