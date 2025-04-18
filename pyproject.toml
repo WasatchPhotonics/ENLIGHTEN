@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "enlighten"
+version = "0.1.0"
+description = "ENLIGHTEN project"
+requires-python = ">=3.8"
+dependencies = [
+    "numpy",
+    "tensorflow~=2.17",
+    "PySide6",
+    "PyQt5",
+    "pygtail",
+    "pyusb",
+    "pefile",
+    "pyinstaller==6.10.0",
+    "pywavelets",
+    "superman",
+    "pyqtgraph",
+    "libusb",
+    "seabreeze",
+    "boto3",
+    "bleak",
+    "pyftdi",
+    "adafruit-blinka",
+    "SPyC_Writer",
+    "crcmod",
+    "pandas",
+    "pexpect",
+    "pip",
+    "psutil",
+    "pytest",
+    "scipy",
+    "xlwt",
+    "qimage2ndarray",
+    "2to3",
+    "matplotlib",
+    "pyserial",
+    "colour-science",
+    "wasatch @ git+https://github.com/WasatchPhotonics/Wasatch.PY.git@jklein-fix-packaging",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
