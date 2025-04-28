@@ -19,7 +19,7 @@ os.environ["BLINKA_FT232H"]="1" # used to allow SPI with FT232H
 
 from enlighten import common
 from enlighten.ui.BasicWindow import BasicWindow
-import splashscreens_rc
+from enlighten.assets.uic_qrc import splashscreens_rc
 
 from wasatch.DeviceID import DeviceID
 from wasatch   import applog
