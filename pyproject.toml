@@ -40,6 +40,7 @@ dependencies = [
     "pyserial",
     "colour-science",
     "wasatch @ git+https://github.com/WasatchPhotonics/Wasatch.PY.git@jklein-fix-packaging",
+    "jcamp",
 ]
 
 [tool.setuptools]
