@@ -31,5 +31,5 @@ jobs:
       uses: sayyid5416/pyinstaller@v1
       with:
         path: enlighten
-        spec: 'enlighten/enlighten.spec'
+        spec: 'enlighten.spec'
         upload_exe_with_name: 'ENLIGHTEN'
