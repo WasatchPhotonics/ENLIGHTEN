@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+requires = ["pdm-backend", "PySide6"]
+build-backend = "pdm.backend"
 
 [project]
 name = "enlighten"
@@ -41,7 +41,12 @@ dependencies = [
     "colour-science",
     "wasatch @ git+https://github.com/WasatchPhotonics/Wasatch.PY.git@jklein-fix-packaging",
     "jcamp",
+    "pywin32  ; platform_system == 'Windows'",
+    "ids_peak  ; platform_system == 'Windows'",
 ]
 
-[tool.setuptools]
-package-dir = {"" = "enlighten"}
+[tool.pdm.build]
+includes = ["enlighten"]
+
+[tool.pdm.build.scripts]
+pre_build = "enlighten.build_hooks.build_ui_files:postbuild"
