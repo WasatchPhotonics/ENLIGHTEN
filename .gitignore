@@ -26,7 +26,6 @@ releases/
 scripts/built-dist/Enlighten/
 scripts/work-path/Enlighten/
 scripts/Enlighten*.spec
-Enlighten*.spec
 build
 build-work
 build-mac
