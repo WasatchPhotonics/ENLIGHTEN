@@ -1,7 +1,4 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
-
-name: Python application
+name: ENLIGHTEN
 
 on:
   push:
@@ -33,3 +30,10 @@ jobs:
         path: enlighten
         spec: 'enlighten.spec'
         upload_exe_with_name: 'ENLIGHTEN'
+
+    - name: Compile .ISS to .EXE Installer
+      uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+      with:
+        path: scripts/Application_InnoSetup.iss
+        options: /O+ /DENLIGHTEN_VERSION=1 /DCOMPRESSION=lzma/max
+
