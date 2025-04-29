@@ -52,7 +52,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 ; "Regular" files
-Source: "built-dist\*"; DestDir: "{app}"; Flags: recursesubdirs ignoreversion
+Source: "dist\*"; DestDir: "{app}"; Flags: recursesubdirs ignoreversion
 
 ; possibly for https://pyinstaller.org/en/v6.0.0/usage.html#windows
 Source: "support_files\msvcr100.dll"; DestDir: "{app}\enlighten\"; Flags: recursesubdirs ignoreversion
