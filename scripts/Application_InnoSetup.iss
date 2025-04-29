@@ -98,7 +98,7 @@ Source: "..\enlighten\assets\uic_qrc\images\logos\*"; DestDir: "{app}\enlighten\
 
 ; ENLIGHTEN Plug-In examples
 ; Note that under Mac Parallels, this lands into the Mac Documents folder, not on C:
-Source: "..\plugins\*"; DestDir: "{app}\enlighten\plugins"; Flags: recursesubdirs 
+Source: "..\enlighten\plugins\*"; DestDir: "{app}\enlighten\plugins"; Flags: recursesubdirs
 
 [Icons]
 Name: "{group}\{#MyAppName} {#ENLIGHTEN_VERSION}"; Filename: "{app}\{#MyAppName}\{#MyAppExeName}"; IconFilename: "{app}\{#MyAppName}\{#MyAppExeName}"
