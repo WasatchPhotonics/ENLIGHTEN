@@ -1,12 +1,11 @@
-import sys
 import subprocess
-from pathlib import Path
+import sys
 import platform
+from pathlib import Path
 
-UIC = "pyside6-uic"
-RCC = "pyside6-rcc"
-
-
+def postbuild():
+    embed_stylesheet()
+    convert_qt_files()
 
 def embed_stylesheet():
     print("Embedding stylesheet...")
@@ -17,29 +16,22 @@ def embed_stylesheet():
         subprocess.run(['unix2dos', str(ui_file)], check=True)
         print(f"Converted line endings in {ui_file}")
 
-
 def convert_qt_files():
+    uic = "pyside6-uic"
+    rcc = "pyside6-rcc"
 
-    # Convert .qrc files
     for qrc_file in Path('.').glob('**/assets/uic_qrc/*.qrc'):
         dest_py = qrc_file.with_name(qrc_file.stem + "_rc.py")
         print(f"Converting resource file {qrc_file} -> {dest_py}")
-        subprocess.run([RCC, str(qrc_file), '-o', str(dest_py)], check=True)
+        subprocess.run([rcc, str(qrc_file), '-o', str(dest_py)], check=True)
 
-    # Convert .ui files
     for ui_file in Path('.').glob('**/assets/uic_qrc/*.ui'):
         dest_py = ui_file.with_suffix('.py')
         print(f"Converting UI file {ui_file} -> {dest_py}")
-        subprocess.run([UIC, '--from-imports', str(ui_file), '-o', str(dest_py)], check=True)
+        subprocess.run([uic, '--from-imports', str(ui_file), '-o', str(dest_py)], check=True)
 
-    # Ensure __init__.py exists to make valid Python module
     uic_qrc_dirs = set(f.parent for f in Path('.').glob('**/assets/uic_qrc/*.ui'))
     for d in uic_qrc_dirs:
         init_py = d / "__init__.py"
         init_py.touch()
         print(f"Ensured Python module by touching {init_py}")
-
-
-if __name__ == '__main__':
-    embed_stylesheet()
-    convert_qt_files()
