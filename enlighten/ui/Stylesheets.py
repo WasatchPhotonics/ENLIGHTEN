@@ -1,16 +1,28 @@
 import os
 import logging
-
+import sys
 log = logging.getLogger(__name__)
 
-## 
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS,
+        # and places our data files in a folder relative to that temp
+        # folder named as specified in the datas tuple in the spec file
+        return os.path.join(sys._MEIPASS, relative_path)
+    except Exception:
+        # sys._MEIPASS is not defined, so use the original path
+        return relative_path
+
+##
 # Encapsulates application of CSS stylesheets to Qt widgets.
 class Stylesheets:
 
     DEFAULT_PATH = "enlighten/assets/stylesheets"
 
     def get_theme_list(self):
-        return os.listdir(self.DEFAULT_PATH)
+        log.info(f"Looking in {resource_path(self.DEFAULT_PATH)} for file; cwd= {os.getcwd()}")
+        return os.listdir(resource_path(self.DEFAULT_PATH))
 
     def clear(self):
         self.css = {}
@@ -28,7 +40,7 @@ class Stylesheets:
         self.clear()
         path = self.ctl.stylesheet_path
 
-        self.path = path if path else self.DEFAULT_PATH
+        self.path = resource_path(path) if path else resource_path(self.DEFAULT_PATH)
 
         for theme in self.get_theme_list():
             self.load(theme)
