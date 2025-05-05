@@ -74,7 +74,7 @@ class Controller:
     # ##########################################################################
 
     ACQUISITION_TIMER_SLEEP_MS      =  100
-    STATUS_TIMER_SLEEP_MS           = 1000
+    STATUS_TIMER_SLEEP_MS           =  250
     BUS_TIMER_SLEEP_MS              = 1000
     MAX_MISSED_READINGS             =    2
     USE_ERROR_DIALOG                = False
@@ -1285,11 +1285,12 @@ class Controller:
                     if spec.device is None:
                         break
 
+                    log.debug(f"polling for status message: {spec.device}")
                     msg = spec.device.acquire_status_message()
                     if msg is None:
                         break
 
-                    self.process_status_message(msg)
+                    self.process_status_message(msg, spec)
                 except:
                     log.debug("Error reading or processing StatusMessage on %s", spec.device_id, exc_info=1)
 
@@ -1373,11 +1374,14 @@ class Controller:
             spec.app_state.missed_reading_count += 1
 
             # this doesn't have to be done after each keepalive...we could do this at 1Hz or so
+            
             if spec.app_state.missed_reading_count > self.MAX_MISSED_READINGS and \
                     not spec.app_state.spec_timeout_prompt_shown and \
                     not self.multispec.is_in_reset(spec.device.device_id) and \
-                    spec.app_state.received_reading_at_current_integration_time:
-                log.info("displaying Timeout Warning MessageBox (stay connected, or disconnect)")
+                    spec.app_state.received_reading_at_current_integration_time and \
+                    (spec.app_state.last_status_message_time is None or (now - spec.app_state.last_status_message_time).total_seconds() * 1000 < spec.settings.state.integration_time_ms * 3):
+
+                log.info(f"displaying Timeout Warning MessageBox (stay connected, or disconnect) (missed_reading_count {spec.app_state.missed_reading_count})")
                 spec.app_state.spec_timeout_prompt_shown = True
                 # move to msgbox
                 dlg = QMessageBox(self.form)
@@ -1406,13 +1410,17 @@ class Controller:
             return
 
         # are we waiting on a SPECIFIC Reading (or series of Readings)?
+        matched_take_one = False
         if spec.app_state.take_one_request:
             # is this that Reading?
             if reading.take_one_request:
                 if reading.take_one_request.request_id == spec.app_state.take_one_request.request_id:
                     log.debug(f"TakeOneRequest matched: {spec.app_state.take_one_request}")
+                    matched_take_one = True
                 else:
+                    # log the error but accept the match anyway, so we don't freeze the GUI due to some unforeseen bug
                     log.critical(f"TakeOneRequest mismatch: expected {spec.app_state.take_one_request} but received {reading.take_one_request}...clearing")
+                    matched_take_one = True
                 
                 # is this part of a "TakeMany" Fast-Batch?
                 if reading.take_one_request.readings_target:
@@ -1430,6 +1438,10 @@ class Controller:
         else:
             # log.debug("not looking for any particular reading")
             pass
+
+        if spec.app_state.paused and not matched_take_one:
+            log.debug("paused, and not a match, so not displaying")
+            return
 
         if reading.failure is not None:
             # WasatchDeviceWrapper currently turns these into upstream poison-pills,
@@ -1613,7 +1625,7 @@ class Controller:
         log.critical("acquire_reading(%s): how did we get here?!", str(device_id))
         return AcquiredReading(disconnect=True)
 
-    def process_status_message(self, msg):
+    def process_status_message(self, msg, spec):
         """
         Used to handle StatusMessage objects received from spectrometer
         threads (as opposed to the Readings we normally receive).
@@ -1633,7 +1645,10 @@ class Controller:
             log.error("received invalid StatusMessage", exc_info=1)
             return
 
-        elif msg.setting == "marquee_info":
+        spec.app_state.last_status_message_time = datetime.datetime.now()
+
+        # @todo make this a hash
+        if   msg.setting == "marquee_info":
             self.marquee.info(msg.value)
 
         elif msg.setting == "marquee_error":
@@ -1647,6 +1662,9 @@ class Controller:
 
         elif msg.setting == "firmware_log": 
             self.logging_feature.process_new_firmware_log(msg.value)
+
+        elif msg.setting == "scan_averaging": 
+            self.scan_averaging.process_status_message(msg.value, spec)
 
         else:
             log.debug("unsupported StatusMessage: %s", msg.setting)
@@ -1989,11 +2007,12 @@ class Controller:
         if app_state:
             app_state.processed_reading = pr
 
-        # were we only taking one measurement?
-        # log.debug("calling TakeOneFeature.process")
+        # Were we only taking one measurement? This allows "completing" an open 
+        log.debug("calling TakeOneFeature.process")
         self.take_one.process(pr)
 
         # was this part of a TakeMany Fast-Batch series?
+        log.debug("calling BatchCollection.process")
         self.batch_collection.process(pr, spec)
 
         # update on-screen ASTM peaks

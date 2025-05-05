@@ -78,6 +78,24 @@ class ScanAveragingFeature:
     def show_label(self, flag):
         self.label.setVisible(flag)
 
+    def process_status_message(self, msg, spec):
+        # ignore "floated-up" averaging updates if we're doing BatchCollection 
+        # and we're between measurements. In this state, the scope is paused, and
+        # it doesn't make sense to update the background averaging count if we're
+        # not updating the spectrum. That said, we don't hide the display simply 
+        # because VCRControls.paused, because many BatchCollections run entirely
+        # while the scope is "paused," and we DO want to show active averaging when
+        # for scheduled BatchCollection measurements.
+        if self.ctl.batch_collection.running and spec.app_state.take_one_request is None:
+            log.debug("squelching scan averaging update during gap in BatchCollection")
+            return
+
+        try:
+            count = int(msg[1])
+            self.update_label(spec, count)
+        except:
+            log.error("received invalid status msg {msg}", exc_info=1)
+
     def update_label(self, spec, count):
         log.debug("count %d" % count)
         if spec is None:
@@ -92,7 +110,7 @@ class ScanAveragingFeature:
             self.label.setVisible(False)
             return
 
-        if self.ctl.vcr_controls and self.ctl.vcr_controls.is_paused(spec):
+        if self.ctl.vcr_controls and self.ctl.vcr_controls.is_paused(spec) and not self.ctl.batch_collection.running:
             self.label.setVisible(False)
             return
 
@@ -131,5 +149,9 @@ class ScanAveragingFeature:
 
         self.update_from_gui()
 
-    def get_scans_to_average(self):
-        return int(self.spinbox.value())
+    def get_scans_to_average(self, spec=None):
+        if spec is None:
+            spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return 1
+        return int(spec.settings.state.scans_to_average)

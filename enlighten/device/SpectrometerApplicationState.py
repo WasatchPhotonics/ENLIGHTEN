@@ -48,6 +48,7 @@ class SpectrometerApplicationState:
         self.baseline_correction_algo = None
         self.baseline_correction_enabled = False # MZ: is this used? should it be?
         self.spec_timeout_prompt_shown = False
+        self.last_status_message_time = None
         self.missed_reading_count = 0
         self.received_reading_at_current_integration_time = False
         self.laser_state = LaserStates.DISABLED

@@ -102,10 +102,13 @@ class TakeOneFeature:
 
         self.reset()
 
-    ##
-    # Accept a newly ProcessedReading from the Controller.  If the measurement is 
-    # fully averaged, complete the TakeOne and optionally save.
     def process(self, processed_reading):
+        """
+        Accept a newly ProcessedReading from the Controller.  If the measurement is 
+        fully averaged, complete the TakeOne and optionally save.
+        
+        @returns True if it "completed" a TakeOneRequest
+        """
         if not self.running:
             log.debug("process: not running")
             return
@@ -117,21 +120,21 @@ class TakeOneFeature:
         log.debug("process: start")
 
         # did we get an averaged reading (completing a single TakeOne within a spectrometer?)
-        reading = processed_reading.reading
-        if not reading.averaged:
+        if not processed_reading.reading.averaged:
             log.debug("process: insufficiently averaged")
             return
         self.completion_count += 1
 
         # does this complete the overall TakeOne operation?
         log.debug("process: checking for completion")
-        if self.check_complete():
-            log.debug("process: calling complete")
-            self.complete()
-        else:
+        if not self.check_all_spectrometers_complete():
             log.debug("process: not yet complete")
+            return
 
-    def check_complete(self):
+        log.debug("process: calling complete")
+        self.complete()
+
+    def check_all_spectrometers_complete(self):
         """ 
         TakeOne events should yield a response from every connected 
         spectrometer...see whether they've all called in. 

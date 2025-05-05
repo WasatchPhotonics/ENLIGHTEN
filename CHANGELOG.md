@@ -1,6 +1,8 @@
 # Version History
 
 - 2025-??-?? 4.1.27
+    - Horiz ROI
+        - persist button setting as "user request"
     - Area Scan
         - continue updating detector temperature and other hardware metrics from
           "background / ignored" readings while scope paused
