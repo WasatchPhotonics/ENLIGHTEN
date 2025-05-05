@@ -3,10 +3,6 @@ import sys
 import platform
 from pathlib import Path
 
-def postbuild():
-    embed_stylesheet()
-    convert_qt_files()
-
 def embed_stylesheet():
     print("Embedding stylesheet...")
     subprocess.run([sys.executable, 'scripts/embed_stylesheet.py'], check=True)
@@ -35,3 +31,7 @@ def convert_qt_files():
         init_py = d / "__init__.py"
         init_py.touch()
         print(f"Ensured Python module by touching {init_py}")
+
+if __name__ == "__main__":
+    embed_stylesheet()
+    convert_qt_files()
