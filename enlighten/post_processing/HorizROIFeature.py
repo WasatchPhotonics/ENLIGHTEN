@@ -118,7 +118,7 @@ class HorizROIFeature:
         self.user_requested_enabled = self.enabled
 
         log.debug(f"button_callback: user_requested_enabled = {self.user_requested_enabled}, enabled = {self.enabled}")
-        if self.ctl.config.set("HorizROIFeature", "user_requested_enabled", self.user_requested_enabled)
+        self.ctl.config.set("HorizROIFeature", "user_requested_enabled", self.user_requested_enabled)
         
         self.update_visibility()
 
