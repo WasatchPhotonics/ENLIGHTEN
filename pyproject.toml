@@ -16,7 +16,7 @@ dependencies = [
     "superman",
     "pyqtgraph",
     "libusb",
-    "seabreeze",
+    "seabreeze==2.7.0",
     "boto3",
     "bleak",
     "pyftdi",
