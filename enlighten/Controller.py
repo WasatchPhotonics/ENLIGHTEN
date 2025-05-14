@@ -1798,7 +1798,8 @@ class Controller:
         selected = False
         if spec is None:
             spec = self.multispec.current_spectrometer()
-            settings = spec.settings
+            if spec is not None:
+                settings = spec.settings
         if spec is not None:
             app_state = spec.app_state
             selected = self.multispec.is_selected(spec.device_id)
