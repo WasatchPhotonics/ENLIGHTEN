@@ -33,7 +33,7 @@ SetupIconFile=..\{#module_name}\assets\uic_qrc\images\EnlightenIcon.ico
 UninstallDisplayIcon="{app}\{#MyAppName}\{#MyAppExeName}"
 PrivilegesRequired=poweruser
 WizardStyle=modern
-WizardImageFile=..\enlighten\assets\uic_qrc\images\logos\wp-314.bmp,..\enlighten\assets\uic_qrc\images\logos\wp-386.bmp
+WizardImageFile=..\src\enlighten\assets\uic_qrc\images\logos\wp-314.bmp,..\src\enlighten\assets\uic_qrc\images\logos\wp-386.bmp
 
 ; use standard compression defaults (lzma2/max)
 ; @see https://jrsoftware.org/ishelp/index.php?topic=setup_compression
