@@ -1,8 +1,0 @@
-<RCC>
-  <qresource prefix="application">
-    <file>images/enlightenLOGO.png</file>
-    <file>images/enlightenLOGO-light.png</file>
-    <file>images/EnlightenIcon.ico</file>
-    <file>images/PoweredByKnowItAll-Wiley.png</file>
-  </qresource>
-</RCC>
