@@ -200,7 +200,7 @@ do
     fi
 
     echo -n "converting $FILE"
-    $UIC_PRE "$UIC" $FILE -o $DEST $UIC_OPTS && convertToPy3 $DEST
+    $UIC_PRE "$UIC" --import-from= $FILE -o $DEST $UIC_OPTS && convertToPy3 $DEST
     echo "...done"
 done
 
