@@ -64,9 +64,9 @@ Source: "support_files\msvcr100.dll"; DestDir: "{app}\enlighten\"; Flags: recurs
 Source: "support_files\libusb_drivers\amd64\libusb0.dll"; DestDir: "{app}\enlighten\"; Flags: recursesubdirs ignoreversion
 
 ; Files and directories to be copied as-is into the destination directory tree
-Source: "..\enlighten\assets\stylesheets\*"; DestDir: "{app}\enlighten\enlighten\assets\stylesheets\"; Flags: recursesubdirs ignoreversion
-Source: "..\enlighten\assets\example_data\*"; DestDir: "{app}\enlighten\enlighten\assets\example_data\"; Flags: recursesubdirs ignoreversion
-Source: "..\enlighten\assets\uic_qrc\images\EnlightenIcon.ico"; DestDir: "{app}\enlighten"; DestName: "default_icon.ico"
+Source: "..\src\enlighten\assets\stylesheets\*"; DestDir: "{app}\enlighten\enlighten\assets\stylesheets\"; Flags: recursesubdirs ignoreversion
+Source: "..\src\enlighten\assets\example_data\*"; DestDir: "{app}\enlighten\enlighten\assets\example_data\"; Flags: recursesubdirs ignoreversion
+Source: "..\src\enlighten\assets\uic_qrc\images\EnlightenIcon.ico"; DestDir: "{app}\enlighten"; DestName: "default_icon.ico"
 Source: "..\dist\KIAConsole.exe"; DestDir: "{app}\enlighten"
 Source: "..\dist\CyUSB3-Win10.zip"; DestDir: "{app}\enlighten"
 Source: "..\dist\DFU_Drivers.zip"; DestDir: "{app}\enlighten"
@@ -94,11 +94,11 @@ Source: "..\dist\Windows\System32\*"; DestDir: "{sysnative}"
 Source: "..\dist\Windows\SysWOW64\*"; DestDir: "{sys}"
 
 ; installer Wizard logos
-Source: "..\enlighten\assets\uic_qrc\images\logos\*"; DestDir: "{app}\enlighten\enlighten\assets\uic\images\logos\"
+Source: "..\src\enlighten\assets\uic_qrc\images\logos\*"; DestDir: "{app}\enlighten\enlighten\assets\uic\images\logos\"
 
 ; ENLIGHTEN Plug-In examples
 ; Note that under Mac Parallels, this lands into the Mac Documents folder, not on C:
-Source: "..\enlighten\plugins\*"; DestDir: "{app}\enlighten\plugins"; Flags: recursesubdirs
+Source: "..\src\enlighten\plugins\*"; DestDir: "{app}\enlighten\plugins"; Flags: recursesubdirs
 
 [Icons]
 Name: "{group}\{#MyAppName} {#ENLIGHTEN_VERSION}"; Filename: "{app}\{#MyAppName}\{#MyAppExeName}"; IconFilename: "{app}\{#MyAppName}\{#MyAppExeName}"
