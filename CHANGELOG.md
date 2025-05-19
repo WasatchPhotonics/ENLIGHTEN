@@ -6,6 +6,7 @@
     - Area Scan
         - continue updating detector temperature and other hardware metrics from
           "background / ignored" readings while scope paused
+        - mostly works on XS
 - 2025-04-11 4.1.26
     - Area Scan
         - R0 Area Scan works with new FW

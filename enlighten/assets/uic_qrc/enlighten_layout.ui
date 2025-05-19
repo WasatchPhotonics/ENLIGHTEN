@@ -19423,6 +19423,50 @@ li.checked::marker { content: "\2612"; }
                             </property>
                            </widget>
                           </item>
+                          <item row="7" column="0">
+                           <widget class="QSpinBox" name="spinBox_area_scan_line_step">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                             <size>
+                              <width>75</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="focusPolicy">
+                             <enum>Qt::FocusPolicy::StrongFocus</enum>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                            <property name="minimum">
+                             <number>0</number>
+                            </property>
+                            <property name="maximum">
+                             <number>255</number>
+                            </property>
+                            <property name="value">
+                             <number>1</number>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="7" column="1">
+                           <widget class="QLabel" name="label_223x">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="text">
+                             <string>Line Step</string>
+                            </property>
+                           </widget>
+                          </item>
                          </layout>
                         </item>
                         <item>

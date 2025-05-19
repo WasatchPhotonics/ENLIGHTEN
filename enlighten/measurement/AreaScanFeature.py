@@ -76,6 +76,7 @@ class AreaScanFeature:
         self.sb_start           = cfu.spinBox_area_scan_start_line
         self.sb_stop            = cfu.spinBox_area_scan_stop_line
         self.sb_delay_ms        = cfu.spinBox_area_scan_delay_ms
+        self.sb_step            = cfu.spinBox_area_scan_line_step
 
         self.data = None
         self.enabled = False
@@ -106,6 +107,7 @@ class AreaScanFeature:
         self.sb_start    .valueChanged   .connect(self.roi_callback)
         self.sb_stop     .valueChanged   .connect(self.roi_callback)
         self.sb_delay_ms .valueChanged   .connect(self.delay_callback)
+        self.sb_step     .valueChanged   .connect(self.step_callback)
 
         self.progress_bar_timer = QtCore.QTimer()
         self.progress_bar_timer.timeout.connect(self.tick_progress_bar)
@@ -189,6 +191,15 @@ class AreaScanFeature:
     # ##########################################################################
     # callbacks
     # ##########################################################################
+
+    def step_callback(self):
+        """ the user changed the step spinner """
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return self.disable()
+
+        spec.settings.state.area_scan_line_step = self.sb_step.value()
+        spec.change_device_setting("area_scan_line_step", spec.settings.state.area_scan_line_step)
 
     def delay_callback(self):
         """ the user changed the delay_ms spinner """
