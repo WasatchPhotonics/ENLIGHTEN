@@ -14,7 +14,8 @@ a = Analysis(
         'scipy.special._special_ufuncs',
         'scipy.special.cython_special',
         'tensorflow',
-        'tensorflow.python.data.ops.shuffle_op'
+        'tensorflow.python.data.ops.shuffle_op',
+        'psutil'
     ],
     hookspath=[],
     hooksconfig={},
