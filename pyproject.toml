@@ -46,5 +46,8 @@ requires=["setuptools"]
 build-backend="setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-include=["enlighten"]
+include=["enlighten","enlighten.assets", "enlighten.data",
+            "enlighten.file_io","enlighten.KnowItAll","enlighten.measurement",
+            "enlighten.network", "enlighten.parser", "enlighten.plugins", "enlighten.post_processing", "enlighten.scope",
+            "enlighten.timing", "enlighten.ui"]
 where=["src"]
