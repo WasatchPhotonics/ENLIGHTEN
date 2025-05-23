@@ -5,7 +5,7 @@ a = Analysis(
     ['src\\enlighten\\Enlighten.py'],
     pathex=['src/enlighten/assets/uic_qrc'],
     binaries=[],
-    datas=[('support_files/libusb_drivers/amd64/libusb0.dll', '.')],
+    datas=[('scripts/support_files/libusb_drivers/amd64/libusb0.dll', '.')],
     hiddenimports=['numpy.core._multiarray_umath',
                     'scipy._lib.messagestream',
                     'scipy._lib.array_api_compat.numpy.fft',
