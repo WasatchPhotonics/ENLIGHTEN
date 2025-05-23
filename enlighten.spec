@@ -2,21 +2,19 @@
 
 
 a = Analysis(
-    ['src/enlighten/Enlighten.py'],
+    ['src\\enlighten\\Enlighten.py'],
     pathex=['src/enlighten/assets/uic_qrc'],
     binaries=[],
-    datas=[('scripts\\support_files\\libusb_drivers\\amd64\\libusb0.dll', '.'),
-            ('src/enlighten/assets/stylesheets', 'src/enlighten/assets/stylesheets')],
-    hiddenimports=[
-        'numpy.core._multiarray_umath',
-        'scipy._lib.messagestream',
-        'scipy._lib.array_api_compat.numpy.fft',
-        'scipy.special._special_ufuncs',
-        'scipy.special.cython_special',
-        'tensorflow',
-        'tensorflow.python.data.ops.shuffle_op',
-        'psutil'
-    ],
+    datas=[('support_files/libusb_drivers/amd64/libusb0.dll', '.')],
+    hiddenimports=['numpy.core._multiarray_umath',
+                    'scipy._lib.messagestream',
+                    'scipy._lib.array_api_compat.numpy.fft',
+                    'scipy.special._special_ufuncs',
+                    'scipy.special.cython_special',
+                    'colour',
+                    'tensorflow',
+                    'tensorflow.python.data.ops.shuffle_op',
+                    'psutil'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
