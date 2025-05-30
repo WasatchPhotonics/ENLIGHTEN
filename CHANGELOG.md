@@ -1,6 +1,6 @@
 # Version History
 
-- 2025-??-?? 4.1.27
+- 2025-05-30 4.1.27
     - Horiz ROI
         - persist button setting as "user request"
     - Area Scan
