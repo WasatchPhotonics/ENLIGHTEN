@@ -70,8 +70,11 @@ class HorizROIFeature:
         self.cb_editing = self.ctl.form.ui.checkBox_edit_horiz_roi
 
         log.debug("init: defaulting to enabled and user_requested_enabled (i.e. grey)")
+        if self.ctl.config.has_option("HorizROIFeature", "user_requested_enabled"):
+            self.user_requested_enabled = self.ctl.config.get_bool("HorizROIFeature", "user_requested_enabled")
+        else:
+            self.user_requested_enabled = True
         self.enabled = True
-        self.user_requested_enabled = True
 
         self.observers = set()
         self.ctl.graph.register_observer("change_axis", self.change_axis_callback)
@@ -115,6 +118,7 @@ class HorizROIFeature:
         self.user_requested_enabled = self.enabled
 
         log.debug(f"button_callback: user_requested_enabled = {self.user_requested_enabled}, enabled = {self.enabled}")
+        self.ctl.config.set("HorizROIFeature", "user_requested_enabled", self.user_requested_enabled)
         
         self.update_visibility()
 

@@ -136,7 +136,7 @@ class ColumnFileParser:
             pass
 
         try:
-            # why Excel why?
+            # change Excel timestamps of the form HH:MM.fractional_minutes to (using today's date) "YYYY-MM-DD HH:MM:SS"
             pat = r'(\d{2}:\d{2})\.(\d+)'
             m = re.match(pat, ts)
             if m:
@@ -194,11 +194,12 @@ class ColumnFileParser:
         except:
             log.error("error parsing timestamp", exc_info=1)
 
+        # processed
+        if pr.processed is None and pr.raw is not None:
+            pr.processed = pr.raw
+
         # pixels (currently ignoring Pixel Count and just using what's in the data columns)
-        if False and "Pixel Count" in metadata:
-            eeprom.active_pixels_horizontal = int(self.get_safe_float("Pixel Count"))
-        else:
-            eeprom.active_pixels_horizontal = len(pr.processed)
+        eeprom.active_pixels_horizontal = len(pr.processed)
         log.debug("active_pixels_horizontal = %d", eeprom.active_pixels_horizontal)
 
         # fields where name changed in different versions / generators

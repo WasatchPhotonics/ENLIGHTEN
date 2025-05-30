@@ -116,7 +116,7 @@ class GUI:
         else:
             self.ctl.stylesheets.apply(button, "gray_gradient_button")
     
-    def make_pen(self, widget=None, color=None, selected=False):
+    def make_pen(self, widget=None, color=None, selected=False, width=None):
         """ @param widget: allows enlighten.ini to override color/style for named widgets """
         if color is None and widget is not None:
             color = self.ctl.colors.get_by_widget(widget)
@@ -131,7 +131,9 @@ class GUI:
             color = self.ctl.colors.get_next_random()
 
         style = self.ctl.config.get(self.SECTION, f"{widget}_pen_style")
-        width = int(self.ctl.config.get(self.SECTION, f"{widget}_pen_width"))
+        if width is None:
+            width = int(self.ctl.config.get(self.SECTION, f"{widget}_pen_width"))
+
         if selected and self.ctl.multispec and self.ctl.multispec.count() > 1 and not self.ctl.multispec.hide_others:
             width = int(width * 2)
 

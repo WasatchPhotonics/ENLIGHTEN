@@ -24,7 +24,7 @@ class BatchCollection:
     button is clicked, and is implemented as a timed series of clicks to the
     VCRControls' "Step and Save" button.
     
-    VCRControls will be left Paused at the end of a Batch Collection, regardless
+    VCRControls will be left Paused at the END of a Batch Collection, regardless
     of initial state.
     
     @par History
@@ -388,7 +388,7 @@ class BatchCollection:
         self.save_count_by_device_id = {}
         self.first_tick = True
 
-        # we should only be ABLE to start a batch if we're paused, but...just to be sure:
+        # automatically pause at the START of a BatchCollection
         self.ctl.vcr_controls.pause()
 
         # Compute "next start time" now, at the beginning of the batch,
@@ -439,8 +439,15 @@ class BatchCollection:
             # Readings. Indicate this downstream by generating a SINGLE 
             # TakeOneRequest with readings_target and readings_current 
             # populated, so WasatchDevice can keep count for us.
+            #
+            # It is unclear what should happen if the user changes ENLIGHTEN's
+            # ScansToAverage while this "fast BatchCollection" is in progress.
+            # Presumably the user WANTED to change averaging, so downstream
+            # Wasatch.PY device classes should allow change_setting("scans_to_average")
+            # to "stomp" whatever value was already in TakeOneRequest.scans_to_average.
             
             take_one_streaming = TakeOneRequest(self.take_one_template)
+            take_one_streaming.scans_to_average = self.ctl.scan_averaging.get_scans_to_average()
             take_one_streaming.readings_target = self.measurement_count
             take_one_streaming.readings_current = 0
 
@@ -483,7 +490,7 @@ class BatchCollection:
         self.ctl.marquee.info("batch of %d measurements complete" % self.measurement_count, persist=True)
         self.current_batch_start_time = None
 
-        # batches end in paused state
+        # batches END in paused state
         self.ctl.vcr_controls.pause()
 
         self.ctl.multispec.change_device_setting("take_one_request", None)
@@ -568,6 +575,8 @@ class BatchCollection:
         self.next_tick_start_time = datetime.datetime.now() + datetime.timedelta(milliseconds=self.measurement_period_ms)
 
         # when this event completes, VCRControls will call our save_complete method
+        if self.take_one_template is not None:
+            self.take_one_template.scans_to_average = self.ctl.scan_averaging.get_scans_to_average()
         self.ctl.vcr_controls.step_save(self.save_complete, take_one_template=self.take_one_template)
 
     def update_suffix(self):

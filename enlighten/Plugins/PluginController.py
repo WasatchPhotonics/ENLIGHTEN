@@ -1017,7 +1017,9 @@ class PluginController:
             # allow plugin to block ENLIGHTEN until response received
             if config.block_enlighten:
                 if not self.process_response_blocking(processed_reading):
+                    log.debug("process_reading: error while processing blocking response")
                     return False
+
             return True
 
         except: 

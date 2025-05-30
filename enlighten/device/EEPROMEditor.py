@@ -203,6 +203,7 @@ class EEPROMEditor:
 
         # mapping from eeprom.subformat to which frame(s) should be visible
         self.subformat_frames = {
+            0: [],
             1: [ cfu.frame_eeprom_sub_1 ],
             2: [ cfu.frame_eeprom_sub_2 ],
             3: [ cfu.frame_eeprom_sub_3, cfu.frame_eeprom_sub_1 ],
