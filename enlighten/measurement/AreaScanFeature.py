@@ -66,10 +66,12 @@ class AreaScanFeature:
         self.bt_save            = cfu.pushButton_area_scan_save
         self.cb_enable          = cfu.checkBox_area_scan_enable
         self.cb_normalize       = cfu.checkBox_area_scan_normalize
+        self.cb_fit             = cfu.checkBox_area_scan_fit
         self.frame_image        = cfu.frame_area_scan_image
         self.frame_live         = cfu.frame_area_scan_live
         self.graphics_view      = cfu.graphicsView_area_scan
         self.layout_live        = cfu.layout_area_scan_live
+        self.lb_elapsed         = cfu.label_area_scan_frame_elapsed
         self.lb_current         = cfu.label_area_scan_current_line
         self.lb_frame_count     = cfu.label_area_scan_frame_count
         self.progress_bar       = cfu.progressBar_area_scan
@@ -81,7 +83,8 @@ class AreaScanFeature:
         self.data = None
         self.enabled = False
         self.visible = False
-        self.normalize = False
+        self.normalize = True
+        self.fit = True
         self.start_line = 0
         self.stop_line = 63
         self.ignored = 0
@@ -90,19 +93,25 @@ class AreaScanFeature:
         self.image = None
         self.name = "Area_Scan"
         self.last_received_time = None
+        self.last_line = 0
+        self.last_elapsed_sec = 0
         self.curve_live = None
+        self.frame_start = datetime.datetime.now()
 
-        self.pen_start = self.ctl.gui.make_pen(color="green")
-        self.pen_stop = self.ctl.gui.make_pen(color="red")
+        self.pen_start = self.ctl.gui.make_pen(color="green", width=2)
+        self.pen_stop  = self.ctl.gui.make_pen(color="red", width=2)
+        self.pen_line  = self.ctl.gui.make_pen(color="yellow")
 
         # create widgets we can't / don't pass in
         self.create_widgets()
 
-        self.cb_normalize.setChecked(False)
+        self.cb_fit.setChecked(True)
+        self.cb_normalize.setChecked(True)
         self.progress_bar.setVisible(False)
 
         self.bt_save     .clicked        .connect(self.save_callback)
         self.cb_normalize.stateChanged   .connect(self.normalize_callback)
+        self.cb_fit      .stateChanged   .connect(self.fit_callback)
         self.cb_enable   .stateChanged   .connect(self.enable_callback)
         self.sb_start    .valueChanged   .connect(self.roi_callback)
         self.sb_stop     .valueChanged   .connect(self.roi_callback)
@@ -225,6 +234,13 @@ class AreaScanFeature:
         if spec is None:
             return self.disable()
         self.normalize = self.cb_normalize.isChecked()
+
+    def fit_callback(self):
+        """ The user clicked "[x] fit" on the widget """
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return self.disable()
+        self.fit = self.cb_fit.isChecked()
 
     def disable(self):
         log.debug("disabling area scan")
@@ -365,35 +381,67 @@ class AreaScanFeature:
             self.ctl.set_curve_data(self.curve_live, reading.spectrum)
 
     def process_reading_with_area_scan_image_data(self, reading):
-        """ we have received a Reading with an AreaScanImage with .data populated (implicitly a NumPy array) """
+        """ 
+        We have received a Reading with an AreaScanImage with .data populated 
+        (implicitly a NumPy array), such as generated on XS spectrometers from
+        wasatch.FID.get_area_scan_xs.
+        """
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
 
         try:
             asi = reading.area_scan_image
-            h, w = asi.data.shape
+            line_index = asi.line_index 
+            data = asi.data
+            h, w = data.shape
 
-            # normalize and scale
-            lo = np.min(asi.data)
-            hi = np.max(asi.data)
-            normalized = (asi.data - lo) / (hi - lo)
-            scaled = normalized * 65535
-            scaled_ushort = scaled.astype(np.uint16)
+            # optionally normalize
+            if self.normalize:
+                lo = np.min(data)
+                hi = np.max(data)
+                data = (data - lo) / (hi - lo)
+                data *= 65535
+            data = data.astype(np.uint16)
 
-            qimage = QtGui.QImage(scaled_ushort.data, w, h, w*2, QtGui.QImage.Format_Grayscale16)
-            qpixmap = QtGui.QPixmap.fromImage(qimage)
+            # generate QImage from source data
+            self.image = QtGui.QImage(data, w, h, w*2, QtGui.QImage.Format_Grayscale16)
+            qpixmap = QtGui.QPixmap.fromImage(self.image)
 
             self.scene.clear()
             self.scene.addPixmap(qpixmap)
 
-            start_line = spec.settings.eeprom.roi_vertical_region_1_start
-            stop_line = spec.settings.eeprom.roi_vertical_region_1_end
+            start = spec.settings.eeprom.roi_vertical_region_1_start
+            stop  = spec.settings.eeprom.roi_vertical_region_1_end
 
-            self.scene.addLine(-10, start_line, qpixmap.width() + 10, start_line, self.pen_start)
-            self.scene.addLine(-10, stop_line,  qpixmap.width() + 10, stop_line,  self.pen_stop)
+            # add three horizontal marker lines ATOP the image to show bounds and progress
+            log.debug(f"adding green/red lines at (start {start}, stop {stop}) on image (width {w}, height {h}), line_index {line_index}")
+            margin = 15
+            self.scene.addLine(-margin, start,      w + margin, start,      self.pen_start)
+            self.scene.addLine(-margin, line_index, w + margin, line_index, self.pen_line) 
+            self.scene.addLine(-margin, stop,       w + margin, stop,       self.pen_stop)
 
-            # @todo consider adding vertical ROI lines like below
+            # optionally scale entire QGraphicsView
+            if self.fit:
+                w_ratio = self.frame_image.width()  / self.scene.width()
+                h_ratio = self.frame_image.height() / self.scene.height()
+                ratio = min(w_ratio, h_ratio)
+                if ratio < 1:
+                    t = QtGui.QTransform()
+                    t.scale(ratio, ratio)
+                    self.graphics_view.setTransform(t)
+
+            # display current line
+            self.lb_current.setText(str(line_index))
+
+            # display timing
+            if line_index < self.last_line:
+                self.last_elapsed_sec = (datetime.datetime.now() - self.frame_start).total_seconds()
+                self.frame_start = datetime.datetime.now()
+            elapsed_sec = (datetime.datetime.now() - self.frame_start).total_seconds()
+            self.lb_elapsed.setText(f"{elapsed_sec:.2f} (last {self.last_elapsed_sec:.2f})")
+            self.last_line = line_index
+
         except:
             log.error("failed to render AreaScanImage data", exc_info=1)
 

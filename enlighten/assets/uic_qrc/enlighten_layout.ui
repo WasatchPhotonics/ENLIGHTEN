@@ -19218,6 +19218,9 @@ li.checked::marker { content: "\2612"; }
                               <verstretch>0</verstretch>
                              </sizepolicy>
                             </property>
+                            <property name="checked">
+                             <bool>true</bool>
+                            </property>
                             <property name="text">
                              <string />
                             </property>
@@ -19444,7 +19447,7 @@ li.checked::marker { content: "\2612"; }
                              <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="minimum">
-                             <number>0</number>
+                             <number>1</number>
                             </property>
                             <property name="maximum">
                              <number>255</number>
@@ -19464,6 +19467,61 @@ li.checked::marker { content: "\2612"; }
                             </property>
                             <property name="text">
                              <string>Line Step</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="8" column="0">
+                           <widget class="QCheckBox" name="checkBox_area_scan_fit">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="text">
+                             <string />
+                            </property>
+                            <property name="checked">
+                             <bool>true</bool>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="8" column="1">
+                           <widget class="QLabel" name="label_228">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="text">
+                             <string>Fit</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="9" column="0">
+                           <widget class="QLabel" name="label_area_scan_frame_elapsed">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="text">
+                             <string />
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="9" column="1">
+                           <widget class="QLabel" name="label_234">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="text">
+                             <string>Elapsed sec</string>
                             </property>
                            </widget>
                           </item>
