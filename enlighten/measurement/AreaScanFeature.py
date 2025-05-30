@@ -154,6 +154,21 @@ class AreaScanFeature:
     # public methods
     # ##########################################################################
 
+    def init_hotplug(self):
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return self.disable()
+
+        start = spec.settings.eeprom.roi_vertical_region_1_start
+        stop  = spec.settings.eeprom.roi_vertical_region_1_end
+
+        log.debug(f"init_hotplug: setting spinboxes to ({start}, {stop})")
+
+        self.sb_start.setValue(start)
+        self.sb_stop.setValue(stop)
+
+        log.debug(f"init_hotplug: done")
+
     ## @todo mess with is_supported etc if appropriate
     def update_visibility(self):
         spec = self.ctl.multispec.current_spectrometer()
@@ -296,7 +311,20 @@ class AreaScanFeature:
         # save table
         pathname_csv = os.path.join(today_dir, basename + ".csv")
         log.debug("saving csv %s", pathname_csv)
-        np.savetxt(pathname_csv, self.data, fmt="%d", delimiter=",")
+
+        lines = len(self.data)
+        pixels = len(self.data[0])
+        with open(pathname_csv, "w") as outfile:
+            for i in range(pixels):
+                outfile.write(f", {i}")
+            outfile.write("\n")
+            for line in range(lines):
+                outfile.write(f"{line}")
+                for i in range(pixels):
+                    outfile.write(f", {self.data[line][i]}")
+                outfile.write("\n")
+
+        # np.savetxt(pathname_csv, self.data, fmt="%d", delimiter=",")
 
         self.ctl.marquee.info("saved %s" % basename)
 
@@ -400,8 +428,9 @@ class AreaScanFeature:
             if self.normalize:
                 lo = np.min(data)
                 hi = np.max(data)
-                data = (data - lo) / (hi - lo)
-                data *= 65535
+                if hi > lo:
+                    data = (data - lo) / (hi - lo)
+                    data *= 65535
             data = data.astype(np.uint16)
 
             # generate QImage from source data
@@ -422,14 +451,14 @@ class AreaScanFeature:
             self.scene.addLine(-margin, stop,       w + margin, stop,       self.pen_stop)
 
             # optionally scale entire QGraphicsView
+            t = QtGui.QTransform()
             if self.fit:
                 w_ratio = self.frame_image.width()  / self.scene.width()
                 h_ratio = self.frame_image.height() / self.scene.height()
                 ratio = min(w_ratio, h_ratio)
                 if ratio < 1:
-                    t = QtGui.QTransform()
                     t.scale(ratio, ratio)
-                    self.graphics_view.setTransform(t)
+            self.graphics_view.setTransform(t)
 
             # display current line
             self.lb_current.setText(str(line_index))
@@ -440,7 +469,9 @@ class AreaScanFeature:
                 self.frame_start = datetime.datetime.now()
             elapsed_sec = (datetime.datetime.now() - self.frame_start).total_seconds()
             self.lb_elapsed.setText(f"{elapsed_sec:.2f} (last {self.last_elapsed_sec:.2f})")
+
             self.last_line = line_index
+            self.data = data 
 
         except:
             log.error("failed to render AreaScanImage data", exc_info=1)

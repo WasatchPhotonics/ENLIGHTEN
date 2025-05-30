@@ -927,6 +927,7 @@ class Controller:
                              self.laser_control,
                              self.laser_watchdog,
                              self.laser_temperature,
+                             self.area_scan,
                              self.horiz_roi ]:
                 feature.init_hotplug()
 
