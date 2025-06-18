@@ -19487,7 +19487,7 @@ li.checked::marker { content: "\2612"; }
                            </widget>
                           </item>
                           <item row="8" column="1">
-                           <widget class="QLabel" name="label_228">
+                           <widget class="QLabel" name="label_228_x">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                               <horstretch>0</horstretch>
@@ -19513,7 +19513,7 @@ li.checked::marker { content: "\2612"; }
                            </widget>
                           </item>
                           <item row="9" column="1">
-                           <widget class="QLabel" name="label_234">
+                           <widget class="QLabel" name="label_234_x">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                               <horstretch>0</horstretch>
