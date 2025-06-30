@@ -77,7 +77,6 @@ class AreaScanFeature:
         self.progress_bar       = cfu.progressBar_area_scan
         self.sb_start           = cfu.spinBox_area_scan_start_line
         self.sb_stop            = cfu.spinBox_area_scan_stop_line
-        self.sb_delay_ms        = cfu.spinBox_area_scan_delay_ms
         self.sb_step            = cfu.spinBox_area_scan_line_step
 
         self.data = None
@@ -89,7 +88,6 @@ class AreaScanFeature:
         self.stop_line = 63
         self.ignored = 0
         self.frame_count = 0
-        self.delay_ms = self.sb_delay_ms.value()
         self.image = None
         self.name = "Area_Scan"
         self.last_received_time = None
@@ -115,7 +113,6 @@ class AreaScanFeature:
         self.cb_enable   .stateChanged   .connect(self.enable_callback)
         self.sb_start    .valueChanged   .connect(self.roi_callback)
         self.sb_stop     .valueChanged   .connect(self.roi_callback)
-        self.sb_delay_ms .valueChanged   .connect(self.delay_callback)
         self.sb_step     .valueChanged   .connect(self.step_callback)
 
         self.progress_bar_timer = QtCore.QTimer()
@@ -188,14 +185,8 @@ class AreaScanFeature:
             self.sb_start.setValue(0)
             self.sb_stop .setValue(spec.settings.eeprom.active_pixels_vertical - 1)
 
-        if spec.settings.is_imx():
-            self.sb_start.setEnabled(True)
-            self.sb_stop.setEnabled(True)
-            self.sb_delay_ms.setEnabled(False)
-        else:
-            # Hamamatsu
-            self.sb_start.setEnabled(False)
-            self.sb_stop.setEnabled(False)
+        self.sb_start.setEnabled(True)
+        self.sb_stop.setEnabled(True)
 
         self.frame_count = 0 # could move to app_settings
 
@@ -224,16 +215,6 @@ class AreaScanFeature:
 
         spec.settings.state.area_scan_line_step = self.sb_step.value()
         spec.change_device_setting("area_scan_line_step", spec.settings.state.area_scan_line_step)
-
-    def delay_callback(self):
-        """ the user changed the delay_ms spinner """
-        spec = self.ctl.multispec.current_spectrometer()
-        if spec is None:
-            return self.disable()
-
-        self.delay_ms = self.sb_delay_ms.value()
-        if self.enabled:
-            spec.change_device_setting("detector_offset", self.delay_ms)
 
     def roi_callback(self):
         """ the user changed the start/stop lines """
@@ -278,7 +259,6 @@ class AreaScanFeature:
             log.debug("enabling area scan")
             self.frame_image.setVisible(True)
             self.progress_bar.setVisible(True)
-            spec.change_device_setting("detector_offset", self.delay_ms)
             spec.change_device_setting("area_scan_enable", True)
         else:
             spec.change_device_setting("area_scan_enable", False)
@@ -408,6 +388,9 @@ class AreaScanFeature:
         if reading.spectrum is not None:
             self.ctl.set_curve_data(self.curve_live, reading.spectrum)
 
+        self.frame_count += 1
+        self.lb_frame_count.setText(str(self.frame_count))
+
     def process_reading_with_area_scan_image_data(self, reading):
         """ 
         We have received a Reading with an AreaScanImage with .data populated 
@@ -421,6 +404,10 @@ class AreaScanFeature:
         try:
             asi = reading.area_scan_image
             line_index = asi.line_index 
+            if line_index is None:
+                log.error("AreaScanImage missing line_index")
+                return
+
             data = asi.data
             h, w = data.shape
 
