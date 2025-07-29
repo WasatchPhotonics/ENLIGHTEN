@@ -430,6 +430,11 @@ class EEPROMEditor:
             elif index is not None:
                 value = attr.get_widget_value(index=index)
                 old = getattr(self.eeprom, attr.name)
+                # log.debug(f"widget_callback: value {value}, old {old}")
+                while len(old) < index + 1:
+                    default = -1 if attr.name == "bad_pixels" else 0
+                    log.debug(f"widget_callback: appending {default} to {attr.name}")
+                    old.append(default)
                 old[index] = value
             else:
                 raise AttributeError(f"widget_callback does not support non-multi, non-scalar attributes without index: {attr}")

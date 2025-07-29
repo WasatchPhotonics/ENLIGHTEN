@@ -2,6 +2,7 @@
 
 - 2025-06-30 4.1.29
     - Area Scan working on 2048px Hamamatsu detectors (with unreleased FW)
+    - [#557] bad pixel fix in EEPROM Editor
 - 2025-06-16 4.1.28
     - internal testing
 - 2025-05-30 4.1.27
