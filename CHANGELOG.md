@@ -84,7 +84,7 @@
         - merged in Samie's spiffy new scripts/win11/bootstrap.py
         - temporarily deprecated ability to save in SPC format (will chase down later)
         - added scripts/make_windows_installer.bat
-    - BLE
+    - Bluetooth® LE
         - refactored BLEManager
         - refactored wasatch.BLEDevice and wasatch.DeviceFinderBLE
 - 2024-12-06 4.1.19
@@ -193,7 +193,7 @@
         - added disable_ble_power
         - added disable_laser_armed_indicator
     - simplified Demo.SineAndScale plugin
-    - added BLE firmware version
+    - added Bluetooth® LE firmware version
 - 2024-09-27 4.1.6
     - fix AutoRaman Preset setters
 - 2024-09-19 4.1.5
@@ -918,7 +918,7 @@
         - many associated Wasatch.PY fixes (TEC setpoint, shutter state etc)
         - add WP_830XL to ModelConfig
 - 2022-04-21 3.1.9a
-    - fixes to ble gui bugs
+    - fixes to Bluetooth® LE gui bugs
 - 2022-04-20 3.1.9
     - hide reference widgets in Raman mode
     - Setup interface for SPI device
@@ -929,11 +929,11 @@
     - remove blocking call for spectrometer settings
     - make spec error appear as dialog instead of marquee
 - 2022-04-12 3.1.6
-    - create ble throbber, gui tweaks
+    - create Bluetooth® LE throbber, gui tweaks
 - 2022-04-07 3.1.5
     - installer automatically uninstalls old version
 - 2022-03-22 3.1.4
-    - add ble connection feature
+    - add Bluetooth® LE connection feature
 - 2022-03-21 3.1.3
     - added sig\_laser\_tec, has\_interlock\_feedback
     - added StatusIndicator tooltips

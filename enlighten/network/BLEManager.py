@@ -20,9 +20,15 @@ log = logging.getLogger(__name__)
 
 class BLEManager:
     """
-    Provides GUI allowing user to select a Wasatch BLE spectrometer for connection.
+    Provides GUI allowing user to select a Wasatch Bluetooth® LE spectrometer for
+    connection.
 
-    @see detailed BLE architecture in wasatch.BLEDevice
+    Note that all displayed strings, labels etc referencing BLE should utilize the
+    full "Bluetooth® LE" registered trademark. Internal variables, class names, 
+    methods etc may using the BLE abbreviation as long as those are not exposed 
+    in the public GUI.
+
+    @see detailed Bluetooth® LE architecture in wasatch.BLEDevice
     """
 
     def __init__(self, ctl):
@@ -91,7 +97,7 @@ class BLEManager:
 
 class BLESelector(QDialog):
     """
-    A pop-up window listing all discovered BLE devices.
+    A pop-up window listing all discovered Bluetooth® LE devices.
 
     +-----------------------+
     | BLE Spectrometers [x] |
