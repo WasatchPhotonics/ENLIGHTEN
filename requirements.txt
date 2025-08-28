@@ -1,7 +1,7 @@
 numpy
 tensorflow==2.13.1
 PySide6
-PyQt5
+# PyQt5
 pygtail 
 pyusb 
 pefile 

@@ -865,7 +865,7 @@ class Measurement:
         if field == "ccd offset odd":            return self.settings.eeprom.detector_offset_odd
         if field == "ccd gain odd":              return self.settings.eeprom.detector_gain_odd
         if field == "high gain mode":            return self.settings.state.high_gain_mode_enabled
-        if field == "laser wavelength":          return self.settings.excitation()
+        if field == "laser wavelength":          return f"{self.settings.excitation():.3f}"
         if field == "laser enable":              return reading.laser_enabled if reading else self.settings.state.laser_enabled 
         if field == "laser temperature":         return reading.laser_temperature_degC if reading else -99
         if field == "pixel count":               return self.settings.pixels()
