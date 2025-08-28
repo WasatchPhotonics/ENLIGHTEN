@@ -1,5 +1,8 @@
 # Version History
 
+- 2025-??-?? 4.1.30
+    - clamp excitation to 3 decimal places in exports
+    - remove unused PyQt5 dependency
 - 2025-06-30 4.1.29
     - Area Scan working on 2048px Hamamatsu detectors (with unreleased FW)
     - [#557] bad pixel fix in EEPROM Editor
