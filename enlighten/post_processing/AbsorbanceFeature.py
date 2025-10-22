@@ -39,7 +39,7 @@ class AbsorbanceFeature:
             au = 0
             t = t_perc / 100.0
             if t != 0:
-                if t >= 0:
+                if t > 0:
                     try:
                         au = -1.0 * math.log10(t)
                     except:
