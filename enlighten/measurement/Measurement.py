@@ -350,7 +350,7 @@ class Measurement:
         else:
             raise Exception("Measurement requires exactly one of (spec, source_pathname, measurement, dict)")
 
-        if self.ctl.interp.enabled:
+        if self.ctl and self.ctl.interp.enabled:
             self.ctl.interp.process(self.processed_reading)
 
         self.generate_id()
@@ -894,7 +894,7 @@ class Measurement:
         if field == "suffix":                    return self.suffix
         if field == "session count":             return reading.session_count if reading else 0
         if field == "plugin name":               return self.plugin_name
-        if field == "preset":                    return self.ctl.presets.selected_preset
+        if field == "preset":                    return self.ctl.presets.selected_preset if self.ctl else None
         if field == "laser power mw":            return reading.laser_power_mW if (reading and reading.laser_power_mW is not None and reading.laser_power_mW > 0) else ""
 
         log.error("Unknown CSV header field: %s", field)
@@ -1291,7 +1291,7 @@ class Measurement:
             # outside the ROI will receive "NA" for "processed", but should 
             # include wavelength/wavenumber axis values, and might as well include
             # raw, dark and reference.
-            if self.ctl.horiz_roi.enabled:
+            if self.ctl and self.ctl.horiz_roi.enabled:
                 # We're setting stage to "orig" to indicate we don't want to load
                 # the "cropped" component versions -- we want the original full-
                 # detector spectrum components. (We'll still use the cropped/final
@@ -1324,10 +1324,6 @@ class Measurement:
     # generated labels are Unicode.  (Dieter doesn't seem to like Unicode CSV)
     def save_csv_file_by_column(self, use_basename=False, ext="csv", delim=",", include_header=True, include_metadata=True, resave=False):
         pr = self.processed_reading
-
-        if not self.ctl or not self.ctl.save_options:
-            log.error("Measurement.save* requires SaveOptions")
-            return
 
         today_dir = self.generate_today_dir()
         if use_basename:
@@ -1371,13 +1367,13 @@ class Measurement:
                 out.writerow([])
 
             headers = []
-            if self.ctl.save_options.save_pixel():       headers.append("Pixel")
-            if self.ctl.save_options.save_wavelength():  headers.append("Wavelength")
-            if self.ctl.save_options.save_wavenumber():  headers.append("Wavenumber")
-            if self.ctl.save_options.save_processed():   headers.append("Processed")
-            if self.ctl.save_options.save_raw():         headers.append("Raw")
-            if self.ctl.save_options.save_dark():        headers.append("Dark")
-            if self.ctl.save_options.save_reference():   headers.append("Reference")
+            if not self.ctl or self.ctl.save_options.save_pixel():       headers.append("Pixel")
+            if not self.ctl or self.ctl.save_options.save_wavelength():  headers.append("Wavelength")
+            if not self.ctl or self.ctl.save_options.save_wavenumber():  headers.append("Wavenumber")
+            if not self.ctl or self.ctl.save_options.save_processed():   headers.append("Processed")
+            if not self.ctl or self.ctl.save_options.save_raw():         headers.append("Raw")
+            if not self.ctl or self.ctl.save_options.save_dark():        headers.append("Dark")
+            if not self.ctl or self.ctl.save_options.save_reference():   headers.append("Reference")
 
             if include_header:
                 out.writerow(headers)
@@ -1387,13 +1383,13 @@ class Measurement:
 
             for pixel in range(pixels):
                 values = []
-                if self.ctl.save_options.save_pixel():       values.append(pixel)
-                if self.ctl.save_options.save_wavelength():  values.append(self.csv_formatted(roi, 2,         wavelengths, pixel))
-                if self.ctl.save_options.save_wavenumber():  values.append(self.csv_formatted(roi, 2,         wavenumbers, pixel))
-                if self.ctl.save_options.save_processed():   values.append(self.csv_formatted(roi, precision, processed,   pixel, obey_roi=True))
-                if self.ctl.save_options.save_raw():         values.append(self.csv_formatted(roi, precision, raw,         pixel))
-                if self.ctl.save_options.save_dark():        values.append(self.csv_formatted(roi, precision, dark,        pixel))
-                if self.ctl.save_options.save_reference():   values.append(self.csv_formatted(roi, precision, reference,   pixel))
+                if not self.ctl or self.ctl.save_options.save_pixel():       values.append(pixel)
+                if not self.ctl or self.ctl.save_options.save_wavelength():  values.append(self.csv_formatted(roi, 2,         wavelengths, pixel))
+                if not self.ctl or self.ctl.save_options.save_wavenumber():  values.append(self.csv_formatted(roi, 2,         wavenumbers, pixel))
+                if not self.ctl or self.ctl.save_options.save_processed():   values.append(self.csv_formatted(roi, precision, processed,   pixel, obey_roi=True))
+                if not self.ctl or self.ctl.save_options.save_raw():         values.append(self.csv_formatted(roi, precision, raw,         pixel))
+                if not self.ctl or self.ctl.save_options.save_dark():        values.append(self.csv_formatted(roi, precision, dark,        pixel))
+                if not self.ctl or self.ctl.save_options.save_reference():   values.append(self.csv_formatted(roi, precision, reference,   pixel))
                 out.writerow(values)
 
         log.info("saved columnar %s", pathname)
@@ -1733,6 +1729,8 @@ class Measurement:
         if resave:
             return True
         if not os.path.exists(pathname):
+            return True
+        if not self.ctl:
             return True
 
         if self.ctl.config.has_option("Measurement", "overwrite_existing"):

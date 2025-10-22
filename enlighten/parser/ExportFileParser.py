@@ -105,7 +105,7 @@ class ExportFileParser:
             else:
                 em.timestamp = datetime.datetime.strptime(metadata["Timestamp"], "%Y-%m-%d %H:%M:%S.%f") 
         except:
-            log.error("unable to parse metadata timestamp: %s", metadata["Timestamp"])
+            log.error(f"unable to parse format {self.format} timestamp {metadata['Timestamp']}")
             pass
 
         try:
@@ -147,6 +147,9 @@ class ExportFileParser:
         eeprom.wavelength_coeffs.append(get_float("CCD C2"))
         eeprom.wavelength_coeffs.append(get_float("CCD C3"))
         eeprom.wavelength_coeffs.append(get_float("CCD C4"))
+        if eeprom.wavelength_coeffs[:4] == [ 0, 0, 0, 0 ]:
+            eeprom.wavelength_coeffs = None
+
         eeprom.serial_number            = metadata.get("Serial Number")
         eeprom.model                    = metadata.get("Model")
         eeprom.detector                 = metadata.get("Detector")
@@ -176,15 +179,20 @@ class ExportFileParser:
             state.laser_power_perc      = get_float("Laser Power %")
             state.laser_power_mW        = get_float("Laser Power mW")
 
-        log.debug("generating wavecal from coeffs: %s" % eeprom.wavelength_coeffs)
+        log.debug(f"post_process_metadata: calling update_wavecal")
         em.settings.update_wavecal()
 
     def generate_measurements(self):
         log.debug("generate_measurements: %d ExportedMeasurements to convert" % len(self.exported_measurements))
-        for em in self.exported_measurements:
+        for count, em in enumerate(self.exported_measurements):
+            log.debug(f"generate_measurements: starting ExportedMeasurement {count}")
+
             self.post_process_metadata(em)
+
             em.processed_reading.post_load_cleanup(settings=em.settings)
-            self.ctl.horiz_roi.process(em.processed_reading)
+
+            if self.ctl:
+                self.ctl.horiz_roi.process(em.processed_reading)
 
             if em.processed_reading.processed is None:
                 log.critical("ignoring malformed ExportMeasurement missing processed array")
@@ -310,7 +318,7 @@ class ExportFileParser:
             self.global_metadata[field] = value
             # we can't instantiate ExportedMeasurements yet, because we don't yet know how many there will be
         else:
-            # new format has a metadata block for each measurement
+            # new format has a metadata block for each measurement (including format 3)
             if len(self.exported_measurements) == 0:
                 # in format 2, use the first metadata field after "ENLIGHTEN Version"
                 # (probably "Measurement ID" or "Serial Number") to instantiate ExportedMeasurements
@@ -349,6 +357,7 @@ class ExportFileParser:
             if len(values):
                 em.metadata[field] = values[0]  # store this key-value pair
                 values = values[em.header_count:] # toss the nulls expected to follow
+
     def process_header(self, values):
         """
         Read the header row topping the data block, storing each header by position
@@ -398,7 +407,7 @@ class ExportFileParser:
                         elif header == "dark":      em.processed_reading.dark      = []
                         elif header == "reference": em.processed_reading.reference = []
                         else:
-                            log.error("process_header: unknown header %s", header)
+                            log.error(f"process_header: unknown header [{header}]")
 
     def process_data(self, values):
         """
