@@ -1,8 +1,10 @@
 # Version History
 
-- 2025-??-?? 4.1.30
+- 2025-10-22 4.1.30
     - clamp excitation to 3 decimal places in exports
     - remove unused PyQt5 dependency
+    - improved support for external scripts to use internal classes
+    - fixed heartbeat warning on Andor
 - 2025-06-30 4.1.29
     - Area Scan working on 2048px Hamamatsu detectors (with unreleased FW)
     - [#557] bad pixel fix in EEPROM Editor
