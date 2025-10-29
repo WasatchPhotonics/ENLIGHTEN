@@ -1,5 +1,7 @@
 # Version History
 
+- 2025-10-29 4.1.31
+    - added plugins/plugins.json to track version of installed plugins and allow more-careful upgrades
 - 2025-10-22 4.1.30
     - clamp excitation to 3 decimal places in exports
     - remove unused PyQt5 dependency

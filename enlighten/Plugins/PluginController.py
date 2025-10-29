@@ -1,6 +1,7 @@
 import os
 import sys
 import copy
+import json
 import shutil
 import logging
 import pyqtgraph
@@ -216,24 +217,56 @@ class PluginController:
 
         self.timer.start(1000) # 1Hz
 
+    def need_to_stub(self, plugin_dst):
+        rev_file = os.path.join(plugin_dst, "plugins.json") 
+        if not os.path.exists(rev_file):
+            log.debug(f"re-stubbing plugins tree because couldn't find rev_file {rev_file}")
+            return True
+
+        try:
+            with open(rev_file) as infile:
+                plugin_data = json.load(infile)
+        except:
+            log.debug(f"re-stubbing plugins tree because invalid JSON in rev_file {rev_file}")
+            return True
+
+        if "ENLIGHTEN version" in plugin_data:
+            found_rev = plugin_data["ENLIGHTEN version"]
+            if found_rev == common.VERSION:
+                log.debug(f"not re-stubbing plugins tree because found_rev matched current {found_rev}")
+                return False
+            else:
+                log.debug(f"re-stubbing plugins tree because found_rev {found_rev} vs current {common.VERSION}")
+                return True
+        else:
+            log.debug(f"re-stubbing plugins tree because couldn't find version in rev_file {rev_file}")
+            return True
+            
     def create_plugins_folder(self):
         """Create the plugins folder if it does not exist"""
         log.debug(f"starting plugin stub")
         plugin_dst = os.path.join(self.directory, "plugins")
-        if os.path.exists(plugin_dst):
-            log.debug(f"plugin destination exists. Assumming created so not stubbing")
+        if not self.need_to_stub(plugin_dst):
             return
-        os.mkdir(plugin_dst)
+
+        os.makedirs(plugin_dst, exist_ok=True)
 
         cwd = os.getcwd()
         plugin_src = os.path.join(cwd, "plugins")
 
-        if os.path.exists(plugin_src):
-            plugin_src_items = os.listdir(plugin_src)
-            log.debug(f"in search items {plugin_src} found items {plugin_src_items}")
-            shutil.copytree(plugin_src, plugin_dst, dirs_exist_ok=True)
-        else:
+        if not os.path.exists(plugin_src):
             log.error(f"couldn't find plugin src {plugin_src} so not creating stub")
+            return
+
+        log.debug(f"copying plugin_src {plugin_src} to plugin_dst {plugin_dst}")
+        shutil.copytree(plugin_src, plugin_dst, dirs_exist_ok=True)
+
+        # track the version of plugins installed
+        rev_file = os.path.join(plugin_dst, "plugins.json") 
+        log.debug(f"creating rev_file {rev_file}")
+        with open(rev_file, "w") as outfile:
+            plugin_data = { "ENLIGHTEN version": common.VERSION }
+            json.dump(plugin_data, outfile, indent=4)
 
     def initialize_python_path(self):
         log.debug("initializing plugin path")

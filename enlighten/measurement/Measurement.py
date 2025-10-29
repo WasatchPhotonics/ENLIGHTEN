@@ -809,7 +809,7 @@ class Measurement:
     #       and in the case that we loaded previously-saved spectra from disk,
     #       we're not currently re-instantiating Reading objects (only the
     #       ProcessedReading, which is all that's needed for on-screen traces),
-    #       so currently those output a deliberately-suspicious -99.
+    #       so currently those output "NA"
     #
     # @todo replace if/elif with dict of lambdas
     def get_metadata(self, field):
@@ -853,7 +853,7 @@ class Measurement:
         if field == "line number":               return self.ctl.save_options.line_number if (self.ctl and self.ctl.save_options) else 0
         if field == "timestamp":                 return self.timestamp
         if field == "blank":                     return self.settings.eeprom.serial_number # for Multispec
-        if field == "temperature":               return reading.detector_temperature_degC if reading else -99
+        if field == "temperature":               return reading.detector_temperature_degC if reading else "NA"
         if field == "technique":                 return self.technique
         if field == "baseline correction algo":  return self.baseline_correction_algo
         if field == "ccd c0":                    return 0 if len(wavecal) < 1 else wavecal[0]
@@ -867,7 +867,7 @@ class Measurement:
         if field == "high gain mode":            return self.settings.state.high_gain_mode_enabled
         if field == "laser wavelength":          return f"{self.settings.excitation():.3f}"
         if field == "laser enable":              return reading.laser_enabled if reading else self.settings.state.laser_enabled 
-        if field == "laser temperature":         return reading.laser_temperature_degC if reading else -99
+        if field == "laser temperature":         return reading.laser_temperature_degC if reading and self.settings.is_xs() else "NA"
         if field == "pixel count":               return self.settings.pixels()
         if field == "declared match":            return str(self.declared_match) if self.declared_match is not None else None
         if field == "declared score":            return self.declared_match.score if self.declared_match is not None else 0
