@@ -46,8 +46,9 @@ class LibraryMatching(EnlightenPluginBase):
 
     def configure_fields(self):
         path = self.get_library_dir_from_ini()
-        if path:
-            self.set_library_dir(path)
+        if path is None:
+            path = self.get_default_library_dir()
+        self.set_library_dir(path)
 
         self.field(name="Select Library",
                    datatype="button",
@@ -136,6 +137,9 @@ class LibraryMatching(EnlightenPluginBase):
         else:
             log.debug(f"library dir not found in {section}")
 
+    def get_default_library_dir(self):
+        return os.path.join(common.get_default_data_dir(), "MatchingLibrary")
+
     def select_library_callback(self):
         """
         Callback for when user clicks "Select Library" button. Since this is
@@ -153,7 +157,7 @@ class LibraryMatching(EnlightenPluginBase):
         # default to last selection
         path = self.get_library_dir_from_ini()
         if path is None:
-            path = common.get_default_data_dir()
+            path = self.get_default_library_dir()
         dialog.setDirectory(path)
 
         # get the user's choice
@@ -233,20 +237,26 @@ class LibraryMatching(EnlightenPluginBase):
         leave it alone.
         """
 
-        dst = os.path.join(self.ctl.save_options.get_directory(), "MatchingLibrary")
-        if os.path.exists(dst):
-            log.debug(f"{dst} already exists")
+        copied_key = f"ENLIGHTEN-{common.VERSION}.copied"
+        if self.ctl.config.get_bool(self.SECTION, copied_key):
+            log.debug("MatchingLibrary already copied")
             return
 
-        src = os.path.join(os.getcwd(), "plugins", "Raman", "MatchingLibrary")
+        dst = os.path.join(common.get_default_data_dir(), "MatchingLibrary")
+        src = os.path.join(common.get_default_data_dir(), "plugins", "Raman", "MatchingLibrary")
+
         log.error(f"checking for src {src}")
         if not os.path.exists(src):
             log.error(f"{src} not found")
             return
 
-        # src exists, but not dst, so perform the copy
+        # src exists, so perform the copy
         log.debug(f"performing recursive copy from {src} to {dst}")
-        shutil.copytree(src, dst)
+        shutil.copytree(src, dst, dirs_exist_ok=True)
+
+        # tag that the copy has been performed so we don't try to do it again 
+        # (until ENLIGHTEN is updated)
+        self.ctl.config.set(self.SECTION, copied_key, True)
 
     def colorize_button_field(self, field_name, active, tooltip):
         """
@@ -321,8 +331,13 @@ class Pearson:
                 self.compound_names.append(basename)
 
                 log.debug(f"Pearson.lazy_load_spectra: loading {basename} ({pathname})")
-                csv_loader = CSVLoader(pathname)
-                pr, metadata = csv_loader.load_data(scalar_metadata=True)
+                try:
+                    csv_loader = CSVLoader(pathname)
+                    pr, metadata = csv_loader.load_data(scalar_metadata=True)
+                except Exception as ex:
+                    self.ctl.marquee.error(f"LibraryMatching: error loading {pathname}")
+                    log.error(f"Failed to load library spectrum {pathname}", exc_info=1)
+                    continue
 
                 df = pd.DataFrame({
                     'Wavenumber': pr.get_wavenumbers(),

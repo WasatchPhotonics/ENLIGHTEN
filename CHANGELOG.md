@@ -1,7 +1,10 @@
 # Version History
 
+- 2025-11-06 4.1.32
+    - [#562] re-copy distribution plugins at first launch of each new ENLIGHTEN version
+    - graceful error handling when loading Raman.LibraryMatching spectra
 - 2025-10-29 4.1.31
-    - added plugins/plugins.json to track version of installed plugins and allow more-careful upgrades
+    - allow use of XS board as laser driver with no detector
 - 2025-10-22 4.1.30
     - clamp excitation to 3 decimal places in exports
     - remove unused PyQt5 dependency
