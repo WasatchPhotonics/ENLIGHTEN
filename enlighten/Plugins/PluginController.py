@@ -215,25 +215,29 @@ class PluginController:
             self.force_load_plugin(module)
 
         self.timer.start(1000) # 1Hz
-
+            
     def create_plugins_folder(self):
         """Create the plugins folder if it does not exist"""
-        log.debug(f"starting plugin stub")
-        plugin_dst = os.path.join(self.directory, "plugins")
-        if os.path.exists(plugin_dst):
-            log.debug(f"plugin destination exists. Assumming created so not stubbing")
+        copied_key = f"ENLIGHTEN-{common.VERSION}.copied"
+        if self.ctl.config.get_bool(self.SECTION, copied_key):
+            log.debug(f"not re-stubbing plugins tree because found {copied_key}")
             return
-        os.mkdir(plugin_dst)
 
         cwd = os.getcwd()
         plugin_src = os.path.join(cwd, "plugins")
-
-        if os.path.exists(plugin_src):
-            plugin_src_items = os.listdir(plugin_src)
-            log.debug(f"in search items {plugin_src} found items {plugin_src_items}")
-            shutil.copytree(plugin_src, plugin_dst, dirs_exist_ok=True)
-        else:
+        if not os.path.exists(plugin_src):
             log.error(f"couldn't find plugin src {plugin_src} so not creating stub")
+            return
+
+        log.debug(f"stubbing plugins tree")
+        plugin_dst = os.path.join(self.directory, "plugins")
+        os.makedirs(plugin_dst, exist_ok=True)
+
+        log.debug(f"copying plugin_src {plugin_src} to plugin_dst {plugin_dst}")
+        shutil.copytree(plugin_src, plugin_dst, dirs_exist_ok=True)
+
+        # flag so we don't have to do this again until the next update
+        self.ctl.config.set(self.SECTION, copied_key, True)
 
     def initialize_python_path(self):
         log.debug("initializing plugin path")

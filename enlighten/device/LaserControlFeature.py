@@ -116,6 +116,7 @@ class LaserControlFeature:
         state.laser_power_perc = 100
         state.laser_power_mW = settings.eeprom.max_laser_power_mW
         state.use_mW = settings.eeprom.has_laser_power_calibration() and settings.is_mml()
+        log.debug(f"init_hotplug: laser_power_perc {state.laser_power_perc}, laser_power_mW {state.laser_power_mW}, use_mW {state.use_mW}")
 
         self.set_laser_enable(False)
         
@@ -310,12 +311,11 @@ class LaserControlFeature:
         return perc < self.MIN_BATTERY_PERC
 
     def disconnect(self):
+        log.debug("disconnect: start")
         spec = self.ctl.multispec.current_spectrometer()
-        if spec is None:
-            return
-
-        if spec.settings.state.laser_enabled:
+        if spec and spec.settings.state.laser_enabled:
             spec.change_device_setting("laser_enable", False)
+        self.refresh_laser_buttons(force_off=True)
 
     def set_mW(self, mW):
         spec = self.ctl.multispec.current_spectrometer()
@@ -341,19 +341,22 @@ class LaserControlFeature:
     # Private Methods
     # ##########################################################################
 
-    def refresh_laser_buttons(self, force_on=False):
+    def refresh_laser_buttons(self, force_on=False, force_off=False):
         """ 
         force_on means whether the button is red (indicate laser is enabled and 
         firing) or grey (imply laser is not enabled and not firing). This doesn't
         actually affect whether the button is clickable -- that is determined by
         'allowed'.
         """
+        log.debug("refresh_laser_buttons: start")
         spec = self.ctl.multispec.current_spectrometer()
         cfu = self.ctl.form.ui
 
-        enabled = force_on or (spec and spec.settings.state.laser_enabled)
+        enabled = not force_off and (force_on or (spec and spec.settings.state.laser_enabled))
         allowed = 0 == len(self.restrictions)
         why_not = ", ".join(self.restrictions)
+
+        log.debug(f"refresh_laser_buttons: enabled {enabled}, allowed {allowed}, why_not {why_not}")
 
         if enabled:
             cfu.pushButton_laser_toggle.setText(self.BTN_OFF_TEXT)
@@ -364,6 +367,7 @@ class LaserControlFeature:
             b.setEnabled(allowed)
             b.setToolTip("Toggle laser (ctrl-L)" if allowed else f"Disabled ({why_not})")
             self.ctl.gui.colorize_button(b, enabled)
+            log.debug(f"refresh_laser_buttons: updated button {b} with enabled {enabled}, allowed {allowed}, why_not {why_not}")
 
     def configure_laser_power_controls_percent(self):
         spec = self.ctl.multispec.current_spectrometer()
@@ -376,10 +380,13 @@ class LaserControlFeature:
 
         if settings.state.use_mW:
             # convert from mW -> %
-            value = settings.eeprom.laser_power_mW_to_percent(settings.state.laser_power_mW)
+            current_mW = settings.state.laser_power_mW
+            log.debug(f"configure_laser_power_controls_percent: use_mW True, so converting {current_mW}mW to percent")
+            value = settings.eeprom.laser_power_mW_to_percent(current_mW)
         else:
             value = settings.state.laser_power_perc
 
+        log.debug(f"configure_laser_power_controls_percent: setting slider to {value}%, and use_mW False")
         util.set_min_max(slider,  1, 100)
         util.set_min_max(spinbox, 1, 100, value)
         settings.state.use_mW = False
