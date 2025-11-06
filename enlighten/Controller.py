@@ -253,6 +253,7 @@ class Controller:
             spec = self.current_spectrometer()
         if spec is None:
             log.error("disconnect_device: no more devices")
+            self.disconnect_features()
             return False
 
         if spec.device_id in self.other_device_ids:
@@ -270,11 +271,7 @@ class Controller:
         # avoid confusing/dangerous behavior on re-launch
         ########################################################################
 
-        for feature in [ self.laser_control,
-                         self.accessory_control,
-                         self.area_scan,
-                         self.auto_raman ]:
-            feature.disconnect()
+        self.disconnect_features()
 
         if spec.settings.is_gen15():
             log.debug("disconnect_device[%s]: disabling fan", device_id)
@@ -294,7 +291,6 @@ class Controller:
         # close
         ########################################################################
 
-
         log.debug("disconnect_device[%s]: closing", device_id)
         spec.close()
 
@@ -311,6 +307,15 @@ class Controller:
         self.status_indicators.update_visibility()
 
         return True
+
+    def disconnect_features(self):
+        """ tell any features supporting disconnect events that we have disconnected the current spectrometer """
+        log.debug("disconnect_features: start")
+        for feature in [ self.laser_control,
+                         self.accessory_control,
+                         self.area_scan,
+                         self.auto_raman ]:
+            feature.disconnect()
 
     def close(self, event_arg_str):
         log.critical(f"closing ({event_arg_str})")

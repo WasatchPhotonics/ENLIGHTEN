@@ -3,6 +3,8 @@
 - 2025-11-06 4.1.32
     - [#562] re-copy distribution plugins at first launch of each new ENLIGHTEN version
     - graceful error handling when loading Raman.LibraryMatching spectra
+    - [#544] fix hotplug race condition when laser power set in percent (often defaulted to 1%)
+    - ensure laser firing buttons disable when spectrometer unplugged
 - 2025-10-29 4.1.31
     - allow use of XS board as laser driver with no detector
 - 2025-10-22 4.1.30
