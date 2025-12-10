@@ -1,5 +1,8 @@
 # Version History
 
+- 2025-12-10 4.1.33
+    - disable onboard averaging (XS testing)
+    - disable use of eeprom.actual_horiz_pixels when reading spectra
 - 2025-11-06 4.1.32
     - [#562] re-copy distribution plugins at first launch of each new ENLIGHTEN version
     - graceful error handling when loading Raman.LibraryMatching spectra
