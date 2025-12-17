@@ -21,6 +21,8 @@ class LaserControlFeature:
 
     LASER_INIT_TOKEN = "laser_init"
 
+    SECTION = "LaserControlFeature"
+
     def __init__(self, ctl):
         self.ctl = ctl
 
@@ -34,6 +36,7 @@ class LaserControlFeature:
         self.initializing = False
         self.area_at_start = None
         self.min_at_start = None
+        self.xs_password_provided = False
 
         cfu = self.ctl.form.ui
 
@@ -563,3 +566,19 @@ class LaserControlFeature:
     # When it releases, the flag will be cleared and then it will send one, final, laser value
     def slider_power_press_callback(self):
         self.slider_stop_usb = True
+
+    def laser_can_fire_per_password(self):
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return False
+        if self.xs_password_provided:
+            return True
+        if not spec.settings.is_xs():
+            return True
+
+        title = "XS Laser Safety PIN"
+        label_text = "Enter password to allow XS laser to fire"
+        result = self.ctl.gui.msgbox_with_lineedit(self, title=title, label_text=label_text, lineedit_text=None)
+        self.xs_password_provided = result and result["ok"]
+
+        return self.xs_password_provided
