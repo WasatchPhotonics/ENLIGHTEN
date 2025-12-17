@@ -134,6 +134,7 @@ class LaserControlFeature:
         cfu = self.ctl.form.ui
         
         if spec is None:
+            log.debug(f"update_visibility: returning because spec {spec}")
             return
 
         settings = spec.settings
@@ -146,6 +147,7 @@ class LaserControlFeature:
                         cfu.pushButton_laser_convenience ]:
             widget.setVisible(has_laser)
         if not has_laser:
+            log.debug(f"update_visibility: returning because has_laser {has_laser}")
             return
 
         has_calibration = settings.eeprom.has_laser_power_calibration()

@@ -597,7 +597,7 @@ class Multispec:
             return 
 
         label = str(self.combo_spectrometer.itemText(index))
-        log.debug("get_combo_device_id: label = %s index = %d", label, index)
+        log.debug(f"get_combo_device_id: label {label}, index {index}")
         m = re.match(r'^\s*(.*)\s+\((.*)\)\s*$', label)
         if not m:
             log.error("get_combo_device_id: can't parse %s", label)
@@ -605,24 +605,28 @@ class Multispec:
 
         serial = m.group(1)
         model  = m.group(2)
-        log.debug("get_combo_device_id: serial [%s], model [%s]", serial, model)
+        log.debug(f"get_combo_device_id: serial {serial}, model {model}")
 
         for device_id in sorted(self.spectrometers, key=str):
-            if serial == self.spectrometers[device_id].settings.eeprom.serial_number:
+            if ( serial == self.spectrometers[device_id].settings.eeprom.serial_number and 
+                 model  == self.spectrometers[device_id].settings.eeprom.model):
+                log.debug(f"get_combo_device_id: returning device_id {device_id}")
                 return device_id 
 
-        log.error("get_combo_device_id: can't find serial %s, model %s", serial, model)
+        log.error(f"get_combo_device_id: can't find serial {serial}, model {model}")
 
     ## If the selected MultiSpec spectrometer changes, update affected objects
     def combo_callback(self):
         # get the device_id of the selected item in the comboBox
         device_id = self.get_combo_device_id()
+        log.debug(f"combo_callback: selected device {device_id}")
         if device_id is None:
             log.debug("combo_callback: can't determine device_id (setting None)")
             self.device_id = None
             return 
 
         spec = self.spectrometers[device_id]
+        log.debug(f"combo_callback: selected spec {spec}")
         if spec is None:
             log.error("combo_callback: selected non-existent spectrometer: %s", device_id)
             return
