@@ -37,6 +37,7 @@ class LaserControlFeature:
         self.area_at_start = None
         self.min_at_start = None
         self.xs_password_provided = False
+        self.current_spectrometer_callback = None # override callback to ctl.multispec.current_spectrometer()
 
         cfu = self.ctl.form.ui
 
@@ -79,10 +80,22 @@ class LaserControlFeature:
         for widget in self.expert_widgets:
             widget.setVisible(doing_expert)
 
-        spec = self.ctl.multispec.current_spectrometer()
+        spec = self.current_spectrometer()
 
         has_laser_power_calibration = spec is not None and spec.settings.eeprom.has_laser_power_calibration()
         cfu.comboBox_laser_power_unit.setVisible(has_laser_power_calibration and doing_expert)
+
+    def set_current_spectrometer_callback(self, callback):
+        self.current_spectrometer_callback = callback
+
+    def current_spectrometer(self):
+        """ 
+        Allow ctl.multispec.current_spectrometer to be overridden by an external
+        callback. This is provided for plugins.network.IDSPeak.
+        """
+        if self.current_spectrometer_callback:
+            return self.current_spectrometer_callback()
+        return self.ctl.multispec.current_spectrometer()
 
     # ##########################################################################
     # Public Methods
@@ -106,7 +119,7 @@ class LaserControlFeature:
     # - disable laser
     # - default to high-resolution laser power (1ms pulse period)
     def init_hotplug(self):
-        spec = self.ctl.multispec.current_spectrometer()
+        spec = self.current_spectrometer()
         if spec is None:
             return
 
@@ -130,7 +143,7 @@ class LaserControlFeature:
     # connected spectrometers.
     def update_visibility(self, init=False):
         log.debug(f"update_visibility(init={init})")
-        spec = self.ctl.multispec.current_spectrometer()
+        spec = self.current_spectrometer()
         cfu = self.ctl.form.ui
         
         if spec is None:
@@ -199,12 +212,14 @@ class LaserControlFeature:
 
         # not all...
 
+        if self.current_spectrometer_callback:
+            spec = self.current_spectrometer()
         if spec is None:
             # if we were NOT given a specific spectrometer (so this is
             # the default behavior, like clicking the GUI button), then
             # default to the current spectrometer, and obey multispec
             # locking if enabled
-            spec = self.ctl.multispec.current_spectrometer()
+            spec = self.current_spectrometer()
             use_multispec = True
         else:
             # we were given a specific spectrometer (possibly via 'all',
@@ -213,6 +228,8 @@ class LaserControlFeature:
 
         if spec is None:
             return
+
+        log.debug(f"set_laser_enable: sending flag {flag} to spec {spec} (use_multispec {use_multispec})")
 
         if use_multispec:
             self.ctl.multispec.set_state("laser_enabled", flag)
@@ -223,7 +240,7 @@ class LaserControlFeature:
 
         spec.app_state.laser_state = LaserStates.REQUESTED if flag else LaserStates.DISABLED
 
-        if self.ctl.multispec.is_current_spectrometer(spec):
+        if self.ctl.multispec.is_current_spectrometer(spec) or self.current_spectrometer_callback:
             self.refresh_laser_buttons()
 
         self.ctl.status_indicators.update_visibility()
@@ -237,7 +254,7 @@ class LaserControlFeature:
 
     def tick_status(self):
         """ Called from Controller.tick_status """
-        spec = self.ctl.multispec.current_spectrometer()
+        spec = self.current_spectrometer()
         if spec is None:
             return
 
@@ -245,7 +262,7 @@ class LaserControlFeature:
             self.ctl.sounds.play("laser_steady", repeat=True)
 
     def process_reading(self, reading):
-        spec = self.ctl.multispec.current_spectrometer()
+        spec = self.current_spectrometer()
         if spec is None:
             return
 
@@ -305,7 +322,7 @@ class LaserControlFeature:
 
     def cant_fire_because_battery(self, spec=None):
         if spec is None:
-            spec = self.ctl.multispec.current_spectrometer()
+            spec = self.current_spectrometer()
         if spec is None:
             return False
         
@@ -317,13 +334,13 @@ class LaserControlFeature:
 
     def disconnect(self):
         log.debug("disconnect: start")
-        spec = self.ctl.multispec.current_spectrometer()
+        spec = self.current_spectrometer()
         if spec and spec.settings.state.laser_enabled:
             spec.change_device_setting("laser_enable", False)
         self.refresh_laser_buttons(force_off=True)
 
     def set_mW(self, mW):
-        spec = self.ctl.multispec.current_spectrometer()
+        spec = self.current_spectrometer()
         if spec is None:
             return
         if not spec.settings.state.use_mW:
@@ -331,7 +348,7 @@ class LaserControlFeature:
         self.ctl.form.ui.doubleSpinBox_laser_power.setValue(mW)
 
     def set_perc(self, perc):
-        spec = self.ctl.multispec.current_spectrometer()
+        spec = self.current_spectrometer()
         if spec is None:
             return
         if spec.settings.state.use_mW:
@@ -354,7 +371,7 @@ class LaserControlFeature:
         'allowed'.
         """
         log.debug("refresh_laser_buttons: start")
-        spec = self.ctl.multispec.current_spectrometer()
+        spec = self.current_spectrometer()
         cfu = self.ctl.form.ui
 
         enabled = not force_off and (force_on or (spec and spec.settings.state.laser_enabled))
@@ -375,7 +392,7 @@ class LaserControlFeature:
             log.debug(f"refresh_laser_buttons: updated button {b} with enabled {enabled}, allowed {allowed}, why_not {why_not}")
 
     def configure_laser_power_controls_percent(self):
-        spec = self.ctl.multispec.current_spectrometer()
+        spec = self.current_spectrometer()
         if spec is None:
             return
 
@@ -405,7 +422,7 @@ class LaserControlFeature:
         log.debug("configure_laser_power_controls_percent: value %s, suffix %s", value, spinbox.suffix())
 
     def configure_laser_power_controls_mW(self):
-        spec = self.ctl.multispec.current_spectrometer()
+        spec = self.current_spectrometer()
         if spec is None:
             return
 
@@ -463,7 +480,7 @@ class LaserControlFeature:
     def set_laser_power_callback(self):
         if self.slider_stop_usb:
             return
-        spec = self.ctl.multispec.current_spectrometer()
+        spec = self.current_spectrometer()
         if spec is None:
             return
 
@@ -481,7 +498,7 @@ class LaserControlFeature:
     # as a button rather than a checkbox.
     def toggle_callback(self):
         log.debug("toggle_callback: start")
-        spec = self.ctl.multispec.current_spectrometer()
+        spec = self.current_spectrometer()
         if spec is None:
             log.debug("toggle_callback: no spectrometer?")
             return
@@ -522,7 +539,7 @@ class LaserControlFeature:
     # Note this will happen when excitation is changed in EEPROMEditor, as that object
     # calls Controller.update_wavecal which syncs the two excitation spinboxen.
     def excitation_callback(self):
-        spec = self.ctl.multispec.current_spectrometer()
+        spec = self.current_spectrometer()
         if spec is None:
             return
 
@@ -570,7 +587,7 @@ class LaserControlFeature:
         self.slider_stop_usb = True
 
     def laser_can_fire_per_password(self):
-        spec = self.ctl.multispec.current_spectrometer()
+        spec = self.current_spectrometer()
         if spec is None:
             return False
         if self.xs_password_provided:
