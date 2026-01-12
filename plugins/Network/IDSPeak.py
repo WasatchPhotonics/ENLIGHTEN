@@ -27,6 +27,26 @@ class IDSPeak(EnlightenPluginBase):
         log.debug(f"adding to other_device_ids: {device_id}")
         self.ctl.other_device_ids.add(device_id)
 
+        # The IDS camera is not yet configured to directly control a laser 
+        # (although it could, via its GPIO port). For now, if IDSPeak is running,
+        # redirect laser control to "any other" connected spectrometer which 
+        # happens to provide a laser.
+        self.ctl.laser_control.set_current_spectrometer_callback(self.get_spectrometer_with_laser)
+
+    def disconnect(self):
+        self.ctl.laser_control.set_current_spectrometer_callback(None)
+        super().disconnect()
+
+    def get_spectrometer_with_laser(self):
+        """
+        This method is provided to override ctl.multispec.current_spectrometer().
+        It returns a handle to the first connected enlighten.devices.Spectrometer with
+        a laser, or None if one can't be found
+        """
+        for spec in self.ctl.multispec.get_spectrometers():
+            if spec.settings and spec.settings.eeprom and spec.settings.eeprom.has_laser:
+                return spec
+
     def update_visibility(self):
         """
         Something has happened -- a new spectrometer may have connected -- so update field state.

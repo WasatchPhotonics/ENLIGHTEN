@@ -96,9 +96,10 @@ class AreaScanFeature:
         self.curve_live = None
         self.frame_start = datetime.datetime.now()
 
-        self.pen_start = self.ctl.gui.make_pen(color="green", width=2)
-        self.pen_stop  = self.ctl.gui.make_pen(color="red", width=2)
-        self.pen_line  = self.ctl.gui.make_pen(color="yellow")
+        self.pen_start  = self.ctl.gui.make_pen(color="enlighten_name_g",  width=2)
+        self.pen_stop   = self.ctl.gui.make_pen(color="enlighten_name_n2", width=2)
+        self.pen_line   = self.ctl.gui.make_pen(color="enlighten_name_h")
+        self.pen_cursor = self.ctl.gui.make_pen(color="enlighten_name_e1")
 
         # create widgets we can't / don't pass in
         self.create_widgets()
@@ -437,6 +438,8 @@ class AreaScanFeature:
             self.scene.addLine(-margin, line_index, w + margin, line_index, self.pen_line) 
             self.scene.addLine(-margin, stop,       w + margin, stop,       self.pen_stop)
 
+            self.display_cursor(y0=-margin, y1=h+margin)
+
             # optionally scale entire QGraphicsView
             t = QtGui.QTransform()
             if self.fit:
@@ -486,8 +489,15 @@ class AreaScanFeature:
 
             self.scene.addLine(-10, scale*start_line, qpixmap.width() + 10, scale*start_line, self.pen_start)
             self.scene.addLine(-10, scale*stop_line,  qpixmap.width() + 10, scale*stop_line,  self.pen_stop)
+
+            self.display_cursor(y0=-10, y1=qpixmap.height() + 10)
         except:
             log.error("failed to display PNG", exc_info=1)
+
+    def display_cursor(self, y0, y1):
+        if self.ctl.cursor.is_enabled():
+            x = self.ctl.cursor.get_pixel()
+            self.scene.addLine(x, y0, x, y1, self.pen_cursor)
 
     def normalize_png(self, pathname_png):
         try:

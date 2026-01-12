@@ -167,7 +167,7 @@ class GUI:
             "checked": dialog.checkBox().isChecked()
         }
 
-    def msgbox_with_lineedit(self, title, label_text, lineedit_text):
+    def msgbox_with_lineedit(self, title, label_text, lineedit_text, is_password=False):
         dialog = QDialog(parent=self.ctl.form)
         dialog.setModal(True)
         dialog.setWindowTitle(title)
@@ -176,6 +176,8 @@ class GUI:
         lb = QLabel(label_text, parent=dialog)
 
         le = QLineEdit(parent=dialog)
+        if is_password:
+            le.setEchoMode(QLineEdit.EchoMode.Password)
         le.setText(lineedit_text)
 
         bb = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
@@ -198,7 +200,7 @@ class GUI:
 
         return retval
 
-    def msgbox_with_lineedit_and_checkbox(self, title, label_text, lineedit_text, checkbox_text, checkbox_checked=False, extra_button_label=None):
+    def msgbox_with_lineedit_and_checkbox(self, title, label_text, lineedit_text, checkbox_text, checkbox_checked=False, extra_button_label=None, is_password=False):
         dialog = QDialog(parent=self.ctl.form)
         dialog.setModal(True)
         dialog.setWindowTitle(title)
@@ -207,6 +209,8 @@ class GUI:
         lb = QLabel(label_text, parent=dialog)
 
         le = QLineEdit(parent=dialog)
+        if is_password:
+            le.setEchoMode(QLineEdit.EchoMode.Password)
         le.setText(lineedit_text)
 
         cb = QCheckBox(checkbox_text, parent=dialog)

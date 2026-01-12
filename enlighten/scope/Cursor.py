@@ -71,7 +71,10 @@ class AxisConverter:
 class Cursor:
     """
     Encapsulates the main Graph x-axis cursor (vertical red line).
-    Note that StatusBar will register as an observer.
+
+    Note that StatusBar will register as an observer. AreaScanFeature does not, 
+    instead requesting the current value (in pixel space) each time it updates 
+    the area scan image.
     """
     def __init__(self, ctl):
         self.ctl = ctl
@@ -262,7 +265,24 @@ class Cursor:
         self.cursor.setValue(midpoint)
         log.debug("centering: midpoint of (%.2f, %.2f) is %.2f", x_axis[0], x_axis[-1], midpoint)
 
+    def get_pixel(self, spec=None):
+        if spec is None:
+            spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return None, None
+
+        curve = spec.curve
+        xp = self.cursor.getXPos()
+
+        x_axis = curve.getData()[0]
+        if x_axis is None:
+            return None
+
+        x_pixel = np.searchsorted(x_axis, xp)
+        return x_pixel
+
     def get_pos(self, spec=None):
+        """ the returned X unit seems to be whatever is currently selected in the GUI """
         if spec is None:
             spec = self.ctl.multispec.current_spectrometer()
         if spec is None:

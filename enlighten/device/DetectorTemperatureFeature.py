@@ -174,6 +174,10 @@ class DetectorTemperatureFeature:
             log.debug("process_reading: not using reading without spectrum")
             return
 
+        if reading.detector_temperature_degC is None:
+            log.debug("process_reading: no detector temperature")
+            return
+
         # add the measurement to the moving window
         app_state.detector_temperatures_degC.add(reading.detector_temperature_degC)
         app_state.detector_temperature_degC_latest = reading.detector_temperature_degC
