@@ -226,7 +226,8 @@ class Measurements:
     # ThumbnailWidget, from the given spectrometer's latest ProcessedReading.
     def create_from_spectrometer(self, spec, label=None):
         if spec is None or spec.app_state.processed_reading is None:
-            msgbox("No spectra to save.", "Error")
+            # downgrading error message as this can happen when using 220250 as laser driver
+            log.debug("No spectra to save")
             return
 
         log.debug("creating Measurement from spec %s", spec.label)
