@@ -465,18 +465,6 @@ class LaserControlFeature:
     def dn_callback(self):
         util.decr_spinbox(self.ctl.form.ui.doubleSpinBox_laser_power)
 
-    ##
-    # This is going to give some weird results if some spectrometers have a laser
-    # power calibration and others don't.
-    #
-    # What it does now is uses the CURRENT spectrometer to decide if the commanded
-    # power was in percent or mW, then sends that command (mW or perc) downstream
-    # to all spectrometers with the associated value.
-    #
-    # If some spectrometers don't support the command (either because they have no
-    # laser or lack a power calibration), they'll do whatever Wasatch.PY tells them
-    # to do (probably nothing).  If the power is out-of-range for some, same deal.
-    #
     def set_laser_power_callback(self):
         if self.slider_stop_usb:
             return
@@ -490,8 +478,8 @@ class LaserControlFeature:
             setting = "laser_power_perc"
 
         value = self.ctl.form.ui.doubleSpinBox_laser_power.value()
-        self.ctl.multispec.set_state("laser_power", value)
-        self.ctl.multispec.change_device_setting(setting, value)
+        spec.settings.state.laser_power = value
+        spec.change_device_setting(setting, value)
 
     ##
     # This is a little convoluted because "laser enabled" was implemented

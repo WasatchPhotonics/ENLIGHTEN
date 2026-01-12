@@ -1,8 +1,10 @@
 # Version History
 
-- 2025-??-?? 4.1.34
-    - require password to fire laser on XS (can be disabled per-SN with Admin password)
+- 2026-01-12 4.1.35
+    - improved support for using 220250 as laser driver (no spectra)
+- 2025-12-18 4.1.34
     - display cursor in Area Scan
+    - infrastructure to support laser PIN on XS
 - 2025-12-10 4.1.33
     - disable onboard averaging (XS testing)
     - disable use of eeprom.actual_horiz_pixels when reading spectra

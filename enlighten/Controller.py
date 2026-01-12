@@ -1415,6 +1415,11 @@ class Controller:
             self.process_hardware_strip_reading(spec, reading)
             return
 
+        if reading.keep_alive:
+            log.debug("attempt_reading: received reading.keep_alive, but passing to hardware strip at least")
+            self.process_hardware_strip_reading(spec, reading)
+            return
+
         # are we waiting on a SPECIFIC Reading (or series of Readings)?
         matched_take_one = False
         if spec.app_state.take_one_request:
@@ -1471,13 +1476,14 @@ class Controller:
 
         # @todo need to update DetectorRegions so this will pass (use total_pixels)
 
-        pixels = len(reading.spectrum)
-        if pixels != spec.settings.pixels():
-            self.marquee.info(f"{device_id} provided incorrect spectra length of {pixels}. Expected {spec.settings.pixels()}")
-            log.error("attempt_reading(%s): ignoring malformed spectrum of %d pixels (expected %d)",
-                device_id, pixels, spec.settings.pixels())
-            reading = None
-            return
+        if reading.spectrum is not None:
+            pixels = len(reading.spectrum)
+            if pixels != spec.settings.pixels():
+                self.marquee.info(f"{device_id} provided incorrect spectra length of {pixels}. Expected {spec.settings.pixels()}")
+                log.error("attempt_reading(%s): ignoring malformed spectrum of %d pixels (expected %d)",
+                    device_id, pixels, spec.settings.pixels())
+                reading = None
+                return
 
         log.debug("attempt_reading(%s): update spectrum data: %s and length (%s)", device_id, str(reading.spectrum[0:5]), str(len(reading.spectrum)))
 
