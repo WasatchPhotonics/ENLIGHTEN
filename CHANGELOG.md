@@ -1,5 +1,7 @@
 # Version History
 
+- 2026-01-16 4.1.36
+    - support 2min acquisitions on IDS / STARVIS
 - 2026-01-12 4.1.35
     - improved support for using 220250 as laser driver (no spectra)
 - 2025-12-18 4.1.34
