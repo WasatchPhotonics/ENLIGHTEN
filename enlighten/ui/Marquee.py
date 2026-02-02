@@ -84,15 +84,13 @@ class Marquee:
 
         cfu.pushButton_marquee_close.clicked.connect(self.close_callback)
 
-        self.current_message = None
-
-
         # Shouldn't need this, but getting around a "ShellExecute error 5"
         self.label.setOpenExternalLinks(False)
         self.label.linkActivated.connect(self.link_activated_callback)
 
         self.next_clear_timestamp = None
         self.next_message = None
+        self.curr_message = None
         
         # could probably use one, keeping separate for now
         self.timer = QtCore.QTimer()
@@ -137,32 +135,32 @@ class Marquee:
                          link       = link)
 
     def showing_something(self):
-        return self.current_message is not None
+        return self.curr_message is not None
 
     def showing_error(self):
-        if self.current_message:
-            return not self.current_message.benign
+        if self.curr_message:
+            return not self.curr_message.benign
             
     def persist(self): 
-        if self.current_message: 
-            return self.current_message.persist
+        if self.curr_message: 
+            return self.curr_message.persist
 
     def last_token(self): 
-        if self.current_message: 
-            return self.current_message.token
+        if self.curr_message: 
+            return self.curr_message.token
 
     def extra_ms(self): 
         ms = 0
-        if self.current_message: 
-            ms = self.current_message.extra_ms
-            if self.current_message.period_sec is not None:
-                if self.current_message.period_sec * 1000 > self.DRAWER_DURATION_MS:
-                    ms = self.current_message.period_sec * 1000 - self.DRAWER_DURATION_MS
+        if self.curr_message: 
+            ms = self.curr_message.extra_ms
+            if self.curr_message.period_sec is not None:
+                if self.curr_message.period_sec * 1000 > self.DRAWER_DURATION_MS:
+                    ms = self.curr_message.period_sec * 1000 - self.DRAWER_DURATION_MS
         return ms
 
     def link(self):
-        if self.current_message:
-            return self.current_message.link
+        if self.curr_message:
+            return self.curr_message.link
 
     def clear(self, token=None, force=False):
         if force or not self.persist() or (token and token == self.last_token()):
@@ -170,7 +168,7 @@ class Marquee:
 
     def hide(self):
         self.label.clear()
-        self.current_message = None
+        self.curr_message = None
         
         op = QtWidgets.QGraphicsOpacityEffect(self.frame)
         op.setOpacity(0)
@@ -192,7 +190,7 @@ class Marquee:
         next_ = self.next_message
         if next_:
             self.next_message = None
-            self.current_message = next_
+            self.curr_message = next_
             self.label.setText(next_.msg)
 
             op = QtWidgets.QGraphicsOpacityEffect(self.frame)
@@ -203,6 +201,7 @@ class Marquee:
             if next_.is_error():
                 self.ctl.stylesheets.set_benign(self.inner, False)
             else:
+                self.ctl.stylesheets.set_benign(self.inner, None)
                 self.ctl.stylesheets.apply(self.inner, self.default_css, raw=True)
 
             self.schedule_clear()

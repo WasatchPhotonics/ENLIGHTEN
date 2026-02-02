@@ -1,5 +1,7 @@
 # Version History
 
+- 2026-??-?? 4.1.37
+    - fixed "persistent error" coloring in Marquee
 - 2026-01-16 4.1.36
     - support 2min acquisitions on IDS / STARVIS
 - 2026-01-12 4.1.35
