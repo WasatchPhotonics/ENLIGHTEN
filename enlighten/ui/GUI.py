@@ -190,13 +190,10 @@ class GUI:
         vb.addWidget(bb)
 
         result = dialog.exec_()
-        log.debug(f"msgbox_with_lineedit: result = {result}")
-
         retval = {
             "ok": result == QDialog.Accepted,
             "lineedit": le.text() 
         }
-        log.debug(f"msgbox_with_lineedit: retval = {retval}")
 
         return retval
 
