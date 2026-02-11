@@ -321,13 +321,15 @@ class EEPROMEditor:
                       "tec_beta", "tec_r298", "subformat", "spline_points", "laser_warmup_sec", 
                       "untethered_library_type", "untethered_library_id", "untethered_scans_to_average", 
                       "untethered_min_ramp_pixels", "untethered_min_peak_height", "untethered_match_threshold", "untethered_library_count",
-                      "laser_watchdog_sec", "light_source_type", "power_timeout_sec", "detector_timeout_sec" ]:
+                      "laser_watchdog_sec", "light_source_type", "power_timeout_sec", "detector_timeout_sec",
+                      "startup_scans_to_average", "laser_attenuator" ]:
             self.add_attribute("spinbox", name, widget=getattr(cfu, f"spinBox_ee_{name}"))
 
         for name in [ "max_laser_power_mW", "min_laser_power_mW", "detector_gain", "detector_gain_odd", "spline_min", "spline_max" ]:
             self.add_attribute("doublespinbox", name, widget=getattr(cfu, f"doubleSpinBox_ee_{name}"))
 
-        for name in [ "calibrated_by", "calibration_date", "detector", "model", "serial_number", "user_text", "product_configuration" ]:
+        for name in [ "calibrated_by", "calibration_date", "detector", "model", "serial_number", "user_text", "product_configuration",
+                      "laser_password" ]:
             self.add_attribute("lineedit", name, is_numeric=False, widget=getattr(cfu, f"lineEdit_ee_{name}"))
 
         # Arrays (but still not multi-wavelength)
