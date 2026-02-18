@@ -129,6 +129,7 @@ class BatchCollection:
         self.cb_dark_before_batch           = cfu.checkBox_BatchCollection_dark_before_batch
         self.cb_clear_before_batch          = cfu.checkBox_BatchCollection_clear_before_batch
         self.cb_export_after_batch          = cfu.checkBox_BatchCollection_export_after_batch
+        self.cb_save_area_scan              = cfu.checkBox_BatchCollection_save_area_scan
         self.lb_explain                     = cfu.label_BatchCollection_explain
         self.rb_laser_manual                = cfu.radioButton_BatchCollection_laser_manual
         self.rb_laser_spectrum              = cfu.radioButton_BatchCollection_laser_spectrum
@@ -140,6 +141,8 @@ class BatchCollection:
         self.spinbox_batch_period_sec       = cfu.spinBox_BatchCollection_batch_period_sec
         self.spinbox_laser_warmup_ms        = cfu.spinBox_BatchCollection_laser_warmup_ms
         self.spinbox_collection_timeout     = cfu.spinBox_BatchCollection_collection_timeout
+
+        self.cb_save_area_scan.setEnabled(False) # MZ: YOU ARE HERE
 
         # if true, save each measurement for each spectrometer (when timing is
         # disabled and we're just counting down measurements)
@@ -170,6 +173,7 @@ class BatchCollection:
         self.export_after_batch = False
         self.collection_start_time = None
         self.take_one_template = None
+        self.save_area_scan = False
 
         # set initial values before binding callbacks
         self.init_from_config()
@@ -179,6 +183,7 @@ class BatchCollection:
         self.cb_dark_before_batch          .stateChanged .connect(self.update_from_widgets)
         self.cb_clear_before_batch         .stateChanged .connect(self.update_from_widgets)
         self.cb_export_after_batch         .stateChanged .connect(self.update_from_widgets)
+        self.cb_save_area_scan             .stateChanged .connect(self.update_from_widgets)
         self.rb_laser_manual               .toggled      .connect(self.update_from_widgets)
         self.rb_laser_spectrum             .toggled      .connect(self.update_from_widgets)
         self.rb_laser_batch                .toggled      .connect(self.update_from_widgets)
@@ -254,6 +259,7 @@ class BatchCollection:
         self.dark_before_batch     = self.cb_dark_before_batch.isChecked()
         self.clear_before_batch    = self.cb_clear_before_batch.isChecked()
         self.export_after_batch    = self.cb_export_after_batch.isChecked()
+        self.save_area_scan        = self.cb_save_area_scan.isChecked()
         self.measurement_count     = self.spinbox_measurement_count.value()
         self.measurement_period_ms = self.spinbox_measurement_period_ms.value()
         self.batch_count           = self.spinbox_batch_count.value()
@@ -644,6 +650,10 @@ class BatchCollection:
         log.info("measurement %d/%d (batch %d/%d)",
             self.current_measurement_count, self.measurement_count,
             self.current_batch_count, self.batch_count)
+
+        if self.save_area_scan:
+            log.debug("save_complete: saving area scan")
+            self.ctl.area_scan.save_area_scan()
 
         if self.current_measurement_count >= self.measurement_count:
             self.complete_batch()

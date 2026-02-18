@@ -10033,6 +10033,19 @@ QComboBox QListView
                                  </property>
                                 </widget>
                                </item>
+                               <item>
+                                <widget class="QCheckBox" name="checkBox_BatchCollection_save_area_scan">
+                                 <property name="toolTip">
+                                  <string>Save an Area Scan of each measurement (Area Scan must be enabled before starting batch)</string>
+                                 </property>
+                                 <property name="text">
+                                  <string>Save Area Scan with each measurement</string>
+                                 </property>
+                                 <property name="checked">
+                                  <bool>false</bool>
+                                 </property>
+                                </widget>
+                               </item>
                               </layout>
                              </item>
                              <item>

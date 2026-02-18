@@ -117,7 +117,7 @@ class AreaScanFeature:
         self.cb_normalize_csv.setChecked(True)
         self.progress_bar.setVisible(False)
 
-        self.bt_save     .clicked        .connect(self.save_callback)
+        self.bt_save     .clicked        .connect(self.save_area_scan)
         self.cb_normalize.stateChanged   .connect(self.normalize_callback)
         self.cb_normalize_csv.stateChanged.connect(self.normalize_callback)
         self.cb_fit      .stateChanged   .connect(self.fit_callback)
@@ -294,7 +294,7 @@ class AreaScanFeature:
             self.update_from_gui()
             self.ignored = 0
 
-    def save_callback(self):
+    def save_area_scan(self):
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return self.disable()
