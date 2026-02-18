@@ -4785,7 +4785,6 @@ QComboBox QListView
                             <property name="keyboardTracking">
                              <bool>false</bool>
                             </property>
-
                             <property name="maximum">
                              <number>255</number>
                             </property>
@@ -4798,6 +4797,7 @@ QComboBox QListView
                             </property>
                            </widget>
                           </item>
+
                           <item row="16" column="0">
                            <widget class="QSpinBox" name="spinBox_ee_detector_timeout_sec">
                             <property name="minimumSize">
@@ -4824,6 +4824,7 @@ QComboBox QListView
                             </property>
                            </widget>
                           </item>
+
                           <item row="17" column="0">
                            <widget class="QSpinBox" name="spinBox_ee_horiz_binning_mode">
                             <property name="minimumSize">
@@ -4851,6 +4852,66 @@ QComboBox QListView
                            </widget>
                           </item>
 
+                          <item row="18" column="0">
+                           <widget class="QSpinBox" name="spinBox_ee_startup_scans_to_average">
+                            <property name="minimumSize">
+                             <size>
+                              <width>125</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                            <property name="keyboardTracking">
+                             <bool>false</bool>
+                            </property>
+                            <property name="maximum">
+                             <number>100</number>
+                            </property>
+                            <property name="minimum">
+                             <number>1</number>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="18" column="1">
+                           <widget class="QLabel" name="label_48d">
+                            <property name="text">
+                             <string>Startup Scans to Average</string>
+                            </property>
+                           </widget>
+                          </item>
+
+                          <item row="19" column="0">
+                           <widget class="QSpinBox" name="spinBox_ee_laser_attenuator">
+                            <property name="minimumSize">
+                             <size>
+                              <width>125</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                            <property name="keyboardTracking">
+                             <bool>false</bool>
+                            </property>
+                            <property name="maximum">
+                             <number>255</number>
+                            </property>
+                            <property name="minimum">
+                             <number>0</number>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="19" column="1">
+                           <widget class="QLabel" name="label_48e">
+                            <property name="text">
+                             <string>XS Laser Attenuator</string>
+                            </property>
+                           </widget>
+                          </item>
+
                          </layout>
                         </item>
                        </layout>
@@ -4859,6 +4920,7 @@ QComboBox QListView
                     </layout>
                    </widget>
                   </item>
+
                   <item>
                    <widget class="QFrame" name="frame_eeprom_page_4_white">
                     <property name="frameShape">
@@ -4938,6 +5000,7 @@ QComboBox QListView
                     </layout>
                    </widget>
                   </item>
+
                   <item>
                    <widget class="QFrame" name="frame_eeprom_page_5_white">
                     <property name="frameShape">
@@ -6443,6 +6506,86 @@ QComboBox QListView
                            </item>
                           </layout>
                          </widget>
+                        </item>
+                       </layout>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+
+                  <item>
+                   <widget class="QFrame" name="frame_eeprom_page_8_white">
+                    <property name="frameShape">
+                     <enum>QFrame::Shape::StyledPanel</enum>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Shadow::Raised</enum>
+                    </property>
+                    <property name="wpBox" stdset="0">
+                     <bool>false</bool>
+                    </property>
+                    <layout class="QVBoxLayout" name="verticalLayout_118y">
+                     <property name="spacing">
+                      <number>0</number>
+                     </property>
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                     <item>
+                      <widget class="QFrame" name="frame_eeprom_page_8">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="wpPanel" stdset="0">
+                        <bool>false</bool>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_76y">
+                        <item>
+                         <widget class="QLabel" name="label_160y">
+                          <property name="font">
+                           <font>
+                            <pointsize>10</pointsize>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="text">
+                           <string>EEPROM Page 8</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <layout class="QFormLayout" name="formLayout_ee_page_8">
+                          <property name="fieldGrowthPolicy">
+                           <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
+                          </property>
+                          <item row="0" column="0">
+                           <widget class="QLabel" name="label_200x">
+                            <property name="text">
+                             <string>XS Laser Password</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="0" column="1">
+                           <widget class="QLineEdit" name="lineEdit_ee_laser_password">
+                            <property name="echoMode">
+                             <enum>QLineEdit::PasswordEchoOnEdit</enum>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
                         </item>
                        </layout>
                       </widget>

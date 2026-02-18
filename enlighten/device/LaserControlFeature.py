@@ -491,6 +491,12 @@ class LaserControlFeature:
             log.debug("toggle_callback: no spectrometer?")
             return
 
+        # check for laser password, if the laser is not already firing 
+        # (always allow user to turn it OFF)
+        if not spec.settings.state.laser_enabled:
+            if not self.laser_can_fire_per_password():
+                return
+
         # invert the previous state
         flag = not spec.settings.state.laser_enabled
         log.debug(f"toggle_callback: laser_enabled was {spec.settings.state.laser_enabled}, so setting {flag}")
@@ -585,7 +591,24 @@ class LaserControlFeature:
 
         title = "XS Laser Safety PIN"
         label_text = "Enter password to allow XS laser to fire"
-        result = self.ctl.gui.msgbox_with_lineedit(self, title=title, label_text=label_text, lineedit_text=None)
-        self.xs_password_provided = result and result["ok"]
+        result = self.ctl.gui.msgbox_with_lineedit(title=title, label_text=label_text, lineedit_text=None, is_password=True)
+        if not result["ok"]:
+            log.debug("user cancelled laser password prompt")
+            return False
+
+        # if no password was set in the EEPROM, use serial number
+        expected_password = spec.settings.eeprom.laser_password
+        if expected_password is None:
+            expected_password = spec.settings.eeprom.serial_number
+
+        # case-sensitive comparison
+        if result["lineedit"] == expected_password:
+            log.debug("correct laser password entered")
+            self.ctl.marquee.info("Laser authenticated for session", benign=True)
+            self.xs_password_provided = True
+        else:
+            log.debug("incorrect laser password entered")
+            self.ctl.marquee.error("incorrect laser password")
+            self.xs_password_provided = False
 
         return self.xs_password_provided
