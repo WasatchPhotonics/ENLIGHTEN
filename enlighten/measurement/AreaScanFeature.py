@@ -79,6 +79,7 @@ class AreaScanFeature:
         self.sb_start           = cfu.spinBox_area_scan_start_line
         self.sb_stop            = cfu.spinBox_area_scan_stop_line
         self.sb_step            = cfu.spinBox_area_scan_line_step
+        self.sb_scale           = cfu.spinBox_area_scan_scale
 
         self.data = None
         self.data_raw = None
@@ -89,6 +90,7 @@ class AreaScanFeature:
         self.fit = True
         self.start_line = 0
         self.stop_line = 63
+        self.scale = 1
         self.ignored = 0
         self.frame_count = 0
         self.image = None
@@ -103,6 +105,9 @@ class AreaScanFeature:
         self.pen_stop   = self.ctl.gui.make_pen(color="enlighten_name_n2", width=2)
         self.pen_line   = self.ctl.gui.make_pen(color="enlighten_name_h")
         self.pen_cursor = self.ctl.gui.make_pen(color="enlighten_name_e1")
+
+        self.cb_fit.setEnabled(True)
+        self.sb_scale.setEnabled(False)
 
         # create widgets we can't / don't pass in
         self.create_widgets()
@@ -120,6 +125,7 @@ class AreaScanFeature:
         self.sb_start    .valueChanged   .connect(self.roi_callback)
         self.sb_stop     .valueChanged   .connect(self.roi_callback)
         self.sb_step     .valueChanged   .connect(self.step_callback)
+        self.sb_scale    .valueChanged   .connect(self.scale_callback)
 
         self.progress_bar_timer = QtCore.QTimer()
         self.progress_bar_timer.timeout.connect(self.tick_progress_bar)
@@ -213,6 +219,9 @@ class AreaScanFeature:
     # callbacks
     # ##########################################################################
 
+    def scale_callback(self):
+        self.scale = self.sb_scale.value()
+
     def step_callback(self):
         """ the user changed the step spinner """
         spec = self.ctl.multispec.current_spectrometer()
@@ -244,6 +253,10 @@ class AreaScanFeature:
         if spec is None:
             return self.disable()
         self.fit = self.cb_fit.isChecked()
+
+        if not self.fit:
+            self.cb_fit.setEnabled(False)
+            self.sb_scale.setEnabled(True)
 
     def disable(self):
         log.debug("disabling area scan")
@@ -439,6 +452,15 @@ class AreaScanFeature:
             self.image = QtGui.QImage(data, w, h, w*2, QtGui.QImage.Format_Grayscale16)
             qpixmap = QtGui.QPixmap.fromImage(self.image)
 
+            # scale image if requested
+            # - QPixmap.setDevicePixelRatio()
+            # - QPixmap.scaled()
+            # - QImage.scaled()
+            if self.scale > 1:
+                # note that this doesn't change self.image, which is what gets saved as a PNG
+                size = QtCore.QSize(w * self.scale, h * self.scale)
+                qpixmap = qpixmap.scaled(size)
+
             self.scene.clear()
             self.scene.addPixmap(qpixmap)
 
@@ -448,11 +470,18 @@ class AreaScanFeature:
             # add three horizontal marker lines ATOP the image to show bounds and progress
             log.debug(f"adding green/red lines at (start {start}, stop {stop}) on image (width {w}, height {h}), line_index {line_index}")
             margin = 15
-            self.scene.addLine(-margin, start,      w + margin, start,      self.pen_start)
-            self.scene.addLine(-margin, line_index, w + margin, line_index, self.pen_line) 
-            self.scene.addLine(-margin, stop,       w + margin, stop,       self.pen_stop)
 
-            self.display_cursor(y0=-margin, y1=h+margin)
+            scaled_w     = self.scale * w
+            scaled_h     = self.scale * h
+            scaled_start = self.scale * start
+            scaled_index = self.scale * line_index
+            scaled_stop  = self.scale * stop
+
+            self.scene.addLine(-margin, scaled_start, scaled_w + margin, scaled_start, self.pen_start)
+            self.scene.addLine(-margin, scaled_index, scaled_w + margin, scaled_index, self.pen_line) 
+            self.scene.addLine(-margin, scaled_stop,  scaled_w + margin, scaled_stop,  self.pen_stop)
+
+            self.display_cursor(y0 = -margin, y1 = margin + scaled_h)
 
             # optionally scale entire QGraphicsView
             t = QtGui.QTransform()
@@ -549,11 +578,7 @@ class AreaScanFeature:
         self.data = np.zeros((data_h, data_w), dtype=np.float32)
         self.data_raw = None
 
-        self.frame_image.setMinimumHeight(data_h + 40)
         self.graphics_view.setMinimumHeight(150)
-
-        # if spec.settings.is_micro():
-        #    self.image.move(0, 0)
 
     def finish_update(self):
         """

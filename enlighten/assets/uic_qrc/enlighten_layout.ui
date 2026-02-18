@@ -7475,6 +7475,7 @@ QComboBox QListView
                      <widget class="QWidget" name="page_hardware_capture_details_spectrum">
                       <layout class="QVBoxLayout" name="verticalLayout_43">
                        <item>
+
                         <widget class="QFrame" name="frame_area_scan_image">
                          <property name="sizePolicy">
                           <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
@@ -7488,6 +7489,7 @@ QComboBox QListView
                          <property name="frameShadow">
                           <enum>QFrame::Shadow::Raised</enum>
                          </property>
+
                          <layout class="QHBoxLayout" name="horizontalLayout_54" stretch="0">
                           <item>
                            <layout class="QHBoxLayout" name="layout_area_scan_image">
@@ -7498,22 +7500,25 @@ QComboBox QListView
                              <widget class="QGraphicsView" name="graphicsView_area_scan">
                               <property name="sizePolicy">
                                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                                <horstretch>0</horstretch>
+                                <horstretch>1</horstretch>
                                 <verstretch>5</verstretch>
                                </sizepolicy>
                               </property>
-                              <property name="sizeAdjustPolicy">
-                               <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents</enum>
-                              </property>
                               <property name="interactive">
-                               <bool>false</bool>
+                               <bool>true</bool>
                               </property>
+
+                              <property name="horizontalScrollBarPolicy">
+                               <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOn</enum>
+                              </property>
+
                              </widget>
                             </item>
                            </layout>
                           </item>
                          </layout>
                         </widget>
+
                        </item>
                        <item>
                         <widget class="QFrame" name="frame_area_scan_live">
@@ -19411,6 +19416,9 @@ li.checked::marker { content: "\2612"; }
                             </property>
                            </widget>
                           </item>
+
+                           
+
                           <item row="3" column="0">
                            <widget class="QLabel" name="label_area_scan_current_line">
                             <property name="sizePolicy">
@@ -19593,6 +19601,50 @@ li.checked::marker { content: "\2612"; }
                            </widget>
                           </item>
                           <item row="8" column="0">
+                           <widget class="QSpinBox" name="spinBox_area_scan_scale">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                             <size>
+                              <width>75</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="focusPolicy">
+                             <enum>Qt::FocusPolicy::StrongFocus</enum>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                            <property name="minimum">
+                             <number>1</number>
+                            </property>
+                            <property name="maximum">
+                             <number>10</number>
+                            </property>
+                            <property name="value">
+                             <number>1</number>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="8" column="1">
+                           <widget class="QLabel" name="label_223x2">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="text">
+                             <string>Image Scale</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="9" column="0">
                            <widget class="QCheckBox" name="checkBox_area_scan_fit">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -19608,7 +19660,7 @@ li.checked::marker { content: "\2612"; }
                             </property>
                            </widget>
                           </item>
-                          <item row="8" column="1">
+                          <item row="9" column="1">
                            <widget class="QLabel" name="label_228_x">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -19621,7 +19673,7 @@ li.checked::marker { content: "\2612"; }
                             </property>
                            </widget>
                           </item>
-                          <item row="9" column="0">
+                          <item row="10" column="0">
                            <widget class="QLabel" name="label_area_scan_frame_elapsed">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -19634,7 +19686,7 @@ li.checked::marker { content: "\2612"; }
                             </property>
                            </widget>
                           </item>
-                          <item row="9" column="1">
+                          <item row="10" column="1">
                            <widget class="QLabel" name="label_234_x">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
