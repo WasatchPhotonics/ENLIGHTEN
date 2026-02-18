@@ -19383,6 +19383,35 @@ li.checked::marker { content: "\2612"; }
                            </widget>
                           </item>
                           <item row="2" column="0">
+                           <widget class="QCheckBox" name="checkBox_area_scan_normalize_csv">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="checked">
+                             <bool>true</bool>
+                            </property>
+                            <property name="text">
+                             <string />
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="2" column="1">
+                           <widget class="QLabel" name="label_228x">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="text">
+                             <string>Normalize CSV</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="3" column="0">
                            <widget class="QLabel" name="label_area_scan_current_line">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -19395,7 +19424,7 @@ li.checked::marker { content: "\2612"; }
                             </property>
                            </widget>
                           </item>
-                          <item row="2" column="1">
+                          <item row="3" column="1">
                            <widget class="QLabel" name="label_226">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -19408,7 +19437,7 @@ li.checked::marker { content: "\2612"; }
                             </property>
                            </widget>
                           </item>
-                          <item row="3" column="0">
+                          <item row="4" column="0">
                            <widget class="QLabel" name="label_area_scan_frame_count">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -19421,7 +19450,7 @@ li.checked::marker { content: "\2612"; }
                             </property>
                            </widget>
                           </item>
-                          <item row="3" column="1">
+                          <item row="4" column="1">
                            <widget class="QLabel" name="label_234">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -19434,7 +19463,7 @@ li.checked::marker { content: "\2612"; }
                             </property>
                            </widget>
                           </item>
-                          <item row="4" column="0">
+                          <item row="5" column="0">
                            <widget class="QSpinBox" name="spinBox_area_scan_start_line">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -19465,7 +19494,7 @@ li.checked::marker { content: "\2612"; }
                             </property>
                            </widget>
                           </item>
-                          <item row="4" column="1">
+                          <item row="5" column="1">
                            <widget class="QLabel" name="label_223">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -19478,7 +19507,7 @@ li.checked::marker { content: "\2612"; }
                             </property>
                            </widget>
                           </item>
-                          <item row="5" column="0">
+                          <item row="6" column="0">
                            <widget class="QSpinBox" name="spinBox_area_scan_stop_line">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -19506,7 +19535,7 @@ li.checked::marker { content: "\2612"; }
                             </property>
                            </widget>
                           </item>
-                          <item row="5" column="1">
+                          <item row="6" column="1">
                            <widget class="QLabel" name="label_224">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">

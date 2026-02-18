@@ -2,6 +2,7 @@
 
 - 2026-02-?? 4.1.38
     - added edittable laser_password, startup_scans_to_average, laser_attenuator
+    - allow area scan normalization CSV to be optional
 - 2026-02-09 4.1.37
     - fixed "persistent error" coloring in Marquee
     - rotated Hamamatsu area scan 180 deg

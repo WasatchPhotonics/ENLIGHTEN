@@ -66,6 +66,7 @@ class AreaScanFeature:
         self.bt_save            = cfu.pushButton_area_scan_save
         self.cb_enable          = cfu.checkBox_area_scan_enable
         self.cb_normalize       = cfu.checkBox_area_scan_normalize
+        self.cb_normalize_csv   = cfu.checkBox_area_scan_normalize_csv
         self.cb_fit             = cfu.checkBox_area_scan_fit
         self.frame_image        = cfu.frame_area_scan_image
         self.frame_live         = cfu.frame_area_scan_live
@@ -80,9 +81,11 @@ class AreaScanFeature:
         self.sb_step            = cfu.spinBox_area_scan_line_step
 
         self.data = None
+        self.data_raw = None
         self.enabled = False
         self.visible = False
         self.normalize = True
+        self.normalize_csv = True
         self.fit = True
         self.start_line = 0
         self.stop_line = 63
@@ -106,10 +109,12 @@ class AreaScanFeature:
 
         self.cb_fit.setChecked(True)
         self.cb_normalize.setChecked(True)
+        self.cb_normalize_csv.setChecked(True)
         self.progress_bar.setVisible(False)
 
         self.bt_save     .clicked        .connect(self.save_callback)
         self.cb_normalize.stateChanged   .connect(self.normalize_callback)
+        self.cb_normalize_csv.stateChanged.connect(self.normalize_callback)
         self.cb_fit      .stateChanged   .connect(self.fit_callback)
         self.cb_enable   .stateChanged   .connect(self.enable_callback)
         self.sb_start    .valueChanged   .connect(self.roi_callback)
@@ -231,6 +236,7 @@ class AreaScanFeature:
         if spec is None:
             return self.disable()
         self.normalize = self.cb_normalize.isChecked()
+        self.normalize_csv = self.cb_normalize_csv.isChecked()
 
     def fit_callback(self):
         """ The user clicked "[x] fit" on the widget """
@@ -243,6 +249,7 @@ class AreaScanFeature:
         log.debug("disabling area scan")
         self.enabled = False
         self.data = None
+        self.data_raw = None
         self.last_received_time = None
         self.frame_image.setVisible(False)
         self.cb_enable.setChecked(False)
@@ -279,6 +286,7 @@ class AreaScanFeature:
         if spec is None:
             return self.disable()
 
+        saved_something = False
         today_dir = self.ctl.save_options.generate_today_dir()
         basename = "area-scan-%s-%s" % (datetime.datetime.now().strftime("%Y%m%d-%H%M%S"),
                                         spec.settings.eeprom.serial_number)
@@ -288,26 +296,31 @@ class AreaScanFeature:
             pathname_png = os.path.join(today_dir, basename + ".png")
             log.debug("saving qimage %s", pathname_png)
             self.image.save(pathname_png)
+            saved_something = True
 
-        # save table
-        pathname_csv = os.path.join(today_dir, basename + ".csv")
-        log.debug("saving csv %s", pathname_csv)
+        data = self.data if self.normalize_csv else self.data_raw
+        if data is not None:
+            # save table
+            pathname_csv = os.path.join(today_dir, basename + ".csv")
+            log.debug("saving csv %s", pathname_csv)
 
-        lines = len(self.data)
-        pixels = len(self.data[0])
-        with open(pathname_csv, "w") as outfile:
-            for i in range(pixels):
-                outfile.write(f", {i}")
-            outfile.write("\n")
-            for line in range(lines):
-                outfile.write(f"{line}")
+            lines = len(data)
+            pixels = len(data[0])
+            with open(pathname_csv, "w") as outfile:
                 for i in range(pixels):
-                    outfile.write(f", {self.data[line][i]}")
+                    outfile.write(f", {i}")
                 outfile.write("\n")
+                for line in range(lines):
+                    outfile.write(f"{line}")
+                    for i in range(pixels):
+                        outfile.write(f", {data[line][i]}")
+                    outfile.write("\n")
+            saved_something = True
 
-        # np.savetxt(pathname_csv, self.data, fmt="%d", delimiter=",")
-
-        self.ctl.marquee.info("saved %s" % basename)
+        if saved_something:
+            self.ctl.marquee.info("saved %s" % basename)
+        else:
+            self.ctl.marquee.error("no area scan data to save")
 
     # ##########################################################################
     # private methods
@@ -413,6 +426,7 @@ class AreaScanFeature:
             h, w = data.shape
 
             # optionally normalize
+            self.data_raw = data.astype(np.uint16)
             if self.normalize:
                 lo = np.min(data)
                 hi = np.max(data)
@@ -533,6 +547,7 @@ class AreaScanFeature:
 
         log.debug("resize: data_w = %d, data_h = %d (start %d, stop %d)", data_w, data_h, self.start_line, self.stop_line)
         self.data = np.zeros((data_h, data_w), dtype=np.float32)
+        self.data_raw = None
 
         self.frame_image.setMinimumHeight(data_h + 40)
         self.graphics_view.setMinimumHeight(150)
@@ -555,6 +570,6 @@ class AreaScanFeature:
         self.scene.clear() # @todo - anything leak here? need to deleteLater old pixmap?
         self.scene.addPixmap(pixmap)
 
-        # vertically bin the on-screen image for the "live" spectrum
+        # vertically bin the on-screen image for the "live" spectrum (optionally normalized)
         total = np.sum(self.data, axis=0)
         self.ctl.set_curve_data(self.curve_live, total)
