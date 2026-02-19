@@ -2,9 +2,12 @@
 
 - 2026-02-?? 4.1.38
     - added edittable laser_password, startup_scans_to_average, laser_attenuator
-    - allow saving raw area scan CSV even when image is normalized
-    - [#572] allow zooming the area scan image on-screen
-    - EXPLORING area scan + BatchCollection, but not there yet
+    - Area Scan
+        - allow saving raw CSV even when image is normalized
+        - [#572] allow zooming image on-screen
+        - add prefix/suffix to basename
+        - add horizontal cursor
+        - EXPLORING BatchCollection, but not there yet
 - 2026-02-09 4.1.37
     - fixed "persistent error" coloring in Marquee
     - rotated Hamamatsu area scan 180 deg

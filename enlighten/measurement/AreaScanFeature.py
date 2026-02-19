@@ -80,6 +80,7 @@ class AreaScanFeature:
         self.sb_stop            = cfu.spinBox_area_scan_stop_line
         self.sb_step            = cfu.spinBox_area_scan_line_step
         self.sb_scale           = cfu.spinBox_area_scan_scale
+        self.sb_cursor          = cfu.spinBox_area_scan_cursor
 
         self.data = None
         self.data_raw = None
@@ -91,6 +92,7 @@ class AreaScanFeature:
         self.start_line = 0
         self.stop_line = 63
         self.scale = 1
+        self.cursor_line = 0
         self.ignored = 0
         self.frame_count = 0
         self.image = None
@@ -104,10 +106,10 @@ class AreaScanFeature:
         self.pen_start  = self.ctl.gui.make_pen(color="enlighten_name_g",  width=2)
         self.pen_stop   = self.ctl.gui.make_pen(color="enlighten_name_n2", width=2)
         self.pen_line   = self.ctl.gui.make_pen(color="enlighten_name_h")
-        self.pen_cursor = self.ctl.gui.make_pen(color="enlighten_name_e1")
+        self.pen_cursor = self.ctl.gui.make_pen(color="enlighten_name_i")
 
         self.cb_fit.setEnabled(True)
-        self.sb_scale.setEnabled(False)
+        self.sb_scale.setEnabled(True)
 
         # create widgets we can't / don't pass in
         self.create_widgets()
@@ -126,6 +128,7 @@ class AreaScanFeature:
         self.sb_stop     .valueChanged   .connect(self.roi_callback)
         self.sb_step     .valueChanged   .connect(self.step_callback)
         self.sb_scale    .valueChanged   .connect(self.scale_callback)
+        self.sb_cursor   .valueChanged   .connect(self.cursor_callback)
 
         self.progress_bar_timer = QtCore.QTimer()
         self.progress_bar_timer.timeout.connect(self.tick_progress_bar)
@@ -219,8 +222,13 @@ class AreaScanFeature:
     # callbacks
     # ##########################################################################
 
+    def cursor_callback(self):
+        self.cursor_line = self.sb_cursor.value()
+
     def scale_callback(self):
         self.scale = self.sb_scale.value()
+        self.cb_fit.setChecked(False)
+        self.cb_fit.setEnabled(False)
 
     def step_callback(self):
         """ the user changed the step spinner """
@@ -253,10 +261,6 @@ class AreaScanFeature:
         if spec is None:
             return self.disable()
         self.fit = self.cb_fit.isChecked()
-
-        if not self.fit:
-            self.cb_fit.setEnabled(False)
-            self.sb_scale.setEnabled(True)
 
     def disable(self):
         log.debug("disabling area scan")
@@ -301,8 +305,16 @@ class AreaScanFeature:
 
         saved_something = False
         today_dir = self.ctl.save_options.generate_today_dir()
-        basename = "area-scan-%s-%s" % (datetime.datetime.now().strftime("%Y%m%d-%H%M%S"),
-                                        spec.settings.eeprom.serial_number)
+
+        # this doesn't use the full templating capability of Measurement (which 
+        # needs extracted into TemplateFeature), but meets the immediate need
+        ts = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        sn = spec.settings.eeprom.serial_number
+        basename = f"area-scan-{ts}-{sn}"
+        if self.ctl.save_options.has_prefix():
+            basename = self.ctl.save_options.prefix() + "-" + basename
+        if self.ctl.save_options.has_suffix():
+            basename += "-" + self.ctl.save_options.suffix()
 
         # save image
         if self.image is not None:
@@ -481,7 +493,8 @@ class AreaScanFeature:
             self.scene.addLine(-margin, scaled_index, scaled_w + margin, scaled_index, self.pen_line) 
             self.scene.addLine(-margin, scaled_stop,  scaled_w + margin, scaled_stop,  self.pen_stop)
 
-            self.display_cursor(y0 = -margin, y1 = margin + scaled_h)
+            self.display_vertical_cursor  (y0 = -margin, y1 = margin + scaled_h)
+            self.display_horizontal_cursor(x0 = -margin, x1 = margin + scaled_w)
 
             # optionally scale entire QGraphicsView
             t = QtGui.QTransform()
@@ -527,20 +540,28 @@ class AreaScanFeature:
             if asi.height is not None and asi.height_orig is not None:
                 scale = 1.0 * asi.height / asi.height_orig
                 
+            margin = 10
             start_line = spec.settings.eeprom.roi_vertical_region_1_start
             stop_line = spec.settings.eeprom.roi_vertical_region_1_end
 
-            self.scene.addLine(-10, scale*start_line, qpixmap.width() + 10, scale*start_line, self.pen_start)
-            self.scene.addLine(-10, scale*stop_line,  qpixmap.width() + 10, scale*stop_line,  self.pen_stop)
+            self.scene.addLine(-margin, scale*start_line, qpixmap.width() + margin, scale*start_line, self.pen_start)
+            self.scene.addLine(-margin, scale*stop_line,  qpixmap.width() + margin, scale*stop_line,  self.pen_stop)
 
-            self.display_cursor(y0=-10, y1=qpixmap.height() + 10)
+            self.display_vertical_cursor  (y0 = -margin, y1 = margin + qpixmap.height())
+            self.display_horizontal_cursor(x0 = -margin, x1 = margin + qpixmap.width())
         except:
             log.error("failed to display PNG", exc_info=1)
 
-    def display_cursor(self, y0, y1):
+    def display_vertical_cursor(self, y0, y1):
         if self.ctl.cursor.is_enabled():
             x = self.ctl.cursor.get_pixel()
             self.scene.addLine(x, y0, x, y1, self.pen_cursor)
+
+    def display_horizontal_cursor(self, x0, x1):
+        y = self.cursor_line * self.scale
+        # log.debug(f"display_horizontal_cursor: y {y}, x0 {x0}, x1 {x1}")
+        if y > 0:
+            self.scene.addLine(x0, y, x1, y, self.pen_cursor)
 
     def normalize_png(self, pathname_png):
         try:
