@@ -66,6 +66,7 @@ class AreaScanFeature:
         self.bt_save            = cfu.pushButton_area_scan_save
         self.cb_enable          = cfu.checkBox_area_scan_enable
         self.cb_normalize       = cfu.checkBox_area_scan_normalize
+        self.cb_normalize_csv   = cfu.checkBox_area_scan_normalize_csv
         self.cb_fit             = cfu.checkBox_area_scan_fit
         self.frame_image        = cfu.frame_area_scan_image
         self.frame_live         = cfu.frame_area_scan_live
@@ -78,14 +79,20 @@ class AreaScanFeature:
         self.sb_start           = cfu.spinBox_area_scan_start_line
         self.sb_stop            = cfu.spinBox_area_scan_stop_line
         self.sb_step            = cfu.spinBox_area_scan_line_step
+        self.sb_scale           = cfu.spinBox_area_scan_scale
+        self.sb_cursor          = cfu.spinBox_area_scan_cursor
 
         self.data = None
+        self.data_raw = None
         self.enabled = False
         self.visible = False
         self.normalize = True
+        self.normalize_csv = True
         self.fit = True
         self.start_line = 0
         self.stop_line = 63
+        self.scale = 1
+        self.cursor_line = 0
         self.ignored = 0
         self.frame_count = 0
         self.image = None
@@ -99,22 +106,29 @@ class AreaScanFeature:
         self.pen_start  = self.ctl.gui.make_pen(color="enlighten_name_g",  width=2)
         self.pen_stop   = self.ctl.gui.make_pen(color="enlighten_name_n2", width=2)
         self.pen_line   = self.ctl.gui.make_pen(color="enlighten_name_h")
-        self.pen_cursor = self.ctl.gui.make_pen(color="enlighten_name_e1")
+        self.pen_cursor = self.ctl.gui.make_pen(color="enlighten_name_i")
+
+        self.cb_fit.setEnabled(True)
+        self.sb_scale.setEnabled(True)
 
         # create widgets we can't / don't pass in
         self.create_widgets()
 
         self.cb_fit.setChecked(True)
         self.cb_normalize.setChecked(True)
+        self.cb_normalize_csv.setChecked(True)
         self.progress_bar.setVisible(False)
 
-        self.bt_save     .clicked        .connect(self.save_callback)
+        self.bt_save     .clicked        .connect(self.save_area_scan)
         self.cb_normalize.stateChanged   .connect(self.normalize_callback)
+        self.cb_normalize_csv.stateChanged.connect(self.normalize_callback)
         self.cb_fit      .stateChanged   .connect(self.fit_callback)
         self.cb_enable   .stateChanged   .connect(self.enable_callback)
         self.sb_start    .valueChanged   .connect(self.roi_callback)
         self.sb_stop     .valueChanged   .connect(self.roi_callback)
         self.sb_step     .valueChanged   .connect(self.step_callback)
+        self.sb_scale    .valueChanged   .connect(self.scale_callback)
+        self.sb_cursor   .valueChanged   .connect(self.cursor_callback)
 
         self.progress_bar_timer = QtCore.QTimer()
         self.progress_bar_timer.timeout.connect(self.tick_progress_bar)
@@ -208,6 +222,14 @@ class AreaScanFeature:
     # callbacks
     # ##########################################################################
 
+    def cursor_callback(self):
+        self.cursor_line = self.sb_cursor.value()
+
+    def scale_callback(self):
+        self.scale = self.sb_scale.value()
+        self.cb_fit.setChecked(False)
+        self.cb_fit.setEnabled(False)
+
     def step_callback(self):
         """ the user changed the step spinner """
         spec = self.ctl.multispec.current_spectrometer()
@@ -231,6 +253,7 @@ class AreaScanFeature:
         if spec is None:
             return self.disable()
         self.normalize = self.cb_normalize.isChecked()
+        self.normalize_csv = self.cb_normalize_csv.isChecked()
 
     def fit_callback(self):
         """ The user clicked "[x] fit" on the widget """
@@ -243,6 +266,7 @@ class AreaScanFeature:
         log.debug("disabling area scan")
         self.enabled = False
         self.data = None
+        self.data_raw = None
         self.last_received_time = None
         self.frame_image.setVisible(False)
         self.cb_enable.setChecked(False)
@@ -274,40 +298,54 @@ class AreaScanFeature:
             self.update_from_gui()
             self.ignored = 0
 
-    def save_callback(self):
+    def save_area_scan(self):
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return self.disable()
 
+        saved_something = False
         today_dir = self.ctl.save_options.generate_today_dir()
-        basename = "area-scan-%s-%s" % (datetime.datetime.now().strftime("%Y%m%d-%H%M%S"),
-                                        spec.settings.eeprom.serial_number)
+
+        # this doesn't use the full templating capability of Measurement (which 
+        # needs extracted into TemplateFeature), but meets the immediate need
+        ts = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        sn = spec.settings.eeprom.serial_number
+        basename = f"area-scan-{ts}-{sn}"
+        if self.ctl.save_options.has_prefix():
+            basename = self.ctl.save_options.prefix() + "-" + basename
+        if self.ctl.save_options.has_suffix():
+            basename += "-" + self.ctl.save_options.suffix()
 
         # save image
         if self.image is not None:
             pathname_png = os.path.join(today_dir, basename + ".png")
             log.debug("saving qimage %s", pathname_png)
             self.image.save(pathname_png)
+            saved_something = True
 
-        # save table
-        pathname_csv = os.path.join(today_dir, basename + ".csv")
-        log.debug("saving csv %s", pathname_csv)
+        data = self.data if self.normalize_csv else self.data_raw
+        if data is not None:
+            # save table
+            pathname_csv = os.path.join(today_dir, basename + ".csv")
+            log.debug("saving csv %s", pathname_csv)
 
-        lines = len(self.data)
-        pixels = len(self.data[0])
-        with open(pathname_csv, "w") as outfile:
-            for i in range(pixels):
-                outfile.write(f", {i}")
-            outfile.write("\n")
-            for line in range(lines):
-                outfile.write(f"{line}")
+            lines = len(data)
+            pixels = len(data[0])
+            with open(pathname_csv, "w") as outfile:
                 for i in range(pixels):
-                    outfile.write(f", {self.data[line][i]}")
+                    outfile.write(f", {i}")
                 outfile.write("\n")
+                for line in range(lines):
+                    outfile.write(f"{line}")
+                    for i in range(pixels):
+                        outfile.write(f", {data[line][i]}")
+                    outfile.write("\n")
+            saved_something = True
 
-        # np.savetxt(pathname_csv, self.data, fmt="%d", delimiter=",")
-
-        self.ctl.marquee.info("saved %s" % basename)
+        if saved_something:
+            self.ctl.marquee.info("saved %s" % basename)
+        else:
+            self.ctl.marquee.error("no area scan data to save")
 
     # ##########################################################################
     # private methods
@@ -413,6 +451,7 @@ class AreaScanFeature:
             h, w = data.shape
 
             # optionally normalize
+            self.data_raw = data.astype(np.uint16)
             if self.normalize:
                 lo = np.min(data)
                 hi = np.max(data)
@@ -425,6 +464,15 @@ class AreaScanFeature:
             self.image = QtGui.QImage(data, w, h, w*2, QtGui.QImage.Format_Grayscale16)
             qpixmap = QtGui.QPixmap.fromImage(self.image)
 
+            # scale image if requested
+            # - QPixmap.setDevicePixelRatio()
+            # - QPixmap.scaled()
+            # - QImage.scaled()
+            if self.scale > 1:
+                # note that this doesn't change self.image, which is what gets saved as a PNG
+                size = QtCore.QSize(w * self.scale, h * self.scale)
+                qpixmap = qpixmap.scaled(size)
+
             self.scene.clear()
             self.scene.addPixmap(qpixmap)
 
@@ -434,11 +482,19 @@ class AreaScanFeature:
             # add three horizontal marker lines ATOP the image to show bounds and progress
             log.debug(f"adding green/red lines at (start {start}, stop {stop}) on image (width {w}, height {h}), line_index {line_index}")
             margin = 15
-            self.scene.addLine(-margin, start,      w + margin, start,      self.pen_start)
-            self.scene.addLine(-margin, line_index, w + margin, line_index, self.pen_line) 
-            self.scene.addLine(-margin, stop,       w + margin, stop,       self.pen_stop)
 
-            self.display_cursor(y0=-margin, y1=h+margin)
+            scaled_w     = self.scale * w
+            scaled_h     = self.scale * h
+            scaled_start = self.scale * start
+            scaled_index = self.scale * line_index
+            scaled_stop  = self.scale * stop
+
+            self.scene.addLine(-margin, scaled_start, scaled_w + margin, scaled_start, self.pen_start)
+            self.scene.addLine(-margin, scaled_index, scaled_w + margin, scaled_index, self.pen_line) 
+            self.scene.addLine(-margin, scaled_stop,  scaled_w + margin, scaled_stop,  self.pen_stop)
+
+            self.display_vertical_cursor  (y0 = -margin, y1 = margin + scaled_h)
+            self.display_horizontal_cursor(x0 = -margin, x1 = margin + scaled_w)
 
             # optionally scale entire QGraphicsView
             t = QtGui.QTransform()
@@ -484,20 +540,28 @@ class AreaScanFeature:
             if asi.height is not None and asi.height_orig is not None:
                 scale = 1.0 * asi.height / asi.height_orig
                 
+            margin = 10
             start_line = spec.settings.eeprom.roi_vertical_region_1_start
             stop_line = spec.settings.eeprom.roi_vertical_region_1_end
 
-            self.scene.addLine(-10, scale*start_line, qpixmap.width() + 10, scale*start_line, self.pen_start)
-            self.scene.addLine(-10, scale*stop_line,  qpixmap.width() + 10, scale*stop_line,  self.pen_stop)
+            self.scene.addLine(-margin, scale*start_line, qpixmap.width() + margin, scale*start_line, self.pen_start)
+            self.scene.addLine(-margin, scale*stop_line,  qpixmap.width() + margin, scale*stop_line,  self.pen_stop)
 
-            self.display_cursor(y0=-10, y1=qpixmap.height() + 10)
+            self.display_vertical_cursor  (y0 = -margin, y1 = margin + qpixmap.height())
+            self.display_horizontal_cursor(x0 = -margin, x1 = margin + qpixmap.width())
         except:
             log.error("failed to display PNG", exc_info=1)
 
-    def display_cursor(self, y0, y1):
+    def display_vertical_cursor(self, y0, y1):
         if self.ctl.cursor.is_enabled():
             x = self.ctl.cursor.get_pixel()
             self.scene.addLine(x, y0, x, y1, self.pen_cursor)
+
+    def display_horizontal_cursor(self, x0, x1):
+        y = self.cursor_line * self.scale
+        # log.debug(f"display_horizontal_cursor: y {y}, x0 {x0}, x1 {x1}")
+        if y > 0:
+            self.scene.addLine(x0, y, x1, y, self.pen_cursor)
 
     def normalize_png(self, pathname_png):
         try:
@@ -533,12 +597,9 @@ class AreaScanFeature:
 
         log.debug("resize: data_w = %d, data_h = %d (start %d, stop %d)", data_w, data_h, self.start_line, self.stop_line)
         self.data = np.zeros((data_h, data_w), dtype=np.float32)
+        self.data_raw = None
 
-        self.frame_image.setMinimumHeight(data_h + 40)
         self.graphics_view.setMinimumHeight(150)
-
-        # if spec.settings.is_micro():
-        #    self.image.move(0, 0)
 
     def finish_update(self):
         """
@@ -555,6 +616,6 @@ class AreaScanFeature:
         self.scene.clear() # @todo - anything leak here? need to deleteLater old pixmap?
         self.scene.addPixmap(pixmap)
 
-        # vertically bin the on-screen image for the "live" spectrum
+        # vertically bin the on-screen image for the "live" spectrum (optionally normalized)
         total = np.sum(self.data, axis=0)
         self.ctl.set_curve_data(self.curve_live, total)
