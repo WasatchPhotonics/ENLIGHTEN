@@ -1,11 +1,11 @@
 import os
 import logging
-import datetime
 import pyqtgraph
 import numpy as np
 import qimage2ndarray
 
 from PIL import Image, ImageStat
+from datetime import datetime
 
 from enlighten import common
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
@@ -52,6 +52,14 @@ class AreaScanFeature:
     On such devices, when Area Scan is enabled, Wasatch.PY will automatically
     include each full-frame image along with the vertically binned spectrum,
     so the image can be directly displayed in ENLIGHTEN.
+
+    @par Batch Collection
+
+    I am not taking time to fully integrate Area Scan into our BatchCollection
+    at this time -- I think there are multiple reasons why that might prove 
+    tricky, and it's too much to take on right now for the limited target
+    audience. Instead I'm kludging in a very lightweight connection between
+    the two.
 
     """
 
@@ -101,7 +109,8 @@ class AreaScanFeature:
         self.last_line = 0
         self.last_elapsed_sec = 0
         self.curve_live = None
-        self.frame_start = datetime.datetime.now()
+        self.frame_start = datetime.now()
+        self.last_save_timestamp = self.frame_start
 
         self.pen_start  = self.ctl.gui.make_pen(color="enlighten_name_g",  width=2)
         self.pen_stop   = self.ctl.gui.make_pen(color="enlighten_name_n2", width=2)
@@ -119,7 +128,7 @@ class AreaScanFeature:
         self.cb_normalize_csv.setChecked(True)
         self.progress_bar.setVisible(False)
 
-        self.bt_save     .clicked        .connect(self.save_area_scan)
+        self.bt_save     .clicked        .connect(self.save)
         self.cb_normalize.stateChanged   .connect(self.normalize_callback)
         self.cb_normalize_csv.stateChanged.connect(self.normalize_callback)
         self.cb_fit      .stateChanged   .connect(self.fit_callback)
@@ -298,7 +307,7 @@ class AreaScanFeature:
             self.update_from_gui()
             self.ignored = 0
 
-    def save_area_scan(self):
+    def save(self):
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return self.disable()
@@ -308,7 +317,8 @@ class AreaScanFeature:
 
         # this doesn't use the full templating capability of Measurement (which 
         # needs extracted into TemplateFeature), but meets the immediate need
-        ts = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+        now = datetime.now()
+        ts = now.strftime("%Y%m%d-%H%M%S")
         sn = spec.settings.eeprom.serial_number
         basename = f"area-scan-{ts}-{sn}"
         if self.ctl.save_options.has_prefix():
@@ -344,6 +354,7 @@ class AreaScanFeature:
 
         if saved_something:
             self.ctl.marquee.info("saved %s" % basename)
+            self.last_save_timestamp = now
         else:
             self.ctl.marquee.error("no area scan data to save")
 
@@ -372,14 +383,14 @@ class AreaScanFeature:
         """ we've updated the start/stop lines, so resize the image """
         if self.last_received_time is None:
             log.debug("update_progress_bar: initializing")
-            self.last_received_time = datetime.datetime.now()
+            self.last_received_time = datetime.now()
             return
 
-        elapsed_ms = round(1000 * (datetime.datetime.now() - self.last_received_time).total_seconds())
+        elapsed_ms = round(1000 * (datetime.now() - self.last_received_time).total_seconds())
         log.debug("update_progress_bar: elapsed = %d ms (estimate was %d)", elapsed_ms, self.progress_bar.maximum())
         if elapsed_ms > 5000:
             log.debug("update_progress_bar: ignoring overlong elapsed")
-            self.last_received_time = datetime.datetime.now()
+            self.last_received_time = datetime.now()
             return
     
         self.progress_bar.setVisible(True)
@@ -388,7 +399,7 @@ class AreaScanFeature:
         self.progress_bar.setValue(1)
         self.progress_bar_timer.start(100)
 
-        self.last_received_time = datetime.datetime.now()
+        self.last_received_time = datetime.now()
 
     def tick_progress_bar(self):
         if not self.enabled:
@@ -398,7 +409,7 @@ class AreaScanFeature:
             return
         elif self.last_received_time is None:
             return
-        elapsed_ms = round(1000 * (datetime.datetime.now() - self.last_received_time).total_seconds())
+        elapsed_ms = round(1000 * (datetime.now() - self.last_received_time).total_seconds())
         self.progress_bar.setValue(elapsed_ms)
         self.progress_bar_timer.start(100)
 
@@ -511,9 +522,9 @@ class AreaScanFeature:
 
             # display timing
             if line_index < self.last_line:
-                self.last_elapsed_sec = (datetime.datetime.now() - self.frame_start).total_seconds()
-                self.frame_start = datetime.datetime.now()
-            elapsed_sec = (datetime.datetime.now() - self.frame_start).total_seconds()
+                self.last_elapsed_sec = (datetime.now() - self.frame_start).total_seconds()
+                self.frame_start = datetime.now()
+            elapsed_sec = (datetime.now() - self.frame_start).total_seconds()
             self.lb_elapsed.setText(f"{elapsed_sec:.2f} (last {self.last_elapsed_sec:.2f})")
 
             self.last_line = line_index
@@ -521,6 +532,38 @@ class AreaScanFeature:
 
         except:
             log.error("failed to render AreaScanImage data", exc_info=1)
+
+        self.check_for_batch_collection()
+
+    def check_for_batch_collection(self):
+        """
+        This is as far as we've currently integrated Area Scan into Batch 
+        Collection. Basically, we use the timing periods and counts from the 
+        BatchCollection form when BatchCollection is enabled, but do not attempt
+        to ride over the whole "TakeOneRequest" / VCRControls pipeline. I'm sure
+        it's doable, but I'm not doing it now.
+        """
+        if not self.enabled:
+            # we only auto-save Area Scan if the feature is enabled
+            return
+
+        if not self.ctl.page_nav.doing_factory():
+            # we only auto-save Area Scan when we're looking at area scan
+            return
+
+        bc = self.ctl.batch_collection
+        if not bc.enabled:
+            # we only auto-save Area Scan if BatchCollection is ENABLED 
+            # (which is not the same as RUNNING)
+            return
+
+        period_ms = bc.measurement_period_ms
+        elapsed_ms = (datetime.now() - self.last_save_timestamp).total_seconds() * 1000.0
+        if period_ms > elapsed_ms:
+            # use BatchCollection "measurement period" to decide how often to save an Area Scan
+            return
+
+        self.save()
 
     def process_reading_with_area_scan_image_png(self, reading):
         """ we have received a Reading with an AreaScanImage with pathname_png populated """

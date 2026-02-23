@@ -7132,7 +7132,7 @@ QComboBox QListView
                     </size>
                    </property>
                    <property name="toolTip">
-                    <string>Reset EEPROM to factory settings by loading from cloud</string>
+                    <string>Attempt to "reboot" the spectrometer's FPGA if spectra are frozen</string>
                    </property>
                    <property name="text">
                     <string>Reset FPGA</string>
