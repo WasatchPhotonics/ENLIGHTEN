@@ -1,7 +1,15 @@
 # Version History
 
-- 2026-02-?? 4.1.38
+- 2026-02-23 4.1.38
     - added edittable laser_password, startup_scans_to_average, laser_attenuator
+    - Area Scan
+        - allow saving raw CSV even when image is normalized
+        - [#572] allow zooming image on-screen
+        - add prefix/suffix to basename
+        - add horizontal cursor
+        - weak integration with BatchCollection (uses the configured 
+          BatchCollection measurement period, but only when BatchCollection is 
+          ENABLED but NOT RUNNING, and in Factory view)
 - 2026-02-09 4.1.37
     - fixed "persistent error" coloring in Marquee
     - rotated Hamamatsu area scan 180 deg
