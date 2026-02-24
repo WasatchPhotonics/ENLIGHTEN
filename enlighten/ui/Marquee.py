@@ -33,7 +33,7 @@ class Message:
         self.link = link
 
     def is_error(self):
-        return self.benign == False or "error" in self.msg.lower()
+        return "error" in self.msg.lower() or not self.benign
 
     def __repr__(self):
         return f"Marquee.Message: persist {self.persist}, token {self.token}, benign {self.benign}, immediate {self.immediate}, extra_ms {self.extra_ms}, period_sec {self.period_sec}, link {self.link}, msg {self.msg}"

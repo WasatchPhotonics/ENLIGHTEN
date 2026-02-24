@@ -334,7 +334,7 @@ class Pearson:
                 try:
                     csv_loader = CSVLoader(pathname)
                     pr, metadata = csv_loader.load_data(scalar_metadata=True)
-                except Exception as ex:
+                except:
                     self.ctl.marquee.error(f"LibraryMatching: error loading {pathname}")
                     log.error(f"Failed to load library spectrum {pathname}", exc_info=1)
                     continue

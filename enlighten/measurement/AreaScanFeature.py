@@ -426,7 +426,6 @@ class AreaScanFeature:
             self.data[index] = spectrum
 
     def process_reading_with_area_scan_image(self, reading):
-        spectrum = reading.spectrum
         asi = reading.area_scan_image
         self.resize(area_scan_image=asi)
 
