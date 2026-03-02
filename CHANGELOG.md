@@ -1,5 +1,7 @@
 # Version History
 
+- 2026-03-02 4.1.39
+    - add image format to saved metadata
 - 2026-02-23 4.1.38
     - added edittable laser_password, startup_scans_to_average, laser_attenuator
     - Area Scan

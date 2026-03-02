@@ -244,6 +244,7 @@ class Measurement:
                            'Suffix',
                            'Preset',
                            'Auto-Raman',
+                           'Image Format',
                            'Session Count',
                            'Plugin Name']
 
@@ -894,6 +895,7 @@ class Measurement:
         if field == "suffix":                    return self.suffix
         if field == "session count":             return reading.session_count if reading else 0
         if field == "plugin name":               return self.plugin_name
+        if field == "image format":              return reading.image_format if reading else None
         if field == "preset":                    return self.ctl.presets.selected_preset if self.ctl else None
         if field == "laser power mw":            return reading.laser_power_mW if (reading and reading.laser_power_mW is not None and reading.laser_power_mW > 0) else ""
 
