@@ -1,5 +1,9 @@
 # Version History
 
+- 2026-03-13 4.1.40
+    - IDS Area Scan
+        - support saving PNG 
+        - support changing vertical ROI from Area Scan GUI
 - 2026-03-02 4.1.39
     - add image format to saved metadata
     - attempt FPGA reset on InGaAs spectra timeout

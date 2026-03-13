@@ -1,6 +1,7 @@
 import os
 import logging
 import pyqtgraph
+import shutil
 import numpy as np
 import qimage2ndarray
 
@@ -104,6 +105,7 @@ class AreaScanFeature:
         self.ignored = 0
         self.frame_count = 0
         self.image = None
+        self.pathname_png = None
         self.name = "Area_Scan"
         self.last_received_time = None
         self.last_line = 0
@@ -326,8 +328,16 @@ class AreaScanFeature:
         if self.ctl.save_options.has_suffix():
             basename += "-" + self.ctl.save_options.suffix()
 
-        # save image
-        if self.image is not None:
+        # copy or save image
+        if self.pathname_png is not None:
+            new_pathname_png = os.path.join(today_dir, basename + ".png")
+            log.debug("copying {self.pathname_png} -> {new_pathname_png}")
+            try:
+                shutil.copy2(self.pathname_png, new_pathname_png)
+            except:
+                log.error("failed to copy {self.pathname_png} -> {new_pathname_png}", exc_info=1)
+            saved_something = True
+        elif self.image is not None:
             pathname_png = os.path.join(today_dir, basename + ".png")
             log.debug("saving qimage %s", pathname_png)
             self.image.save(pathname_png)
@@ -571,6 +581,8 @@ class AreaScanFeature:
             return
 
         asi = reading.area_scan_image
+        self.pathname_png = asi.pathname_png # for saving
+
         try:
             if self.normalize:
                 self.normalize_png(asi.pathname_png)
