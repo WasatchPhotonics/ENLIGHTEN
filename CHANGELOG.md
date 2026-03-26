@@ -1,5 +1,7 @@
 # Version History
 
+- 2026-03-25 4.1.41
+    - Add XS laser password for Auto-Raman
 - 2026-03-13 4.1.40
     - IDS Area Scan
         - support saving PNG 

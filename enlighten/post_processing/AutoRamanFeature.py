@@ -202,6 +202,10 @@ class AutoRamanFeature:
             if result["checked"]:
                 self.ctl.config.set(self.SECTION, "suppress_warning", True)
 
+        if not self.ctl.laser_control.laser_can_fire_per_password():
+            self.ctl.marquee.error("Auto-Raman on XS requires laser password")
+            return
+
         # ensure we're paused
         self.ctl.vcr_controls.pause()
 
