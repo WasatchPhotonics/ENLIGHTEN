@@ -1,5 +1,9 @@
 # Version History
 
+- 2026-03-30 4.1.42
+    - track XS laser passwords by SN
+    - display laser password status via StatusIndicators
+    - hide laser password dots when entering password, also if authenticated
 - 2026-03-25 4.1.41
     - Add XS laser password for Auto-Raman
 - 2026-03-13 4.1.40

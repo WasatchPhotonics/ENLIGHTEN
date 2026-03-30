@@ -10,8 +10,10 @@ from typing import List
 
 if common.use_pyside2():
     from PySide2 import QtGui, QtWidgets, QtCore
+    from PySide2.QtWidgets import QLineEdit
 else:
     from PySide6 import QtGui, QtWidgets, QtCore
+    from PySide6.QtWidgets import QLineEdit
 
 log = logging.getLogger(__name__)
 
@@ -160,6 +162,10 @@ class EEPROMAttribute:
                 w.setStyleSheet("background: #444; color: #ccc;")
             else:
                 w.setStyleSheet("color: #eee;")
+
+    def set_show_dots(self, show_dots):
+        if self.qtype == "lineedit": 
+            self.widget.setEchoMode(QLineEdit.EchoMode.PasswordEchoOnEdit if show_dots else QLineEdit.EchoMode.Normal)
 
 class EEPROMEditor:
     """
@@ -530,6 +536,10 @@ class EEPROMEditor:
                 editable = self.eeprom.is_editable(name)
 
             attr.set_enabled(editable)
+
+            # password fields should show contents IFF editable
+            if "password" in name:
+                attr.set_show_dots(not editable)
 
     def update_fpga_option_display(self):
         spec = self.ctl.multispec.current_spectrometer()
