@@ -200,9 +200,11 @@ class Marquee:
 
             if next_.is_error():
                 self.ctl.stylesheets.set_benign(self.inner, False)
+                log.error(f"tick: displaying {next_.msg}")
             else:
                 self.ctl.stylesheets.set_benign(self.inner, None)
                 self.ctl.stylesheets.apply(self.inner, self.default_css, raw=True)
+                log.info(f"tick: displaying {next_.msg}")
 
             self.schedule_clear()
 

@@ -26,7 +26,7 @@ class PixelNoise(EnlightenPluginBase):
         self.field(name="Stdev",   datatype="float",  precision=2, tooltip="Standard deviation of noise over all pixels over time")
         self.field(name="Min",     datatype="float",  precision=2, tooltip="Minimum noise of any pixel over time")
         self.field(name="Max",     datatype="float",  precision=2, tooltip="Maximum noise of any pixel over time")
-        self.field(name="IQR",     datatype="bool",   direction="input", callback=self.iqr_callback, tooltip="Use interquartile instead of full detector")
+        self.field(name="IQR",     datatype="bool",   direction="input", callback=self.iqr_callback, tooltip="Use interquartile of history for each pixel")
         self.field(name="Clear",   datatype="button", callback=self.reset, tooltip="Clear history")
 
         self.reset()
@@ -79,18 +79,38 @@ class Metrics:
 
         self.resize()
 
-        if iqr:
-            qtr = int(len(spectrum)/4)
-            spectrum = sorted(spectrum)[qtr:-qtr]
-
         if self.data is None or self.width() != len(spectrum):
             self.data = np.array(spectrum, dtype=np.float32)
         else:
             self.data = np.vstack((self.data, spectrum))
 
-        # stdev of each pixel over time
-        stdev = 0 if self.height() < 2 else np.std(self.data, axis=1)
+        ########################################################################
+        # compute the stdev of each pixel over time
+        ########################################################################
 
+        # if IQR selected, take the middle half of each pixel's SORTED history
+        if iqr and self.height() > 4:
+            qtr = int(self.height() / 4)
+
+            # start with pixel 0
+            values = self.data[:, 0]
+            new_data = np.sort(values)[qtr:-qtr] 
+
+            # now append rest of pixels as new rows
+            for px in range(1, self.width()):
+                values = np.sort(self.data[:, px])
+                new_data = np.vstack((new_data, values[qtr:-qtr]))
+
+            # now rotate whole thing 270deg to again make pixels the major (horizontal) axis (retaining pixel 0 as pixel 0 for consistency)
+            new_data = np.rot90(new_data, k=3)
+        else:
+            # we're not doing IQR, or we don't have enough data to extract a middle half
+            new_data = self.data.copy()
+
+        # compute the (sample) standard deviation of the selected data (IQR or otherwise)
+        stdev = 0 if self.height() < 2 else np.std(new_data, axis=1)
+
+        # generate secondary metrics of the per-pixel standard deviations (across the detector)
         self.mean   = np.mean(stdev) 
         self.median = np.median(stdev)
         self.stdev  = np.std (stdev) # stdev of the stdevs
