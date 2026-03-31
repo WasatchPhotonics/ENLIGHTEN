@@ -22,9 +22,11 @@ class PixelNoise(EnlightenPluginBase):
         self.field(name="History", direction="input", datatype="int", minimum=10, maximum=1000, initial=100, tooltip="Number of spectra retained for noise computation")
         self.field(name="Filled",  datatype="int",    initial=0,   tooltip="Portion of potential history currently populated")
         self.field(name="Mean",    datatype="float",  precision=2, tooltip="Average noise over all pixels over time")
+        self.field(name="Median",  datatype="float",  precision=2, tooltip="Median noise over all pixels over time")
         self.field(name="Stdev",   datatype="float",  precision=2, tooltip="Standard deviation of noise over all pixels over time")
         self.field(name="Min",     datatype="float",  precision=2, tooltip="Minimum noise of any pixel over time")
         self.field(name="Max",     datatype="float",  precision=2, tooltip="Maximum noise of any pixel over time")
+        self.field(name="IQR",     datatype="bool",   direction="input", callback=self.iqr_callback, tooltip="Use interquartile instead of full detector")
         self.field(name="Clear",   datatype="button", callback=self.reset, tooltip="Clear history")
 
         self.reset()
@@ -32,13 +34,15 @@ class PixelNoise(EnlightenPluginBase):
     def process_request(self, request):
         spectrum = np.array(request.processed_reading.get_processed(), dtype=np.float32)
         history = request.fields["History"]
+        iqr = request.fields["IQR"]
 
         if self.metrics is None:
-            self.metrics = Metrics(spectrum, history)
+            self.metrics = Metrics(spectrum, history, iqr)
         else:
-            self.metrics.update(spectrum, history)
+            self.metrics.update(spectrum, history, iqr)
 
         self.outputs = { "Mean"  : self.metrics.mean,
+                         "Median": self.metrics.median,
                          "Stdev" : self.metrics.stdev,
                          "Min"   : self.metrics.min,
                          "Max"   : self.metrics.max,
@@ -47,35 +51,48 @@ class PixelNoise(EnlightenPluginBase):
     def reset(self):
         self.metrics = None
 
+    def iqr_callback(self):
+        if self.metrics is None:
+            return
+        b = self.get_widget_from_name(self, "IQR")
+        if b.isChecked() != self.metrics.iqr:
+            self.metrics = None
+
 class Metrics:
-    def __init__(self, spectrum, history):
+    def __init__(self, spectrum, history, iqr):
         self.reset()
-        self.update(spectrum, history)
+        self.iqr = iqr
+        self.update(spectrum, history, iqr)
 
     def reset(self):
+        log.debug("resetting Metrics")
         self.data = None
-        self.avg = 0
+        self.iqr = False
         self.min = 0
         self.max = 0
+        self.mean = 0
         self.stdev = 0
+        self.median = 0
 
-    def update(self, spectrum, history):
+    def update(self, spectrum, history, iqr):
         self.history = history
-
-        if self.width() != len(spectrum):
-            self.reset()
 
         self.resize()
 
-        if self.data is None:
+        if iqr:
+            qtr = int(len(spectrum)/4)
+            spectrum = sorted(spectrum)[qtr:-qtr]
+
+        if self.data is None or self.width() != len(spectrum):
             self.data = np.array(spectrum, dtype=np.float32)
         else:
             self.data = np.vstack((self.data, spectrum))
 
         # stdev of each pixel over time
-        stdev = np.std(self.data, axis=0)
+        stdev = 0 if self.height() < 2 else np.std(self.data, axis=1)
 
-        self.mean   = np.mean(stdev)
+        self.mean   = np.mean(stdev) 
+        self.median = np.median(stdev)
         self.stdev  = np.std (stdev) # stdev of the stdevs
         self.min    = np.min (stdev)
         self.max    = np.max (stdev)
