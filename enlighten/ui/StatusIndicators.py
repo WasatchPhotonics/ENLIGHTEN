@@ -58,7 +58,11 @@ class StatusIndicators:
         def style(color, msg):
             return f"<p><span style='color:{color}; font-weight:bold'>{color.upper()}:</span> {msg}</p>"
 
-        # These are the 9 basic options:
+        # These are the 9 basic options. Note that what we're doing here is 
+        # setting a STATIC "What's This?" pop-up (not ToolTip) summarizing the 
+        # meaning of all 3 possible colors on all 3 indicators. These "What's 
+        # This?" explanations are not intended to be dynamic, or change with 
+        # spectrometer state.
         self.button_hardware.setWhatsThis(
             style('orange', f"device error logged within the last {self.HARDWARE_WARNING_WINDOW_SEC}sec") +
             style('green',  "spectrometer connected") +
@@ -66,7 +70,7 @@ class StatusIndicators:
             
         self.button_lamp.setWhatsThis(
             style('orange', "laser/lamp emitting") +
-            style('gray',   "laser safety interlock open or battery too low") +
+            style('gray',   "laser safety interlock open, password required or battery too low") +
             style('green',  "no laser/lamp found, or interlock closed but not emitting"))
 
         self.button_temperature.setWhatsThis(
@@ -172,8 +176,16 @@ class StatusIndicators:
                         lamp_tt = "Laser is CHARGING (about to fire)"
                         lamp_text = "Charging"
                     elif reading.laser_can_fire:
-                        lamp = "connected"
-                        lamp_tt = "Laser is ARMED (can fire)"
+                        if settings.is_xs():
+                            if self.ctl.laser_control.laser_can_fire_per_password(prompt=False):
+                                lamp = "connected"
+                                lamp_tt = "Laser is ARMED (password valid, can fire)"
+                            else:
+                                lamp = "disconnected"
+                                lamp_tt = "Interlock is closed (accessory present), but requires password"
+                        else:
+                            lamp = "connected"
+                            lamp_tt = "Laser is ARMED (can fire)"
                     elif self.ctl.laser_control.cant_fire_because_battery(spec):
                         perc = self.ctl.battery_feature.get_perc(spec)
                         lamp = "disconnected"

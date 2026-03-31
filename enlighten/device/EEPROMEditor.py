@@ -10,8 +10,10 @@ from typing import List
 
 if common.use_pyside2():
     from PySide2 import QtGui, QtWidgets, QtCore
+    from PySide2.QtWidgets import QLineEdit
 else:
     from PySide6 import QtGui, QtWidgets, QtCore
+    from PySide6.QtWidgets import QLineEdit
 
 log = logging.getLogger(__name__)
 
@@ -161,6 +163,10 @@ class EEPROMAttribute:
             else:
                 w.setStyleSheet("color: #eee;")
 
+    def set_show_dots(self, show_dots):
+        if self.qtype == "lineedit": 
+            self.widget.setEchoMode(QLineEdit.EchoMode.PasswordEchoOnEdit if show_dots else QLineEdit.EchoMode.Normal)
+
 class EEPROMEditor:
     """
     Unlike most business objects, just pass in self.form.ui to avoid a REALLY long list of widgets
@@ -254,7 +260,6 @@ class EEPROMEditor:
             "inc_laser":                "has_laser",
             "max_laser_power_mw":       "max_laser_power_mW",
             "min_laser_power_mw":       "min_laser_power_mW",
-            "product_config":           "product_configuration",
             "roi_horiz_end":            "roi_horizontal_end",
             "roi_horiz_start":          "roi_horizontal_start",
             "serial":                   "serial_number",
@@ -328,7 +333,7 @@ class EEPROMEditor:
         for name in [ "max_laser_power_mW", "min_laser_power_mW", "detector_gain", "detector_gain_odd", "spline_min", "spline_max" ]:
             self.add_attribute("doublespinbox", name, widget=getattr(cfu, f"doubleSpinBox_ee_{name}"))
 
-        for name in [ "calibrated_by", "calibration_date", "detector", "model", "serial_number", "user_text", "product_configuration",
+        for name in [ "calibrated_by", "calibration_date", "detector", "model", "serial_number", "user_text", 
                       "laser_password" ]:
             self.add_attribute("lineedit", name, is_numeric=False, widget=getattr(cfu, f"lineEdit_ee_{name}"))
 
@@ -456,6 +461,14 @@ class EEPROMEditor:
         elif self.updated_from_eeprom and ("detector_gain" in attr.name or "detector_offset" in attr.name):
             self.ctl.update_gain_and_offset(force=True)
 
+        # Model
+        elif "model" == attr.name:
+            if len(value) > 16:
+                self.eeprom.model = value[:16]
+                self.eeprom.product_configuration = value[16:]
+            else:
+                self.eeprom.product_configuration = None
+
         # SRM
         elif "raman_intensity" in attr.name and self.settings is not None:
             self.settings.update_raman_intensity_factors()
@@ -530,6 +543,10 @@ class EEPROMEditor:
                 editable = self.eeprom.is_editable(name)
 
             attr.set_enabled(editable)
+
+            # password fields should show contents IFF editable
+            if "password" in name:
+                attr.set_show_dots(not editable)
 
     def update_fpga_option_display(self):
         spec = self.ctl.multispec.current_spectrometer()
@@ -637,6 +654,9 @@ class EEPROMEditor:
                     else:
                         if attr.is_scalar:                      # e.g. serial_number, model
                             value = self.eeprom.multi_wavelength_calibration.get(attr.name)
+                            if attr.name == "model":
+                                product_configuration = self.eeprom.multi_wavelength_calibration.get("product_configuration")
+                                value += product_configuration
                             attr.widget.setText(str(value))
                         else:                                   # e.g. adc_to_degC, degC_to_dac, laser_power_coeffs, linearity_coeffs
                             a = self.eeprom.multi_wavelength_calibration.get(attr.name)

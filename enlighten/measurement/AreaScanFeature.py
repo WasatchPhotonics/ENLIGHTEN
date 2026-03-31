@@ -653,7 +653,8 @@ class AreaScanFeature:
         self.data = np.zeros((data_h, data_w), dtype=np.float32)
         self.data_raw = None
 
-        self.graphics_view.setMinimumHeight(150)
+        #self.graphics_view.setMinimumHeight(150)
+        self.graphics_view.setMinimumHeight(40 + data_h)
 
     def finish_update(self):
         """

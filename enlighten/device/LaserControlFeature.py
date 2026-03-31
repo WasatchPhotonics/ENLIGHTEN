@@ -36,7 +36,7 @@ class LaserControlFeature:
         self.initializing = False
         self.area_at_start = None
         self.min_at_start = None
-        self.xs_password_provided = False
+        self.xs_password_provided_by_serial = set()
         self.current_spectrometer_callback = None # override callback to ctl.multispec.current_spectrometer()
 
         cfu = self.ctl.form.ui
@@ -580,18 +580,23 @@ class LaserControlFeature:
     def slider_power_press_callback(self):
         self.slider_stop_usb = True
 
-    def laser_can_fire_per_password(self):
+    def laser_can_fire_per_password(self, prompt=True):
         spec = self.current_spectrometer()
         if spec is None:
             return False
-        if self.xs_password_provided:
-            return True
         if not spec.settings.is_xs():
             return True
 
+        sn = spec.settings.eeprom.serial_number
+        if sn in self.xs_password_provided_by_serial:
+            return True
+
+        if not prompt:
+            return False
+
         title = "XS Laser Safety PIN"
         label_text = "Enter password to allow XS laser to fire"
-        result = self.ctl.gui.msgbox_with_lineedit(title=title, label_text=label_text, lineedit_text=None, is_password=True)
+        result = self.ctl.gui.msgbox_with_lineedit(title=title, label_text=label_text, lineedit_text=None)
         if not result["ok"]:
             log.debug("user cancelled laser password prompt")
             return False
@@ -605,10 +610,10 @@ class LaserControlFeature:
         if result["lineedit"] == expected_password:
             log.debug("correct laser password entered")
             self.ctl.marquee.info("Laser authenticated for session", benign=True)
-            self.xs_password_provided = True
+            self.xs_password_provided_by_serial.add(sn)
         else:
             log.debug("incorrect laser password entered")
             self.ctl.marquee.error("incorrect laser password")
-            self.xs_password_provided = False
+            self.xs_password_provided_by_serial.discard(sn)
 
-        return self.xs_password_provided
+        return sn in self.xs_password_provided_by_serial

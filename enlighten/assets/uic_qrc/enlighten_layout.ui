@@ -5541,16 +5541,6 @@ QComboBox QListView
                             </property>
                            </widget>
                           </item>
-                          <item row="15" column="0">
-                           <widget class="QLineEdit" name="lineEdit_ee_product_configuration" />
-                          </item>
-                          <item row="15" column="1">
-                           <widget class="QLabel" name="label_185">
-                            <property name="text">
-                             <string>Product Configuration</string>
-                            </property>
-                           </widget>
-                          </item>
                           <item row="16" column="0">
                            <widget class="QSpinBox" name="spinBox_ee_subformat">
                             <property name="minimumSize">
@@ -6572,16 +6562,16 @@ QComboBox QListView
                            <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
                           </property>
                           <item row="0" column="0">
-                           <widget class="QLabel" name="label_200x">
-                            <property name="text">
-                             <string>XS Laser Password</string>
+                           <widget class="QLineEdit" name="lineEdit_ee_laser_password">
+                            <property name="echoMode">
+                             <enum>QLineEdit::PasswordEchoOnEdit</enum>
                             </property>
                            </widget>
                           </item>
                           <item row="0" column="1">
-                           <widget class="QLineEdit" name="lineEdit_ee_laser_password">
-                            <property name="echoMode">
-                             <enum>QLineEdit::PasswordEchoOnEdit</enum>
+                           <widget class="QLabel" name="label_200x">
+                            <property name="text">
+                             <string>XS Laser Password</string>
                             </property>
                            </widget>
                           </item>
