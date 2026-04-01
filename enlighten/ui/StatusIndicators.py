@@ -102,6 +102,7 @@ class StatusIndicators:
         self.timer.stop()
 
     def raise_hardware_error(self, msg=None):
+        # uncommenting this will generate a recursively self-appending string!
         # log.debug(f"raising hardware error ({msg})")
         self.last_hardware_error_time = datetime.datetime.now()
 
@@ -171,7 +172,7 @@ class StatusIndicators:
                     if reading.laser_is_firing: 
                         lamp = "warning"
                         lamp_tt = "Laser is FIRING"
-                    elif reading.laser_enabled:
+                    elif reading.laser_enabled and not reading.is_auto_raman():
                         lamp = "transitioning"
                         lamp_tt = "Laser is CHARGING (about to fire)"
                         lamp_text = "Charging"

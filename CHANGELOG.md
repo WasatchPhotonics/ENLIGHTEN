@@ -1,10 +1,12 @@
 # Version History
 
-- 2026-03-31 4.1.43
+- 2026-04-01 4.1.43
     - remove product_configuration from EEPROMEditor (merge into model)
     - attempt to dynamically scale height of area scan view
     - add median, IQR to Prod.PixelNoise and fixed math
     - assume all XS have laser interlock feedback
+    - fix laser and hardware status indicators after Auto-Raman
+    - temporarily bumping XS spectra timeout whilst debugging timeouts on slower laptops
 - 2026-03-30 4.1.42
     - track XS laser passwords by SN
     - display laser password status via StatusIndicators
