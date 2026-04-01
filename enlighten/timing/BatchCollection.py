@@ -604,8 +604,8 @@ class BatchCollection:
             return
 
         if tor.readings_target is None or tor.readings_target <= 0:
-            # This is happening due to AutoRaman
-            log.error(f"process: should be impossible...any 'single' TakeOneRequests should have been processed and cleared back in Controller.attempt_reading: {tor}")
+            if not pr.reading.is_auto_raman():
+                log.error(f"process: should be impossible...any 'single' TakeOneRequests should have been processed and cleared back in Controller.attempt_reading: {tor}")
             spec.app_state.take_one_request = None
             return
 

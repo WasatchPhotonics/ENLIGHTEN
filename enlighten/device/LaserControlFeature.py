@@ -295,7 +295,8 @@ class LaserControlFeature:
             if reading.laser_enabled:
                 # reading says laser firing
                 if state == LaserStates.DISABLED:
-                    log.critical("reading thinks laser firing when application thinks disabled?! Disabling...")
+                    if not reading.is_auto_raman():
+                        log.critical("reading thinks laser firing when application thinks disabled?! Disabling...")
                     self.set_laser_enable(False, spec)
                 elif state == LaserStates.REQUESTED:
                     log.debug("the laser has started firing")
@@ -355,7 +356,15 @@ class LaserControlFeature:
             self.configure_laser_power_controls_percent()
         self.ctl.form.ui.doubleSpinBox_laser_power.setValue(perc)
 
-    def update_laser_firing_indicators(self, flag):
+    def update_laser_firing_indicators(self, status):
+        flag = True
+        if status == "firing":
+            flag = True
+        elif status == "not firing":
+            flag = False
+        else:
+            log.critical(f"update_laser_firing_indicators: unknown status '{status}'")
+        
         self.refresh_laser_buttons(force_on=flag)
         self.ctl.status_indicators.force_laser_on = flag
 
