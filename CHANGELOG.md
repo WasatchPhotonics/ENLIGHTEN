@@ -7,6 +7,7 @@
     - assume all XS have laser interlock feedback
     - fix laser and hardware status indicators after Auto-Raman
     - temporarily bumping XS spectra timeout whilst debugging timeouts on slower laptops
+    - dropping WrapperWorker poll rate down from 200Hz to 20Hz, again for testing
 - 2026-03-30 4.1.42
     - track XS laser passwords by SN
     - display laser password status via StatusIndicators
