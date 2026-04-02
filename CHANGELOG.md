@@ -1,5 +1,7 @@
 # Version History
 
+- 2026-04-01 4.1.44
+    - support XS laser password in BatchCollection
 - 2026-04-01 4.1.43
     - remove product_configuration from EEPROMEditor (merge into model)
     - attempt to dynamically scale height of area scan view

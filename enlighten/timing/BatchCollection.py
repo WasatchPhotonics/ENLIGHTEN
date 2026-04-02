@@ -348,6 +348,11 @@ class BatchCollection:
             self.stop() # just to be safe
             return False
 
+        if self.laser_mode != "manual":
+            if not self.ctl.laser_control.laser_can_fire_per_password():
+                log.error("unable to start BatchCollection due to laser password")
+                return False
+
         self.ctl.vcr_controls.register_observer("stop", self.vcr_stop)
         self.collection_start_time = datetime.datetime.now()
         if self.spinbox_collection_timeout.value() != 0:
