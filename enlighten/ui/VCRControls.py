@@ -232,18 +232,20 @@ class VCRControls:
     def start_collection(self): 
         log.debug("start_collection")
 
-        # testing: pause, if not already
+        # pause, if not already
         spec = self.ctl.multispec.current_spectrometer()
         if spec:
             paused = spec.app_state.paused
         else:
+            # MZ: ...how can we start a collection if there is no spectrometer? why pause?
             paused = self.paused 
         if not paused:
             self.pause()
-        # end testing
 
+        # tell BatchCollection or other observers to get on with it
         for callback in list(self.callbacks["start_collection"]):
             callback()
+
         self.update_visibility()
         
     # ##########################################################################

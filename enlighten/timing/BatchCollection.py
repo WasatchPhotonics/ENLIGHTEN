@@ -349,7 +349,7 @@ class BatchCollection:
             return False
 
         if self.laser_mode != "manual":
-            if not self.ctl.laser_control.can_fire_per_password():
+            if not self.ctl.laser_control.laser_can_fire_per_password():
                 log.error("unable to start BatchCollection due to laser password")
                 return False
 
