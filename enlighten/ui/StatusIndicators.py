@@ -169,13 +169,14 @@ class StatusIndicators:
                         lamp_tt = "laser not enabled"
 
                 else:
-                    if reading.laser_is_firing: 
+                    if reading.laser_is_firing or spec.app_state.laser_state == common.LaserStates.FIRING:
                         lamp = "warning"
                         lamp_tt = "Laser is FIRING"
-                    elif reading.laser_enabled and not reading.is_auto_raman():
+                    elif reading.laser_enabled and not reading.is_auto_raman() and not spec.app_state.laser_state == common.LaserStates.DISABLED:
                         lamp = "transitioning"
                         lamp_tt = "Laser is CHARGING (about to fire)"
                         lamp_text = "Charging"
+                        log.debug(f"setting LED to CHARGING (laser_state {spec.app_state.laser_state})")
                     elif reading.laser_can_fire:
                         if settings.is_xs():
                             if self.ctl.laser_control.laser_can_fire_per_password(prompt=False):
