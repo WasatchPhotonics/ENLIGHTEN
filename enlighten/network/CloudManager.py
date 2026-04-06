@@ -109,6 +109,10 @@ class CloudManager:
 
         andor_table = self.dynamo_resource.Table("andor_EEPROM")
         response = andor_table.get_item(Key={"detector_serial_number": detector_serial})
+        if "Item" not in response:
+            log.critical(f"Item not found in AWS response: {response}")
+            self.ctl.marquee.error(f"cloud EEPROM not found for detector {detector_serial}")
+            return {}
         eeprom_response = response["Item"]
         dict_response = dict(eeprom_response)
         util.normalize_decimal(dict_response)
@@ -208,6 +212,8 @@ class CloudManager:
             return 
         if not self.is_internet_available():
             return
+
+        self.ctl.marquee.info("Checking for Andor EEPROM in cloud...")
 
         # boto seems to log a lot of exception and stack-traces even during "successful" connections
         logging.getLogger('botocore.utils').setLevel(logging.INFO)
