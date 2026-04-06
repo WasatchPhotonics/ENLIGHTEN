@@ -656,7 +656,8 @@ class EEPROMEditor:
                             value = self.eeprom.multi_wavelength_calibration.get(attr.name)
                             if attr.name == "model":
                                 product_configuration = self.eeprom.multi_wavelength_calibration.get("product_configuration")
-                                value += product_configuration
+                                if value and product_configuration:
+                                    value += product_configuration
                             attr.widget.setText(str(value))
                         else:                                   # e.g. adc_to_degC, degC_to_dac, laser_power_coeffs, linearity_coeffs
                             a = self.eeprom.multi_wavelength_calibration.get(attr.name)
