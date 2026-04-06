@@ -1,5 +1,11 @@
 # Version History
 
+- 2026-??-?? 4.1.45
+    - XS
+        - making laser StatusIndicator more responsive to Laser Watchdog
+    - Andor / XL
+        - improved error-handling for missing cloud EEPROM
+        - only warn user once when unable to find Andor drivers
 - 2026-04-01 4.1.44
     - support XS laser password in BatchCollection
 - 2026-04-01 4.1.43
