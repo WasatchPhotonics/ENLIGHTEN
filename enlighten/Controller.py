@@ -315,7 +315,8 @@ class Controller:
         for feature in [ self.laser_control,
                          self.accessory_control,
                          self.area_scan,
-                         self.auto_raman ]:
+                         self.auto_raman,
+                         self.ble_manager ]:
             feature.disconnect()
 
     def close(self, event_arg_str):
@@ -325,6 +326,7 @@ class Controller:
 
         log.debug("stopping all timers")
         for feature in [ self.batch_collection,
+                         self.ble_manager,
                          self.status_indicators,
                          self.plugin_controller,
                          self.logging_feature ]:
@@ -643,8 +645,6 @@ class Controller:
 
                     # remove the "in-process" flag, as it's now in the "connected" list
                     # and fully initialized
-                    self.initialize_new_device(device)
-
                     self.multispec.remove_in_process(device_id)
                     self.header(f"connect_new: done ({device_id})")
                     
@@ -941,6 +941,7 @@ class Controller:
             # cursor
             self.cursor.center()
             for feature in [ self.accessory_control,
+                             self.ble_manager,
                              self.laser_control,
                              self.laser_watchdog,
                              self.laser_temperature,
@@ -1111,6 +1112,7 @@ class Controller:
 
         # Convenience
         make_shortcut("Ctrl+A", self.authentication.login) # authenticate, advanced
+        make_shortcut("Ctrl+B", self.ble_manager.button_callback)
         make_shortcut("Ctrl+C", self.graph.copy_to_clipboard_callback)
         make_shortcut("Ctrl+D", self.dark_feature.toggle)
         make_shortcut("Ctrl+E", self.measurements.rename_last_measurement)

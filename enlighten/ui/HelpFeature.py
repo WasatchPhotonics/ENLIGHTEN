@@ -46,6 +46,7 @@ class HelpFeature:
             Ctrl-` next view (backtick)
             
             Ctrl-A Authenticate
+            Ctrl-B toggle Bluetooth® LE
             Ctrl-C Copy to system clipboard
             Ctrl-D take/clear Dark
             Ctrl-E Edit last saved measurement

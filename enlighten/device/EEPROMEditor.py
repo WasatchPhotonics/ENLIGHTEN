@@ -478,7 +478,7 @@ class EEPROMEditor:
             self.update_subformat()
 
         # vertical ROI
-        elif "roi_vertical_region" in attr.name:
+        elif "roi_vertical_region_1" in attr.name:
             spec = self.ctl.multispec.current_spectrometer()
             if spec is not None:
                 vert_roi = self.settings.get_vertical_roi()

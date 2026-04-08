@@ -35,10 +35,13 @@ class BLEManager:
         self.ctl = ctl
         cfu = ctl.form.ui
 
-        self.discovered_device_queue = Queue() # holds wasatch.DeviceFinderBLE.DiscoveredBLEDevices
+        self.bt_ble = cfu.pushButton_show_ble_selector
 
-        self.ble_selector = BLESelector(ble_manager=self, parent=cfu.pushButton_show_ble_selector)
-        cfu.pushButton_show_ble_selector.clicked.connect(self.show_selector_callback)
+        self.discovered_device_queue = Queue() # holds wasatch.DeviceFinderBLE.DiscoveredBLEDevices
+        self.connected = False
+
+        self.ble_selector = BLESelector(ble_manager=self, parent=self.bt_ble)
+        self.bt_ble.clicked.connect(self.button_callback)
 
         # @todo move to AutoRaman
         cfu.readingProgressBar.hide()
@@ -46,7 +49,56 @@ class BLEManager:
         # grab an asyncio run_loop in which to call DeviceFinderBLE's async methods
         self.scan_loop = BLEDevice.get_run_loop()
 
-    def show_selector_callback(self):
+    def init_hotplug(self):
+        self.refresh_connected()
+
+    def disconnect(self):
+        """ 
+        Try to disconnect the currently-connected spectrometer, but ENLIGHTEN is
+        staying up and may reconnect later.
+        """
+        log.debug("disconnect: start")
+        spec = self.get_connected_ble_spectrometer()
+        if spec:
+            spec.device.disconnect()
+        self.refresh_connected()
+        log.debug("disconnect: done")
+
+    def stop(self):
+        """ ENLIGHTEN is shutting down, so disconnect everything ASAP """
+        log.debug("stop: start")
+        spec = self.get_connected_ble_spectrometer(include_disconnecting=True)
+        if spec:
+            spec.device.disconnect()
+        log.debug("stop: done")
+
+    def refresh_connected(self):
+        spec = self.get_connected_ble_spectrometer()
+        self.connected = spec is not None
+        self.ctl.gui.colorize_button(self.bt_ble, self.connected, active_color="blue")
+
+        if self.connected:
+            tt = "Disconnect Bluetooth® LE spectrometer"
+        else:
+            tt = "Scan for Bluetooth® LE spectrometers"
+        self.bt_ble.setToolTip(tt)
+
+    def get_connected_ble_spectrometer(self, include_disconnecting=False):
+        for spec in self.ctl.multispec.get_spectrometers():
+            if spec.device_id.is_ble() and (include_disconnecting or not self.ctl.multispec.is_disconnecting(spec.device_id)):
+                return spec
+
+    def button_callback(self):
+        spec = self.get_connected_ble_spectrometer()
+        if spec:
+            # un-pair
+            spec.device.disconnect()
+
+            # remove from ENLIGHTEN GUI
+            self.ctl.disconnect_device(spec)
+            return
+
+        # apparently we weren't connected, so prompt to select
         self.ble_selector.show()
         self.ble_selector.reset()
 
@@ -93,6 +145,7 @@ class BLEManager:
 
         # add this DeviceID to the Controller's list of "external" (non-USB) 
         # device IDs to check
+        log.debug(f"adding {device_id} to Controller external search list")
         self.ctl.other_device_ids.add(device_id)
 
 class BLESelector(QDialog):
@@ -135,10 +188,10 @@ class BLESelector(QDialog):
             self.table.cellClicked.connect(self.cellClicked_callback)
 
             self.bt_connect.clicked.connect(ble_manager.connect_callback)
-            self.bt_rescan.clicked.connect(ble_manager.show_selector_callback)
+            self.bt_rescan.clicked.connect(ble_manager.button_callback)
 
-            self.table.verticalHeader().hide()
-            self.table.horizontalHeader().hide()
+            self.table.verticalHeader().setVisible(False)
+            self.table.horizontalHeader().setVisible(False)
         except:
             log.error("exception constructing table", exc_info=1)
 
