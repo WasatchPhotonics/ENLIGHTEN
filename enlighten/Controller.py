@@ -113,17 +113,18 @@ class Controller:
         self.max_memory_growth      = max_memory_growth
         self.max_thumbnails         = max_thumbnails
         self.run_sec                = run_sec
-        self.dialog_open            = False
         self.serial_number_desired  = serial_number
         self.stylesheet_path        = stylesheet_path
         self.set_all_dfu            = set_all_dfu
+        self.form                   = form
+        self.splash                 = splash
         self.window_state           = window_state
         self.start_batch            = start_batch
         self.plugin                 = plugin 
         self.password               = password
-        self.spec_timeout           = 30
-        self.splash                 = splash
-        self.form                   = form
+
+        self.spec_timeout_sec       = 30
+        self.dialog_open            = False
 
         if form is None:
             log.error("Got a None value for form. Cannot start without QResources")
@@ -572,6 +573,13 @@ class Controller:
 
         # attempt to connect the device
         if new_device_id.is_andor():
+            if not WasatchDeviceWrapper.is_device_class_available("AndorDevice"):
+                # give up here, because AndorDevice can't get as far as connect(),
+                # which is where this would normally happen
+                log.debug("giving up on unavailable AndorDevice")
+                self.multispec.set_gave_up(new_device_id)
+                return
+
             self.marquee.info("connecting to XL spectrometer (please wait)", persist=True)
         else:
             self.marquee.info(f"connecting to {new_device_id}", persist=True)
@@ -621,8 +629,15 @@ class Controller:
 
             poll_result = device.poll_settings()
             if poll_result is not None:
-                if poll_result.data:
-                    self.header("check_ready_initialize: successfully connected %s" % device_id)
+                # we got something, so stop polling (either we successfully read
+                # SpectrometerSettings, or an error occurred and we should give up)
+
+                # poll_result is a SpectrometerResponse object
+                if poll_result.error_msg:
+                    self.marquee.error(poll_result.error_msg)
+                    disconnect_device = True
+                else:
+                    self.header(f"check_ready_initialize: successfully connected {device_id}")
                     device.settings.state.dump("Controller.check_ready_initialize")
                     self.initialize_new_device(device)
 
@@ -631,16 +646,13 @@ class Controller:
                     self.initialize_new_device(device)
 
                     self.multispec.remove_in_process(device_id)
-                    self.header("connect_new: done (%s)" % device_id)
-                else:
-                    self.marquee.error(poll_result.error_msg)
-                    disconnect_device = True
+                    self.header(f"connect_new: done ({device_id})")
                     
             else:
                 # didn't get settings so check for timeout
-                if device.connect_start_time + datetime.timedelta(seconds=self.spec_timeout) < datetime.datetime.now():
+                if device.connect_start_time + datetime.timedelta(seconds=self.spec_timeout_sec) < datetime.datetime.now():
                     log.error(f"{device_id} settings timed out, giving up on the spec")
-                    self.marquee.error(f"Failed to connect to {device_id}")
+                    self.marquee.error(f"timed-out connecting to {device_id}")
                     disconnect_device = True
 
             if disconnect_device:
@@ -741,7 +753,7 @@ class Controller:
         # initialize from cloud
         ########################################################################
 
-        if device.is_andor:
+        if device.device_id.is_andor():
             if device.settings.eeprom.stubbed:
                 log.debug("Andor EEPROM is stubbed, so attempting cloud download")
                 self.cloud_manager.download_andor_eeprom(device)
@@ -782,7 +794,7 @@ class Controller:
         self.multispec.update_hide_others()
         self.multispec.update_color()
 
-        if device.is_andor:
+        if device.device_id.is_andor:
             self.update_wavecal()
 
         ########################################################################
