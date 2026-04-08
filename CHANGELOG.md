@@ -2,7 +2,10 @@
 
 - 2026-??-?? 4.1.46
     - XS
-        - changed Bluetooth LE button to icon
+        - changed Bluetooth LE button to icon (and tweaked)
+        - added blue_gradient_button CSS
+        - added ctrl-B shortcut
+    - EEPROMEditor vertical ROI fix (only apply region #1 to spectrometer)
 - 2026-04-06 4.1.45
     - XS
         - making laser StatusIndicator more responsive to Laser Watchdog
