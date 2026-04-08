@@ -1,5 +1,8 @@
 # Version History
 
+- 2026-??-?? 4.1.46
+    - XS
+        - changed Bluetooth LE button to icon
 - 2026-04-06 4.1.45
     - XS
         - making laser StatusIndicator more responsive to Laser Watchdog

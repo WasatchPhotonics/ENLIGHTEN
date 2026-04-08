@@ -12769,7 +12769,17 @@ QComboBox QListView
                               <string>Scan for Bluetooth® LE spectrometers</string>
                              </property>
                              <property name="text">
-                              <string>Bluetooth® LE</string>
+                              <string />
+                             </property>
+                             <property name="icon">
+                              <iconset resource="grey_icons.qrc">
+                               <normaloff>:/greys/images/grey_icons/bluetooth.svg</normaloff>:/greys/images/grey_icons/bluetooth.svg</iconset>
+                             </property>
+                             <property name="iconSize">
+                              <size>
+                               <width>16</width>
+                               <height>16</height>
+                              </size>
                              </property>
                             </widget>
                            </item>
