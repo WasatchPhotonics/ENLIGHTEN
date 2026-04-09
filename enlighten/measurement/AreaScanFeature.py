@@ -561,7 +561,7 @@ class AreaScanFeature:
             return
 
         bc = self.ctl.batch_collection
-        if not bc.enabled:
+        if not bc.running:
             # we only auto-save Area Scan if BatchCollection is ENABLED 
             # (which is not the same as RUNNING)
             return

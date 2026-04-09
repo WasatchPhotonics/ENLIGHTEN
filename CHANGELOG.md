@@ -5,6 +5,8 @@
         - changed Bluetooth LE button to icon (and tweaked)
         - added blue_gradient_button CSS
         - added ctrl-B shortcut
+        - fixed Area Scan line increment (RegisterMap)
+        - fixed Area Scan auto-save (BatchCollection.running)
     - EEPROMEditor vertical ROI fix (only apply region #1 to spectrometer)
 - 2026-04-06 4.1.45
     - XS
