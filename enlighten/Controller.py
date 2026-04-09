@@ -2125,9 +2125,9 @@ class Controller:
             log.error("set_from_ini_file: spectrometer has disconnected")
             return
 
-        if not spec.settings.eeprom.is_valid_serial_number():
-            log.error(f"invalid serial number: {spec.settings.eeprom.serial_number}")
-            return
+        # if not spec.settings.eeprom.is_valid_serial_number():
+        #     log.error(f"invalid serial number: {spec.settings.eeprom.serial_number}")
+        #     return
 
         # avoid corrupted data on unprogrammed EEPROMs
         sn = "UNKNOWN"

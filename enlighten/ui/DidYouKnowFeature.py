@@ -484,6 +484,8 @@ class DidYouKnowFeature:
         | [X] Show at start   [Next Tip]    Tip 1/5  |
         |____________________________________________|
         @endverbatim
+
+        @note As a QDialog, can close with ESC
         """
 
         self.dialog = QDialog(parent=self.ctl.form)
