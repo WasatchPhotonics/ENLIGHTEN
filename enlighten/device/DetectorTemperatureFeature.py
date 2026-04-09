@@ -245,11 +245,15 @@ class DetectorTemperatureFeature:
         cfu.stackedWidget_detector_temperature.addWidget(cfu.tec_temperature_graph)
         cfu.stackedWidget_detector_temperature.setCurrentIndex(1)
 
+        cfu.tec_temperature_graph.setMouseEnabled(x=False, y=False)
+
     def add_spec_curve(self, spec):
+        cfu = self.ctl.form.ui
+
         if self.ctl.multispec.check_hardware_curve_present(self.name, spec.device_id):
             log.info(f"Called add_spec_curve for spec {spec.label} with curve already present, returning")
             return
-        curve = self.ctl.form.ui.tec_temperature_graph.plot([], pen=spec.curve.opts['pen'],name=str(spec.label))
+        curve = cfu.tec_temperature_graph.plot([], pen=spec.curve.opts['pen'],name=str(spec.label))
         self.ctl.multispec.register_hardware_feature_curve(self.name, spec.device_id, curve)
 
     def remove_spec_curve(self, spec):
@@ -257,10 +261,12 @@ class DetectorTemperatureFeature:
         if cur_curve is None:
             log.info(f"attempted to delete curve for spec {spec.label} that doesn't exist. Returning")
             return
+
         # remove current curve from graph
-        for curve in self.ctl.form.ui.tec_temperature_graph.listDataItems():
+        cfu = self.ctl.form.ui
+        for curve in cfu.tec_temperature_graph.listDataItems():
             if curve.name() == cur_curve.name():
-                self.ctl.form.ui.tec_temperature_graph.removeItem(curve)
+                cfu.tec_temperature_graph.removeItem(curve)
         # remove current curve from multispec record
         self.ctl.multispec.remove_hardware_curve(self.name, spec.device_id)
     

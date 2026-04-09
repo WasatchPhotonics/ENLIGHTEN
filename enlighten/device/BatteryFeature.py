@@ -88,6 +88,8 @@ class BatteryFeature:
         cfu.stackedWidget_battery.addWidget(cfu.battery_graph)
         cfu.stackedWidget_battery.setCurrentIndex(1)
 
+        cfu.battery_graph.setMouseEnabled(x=False, y=False)
+
     def add_spec_curve(self, spec):
         if self.ctl.multispec.check_hardware_curve_present(self.name, spec.device_id):
             return

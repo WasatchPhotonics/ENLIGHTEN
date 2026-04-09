@@ -9,7 +9,9 @@
     - EEPROMEditor
         - deprecated EEPROM digest display
         - tweaked firmware field ordering
-    - added ctrl-& last-trace shortcut
+    - GUI
+        - added ctrl-& last-trace shortcut
+        - made Factory View strip-charts ignore mouse events (simplifies scrolling)
 - 2026-04-09 4.1.46
     - XS
         - changed Bluetooth LE button to icon (and tweaked)
