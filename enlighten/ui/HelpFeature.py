@@ -62,6 +62,7 @@ class HelpFeature:
             Ctrl-X toggle eXpert mode
 
             Ctrl-* Auto-Raman
+            Ctrl-& toggle trace of last measurement
             Ctrl-, Prev Spectrometer
             Ctrl-. Next Spectrometer
             
