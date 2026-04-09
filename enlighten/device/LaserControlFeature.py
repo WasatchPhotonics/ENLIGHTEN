@@ -427,12 +427,12 @@ class LaserControlFeature:
         if settings.state.use_mW:
             # convert from mW -> %
             current_mW = settings.state.laser_power_mW
-            log.debug(f"configure_laser_power_controls_percent: use_mW True, so converting {current_mW}mW to percent")
+            # log.debug(f"configure_laser_power_controls_percent: use_mW True, so converting {current_mW}mW to percent")
             value = settings.eeprom.laser_power_mW_to_percent(current_mW)
         else:
             value = settings.state.laser_power_perc
 
-        log.debug(f"configure_laser_power_controls_percent: setting slider to {value}%, and use_mW False")
+        # log.debug(f"configure_laser_power_controls_percent: setting slider to {value}%, and use_mW False")
         util.set_min_max(slider,  1, 100)
         util.set_min_max(spinbox, 1, 100, value)
         settings.state.use_mW = False
@@ -443,7 +443,7 @@ class LaserControlFeature:
 
         spec.change_device_setting("laser_power_require_modulation", False)
 
-        log.debug("configure_laser_power_controls_percent: value %s, suffix %s", value, spinbox.suffix())
+        # log.debug("configure_laser_power_controls_percent: value %s, suffix %s", value, spinbox.suffix())
 
     def configure_laser_power_controls_mW(self):
         spec = self.current_spectrometer()
