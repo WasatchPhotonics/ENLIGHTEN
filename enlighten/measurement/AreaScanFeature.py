@@ -450,6 +450,22 @@ class AreaScanFeature:
         self.frame_count += 1
         self.lb_frame_count.setText(str(self.frame_count))
 
+    def max_perc(self, data, perc):
+        """ 
+        perc is a float percentage (i.e. 0.01 to 0.99)
+        """
+        if data is None:
+            return 0
+
+        # convert to sorted array of unique values
+        values = np.unique(data)
+
+        # take the perc% value
+        index = int(perc * len(values))
+        index = min(len(values) - 1, index)
+        index = max(0, index)
+        return values[index]
+
     def process_reading_with_area_scan_image_data(self, reading):
         """ 
         We have received a Reading with an AreaScanImage with .data populated 
@@ -471,14 +487,18 @@ class AreaScanFeature:
             h, w = data.shape
 
             # optionally normalize
-            self.data_raw = data.astype(np.uint16)
+            self.data_raw = data.astype(np.uint32)
             if self.normalize:
                 lo = np.min(data)
-                hi = np.max(data)
+                hi = self.max_perc(data, 0.9)
+                log.debug(f"prwasid: raw: lo {lo}, hi {hi}")
                 if hi > lo:
                     data = (data - lo) / (hi - lo)
                     data *= 65535
-            data = data.astype(np.uint16)
+            data = np.clip(data, a_min=0, a_max=65535).astype(np.uint16)
+            lo = np.min(data)
+            hi = np.max(data)
+            log.debug(f"prwasid: norm: lo {lo}, hi {hi}")
 
             # generate QImage from source data
             self.image = QtGui.QImage(data, w, h, w*2, QtGui.QImage.Format_Grayscale16)
