@@ -6787,44 +6787,44 @@ QComboBox QListView
                   </widget>
                  </item>
                  <item row="2" column="0">
+                  <widget class="QLabel" name="label_ble_firmware_version">
+                   <property name="text">
+                    <string>unknown</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QLabel" name="label_165x">
+                   <property name="text">
+                    <string>Bluetooth® LE Firmware Version</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="0">
                   <widget class="QLabel" name="label_microcontroller_serial_number">
                    <property name="text">
                     <string>none</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="2" column="1">
+                 <item row="3" column="1">
                   <widget class="QLabel" name="label_172">
                    <property name="text">
                     <string>Microcontroller Serial Number</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="3" column="0">
+                 <item row="4" column="0">
                   <widget class="QLabel" name="label_detector_serial_number">
                    <property name="text">
                     <string>none</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="3" column="1">
+                 <item row="4" column="1">
                   <widget class="QLabel" name="label_172x">
                    <property name="text">
                     <string>Detector Serial Number</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="0">
-                  <widget class="QLabel" name="label_eeprom_digest">
-                   <property name="text">
-                    <string>0xabcde</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="1">
-                  <widget class="QLabel" name="label_240">
-                   <property name="text">
-                    <string>EEPROM Digest</string>
                    </property>
                   </widget>
                  </item>
@@ -6881,20 +6881,6 @@ QComboBox QListView
                   <widget class="QLabel" name="label_236">
                    <property name="text">
                     <string>Ambient Temperature</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="9" column="0">
-                  <widget class="QLabel" name="label_ble_firmware_version">
-                   <property name="text">
-                    <string>unknown</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="9" column="1">
-                  <widget class="QLabel" name="label_165x">
-                   <property name="text">
-                    <string>Bluetooth® LE Firmware Version</string>
                    </property>
                   </widget>
                  </item>
