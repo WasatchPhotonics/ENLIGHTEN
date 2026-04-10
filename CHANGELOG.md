@@ -1,7 +1,13 @@
 # Version History
 
-- 2026-??-?? 4.1.48
+- 2026-04-10 4.2.0
     - deprecating heartbeat
+    - XS
+        - area scan seems robust
+        - BLE Auto-Raman works
+
+## 4.1 XS Development
+
 - 2026-04-09 4.1.47
     - XS
         - fixed Area Scan line increment (RegisterMap)
