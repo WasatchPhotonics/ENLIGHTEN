@@ -1301,7 +1301,7 @@ class Controller:
 
             # send a heartbeat to keep the child thread alive
             # (not sure this is still useful)
-            spec.change_device_setting("heartbeat")
+            # spec.change_device_setting("heartbeat")
 
             # look for any inbound status messages from the child threads
             while True:
