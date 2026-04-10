@@ -101,6 +101,7 @@ class AreaScanFeature:
         self.start_line = 0
         self.stop_line = 63
         self.scale = 1
+        self.ratio = None
         self.cursor_line = 0
         self.ignored = 0
         self.frame_count = 0
@@ -164,6 +165,8 @@ class AreaScanFeature:
         self.chart_live = pyqtgraph.PlotWidget(name="Area Scan Live")
         self.curve_live = self.chart_live.plot([], pen=self.ctl.gui.make_pen(widget="area_scan_live"))
         self.layout_live.addWidget(self.chart_live)
+
+        self.chart_live.setMouseEnabled(x=False, y=False)
 
     def disconnect(self):
         log.debug("disconnecting")
@@ -272,6 +275,7 @@ class AreaScanFeature:
         if spec is None:
             return self.disable()
         self.fit = self.cb_fit.isChecked()
+        self.resize()
 
     def disable(self):
         log.debug("disabling area scan")
@@ -450,6 +454,22 @@ class AreaScanFeature:
         self.frame_count += 1
         self.lb_frame_count.setText(str(self.frame_count))
 
+    def max_perc(self, data, perc):
+        """ 
+        perc is a float percentage (i.e. 0.01 to 0.99)
+        """
+        if data is None:
+            return 0
+
+        # convert to sorted array # of unique values
+        values = np.sort(data.flatten()) # np.unique(data)
+
+        # take the perc% value
+        index = int(perc * len(values))
+        index = min(len(values) - 1, index)
+        index = max(0, index)
+        return values[index]
+
     def process_reading_with_area_scan_image_data(self, reading):
         """ 
         We have received a Reading with an AreaScanImage with .data populated 
@@ -471,14 +491,18 @@ class AreaScanFeature:
             h, w = data.shape
 
             # optionally normalize
-            self.data_raw = data.astype(np.uint16)
+            self.data_raw = data.astype(np.uint32)
             if self.normalize:
                 lo = np.min(data)
-                hi = np.max(data)
+                hi = self.max_perc(data, 0.99)
+                log.debug(f"prwasid: raw: lo {lo}, hi {hi}")
                 if hi > lo:
                     data = (data - lo) / (hi - lo)
                     data *= 65535
-            data = data.astype(np.uint16)
+            data = np.clip(data, a_min=0, a_max=65535).astype(np.uint16)
+            lo = np.min(data)
+            hi = np.max(data)
+            log.debug(f"prwasid: norm: lo {lo}, hi {hi}")
 
             # generate QImage from source data
             self.image = QtGui.QImage(data, w, h, w*2, QtGui.QImage.Format_Grayscale16)
@@ -500,7 +524,7 @@ class AreaScanFeature:
             stop  = spec.settings.eeprom.roi_vertical_region_1_end
 
             # add three horizontal marker lines ATOP the image to show bounds and progress
-            log.debug(f"adding green/red lines at (start {start}, stop {stop}) on image (width {w}, height {h}), line_index {line_index}")
+            # log.debug(f"adding green/red lines at (start {start}, stop {stop}) on image (width {w}, height {h}), line_index {line_index}")
             margin = 15
 
             scaled_w     = self.scale * w
@@ -521,9 +545,9 @@ class AreaScanFeature:
             if self.fit:
                 w_ratio = self.frame_image.width()  / self.scene.width()
                 h_ratio = self.frame_image.height() / self.scene.height()
-                ratio = min(w_ratio, h_ratio)
-                if ratio < 1:
-                    t.scale(ratio, ratio)
+                self.ratio = min(w_ratio, h_ratio)
+                if self.ratio < 1:
+                    t.scale(self.ratio, self.ratio)
             self.graphics_view.setTransform(t)
 
             # display current line
@@ -546,7 +570,7 @@ class AreaScanFeature:
 
     def check_for_batch_collection(self):
         """
-        This is as far as we've currently integrated Area Scan into Batch 
+        Thisis as far as we've currently integrated Area Scan into Batch 
         Collection. Basically, we use the timing periods and counts from the 
         BatchCollection form when BatchCollection is enabled, but do not attempt
         to ride over the whole "TakeOneRequest" / VCRControls pipeline. I'm sure
@@ -561,7 +585,7 @@ class AreaScanFeature:
             return
 
         bc = self.ctl.batch_collection
-        if not bc.enabled:
+        if not bc.running:
             # we only auto-save Area Scan if BatchCollection is ENABLED 
             # (which is not the same as RUNNING)
             return
@@ -653,8 +677,8 @@ class AreaScanFeature:
         self.data = np.zeros((data_h, data_w), dtype=np.float32)
         self.data_raw = None
 
-        #self.graphics_view.setMinimumHeight(150)
-        self.graphics_view.setMinimumHeight(40 + data_h)
+        new_height = data_h
+        self.graphics_view.setMinimumHeight(new_height)
 
     def finish_update(self):
         """

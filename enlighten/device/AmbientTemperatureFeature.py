@@ -84,6 +84,8 @@ class AmbientTemperatureFeature:
         cfu.stackedWidget_ambient_temperature.addWidget(self.graph)
         cfu.stackedWidget_ambient_temperature.setCurrentIndex(1)
 
+        self.graph.setMouseEnabled(x=False, y=False)
+
     def add_spec_curve(self, spec):
         if self.ctl.multispec.check_hardware_curve_present(self.name, spec.device_id):
             return

@@ -221,6 +221,10 @@ class Measurements:
         if self.measurements:
             self.measurements[-1].thumbnail_widget.rename_callback()
 
+    def add_trace_from_last_measurement(self):
+        if self.measurements:
+            self.measurements[-1].thumbnail_widget.display_callback()
+
     ##
     # Use the MeasurementFactory to instantiate a new Measurement, including
     # ThumbnailWidget, from the given spectrometer's latest ProcessedReading.

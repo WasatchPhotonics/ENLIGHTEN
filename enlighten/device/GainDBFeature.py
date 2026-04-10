@@ -85,7 +85,7 @@ class GainDBFeature:
             if spec is None:
                 self.visible = False
             else:
-                self.visible = (spec.settings.is_micro() or spec.settings.is_ids()) and self.ctl.page_nav.doing_expert()
+                self.visible = (spec.settings.is_xs() or spec.settings.is_ids()) and self.ctl.page_nav.doing_expert()
 
         # normally we'd do this at the enclosing frame, but gain is currently 
         # nested within the detectorControlWidget, and a sub-frame breaks the

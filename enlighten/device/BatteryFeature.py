@@ -39,7 +39,7 @@ class BatteryFeature:
 
     def process_reading(self, spec, reading):
         current_spec = self.ctl.multispec.current_spectrometer()
-        if reading.battery_raw is None:
+        if reading.battery_percentage is None:
             return
 
         if hasattr(spec.settings.eeprom,"has_battery"):
@@ -61,7 +61,6 @@ class BatteryFeature:
             self.ctl.hardware_file_manager.write_line(self.name,f"{self.name},{spec.label},{current_time}, {perc}, {charging_label}")
 
         cfu = self.ctl.form.ui
-        cfu.label_battery_raw.setText("0x%06x" % reading.battery_raw)
         cfu.label_battery_parsed.setText(f"Battery ({perc:.2f}%, {charging_label})")
         if spec == current_spec:
             self.lb_perc.setText(f"{perc:.2f} %")
@@ -87,6 +86,8 @@ class BatteryFeature:
         cfu.battery_graph.invertX(True)
         cfu.stackedWidget_battery.addWidget(cfu.battery_graph)
         cfu.stackedWidget_battery.setCurrentIndex(1)
+
+        cfu.battery_graph.setMouseEnabled(x=False, y=False)
 
     def add_spec_curve(self, spec):
         if self.ctl.multispec.check_hardware_curve_present(self.name, spec.device_id):

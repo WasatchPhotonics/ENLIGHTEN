@@ -197,7 +197,6 @@ class EEPROMEditor:
         self.ctl = ctl
         cfu = ctl.form.ui
 
-        self.lb_digest                       = cfu.label_eeprom_digest
         self.lb_product_image                = cfu.label_product_image
         self.lb_serial                       = cfu.label_serial
 
@@ -478,7 +477,7 @@ class EEPROMEditor:
             self.update_subformat()
 
         # vertical ROI
-        elif "roi_vertical_region" in attr.name:
+        elif "roi_vertical_region_1" in attr.name:
             spec = self.ctl.multispec.current_spectrometer()
             if spec is not None:
                 vert_roi = self.settings.get_vertical_roi()
@@ -489,39 +488,9 @@ class EEPROMEditor:
         if self.updated_from_eeprom:
             self.ctl.eeprom_writer.send_to_subprocess()
 
-        ####################################################################
-        # update digest (highlight if changed)
-        ####################################################################
-
-        self.update_digest()
-
     # ##########################################################################
     # methods
     # ##########################################################################
-
-    def update_digest(self):
-        """
-        There is a potential issue here.  We are really colorizing the 
-        digest not only if fields have been actively changed on the GUI,
-        but if THE CURRENT VERSION OF ENLIGHTEN would save the EEPROM with
-        different buffer contents.  Therefore, if a spectrometer's EEPROM
-        has format 9, and the curent version of ENLIGHTEN would save it 
-        with format 11, then the digest will show a difference (red) even
-        though nothing has been changed by the user.
-        """
-        new_digest = self.eeprom.generate_digest(regenerate=True)
-        if self.eeprom.digest == new_digest:
-            css = "white_text"
-            tt = "EEPROM has latest format and is unchanged"
-        elif self.eeprom.format != self.eeprom.latest_rev():
-            css = "yellow_text"   
-            tt = "EEPROM has older format (%d != %d)" % (self.eeprom.format, self.eeprom.latest_rev())
-        else:
-            css = "red_text"   
-            tt = "EEPROM has current format but contents changed since load"
-        self.ctl.stylesheets.apply(self.lb_digest, css)
-        self.lb_digest.setText(new_digest)
-        self.lb_digest.setToolTip(tt)
 
     def sci_str(self, n):
         """
@@ -587,7 +556,6 @@ class EEPROMEditor:
         cfu = self.ctl.form.ui
 
         cfu.label_ee_format.setText(str(self.eeprom.format))
-        self.lb_digest.setText(str(self.eeprom.digest))
 
         # update the big serial number and graphic atop Hardware Setup
         self.lb_serial.setText(self.eeprom.serial_number)

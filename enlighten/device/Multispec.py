@@ -258,6 +258,8 @@ class Multispec:
             log.error(f"{e} trying to set disconnect status for {device_id}")
 
     def is_disconnecting(self, device_id: str) -> bool:
+        if not isinstance(device_id, str):
+            device_id = str(device_id)
         return device_id in self.disconnecting.keys()
 
     def lock_callback(self):
