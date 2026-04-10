@@ -157,10 +157,10 @@ class BLESelector(QDialog):
     +-----------------------+
     | [Connect]    [Rescan] |
     |                       |
-    | RSSI Serial Number    |
-    | ***  WP-01234         |
-    | *    WP-01228         |
-    | **   WP-01499         |
+    | Signal Serial Number  |
+    | ***    WP-01234       |
+    | *      WP-01228       |
+    | **     WP-01499       |
     +-----------------------+
     """
     def __init__(self, ble_manager, parent=None):
@@ -210,7 +210,7 @@ class BLESelector(QDialog):
         self.table.clear()
         self.table.setRowCount(1)
 
-        self.table.setItem(0, 0, QTableWidgetItem("RSSI"))
+        self.table.setItem(0, 0, QTableWidgetItem("Signal"))
         self.table.setItem(0, 1, QTableWidgetItem("Serial Number"))
 
         self.serial_number_to_row = {}
@@ -244,19 +244,22 @@ class BLESelector(QDialog):
         rssi = discovered_device.rssi
         serial_number = device_id.serial_number
 
-        rssi_str = f"{rssi:0.2f}"
-        rssi_str = self.rssi_to_bars(rssi)
+        rssi_num_str = f"RSSI {rssi:0.2f}"
+        rssi_bar_str = self.rssi_to_bars(rssi)
+        rssi_item = QTableWidgetItem(rssi_bar_str)
+        rssi_item.setToolTip(rssi_num_str)
 
         try:
             if serial_number in self.serial_number_to_row:
                 # we've seen this device before, so just update the previous RSSI
                 row = self.serial_number_to_row[serial_number]
-                self.table.setItem(row, 0, QTableWidgetItem(rssi_str))
+                self.table.setItem(row, 0, rssi_item)
             else:
                 # new device, so insert new row
                 row = self.table.rowCount()
                 self.table.insertRow(row)
-                self.table.setItem(row, 0, QTableWidgetItem(rssi_str))
+
+                self.table.setItem(row, 0, rssi_item)
                 self.table.setItem(row, 1, QTableWidgetItem(serial_number))
 
                 # update mappings
