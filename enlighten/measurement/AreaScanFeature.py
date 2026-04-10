@@ -524,7 +524,7 @@ class AreaScanFeature:
             stop  = spec.settings.eeprom.roi_vertical_region_1_end
 
             # add three horizontal marker lines ATOP the image to show bounds and progress
-            log.debug(f"adding green/red lines at (start {start}, stop {stop}) on image (width {w}, height {h}), line_index {line_index}")
+            # log.debug(f"adding green/red lines at (start {start}, stop {stop}) on image (width {w}, height {h}), line_index {line_index}")
             margin = 15
 
             scaled_w     = self.scale * w
@@ -677,11 +677,7 @@ class AreaScanFeature:
         self.data = np.zeros((data_h, data_w), dtype=np.float32)
         self.data_raw = None
 
-        #self.graphics_view.setMinimumHeight(150)
-        if self.ratio:
-            new_height = data_h * self.ratio
-        else:
-            new_height = data_h
+        new_height = data_h
         self.graphics_view.setMinimumHeight(new_height)
 
     def finish_update(self):

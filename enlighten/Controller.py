@@ -449,6 +449,9 @@ class Controller:
         if self.shutting_down:
             return self.bus_timer.stop()
 
+        if self.area_scan.enabled:
+            return
+
         # if a spectrometer is already in the process of connecting, let it
         # finish before starting another one
         if self.multispec.have_any_in_process():
