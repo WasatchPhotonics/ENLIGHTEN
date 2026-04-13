@@ -17,7 +17,7 @@ class BluetoothTester(EnlightenPluginBase):
         self.field(name="Laser TEC Mode",        datatype="combobox", callback=self.laser_tec_mode, choices=list(BLEDevice.LASER_TEC_MODES.values()))
         self.field(name="Image Sensor State",    datatype="button",   callback=self.image_sensor_state)
         self.field(name="Update Status",         datatype="button",   callback=self.update_status)
-        self.field(name="Reset",                 datatype="button",   callback=self.reset)
+        self.field(name="Reset Unit",            datatype="button",   callback=self.reset_unit)
         self.field(name="Power Off",             datatype="button",   callback=self.power_off)
 
         self.change_setting("testing", True)
@@ -32,5 +32,5 @@ class BluetoothTester(EnlightenPluginBase):
     def power_watchdog_sec      (self): self.change_setting("power_watchdog_sec",       self.get_widget_from_name("Power Watchdog Sec").value())
     def image_sensor_state      (self): self.change_setting("get_image_sensor_state")
     def update_status           (self): self.change_setting("update_status")
-    def reset                   (self): self.change_setting("reset")
+    def reset_unit              (self): self.change_setting("reset_unit")
     def power_off               (self): self.change_setting("power_off")

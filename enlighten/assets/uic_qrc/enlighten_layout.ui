@@ -6864,7 +6864,7 @@ QComboBox QListView
                   </widget>
                  </item>
                  <item row="7" column="0">
-                  <widget class="QLabel" name="label_battery">
+                  <widget class="QLabel" name="label_battery_static">
                    <property name="text">
                     <string>Battery</string>
                    </property>
