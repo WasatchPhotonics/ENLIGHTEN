@@ -1,5 +1,7 @@
 # Version History
 
+- 2026-??-?? 4.2.1
+    - added RnD.BluetoothTester plugin
 - 2026-04-10 4.2.0
     - deprecating heartbeat
     - XS
