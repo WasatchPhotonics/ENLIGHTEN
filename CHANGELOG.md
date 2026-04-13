@@ -3,6 +3,8 @@
 - 2026-??-?? 4.2.1
     - added RnD.BluetoothTester plugin
     - allow keyboard navigation and selection in BLEManager dialog
+    - reformat Hardware Miscellaneous settings
+    - add USB Adapter Info (USB3PowerConnectionState)
 - 2026-04-10 4.2.0
     - deprecating heartbeat
     - XS

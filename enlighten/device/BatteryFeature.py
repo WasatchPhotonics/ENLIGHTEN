@@ -18,6 +18,10 @@ class BatteryFeature:
         self.output_to_file        = False
 
         self.lb_perc = cfu.label_hardware_capture_details_battery
+        self.lb_parsed = cfu.label_battery_parsed
+
+        # MZ: consider eventually moving this to a new Feature, but fine for now
+        self.lb_power_connection_state = cfu.label_power_connection_state
 
         self.populate_placeholder()
         ctl.multispec.register_strip_feature(self)
@@ -39,6 +43,10 @@ class BatteryFeature:
 
     def process_reading(self, spec, reading):
         current_spec = self.ctl.multispec.current_spectrometer()
+
+        if reading.power_connection_state:
+            self.lb_power_connection_state.setText(str(reading.power_connection_state))
+
         if reading.battery_percentage is None:
             return
 
@@ -60,8 +68,7 @@ class BatteryFeature:
         if self.output_to_file:
             self.ctl.hardware_file_manager.write_line(self.name,f"{self.name},{spec.label},{current_time}, {perc}, {charging_label}")
 
-        cfu = self.ctl.form.ui
-        cfu.label_battery_parsed.setText(f"Battery ({perc:.2f}%, {charging_label})")
+        self.lb_parsed.setText(f"{perc:.2f}%, {charging_label}")
         if spec == current_spec:
             self.lb_perc.setText(f"{perc:.2f} %")
             
