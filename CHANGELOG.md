@@ -2,6 +2,7 @@
 
 - 2026-??-?? 4.2.1
     - added RnD.BluetoothTester plugin
+    - allow keyboard navigation and selection in BLEManager dialog
 - 2026-04-10 4.2.0
     - deprecating heartbeat
     - XS

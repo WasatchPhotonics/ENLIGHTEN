@@ -22,7 +22,7 @@ class BluetoothTester(EnlightenPluginBase):
 
         self.change_setting("testing", True)
 
-    def change_setting(self, setting, value):
+    def change_setting(self, setting, value=None):
         spec = self.ctl.current_spectrometer()
         if spec:
             spec.change_device_setting(setting, value)
