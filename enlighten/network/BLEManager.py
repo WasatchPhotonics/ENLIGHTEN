@@ -11,10 +11,10 @@ from wasatch.BLEDevice       import BLEDevice # for get_run_loop
 
 if common.use_pyside2():
     from PySide2 import QtCore, QtGui
-    from PySide2.QtWidgets import QDialog, QPushButton, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QLabel
+    from PySide2.QtWidgets import QDialog, QPushButton, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QLabel, QAbstractItemView
 else:
     from PySide6 import QtCore, QtGui
-    from PySide6.QtWidgets import QDialog, QPushButton, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QLabel
+    from PySide6.QtWidgets import QDialog, QPushButton, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QLabel, QAbstractItemView
 
 log = logging.getLogger(__name__)
 
@@ -185,7 +185,10 @@ class BLESelector(QDialog):
             self.table = QTableWidget(1, 2, self)
             self.table.horizontalHeader().setStretchLastSection(True)
             self.layout.addWidget(self.table)
+
+            self.table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
             self.table.cellClicked.connect(self.cellClicked_callback)
+            self.table.selectionModel().selectionChanged.connect(self.selectionChanged_callback)
 
             self.bt_connect.clicked.connect(ble_manager.connect_callback)
             self.bt_rescan.clicked.connect(ble_manager.button_callback)
@@ -234,7 +237,19 @@ class BLESelector(QDialog):
             log.error(f"row {row} has no DeviceID?!")
 
         self.selected_device_id = device_id
-        log.debug("user selected {device_id}")
+        log.debug(f"user selected {device_id}")
+
+    def selectionChanged_callback(self):
+        items = self.table.selectedItems()
+        for item in items:
+            row = item.row()
+
+            device_id = self.row_to_device_id.get(row, None)
+            if device_id is None:
+                log.error(f"row {row} has no DeviceID?!")
+
+            self.selected_device_id = device_id
+            log.debug(f"user selected {device_id}")
 
     def add_to_table(self, discovered_device):
         """
