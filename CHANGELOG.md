@@ -1,11 +1,13 @@
 # Version History
 
-- 2026-??-?? 4.2.1
-    - added RnD.BluetoothTester plugin
-    - allow keyboard navigation and selection in BLEManager dialog
-    - reformat Hardware Miscellaneous settings
-    - add USB Adapter Info (USB3PowerConnectionState)
-    - fixed RESET_UNIT
+- 2026-04-16 4.2.1
+    - Bluetooth
+        - added RnD.BluetoothTester plugin
+        - allow keyboard navigation and selection in BLEManager dialog
+        - reformat Hardware Miscellaneous settings
+        - add USB Adapter Info (USB3PowerConnectionState)
+        - fixed RESET_UNIT
+        - numerous other BLEDevice improvements from Wasatch.P6Y 2.3.23
 - 2026-04-10 4.2.0
     - deprecating heartbeat
     - XS
