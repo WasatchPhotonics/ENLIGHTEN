@@ -102,6 +102,93 @@ class ModelInfo:
 
         return info
 
+    def get_image_by_model(self):
+        images = """
+            532X-IC
+            532X-IC-OEM
+
+            638X-IC
+            638X-IC-OEM
+            638X-ILC
+            638X-ILC-OEM
+            638X-ILP
+            638X-ILP-OEM
+
+            785X-IC
+            785X-IC-OEM
+            785X-ILC
+            785X-ILC-OEM
+            785X-ILP
+            785X-ILP-OEM
+
+            830X-IC
+            830X-IC-OEM
+            830X-ILC
+            830X-ILC-OEM
+            830X-ILP
+            830X-ILP-OEM
+
+           1064X-IC-OEM
+           1064X-ILC-OEM
+           1064X-ILP-OEM
+
+            785XM-ILP-OEM
+            785XM-ILS-OEM
+            785XM-IS-OEM
+
+            830XM-ILP-OEM
+            830XM-ILS-OEM
+            830XM-IS-OEM
+
+            532XL-ER
+            532XL-SR
+
+            633XL-ER
+            633XL-SR
+
+            785XL-ER
+            785XL-SR
+
+            830XL-ER
+           1064XL-ER
+        """
+        # all image names start with WP- and end in .png
+
+"""
+    def get_image_base_from_model(self, model):
+        model = model.upper()
+        
+        # X series
+        if "532X" in model:
+            return "532X-IC-OEM" if "OEM" in model else "532X-IC"
+        elif "638X" in model:
+            if "-ILP" in model:
+                return "638X-ILP-OEM" if "OEM" in model else "638X-ILP"
+            elif "-ILC" in model:
+                return "638X-ILC-OEM" if "OEM" in model else "638X-ILC"
+            elif "-IC" in model:
+                return "638X-IC-OEM" if "OEM" in model else "638X-IC"
+
+            785X-IC
+            785X-IC-OEM
+            785X-ILC
+            785X-ILC-OEM
+            785X-ILP
+            785X-ILP-OEM
+
+            830X-IC
+            830X-IC-OEM
+            830X-ILC
+            830X-ILC-OEM
+            830X-ILP
+            830X-ILP-OEM
+
+           1064X-IC-OEM
+           1064X-ILC-OEM
+           1064X-ILP-OEM
+"""
+
+
 # ##############################################################################
 #                                                                              #
 #                            ABC and Concrete Classes                          #
