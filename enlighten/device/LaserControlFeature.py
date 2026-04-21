@@ -598,6 +598,12 @@ class LaserControlFeature:
         self.ctl.form.ui.doubleSpinBox_laser_power.setValue(position)
         self.set_laser_power_callback()
 
+    def set_focus_power(self):
+        cfu = self.ctl.form.ui
+        sb = cfu.doubleSpinBox_laser_power
+        sb.setFocus()
+        sb.selectAll()
+
     # set a flag to prevent sending a command to the spectrometer
     # This prevents flooding the spec with laser values while the slider is moving
     # When it releases, the flag will be cleared and then it will send one, final, laser value

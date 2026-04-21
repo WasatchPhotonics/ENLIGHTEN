@@ -1130,6 +1130,7 @@ class Controller:
         make_shortcut("Ctrl+T", self.integration_time_feature.set_focus)
         make_shortcut("Ctrl+X", self.page_nav.toggle_expert)
         make_shortcut("Ctrl+*", self.auto_raman.measure_callback)
+        make_shortcut("Ctrl+%", self.laser_control.set_focus_power)
         make_shortcut("Ctrl+&", self.measurements.add_trace_from_last_measurement)
         make_shortcut("Ctrl+,", self.multispec.select_prev_spectrometer)
         make_shortcut("Ctrl+.", self.multispec.select_next_spectrometer)
