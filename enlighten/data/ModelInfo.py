@@ -116,80 +116,65 @@ class ModelInfo:
     def get_image_basename_from_model(self, model):
         model = model.upper()
 
-        # X series
-        if "532X" in model:
-            return "532X-IC-OEM" if "OEM" in model else "532X-IC"
-        elif "638X" in model:
-            if "-ILP" in model:
-                return "638X-ILP-OEM" if "OEM" in model else "638X-ILP"
-            elif "-ILC" in model:
-                return "638X-ILC-OEM" if "OEM" in model else "638X-ILC"
-            elif "-IC" in model:
-                return "638X-IC-OEM" if "OEM" in model else "638X-IC"
-            else:
-                return "638X-ILP"
-        elif "785X" in model:
-            if "-ILP" in model:
-                return "785X-ILP-OEM" if "OEM" in model else "785X-ILP"
-            elif "-ILC" in model:
-                return "785X-ILC-OEM" if "OEM" in model else "785X-ILC"
-            elif "-IC" in model:
-                return "785X-IC-OEM" if "OEM" in model else "785X-IC"
-            else:
-                return "785X-ILP"
-        elif "830X" in model:
-            if "-ILP" in model:
-                return "830X-ILP-OEM" if "OEM" in model else "830X-ILP"
-            elif "-ILC" in model:
-                return "830X-ILC-OEM" if "OEM" in model else "830X-ILC"
-            elif "-IC" in model:
-                return "830X-IC-OEM" if "OEM" in model else "830X-IC"
-            else:
-                return "830X-ILP"
-        elif "1064X" in model:
-            if "-ILP" in model:
-                return "1064X-ILP-OEM"
-            elif "-ILC" in model:
-                return "1064X-ILC-OEM"
-            elif "-IC" in model:
-                return "1064X-IC-OEM"
-            else:
-                return "1064X-ILP-OEM"
+        # note: order matters; check for 785XSB before 785XS, and 785XS, 785XM, 
+        # 785XL before 785X
+
+        # XSB series
+        if "785XSB" in model: return "785XSB-ILP"
+
+        # XS series
+        if "633XS" in model: return "633XS-ILP"
+        if "785XS" in model: return "785XS-ILP"
+        if "830XS" in model: return "830XS-ILP"
 
         # XM series
-        elif "785XM" in model:
-            if "-ILP" in model:
-                return "785XM-ILP-OEM"
-            elif any([tok in model for tok in ["-ILS", "-ILC"]]):
-                return "785XM-ILS-OEM"
-            elif any([tok in model for tok in ["-IS", "-IC"]]):
-                return "785XM-IS-OEM"
-            else:
-                return "785XM-ILP-OEM"
-        elif "830XM" in model:
-            if "-ILP" in model:
-                return "830XM-ILP-OEM"
-            elif any([tok in model for tok in ["-ILS", "-ILC"]]):
-                return "830XM-ILS-OEM"
-            elif any([tok in model for tok in ["-IS", "-IC"]]):
-                return "830XM-IS-OEM"
-            else:
-                return "830XM-ILP-OEM"
+        if "785XM" in model:
+            if "-ILP" in model: return "785XM-ILP-OEM"
+            if any([tok in model for tok in ["-ILS", "-ILC"]]): return "785XM-ILS-OEM"
+            if any([tok in model for tok in ["-IS", "-IC"]]): return "785XM-IS-OEM"
+            return "785XM-ILP-OEM"
+
+        if "830XM" in model:
+            if "-ILP" in model: return "830XM-ILP-OEM"
+            if any([tok in model for tok in ["-ILS", "-ILC"]]): return "830XM-ILS-OEM"
+            if any([tok in model for tok in ["-IS", "-IC"]]): return "830XM-IS-OEM"
+            return "830XM-ILP-OEM"
         
         # XL series
-        elif "532XL" in model:
-            return "532XL-ER" if "-ER" in model else "532XL-SR"
-        elif "633XL" in model:
-            return "633XL-ER" if "-ER" in model else "633XL-SR"
-        elif "785XL" in model:
-            return "785XL-ER" if "-ER" in model else "785XL-SR"
-        elif "830XL" in model:
-            return "830XL-ER"
-        elif "1064XL" in model:
-            return "1064XL-ER"
+        if "532XL" in model: return "532XL-ER" if "-ER" in model else "532XL-SR"
+        if "633XL" in model: return "633XL-ER" if "-ER" in model else "633XL-SR"
+        if "785XL" in model: return "785XL-ER" if "-ER" in model else "785XL-SR"
+        if "830XL" in model: return "830XL-ER"
+        if "1064XL" in model: return "1064XL-ER"
 
-        else:
+        # X series
+        if "532X" in model: return "532X-IC-OEM" if "OEM" in model else "532X-IC"
+
+        if "638X" in model:
+            if "-ILP" in model: return "638X-ILP-OEM" if "OEM" in model else "638X-ILP"
+            if "-ILC" in model: return "638X-ILC-OEM" if "OEM" in model else "638X-ILC"
+            if "-IC" in model: return "638X-IC-OEM" if "OEM" in model else "638X-IC"
+            return "638X-ILP"
+
+        if "785X" in model:
+            if "-ILP" in model: return "785X-ILP-OEM" if "OEM" in model else "785X-ILP"
+            if "-ILC" in model: return "785X-ILC-OEM" if "OEM" in model else "785X-ILC"
+            if "-IC" in model: return "785X-IC-OEM" if "OEM" in model else "785X-IC"
             return "785X-ILP"
+
+        if "830X" in model:
+            if "-ILP" in model: return "830X-ILP-OEM" if "OEM" in model else "830X-ILP"
+            if "-ILC" in model: return "830X-ILC-OEM" if "OEM" in model else "830X-ILC"
+            if "-IC" in model: return "830X-IC-OEM" if "OEM" in model else "830X-IC"
+            return "830X-ILP"
+
+        if "1064X" in model:
+            if "-ILP" in model: return "1064X-ILP-OEM"
+            if "-ILC" in model: return "1064X-ILC-OEM"
+            if "-IC" in model: return "1064X-IC-OEM"
+            return "1064X-ILP-OEM"
+
+        return "785X-ILP"
 
 # ##############################################################################
 #                                                                              #
