@@ -175,25 +175,17 @@ class Spectrometer:
         """
         called by EEPROMEditor.update_product_image
         
-        returns something like :/spectrometers/images/devices/785X-ILP.png"
+        returns something like :/spectrometers/images/devices/WP-785X-ILP.png"
         """
+        model = self.settings.full_model()
+        basename = self.ctl.model_info.get_image_basename_from_model(model)
 
-        def make_pathname(model):
-            # this must correspond exactly to the paths specified in devices.rc 
-            # and iterated in ImageResources
-            return f":/spectrometers/images/devices/{model}.png"
+        # this must correspond exactly to the paths specified in devices.rc 
+        # and iterated in ImageResources
+        pathname = f":/spectrometers/images/devices/WP-{basename}.png"
+        log.debug(f"get_image_pathname: model {model}, basename {basename}, pathname {pathname}")
 
-        if self.wp_model_info is None:
-            log.debug("get_image_pathname: no wp_model_info")
-            image_pathname = make_pathname("WP-785X-ILP")
-        else:
-            model = self.settings.full_model()
-            image_basename = self.wp_model_info.get_image_basename_from_model(model)
-            image_pathname = make_pathname(model)
-            log.debug(f"get_image_pathname: model {model}, basename {image_basename}, pathname {image_pathname}")
-
-        if self.ctl.image_resources.contains(image_pathname):
-            return image_pathname
+        return pathname
 
     def is_acquisition_timeout(self):
 

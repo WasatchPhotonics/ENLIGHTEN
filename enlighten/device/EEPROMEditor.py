@@ -858,12 +858,22 @@ class EEPROMEditor:
         if spec is None:
             return
 
-        resource_pathname = spec.get_image_resource_pathname()
-        if not self.ctl.image_resources.contains(resource_pathname):
-            self.lb_product_image.setPixmap(None)
+        pathname = spec.get_image_resource_pathname()
+        if not self.ctl.image_resources.contains(pathname):
+            log.error(f"image_resources does not contain {pathname}")
+            self.lb_product_image.clear()
             return
 
-        pixmap = QtGui.QPixmap(resource_pathname)
-        scaled_pixmap = pixmap.scaled(200, 200, Qt.KeepAspectRatio)
+        log.debug(f"instantiating pixmap from {pathname}")
 
-        self.lb_product_image.setPixmap(scaled_pixmap)
+        pixmap = QtGui.QPixmap(pathname)
+        log.debug(f"original pixmap width {pixmap.width()}, height {pixmap.height()}")
+
+        max_width = 200
+        max_height = 200
+
+        pixmap = pixmap.scaled(max_width, max_height, QtCore.Qt.AspectRatioMode.KeepAspectRatio)
+        log.debug(f"scaled pixmap width {pixmap.width()}, height {pixmap.height()}")
+
+        self.lb_product_image.setMinimumHeight(max_height)
+        self.lb_product_image.setPixmap(pixmap)
