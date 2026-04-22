@@ -125,6 +125,7 @@ class Controller:
 
         self.spec_timeout_sec       = 30
         self.dialog_open            = False
+        self.safe_mode              = False
 
         if form is None:
             log.error("Got a None value for form. Cannot start without QResources")
@@ -216,6 +217,10 @@ class Controller:
         # instantiate major business objects (require access to populated placeholders)
         self.business_objects.create_rest()
         self.update_feature_visibility()
+
+        # check for Safe Mode before starting timers
+        self.safe_mode = self.config.get_bool("Safe Mode", "enabled")
+        log.debug(f"safe_mode {self.safe_mode}")
 
         # setup timers
         self.setup_bus_listener()
@@ -590,7 +595,7 @@ class Controller:
             self.marquee.info(f"connecting to {new_device_id}", persist=True)
         
         log.debug(f"connect_new: instantiating WasatchDeviceWrapper with {new_device_id}")
-        device = WasatchDeviceWrapper(device_id=new_device_id, log_level=self.log_level)
+        device = WasatchDeviceWrapper(device_id=new_device_id, log_level=self.log_level, safe_mode=self.safe_mode)
 
         # flag that an attempt to connect to the device is ongoing
         self.header(f"connect_new: setting in-process {new_device_id}")

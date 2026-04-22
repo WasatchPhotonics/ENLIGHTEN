@@ -3,6 +3,8 @@
 - 2026-??-?? 4.2.2
     - BLE laser PWM works
     - added ctrl-% shortcut
+    - starting to think about Safe Mode
+    - simplifying logic to generate and scale product images
 - 2026-04-16 4.2.1
     - Bluetooth
         - added RnD.BluetoothTester plugin

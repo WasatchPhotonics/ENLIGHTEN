@@ -559,11 +559,7 @@ class EEPROMEditor:
 
         # update the big serial number and graphic atop Hardware Setup
         self.lb_serial.setText(self.eeprom.serial_number)
-        pathname = spec.get_image_pathname()
-        if self.ctl.image_resources.contains(pathname):
-            self.lb_product_image.setPixmap(QtGui.QPixmap(pathname))
-        else:
-            log.error(f"received pathname not in resources: {pathname}")
+        self.update_product_image(spec)
 
         for name, attr in self.attributes.items():
             try:
@@ -857,3 +853,17 @@ class EEPROMEditor:
             self.ctl.eeprom_writer.backup(file_name[0])
         else:
             log.error("Error in selecting save location path for eeprom")
+
+    def update_product_image(self, spec):
+        if spec is None:
+            return
+
+        resource_pathname = spec.get_image_resource_pathname()
+        if not self.ctl.image_resources.contains(resource_pathname):
+            self.lb_product_image.setPixmap(None)
+            return
+
+        pixmap = QtGui.QPixmap(resource_pathname)
+        scaled_pixmap = pixmap.scaled(200, 200, Qt.KeepAspectRatio)
+
+        self.lb_product_image.setPixmap(scaled_pixmap)

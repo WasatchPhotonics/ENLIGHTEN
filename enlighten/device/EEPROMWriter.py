@@ -129,10 +129,13 @@ class EEPROMWriter:
         
         @param output_path[in] if provided, should be a scalar string pathname of an existing directory
         """
-        log.debug("backing up EEPROM")
-
         spec = self.ctl.multispec.current_spectrometer()
+        if not spec:
+            return
+
+        log.debug("backing up EEPROM")
         try:
+            # this should have been populated when Spectrometer was instantiated
             text = spec.settings.eeprom_backup.json()
             digest = hashlib.sha1(text.encode("UTF-8")).hexdigest()
             digest_short = digest[:10]

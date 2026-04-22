@@ -102,62 +102,20 @@ class ModelInfo:
 
         return info
 
-    def get_image_by_model(self):
-        images = """
-            532X-IC
-            532X-IC-OEM
-
-            638X-IC
-            638X-IC-OEM
-            638X-ILC
-            638X-ILC-OEM
-            638X-ILP
-            638X-ILP-OEM
-
-            785X-IC
-            785X-IC-OEM
-            785X-ILC
-            785X-ILC-OEM
-            785X-ILP
-            785X-ILP-OEM
-
-            830X-IC
-            830X-IC-OEM
-            830X-ILC
-            830X-ILC-OEM
-            830X-ILP
-            830X-ILP-OEM
-
-           1064X-IC-OEM
-           1064X-ILC-OEM
-           1064X-ILP-OEM
-
-            785XM-ILP-OEM
-            785XM-ILS-OEM
-            785XM-IS-OEM
-
-            830XM-ILP-OEM
-            830XM-ILS-OEM
-            830XM-IS-OEM
-
-            532XL-ER
-            532XL-SR
-
-            633XL-ER
-            633XL-SR
-
-            785XL-ER
-            785XL-SR
-
-            830XL-ER
-           1064XL-ER
+    def get_image_name_from_model(self, model):
         """
-        # all image names start with WP- and end in .png
+        This is called by enlighten.Spectrometer.get_image_pathname, itself 
+        called by Controller to update the image atop Settings view when a new 
+        spectrometer is connected or selected.
 
-"""
-    def get_image_base_from_model(self, model):
+        - note that we're ignoring ƒ-number, cooling, and slit
+        - remember to consider XSB, ILLP
+        """
+        basename = self.get_image_basename_from_model(model)
+
+    def get_image_basename_from_model(self, model):
         model = model.upper()
-        
+
         # X series
         if "532X" in model:
             return "532X-IC-OEM" if "OEM" in model else "532X-IC"
@@ -168,26 +126,70 @@ class ModelInfo:
                 return "638X-ILC-OEM" if "OEM" in model else "638X-ILC"
             elif "-IC" in model:
                 return "638X-IC-OEM" if "OEM" in model else "638X-IC"
+            else:
+                return "638X-ILP"
+        elif "785X" in model:
+            if "-ILP" in model:
+                return "785X-ILP-OEM" if "OEM" in model else "785X-ILP"
+            elif "-ILC" in model:
+                return "785X-ILC-OEM" if "OEM" in model else "785X-ILC"
+            elif "-IC" in model:
+                return "785X-IC-OEM" if "OEM" in model else "785X-IC"
+            else:
+                return "785X-ILP"
+        elif "830X" in model:
+            if "-ILP" in model:
+                return "830X-ILP-OEM" if "OEM" in model else "830X-ILP"
+            elif "-ILC" in model:
+                return "830X-ILC-OEM" if "OEM" in model else "830X-ILC"
+            elif "-IC" in model:
+                return "830X-IC-OEM" if "OEM" in model else "830X-IC"
+            else:
+                return "830X-ILP"
+        elif "1064X" in model:
+            if "-ILP" in model:
+                return "1064X-ILP-OEM"
+            elif "-ILC" in model:
+                return "1064X-ILC-OEM"
+            elif "-IC" in model:
+                return "1064X-IC-OEM"
+            else:
+                return "1064X-ILP-OEM"
 
-            785X-IC
-            785X-IC-OEM
-            785X-ILC
-            785X-ILC-OEM
-            785X-ILP
-            785X-ILP-OEM
+        # XM series
+        elif "785XM" in model:
+            if "-ILP" in model:
+                return "785XM-ILP-OEM"
+            elif any([tok in model for tok in ["-ILS", "-ILC"]]):
+                return "785XM-ILS-OEM"
+            elif any([tok in model for tok in ["-IS", "-IC"]]):
+                return "785XM-IS-OEM"
+            else:
+                return "785XM-ILP-OEM"
+        elif "830XM" in model:
+            if "-ILP" in model:
+                return "830XM-ILP-OEM"
+            elif any([tok in model for tok in ["-ILS", "-ILC"]]):
+                return "830XM-ILS-OEM"
+            elif any([tok in model for tok in ["-IS", "-IC"]]):
+                return "830XM-IS-OEM"
+            else:
+                return "830XM-ILP-OEM"
+        
+        # XL series
+        elif "532XL" in model:
+            return "532XL-ER" if "-ER" in model else "532XL-SR"
+        elif "633XL" in model:
+            return "633XL-ER" if "-ER" in model else "633XL-SR"
+        elif "785XL" in model:
+            return "785XL-ER" if "-ER" in model else "785XL-SR"
+        elif "830XL" in model:
+            return "830XL-ER"
+        elif "1064XL" in model:
+            return "1064XL-ER"
 
-            830X-IC
-            830X-IC-OEM
-            830X-ILC
-            830X-ILC-OEM
-            830X-ILP
-            830X-ILP-OEM
-
-           1064X-IC-OEM
-           1064X-ILC-OEM
-           1064X-ILP-OEM
-"""
-
+        else:
+            return "785X-ILP"
 
 # ##############################################################################
 #                                                                              #

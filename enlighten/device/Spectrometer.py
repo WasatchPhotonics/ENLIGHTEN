@@ -112,6 +112,7 @@ class Spectrometer:
             self.fwhm = ctl.model_info.model_fwhm.get_by_model(self.settings.full_model())
             log.debug(f"using FWHM from lookup table: {self.fwhm}")
 
+        # take a backup of the EEPROM "at connection"
         self.settings.eeprom_backup = copy.deepcopy(self.settings.eeprom)
 
         self.label = f"{self.settings.eeprom.serial_number} ({self.settings.full_model()})"
@@ -170,33 +171,29 @@ class Spectrometer:
         if self.wp_model_info is not None:
             return self.wp_model_info.get_fwhm(unit, int(round(self.settings.eeprom.slit_size_um, 0)))
 
-    def get_image_pathname(self):
+    def get_image_resource_pathname(self):
+        """
+        called by EEPROMEditor.update_product_image
+        
+        returns something like :/spectrometers/images/devices/785X-ILP.png"
+        """
 
         def make_pathname(model):
             # this must correspond exactly to the paths specified in devices.rc 
             # and iterated in ImageResources
             return f":/spectrometers/images/devices/{model}.png"
 
-        pathname = make_pathname("WP-785X-ILP")
-
         if self.wp_model_info is None:
-            log.debug("get_image_pathname: no wp_model_info, so default")
-            return pathname
+            log.debug("get_image_pathname: no wp_model_info")
+            image_pathname = make_pathname("WP-785X-ILP")
+        else:
+            model = self.settings.full_model()
+            image_basename = self.wp_model_info.get_image_basename_from_model(model)
+            image_pathname = make_pathname(model)
+            log.debug(f"get_image_pathname: model {model}, basename {image_basename}, pathname {image_pathname}")
 
-        model = self.settings.full_model()
-        log.debug("get_image_pathname: eeprom_model = [%s]", model)
-        log.debug("get_image_pathname: wp_model_info =")
-        if self.wp_model_info is not None:
-            self.wp_model_info.dump()
-            name = self.wp_model_info.name
-            pathname = make_pathname(name)
-            if self.ctl.image_resources.contains(pathname):
-                log.debug(f"get_image_pathname: found {pathname}")
-            else:
-                log.debug(f"get_image_pathname: not found: {pathname}")
-
-        log.debug(f"returning {pathname}")
-        return pathname
+        if self.ctl.image_resources.contains(image_pathname):
+            return image_pathname
 
     def is_acquisition_timeout(self):
 
