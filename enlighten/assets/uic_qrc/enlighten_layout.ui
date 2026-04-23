@@ -2609,7 +2609,7 @@ QComboBox QListView
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_serial_eeprom_etc">
             <property name="spacing">
-             <number>12</number>
+             <number>5</number>
             </property>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_serial_and_image">
@@ -2655,9 +2655,6 @@ QComboBox QListView
                </widget>
               </item>
              </layout>
-            </item>
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_16" />
             </item>
             <item>
              <widget class="QFrame" name="frame_eeprom_contents_white">
@@ -2862,47 +2859,6 @@ QComboBox QListView
                            <widget class="QLabel" name="label_77">
                             <property name="text">
                              <string>Model</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="2" column="0">
-                           <widget class="QSpinBox" name="spinBox_ee_baud_rate">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
-                            <property name="minimumSize">
-                             <size>
-                              <width>125</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="alignment">
-                             <set>Qt::AlignmentFlag::AlignCenter</set>
-                            </property>
-                            <property name="keyboardTracking">
-                             <bool>false</bool>
-                            </property>
-                            <property name="minimum">
-                             <number>300</number>
-                            </property>
-                            <property name="maximum">
-                             <number>256000</number>
-                            </property>
-                            <property name="singleStep">
-                             <number>100</number>
-                            </property>
-                            <property name="value">
-                             <number>9600</number>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="2" column="1">
-                           <widget class="QLabel" name="label_79">
-                            <property name="text">
-                             <string>Baud Rate</string>
                             </property>
                            </widget>
                           </item>
@@ -3960,76 +3916,6 @@ QComboBox QListView
                             </property>
                            </widget>
                           </item>
-                          <item row="14" column="1">
-                           <widget class="QLabel" name="label_119">
-                            <property name="text">
-                             <string>Linearity Coeff0</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="15" column="1">
-                           <widget class="QLabel" name="label_120">
-                            <property name="text">
-                             <string>Linearity Coeff1</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="16" column="1">
-                           <widget class="QLabel" name="label_121">
-                            <property name="text">
-                             <string>Linearity Coeff2</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="17" column="1">
-                           <widget class="QLabel" name="label_122">
-                            <property name="text">
-                             <string>Linearity Coeff3</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="18" column="1">
-                           <widget class="QLabel" name="label_123">
-                            <property name="text">
-                             <string>Linearity Coeff4</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="18" column="0">
-                           <widget class="QLineEdit" name="lineEdit_ee_linearity_coeff_4">
-                            <property name="text">
-                             <string>4</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="14" column="0">
-                           <widget class="QLineEdit" name="lineEdit_ee_linearity_coeff_0">
-                            <property name="text">
-                             <string>0</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="15" column="0">
-                           <widget class="QLineEdit" name="lineEdit_ee_linearity_coeff_1">
-                            <property name="text">
-                             <string>1</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="16" column="0">
-                           <widget class="QLineEdit" name="lineEdit_ee_linearity_coeff_2">
-                            <property name="text">
-                             <string>2</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="17" column="0">
-                           <widget class="QLineEdit" name="lineEdit_ee_linearity_coeff_3">
-                            <property name="text">
-                             <string>3</string>
-                            </property>
-                           </widget>
-                          </item>
                           <item row="1" column="0">
                            <widget class="QSpinBox" name="spinBox_ee_active_pixels_horizontal">
                             <property name="minimumSize">
@@ -4396,80 +4282,28 @@ QComboBox QListView
                           <property name="verticalSpacing">
                            <number>4</number>
                           </property>
-                          <item row="0" column="0">
-                           <widget class="QLabel" name="label_135">
-                            <property name="minimumSize">
-                             <size>
-                              <width>100</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="font">
-                             <font>
-                              <italic>true</italic>
-                             </font>
-                            </property>
-                            <property name="text">
-                             <string>Reserved</string>
-                            </property>
-                            <property name="alignment">
-                             <set>Qt::AlignmentFlag::AlignCenter</set>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="0" column="1">
-                           <widget class="QLabel" name="label_125">
-                            <property name="text">
-                             <string>Device Lifetime Operation (min)</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="1" column="0">
-                           <widget class="QLabel" name="label_136">
-                            <property name="minimumSize">
-                             <size>
-                              <width>100</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="font">
-                             <font>
-                              <italic>true</italic>
-                             </font>
-                            </property>
-                            <property name="text">
-                             <string>Reserved</string>
-                            </property>
-                            <property name="alignment">
-                             <set>Qt::AlignmentFlag::AlignCenter</set>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="1" column="1">
-                           <widget class="QLabel" name="label_126">
-                            <property name="text">
-                             <string>Laser Lifetime Operation (min)</string>
-                            </property>
-                           </widget>
-                          </item>
                           <item row="2" column="0">
-                           <widget class="QLabel" name="label_137">
+                           <widget class="QSpinBox" name="spinBox_ee_max_laser_temp_deg_c">
                             <property name="minimumSize">
                              <size>
-                              <width>100</width>
+                              <width>125</width>
                               <height>0</height>
                              </size>
                             </property>
-                            <property name="font">
-                             <font>
-                              <italic>true</italic>
-                             </font>
-                            </property>
-                            <property name="text">
-                             <string>Reserved</string>
-                            </property>
                             <property name="alignment">
                              <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                            <property name="keyboardTracking">
+                             <bool>false</bool>
+                            </property>
+                            <property name="minimum">
+                             <number>-128</number>
+                            </property>
+                            <property name="maximum">
+                             <number>127</number>
+                            </property>
+                            <property name="value">
+                             <number>40</number>
                             </property>
                            </widget>
                           </item>
@@ -4477,34 +4311,6 @@ QComboBox QListView
                            <widget class="QLabel" name="label_127">
                             <property name="text">
                              <string>Max Laser Temperature (°C)</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="3" column="0">
-                           <widget class="QLabel" name="label_138">
-                            <property name="minimumSize">
-                             <size>
-                              <width>100</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="font">
-                             <font>
-                              <italic>true</italic>
-                             </font>
-                            </property>
-                            <property name="text">
-                             <string>Reserved</string>
-                            </property>
-                            <property name="alignment">
-                             <set>Qt::AlignmentFlag::AlignCenter</set>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="3" column="1">
-                           <widget class="QLabel" name="label_128">
-                            <property name="text">
-                             <string>Min Laser Temperature (°C)</string>
                             </property>
                            </widget>
                           </item>
@@ -5542,7 +5348,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="16" column="0">
-                           <widget class="QSpinBox" name="spinBox_ee_subformat">
+                           <widget class="QLineEdit" name="lineEdit_ee_assembly_revision_packed">
                             <property name="minimumSize">
                              <size>
                               <width>125</width>
@@ -5552,6 +5358,23 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="16" column="1">
+                           <widget class="QLabel" name="label_69x">
+                            <property name="text">
+                             <string>Assembly Revision Packed</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="17" column="0">
+                           <widget class="QSpinBox" name="spinBox_ee_subformat">
+                            <property name="minimumSize">
+                             <size>
+                              <width>125</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="17" column="1">
                            <widget class="QLabel" name="label_69">
                             <property name="text">
                              <string>Page 6-7 Subformat</string>
@@ -6895,9 +6718,26 @@ QComboBox QListView
                   </widget>
                  </item>
                  <item row="9" column="0">
-                  <widget class="QLabel" name="label_236x">
+                  <widget class="QLabel" name="label_236y">
                    <property name="text">
                     <string>Power Connection State</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="10" column="1">
+                  <widget class="QLabel" name="label_assembly_revision">
+                   <property name="text">
+                    <string />
+                   </property>
+                   <property name="wordWrap">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="10" column="0">
+                  <widget class="QLabel" name="label_236x">
+                   <property name="text">
+                    <string>Assembly Revision</string>
                    </property>
                   </widget>
                  </item>

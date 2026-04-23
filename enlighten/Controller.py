@@ -826,13 +826,16 @@ class Controller:
             self.eeprom_writer.backup()
 
         ########################################################################
-        # display firmware
+        # update hardware details (move to class)
         ########################################################################
 
         cfu.label_microcontroller_firmware_version.setText(spec.settings.microcontroller_firmware_version)
         cfu.label_fpga_firmware_version.setText(spec.settings.fpga_firmware_version)
         cfu.label_microcontroller_serial_number.setText(spec.settings.microcontroller_serial_number)
-        cfu.label_ble_firmware_version.setText(spec.settings.ble_firmware_version)
+        cfu.label_assembly_revision.setText(str(spec.settings.eeprom.assembly_revision))
+
+        self.update_ble_firmware_version()
+        self.update_power_connection_state()
 
         ########################################################################
         # update EEPROM Editor
@@ -1015,6 +1018,32 @@ class Controller:
         # updates from initialization to match time window in spinbox
         # call StripChartFeature getter
         spec.app_state.reset_rolling_data(time_window=cfu.spinBox_strip_window.value(), hotplug=hotplug)
+
+    def update_ble_firmware_version(self):
+        cfu = self.form.ui
+        spec = self.multispec.current_spectrometer()
+        if spec is None:
+            return
+
+        cfu.label_ble_firmware_version.setText(spec.settings.ble_firmware_version)
+
+    def update_power_connection_state(self):
+        """ USB adapter info """
+        cfu = self.form.ui
+        lb = cfu.label_power_connection_state
+        lb.clear()
+        lb.setToolTip(None)
+
+        spec = self.multispec.current_spectrometer()
+        if spec is None:
+            return
+
+        pcs = spec.settings.state.power_connection_state
+        if not pcs:
+            return
+            
+        lb.setText(pcs.short())
+        lb.setToolTip(pcs.long())
 
     # ##########################################################################
     # Setup (populate widget placeholders)
@@ -1701,6 +1730,9 @@ class Controller:
 
         elif msg.setting == "scan_averaging": 
             self.scan_averaging.process_status_message(msg.value, spec)
+
+        elif msg.setting == "received_ble_firmware_version": 
+            self.update_ble_firmware_version()
 
         else:
             log.debug("unsupported StatusMessage: %s", msg.setting)

@@ -41,6 +41,7 @@ class EEPROMAttribute:
         self.is_scalar = False          # is this a array like wavelength_coeffs (lineedit) or bad_pixels (spinbox), or a scalar like excitation_nm_float or serial_number?
         self.is_multi = False           # does this attribute support multiple values for different wavelength calibrations per subformat 5?
         self.is_editable = False        # should this field be editable using the "wasatch" and "wasatchoem" passwords?
+        self.is_data = False            # is this a packed byte array
         self.count = 0                  # if this attribute is a list (non-scalar), how many elements does it have?
         self.calibrations = 0           # if this attribute is_multi, how many calibrations does it have?
         self.widget = None
@@ -316,7 +317,7 @@ class EEPROMEditor:
             self.add_attribute("checkbox", name, widget=getattr(cfu, f"checkBox_ee_{name}"))
 
         for name in [ "active_pixels_horizontal", "active_pixels_vertical", "actual_pixels_horizontal", 
-                      "slit_size_um", "baud_rate", "detector_offset", "detector_offset_odd", 
+                      "slit_size_um", "detector_offset", "detector_offset_odd", 
                       "startup_laser_tec_setpoint", "startup_integration_time_ms", "startup_temp_degC", "startup_triggering_scheme",
                       "min_integration_time_ms", "max_integration_time_ms", "max_temp_degC", "min_temp_degC",
                       "roi_vertical_region_1_end",   "roi_vertical_region_1_start", 
@@ -326,19 +327,19 @@ class EEPROMEditor:
                       "untethered_library_type", "untethered_library_id", "untethered_scans_to_average", 
                       "untethered_min_ramp_pixels", "untethered_min_peak_height", "untethered_match_threshold", "untethered_library_count",
                       "laser_watchdog_sec", "light_source_type", "power_timeout_sec", "detector_timeout_sec",
-                      "startup_scans_to_average", "laser_attenuator" ]:
+                      "startup_scans_to_average", "laser_attenuator", "max_laser_temp_deg_c" ]:
             self.add_attribute("spinbox", name, widget=getattr(cfu, f"spinBox_ee_{name}"))
 
         for name in [ "max_laser_power_mW", "min_laser_power_mW", "detector_gain", "detector_gain_odd", "spline_min", "spline_max" ]:
             self.add_attribute("doublespinbox", name, widget=getattr(cfu, f"doubleSpinBox_ee_{name}"))
 
         for name in [ "calibrated_by", "calibration_date", "detector", "model", "serial_number", "user_text", 
-                      "laser_password" ]:
+                      "laser_password", "assembly_revision_packed" ]:
             self.add_attribute("lineedit", name, is_numeric=False, widget=getattr(cfu, f"lineEdit_ee_{name}"))
 
         # Arrays (but still not multi-wavelength)
         self.add_attribute("lineedit", "laser_power_coeffs", widgets=[ getattr(cfu, f"lineEdit_ee_laser_power_coeff_{i}") for i in range(4) ])
-        self.add_attribute("lineedit", "linearity_coeffs",   widgets=[ getattr(cfu, f"lineEdit_ee_linearity_coeff_{i}")   for i in range(5) ])
+       #self.add_attribute("lineedit", "linearity_coeffs",   widgets=[ getattr(cfu, f"lineEdit_ee_linearity_coeff_{i}")   for i in range(5) ]) # deprecated
         self.add_attribute("lineedit", "degC_to_dac_coeffs", widgets=[ getattr(cfu, f"lineEdit_ee_degC_to_dac_coeff_{i}") for i in range(3) ])
         self.add_attribute("lineedit", "adc_to_degC_coeffs", widgets=[ getattr(cfu, f"lineEdit_ee_adc_to_degC_coeff_{i}") for i in range(3) ])
         self.add_attribute("lineedit", "spline_wavelengths", widgets=[ getattr(cfu, f"lineEdit_ee_spline_wl_{i}")         for i in range(14) ])
@@ -622,8 +623,12 @@ class EEPROMEditor:
                                 product_configuration = self.eeprom.multi_wavelength_calibration.get("product_configuration")
                                 if value and product_configuration:
                                     value += product_configuration
+                            elif attr.name == "assembly_revision_packed":
+                                # could generalize this with attr.is_data
+                                if value and len(value):
+                                    value = "".join([f"{v:02x}" for v in value])
                             attr.widget.setText(str(value))
-                        else:                                   # e.g. adc_to_degC, degC_to_dac, laser_power_coeffs, linearity_coeffs
+                        else:                                   # e.g. adc_to_degC, degC_to_dac, laser_power_coeffs
                             a = self.eeprom.multi_wavelength_calibration.get(attr.name)
                             for i, w in enumerate(attr.widgets):
                                 if i < len(a):
