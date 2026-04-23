@@ -3,10 +3,12 @@ import json
 import logging
 import decimal
 from functools import partial
-
-from wasatch.EEPROM import EEPROM
-from enlighten import common
 from typing import List
+
+from wasatch.AssemblyRevision import AssemblyRevision
+from wasatch.EEPROM           import EEPROM
+
+from enlighten import common
 
 if common.use_pyside2():
     from PySide2 import QtGui, QtWidgets, QtCore
@@ -477,6 +479,18 @@ class EEPROMEditor:
         elif attr.name == "subformat":
             self.update_subformat()
 
+        # user_text -> user_data
+        elif attr.name == "user_text":
+            # this will force EEPROM to re-generate user_data from user_text when saving
+            self.settings.eeprom.user_data = None
+
+        # assembly revision
+        elif attr.name == "assembly_revision_packed":
+            log.debug(f"parsing updated assembly_revision_packed: value {value}")
+            self.settings.eeprom.assembly_revision = AssemblyRevision(value)
+            log.debug(f"updated assembly_revision {self.settings.eeprom.assembly_revision}")
+            self.ctl.update_assembly_revision()
+
         # vertical ROI
         elif "roi_vertical_region_1" in attr.name:
             spec = self.ctl.multispec.current_spectrometer()
@@ -484,10 +498,6 @@ class EEPROMEditor:
                 vert_roi = self.settings.get_vertical_roi()
                 if vert_roi is not None:
                     spec.change_device_setting("vertical_binning", vert_roi)
-
-        # send "user" updates downstream (not when switching between spectrometers though)
-        if self.updated_from_eeprom:
-            self.ctl.eeprom_writer.send_to_subprocess()
 
     # ##########################################################################
     # methods
@@ -543,9 +553,6 @@ class EEPROMEditor:
         
         We don't call blockSignals(), so each call to setValue() should trigger
         the appropriate bound callback (passed-through to widget_callback()).
-        
-        However, we don't want to send a long stream of "send_to_subprocess"
-        events, so only send one at the end of this update if needed.
         """
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:

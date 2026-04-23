@@ -832,10 +832,10 @@ class Controller:
         cfu.label_microcontroller_firmware_version.setText(spec.settings.microcontroller_firmware_version)
         cfu.label_fpga_firmware_version.setText(spec.settings.fpga_firmware_version)
         cfu.label_microcontroller_serial_number.setText(spec.settings.microcontroller_serial_number)
-        cfu.label_assembly_revision.setText(str(spec.settings.eeprom.assembly_revision))
 
         self.update_ble_firmware_version()
         self.update_power_connection_state()
+        self.update_assembly_revision()
 
         ########################################################################
         # update EEPROM Editor
@@ -1044,6 +1044,14 @@ class Controller:
             
         lb.setText(pcs.short())
         lb.setToolTip(pcs.long())
+
+    def update_assembly_revision(self):
+        spec = self.multispec.current_spectrometer()
+        if spec is None:
+            return
+
+        cfu = self.form.ui
+        cfu.label_assembly_revision.setText(str(spec.settings.eeprom.assembly_revision))
 
     # ##########################################################################
     # Setup (populate widget placeholders)

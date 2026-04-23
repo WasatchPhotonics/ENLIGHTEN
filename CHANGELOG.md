@@ -5,10 +5,12 @@
     - added ctrl-% shortcut
     - starting to think about Safe Mode
     - simplifying logic to generate and scale product images
+    - simplifying process to write EEPROM
     - fixed BLE Firmware Rev 
     - added Power Connection State (pending FW fix)
     - added Laser Max Temp DegC
     - added AssemblyRevision (packed and expanded)
+    - improve process of editing user_text
     - deprecated Baud Rate and Linearity Coeffs
 - 2026-04-16 4.2.1
     - Bluetooth
