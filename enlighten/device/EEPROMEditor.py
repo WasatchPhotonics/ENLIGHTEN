@@ -585,8 +585,12 @@ class EEPROMEditor:
                                 for i, w in enumerate(attr.widgets[m]):
                                     w.setValue(int(self.eeprom.multi_wavelength_calibration.get(attr.name, m, i, default=0)))
                     else:
-                        if attr.is_scalar:                      # e.g. baud_rate
-                            attr.widget.setValue(int(getattr(self.eeprom, attr.name)))
+                        if attr.is_scalar:                      # e.g. baud_rate, max_laser_temp_deg_c
+                            value = getattr(self.eeprom, attr.name)
+                            if value is not None:
+                                attr.widget.setValue(int(value))
+                            else:
+                                attr.widget.setValue(attr.widget.minimum())
                         else:                                   # e.g. bad_pixels
                             for i, w in enumerate(attr.widgets):
                                 a = getattr(self.eeprom, attr.name)
