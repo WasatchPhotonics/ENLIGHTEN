@@ -20,9 +20,6 @@
         - Safe Mode
         - Etalon Correction
         - InGaAs Correction
-    - TODO:
-        - port RamanShiftCorrectionFeature to ctl
-        - port AccessoryControlFeature to ctl 
 
 - 2026-04-16 4.2.1
     - Bluetooth

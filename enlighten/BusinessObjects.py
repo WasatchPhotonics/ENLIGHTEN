@@ -379,30 +379,10 @@ class BusinessObjects:
         ctl.ingaas_correction = InGaAsCorrectionFeature(ctl)
 
         self.header("instantiating RamanShiftCorrectionFeature")
-        ctl.raman_shift_correction = RamanShiftCorrectionFeature(
-            button                      = cfu.pushButton_ramanCorrection,
-            cb_visible                  = cfu.checkBox_ramanCorrection_visible,
-            combo                       = cfu.comboBox_ramanCorrection_compoundName,
-            config                      = ctl.config,
-            frame                       = cfu.frame_ramanCorrection_white,
-            graph                       = ctl.graph,
-            gui                         = ctl.gui,
-            marquee                     = ctl.marquee,
-            multispec                   = ctl.multispec,
-            page_nav                    = ctl.page_nav)
+        ctl.raman_shift_correction = RamanShiftCorrectionFeature(ctl)
 
         self.header("instantiating AccessoryControlFeature")
-        ctl.accessory_control = AccessoryControlFeature(
-            cb_display                  = cfu.checkBox_accessory_cont_strobe_display,
-            cb_enable                   = cfu.checkBox_accessory_cont_strobe_enable,
-            cb_fan                      = cfu.checkBox_accessory_fan,
-            cb_lamp                     = cfu.checkBox_accessory_lamp,
-            cb_shutter                  = cfu.checkBox_accessory_shutter,
-            frame_cont_strobe           = cfu.frame_accessory_cont_strobe,
-            frame_widget                = cfu.frame_accessory_widget,
-            multispec                   = ctl.multispec,
-            sb_freq_hz                  = cfu.spinBox_accessory_cont_strobe_freq_hz,
-            sb_width_us                 = cfu.spinBox_accessory_cont_strobe_width_us)
+        ctl.accessory_control = AccessoryControlFeature(ctl)
 
         self.header("instantiating HighGainModeFeature")
         ctl.high_gain_mode = HighGainModeFeature(ctl)

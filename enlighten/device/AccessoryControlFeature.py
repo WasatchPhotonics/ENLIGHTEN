@@ -28,28 +28,19 @@ class AccessoryControlFeature:
     The bridging between nomenclatures is deliberately encapsulated here, within
     this Feature class.
     """
-    def __init__(self,
-            cb_display,
-            cb_enable,
-            cb_fan,
-            cb_lamp,
-            cb_shutter,
-            frame_cont_strobe,
-            frame_widget,
-            multispec,
-            sb_freq_hz,
-            sb_width_us):
+    def __init__(self, ctl):
+        self.ctl = ctl
+        cfu = ctl.form.ui
 
-        self.cb_display                 = cb_display
-        self.cb_enable                  = cb_enable
-        self.cb_fan                     = cb_fan
-        self.cb_lamp                    = cb_lamp
-        self.cb_shutter                 = cb_shutter
-        self.frame_cont_strobe          = frame_cont_strobe
-        self.frame_widget               = frame_widget
-        self.multispec                  = multispec
-        self.sb_freq_hz                 = sb_freq_hz
-        self.sb_width_us                = sb_width_us
+        self.cb_display                 = cfu.checkBox_accessory_cont_strobe_display
+        self.cb_enable                  = cfu.checkBox_accessory_cont_strobe_enable
+        self.cb_fan                     = cfu.checkBox_accessory_fan
+        self.cb_lamp                    = cfu.checkBox_accessory_lamp
+        self.cb_shutter                 = cfu.checkBox_accessory_shutter
+        self.frame_cont_strobe          = cfu.frame_accessory_cont_strobe
+        self.frame_widget               = cfu.frame_accessory_widget
+        self.sb_freq_hz                 = cfu.spinBox_accessory_cont_strobe_freq_hz
+        self.sb_width_us                = cfu.spinBox_accessory_cont_strobe_width_us
 
         self.visible = False
         self.cont_strobe_visible = False
@@ -73,7 +64,7 @@ class AccessoryControlFeature:
         if not self.update_visibility():
             return
 
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
 
@@ -86,7 +77,7 @@ class AccessoryControlFeature:
         self.width_callback()
 
     def disconnect(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
         
@@ -98,7 +89,7 @@ class AccessoryControlFeature:
             spec.change_device_setting(setting, False)
 
     def update_visibility(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             self.visible = False
         else:
@@ -125,7 +116,7 @@ class AccessoryControlFeature:
         return int(round(1e6 / us))
 
     def fan_callback(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
 
@@ -133,7 +124,7 @@ class AccessoryControlFeature:
         spec.change_device_setting("fan_enable", spec.settings.state.fan_enabled)
 
     def lamp_callback(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
 
@@ -141,7 +132,7 @@ class AccessoryControlFeature:
         spec.change_device_setting("lamp_enable", spec.settings.state.lamp_enabled)
 
     def shutter_callback(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
 
@@ -153,7 +144,7 @@ class AccessoryControlFeature:
         self.update_visibility()
 
     def enable_callback(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
 
@@ -164,7 +155,7 @@ class AccessoryControlFeature:
         spec.change_device_setting("mod_enable",    enabled)
 
     def freq_callback(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
 
@@ -172,7 +163,7 @@ class AccessoryControlFeature:
         spec.change_device_setting("mod_period_us", spec.settings.state.mod_period_us)
 
     def width_callback(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
 
