@@ -89,6 +89,9 @@ class Authentication:
     def register_observer(self, callback):
         self.observers.add(callback)
 
+    def is_production_password(self, password):
+        return hashlib.md5(password.encode('utf-8')).hexdigest() == self.PRODUCTION_DIGEST
+
     def login(self, switch_to_factory=False, password=None):
         """
         The user has clicked "Advanced Features" or pressed "Ctrl-A," so display
@@ -109,7 +112,7 @@ class Authentication:
             self.level = self.ADVANCED
         elif password.lower() == "wasatchoem":
             self.level = self.OEM
-        elif hashlib.md5(password.encode('utf-8')).hexdigest() == self.PRODUCTION_DIGEST:
+        elif self.is_production_password(password):
             self.level = self.PRODUCTION
         else:
             self.level = self.BASIC

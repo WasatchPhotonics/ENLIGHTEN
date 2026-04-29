@@ -1,17 +1,29 @@
 # Version History
 
 - 2026-??-?? 4.2.2
-    - BLE laser PWM works
-    - added ctrl-% shortcut
-    - starting to think about Safe Mode
-    - simplifying logic to generate and scale product images
-    - simplifying process to write EEPROM
-    - fixed BLE Firmware Rev 
-    - added Power Connection State (pending FW fix)
-    - added Laser Max Temp DegC
-    - added AssemblyRevision (packed and expanded)
-    - improve process of editing user_text
-    - deprecated Baud Rate and Linearity Coeffs
+    - Laser Control
+        - IDS Autonomous Collection
+        - BLE laser PWM works
+        - added ctrl-% shortcut
+        - simplified password entry
+        - add production override
+    - Hardware view
+        - deprecated Baud Rate and Linearity Coeffs
+        - simplified logic to select and scale product image
+        - simplified logic to write EEPROM
+        - simplified logic for editing user_text
+        - fixed BLE Firmware Rev 
+        - added Laser Max Temp DegC
+        - added AssemblyRevision (packed and expanded)
+        - added Power Connection State (pending FW fix)
+    - STARTING: 
+        - Safe Mode
+        - Etalon Correction
+        - InGaAs Correction
+    - TODO:
+        - port RamanShiftCorrectionFeature to ctl
+        - port AccessoryControlFeature to ctl 
+
 - 2026-04-16 4.2.1
     - Bluetooth
         - added RnD.BluetoothTester plugin

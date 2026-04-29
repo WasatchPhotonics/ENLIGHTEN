@@ -46,8 +46,10 @@ from enlighten.post_processing.BaselineCorrection import BaselineCorrection
 from enlighten.post_processing.BoxcarFeature import BoxcarFeature
 from enlighten.post_processing.DarkFeature import DarkFeature
 from enlighten.post_processing.ElectricalDarkCorrectionFeature import ElectricalDarkCorrectionFeature
+from enlighten.post_processing.EtalonCorrectionFeature import EtalonCorrectionFeature
 from enlighten.post_processing.HorizROIFeature import HorizROIFeature
 from enlighten.post_processing.InterpolationFeature import InterpolationFeature
+from enlighten.post_processing.InGaAsCorrectionFeature import InGaAsCorrectionFeature
 from enlighten.post_processing.PixelCalibration import PixelCalibration
 from enlighten.post_processing.RamanIntensityCorrection import RamanIntensityCorrection
 from enlighten.post_processing.ReferenceFeature import ReferenceFeature
@@ -369,6 +371,12 @@ class BusinessObjects:
 
         self.header("instantiating AreaScanFeature")
         ctl.area_scan = AreaScanFeature(ctl)
+
+        self.header("instantiating EtalonCorrectionFeature")
+        ctl.etalon_correction = EtalonCorrectionFeature(ctl)
+
+        self.header("instantiating InGaAsCorrectionFeature")
+        ctl.ingaas_correction = InGaAsCorrectionFeature(ctl)
 
         self.header("instantiating RamanShiftCorrectionFeature")
         ctl.raman_shift_correction = RamanShiftCorrectionFeature(

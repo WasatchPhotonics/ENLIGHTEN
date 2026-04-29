@@ -625,11 +625,12 @@ class LaserControlFeature:
             return False
 
         title = "XS Laser Safety PIN"
-        label_text = "Enter password to allow XS laser to fire"
+        label_text = "Enter password to allow XS laser to fire.\n(Default is serial number)"
         result = self.ctl.gui.msgbox_with_lineedit(title=title, label_text=label_text, lineedit_text=None)
         if not result["ok"]:
             log.debug("user cancelled laser password prompt")
             return False
+        entered_password = result["lineedit"]
 
         # if no password was set in the EEPROM, use serial number
         expected_password = spec.settings.eeprom.laser_password
@@ -637,7 +638,7 @@ class LaserControlFeature:
             expected_password = spec.settings.eeprom.serial_number
 
         # case-sensitive comparison
-        if result["lineedit"] == expected_password:
+        if entered_password == expected_password or self.ctl.authentication.is_production_password(entered_password):
             log.debug("correct laser password entered")
             self.ctl.marquee.info("Laser authenticated for session", benign=True)
             self.xs_password_provided_by_serial.add(sn)
