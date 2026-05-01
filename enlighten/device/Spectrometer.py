@@ -6,7 +6,7 @@ import pyqtgraph
 
 from enlighten.device.SpectrometerApplicationState import SpectrometerApplicationState
 from enlighten.ui.Colors import Colors
-from enlighten.scope.Cursor import AxisConverter
+from enlighten.scope.CursorFeature import AxisConverter
 from enlighten import common
 
 from wasatch.SpectrometerState     import SpectrometerState

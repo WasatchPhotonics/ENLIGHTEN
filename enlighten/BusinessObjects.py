@@ -56,25 +56,25 @@ from enlighten.scope.Graph import Graph
 from enlighten.scope.GridFeature import GridFeature
 from enlighten.scope.PresetFeature import PresetFeature
 from enlighten.scope.RamanShiftCorrectionFeature import RamanShiftCorrectionFeature
-from enlighten.timing.BatchCollection import BatchCollection
-from enlighten.ui.Authentication import Authentication
-from enlighten.ui.Clipboard import Clipboard
+from enlighten.timing.BatchCollectionFeature import BatchCollectionFeature
+from enlighten.ui.AuthenticationFeature import AuthenticationFeature
+from enlighten.ui.ClipboardFeature import ClipboardFeature
 from enlighten.ui.Colors import Colors
 from enlighten.ui.DidYouKnowFeature import DidYouKnowFeature
 from enlighten.ui.FocusListener import FocusListener
-from enlighten.ui.GUI import GUI
+from enlighten.ui.GUIFeature import GUIFeature
 from enlighten.ui.GuideFeature import GuideFeature
 from enlighten.ui.HelpFeature import HelpFeature
 from enlighten.ui.ImageResources import ImageResources
-from enlighten.ui.Marquee import Marquee
-from enlighten.ui.PageNavigation import PageNavigation
-from enlighten.ui.ReadingProgressBar import ReadingProgressBar
+from enlighten.ui.MarqueeFeature import MarqueeFeature
+from enlighten.ui.PageNavigationFeature import PageNavigationFeature
+from enlighten.ui.ReadingProgressBarFeature import ReadingProgressBarFeature
 from enlighten.ui.ResourceMonitorFeature import ResourceMonitorFeature
-from enlighten.ui.Sounds import Sounds
+from enlighten.ui.SoundEffectsFeature import SoundEffectsFeature
 from enlighten.ui.StatusBarFeature import StatusBarFeature
-from enlighten.ui.StatusIndicators import StatusIndicators
-from enlighten.ui.Stylesheets import Stylesheets
-from enlighten.ui.VCRControls import VCRControls
+from enlighten.ui.StatusIndicatorFeature import StatusIndicatorFeature
+from enlighten.ui.StylesheetFeature import StylesheetFeature
+from enlighten.ui.VCRControlsFeature import VCRControlsFeature
 
 class BusinessObjects:
     """
@@ -168,9 +168,9 @@ class BusinessObjects:
         ctl.presets             = PresetFeature(ctl)
         ctl.logging_feature     = LoggingFeature(ctl)
         ctl.colors              = Colors(ctl.config)
-        ctl.stylesheets         = Stylesheets(ctl)
-        ctl.gui                 = GUI(ctl)
-        ctl.page_nav            = PageNavigation(ctl)
+        ctl.stylesheets         = StylesheetFeature(ctl)
+        ctl.gui                 = GUIFeature(ctl)
+        ctl.page_nav            = PageNavigationFeature(ctl)
 
     def create_rest(self):
         """
@@ -187,9 +187,9 @@ class BusinessObjects:
         ctl.resource_monitor            = ResourceMonitorFeature(ctl)
         ctl.focus_listener              = FocusListener(ctl)
         ctl.model_info                  = ModelInfoFeature(ctl)
-        ctl.marquee                     = Marquee(ctl)
+        ctl.marquee                     = MarqueeFeature(ctl)
         ctl.file_manager                = FileManagerFeature(ctl)
-        ctl.clipboard                   = Clipboard(ctl)
+        ctl.clipboard                   = ClipboardFeature(ctl)
         ctl.guide                       = GuideFeature(ctl)
         ctl.graph                       = Graph(ctl, name="Scope")
         ctl.hardware_file_manager       = HardwareFileOutputFeature(ctl)
@@ -197,7 +197,7 @@ class BusinessObjects:
         ctl.image_resources             = ImageResources()
         ctl.multispec                   = MultispecFeature(ctl)
         ctl.battery_feature             = BatteryFeature(ctl)
-        ctl.status_indicators           = StatusIndicators(ctl)
+        ctl.status_indicators           = StatusIndicatorFeature(ctl)
         ctl.detector_temperature        = DetectorTemperatureFeature(ctl)
         ctl.horiz_roi                   = HorizROIFeature(ctl)
         ctl.transmission                = TransmissionFeature(ctl)
@@ -207,7 +207,7 @@ class BusinessObjects:
         ctl.save_options                = SaveOptionsFeature(ctl)
         ctl.measurement_factory         = MeasurementFactory(ctl)
         ctl.measurements                = Measurements(ctl)
-        ctl.authentication              = Authentication(ctl)
+        ctl.authentication              = AuthenticationFeature(ctl)
         ctl.eeprom_writer               = EEPROMWriter(ctl)
         ctl.eeprom_editor               = EEPROMEditorFeature(ctl)
         ctl.laser_control               = LaserControlFeature(ctl)
@@ -218,7 +218,7 @@ class BusinessObjects:
         ctl.take_one                    = TakeOneFeature(ctl)
         ctl.cloud_manager               = CloudManagerFeature(ctl)
 
-        ctl.vcr_controls = VCRControls(ctl)
+        ctl.vcr_controls = VCRControlsFeature(ctl)
         ctl.vcr_controls.register_observer("save", ctl.save_current_spectra)
         ctl.scan_averaging.complete_registrations()
 
@@ -227,7 +227,7 @@ class BusinessObjects:
         ctl.edc                         = ElectricalDarkCorrectionFeature(ctl)
         ctl.reference_feature           = ReferenceFeature(ctl)
         ctl.raman_intensity_correction  = RamanIntensityCorrectionFeature(ctl)
-        ctl.batch_collection            = BatchCollection(ctl)
+        ctl.batch_collection            = BatchCollectionFeature(ctl)
         ctl.boxcar                      = BoxcarFeature(ctl)
         ctl.integration_time_feature    = IntegrationTimeFeature(ctl)
         ctl.gain_db_feature             = GainDBFeature(ctl)
@@ -244,11 +244,11 @@ class BusinessObjects:
         ctl.raman_shift_correction      = RamanShiftCorrectionFeature(ctl)
         ctl.accessory_control           = AccessoryControlFeature(ctl)
         ctl.high_gain_mode              = HighGainModeFeature(ctl)
-        ctl.sounds                      = Sounds(ctl)
+        ctl.sounds                      = SoundEffectsFeature(ctl)
         ctl.help                        = HelpFeature(ctl)
         ctl.did_you_know                = DidYouKnowFeature(ctl)
         ctl.status_bar                  = StatusBarFeature(ctl)
-        ctl.reading_progress_bar        = ReadingProgressBar(ctl)
+        ctl.reading_progress_bar        = ReadingProgressBarFeature(ctl)
         ctl.ble_manager                 = BLEManagerFeature(ctl)
         ctl.pixel_calibration           = PixelCalibrationFeature(ctl)
 

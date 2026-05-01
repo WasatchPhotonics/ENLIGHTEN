@@ -4,6 +4,7 @@ import logging
 from enlighten import util
 from enlighten import common
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
+from enlighten.EnlightenFeature import EnlightenFeature
 
 from wasatch.TakeOneRequest import TakeOneRequest
 
@@ -14,7 +15,7 @@ else:
 
 log = logging.getLogger(__name__)
 
-class BatchCollection:
+class BatchCollectionFeature(EnlightenFeature):
     """
     This class encapsulates batch collection, which is the automated collection
     of a series of 'measurement_count' Step-And-Save events at a period of
@@ -122,7 +123,8 @@ class BatchCollection:
     then Auto-Raman mode is recommended.
     """
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.cb_enabled                     = cfu.checkBox_BatchCollection_enabled

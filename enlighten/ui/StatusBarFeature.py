@@ -2,6 +2,7 @@ import numpy as np
 import logging
 
 from enlighten import common
+from enlighten.EnlightenFeature import EnlightenFeature
 
 if common.use_pyside2():
     from PySide2.QtWidgets import QMenu
@@ -10,7 +11,7 @@ else:
 
 log = logging.getLogger(__name__)
 
-class StatusBarFeature:
+class StatusBarFeature(EnlightenFeature):
     """
     This class encapsulates the horizontal status bar at the bottom of the 
     ENLIGHTEN Scope Capture screen.  It offers several real-time status fields
@@ -28,7 +29,8 @@ class StatusBarFeature:
     # ##########################################################################
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
         
         self.widgets = {}

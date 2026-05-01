@@ -2,6 +2,7 @@ import logging
 import pyqtgraph
 
 from enlighten import common
+from enlighten.EnlightenFeature import EnlightenFeature
 
 if common.use_pyside2():
     from PySide2 import QtGui
@@ -12,7 +13,7 @@ else:
 
 log = logging.getLogger(__name__)
 
-class GUI:
+class GUIFeature(EnlightenFeature):
     """
     This is currently holding "GUI Utility" methods, but may grow to encapsulate
     more and more of the actual ENLIGHTEN GUI as we continue to prise functionality
@@ -27,7 +28,8 @@ class GUI:
     SECTION = "graphs"
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.extra_button_clicked = False

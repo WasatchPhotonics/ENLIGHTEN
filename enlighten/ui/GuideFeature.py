@@ -2,6 +2,7 @@ import datetime
 import logging
 
 from enlighten import common
+from enlighten.EnlightenFeature import EnlightenFeature
 
 if common.use_pyside2():
     from PySide2 import QtCore
@@ -11,6 +12,7 @@ else:
 log = logging.getLogger(__name__)
 
 class Tip:
+    """ Different from DidYouKnowFeature.Tip """
     def __init__(self,
             msg,
             persist=False,
@@ -27,7 +29,7 @@ class Tip:
     def __repr__(self):
         return f"Tip <token {self.token}, persist {self.persist}, msg {self.msg}, link {self.link}>"
 
-class GuideFeature:
+class GuideFeature(EnlightenFeature):
     """
     Recommends "tips" that might be suggested to the user through the Marquee.
     """
@@ -35,7 +37,8 @@ class GuideFeature:
     POLL_SEC = 3
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.bt_enable = cfu.pushButton_guide

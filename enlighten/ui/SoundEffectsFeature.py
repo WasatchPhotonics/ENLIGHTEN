@@ -2,6 +2,7 @@ import logging
 import os
 
 from enlighten.util import unwrap
+from enlighten.EnlightenFeature import EnlightenFeature
 
 log = logging.getLogger(__name__)
 
@@ -13,7 +14,7 @@ except ImportError:
     print("winsound library not found - audio disabled")
     HAVE_SOUND = False
 
-class Sounds:
+class SoundEffectsFeature(EnlightenFeature):
     """
     Encapsulates ENLIGHTEN's limited audio capabilities.
     
@@ -28,7 +29,8 @@ class Sounds:
         self.sounds = None
     
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.cb_enable = cfu.checkBox_sound_enable

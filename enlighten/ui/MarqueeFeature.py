@@ -2,6 +2,7 @@ import webbrowser
 import datetime
 
 from enlighten import common
+from enlighten.EnlightenFeature import EnlightenFeature
 
 if common.use_pyside2():
     from PySide2 import QtCore, QtWidgets
@@ -38,7 +39,7 @@ class Message:
     def __repr__(self):
         return f"Marquee.Message: persist {self.persist}, token {self.token}, benign {self.benign}, immediate {self.immediate}, extra_ms {self.extra_ms}, period_sec {self.period_sec}, link {self.link}, msg {self.msg}"
 
-class Marquee:
+class MarqueeFeature(EnlightenFeature):
     """
     Encapsulate access to the "message display area" visible along the top of the 
     ENLIGHTEN display.
@@ -75,7 +76,7 @@ class Marquee:
         self.inner       = cfu.frame_drawer_black
         self.label       = cfu.label_drawer
 
-        self.height = Marquee.ORIG_HEIGHT
+        self.height = self.ORIG_HEIGHT
 
         # just store whatever the current theme sets
         self.default_css = self.inner.styleSheet()

@@ -1,8 +1,9 @@
 import logging
+from enlighten.EnlightenFeature import EnlightenFeature
 
 log = logging.getLogger(__name__)
 
-class Clipboard:
+class ClipboardFeature(EnlightenFeature):
     """
     This class encapsulates access to the host OS (Windows) copy-paste clipboard, 
     allowing tabular data to be copied from ENLIGHTEN and pasted into other 
@@ -13,7 +14,7 @@ class Clipboard:
     "the ENLIGHTEN Clipboard."
     """
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
 
     def copy_spectra(self, spectra):
         """

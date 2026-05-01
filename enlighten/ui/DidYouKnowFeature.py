@@ -2,6 +2,7 @@ import random
 import logging
 
 from enlighten import common
+from enlighten.EnlightenFeature import EnlightenFeature
 
 if common.use_pyside2():
     from PySide2 import QtGui
@@ -22,7 +23,7 @@ class Tip:
     def __repr__(self):
         return f"DYK.Tip<{self.title}>"
 
-class DidYouKnowFeature:
+class DidYouKnowFeature(EnlightenFeature):
     """
     This class provides a pop-up dialog when ENLIGHTEN launches, informing the
     user of new or lesser-known features they might otherwise not stumble across
@@ -31,6 +32,15 @@ class DidYouKnowFeature:
     It is unrelated to the GuideFeature, which displays contextual tips on the
     Marquee during measurement operations.
     """
+    def __init__(self, ctl):
+        super().__init__(ctl)
+
+        self.index = 0
+        self.startup_key = f"show_at_startup_{common.VERSION}"
+
+        self.create_dialog()
+        self.create_tips()
+
     def create_tips(self):
         self.tips = []
 
@@ -413,15 +423,6 @@ class DidYouKnowFeature:
 
         # present tips in random order each time
         random.shuffle(self.tips)
-
-    def __init__(self, ctl):
-        self.ctl = ctl
-
-        self.index = 0
-        self.startup_key = f"show_at_startup_{common.VERSION}"
-
-        self.create_dialog()
-        self.create_tips()
 
     def show(self):
         # force user to re-reject tips on each version

@@ -1,14 +1,15 @@
 from enlighten import common
+from enlighten.EnlightenFeature import EnlightenFeature
 
 if common.use_pyside2():
     from PySide2 import QtCore
 else:
     from PySide6 import QtCore
 
-class ReadingProgressBar:
+class ReadingProgressBarFeature(EnlightenFeature):
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
 
         cfu = ctl.form.ui
         self.pb = cfu.readingProgressBar

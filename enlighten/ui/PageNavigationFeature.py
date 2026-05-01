@@ -2,12 +2,13 @@ import logging
 
 from enlighten import common
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
+from enlighten.EnlightenFeature import EnlightenFeature
 
 from enlighten.util import unwrap
 
 log = logging.getLogger(__name__)
 
-class PageNavigation:
+class PageNavigationFeature(EnlightenFeature):
     """
     This class encapsulates moving around different "screens" of ENLIGHTEN's GUI.
     In many cases, this is achieved by moving different QWidgets (QFrames) to the
@@ -120,9 +121,9 @@ class PageNavigation:
     """
 
     def __init__(self, ctl):
-        self.ctl = ctl
-        cfu = ctl.form.ui
+        super().__init__(ctl)
 
+        cfu = ctl.form.ui
                                 
         self.button_raman       = cfu.pushButton_raman
         self.button_non_raman   = cfu.pushButton_non_raman

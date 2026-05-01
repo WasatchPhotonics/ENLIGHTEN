@@ -3,6 +3,7 @@ import logging
 import time
 
 from enlighten import common
+from enlighten.EnlightenFeature import EnlightenFeature
 
 if common.use_pyside2():
     from PySide2 import QtWidgets
@@ -11,7 +12,7 @@ else:
 
 log = logging.getLogger(__name__)
 
-class Authentication:
+class AuthenticationFeature(EnlightenFeature):
     """
     This class encapsulates the process of "logging-in" to ENLIGHTEN and enabling
     or displaying GUI widgets which should only be exposed to certain user classes.
@@ -66,7 +67,7 @@ class Authentication:
     PRODUCTION_DIGEST = '830147906ad1e20efe9a12b5d0b5242f'
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
 
         cfu = ctl.form.ui
 

@@ -4,9 +4,11 @@ import psutil
 import logging
 import datetime
 
+from enlighten.EnlightenFeature import EnlightenFeature
+
 log = logging.getLogger(__name__)
 
-class ResourceMonitorFeature:
+class ResourceMonitorFeature(EnlightenFeature):
     """
     This class was created a few years ago when we had a buried memory leak which
     only presented on Linux. Fear not, the leak was isolated and resolved (it was
@@ -17,7 +19,8 @@ class ResourceMonitorFeature:
     UPDATE_RATE_SEC = 5
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.lb_growth       = cfu.label_process_growth_mb

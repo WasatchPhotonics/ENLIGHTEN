@@ -2,31 +2,31 @@ import logging
 
 from enlighten import util
 from enlighten.util import unwrap
-
 from enlighten.common import msgbox
+from enlighten.EnlightenFeature import EnlightenFeature
 
 log = logging.getLogger(__name__)
 
-##
-# Encapsulate the state, appearance and behavior of the seven VCR-style
-# "Action Buttons" appearing along the top of the Scope Capture screen.
-# 
-# Those are divided into four conceptual "positions", being:
-#
-# Pos1  Pos2  Pos3            Pos4
-# ----- ----- -----           -----
-# Pause Save  Step            StepSave
-# Play        StartCollection
-# Stop
-#
-# Only 2-4 buttons shold ever be shown at one time.  No more than one button 
-# from a given "position" can be shown at one time; the buttons within a position 
-# are mutually exclusive. 
-#
-class VCRControls:
-
+class VCRControlsFeature(EnlightenFeature):
+    """
+    Encapsulate the state, appearance and behavior of the seven VCR-style
+    "Action Buttons" appearing along the top of the Scope Capture screen.
+    
+    Those are divided into four conceptual "positions", being:
+    
+    Pos1  Pos2  Pos3            Pos4
+    ----- ----- -----           -----
+    Pause Save  Step            StepSave
+    Play        StartCollection
+    Stop
+    
+    Only 2-4 buttons shold ever be shown at one time.  No more than one button 
+    from a given "position" can be shown at one time; the buttons within a position 
+    are mutually exclusive. 
+    """
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.bt_pause            = cfu.pushButton_scope_capture_pause

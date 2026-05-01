@@ -1,11 +1,13 @@
 import os
 import logging
 
+from enlighten.EnlightenFeature import EnlightenFeature
+
 log = logging.getLogger(__name__)
 
 ## 
 # Encapsulates application of CSS stylesheets to Qt widgets.
-class Stylesheets:
+class StylesheetFeature(EnlightenFeature):
 
     DEFAULT_PATH = "enlighten/assets/stylesheets"
 
@@ -23,7 +25,7 @@ class Stylesheets:
         self.widget_last_style = {}
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
 
         self.clear()
         path = self.ctl.stylesheet_path

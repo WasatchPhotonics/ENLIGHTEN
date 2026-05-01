@@ -2,6 +2,7 @@ import datetime
 import logging
 
 from enlighten import common
+from enlighten.EnlightenFeature import EnlightenFeature
 
 if common.use_pyside2():
     from PySide2 import QtCore
@@ -10,7 +11,7 @@ else:
 
 log = logging.getLogger(__name__)
 
-class StatusIndicators:
+class StatusIndicatorFeature(EnlightenFeature):
     """
     Encapsulates the 3 virtual status "LEDs" in the bottom-right of ENLIGHTEN's 
     Scope view:
@@ -44,7 +45,8 @@ class StatusIndicators:
     TEMPERATURE_WINDOW_SEC = 10
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         # MZ: why are these buttons rather than labels?
