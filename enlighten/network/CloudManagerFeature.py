@@ -11,6 +11,7 @@ from botocore.config import Config
 
 from enlighten import common
 from enlighten import util
+from enlighten.EnlightenFeature import EnlightenFeature
 
 if common.use_pyside2():
     from PySide2.QtWidgets import QInputDialog, QLineEdit, QMessageBox
@@ -37,7 +38,7 @@ def handle_decimal_type(obj):
          return float(obj)
   raise TypeError
 
-class CloudManager:
+class CloudManagerFeature(EnlightenFeature):
     """
     Encapsulates access to AWS-backed cloud features.
 
@@ -50,7 +51,8 @@ class CloudManager:
     CONFIG_SECTION = "Cloud"
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.cb_enabled = cfu.checkBox_cloud_config_download_enabled

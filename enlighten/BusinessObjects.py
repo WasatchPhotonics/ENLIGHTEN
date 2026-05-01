@@ -31,9 +31,9 @@ from enlighten.file_io.LoggingFeature import LoggingFeature
 from enlighten.measurement.AreaScanFeature import AreaScanFeature
 from enlighten.measurement.MeasurementFactory import MeasurementFactory
 from enlighten.measurement.Measurements import Measurements
-from enlighten.measurement.SaveOptions import SaveOptions
-from enlighten.network.BLEManager import BLEManager
-from enlighten.network.CloudManager import CloudManager
+from enlighten.measurement.SaveOptionsFeature import SaveOptionsFeature
+from enlighten.network.BLEManagerFeature import BLEManagerFeature
+from enlighten.network.CloudManagerFeature import CloudManagerFeature
 from enlighten.post_processing.AbsorbanceFeature import AbsorbanceFeature
 from enlighten.post_processing.AutoRamanFeature import AutoRamanFeature
 from enlighten.post_processing.BaselineCorrectionFeature import BaselineCorrectionFeature
@@ -204,7 +204,7 @@ class BusinessObjects:
         ctl.absorbance                  = AbsorbanceFeature(ctl)
         ctl.interp                      = InterpolationFeature(ctl)
         ctl.external_trigger            = ExternalTriggerFeature(ctl)
-        ctl.save_options                = SaveOptions(ctl)
+        ctl.save_options                = SaveOptionsFeature(ctl)
         ctl.measurement_factory         = MeasurementFactory(ctl)
         ctl.measurements                = Measurements(ctl)
         ctl.authentication              = Authentication(ctl)
@@ -216,7 +216,7 @@ class BusinessObjects:
         ctl.ambient_temperature         = AmbientTemperatureFeature(ctl)
         ctl.scan_averaging              = ScanAveragingFeature(ctl)
         ctl.take_one                    = TakeOneFeature(ctl)
-        ctl.cloud_manager               = CloudManager(ctl)
+        ctl.cloud_manager               = CloudManagerFeature(ctl)
 
         ctl.vcr_controls = VCRControls(ctl)
         ctl.vcr_controls.register_observer("save", ctl.save_current_spectra)
@@ -249,7 +249,7 @@ class BusinessObjects:
         ctl.did_you_know                = DidYouKnowFeature(ctl)
         ctl.status_bar                  = StatusBarFeature(ctl)
         ctl.reading_progress_bar        = ReadingProgressBar(ctl)
-        ctl.ble_manager                 = BLEManager(ctl)
+        ctl.ble_manager                 = BLEManagerFeature(ctl)
         ctl.pixel_calibration           = PixelCalibrationFeature(ctl)
 
     def destroy(self):

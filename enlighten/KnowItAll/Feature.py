@@ -8,6 +8,7 @@ import os
 from .Wrapper import Wrapper
 from .Config  import Config 
 
+from enlighten.EnlightenFeature import EnlightenFeature
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from enlighten import util, common
 
@@ -126,7 +127,7 @@ class DeclaredMatch:
 #
 # This is probably overcomplicating things, but down the rabbit-hole I went.
 #
-class Feature:
+class Feature(EnlightenFeature):
 
     # ##########################################################################
     # Constants
@@ -157,7 +158,8 @@ class Feature:
     # ##########################################################################
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.bt_alias                   = cfu.pushButton_id_results_make_alias

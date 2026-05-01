@@ -5,10 +5,11 @@ import os
 
 from enlighten import common
 from enlighten import util
+from enlighten.EnlightenFeature import EnlightenFeature
 
 log = logging.getLogger(__name__)
 
-class SaveOptions():
+class SaveOptionsFeature(EnlightenFeature):
     """
     Encapsulates the many options regarding how spectra are to be saved.
     """
@@ -57,9 +58,10 @@ class SaveOptions():
         self.rb_by_row               = None
 
     def __init__(self, ctl):
+        super().__init__(ctl)
+
         self.clear()
 
-        self.ctl = ctl
         cfu = ctl.form.ui
 
         self.bt_location          = cfu.pushButton_scope_setup_change_save_location
@@ -447,8 +449,8 @@ class SaveOptions():
             "format_json": False,
             "format_dx": False,
 
-            "label_template": SaveOptions.DEFAULT_LABEL_TEMPLATE,
-            "filename_template": SaveOptions.DEFAULT_FILENAME_TEMPLATE,
+            "label_template": SaveOptionsFeature.DEFAULT_LABEL_TEMPLATE,
+            "filename_template": SaveOptionsFeature.DEFAULT_FILENAME_TEMPLATE,
 
             "prefix": "enlighten",
             "suffix": "",

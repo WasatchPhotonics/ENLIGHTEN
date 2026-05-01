@@ -7,7 +7,7 @@ import configparser
 # I think we're importing these modules so we can access their static class 
 # functions before Controller's constructor is yet complete.
 from enlighten.data.ColorNames import ColorNames
-from enlighten.measurement.SaveOptions import SaveOptions
+from enlighten.measurement.SaveOptionsFeature import SaveOptionsFeature
 from enlighten.EnlightenFeature import EnlightenFeature
 
 from enlighten import common
@@ -355,7 +355,7 @@ class ConfigurationFeature(EnlightenFeature):
     def load_defaults(self):
         self.defaults = {}
 
-        self.defaults["save"] = SaveOptions.get_default_configuration()
+        self.defaults["save"] = SaveOptionsFeature.get_default_configuration()
 
         self.defaults["batch"] = {
             "enabled": False,

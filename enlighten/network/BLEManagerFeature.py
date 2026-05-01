@@ -6,6 +6,7 @@ from queue import Queue
 from threading import Thread
 
 from enlighten import common, util
+from enlighten.EnlightenFeature import EnlightenFeature
 from wasatch.DeviceFinderBLE import DeviceFinderBLE
 from wasatch.BLEDevice       import BLEDevice # for get_run_loop
 
@@ -18,7 +19,7 @@ else:
 
 log = logging.getLogger(__name__)
 
-class BLEManager:
+class BLEManagerFeature(EnlightenFeature):
     """
     Provides GUI allowing user to select a Wasatch Bluetooth® LE spectrometer for
     connection.
@@ -32,7 +33,8 @@ class BLEManager:
     """
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.bt_ble = cfu.pushButton_show_ble_selector
