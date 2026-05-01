@@ -1,16 +1,18 @@
 import logging
 
-from wasatch.SpectrometerState        import SpectrometerState
+from wasatch.SpectrometerState import SpectrometerState
+from enlighten.EnlightenFeature import EnlightenFeature
 
 log = logging.getLogger(__name__)
 
-class ExternalTriggerFeature:
+class ExternalTriggerFeature(EnlightenFeature):
     """
     Encapsulate external hardware triggering.
     """
     
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.cb_enabled = cfu.checkBox_external_trigger_enabled

@@ -2,12 +2,15 @@ import logging
 import datetime
 import pyqtgraph
 
+from enlighten.EnlightenFeature import EnlightenFeature
+
 log = logging.getLogger(__name__)
 
-class LaserTemperatureFeature:
+class LaserTemperatureFeature(EnlightenFeature):
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.lb_degC        = cfu.label_factory_laser_temperature

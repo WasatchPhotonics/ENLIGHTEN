@@ -1,15 +1,16 @@
 import logging
 
+from enlighten.EnlightenFeature import EnlightenFeature
+
 log = logging.getLogger(__name__)
 
-class MultiPos:
+class MultiPos(EnlightenFeature):
     """ Used for spectrometers with articulated optics. """
     
-    def __init__(self, 
-            multispec,
-            sb_pos):
+    def __init__(self, ctl):
+        super().__init__(ctl)
 
-        self.multispec = multispec
+        # need to point these to new widgets
         self.sb_pos    = sb_pos
 
         self.sb_pos.valueChanged.connect(self.position_changed)
@@ -19,7 +20,7 @@ class MultiPos:
         self.update_visibility()
 
     def update_visibility(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         visible = self._has_multi(spec)
         self.sb_pos.setVisible(visible)
 
@@ -36,7 +37,7 @@ class MultiPos:
     # The caller wishes to reset the wavelength calibration of the given spectrometer to
     # that associated with the given grating position.
     def position_changed(self):
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if not self._has_multi(spec):
             return
 

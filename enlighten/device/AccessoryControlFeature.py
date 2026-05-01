@@ -1,10 +1,11 @@
 import logging
 
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
+from enlighten.EnlightenFeature import EnlightenFeature
 
 log = logging.getLogger(__name__)
 
-class AccessoryControlFeature:
+class AccessoryControlFeature(EnlightenFeature):
     """
     Support for the Gen 1.5 OEM External Accessory Connector.
     
@@ -29,7 +30,8 @@ class AccessoryControlFeature:
     this Feature class.
     """
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.cb_display                 = cfu.checkBox_accessory_cont_strobe_display

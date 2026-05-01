@@ -3,6 +3,7 @@ import datetime
 import pyqtgraph
 
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
+from enlighten.EnlightenFeature import EnlightenFeature
 
 from enlighten import common
 
@@ -13,11 +14,12 @@ else:
 
 log = logging.getLogger(__name__)
 
-class DetectorTemperatureFeature:
+class DetectorTemperatureFeature(EnlightenFeature):
     """ Encapsulate the monitoring and control of detector temperature. """
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+        
         cfu = ctl.form.ui
 
         self.curve                 = None

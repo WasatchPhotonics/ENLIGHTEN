@@ -1,7 +1,8 @@
 import re
 import logging
 
-from .ModelFWHM import ModelFWHM
+from enlighten.EnlightenFeature import EnlightenFeature
+from enlighten.data.ModelFWHM import ModelFWHM
 
 from wasatch import utils as wasatch_utils
 
@@ -16,9 +17,9 @@ log = logging.getLogger(__name__)
 ## 
 # Convenience class providing access to pre-built subtypes of WpModelInfo, plus
 # ModelFWHM.
-class ModelInfo:
+class ModelInfoFeature(EnlightenFeature):
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
 
         self.model_fwhm = ModelFWHM()
 

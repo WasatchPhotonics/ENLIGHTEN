@@ -1,16 +1,18 @@
 import logging
 import datetime
-
 import pyqtgraph
+
+from enlighten.EnlightenFeature import EnlightenFeature
 
 log = logging.getLogger(__name__)
 
-class BatteryFeature:
+class BatteryFeature(EnlightenFeature):
     """ 
     @todo track battery state in SpectrometerApplicationState to support multiple connected spectrometers
     """
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.curve                 = None

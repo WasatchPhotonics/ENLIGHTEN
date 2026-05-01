@@ -1,8 +1,10 @@
 import logging
 
+from enlighten.EnlightenFeature import EnlightenFeature
+
 log = logging.getLogger(__name__)
 
-class HighGainModeFeature:
+class HighGainModeFeature(EnlightenFeature):
     """
     Control the "high gain" mode on Hamamatsu InGaAs detectors (on or off).
     
@@ -14,7 +16,8 @@ class HighGainModeFeature:
     CONFIG_KEY = "high_gain_mode_enabled"
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.cb_enabled = cfu.checkBox_high_gain_mode_enabled

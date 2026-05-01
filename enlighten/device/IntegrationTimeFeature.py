@@ -3,12 +3,13 @@ import logging
 from enlighten import util
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from enlighten.ui.MouseWheelFilter import MouseWheelFilter
+from enlighten.EnlightenFeature import EnlightenFeature
 
 from enlighten.common import msgbox
 
 log = logging.getLogger(__name__)
 
-class IntegrationTimeFeature:
+class IntegrationTimeFeature(EnlightenFeature):
 
     # integration time slider steps in 100ms increments, and only goes up to 5sec
     MILLISEC_TO_TENTHS = 0.01
@@ -16,9 +17,10 @@ class IntegrationTimeFeature:
     MAX_SLIDER_SEC = 5
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
 
         cfu = ctl.form.ui
+
         self.bt_dn = cfu.pushButton_integration_time_ms_dn
         self.bt_up = cfu.pushButton_integration_time_ms_up
         self.slider = cfu.slider_integration_time_ms

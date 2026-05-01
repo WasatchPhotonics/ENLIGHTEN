@@ -6,6 +6,7 @@ import re
 
 from enlighten.device.Spectrometer import Spectrometer
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
+from enlighten.EnlightenFeature import EnlightenFeature
 
 from wasatch.DeviceID import DeviceID
 from wasatch.WasatchDeviceWrapper import WasatchDeviceWrapper
@@ -34,10 +35,11 @@ log = logging.getLogger(__name__)
 # callback to get it, but the tear-down process is sufficiently lightweight to
 # just let it ride.
 #
-class Multispec:
+class MultispecFeature(EnlightenFeature):
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.button_lock           = cfu.pushButton_multiSpec_lock

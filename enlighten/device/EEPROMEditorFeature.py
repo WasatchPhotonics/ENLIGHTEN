@@ -9,6 +9,7 @@ from wasatch.AssemblyRevision import AssemblyRevision
 from wasatch.EEPROM           import EEPROM
 
 from enlighten import common
+from enlighten.EnlightenFeature import EnlightenFeature
 
 if common.use_pyside2():
     from PySide2 import QtGui, QtWidgets, QtCore
@@ -170,7 +171,7 @@ class EEPROMAttribute:
         if self.qtype == "lineedit": 
             self.widget.setEchoMode(QLineEdit.EchoMode.PasswordEchoOnEdit if show_dots else QLineEdit.EchoMode.Normal)
 
-class EEPROMEditor:
+class EEPROMEditorFeature(EnlightenFeature):
     """
     Unlike most business objects, just pass in self.form.ui to avoid a REALLY long list of widgets
     
@@ -197,7 +198,8 @@ class EEPROMEditor:
     developers would appreciate it).
     """
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.lb_product_image                = cfu.label_product_image

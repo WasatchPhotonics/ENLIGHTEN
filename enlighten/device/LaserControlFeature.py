@@ -2,13 +2,14 @@ import logging
 
 from enlighten import util
 from enlighten.common import LaserStates
+from enlighten.EnlightenFeature import EnlightenFeature
 
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from enlighten.ui.MouseWheelFilter import MouseWheelFilter
 
 log = logging.getLogger(__name__)
 
-class LaserControlFeature:
+class LaserControlFeature(EnlightenFeature):
     """
     Encapsulate laser control from the application side.
     """
@@ -24,7 +25,9 @@ class LaserControlFeature:
     SECTION = "LaserControlFeature"
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
+        cfu = self.ctl.form.ui
 
         self.ctl.battery_feature.register_observer(self.battery_callback)
 
@@ -38,8 +41,6 @@ class LaserControlFeature:
         self.min_at_start = None
         self.xs_password_provided_by_serial = set()
         self.current_spectrometer_callback = None # override callback to ctl.multispec.current_spectrometer()
-
-        cfu = self.ctl.form.ui
 
         cfu.pushButton_laser_power_dn   .clicked            .connect(self.dn_callback)
         cfu.pushButton_laser_power_up   .clicked            .connect(self.up_callback)

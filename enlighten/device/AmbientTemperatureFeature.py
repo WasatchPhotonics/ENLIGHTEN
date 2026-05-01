@@ -2,12 +2,15 @@ import logging
 import datetime
 import pyqtgraph
 
+from enlighten.EnlightenFeature import EnlightenFeature
+
 log = logging.getLogger(__name__)
 
-class AmbientTemperatureFeature:
+class AmbientTemperatureFeature(EnlightenFeature):
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.lb_chart_degC    = cfu.label_factory_ambient_temperature

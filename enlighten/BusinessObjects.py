@@ -7,11 +7,11 @@ log = logging.getLogger(__name__)
 from enlighten.EnlightenFeature import EnlightenFeature
 from enlighten.KnowItAll.Feature import Feature as KIAFeature
 from enlighten.Plugins.PluginController import PluginController
-from enlighten.data.ModelInfo import ModelInfo
+from enlighten.data.ModelInfoFeature import ModelInfoFeature
 from enlighten.device.AccessoryControlFeature import AccessoryControlFeature
 from enlighten.device.BatteryFeature import BatteryFeature
 from enlighten.device.DetectorTemperatureFeature import DetectorTemperatureFeature
-from enlighten.device.EEPROMEditor import EEPROMEditor
+from enlighten.device.EEPROMEditorFeature import EEPROMEditorFeature
 from enlighten.device.EEPROMWriter import EEPROMWriter
 from enlighten.device.ExternalTriggerFeature import ExternalTriggerFeature
 from enlighten.device.GainDBFeature import GainDBFeature
@@ -21,7 +21,7 @@ from enlighten.device.LaserControlFeature import LaserControlFeature
 from enlighten.device.LaserWatchdogFeature import LaserWatchdogFeature
 from enlighten.device.LaserTemperatureFeature import LaserTemperatureFeature
 from enlighten.device.AmbientTemperatureFeature import AmbientTemperatureFeature
-from enlighten.device.Multispec import Multispec
+from enlighten.device.MultispecFeature import MultispecFeature
 from enlighten.factory.DFUFeature import DFUFeature
 from enlighten.factory.FactoryStripChartFeature import FactoryStripChartFeature
 from enlighten.file_io.Configuration import Configuration
@@ -186,7 +186,7 @@ class BusinessObjects:
 
         ctl.resource_monitor            = ResourceMonitorFeature(ctl)
         ctl.focus_listener              = FocusListener(ctl)
-        ctl.model_info                  = ModelInfo(ctl)
+        ctl.model_info                  = ModelInfoFeature(ctl)
         ctl.marquee                     = Marquee(ctl)
         ctl.file_manager                = FileManager(ctl)
         ctl.clipboard                   = Clipboard(ctl)
@@ -195,7 +195,7 @@ class BusinessObjects:
         ctl.hardware_file_manager       = HardwareFileOutputManager(ctl)
         ctl.cursor                      = Cursor(ctl)
         ctl.image_resources             = ImageResources()
-        ctl.multispec                   = Multispec(ctl)
+        ctl.multispec                   = MultispecFeature(ctl)
         ctl.battery_feature             = BatteryFeature(ctl)
         ctl.status_indicators           = StatusIndicators(ctl)
         ctl.detector_temperature        = DetectorTemperatureFeature(ctl)
@@ -209,7 +209,7 @@ class BusinessObjects:
         ctl.measurements                = Measurements(ctl)
         ctl.authentication              = Authentication(ctl)
         ctl.eeprom_writer               = EEPROMWriter(ctl)
-        ctl.eeprom_editor               = EEPROMEditor(ctl)
+        ctl.eeprom_editor               = EEPROMEditorFeature(ctl)
         ctl.laser_control               = LaserControlFeature(ctl)
         ctl.laser_watchdog              = LaserWatchdogFeature(ctl)
         ctl.laser_temperature           = LaserTemperatureFeature(ctl)
