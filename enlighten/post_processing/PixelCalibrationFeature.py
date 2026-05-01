@@ -3,10 +3,11 @@ import json
 import logging
 
 from enlighten import common
+from enlighten.EnlightenFeature import EnlightenFeature
 
 log = logging.getLogger(__name__)
 
-class PixelCalibration:
+class PixelCalibrationFeature(EnlightenFeature):
     """
     Support any additional pixel calibrations we may want to create which for 
     whatever reason need an external file and can't be kept on the EEPROM.
@@ -17,7 +18,8 @@ class PixelCalibration:
     """
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.cb_enable = cfu.checkBox_enable_pixel_correction

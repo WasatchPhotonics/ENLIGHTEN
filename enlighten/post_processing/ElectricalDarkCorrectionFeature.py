@@ -1,11 +1,14 @@
 import logging
 
+from enlighten.EnlightenFeature import EnlightenFeature
+
 log = logging.getLogger(__name__)
 
-class ElectricalDarkCorrectionFeature:
+class ElectricalDarkCorrectionFeature(EnlightenFeature):
     
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.cb_enable = cfu.checkBox_edc_enabled

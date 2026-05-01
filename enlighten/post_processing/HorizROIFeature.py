@@ -2,10 +2,11 @@ import logging
 
 from wasatch.ProcessedReading import ProcessedReading
 from enlighten.util import unwrap
+from enlighten.EnlightenFeature import EnlightenFeature
 
 log = logging.getLogger(__name__)
 
-class HorizROIFeature:
+class HorizROIFeature(EnlightenFeature):
     """
     Encapsulate the Horizontal ROI feature.
 
@@ -64,7 +65,7 @@ class HorizROIFeature:
     """
     
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
 
         self.button = self.ctl.form.ui.pushButton_roi_toggle 
         self.cb_editing = self.ctl.form.ui.checkBox_edit_horiz_roi

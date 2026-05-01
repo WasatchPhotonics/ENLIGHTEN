@@ -16,6 +16,8 @@
         - added Laser Max Temp DegC
         - added AssemblyRevision (packed and expanded)
         - added Power Connection State (pending FW fix)
+    - Infrastructure
+        - moved post_processing to EnlightenFeature
     - STARTING: 
         - Safe Mode
         - Etalon Correction

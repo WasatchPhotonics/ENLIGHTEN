@@ -1,15 +1,17 @@
 import logging
 
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
+from enlighten.EnlightenFeature import EnlightenFeature
 
 log = logging.getLogger(__name__)
 
 ##
 # @todo redo process() math with numpy
-class TransmissionFeature:
+class TransmissionFeature(EnlightenFeature):
     
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.cb_max_enable  = cfu.checkBox_enable_max_transmission

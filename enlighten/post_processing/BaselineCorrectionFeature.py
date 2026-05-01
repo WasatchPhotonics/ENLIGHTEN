@@ -2,13 +2,15 @@ import numpy as np
 import logging
 
 from superman.baseline import BL_CLASSES, AirPLS
+
+from enlighten.EnlightenFeature import EnlightenFeature
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 
 from enlighten.util import unwrap
 
 log = logging.getLogger(__name__)
 
-class BaselineCorrection:
+class BaselineCorrectionFeature(EnlightenFeature):
     """
     Encapsulates baseline correction.
     
@@ -58,14 +60,14 @@ class BaselineCorrection:
     DEFAULT_ALGO_NAME = "AirPLS"
     
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
 
         cfu = ctl.form.ui
         self.cb_enabled     = cfu.checkBox_baselineCorrection_enable
         self.cb_show_curve  = cfu.checkBox_baselineCorrection_show
         self.combo_algo     = cfu.comboBox_baselineCorrection_algo
 
-        self.current_algo_name = BaselineCorrection.DEFAULT_ALGO_NAME
+        self.current_algo_name = self.DEFAULT_ALGO_NAME
         self.enabled = False
         self.allowed = False
         self.show_curve = False

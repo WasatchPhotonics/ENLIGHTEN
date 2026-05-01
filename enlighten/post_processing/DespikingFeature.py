@@ -3,11 +3,13 @@ from statistics import median
 
 import numpy as np
 
+from enlighten.EnlightenFeature import EnlightenFeature
+
 from wasatch.ProcessedReading import ProcessedReading
 
 log = logging.getLogger(__name__)
 
-class DespikingFeature:
+class DespikingFeature(EnlightenFeature):
     """
     Provides access to the removal of cosmic spikes that could impact
     analysis. Currently only implements the algorithm in the paper by
@@ -15,9 +17,10 @@ class DespikingFeature:
     algorithms to choose from.
     """
 
-    def __init__(self,
-                 spin_tau,
-                 spin_window):
+    def __init__(self, ctl):
+        super().__init__(ctl)
+
+        # these need updated to new widgets
         self.spin_tau = spin_tau
         self.spin_window = spin_window
 

@@ -6,6 +6,7 @@ import pyqtgraph
 
 from enlighten import common
 from enlighten.util import unwrap
+from enlighten.EnlightenFeature import EnlightenFeature
 
 if common.use_pyside2():
     from PySide2 import QtWidgets
@@ -14,16 +15,17 @@ else:
 
 log = logging.getLogger(__name__)
 
-class DarkFeature:
+class DarkFeature(EnlightenFeature):
 
     def __init__(self, ctl):
         """
         Encapsulates storage and display of dark spectra (but not the actual dark
         correction).
         """
-        self.ctl = ctl
+        super().__init__(ctl)
 
         cfu = ctl.form.ui
+
         self.button_toggle = cfu.pushButton_scope_toggle_dark
 
         self.populate_placeholder_scope_setup()

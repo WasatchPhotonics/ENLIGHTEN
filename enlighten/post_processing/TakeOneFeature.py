@@ -1,5 +1,6 @@
 import logging
 from wasatch.TakeOneRequest import TakeOneRequest
+from enlighten.EnlightenFeature import EnlightenFeature
 
 log = logging.getLogger(__name__)
 
@@ -7,10 +8,10 @@ log = logging.getLogger(__name__)
 # Encapsulates the collection of one averaged spectrum (optionally saved), either
 # from one spectrometer or all.
 #
-class TakeOneFeature:
+class TakeOneFeature(EnlightenFeature):
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
 
         self.reset()
 

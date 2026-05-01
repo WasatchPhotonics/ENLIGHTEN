@@ -2,15 +2,9 @@ import logging
 
 from enlighten import common
 
-if common.use_pyside2():
-    from PySide2.QtGui import QColor
-    from PySide2.QtCore import Qt
-else:
-    from PySide6.QtGui import QColor
-    from PySide6.QtCore import Qt
-
 log = logging.getLogger(__name__)
 
+from enlighten.EnlightenFeature import EnlightenFeature
 from enlighten.KnowItAll.Feature import Feature as KIAFeature
 from enlighten.Plugins.PluginController import PluginController
 from enlighten.data.ModelInfo import ModelInfo
@@ -42,7 +36,7 @@ from enlighten.network.BLEManager import BLEManager
 from enlighten.network.CloudManager import CloudManager
 from enlighten.post_processing.AbsorbanceFeature import AbsorbanceFeature
 from enlighten.post_processing.AutoRamanFeature import AutoRamanFeature
-from enlighten.post_processing.BaselineCorrection import BaselineCorrection
+from enlighten.post_processing.BaselineCorrectionFeature import BaselineCorrectionFeature
 from enlighten.post_processing.BoxcarFeature import BoxcarFeature
 from enlighten.post_processing.DarkFeature import DarkFeature
 from enlighten.post_processing.ElectricalDarkCorrectionFeature import ElectricalDarkCorrectionFeature
@@ -50,10 +44,10 @@ from enlighten.post_processing.EtalonCorrectionFeature import EtalonCorrectionFe
 from enlighten.post_processing.HorizROIFeature import HorizROIFeature
 from enlighten.post_processing.InterpolationFeature import InterpolationFeature
 from enlighten.post_processing.InGaAsCorrectionFeature import InGaAsCorrectionFeature
-from enlighten.post_processing.PixelCalibration import PixelCalibration
-from enlighten.post_processing.RamanIntensityCorrection import RamanIntensityCorrection
+from enlighten.post_processing.PixelCalibrationFeature import PixelCalibrationFeature
+from enlighten.post_processing.RamanIntensityCorrectionFeature import RamanIntensityCorrectionFeature
 from enlighten.post_processing.ReferenceFeature import ReferenceFeature
-from enlighten.post_processing.RichardsonLucy import RichardsonLucy
+from enlighten.post_processing.RichardsonLucyFeature import RichardsonLucyFeature
 from enlighten.post_processing.ScanAveragingFeature import ScanAveragingFeature
 from enlighten.post_processing.TakeOneFeature import TakeOneFeature
 from enlighten.post_processing.TransmissionFeature import TransmissionFeature
@@ -88,24 +82,11 @@ class BusinessObjects:
     terms.  It's not really a separate object, so much as a place to encapsulate 
     one huge set of related functionality out of Controller.py, to make that
     already-huge class more navigable and maintainable.
-    
-    Consider having this maintain a list of all business objects, so Controller
-    could call update_visibility() etc on all of them.
     """
 
     def __init__(self, ctl):
         self.ctl = ctl 
         self.clear()
-
-    def header(self, msg):
-        log.debug("")
-        log.debug("=" * len(msg))
-        log.debug(msg)
-        log.debug("=" * len(msg))
-        log.debug("")
-
-        self.ctl.splash.showMessage(f"version {common.VERSION}\n\n{msg}\n", alignment=Qt.AlignHCenter | Qt.AlignBottom, color=QColor("#ccc"))
-        self.ctl.app.processEvents()
 
     def clear(self):
         """ Ensures objects can check for other's instantiation during start-up """
@@ -130,6 +111,7 @@ class BusinessObjects:
         ctl.detector_temperature = None
         ctl.eeprom_editor = None
         ctl.eeprom_writer = None
+        ctl.etalon_correction = None
         ctl.external_trigger = None
         ctl.file_manager = None
         ctl.focus_listener = None
@@ -144,6 +126,7 @@ class BusinessObjects:
         ctl.high_gain_mode = None
         ctl.horiz_roi = None
         ctl.image_resources = None
+        ctl.ingaas_correction = None
         ctl.integration_time_feature = None
         ctl.interp = None
         ctl.kia_feature = None
@@ -181,26 +164,13 @@ class BusinessObjects:
         """
         ctl = self.ctl
 
-        self.header("instantiating Configuration")
-        ctl.config = Configuration(ctl)
-
-        self.header("instantiating Presets")
-        ctl.presets = PresetFeature(ctl)
-
-        self.header("instantiating LoggingFeature")
-        ctl.logging_feature = LoggingFeature(ctl)
-
-        self.header("instantiating Colors")
-        ctl.colors = Colors(ctl.config)
-
-        self.header("instantiating Stylesheets")
-        ctl.stylesheets = Stylesheets(ctl)
-
-        self.header("instantiating GUI")
-        ctl.gui = GUI(ctl)
-
-        self.header("instantiating PageNavigation")
-        ctl.page_nav = PageNavigation(ctl)
+        ctl.config              = Configuration(ctl)
+        ctl.presets             = PresetFeature(ctl)
+        ctl.logging_feature     = LoggingFeature(ctl)
+        ctl.colors              = Colors(ctl.config)
+        ctl.stylesheets         = Stylesheets(ctl)
+        ctl.gui                 = GUI(ctl)
+        ctl.page_nav            = PageNavigation(ctl)
 
     def create_rest(self):
         """
@@ -214,201 +184,73 @@ class BusinessObjects:
         ctl = self.ctl
         cfu = ctl.form.ui
 
-        self.header("instantiating ResourceMonitorFeature")
-        ctl.resource_monitor = ResourceMonitorFeature(ctl)
+        ctl.resource_monitor            = ResourceMonitorFeature(ctl)
+        ctl.focus_listener              = FocusListener(ctl)
+        ctl.model_info                  = ModelInfo(ctl)
+        ctl.marquee                     = Marquee(ctl)
+        ctl.file_manager                = FileManager(ctl)
+        ctl.clipboard                   = Clipboard(ctl)
+        ctl.guide                       = GuideFeature(ctl)
+        ctl.graph                       = Graph(ctl, name="Scope")
+        ctl.hardware_file_manager       = HardwareFileOutputManager(ctl)
+        ctl.cursor                      = Cursor(ctl)
+        ctl.image_resources             = ImageResources()
+        ctl.multispec                   = Multispec(ctl)
+        ctl.battery_feature             = BatteryFeature(ctl)
+        ctl.status_indicators           = StatusIndicators(ctl)
+        ctl.detector_temperature        = DetectorTemperatureFeature(ctl)
+        ctl.horiz_roi                   = HorizROIFeature(ctl)
+        ctl.transmission                = TransmissionFeature(ctl)
+        ctl.absorbance                  = AbsorbanceFeature(ctl)
+        ctl.interp                      = InterpolationFeature(ctl)
+        ctl.external_trigger            = ExternalTriggerFeature(ctl)
+        ctl.save_options                = SaveOptions(ctl)
+        ctl.measurement_factory         = MeasurementFactory(ctl)
+        ctl.measurements                = Measurements(ctl)
+        ctl.authentication              = Authentication(ctl)
+        ctl.eeprom_writer               = EEPROMWriter(ctl)
+        ctl.eeprom_editor               = EEPROMEditor(ctl)
+        ctl.laser_control               = LaserControlFeature(ctl)
+        ctl.laser_watchdog              = LaserWatchdogFeature(ctl)
+        ctl.laser_temperature           = LaserTemperatureFeature(ctl)
+        ctl.ambient_temperature         = AmbientTemperatureFeature(ctl)
+        ctl.scan_averaging              = ScanAveragingFeature(ctl)
+        ctl.take_one                    = TakeOneFeature(ctl)
+        ctl.cloud_manager               = CloudManager(ctl)
 
-        self.header("instantiating FocusListener")
-        ctl.focus_listener = FocusListener(ctl)
-
-        self.header("instantiating ModelInfo")
-        ctl.model_info = ModelInfo(ctl)
-
-        self.header("instantiating Marquee")
-        ctl.marquee = Marquee(ctl)
-
-        self.header("instantiating FileManager")
-        ctl.file_manager = FileManager(ctl)
-
-        self.header("instantiating Clipboard")
-        ctl.clipboard = Clipboard(ctl)
-
-        self.header("instantiating GuideFeature")
-        ctl.guide = GuideFeature(ctl)
-
-        self.header("instantiating Graph")
-        ctl.graph = Graph(ctl, name="Scope")
-
-        self.header("instantiating HardwareFileOutputManager")
-        ctl.hardware_file_manager = HardwareFileOutputManager(ctl)
-
-        self.header("instantiating Cursor")
-        ctl.cursor = Cursor(ctl)
-
-        self.header("instantiating ImageResources")
-        ctl.image_resources = ImageResources()
-
-        self.header("instantiating Multispec")
-        ctl.multispec = Multispec(ctl)
-
-        self.header("instantiating BatteryFeature")
-        ctl.battery_feature = BatteryFeature(ctl)
-
-        self.header("instantiating StatusIndicators")
-        ctl.status_indicators = StatusIndicators(ctl)
-
-        self.header("instantiating DetectorTemperatureFeature")
-        ctl.detector_temperature = DetectorTemperatureFeature(ctl)
-
-        self.header("instantiating HorizROIFeature")
-        ctl.horiz_roi = HorizROIFeature(ctl)
-
-        self.header("instantiating TransmissionFeature")
-        ctl.transmission = TransmissionFeature(ctl)
-
-        self.header("instantiating AbsorbanceFeature")
-        ctl.absorbance = AbsorbanceFeature(ctl)
-
-        self.header("instantiating InterpolationFeature")
-        ctl.interp = InterpolationFeature(ctl)
-
-        self.header("instantiating ExternalTriggerFeature")
-        ctl.external_trigger = ExternalTriggerFeature(ctl)
-
-        self.header("instantiating SaveOptions")
-        ctl.save_options = SaveOptions(ctl)
-
-        self.header("instantiating MeasurementFactory")
-        ctl.measurement_factory = MeasurementFactory(ctl)
-
-        self.header("instantiating Measurements")
-        ctl.measurements = Measurements(ctl)
-
-        self.header("instantiating Authentication")
-        ctl.authentication = Authentication(ctl)
-
-        self.header("instantiating EEPROMWriter")
-        ctl.eeprom_writer = EEPROMWriter(ctl)
-
-        self.header("instantiating EEPROMEditor")
-        ctl.eeprom_editor = EEPROMEditor(ctl)
-
-        self.header("instantiating LaserControlFeature")
-        ctl.laser_control = LaserControlFeature(ctl)
-
-        self.header("instantiating LaserWatchdogFeature")
-        ctl.laser_watchdog = LaserWatchdogFeature(ctl)
-
-        self.header("instantiating LaserTemperatureFeature")
-        ctl.laser_temperature = LaserTemperatureFeature(ctl)
-
-        self.header("instantiating AmbientTemperatureFeature")
-        ctl.ambient_temperature = AmbientTemperatureFeature(ctl)
-
-        self.header("instantiating ScanAveragingFeature")
-        ctl.scan_averaging = ScanAveragingFeature(ctl)
-
-        self.header("instantiating TakeOneFeature")
-        ctl.take_one = TakeOneFeature(ctl)
-
-        self.header("instantiating CloudManager")
-        ctl.cloud_manager = CloudManager(ctl)
-
-        self.header("instantiating VCRControls")
         ctl.vcr_controls = VCRControls(ctl)
-
-        # need a more general way of handling these
         ctl.vcr_controls.register_observer("save", ctl.save_current_spectra)
         ctl.scan_averaging.complete_registrations()
 
-        self.header("instantiating BaselineCorrection")
-        ctl.baseline_correction = BaselineCorrection(ctl)
-
-        self.header("instantiating DarkFeature")
-        ctl.dark_feature = DarkFeature(ctl)
-
-        self.header("instantiating ElectricalDarkCorrectionFeature")
-        ctl.edc = ElectricalDarkCorrectionFeature(ctl)
-
-        self.header("instantiating ReferenceFeature")
-        ctl.reference_feature = ReferenceFeature(ctl)
-
-        self.header("instantiating RamanIntensityCorrection")
-        ctl.raman_intensity_correction = RamanIntensityCorrection(ctl)
-
-        self.header("instantiating BatchCollection")
-        ctl.batch_collection = BatchCollection(ctl)
-
-        self.header("instantiating BoxcarFeature")
-        ctl.boxcar = BoxcarFeature(ctl)
-
-        self.header("instantiating IntegrationTimeFeature")
-        ctl.integration_time_feature = IntegrationTimeFeature(ctl)
-
-        self.header("instantiating GainDBFeature")
-        ctl.gain_db_feature = GainDBFeature(ctl)
-
-        self.header("instantiating AutoRamanFeature")
-        ctl.auto_raman = AutoRamanFeature(ctl)
-
-        # TODO: refactor like PluginController
-        self.header("instantiating KIAFeature")
-        ctl.kia_feature = KIAFeature(ctl)
-
-        self.header("instantiating RichardsonLucy")
-        ctl.richardson_lucy = RichardsonLucy(ctl)
-
-        self.header("instantiating DFUFeature")
-        ctl.dfu = DFUFeature(ctl)
-
-        self.header("instantiating FactoryStripChartFeature")
-        ctl.factory_strip_charts = FactoryStripChartFeature(ctl)
-
-        self.header("instantiating PluginController")
-        ctl.plugin_controller = PluginController(ctl)
-
-        self.header("instantiating GridFeature")
-        ctl.grid = GridFeature(ctl)
-
-        self.header("instantiating AreaScanFeature")
-        ctl.area_scan = AreaScanFeature(ctl)
-
-        self.header("instantiating EtalonCorrectionFeature")
-        ctl.etalon_correction = EtalonCorrectionFeature(ctl)
-
-        self.header("instantiating InGaAsCorrectionFeature")
-        ctl.ingaas_correction = InGaAsCorrectionFeature(ctl)
-
-        self.header("instantiating RamanShiftCorrectionFeature")
-        ctl.raman_shift_correction = RamanShiftCorrectionFeature(ctl)
-
-        self.header("instantiating AccessoryControlFeature")
-        ctl.accessory_control = AccessoryControlFeature(ctl)
-
-        self.header("instantiating HighGainModeFeature")
-        ctl.high_gain_mode = HighGainModeFeature(ctl)
-
-        self.header("instantiating Sounds")
-        ctl.sounds = Sounds(ctl)
-
-        self.header("instantiating HelpFeature")
-        ctl.help = HelpFeature(ctl)
-
-        self.header("instantiating DidYouKnowFeature")
-        ctl.did_you_know = DidYouKnowFeature(ctl)
-
-        self.header("instantiating StatusBarFeature")
-        ctl.status_bar = StatusBarFeature(ctl)
-
-        self.header("instantiating ReadingProgressBar")
-        ctl.reading_progress_bar = ReadingProgressBar(ctl)
-
-        self.header("instantiating BLEManager")
-        ctl.ble_manager = BLEManager(ctl)
-
-        self.header("instantiating PixelCalibration")
-        ctl.pixel_calibration = PixelCalibration(ctl)
-
-        self.header("done with Business Object creation")
+        ctl.baseline_correction         = BaselineCorrectionFeature(ctl)
+        ctl.dark_feature                = DarkFeature(ctl)
+        ctl.edc                         = ElectricalDarkCorrectionFeature(ctl)
+        ctl.reference_feature           = ReferenceFeature(ctl)
+        ctl.raman_intensity_correction  = RamanIntensityCorrectionFeature(ctl)
+        ctl.batch_collection            = BatchCollection(ctl)
+        ctl.boxcar                      = BoxcarFeature(ctl)
+        ctl.integration_time_feature    = IntegrationTimeFeature(ctl)
+        ctl.gain_db_feature             = GainDBFeature(ctl)
+        ctl.auto_raman                  = AutoRamanFeature(ctl)
+        ctl.kia_feature                 = KIAFeature(ctl)
+        ctl.richardson_lucy             = RichardsonLucyFeature(ctl)
+        ctl.dfu                         = DFUFeature(ctl)
+        ctl.factory_strip_charts        = FactoryStripChartFeature(ctl)
+        ctl.plugin_controller           = PluginController(ctl)
+        ctl.grid                        = GridFeature(ctl)
+        ctl.area_scan                   = AreaScanFeature(ctl)
+        ctl.etalon_correction           = EtalonCorrectionFeature(ctl)
+        ctl.ingaas_correction           = InGaAsCorrectionFeature(ctl)
+        ctl.raman_shift_correction      = RamanShiftCorrectionFeature(ctl)
+        ctl.accessory_control           = AccessoryControlFeature(ctl)
+        ctl.high_gain_mode              = HighGainModeFeature(ctl)
+        ctl.sounds                      = Sounds(ctl)
+        ctl.help                        = HelpFeature(ctl)
+        ctl.did_you_know                = DidYouKnowFeature(ctl)
+        ctl.status_bar                  = StatusBarFeature(ctl)
+        ctl.reading_progress_bar        = ReadingProgressBar(ctl)
+        ctl.ble_manager                 = BLEManager(ctl)
+        ctl.pixel_calibration           = PixelCalibrationFeature(ctl)
 
     def destroy(self):
         log.info("destroying business objects")

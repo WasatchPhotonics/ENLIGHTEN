@@ -3,6 +3,7 @@ import numpy as np
 import math
 
 from enlighten.util import unwrap
+from enlighten.EnlightenFeature import EnlightenFeature
 
 log = logging.getLogger(__name__)
 
@@ -14,7 +15,7 @@ log = logging.getLogger(__name__)
 # settings.
 #
 # @see https://en.wikipedia.org/wiki/Richardson%E2%80%93Lucy_deconvolution
-class RichardsonLucy:
+class RichardsonLucyFeature(EnlightenFeature):
 
     SECTION = "RichardsonLucy"
 
@@ -26,7 +27,8 @@ class RichardsonLucy:
     # 30-Sep-2019 from Dieter.
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.cb_enable = cfu.checkBox_richardson_lucy

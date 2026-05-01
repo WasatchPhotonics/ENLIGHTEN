@@ -1,17 +1,23 @@
 import logging
 
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
+from enlighten.EnlightenFeature import EnlightenFeature
 from enlighten.util import unwrap, incr_spinbox, decr_spinbox
 from wasatch.utils import apply_boxcar
 
 log = logging.getLogger(__name__)
 
-class BoxcarFeature:
-    """ Encapsulate the high-frequency noise smoothing "boxcar" filter run at the end of post-processing. """
+class BoxcarFeature(EnlightenFeature):
+    """ 
+    Encapsulate a high-frequency noise smoothing "boxcar" filter which can be 
+    applied at the end of post-processing. 
+    """
+
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
 
         cfu = ctl.form.ui
+
         self.bt_dn      = cfu.pushButton_boxcar_half_width_dn
         self.bt_up      = cfu.pushButton_boxcar_half_width_up
         self.spinbox    = cfu.spinBox_boxcar_half_width

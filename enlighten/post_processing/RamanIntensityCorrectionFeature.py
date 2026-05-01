@@ -2,9 +2,11 @@ import logging
 
 from enlighten.util import unwrap
 
+from enlighten.EnlightenFeature import EnlightenFeature
+
 log = logging.getLogger(__name__)
 
-class RamanIntensityCorrection:
+class RamanIntensityCorrectionFeature(EnlightenFeature):
     """
     RamanIntensityCorrection uses an EEPROM-stored calibration, generated in the
     factory with NIST SRM standards, to correct intensity (y-axis) on Raman 
@@ -38,7 +40,8 @@ class RamanIntensityCorrection:
     """
     
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
         
         self.button = cfu.pushButton_raman_intensity_correction_tristate

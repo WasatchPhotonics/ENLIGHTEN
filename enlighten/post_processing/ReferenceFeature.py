@@ -5,6 +5,7 @@ import pyqtgraph
 
 from enlighten import common
 from enlighten.util import unwrap
+from enlighten.EnlightenFeature import EnlightenFeature
 
 if common.use_pyside2():
     from PySide2 import QtWidgets
@@ -16,10 +17,11 @@ log = logging.getLogger(__name__)
 ##
 # This class is sufficiently close to DarkFeature that it's tempting to make them
 # one inherit the other, or derive both from a common ABC.
-class ReferenceFeature:
+class ReferenceFeature(EnlightenFeature):
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.lb_timestamp       = cfu.label_reference_timestamp

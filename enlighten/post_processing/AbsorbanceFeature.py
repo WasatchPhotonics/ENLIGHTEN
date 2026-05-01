@@ -1,9 +1,11 @@
 import logging
 import math
 
+from enlighten.EnlightenFeature import EnlightenFeature
+
 log = logging.getLogger(__name__)
 
-class AbsorbanceFeature:
+class AbsorbanceFeature(EnlightenFeature):
     """
     Computes absorbance using Beer's Law.
 
@@ -16,7 +18,7 @@ class AbsorbanceFeature:
     MAX_AU = 6.0    
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
 
     def process(self, processed_reading, settings, app_state):
         """

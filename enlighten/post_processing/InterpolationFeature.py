@@ -7,6 +7,7 @@ from wasatch.utils import generate_excitation, generate_wavenumbers, generate_wa
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from enlighten import common
 from enlighten.util import unwrap
+from enlighten.EnlightenFeature import EnlightenFeature
 
 if common.use_pyside2():
     from PySide2 import QtCore
@@ -19,9 +20,9 @@ log = logging.getLogger(__name__)
 # Encapsulates interpolation of a ProcessedReading.
 #
 # @see ORDER_OF_OPERATIONS.md
-class InterpolationFeature:
+class InterpolationFeature(EnlightenFeature):
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
 
         cfu = self.ctl.form.ui
         self.bt_toggle      = cfu.pushButton_interp_toggle

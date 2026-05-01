@@ -5,11 +5,12 @@ from wasatch.TakeOneRequest   import TakeOneRequest
 from wasatch.AutoRamanRequest import AutoRamanRequest 
 
 from enlighten.util import unwrap
+from enlighten.EnlightenFeature import EnlightenFeature
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 
 log = logging.getLogger(__name__)
 
-class AutoRamanFeature:
+class AutoRamanFeature(EnlightenFeature):
     """
     This feature controls the (normally-hidden) "Auto-Raman Measurement" button 
     on the Laser Control Widget.
@@ -23,7 +24,8 @@ class AutoRamanFeature:
     LASER_CONTROL_DISABLE_REASON = "Auto-Raman enabled"
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = self.ctl.form.ui
 
         self.bt_laser           = cfu.pushButton_laser_toggle

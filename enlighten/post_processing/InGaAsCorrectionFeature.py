@@ -1,11 +1,13 @@
 import logging
 
+from enlighten.EnlightenFeature import EnlightenFeature
+
 log = logging.getLogger(__name__)
 
-class InGaAsCorrectionFeature:
+class InGaAsCorrectionFeature(EnlightenFeature):
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
 
         cfu = ctl.form.ui
 

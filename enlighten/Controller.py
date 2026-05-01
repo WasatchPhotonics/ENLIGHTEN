@@ -315,7 +315,13 @@ class Controller:
         return True
 
     def disconnect_features(self):
-        """ tell any features supporting disconnect events that we have disconnected the current spectrometer """
+        """ 
+        Tell any features supporting disconnect events that we have disconnected
+        the current spectrometer.
+
+        We could turn this to a self-registered notification, but I think I like 
+        being able to control the order here.
+        """
         log.debug("disconnect_features: start")
         for feature in [ self.laser_control,
                          self.accessory_control,
@@ -691,12 +697,17 @@ class Controller:
         all Business Objects are instantiated), etc.
         """
         for feature in [ self.accessory_control,
+                         self.area_scan,
                          self.auto_raman,
                          self.baseline_correction,
+                         self.boxcar,
                          self.dark_feature,
                          self.edc,
+                         self.etalon_correction,
                          self.external_trigger,
+                         self.gain_db_feature,
                          self.graph,
+                         self.high_gain_mode,
                          self.horiz_roi,
                          self.kia_feature,
                          self.laser_control,
@@ -704,10 +715,14 @@ class Controller:
                          self.laser_watchdog,
                          self.logging_feature,
                          self.pixel_calibration,
+                         self.plugin_controller,
                          self.raman_intensity_correction,
                          self.raman_shift_correction,
                          self.reference_feature,
-                         self.status_bar ]:
+                         self.richardson_lucy,
+                         self.status_bar,
+                         self.status_indicators,
+                         self.vcr_controls ]:
             feature.update_visibility()
 
     # ##########################################################################
@@ -949,7 +964,6 @@ class Controller:
         # Activate business objects which have connection / selection events
 
         if hotplug:
-            # cursor
             self.cursor.center()
             for feature in [ self.accessory_control,
                              self.ble_manager,
@@ -960,28 +974,8 @@ class Controller:
                              self.horiz_roi ]:
                 feature.init_hotplug()
 
-        for feature in [ self.accessory_control,
-                         self.area_scan,
-                         self.auto_raman,
-                         self.boxcar,
-                         self.dark_feature,
-                         self.external_trigger,
-                         self.gain_db_feature,
-                         self.graph,
-                         self.high_gain_mode,
-                         self.laser_control,
-                         self.laser_temperature,
-                         self.laser_watchdog,
-                         self.plugin_controller,
-                         self.raman_shift_correction,
-                         self.raman_intensity_correction,
-                         self.reference_feature,
-                         self.richardson_lucy,
-                         self.status_indicators,
-                         self.vcr_controls,
-                         self.edc,
-                         self.horiz_roi ]:
-            feature.update_visibility()
+        # poke everything else
+        self.update_feature_visibility()
 
         ########################################################################
         # Change to Raman if first connected device is Raman
@@ -1855,8 +1849,6 @@ class Controller:
         - apply business logic
         """
 
-        log.debug("process_reading: start")
-
         if settings is None:
             # we are NOT reprocessing
             reprocessing = False
@@ -1932,6 +1924,12 @@ class Controller:
         self.horiz_roi.process(pr)
 
         ########################################################################
+        # Etalon Correction
+        ########################################################################
+
+        self.etalon_correction.process(pr)
+
+        ########################################################################
         # Reference
         ########################################################################
 
@@ -1988,6 +1986,10 @@ class Controller:
             # (yet clearly we haven't...)
             if not self.page_nav.using_reference():
                 self.richardson_lucy.process(pr, spec)
+
+        ########################################################################
+        # Despiking
+        ########################################################################
 
         # if self.form.ui.checkBox_despike_enable.isChecked():
         #     pr = self.despiking_feature.process(pr)

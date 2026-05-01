@@ -249,3 +249,4 @@ def is_rpi():
 def use_pyside2():
     result = is_rpi() or "USE_PYSIDE_2" in os.environ
     return result
+

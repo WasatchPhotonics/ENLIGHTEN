@@ -2,14 +2,16 @@ import logging
 
 from enlighten.util import incr_spinbox, decr_spinbox, unwrap
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
+from enlighten.EnlightenFeature import EnlightenFeature
 
 log = logging.getLogger(__name__)
 
-class ScanAveragingFeature:
+class ScanAveragingFeature(EnlightenFeature):
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
 
         cfu = ctl.form.ui
+
         self.bt_dn      = cfu.pushButton_scan_averaging_dn
         self.bt_up      = cfu.pushButton_scan_averaging_up
         self.spinbox    = cfu.spinBox_scan_averaging
