@@ -17,7 +17,7 @@ from .PluginWorker      import PluginWorker
 from .TableModel        import TableModel
 
 from enlighten import common
-from enlighten.scope.Graph import Graph
+from enlighten.scope.GraphFeature import GraphFeature
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from enlighten.EnlightenFeature import EnlightenFeature
 
@@ -807,7 +807,7 @@ class PluginControllerFeature(EnlightenFeature):
         self.lb_graph_pos.setVisible(config.has_other_graph)
         self.plugin_plot_legend = self.plugin_plot.addLegend()
 
-        self.graph_plugin = Graph(
+        self.graph_plugin = GraphFeature(
             ctl                 = self.ctl,
             name                = f"Plugin {config.name}",
 

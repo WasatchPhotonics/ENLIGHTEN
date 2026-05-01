@@ -5,6 +5,7 @@ import pyqtgraph
 from enlighten import common
 from enlighten.util import unwrap
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
+from enlighten.EnlightenFeature import EnlightenFeature
 
 if common.use_pyside2():
     from PySide2 import QtWidgets
@@ -36,30 +37,28 @@ log = logging.getLogger(__name__)
 #   change Multispec selected spectrometer (or select a ThumbnailWidget, if that
 #   was useful) by clicking a curve on-screen
 #
-class Graph:
+class GraphFeature(EnlightenFeature):
+    """
+    This can be constructed in two ways. By default, the Graph populates its
+    own chart and legend (the one used by most of ENLIGHTEN). However, it
+    also allows an external caller (like PluginController) to pass-in an
+    already-constructed chart and legend. Perhaps we need a GraphFactory?
+    """
 
-    ##
-    # This can be constructed in two ways. By default, the Graph populates its
-    # own chart and legend (the one used by most of ENLIGHTEN). However, it
-    # also allows an external caller (like PluginController) to pass-in an
-    # already-constructed chart and legend. Perhaps we need a GraphFactory?
-    def __init__(self,
-            ctl,
-            name,
+    def __init__(self, ctl, name,
+                 legend      = None,
+                 lock_marker = False, # for 'xy' graphs
+                 plot        = None): # pyqtgraph.PlotWidget
 
-            legend                      = None,
-            lock_marker                 = False, # for 'xy' graphs
-            plot                        = None,  # pyqtgraph.PlotWidget
-            ):               
+        super().__init__(ctl)
 
-        self.ctl                        = ctl
         self.name                       = name
         self.legend                     = legend
         self.lock_marker                = lock_marker
         self.plot                       = plot
 
-        # for now, retain legacy widget aliases
         cfu = ctl.form.ui
+
         self.button_copy                = cfu.pushButton_copy_to_clipboard
         self.button_invert              = cfu.pushButton_invert_x_axis
         self.button_lock_axes           = cfu.pushButton_lock_axes

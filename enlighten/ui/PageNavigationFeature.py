@@ -159,14 +159,16 @@ class PageNavigationFeature(EnlightenFeature):
         self.combo_technique        .currentIndexChanged.connect(self.update_technique_callback)
 
     def post_init(self):
+        cfu = self.ctl.form.ui
+
         self.ctl.graph.set_y_axis(common.Axes.COUNTS)
 
         # always start in scope view
         self.set_main_page(common.Pages.SCOPE)
         self.set_view(common.Views.SCOPE)
 
-        self.ctl.form.ui.frame_FactoryMode_Options.hide()
-        self.ctl.form.ui.frame_transmission_options.hide()        # todo move to TransmissionFeature
+        cfu.frame_FactoryMode_Options.hide()
+        cfu.frame_transmission_options.hide()        # todo move to TransmissionFeature
         self.set_operation_mode_non_raman()
 
     def register_observer(self, event, callback):

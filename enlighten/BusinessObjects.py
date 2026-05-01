@@ -52,7 +52,7 @@ from enlighten.post_processing.ScanAveragingFeature import ScanAveragingFeature
 from enlighten.post_processing.TakeOneFeature import TakeOneFeature
 from enlighten.post_processing.TransmissionFeature import TransmissionFeature
 from enlighten.scope.CursorFeature import CursorFeature
-from enlighten.scope.Graph import Graph
+from enlighten.scope.GraphFeature import GraphFeature
 from enlighten.scope.GridFeature import GridFeature
 from enlighten.scope.PresetFeature import PresetFeature
 from enlighten.scope.RamanShiftCorrectionFeature import RamanShiftCorrectionFeature
@@ -191,7 +191,7 @@ class BusinessObjects:
         ctl.file_manager                = FileManagerFeature(ctl)
         ctl.clipboard                   = ClipboardFeature(ctl)
         ctl.guide                       = GuideFeature(ctl)
-        ctl.graph                       = Graph(ctl, name="Scope")
+        ctl.graph                       = GraphFeature(ctl, name="Scope")
         ctl.hardware_file_manager       = HardwareFileOutputFeature(ctl)
         ctl.cursor                      = CursorFeature(ctl)
         ctl.image_resources             = ImageResources()

@@ -35,6 +35,7 @@ from enlighten import common
 from enlighten.device.Spectrometer import Spectrometer
 from enlighten.ui.ThumbnailWidget import ThumbnailWidget
 from enlighten.ui.TimeoutDialog import TimeoutDialog
+from enlighten.EnlightenFeature import EnlightenFeature
 from enlighten.BusinessObjects import BusinessObjects
 
 if common.use_pyside2():
@@ -681,7 +682,7 @@ class Controller:
         (including whether we're in Expert mode or not).
 
         This is called by PageNavigation.set_view_common, for instance when
-        changing Operation Mode (Ranam, Non-Raman, Expert) or View (Scope, 
+        changing Operation Mode (Raman, Non-Raman, Expert) or View (Scope, 
         Settings, Hardware, Logging, Factory) or Technique (Raman, Emission,
         Absorbance, Transmission/Reflectance), etc.
 
@@ -690,39 +691,8 @@ class Controller:
         It also helps to "re-hide" pyqtgraph curves which had been previously
         hidden, but then erroneously re-show themselves when a curve is removed
         from the chart.  (I'm assuming that pyqtgraph bug hasn't been fixed?)
-
-        IMHO we should give self.bus_obj an iterable list of all business
-        objects, all of which should extend EnlightenBusinessObject or whatever,
-        with overridable methods update_visibility, post_init (to be fired after
-        all Business Objects are instantiated), etc.
         """
-        for feature in [ self.accessory_control,
-                         self.area_scan,
-                         self.auto_raman,
-                         self.baseline_correction,
-                         self.boxcar,
-                         self.dark_feature,
-                         self.edc,
-                         self.etalon_correction,
-                         self.external_trigger,
-                         self.gain_db_feature,
-                         self.graph,
-                         self.high_gain_mode,
-                         self.horiz_roi,
-                         self.kia_feature,
-                         self.laser_control,
-                         self.laser_temperature,
-                         self.laser_watchdog,
-                         self.logging_feature,
-                         self.pixel_calibration,
-                         self.plugin_controller,
-                         self.raman_intensity_correction,
-                         self.raman_shift_correction,
-                         self.reference_feature,
-                         self.richardson_lucy,
-                         self.status_bar,
-                         self.status_indicators,
-                         self.vcr_controls ]:
+        for feature in EnlightenFeature.get_all():
             feature.update_visibility()
 
     # ##########################################################################
@@ -881,8 +851,6 @@ class Controller:
 
         if hotplug:
             self.detector_temperature.init_hotplug()
-        self.detector_temperature.update_visibility()
-        self.battery_feature.update_visibility()
 
         ########################################################################
         # Now override the EEPROM and Detector defaults with the .INI file
@@ -2485,8 +2453,11 @@ class Controller:
         spec.settings.state.ignore_timeouts_until = None
         self.seen_errors[spec].clear()
 
-    ## can't be in LoggingFeature unless log was a parameter...
     def header(self, s):
+        """
+        can't be in LoggingFeature unless log was a parameter...
+        and yes, this is similar to EnlightenFeature.log_header
+        """
         log.debug("")
         log.debug('=' * len(s))
         log.debug(s)

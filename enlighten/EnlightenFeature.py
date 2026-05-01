@@ -13,26 +13,11 @@ log = logging.getLogger(__name__)
 
 class EnlightenFeature:
 
-    ############################################################################
-    # Static members
-    ############################################################################
-
     all_features = set()
-    features_with_update_visibility = set()
-    features_with_init_hotplug = set()
 
-    def get_features():
+    @staticmethod
+    def get_all():
         return list(EnlightenFeature.all_features)
-
-    def get_features_with_init_hotplug():
-        return list(EnlightenFeature.features_with_init_hotplug)
-
-    def get_features_with_update_visibility():
-        return list(EnlightenFeature.features_with_update_visibility)
-
-    ############################################################################
-    # Abstract interface
-    ############################################################################
 
     def __init__(self, ctl):
         # keep a handle to the Controller to access all the other Business Objects
@@ -41,14 +26,14 @@ class EnlightenFeature:
         feature_name = type(self).__name__
         self.log_header(f"instantiating {feature_name}")
 
-        # maintain sets of features implementing certain methods
         EnlightenFeature.all_features.add(self)
 
-        if getattr(type(self), "init_hotplug") is not EnlightenFeature.init_hotplug:
-            EnlightenFeature.features_with_init_hotplug.add(self)
-
-        if getattr(type(self), "update_visibility") is not EnlightenFeature.update_visibility:
-            EnlightenFeature.features_with_update_visibility.add(self)
+    def post_init(self):
+        """
+        May be called by Controller after ALL BusinessObjects / EnlightenFeatures
+        have been constructed.
+        """
+        pass
 
     def update_visibility(self):
         """
