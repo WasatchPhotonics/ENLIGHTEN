@@ -6,6 +6,7 @@ from enlighten import util
 from enlighten import common
 from wasatch import utils as wasatch_utils
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
+from enlighten.EnlightenFeature import EnlightenFeature
 
 log = logging.getLogger(__name__)
 
@@ -68,7 +69,7 @@ class AxisConverter:
                 log.debug(f"wl2px: new x value is {x}")
                 return x
 
-class Cursor:
+class CursorFeature(EnlightenFeature):
     """
     Encapsulates the main Graph x-axis cursor (vertical red line).
 
@@ -77,7 +78,7 @@ class Cursor:
     the area scan image.
     """
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
 
         cfu = self.ctl.form.ui
         self.cb_enable = cfu.checkBox_cursor_scope_enabled

@@ -4,6 +4,7 @@ import json
 import scipy.signal as signal
 import numpy as np
 
+from enlighten.EnlightenFeature import EnlightenFeature
 from enlighten.util import unwrap
 from wasatch import utils as wasatch_utils
 
@@ -81,7 +82,7 @@ class ASTMPeak:
 #   - update "session" wavenumber_correction
 # - otherwise, display error message "can't match ASTM compound <name>"
 
-class RamanShiftCorrectionFeature:
+class RamanShiftCorrectionFeature(EnlightenFeature):
 
     # This file is installed as part of the ENLIGHTEN distribution and contains
     # our supported compounds and their peaks
@@ -98,7 +99,8 @@ class RamanShiftCorrectionFeature:
     MIN_PEAKS_FOUND = 4
     
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+        
         cfu = ctl.form.ui
 
         self.button         = cfu.pushButton_ramanCorrection

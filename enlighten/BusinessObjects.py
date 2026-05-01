@@ -6,7 +6,7 @@ log = logging.getLogger(__name__)
 
 from enlighten.EnlightenFeature import EnlightenFeature
 from enlighten.KnowItAll.Feature import Feature as KIAFeature
-from enlighten.Plugins.PluginController import PluginController
+from enlighten.Plugins.PluginControllerFeature import PluginControllerFeature
 from enlighten.data.ModelInfoFeature import ModelInfoFeature
 from enlighten.device.AccessoryControlFeature import AccessoryControlFeature
 from enlighten.device.BatteryFeature import BatteryFeature
@@ -51,7 +51,7 @@ from enlighten.post_processing.RichardsonLucyFeature import RichardsonLucyFeatur
 from enlighten.post_processing.ScanAveragingFeature import ScanAveragingFeature
 from enlighten.post_processing.TakeOneFeature import TakeOneFeature
 from enlighten.post_processing.TransmissionFeature import TransmissionFeature
-from enlighten.scope.Cursor import Cursor
+from enlighten.scope.CursorFeature import CursorFeature
 from enlighten.scope.Graph import Graph
 from enlighten.scope.GridFeature import GridFeature
 from enlighten.scope.PresetFeature import PresetFeature
@@ -193,7 +193,7 @@ class BusinessObjects:
         ctl.guide                       = GuideFeature(ctl)
         ctl.graph                       = Graph(ctl, name="Scope")
         ctl.hardware_file_manager       = HardwareFileOutputFeature(ctl)
-        ctl.cursor                      = Cursor(ctl)
+        ctl.cursor                      = CursorFeature(ctl)
         ctl.image_resources             = ImageResources()
         ctl.multispec                   = MultispecFeature(ctl)
         ctl.battery_feature             = BatteryFeature(ctl)
@@ -236,7 +236,7 @@ class BusinessObjects:
         ctl.richardson_lucy             = RichardsonLucyFeature(ctl)
         ctl.dfu                         = DFUFeature(ctl)
         ctl.factory_strip_charts        = FactoryStripChartFeature(ctl)
-        ctl.plugin_controller           = PluginController(ctl)
+        ctl.plugin_controller           = PluginControllerFeature(ctl)
         ctl.grid                        = GridFeature(ctl)
         ctl.area_scan                   = AreaScanFeature(ctl)
         ctl.etalon_correction           = EtalonCorrectionFeature(ctl)

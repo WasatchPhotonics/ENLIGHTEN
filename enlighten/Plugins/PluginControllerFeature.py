@@ -19,6 +19,7 @@ from .TableModel        import TableModel
 from enlighten import common
 from enlighten.scope.Graph import Graph
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
+from enlighten.EnlightenFeature import EnlightenFeature
 
 # this is in ../../plugins
 from EnlightenPlugin import EnlightenPluginRequest
@@ -95,7 +96,7 @@ log = logging.getLogger(__name__)
 # plugins when changing to a new plugin; and playing with thoughts of having
 # multiple plug-ins running at one time.  I've come to accept this would be
 # undesirable complexity at this time.
-class PluginController:
+class PluginControllerFeature(EnlightenFeature):
 
     SECTION = "plugins"
 
@@ -133,7 +134,8 @@ class PluginController:
         self.use_other_graph = True # not yet used
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         log.debug("instantiating PluginController")
