@@ -4,11 +4,9 @@ from enlighten import common
 
 log = logging.getLogger(__name__)
 
-from enlighten.EnlightenFeature import EnlightenFeature
-from enlighten.KnowItAll.Feature import Feature as KIAFeature
-from enlighten.Plugins.PluginControllerFeature import PluginControllerFeature
 from enlighten.data.ModelInfoFeature import ModelInfoFeature
 from enlighten.device.AccessoryControlFeature import AccessoryControlFeature
+from enlighten.device.AmbientTemperatureFeature import AmbientTemperatureFeature
 from enlighten.device.BatteryFeature import BatteryFeature
 from enlighten.device.DetectorTemperatureFeature import DetectorTemperatureFeature
 from enlighten.device.EEPROMEditorFeature import EEPROMEditorFeature
@@ -18,22 +16,24 @@ from enlighten.device.GainDBFeature import GainDBFeature
 from enlighten.device.HighGainModeFeature import HighGainModeFeature
 from enlighten.device.IntegrationTimeFeature import IntegrationTimeFeature
 from enlighten.device.LaserControlFeature import LaserControlFeature
-from enlighten.device.LaserWatchdogFeature import LaserWatchdogFeature
 from enlighten.device.LaserTemperatureFeature import LaserTemperatureFeature
-from enlighten.device.AmbientTemperatureFeature import AmbientTemperatureFeature
+from enlighten.device.LaserWatchdogFeature import LaserWatchdogFeature
 from enlighten.device.MultispecFeature import MultispecFeature
+from enlighten.EnlightenFeature import EnlightenFeature
 from enlighten.factory.DFUFeature import DFUFeature
 from enlighten.factory.FactoryStripChartFeature import FactoryStripChartFeature
 from enlighten.file_io.ConfigurationFeature import ConfigurationFeature
 from enlighten.file_io.FileManagerFeature import FileManagerFeature
 from enlighten.file_io.HardwareFileOutputFeature import HardwareFileOutputFeature
 from enlighten.file_io.LoggingFeature import LoggingFeature
+from enlighten.KnowItAll.Feature import Feature as KIAFeature
 from enlighten.measurement.AreaScanFeature import AreaScanFeature
 from enlighten.measurement.MeasurementFactory import MeasurementFactory
 from enlighten.measurement.Measurements import Measurements
 from enlighten.measurement.SaveOptionsFeature import SaveOptionsFeature
 from enlighten.network.BLEManagerFeature import BLEManagerFeature
 from enlighten.network.CloudManagerFeature import CloudManagerFeature
+from enlighten.Plugins.PluginControllerFeature import PluginControllerFeature
 from enlighten.post_processing.AbsorbanceFeature import AbsorbanceFeature
 from enlighten.post_processing.AutoRamanFeature import AutoRamanFeature
 from enlighten.post_processing.BaselineCorrectionFeature import BaselineCorrectionFeature
@@ -42,8 +42,8 @@ from enlighten.post_processing.DarkFeature import DarkFeature
 from enlighten.post_processing.ElectricalDarkCorrectionFeature import ElectricalDarkCorrectionFeature
 from enlighten.post_processing.EtalonCorrectionFeature import EtalonCorrectionFeature
 from enlighten.post_processing.HorizROIFeature import HorizROIFeature
-from enlighten.post_processing.InterpolationFeature import InterpolationFeature
 from enlighten.post_processing.InGaAsCorrectionFeature import InGaAsCorrectionFeature
+from enlighten.post_processing.InterpolationFeature import InterpolationFeature
 from enlighten.post_processing.PixelCalibrationFeature import PixelCalibrationFeature
 from enlighten.post_processing.RamanIntensityCorrectionFeature import RamanIntensityCorrectionFeature
 from enlighten.post_processing.ReferenceFeature import ReferenceFeature
@@ -62,8 +62,8 @@ from enlighten.ui.ClipboardFeature import ClipboardFeature
 from enlighten.ui.Colors import Colors
 from enlighten.ui.DidYouKnowFeature import DidYouKnowFeature
 from enlighten.ui.FocusListener import FocusListener
-from enlighten.ui.GUIFeature import GUIFeature
 from enlighten.ui.GuideFeature import GuideFeature
+from enlighten.ui.GUIFeature import GUIFeature
 from enlighten.ui.HelpFeature import HelpFeature
 from enlighten.ui.ImageResources import ImageResources
 from enlighten.ui.MarqueeFeature import MarqueeFeature
@@ -113,6 +113,7 @@ class BusinessObjects:
         ctl.eeprom_writer = None
         ctl.etalon_correction = None
         ctl.external_trigger = None
+        ctl.factory_strip_feature = None
         ctl.file_manager = None
         ctl.focus_listener = None
         ctl.gain_db_feature = None
@@ -120,7 +121,6 @@ class BusinessObjects:
         ctl.grid = None
         ctl.gui = None
         ctl.guide = None
-        ctl.factory_strip_feature = None
         ctl.hardware_file_manager = None
         ctl.help = None
         ctl.high_gain_mode = None
@@ -131,8 +131,8 @@ class BusinessObjects:
         ctl.interp = None
         ctl.kia_feature = None
         ctl.laser_control = None
-        ctl.laser_watchdog = None
         ctl.laser_temperature = None
+        ctl.laser_watchdog = None
         ctl.logging_feature = None
         ctl.marquee = None
         ctl.measurement_factory = None
@@ -179,7 +179,7 @@ class BusinessObjects:
         
         This is called by Controller.__init__() after set_initial_state(), so you
         can assume that the GUI is configured and all widget placeholders have been
-        populated.  No spectrometers will have connected at this time.
+        populated. No spectrometers will have connected at this time.
         """
         ctl = self.ctl
         cfu = ctl.form.ui

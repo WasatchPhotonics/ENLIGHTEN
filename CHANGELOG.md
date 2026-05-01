@@ -1,6 +1,7 @@
 # Version History
 
 - 2026-??-?? 4.2.2
+    - added EnlightenFeature
     - Laser Control
         - IDS Autonomous Collection
         - BLE laser PWM works
@@ -16,13 +17,10 @@
         - added Laser Max Temp DegC
         - added AssemblyRevision (packed and expanded)
         - added Power Connection State (pending FW fix)
-    - Infrastructure
-        - moved post_processing to EnlightenFeature
     - STARTING: 
         - Safe Mode
         - Etalon Correction
         - InGaAs Correction
-
 - 2026-04-16 4.2.1
     - Bluetooth
         - added RnD.BluetoothTester plugin
