@@ -24,9 +24,9 @@ from enlighten.device.AmbientTemperatureFeature import AmbientTemperatureFeature
 from enlighten.device.MultispecFeature import MultispecFeature
 from enlighten.factory.DFUFeature import DFUFeature
 from enlighten.factory.FactoryStripChartFeature import FactoryStripChartFeature
-from enlighten.file_io.Configuration import Configuration
-from enlighten.file_io.FileManager import FileManager
-from enlighten.file_io.HardwareFileOutputManager import HardwareFileOutputManager
+from enlighten.file_io.ConfigurationFeature import ConfigurationFeature
+from enlighten.file_io.FileManagerFeature import FileManagerFeature
+from enlighten.file_io.HardwareFileOutputFeature import HardwareFileOutputFeature
 from enlighten.file_io.LoggingFeature import LoggingFeature
 from enlighten.measurement.AreaScanFeature import AreaScanFeature
 from enlighten.measurement.MeasurementFactory import MeasurementFactory
@@ -164,7 +164,7 @@ class BusinessObjects:
         """
         ctl = self.ctl
 
-        ctl.config              = Configuration(ctl)
+        ctl.config              = ConfigurationFeature(ctl)
         ctl.presets             = PresetFeature(ctl)
         ctl.logging_feature     = LoggingFeature(ctl)
         ctl.colors              = Colors(ctl.config)
@@ -188,11 +188,11 @@ class BusinessObjects:
         ctl.focus_listener              = FocusListener(ctl)
         ctl.model_info                  = ModelInfoFeature(ctl)
         ctl.marquee                     = Marquee(ctl)
-        ctl.file_manager                = FileManager(ctl)
+        ctl.file_manager                = FileManagerFeature(ctl)
         ctl.clipboard                   = Clipboard(ctl)
         ctl.guide                       = GuideFeature(ctl)
         ctl.graph                       = Graph(ctl, name="Scope")
-        ctl.hardware_file_manager       = HardwareFileOutputManager(ctl)
+        ctl.hardware_file_manager       = HardwareFileOutputFeature(ctl)
         ctl.cursor                      = Cursor(ctl)
         ctl.image_resources             = ImageResources()
         ctl.multispec                   = MultispecFeature(ctl)

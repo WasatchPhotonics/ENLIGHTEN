@@ -7,6 +7,7 @@ from pygtail import Pygtail
 
 from wasatch import applog
 from enlighten import common
+from enlighten.EnlightenFeature import EnlightenFeature
 
 if common.use_pyside2():
     from PySide2 import QtCore, QtGui
@@ -15,7 +16,7 @@ else:
 
 log = logging.getLogger(__name__)
 
-class LoggingFeature:
+class LoggingFeature(EnlightenFeature):
     """
     Currently this timer runs continuously, as it is what provides the "Hardware" Status Indicator.
     """

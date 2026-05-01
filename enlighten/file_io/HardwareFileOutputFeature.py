@@ -3,13 +3,15 @@ import logging
 import datetime
 
 from enlighten import common
+from enlighten.EnlightenFeature import EnlightenFeature
 
 log = logging.getLogger(__name__)
 
-class HardwareFileOutputManager:
+class HardwareFileOutputFeature(EnlightenFeature):
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.features = []

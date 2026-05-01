@@ -2,6 +2,7 @@ import logging
 import os
 
 from enlighten import common
+from enlighten.EnlightenFeature import EnlightenFeature
 
 if common.use_pyside2():
     from PySide2 import QtCore, QtWidgets
@@ -12,12 +13,12 @@ log = logging.getLogger(__name__)
 
 ##
 # Encapsulate operations managing files, directory trees etc.
-class FileManager:
+class FileManagerFeature(EnlightenFeature):
     
     FILTER = "CSV (*.csv);;JSON (*.json);;SPC (*.spc);;ASC (*.asc)"
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
 
         self.files_to_load = []
         self.last_load_dir = common.get_default_data_dir()

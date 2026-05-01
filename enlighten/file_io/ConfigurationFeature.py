@@ -8,6 +8,7 @@ import configparser
 # functions before Controller's constructor is yet complete.
 from enlighten.data.ColorNames import ColorNames
 from enlighten.measurement.SaveOptions import SaveOptions
+from enlighten.EnlightenFeature import EnlightenFeature
 
 from enlighten import common
 
@@ -18,7 +19,7 @@ else:
 
 log = logging.getLogger(__name__)
 
-class Configuration:
+class ConfigurationFeature(EnlightenFeature):
     """
     This is a wrapper over ConfigParser.  It adds the following features:
     
@@ -81,9 +82,9 @@ class Configuration:
         self.linenum = 0
 
     def __init__(self, ctl):
-        self.clear()
+        super().__init__(ctl)
 
-        self.ctl = ctl
+        self.clear()
 
         cfu = ctl.form.ui
         self.lb_save_result = cfu.label_save_ini_result

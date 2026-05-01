@@ -1,8 +1,10 @@
 import logging
 
+from enlighten.EnlightenFeature import EnlightenFeature
+
 log = logging.getLogger(__name__)
 
-class FactoryStripChartFeature:
+class FactoryStripChartFeature(EnlightenFeature):
     """
     This class manages the set of strip-charts on the Factory View which graph 
     device characteristics against a time axis.
@@ -11,7 +13,8 @@ class FactoryStripChartFeature:
     """
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.charts = { cfu.checkBox_hardware_live     : cfu.frame_area_scan_live,
