@@ -124,6 +124,7 @@ class MarqueeFeature(EnlightenFeature):
             return
             
         self.next_message = Message(msg, persist=persist, token=token, benign=benign, immediate=immediate, extra_ms=extra_ms, period_sec=period_sec, link=link)
+        log.debug(f"queued {self.next_message}")
 
     def error(self, msg, persist=False, token=None, benign=False, immediate=False, extra_ms=0, period_sec=None, link=None):
         return self.info(msg        = msg, 
