@@ -17,6 +17,7 @@
         - added Laser Max Temp DegC
         - added AssemblyRevision (packed and expanded)
         - added Power Connection State (pending FW fix)
+        - fixed tab order for wavecal coeffs
     - BatchCollection
         - [#587] fixed "dropped frames" causing BatchCollection to exit early
     - Plugins

@@ -58,7 +58,7 @@ class LibraryMatching(EnlightenPluginBase):
 
         self.field(name="Compound", datatype=str, tooltip="Declared matching compound (highest matching score)")
         self.field(name="Score", datatype=float, precision=2, tooltip="The RamanID algorithm's computed score for the top-matching compound")
-        self.field(name="Min Score", direction="input", datatype=int, initial=65, minimum=0, maximum=100, tooltip="Only report matches with this score or above")
+        self.field(name="Min Score", direction="input", datatype=float, precision=2, initial=0.65, minimum=0.0, maximum=1.0, tooltip="Only report matches with this score or above")
         self.field(name="Max Results", direction="input", datatype=int, initial=2, minimum=1, maximum=20, tooltip="Only report this many matches")
 
         self.field(name="Save to Library",
@@ -428,8 +428,8 @@ class Pearson:
             correlation, _ = pearsonr(library_spectrum, spectrum_interp)
 
             # track all matches that meet the minimum score
-            if 100 * correlation >= request.fields["Min Score"]:
-                matches.append({"Score": 100 * correlation, "Name": self.compound_names[libraryID]})
+            if correlation >= request.fields["Min Score"]:
+                matches.append({"Score": correlation, "Name": self.compound_names[libraryID]})
 
                 # track best correlation so we can graph top-matching library spectrum
                 if (best_correlation < correlation):
