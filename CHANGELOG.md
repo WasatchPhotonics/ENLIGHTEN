@@ -20,8 +20,9 @@
         - fixed tab order for wavecal coeffs
     - BatchCollection
         - [#587] fixed "dropped frames" causing BatchCollection to exit early
-    - Plugins
-        - LibraryMatching: moved Pearson range from 0-100 to 0-1
+    - LibraryMatching
+        - moved Pearson range from 0-100 to 0-1
+        - promoted from Plugin to EnlightenFeature [IN WORK]
     - STARTING: 
         - Safe Mode
         - Etalon Correction

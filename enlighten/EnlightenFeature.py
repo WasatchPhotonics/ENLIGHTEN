@@ -28,6 +28,9 @@ class EnlightenFeature:
 
         EnlightenFeature.all_features.add(self)
 
+    def disconnect(self):
+        pass
+
     def post_init(self):
         """
         May be called by Controller after ALL BusinessObjects / EnlightenFeatures

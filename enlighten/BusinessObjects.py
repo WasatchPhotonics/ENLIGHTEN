@@ -44,6 +44,7 @@ from enlighten.post_processing.EtalonCorrectionFeature import EtalonCorrectionFe
 from enlighten.post_processing.HorizROIFeature import HorizROIFeature
 from enlighten.post_processing.InGaAsCorrectionFeature import InGaAsCorrectionFeature
 from enlighten.post_processing.InterpolationFeature import InterpolationFeature
+from enlighten.post_processing.LibraryMatchingFeature import LibraryMatchingFeature
 from enlighten.post_processing.PixelCalibrationFeature import PixelCalibrationFeature
 from enlighten.post_processing.RamanIntensityCorrectionFeature import RamanIntensityCorrectionFeature
 from enlighten.post_processing.ReferenceFeature import ReferenceFeature
@@ -133,6 +134,7 @@ class BusinessObjects:
         ctl.laser_control = None
         ctl.laser_temperature = None
         ctl.laser_watchdog = None
+        ctl.library_matching = None
         ctl.logging_feature = None
         ctl.marquee = None
         ctl.measurement_factory = None
@@ -251,6 +253,7 @@ class BusinessObjects:
         ctl.reading_progress_bar        = ReadingProgressBarFeature(ctl)
         ctl.ble_manager                 = BLEManagerFeature(ctl)
         ctl.pixel_calibration           = PixelCalibrationFeature(ctl)
+        ctl.library_matching            = LibraryMatchingFeature(ctl)
 
     def destroy(self):
         log.info("destroying business objects")
@@ -262,7 +265,8 @@ class BusinessObjects:
 
         # anything with timers, observers etc
         for feature in [ self.ctl.marquee, 
-                         self.ctl.guide ]:
+                         self.ctl.guide,
+                         self.ctl.library_matching ]:
             feature.stop()
 
         log.info("done destroying business objects")

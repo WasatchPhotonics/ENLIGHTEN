@@ -287,6 +287,8 @@ class DarkFeature(EnlightenFeature):
         self._enable_buttons(True)
 
     def populate_placeholder_scope_setup(self):
+        cfu = self.ctl.form.ui
+
         policy = QtWidgets.QSizePolicy()
         policy.setVerticalPolicy(QtWidgets.QSizePolicy.Preferred)
         policy.setHorizontalPolicy(QtWidgets.QSizePolicy.Preferred)
@@ -296,6 +298,6 @@ class DarkFeature(EnlightenFeature):
 
         self.curve = chart.plot([], pen=self.ctl.gui.make_pen(widget="dark"))
 
-        sw = self.ctl.form.ui.stackedWidget_scope_setup_dark_spectrum
+        sw = cfu.stackedWidget_scope_setup_dark_spectrum
         sw.addWidget(chart)
         sw.setCurrentIndex(1)

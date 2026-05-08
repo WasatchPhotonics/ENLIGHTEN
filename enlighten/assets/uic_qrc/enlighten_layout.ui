@@ -17896,6 +17896,368 @@ li.checked::marker { content: "\2612"; }
                  </layout>
                 </widget>
                </item>
+
+
+               
+               <item>
+                <widget class="QFrame" name="frame_library_matching_1">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_55lb">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label_library_matching_title">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Library Matching</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QFrame" name="frame_library_matching_2">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="lineWidth">
+                     <number>1</number>
+                    </property>
+                    <property name="wpBox" stdset="0">
+                     <bool>false</bool>
+                    </property>
+                    <layout class="QGridLayout" name="grid_library_matching_1" rowstretch="0" columnstretch="0">
+                     <property name="sizeConstraint">
+                      <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+                     </property>
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="spacing">
+                      <number>0</number>
+                     </property>
+                     <item row="0" column="0">
+                      <widget class="QFrame" name="frame_library_matching_3">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>16777215</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="lineWidth">
+                        <number>1</number>
+                       </property>
+                       <property name="wpGrad" stdset="0">
+                        <bool>false</bool>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_23lb">
+
+
+                        
+                        <item>
+                         <widget class="QPushButton" name="pushButton_library_matching_select_library">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>30</height>
+                           </size>
+                          </property>
+                          <property name="font">
+                           <font>
+                            <pointsize>10</pointsize>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="text">
+                           <string>Select Library</string>
+                          </property>
+                          <property name="toolTip">
+                           <string>Select folder containing spectra of known compounds</string>
+                          </property>
+                         </widget>
+                        </item>
+
+                        <item>
+                         <widget class="QFrame" name="frame_library_matching_grid">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="frameShape">
+                           <enum>QFrame::Shape::StyledPanel</enum>
+                          </property>
+                          <property name="frameShadow">
+                           <enum>QFrame::Shadow::Raised</enum>
+                          </property>
+                          <layout class="QFormLayout" name="formLayout_30lb">
+                           <property name="labelAlignment">
+                            <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+                           </property>
+                           <property name="horizontalSpacing">
+                            <number>0</number>
+                           </property>
+                           <property name="verticalSpacing">
+                            <number>3</number>
+                           </property>
+                           <property name="leftMargin">
+                            <number>6</number>
+                           </property>
+                           <property name="topMargin">
+                            <number>6</number>
+                           </property>
+                           <property name="rightMargin">
+                            <number>6</number>
+                           </property>
+                           <property name="bottomMargin">
+                            <number>9</number>
+                           </property>
+
+                           
+                           <item row="0" column="0">
+                            <widget class="QLabel" name="label_library_matching_matched_compound_name_label">
+                             <property name="font">
+                              <font>
+                               <pointsize>10</pointsize>
+                              </font>
+                             </property>
+                             <property name="text">
+                              <string>Compound</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="0" column="1">
+                            <widget class="QLabel" name="label_library_matching_matched_compound_name">
+                             <property name="font">
+                              <font>
+                               <pointsize>10</pointsize>
+                              </font>
+                             </property>
+                             <property name="text">
+                              <string>None</string>
+                             </property>
+                            </widget>
+                           </item>
+
+                           
+                           <item row="1" column="0">
+                            <widget class="QLabel" name="label_library_matching_matched_compound_score_label">
+                             <property name="font">
+                              <font>
+                               <pointsize>10</pointsize>
+                              </font>
+                             </property>
+                             <property name="text">
+                              <string>Score</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="1" column="1">
+                            <widget class="QLabel" name="label_library_matching_matched_compound_score">
+                             <property name="font">
+                              <font>
+                               <pointsize>10</pointsize>
+                              </font>
+                             </property>
+                             <property name="text">
+                              <string>0.00</string>
+                             </property>
+                            </widget>
+                           </item>
+
+                           
+                           <item row="2" column="0">
+                            <widget class="QLabel" name="label_library_matching_min_score_label">
+                             <property name="font">
+                              <font>
+                               <pointsize>10</pointsize>
+                              </font>
+                             </property>
+                             <property name="text">
+                              <string>Min Score</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="2" column="1">
+                            <widget class="QDoubleSpinBox" name="doubleSpinBox_library_matching_min_score">
+                             <property name="minimumSize">
+                              <size>
+                               <width>125</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignmentFlag::AlignCenter</set>
+                             </property>
+                             <property name="keyboardTracking">
+                              <bool>false</bool>
+                             </property>
+                             <property name="decimals">
+                              <number>2</number>
+                             </property>
+                             <property name="minimum">
+                              <double>0.05</double>
+                             </property>
+                             <property name="maximum">
+                              <double>0.95</double>
+                             </property>
+                             <property name="singleStep">
+                              <double>0.01</double>
+                             </property>
+                             <property name="value">
+                              <double>0.65</double>
+                             </property>
+                            </widget>
+                           </item>
+                          
+                           <item row="3" column="0">
+                            <widget class="QLabel" name="label_library_matching_max_results_label">
+                             <property name="font">
+                              <font>
+                               <pointsize>10</pointsize>
+                              </font>
+                             </property>
+                             <property name="text">
+                              <string>Min Score</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="3" column="1">
+                            <widget class="QSpinBox" name="spinBox_library_matching_max_results">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="focusPolicy">
+                              <enum>Qt::FocusPolicy::StrongFocus</enum>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignmentFlag::AlignCenter</set>
+                             </property>
+                             <property name="buttonSymbols">
+                              <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
+                             </property>
+                             <property name="accelerated">
+                              <bool>true</bool>
+                             </property>
+                             <property name="keyboardTracking">
+                              <bool>false</bool>
+                             </property>
+                             <property name="minimum">
+                              <number>0</number>
+                             </property>
+                             <property name="maximum">
+                              <number>99</number>
+                             </property>
+                             <property name="singleStep">
+                              <number>1</number>
+                             </property>
+                             <property name="value">
+                              <number>2</number>
+                             </property>
+                            </widget>
+                           </item>
+
+                          </layout>
+                         </widget>
+                        </item>
+
+                        
+                        <item>
+                         <widget class="QPushButton" name="pushButton_library_matching_save_to_library">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>30</height>
+                           </size>
+                          </property>
+                          <property name="font">
+                           <font>
+                            <pointsize>10</pointsize>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="text">
+                           <string>Save to Library</string>
+                          </property>
+                          <property name="toolTip">
+                           <string>Add current sample spectrum to matching library</string>
+                          </property>
+                         </widget>
+                        </item>
+
+                       </layout>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+
                <item>
                 <widget class="QLabel" name="label_plugin_selection_widget">
                  <property name="sizePolicy">
@@ -18486,6 +18848,8 @@ li.checked::marker { content: "\2612"; }
                  </layout>
                 </widget>
                </item>
+
+
                <item>
                 <widget class="QFrame" name="boxcarWidget">
                  <property name="sizePolicy">
@@ -18747,6 +19111,7 @@ li.checked::marker { content: "\2612"; }
                  </layout>
                 </widget>
                </item>
+
                <item>
                 <widget class="QFrame" name="frame_baseline_correction">
                  <property name="sizePolicy">
