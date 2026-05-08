@@ -124,7 +124,7 @@ class StylesheetFeature(EnlightenFeature):
             # log.debug(f"{widget_name} already has stylesheet equivalent to {self.theme}[{style_name}]")
             pass
         else:
-            log.debug(f"applying {self.theme}[{style_name}] to {widget_name}")
+            # log.debug(f"applying {self.theme}[{style_name}] to {widget_name}")
             widget.setStyleSheet(css)
 
         self.widget_last_style[widget] = style_name
