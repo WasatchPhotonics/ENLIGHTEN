@@ -20220,6 +20220,12 @@ li.checked::marker { content: "\2612"; }
   <tabstop>lineEdit_scope_capture_save_prefix</tabstop>
   <tabstop>lineEdit_scope_capture_save_suffix</tabstop>
   <tabstop>lineEdit_scope_capture_save_note</tabstop>
+
+  <tabstop>lineEdit_ee_wavelength_coeff_0</tabstop>
+  <tabstop>lineEdit_ee_wavelength_coeff_1</tabstop>
+  <tabstop>lineEdit_ee_wavelength_coeff_2</tabstop>
+  <tabstop>lineEdit_ee_wavelength_coeff_3</tabstop>
+  <tabstop>lineEdit_ee_wavelength_coeff_4</tabstop>
  </tabstops>
  <resources>
   <include location="grey_icons.qrc" />
