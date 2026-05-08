@@ -466,7 +466,7 @@ class Measurement:
 
               Also I'd pull this out into a TemplateFeature.
         """
-        log.debug(f"expand_template: starting with template {template}")
+        # log.debug(f"expand_template: starting with template {template}")
         while True:
             # macros look like {integration_time_ms} or {gain_db:0.1f}
             m = re.search(r"{([a-z0-9_ ]+)(:\d*\.\d*f)?}", template, re.IGNORECASE)
@@ -526,7 +526,7 @@ class Measurement:
                     value = macro
 
             template = template.replace(orig, str(value))
-            log.debug(f"expand_template: {orig} -> {value} (now {template})")
+            # log.debug(f"expand_template: {orig} -> {value} (now {template})")
 
     # Note that this wraps the prefix and suffix around the expanded template.
     # Prefix and Suffix are not retained in manually-renamed measurements (ctrl-E).
