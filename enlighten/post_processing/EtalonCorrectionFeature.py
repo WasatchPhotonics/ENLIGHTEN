@@ -1,5 +1,6 @@
 import logging
 import json
+import os
 
 from enlighten.EnlightenFeature import EnlightenFeature
 
