@@ -140,7 +140,7 @@ class StatusIndicatorFeature(EnlightenFeature):
             # hardware status
             ####################################################################
 
-            hw_tt = f"no hardware errors within last {StatusIndicators.HARDWARE_WARNING_WINDOW_SEC} sec"
+            hw_tt = f"no hardware errors within last {self.HARDWARE_WARNING_WINDOW_SEC} sec"
             if self.last_hardware_error_time is not None:
                 elapsed_sec = int(round((datetime.datetime.now() - self.last_hardware_error_time).total_seconds()))
                 if elapsed_sec <= self.HARDWARE_WARNING_WINDOW_SEC:
