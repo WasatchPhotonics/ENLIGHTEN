@@ -53,7 +53,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
         self.is_collapsed   = is_collapsed
         self.graph          = graph 
 
-        log.debug(f"using graph {graph.name}")
+        # log.debug(f"using graph {graph.name}")
 
         self.is_displayed  = False
         self.selected_color = None
@@ -179,7 +179,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
 
     def should_add_id_button(self):
         if not self.ctl.kia_feature.is_installed:
-            log.debug("KIA not installed")
+            # log.debug("KIA not installed")
             return False
 
         # only add "identify" button to Raman measurements
