@@ -616,6 +616,16 @@ class BatchCollectionFeature(EnlightenFeature):
             spec.app_state.take_one_request = None
             return
 
+        # It looks like we have successfully received a valid Reading which 
+        # should count toward readings_target. Assume this is literally the same
+        # Python object used by WasatchDevice and bump the counter. We are doing
+        # this in ENLIGHTEN rather than Wasatch.PY to account for any "dropped
+        # frames" tossed by WasatchDeviceWrapper. [#587]
+        #
+        # TODO: consider merging TakeOneRequest.readings_current with 
+        # BatchCollectionFeature.current_measurement_count? Meh.
+        tor.readings_current += 1
+
         if not self.running:
             spec.app_state.take_one_request = None
             return

@@ -17,6 +17,10 @@
         - added Laser Max Temp DegC
         - added AssemblyRevision (packed and expanded)
         - added Power Connection State (pending FW fix)
+    - BatchCollection
+        - [#587] fixed "dropped frames" causing BatchCollection to exit early
+    - Plugins
+        - LibraryMatching: moved Pearson range from 0-100 to 0-1
     - STARTING: 
         - Safe Mode
         - Etalon Correction
