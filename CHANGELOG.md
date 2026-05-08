@@ -22,11 +22,20 @@
         - [#587] fixed "dropped frames" causing BatchCollection to exit early
     - LibraryMatching
         - moved Pearson range from 0-100 to 0-1
-        - promoted from Plugin to EnlightenFeature [IN WORK]
+        - promoted from Plugin to EnlightenFeature 
+        - TODO: test...
+        - TODO: add * to matching compound name if it came from user-added data
+        - TODO: send match spectrum to (Scope, DALAIGraph) as appropriate
+    - DALAIRamanFeature
+        - TODO: two graphs, side by side, not movable or collapsible
+        - TODO: nrd5-r3-model-17-opset18 (https://bitbucket.org/wasatchphotonics/emauihelpers/src/main/models/)
+    - CalibrationStatusFeature 
+        - TODO: create above Prefix/Note/Suffix (minimizable, all models)
     - STARTING: 
         - Safe Mode
         - Etalon Correction
         - InGaAs Correction
+
 - 2026-04-16 4.2.1
     - Bluetooth
         - added RnD.BluetoothTester plugin
