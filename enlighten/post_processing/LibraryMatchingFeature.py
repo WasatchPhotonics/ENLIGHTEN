@@ -122,7 +122,7 @@ class LibraryMatchingFeature(EnlightenFeature):
 
     def tick(self):
         self.lb_compound.setText(self.last_compound)
-        self.lb_score.setText(f"{self.last_score:02.f}" if self.last_score is not None else "")
+        self.lb_score.setText(f"{self.last_score:0.2f}" if self.last_score is not None else "")
 
     def process(self, pr):
         if not self.enabled:
