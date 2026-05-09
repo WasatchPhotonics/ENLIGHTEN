@@ -30,30 +30,82 @@ class LibraryMatchingFeature(EnlightenFeature):
 
     SECTION = "LibraryMatching"
 
+    # this is the path, under "enlighten.exe", where ENLIGHTEN looks to find the
+    # "distribution" matching library that "comes with" ENLIGHTEN via source or 
+    # binary distributions
+    DIST_LIBRARY_DIR = "enlighten/assets/example_data/matching_library"
+
+    # this is the directory, under EnlightenSpectra, where ENLIGHTEN will 
+    # write (and check for) user-generated library spectra
+    USER_LIBRARY_DIR = "matching_library"
+
     def __init__(self, ctl):
         super().__init__(ctl)
 
-        self.library_dir = None
+        cfu = self.ctl.form.ui
+
+        self.cb_enable          = cfu.checkBox_library_matching_enable
+        self.bt_select_library  = cfu.pushButton_library_matching_select_library
+        self.lb_compound        = cfu.label_library_matching_matched_compound_name
+        self.lb_score           = cfu.label_library_matching_matched_compound_score
+        self.ds_min_score       = cfu.doubleSpinBox_library_matching_min_score
+        self.sb_max_results     = cfu.spinBox_library_matching_max_results
+        self.cb_use_dist        = cfu.checkBox_library_matching_use_dist
+        self.bt_save            = cfu.pushButton_library_matching_save_to_library
+
+        # TODO: figure out what to do with Pandas
+        self.df_results = None 
+
+        # start with defaults
+        self.enabled = False
+        self.dist_library_dir = self.DIST_LIBRARY_DIR
+        self.user_library_dir = os.path.join(common.get_default_data_dir(), self.USER_LIBRARY_DIR)
+        self.min_score = 0.65
+        self.max_results = 2
+        self.use_dist = True
+
+        log.debug(f"defaulting to dist_library_dir {self.dist_library_dir}")
+        log.debug(f"defaulting to user_library_dir {self.user_library_dir}")
+
+        self.init_from_ini()
+
+        self.pearson = Pearson(self)
+
+        self.set_library_dir(self.user_library_dir)
+
+        # connect callbacks after initialization
+        self.bt_select_library  .clicked        .connect(self.select_library_callback)
+        self.bt_save            .clicked        .connect(self.add_to_library)
+        self.ds_min_score       .valueChanged   .connect(self.update_settings)
+        self.sb_max_results     .valueChanged   .connect(self.update_settings)
+        self.cb_use_dist        .stateChanged   .connect(self.update_settings)
+        self.cb_enable          .stateChanged   .connect(self.update_settings)
+
+       #self.bt_select_library  .setToolTip("Select a directory containing a library of Raman spectra")
+        self.bt_save            .setToolTip("Add the current spectrum to the matching library")
+        self.lb_compound        .setToolTip("Declared matching compound (highest matching score)")
+        self.lb_score           .setToolTip("The RamanID algorithm's computed score for the top-matching compound")
+        self.ds_min_score       .setToolTip("Only report matches with this score or above")
+        self.sb_max_results     .setToolTip("Only report this many matches")
+        self.cb_use_dist        .setToolTip("Use standard ENLIGHTEN compound library in addition to user-collected spectra")
+        self.cb_enable          .setToolTip("Perform Pearson Library Matching against measured spectra")
+
         self.add_next_to_library = False
         self.metadata_cache = {}
         self.laser_warning_issued = False
-        self.min_score = 0.65
-        self.max_results = 2
 
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.tick)
         self.timer.setSingleShot(True)
 
-        self.pearson = Pearson(self)
-
-        self.configure_fields()
         self.ctl.measurement_factory.register_observer(self.factory_callback)
 
-        self.curve = self.ctl.graph.add_curve("library_spectrum", 
-                                              rehide=False, 
-                                              in_legend=False, 
-                                              pen=self.ctl.gui.make_pen('#2994d3'))
-        self.curve.setVisible(False)
+        # note that this curve is in the SCOPE Graph...we still need to add one in the DalaiRamanFeature Graph
+        self.curve_scope = self.ctl.graph.add_curve("library_spectrum", 
+                                                    rehide=False, 
+                                                    in_legend=False, 
+                                                    pen='#2994d3')
+        self.curve_scope.setVisible(False)
 
     def disconnect(self):
         self.ctl.measurement_factory.unregister_observer(self.factory_callback)
@@ -62,45 +114,20 @@ class LibraryMatchingFeature(EnlightenFeature):
     def stop(self):
         self.timer.stop()
 
-    def configure_fields(self):
-        cfu = self.ctl.form.ui
-
-        path = self.get_library_dir_from_ini()
-        if path is None:
-            path = self.get_default_library_dir()
-        self.set_library_dir(path)
-
-        self.bt_select_library  = cfu.pushButton_library_matching_select_library
-        self.lb_compound        = cfu.label_library_matching_matched_compound_name
-        self.lb_score           = cfu.label_library_matching_matched_compound_score
-        self.ds_min_score       = cfu.doubleSpinBox_library_matching_min_score
-        self.sb_max_results     = cfu.spinBox_library_matching_max_results
-        self.bt_save            = cfu.pushButton_library_matching_save_to_library
-
-        self.bt_select_library  .clicked        .connect(self.select_library_callback)
-        self.bt_save            .clicked        .connect(self.add_to_library)
-        self.ds_min_score       .valueChanged   .connect(self.update_settings)
-        self.sb_max_results     .valueChanged   .connect(self.update_settings)
-
-        self.bt_select_library.setToolTip("Select a directory containing a library of Raman spectra")
-        self.bt_save.setToolTip("Add the current spectrum to the matching library")
-        self.lb_compound.setToolTip("Declared matching compound (highest matching score)")
-        self.lb_score.setToolTip("The RamanID algorithm's computed score for the top-matching compound")
-        self.ds_min_score.setToolTip("Only report matches with this score or above")
-        self.sb_max_results.setToolTip("Only report this many matches")
-
-        # TODO: figure out what to do with Pandas
-        self.df_results = None 
-
     def update_settings(self):
         self.min_score = self.ds_min_score.value()
         self.max_results = self.sb_max_results.value()
+        self.use_dist = self.cb_use_dist.isChecked()
+        self.enabled = self.cb_enable.isChecked()
 
     def tick(self):
         self.lb_compound.setText(self.last_compound)
         self.lb_score.setText(f"{self.last_score:02.f}" if self.last_score is not None else "")
 
     def process(self, pr):
+        if not self.enabled:
+            return
+
         wavenumbers = pr.get_wavenumbers()
         spectrum = pr.get_processed()
         reading = pr.reading
@@ -116,7 +143,7 @@ class LibraryMatchingFeature(EnlightenFeature):
         }
 
         # try to perform matching
-        compounds, scores = self.pearson.process(request, wavenumbers, spectrum)
+        compounds, scores = self.pearson.process(wavenumbers, spectrum)
         if compounds is None or scores is None or len(compounds) == 0:
             return
 
@@ -136,42 +163,56 @@ class LibraryMatchingFeature(EnlightenFeature):
         self.last_compound = self.wrapped(best_compound)
         self.last_score = best_score
 
+        # TODO: determine which curve to use
+        curve = self.curve_scope
+
         # plot best-matching Pearson library spectrum
         if self.pearson.best_library_spectrum is not None and self.pearson.best_library_wavenumbers is not None:
-            self.curve.setName(f"Library {best_compound}")
-            self.curve.setData(x=self.pearson.best_library_wavenumbers,
-                               y=self.pearson.best_library_spectrum)
+            # curve.setName(f"Library {best_compound}") 
+            curve.setData(x=self.pearson.best_library_wavenumbers,
+                          y=self.pearson.best_library_spectrum)
 
         # update to GUI
         self.timer.start(100)
 
     def set_library_dir(self, path):
-        self.ctl.config.set(self.SECTION, "library_dir", path)
+        """ 
+        This sets the path to the USER library dir, which is normally 
+        EnlightenSpectra/matching_library but can be overridden by the user.
+
+        Note that the "distribution" library remains under 
+        enlighten/assets/example_data and cannot be moved.
+        """
+
+        self.ctl.config.set(self.SECTION, "user_library_dir", path)
         self.ctl.marquee.clear(token="existing_directory")
 
-        self.library_dir = path
-        log.debug(f"using library dir: {path}")
+        log.debug(f"setting user library dir {path}")
+        self.user_library_dir = path
+        os.makedirs(self.user_library_dir, exist_ok=True)
 
         # TODO
         # self.colorize_button_field("Select Library", active=True, tooltip=path)
+        self.ctl.gui.colorize_button(self.bt_select_library, True)
 
-        self.pearson.reset()
+        self.bt_select_library.setToolTip(path)
 
-    def get_library_dir_from_ini(self):
-        section = self.SECTION
-        log.debug(f"getting library dir from {section}")
-        path = self.ctl.config.get(section, "library_dir", default=None)
+        if self.pearson:
+            self.pearson.reset()
+
+    def init_from_ini(self):
+        path = self.ctl.config.get(self.SECTION, "user_library_dir", default=None)
         if path:
-            if os.path.isdir(path):
-                log.debug(f"returning {path}")
-                return path
-            else:
-                log.debug(f"not a directory? [{path}]")
-        else:
-            log.debug(f"library dir not found in {section}")
+            self.user_library_dir = path
 
-    def get_default_library_dir(self):
-        return os.path.join(common.get_default_data_dir(), "MatchingLibrary")
+        self.use_dist = self.ctl.config.get_bool(self.SECTION, "use_dist", default=True)
+        self.cb_use_dist.setChecked(self.use_dist)
+
+        self.max_results = self.ctl.config.get_int(self.SECTION, "max_results", default=2)
+        self.sb_max_results.setValue(self.max_results)
+
+        self.min_score = self.ctl.config.get_float(self.SECTION, "min_score", default=0.65)
+        self.ds_min_score.setValue(self.min_score)
 
     def select_library_callback(self):
         """
@@ -188,9 +229,7 @@ class LibraryMatchingFeature(EnlightenFeature):
         dialog.setOption(QtWidgets.QFileDialog.ShowDirsOnly)
 
         # default to last selection
-        path = self.get_library_dir_from_ini()
-        if path is None:
-            path = self.get_default_library_dir()
+        path = self.user_library_dir
         dialog.setDirectory(path)
 
         # get the user's choice
@@ -203,8 +242,8 @@ class LibraryMatchingFeature(EnlightenFeature):
         self.set_library_dir(path)
 
     def add_to_library(self):
-        if self.library_dir is None or not os.path.isdir(self.library_dir):
-            log.debug(f"can't add_to_library w/o library_dir {self.library_dir}")
+        if self.user_library_dir is None or not os.path.isdir(self.user_library_dir):
+            log.debug(f"can't add_to_library w/o library_dir {self.user_library_dir}")
             return
 
         self.add_next_to_library = True
@@ -247,10 +286,11 @@ class LibraryMatchingFeature(EnlightenFeature):
             log.debug("empty filename")
             return
 
-        additional_dir = os.path.join(self.library_dir, "AdditionalSpectra")
-        os.makedirs(additional_dir, exist_ok=True)
+        os.makedirs(self.user_library_dir, exist_ok=True)
+        new_pathname = os.path.join(self.user_library_dir, f"{label}.csv")
 
-        new_pathname = os.path.join(additional_dir, f"{label}.csv")
+        # note that while we update the label in the .csv, we don't actually use
+        # the label when we later read the .csv
         log.debug(f"copying {old_pathname} to {new_pathname}, changing label -> {label}")
         with open(new_pathname, "w") as outfile:
             with open(old_pathname, "r") as infile:
@@ -299,50 +339,57 @@ class Pearson:
 
     def lazy_load_library(self):
         if self.library_spectra:
-            log.debug("Pearson.lazy_load_spectra: Library was already loaded")
-            return
-
-        if not self.feature.library_dir:
-            log.debug("Pearson.lazy_load_spectra: missing library dir")
+            # log.debug("Pearson.lazy_load_spectra: Library was already loaded")
             return
 
         self.compound_names = []  # positional, so not required to be unique
         self.library_spectra = []
 
-        for (dirpath, _dirnames, filenames) in os.walk(self.feature.library_dir):
-            for filename in sorted(filenames):
-                if filename.startswith(".") or not filename.endswith(".csv"):
-                    log.debug(f"Pearson.lazy_load_spectra: ignoring {filename}")
-                    continue
+        library_dirs = []
+        if self.feature.use_dist:
+            library_dirs.append(self.feature.dist_library_dir)
+        library_dirs.append(self.feature.user_library_dir)
 
-                basename = filename.removesuffix(".csv")
-                pathname = os.path.join(dirpath, filename)
-                self.compound_names.append(basename)
+        # recursively iterate down through each folder tree, looking for .csv files
+        for library_dir in library_dirs:
+            if not os.path.isdir(library_dir):
+                continue
 
-                log.debug(f"Pearson.lazy_load_spectra: loading {basename} ({pathname})")
-                try:
-                    csv_loader = CSVLoader(pathname)
-                    pr, metadata = csv_loader.load_data(scalar_metadata=True)
-                except:
-                    self.ctl.marquee.error(f"LibraryMatching: error loading {pathname}")
-                    log.error(f"Failed to load library spectrum {pathname}", exc_info=1)
-                    continue
+            for (dirpath, _dirnames, filenames) in os.walk(library_dir):
+                for filename in sorted(filenames):
+                    if filename.startswith(".") or not filename.endswith(".csv"):
+                        log.debug(f"Pearson.lazy_load_spectra: ignoring {filename}")
+                        continue
 
-                df = pd.DataFrame({
-                    'Wavenumber': pr.get_wavenumbers(),
-                    'Intensity': pr.get_processed()
-                })
-                self.library_spectra.append(df)
+                    basename = filename.removesuffix(".csv")
+                    pathname = os.path.join(dirpath, filename)
 
-    def process(self, request, wavenumbers, spectrum):
-        if not self.feature.library_dir:
-            self.marquee_message = "Select library directory to perform Raman matching"
-            return None, None
+                    if library_dir == self.feature.dist_library_dir:
+                        basename += "*"
 
+                    self.compound_names.append(basename)
+
+                    log.debug(f"Pearson.lazy_load_spectra: loading {basename} ({pathname})")
+                    try:
+                        # note that we load metadata, but don't do anything with it (even label)
+                        csv_loader = CSVLoader(pathname)
+                        pr, metadata = csv_loader.load_data(scalar_metadata=True)
+                    except:
+                        self.ctl.marquee.error(f"LibraryMatching: error loading {pathname}")
+                        log.error(f"Failed to load library spectrum {pathname}", exc_info=1)
+                        continue
+
+                    df = pd.DataFrame({
+                        'Wavenumber': pr.get_wavenumbers(),
+                        'Intensity': pr.get_processed()
+                    })
+                    self.library_spectra.append(df)
+
+    def process(self, wavenumbers, spectrum):
         try:
             self.lazy_load_library()
 
-            match_result = self.generate_result(request, wavenumbers, spectrum)
+            match_result = self.generate_result(wavenumbers, spectrum)
             if match_result is None or len(match_result) == 0:
                 log.debug("Pearson.process: ignoring null response for now")
                 return None, None
@@ -359,7 +406,7 @@ class Pearson:
             log.debug(f"caught exception during Pearson.process", exc_info=1)
             return None, None
 
-    def generate_result(self, request, wavenumbers, spectrum):
+    def generate_result(self, wavenumbers, spectrum):
         """
             a simple correlation routine
 
@@ -417,7 +464,7 @@ class Pearson:
             correlation, _ = pearsonr(library_spectrum, spectrum_interp)
 
             # track all matches that meet the minimum score
-            if correlation >= request.fields["Min Score"]:
+            if correlation >= self.feature.min_score:
                 matches.append({"Score": correlation, "Name": self.compound_names[libraryID]})
 
                 # track best correlation so we can graph top-matching library spectrum

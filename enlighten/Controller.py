@@ -2032,12 +2032,21 @@ class Controller:
                 return
 
         ########################################################################
-        # KnowItAll
+        # Library Matching and KnowItAll
         ########################################################################
 
-        if selected and self.page_nav.doing_raman():
-            # log.debug("process_reading: sending KIA request (reprocessing = %s)", reprocessing)
-            self.kia_feature.process(pr, settings)
+        # only attempt library matching on the "foreground" spectrometer
+        if selected:
+            
+            # give KnowItAll first dibs
+            matching_performed = False
+            if self.page_nav.doing_raman():
+                if self.kia_feature.enabled:
+                    self.kia_feature.process(pr, settings)
+                    matching_performed = False
+
+            if not matching_performed: 
+                self.library_matching.process(pr)
 
         ########################################################################
         # Re-Processing complete

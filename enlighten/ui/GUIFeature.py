@@ -117,7 +117,7 @@ class GUIFeature(EnlightenFeature):
             self.ctl.stylesheets.apply(button, f"{active_color}_gradient_button")
         else:
             self.ctl.stylesheets.apply(button, "gray_gradient_button")
-    
+
     def make_pen(self, widget=None, color=None, selected=False, width=None):
         """ @param widget: allows enlighten.ini to override color/style for named widgets """
         if color is None and widget is not None:
