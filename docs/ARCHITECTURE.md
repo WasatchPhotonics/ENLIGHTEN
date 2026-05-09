@@ -353,20 +353,20 @@ There a number of things worth observing about that diagram:
 There are five queues used to communicate across the four layers of spectrometer
 communication:
 
-        _____________________________________    __
-       |_____________Controller______________|     |
-         |          |          ^           ^       | main 
-         |     _____v__________|_____      |       | thread
-         |    |_WasatchDeviceWrapper_|     |     __|
-         |          |          ^ settings  |
-   alert |  command |          | queue     | message  
-   queue |    queue |          | response  | queue   
-         |          |          | queue     |        
-         |       ___v__________|__         |     __
-         |      |__WrapperWorker__|        |       |
-         |          |          ^           |       | child
-        _v__________v__________|___________|_      | thread
-       |__________InterfaceDevice____________|   __|
+         _____________________________________    __
+        |_____________Controller______________|     |
+          |          |          ^           ^       | main 
+          |     _____v__________|_____      |       | thread
+          |    |_WasatchDeviceWrapper_|     |     __|
+          |          |          ^ settings  |
+    alert |  command |          | queue     | message  
+    queue |    queue |          | response  | queue   
+          |          |          | queue     |        
+          |       ___v__________|__         |     __
+          |      |__WrapperWorker__|        |       |
+          |          |          ^           |       | child
+         _v__________v__________|___________|_      | thread
+        |__________InterfaceDevice____________|   __|
         
 Two queues go downward, from ENLIGHTEN to the InterfaceDevice:
 
