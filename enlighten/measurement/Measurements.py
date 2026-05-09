@@ -44,11 +44,6 @@ class Measurements:
         self.is_collapsed = False
         self.insert_top = True
 
-        # observers
-        self.observers = {
-            "export": []
-        }
-
         # binding
         cfu.pushButton_erase_captures      .clicked    .connect(self.erase_all_callback)
         cfu.pushButton_export_session      .clicked    .connect(self.export_callback)
@@ -147,18 +142,6 @@ class Measurements:
     #                                Methods                                   #
     #                                                                          #
     # ##########################################################################
-
-    ##
-    # Register the given callback (typically an instance method) if the named
-    # event occurs.
-    #
-    # @param event    (Input) a string (supported values: Measurements.observers.keys())
-    # @param callback (Input) a func or method to call if the named event occurs
-    def register_observer(self, event, callback):
-        if event in self.observers:
-            self.observers[event].append(callback)
-        else:
-            log.error("Measurements has no observable event %s", event)
 
     ##
     # Enable or disable the Identification button on all Measurement ThumbnailWidgets.
@@ -420,7 +403,7 @@ class Measurements:
                 self.export_session_csv(directory, filename, visible_only=visible_only)
 
             # cache export dictionary so we can re-use it between JSON and ExternalAPI
-            if self.ctl.save_options.save_json() or len(self.observers["export"]) > 0:
+            if self.ctl.save_options.save_json() or "export" in self.observers:
                 export = self.generate_export_dict(visible_only=visible_only)
 
             if self.ctl.save_options.save_json():
@@ -429,8 +412,7 @@ class Measurements:
             if self.ctl.save_options.save_spc():
                 self.export_session_spc(directory, filename, visible_only=visible_only)
 
-        for callback in self.observers["export"]:
-            callback(export, visible_only)
+        self.notify_observers_with_value(visible_only, "export")
 
     def read_measurements(self):
         return self.generate_export_dict()

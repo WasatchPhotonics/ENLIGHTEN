@@ -75,8 +75,8 @@ class RamanIntensityCorrectionFeature(EnlightenFeature):
             the correction factors outside the configured ROI."""))
 
         self.ctl.presets.register(self, "enable_when_allowed", getter=self.get_enable_when_allowed, setter=self.set_enable_when_allowed)
-        self.ctl.page_nav.register_observer("view", self.update_visibility)
-        self.ctl.page_nav.register_observer("mode", self.update_visibility)
+        self.ctl.page_nav.register_observer(self.update_visibility, "view")
+        self.ctl.page_nav.register_observer(self.update_visibility, "mode")
         self.ctl.dark_feature.register_observer(self.update_visibility)
         self.ctl.horiz_roi.register_observer(self.update_visibility)
 

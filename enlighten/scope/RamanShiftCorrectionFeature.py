@@ -179,7 +179,8 @@ class RamanShiftCorrectionFeature(EnlightenFeature):
         else:
             self.enabled = False
 
-        self.notify_observers()
+        self.notify_observers_with_value( { "visible": self.widgets_visible,
+                                            "enabled": self.enabled } )
 
         self.checkbox_callback()
 
@@ -189,12 +190,6 @@ class RamanShiftCorrectionFeature(EnlightenFeature):
         # is called if the current excitation or wavecal is updated...this
         # could get tricky. Really need an observer pattern here.
 
-    def notify_observers(self):
-        notification = { "visible": self.widgets_visible,
-                         "enabled": self.enabled }
-        for callback in self.observers:
-            callback(notification)
-        
     ## load previous session's selected compound, if any
     def init_from_config(self):
         s = "RamanShiftCorrection"

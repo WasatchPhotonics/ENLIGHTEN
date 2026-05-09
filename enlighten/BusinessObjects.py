@@ -223,7 +223,7 @@ class BusinessObjects:
         ctl.cloud_manager               = CloudManagerFeature(ctl)
 
         ctl.vcr_controls = VCRControlsFeature(ctl)
-        ctl.vcr_controls.register_observer("save", ctl.save_current_spectra)
+        ctl.vcr_controls.register_observer(ctl.save_current_spectra, "save")
         ctl.scan_averaging.complete_registrations()
 
         ctl.baseline_correction         = BaselineCorrectionFeature(ctl)

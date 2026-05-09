@@ -22,21 +22,35 @@ class EnlightenFeature:
     def __init__(self, ctl):
         # keep a handle to the Controller to access all the other Business Objects
         self.ctl = ctl
-        self.observers = set()
+        self.observers = {} # event -> set
+        self._feature_name = type(self).__name__
 
-        feature_name = type(self).__name__
-        self.log_header(f"instantiating {feature_name}")
+        self.log_header(f"instantiating {self._feature_name}")
 
         EnlightenFeature.all_features.add(self)
 
     def disconnect(self):
         pass
 
-    def register_observer(self, callback):
-        self.observers.add(callback)
+    def register_observer(self, callback, event=None):
+        if event not in self.observers:
+            self.observers[event] = set()
+        self.observers[event].add(callback)
+        log.debug(f"registering {self._feature_name} event {event} --> callback {callback}")
 
-    def unregister_observer(self, callback):
-        self.observers.discard(callback)
+    def unregister_observer(self, callback, event=None):
+        if event in self.observers:
+            self.observers[event].discard(callback)
+
+    def notify_observers(self, event=None):
+        if event in self.observers:
+            for callback in self.observers[event]:
+                callback()
+
+    def notify_observers_with_value(self, value, event=None):
+        if event in self.observers:
+            for callback in self.observers[event]:
+                callback(value)
 
     def post_init(self):
         """

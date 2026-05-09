@@ -195,7 +195,7 @@ class PluginControllerFeature(EnlightenFeature):
         self.timer.setSingleShot(True)
         self.timer.timeout.connect(self.tick)
 
-        self.ctl.page_nav.register_observer("mode", self.update_field_visibility)
+        self.ctl.page_nav.register_observer(self.update_field_visibility, "mode")
 
     def start(self, ms):
         """

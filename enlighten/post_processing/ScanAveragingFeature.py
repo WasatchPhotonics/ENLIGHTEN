@@ -50,7 +50,7 @@ class ScanAveragingFeature(EnlightenFeature):
         self.set_scans_to_average(spec.settings.state.scans_to_average)
 
     def complete_registrations(self):
-        self.ctl.vcr_controls.register_observer("pause", self.reset)
+        self.ctl.vcr_controls.register_observer(self.reset, "pause")
 
     ##
     # When VCRControls are paused or stopped, hide the label and reset the count

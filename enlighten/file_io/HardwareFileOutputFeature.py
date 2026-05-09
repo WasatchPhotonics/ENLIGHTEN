@@ -32,7 +32,6 @@ class HardwareFileOutputFeature(EnlightenFeature):
             self.disable_output()
 
     def register_feature(self, feature_obj):
-        """ @todo rename register_observer """
         self.features.append(feature_obj)
 
     def enable_output(self):

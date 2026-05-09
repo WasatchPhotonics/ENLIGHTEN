@@ -100,7 +100,7 @@ class LibraryMatchingFeature(EnlightenFeature):
         self.timer.timeout.connect(self.tick)
         self.timer.setSingleShot(True)
 
-        self.ctl.measurement_factory.register_observer(self.factory_callback)
+        self.ctl.measurement_factory.register_observer(self.factory_callback, "save")
 
         # note that this curve is in the SCOPE Graph...we still need to add one in the DalaiRamanFeature Graph
         self.curve_scope = self.ctl.graph.add_curve("library_spectrum", 
@@ -110,7 +110,7 @@ class LibraryMatchingFeature(EnlightenFeature):
         self.curve_scope.setVisible(False)
 
     def disconnect(self):
-        self.ctl.measurement_factory.unregister_observer(self.factory_callback)
+        self.ctl.measurement_factory.unregister_observer(self.factory_callback, "save")
         super().disconnect()
 
     def stop(self):
@@ -266,10 +266,7 @@ class LibraryMatchingFeature(EnlightenFeature):
         log.debug("add_to_library: triggering save...")
         self.ctl.vcr_controls.save()
 
-    def factory_callback(self, measurement, event):
-        if event != "save":
-            return
-
+    def factory_callback(self, measurement):
         if not self.add_next_to_library:
             return
 

@@ -83,8 +83,6 @@ class GraphFeature(EnlightenFeature):
         self.show_marker    = False
         self.inverted       = False
 
-        self.observers = {}
-
         self.combo_axis.setCurrentIndex(self.current_x_axis)
 
         # if we weren't passed a pre-populated plot, then create one
@@ -187,11 +185,6 @@ class GraphFeature(EnlightenFeature):
         self.show_marker = self.cb_marker.isChecked()
         self.rescale_curves()
 
-    def register_observer(self, event, callback):
-        if event not in self.observers:
-            self.observers[event] = set()
-        self.observers[event].add(callback)
-
     ## extra <BR> provides margin from the frame bottom...probably would be better with CSS
     def set_x_axis_label(self, text, locked=False):
         self.plot.setLabel(text=text+"<br>", axis="bottom")
@@ -216,9 +209,7 @@ class GraphFeature(EnlightenFeature):
             # traces or paused acquisition)
             self.rescale_curves()
 
-            if "change_axis" in self.observers:
-                for callback in self.observers["change_axis"]:
-                    callback(old_axis, enum)
+            self.notify_observers_with_value( (old_axis, enum), "change_axis")
         except:
             log.error("Error setting suffix", exc_info=1)
             pass

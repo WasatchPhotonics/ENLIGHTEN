@@ -34,7 +34,6 @@ class LaserControlFeature(EnlightenFeature):
         self.slider_stop_usb = False
         self.locked = False
         self.restrictions = set()
-        self.observers = { "enabled": set(), "disabled": set() }
 
         self.initializing = False
         self.area_at_start = None
@@ -72,7 +71,7 @@ class LaserControlFeature(EnlightenFeature):
                         cfu.comboBox_laser_power_unit ]:
             widget.installEventFilter(ScrollStealFilter(widget))
 
-        self.ctl.page_nav.register_observer("mode", self.page_nav_mode_callback)
+        self.ctl.page_nav.register_observer(self.page_nav_mode_callback, "mode")
 
     def page_nav_mode_callback(self):
         cfu = self.ctl.form.ui
@@ -101,12 +100,6 @@ class LaserControlFeature(EnlightenFeature):
     # ##########################################################################
     # Public Methods
     # ##########################################################################
-
-    def register_observer(self, event, callback):
-        if event not in self.observers:
-            log.error(f"register_observer: unsupported event {event}")
-            return
-        self.observers[event].add(callback)
 
     def set_locked(self, flag):
         self.locked = flag
@@ -246,11 +239,7 @@ class LaserControlFeature(EnlightenFeature):
 
         self.ctl.status_indicators.update_visibility()
 
-        event = "enabled" if flag else "disabled"
-        for callback in self.observers[event]:
-            log.debug(f"set_laser_enable: calling {event} callback {callback}")
-            callback()
-
+        self.notify_observers("enabled" if flag else "disabled")
         self.ctl.sounds.play("laser_on" if flag else "laser_off")
 
     def tick_status(self):
@@ -573,7 +562,10 @@ class LaserControlFeature(EnlightenFeature):
         spec.settings.update_wavecal()
 
     # gets called by BatteryFeature when a new battery reading is received
-    def battery_callback(self, perc, charging):
+    def battery_callback(self, state):
+        perc = state[0]
+        charging = state[1]
+
         enough_for_laser = perc >= self.MIN_BATTERY_PERC
         log.debug("enough_for_laser = %s (%.2f%%)" % (enough_for_laser, perc))
 

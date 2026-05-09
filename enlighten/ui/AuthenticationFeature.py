@@ -77,8 +77,6 @@ class AuthenticationFeature(EnlightenFeature):
         self.level = self.BASIC
         self.error_count = 0
 
-        self.observers = set()
-
         self.button_login.clicked.connect(self.login)
         self.button_login.setWhatsThis("Lets you 'login' to ENLIGHTEN™ with passwords enabling additional features.")
 
@@ -86,9 +84,6 @@ class AuthenticationFeature(EnlightenFeature):
             self.login(password=ctl.password)
         else:
             self._update_widgets()
-
-    def register_observer(self, callback):
-        self.observers.add(callback)
 
     def is_production_password(self, password):
         return hashlib.md5(password.encode('utf-8')).hexdigest() == self.PRODUCTION_DIGEST

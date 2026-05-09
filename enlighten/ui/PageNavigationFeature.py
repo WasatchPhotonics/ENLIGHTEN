@@ -148,8 +148,6 @@ class PageNavigationFeature(EnlightenFeature):
         self.has_used_raman = False
         self.current_technique = self.combo_technique.currentIndex()
 
-        self.observers = {}
-
         self.combo_technique.installEventFilter(ScrollStealFilter(self.combo_technique))
 
         self.button_raman           .clicked            .connect(self.set_operation_mode_raman)
@@ -170,11 +168,6 @@ class PageNavigationFeature(EnlightenFeature):
         cfu.frame_FactoryMode_Options.hide()
         cfu.frame_transmission_options.hide()        # todo move to TransmissionFeature
         self.set_operation_mode_non_raman()
-
-    def register_observer(self, event, callback):
-        if event not in self.observers:
-            self.observers[event] = set()
-        self.observers[event].add(callback)
 
     # ##########################################################################
     # activity introspection
@@ -291,10 +284,7 @@ class PageNavigationFeature(EnlightenFeature):
 
         # if everyone registered as observers, we could drop this...
         self.ctl.update_feature_visibility()
-
-        if "view" in self.observers:
-            for callback in self.observers["view"]:
-                callback()
+        self.notify_observers("view")
 
     # ##########################################################################
     # Page Navigation: Operation Mode
@@ -415,9 +405,7 @@ class PageNavigationFeature(EnlightenFeature):
         cfu.frame_area_scan_widget.setVisible(flag and not is_ingaas)
 
     def set_operation_mode_common(self):
-        if "mode" in self.observers:
-            for callback in self.observers["mode"]:
-                callback()
+        self.notify_observers("mode")
 
     def toggle_expert(self):
         if not self.doing_expert():

@@ -21,7 +21,6 @@ class AmbientTemperatureFeature(EnlightenFeature):
         self.curve            = None
         self.name             = "Ambient_Temperature"
         self.output_to_file   = False
-        self.observers        = set()
 
         self.populate_placeholder()
 
@@ -31,9 +30,6 @@ class AmbientTemperatureFeature(EnlightenFeature):
         self.bt_clear    .clicked             .connect(self.clear_data)
         self.bt_copy     .clicked             .connect(self.copy_data)
 
-    def register_observer(self, callback):
-        self.observers.add(callback)
-
     def notify(self, spec, s):
         """ if selected spectrometer, displays on Factory and sends to observers """
         log.debug(f"notify: {s}")
@@ -42,8 +38,7 @@ class AmbientTemperatureFeature(EnlightenFeature):
 
         self.lb_chart_degC.setText(s)
         self.lb_hardware_degC.setText(s)
-        for callback in self.observers:
-            callback(s)
+        self.notify_observers_with_value(s)
 
     def process_reading(self, spec, reading):
         log.debug("process_reading: start")

@@ -52,13 +52,13 @@ class CorrectionStatusFeature(EnlightenFeature):
         self.timer.start(10)
 
     def tick(self):
-        for name, corr in self.corrections:
+        for name, corr in self.corrections.items():
             lb_value = corr["label_value"]
             lb_name = corr["label_name"]
             visible = corr["visible"]
             value = corr["value"]
 
-            lb_value.setValue(value)
+            lb_value.setText(value)
             lb_value.setVisible(visible)
             lb_name.setVisible(visible)
 

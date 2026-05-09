@@ -22,13 +22,12 @@ class LaserTemperatureFeature(EnlightenFeature):
         self.curve          = None
         self.name           = "Laser_TEC_Temperature"
         self.output_to_file = False
-        self.observers      = set()
 
         self.populate_placeholder()
 
         self.ctl.multispec.register_strip_feature(self)
         self.ctl.hardware_file_manager.register_feature(self)
-        self.ctl.page_nav.register_observer("mode", self.update_visibility)
+        self.ctl.page_nav.register_observer(self.update_visibility, "mode")
 
         self.bt_clear    .clicked             .connect(self.clear_data)
         self.bt_copy     .clicked             .connect(self.copy_data)
@@ -60,17 +59,13 @@ class LaserTemperatureFeature(EnlightenFeature):
         if spec and spec.settings.is_xs() and spec.settings.eeprom.sig_laser_tec:
             self.ctl.multispec.change_device_setting("set_laser_tec_mode", self.combo_mode.currentIndex())
 
-    def register_observer(self, callback):
-        self.observers.add(callback)
-
     def notify(self, spec, s):
         """ if selected spectrometer, displays on Factory and sends to observers """
         if spec != self.ctl.multispec.current_spectrometer():
             return
 
         self.lb_degC.setText(s)
-        for callback in self.observers:
-            callback(s)
+        self.notify_observers_with_value(s)
 
     def process_reading(self, spec, reading):
         if spec is None:

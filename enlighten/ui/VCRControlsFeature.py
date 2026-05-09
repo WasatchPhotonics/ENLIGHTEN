@@ -57,9 +57,9 @@ class VCRControlsFeature(EnlightenFeature):
             "stop":             "Cancel the current operation"
         }
 
-        self.callbacks = {} 
+        # pre-initialize the set of supported events, so button state can reflect active listeners
         for name in self.tooltips:
-            self.callbacks[name] = set()
+            self.observers[name] = set()
 
         self.bt_pause           .setToolTip(self.tooltips["pause"])
         self.bt_play            .setToolTip(self.tooltips["play"])
@@ -102,40 +102,17 @@ class VCRControlsFeature(EnlightenFeature):
     # Observers
     ############################################################################
 
-    ## 
-    # Register a callback function (or instance method) to a named VCRControls
-    # event.
-    #
-    # @param event one of "stop", "play", "stop", "pause", "step", "step_save", 
-    #              "start_collection"
-    # @param callback function to be called when the named event occurs
-    def register_observer(self, event, callback):
-        if event not in self.callbacks:
-            log.critical("VCRControls.register has no event %s", event)
-            return
-        log.debug("registering observer: %s -> %s", event, str(callback))
-        self.callbacks[event].add(callback)
-
-        self.update_visibility()
+    def register_observer(self, callback, event):
+        super().register_observer(callback, event)
+        self.update_visibility() # stop-button state depends on registration
 
     ## Remove a registered callback for the named event.
-    def unregister_observer(self, event, callback):
-        if event not in self.callbacks:
-            log.critical("VCRControls.unregister has no event %s", event)
-        elif callback in self.callbacks[event]:
-            log.debug("unregistering %s from event %s", str(callback), event)
-            self.callbacks[event].remove(callback)
-            self.update_visibility() # stop-button state depends on registration
-        else:
-            # Some potential observers only register callbacks when they need to
-            # (i.e. BatchCollection), but unregister everything on shutdown for
-            # safety.
-            #
-            # log.debug("VCRControls didn't have a registration from event %s to %s", event, str(callback))
-            pass
+    def unregister_observer(self, callback, event):
+        super().unregister_observer(callback, event)
+        self.update_visibility() # stop-button state depends on registration
 
     def _stop_enabled(self):
-        return len(self.callbacks["stop"]) > 0
+        return len(self.observers["stop"]) > 0
 
     # ##########################################################################
     # Button callbacks
@@ -151,16 +128,14 @@ class VCRControlsFeature(EnlightenFeature):
     def pause(self, spec=None): 
         log.debug("pause")
         self._set_paused(True, all_=self.ctl.multispec.locked, spec=spec)
-        for callback in list(self.callbacks["pause"]):
-            callback()
+        self.notify_observers("pause")
         self.update_visibility()
 
     ## set the current spectrometer to continuous acquisition
     def play(self, spec=None):
         log.debug("play")
         self._set_paused(False, all_=self.ctl.multispec.locked, spec=spec)
-        for callback in list(self.callbacks["play"]):
-            callback()
+        self.notify_observers("play")
         self.update_visibility()
 
     ## 
@@ -177,8 +152,7 @@ class VCRControlsFeature(EnlightenFeature):
     # A single click of the "stop" button should correctly stop both.
     def stop(self): 
         log.debug("stop")
-        for callback in list(self.callbacks["stop"]):
-            callback()
+        self.notify_observers("stop")
 
         # we essentially have a permanent hardcoded callback from stop -> scan_averaging, 
         # but it's not implemented in the list, as we don't want the callback to expire,
@@ -189,7 +163,7 @@ class VCRControlsFeature(EnlightenFeature):
 
         # after the stop has been processed, clear all observers 
         # (each stop is a one-time event)
-        self.callbacks["stop"] = set()
+        self.observers["stop"] = set()
 
         self.update_visibility()
 
@@ -197,14 +171,12 @@ class VCRControlsFeature(EnlightenFeature):
     def save(self): 
         log.debug("save")
 
-        if len(self.callbacks["save"]) == 0:
+        if len(self.observers["save"]) == 0:
             # this is one scenario where the save button does nothing
             # if this happens, it means the main save callback was unregistered
             msgbox("Fatal Error: Save button has no callback.", "Error")
 
-        for callback in list(self.callbacks["save"]):
-            callback()
-
+        self.notify_observers("save")
         self.update_visibility()
 
     ## collect one measurement, then go back to paused
@@ -214,19 +186,15 @@ class VCRControlsFeature(EnlightenFeature):
         # pass along any callback related to the completion of the TakeOne process
         self.ctl.take_one.start(save=save, completion_callback=completion_callback, template=take_one_template)
 
-        # to be clear, these callbacks indicate the "step" button was clicked/fired, 
+        # to be clear, these notifications indicate the "step" button was clicked/fired, 
         # NOT that it is complete
-        for callback in list(self.callbacks["step"]):
-            log.debug(f"step: calling callback {callback}")
-            callback()
-
+        self.notify_observers("step")
         self.update_visibility()
 
     def step_save(self, completion_callback=None, take_one_template=None): 
         log.debug("step_save")
         self.step(save=True, completion_callback=completion_callback, take_one_template=take_one_template)
-        for callback in list(self.callbacks["step_save"]):
-            callback()
+        self.notify_observers("step_save")
         self.update_visibility()
 
     def start_collection(self): 
@@ -243,9 +211,7 @@ class VCRControlsFeature(EnlightenFeature):
             self.pause()
 
         # tell BatchCollection or other observers to get on with it
-        for callback in list(self.callbacks["start_collection"]):
-            callback()
-
+        self.notify_observers("start_collection")
         self.update_visibility()
         
     # ##########################################################################

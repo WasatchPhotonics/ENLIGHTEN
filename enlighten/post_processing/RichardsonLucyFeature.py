@@ -59,7 +59,7 @@ class RichardsonLucyFeature(EnlightenFeature):
         # Whether we are graphing in wavelengths or wavenumbers, we should be able
         # to perform the deconvolution in whatever axis matches the configured 
         # ideal resolution.  Not sure what I was thinking here.
-        self.ctl.graph.register_observer("change_axis", self.change_axis_callback)
+        self.ctl.graph.register_observer(self.change_axis_callback, "change_axis")
 
         # If the user dis/enables or changes cropping, re-generate guassian.  
         # (Alternative design would be to include ROI tuple in the cache key.)
@@ -73,7 +73,7 @@ class RichardsonLucyFeature(EnlightenFeature):
     def update_from_gui(self):
         self.enabled = self.cb_enable.isChecked()
 
-    def change_axis_callback(self, old_axis, new_axis):
+    def change_axis_callback(self, ignore):
         self.update_visibility()
 
     def update_visibility(self, spec=None):

@@ -1,7 +1,9 @@
 # Version History
 
 - 2026-??-?? 4.2.2
-    - added EnlightenFeature
+    - Infrastructure
+        - added EnlightenFeature
+        - generalized observers
     - Laser Control
         - IDS Autonomous Collection
         - BLE laser PWM works
@@ -29,7 +31,7 @@
         - TODO: two graphs, side by side, not movable or collapsible
         - TODO: nrd5-r3-model-17-opset18 (https://bitbucket.org/wasatchphotonics/emauihelpers/src/main/models/)
     - CalibrationStatusFeature 
-        - TODO: create above Prefix/Note/Suffix (minimizable, all models)
+        - TODO: support minimize
     - STARTING: 
         - Safe Mode
         - Etalon Correction

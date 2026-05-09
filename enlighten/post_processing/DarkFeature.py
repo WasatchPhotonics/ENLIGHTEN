@@ -72,17 +72,12 @@ class DarkFeature(EnlightenFeature):
 
                 Darks are cheap, signal is priceless!"""))
 
-        self.ctl.laser_control.register_observer("enabled", self.laser_control_enabled)
+        self.ctl.laser_control.register_observer(self.laser_control_enabled, "enabled")
         ctl.presets.register(self, "dark", setter=self.preset_changed, getter=None)
-
-        self.observers = set()
 
     # ##########################################################################
     # public methods
     # ##########################################################################
-
-    def register_observer(self, callback):
-        self.observers.add(callback)
 
     def update_visibility(self):
         spec = self.ctl.multispec.current_spectrometer()
@@ -192,8 +187,7 @@ class DarkFeature(EnlightenFeature):
         self.ctl.save_options.update_widgets()
         self.ctl.gui.colorize_button(self.button_toggle, spec.app_state.has_dark())
 
-        for callback in self.observers:
-            callback()
+        self.notify_observers()
 
     # ##########################################################################
     # callbacks (truncates any widget arguments)

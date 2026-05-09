@@ -87,8 +87,6 @@ class CursorFeature(EnlightenFeature):
         self.current_percent = None
         self.center()
 
-        self.observers = []
-
         self.converter = AxisConverter(ctl)
 
         # place a movable vertical line on the scope graph
@@ -108,7 +106,7 @@ class CursorFeature(EnlightenFeature):
         self.cb_enable.setChecked(False)
 
         # add Cursor to Graph
-        self.ctl.graph.register_observer("change_axis", self.change_axis_callback)
+        self.ctl.graph.register_observer(self.change_axis_callback, "change_axis")
 
         for widget in [ self.cb_enable, self.ds_value, cfu.pushButton_cursor_up, cfu.pushButton_cursor_dn ]:
             widget.setWhatsThis(util.unwrap("""
@@ -120,12 +118,6 @@ class CursorFeature(EnlightenFeature):
                 You can also move the cursor with the keyboard using ctrl-left 
                 and ctrl-right."""))
             
-    def register_observer(self, callback):
-        self.observers.append(callback)
-
-    def deregister_observer(self, callback):
-        self.observers.pop(callback, None)
-
     def set_enabled(self, flag):
         self.cb_enable.setChecked(flag)
 
@@ -151,8 +143,10 @@ class CursorFeature(EnlightenFeature):
         util.decr_spinbox(self.ds_value)
         self.update()
 
-    def change_axis_callback(self, old_axis, new_axis):
+    def change_axis_callback(self, pair):
         """ The user changed the current x-axis on the Graph """
+        old_axis = pair[0]
+        new_axis = pair[1]
 
         self.convert_location(old_axis, new_axis)
 
@@ -193,8 +187,7 @@ class CursorFeature(EnlightenFeature):
             x, y = self.get_pos()
             if x is None or y is None:
                 return
-            for callback in self.observers:
-                callback(x, y)
+            self.notify_observers_with_value( (x, y) )
         except:
             log.error("Error updating cursor", exc_info=1)
 

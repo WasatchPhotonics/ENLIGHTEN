@@ -179,7 +179,9 @@ class StatusBarFeature(EnlightenFeature):
         s = action.text()
         self.show(s, action.isChecked())
 
-    def cursor_updated(self, x, y):
+    def cursor_updated(self, pos):
+        x = pos[0]
+        y = pos[1]
         self.set("Cursor Intensity", f"{y:.2f}")
 
     def detector_temp_updated(self, degC):
@@ -190,7 +192,9 @@ class StatusBarFeature(EnlightenFeature):
             s = f"{s:-.2f} °C"
         self.set("Laser Temperature", s)
 
-    def battery_updated(self, perc, charging):
+    def battery_updated(self, state):
+        perc = state[0]
+        charging = state[1]
         spec = self.ctl.multispec.current_spectrometer()
         if spec and spec.settings.eeprom.has_battery:
             self.set("Battery", f"{perc:.2f}%")

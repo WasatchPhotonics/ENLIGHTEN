@@ -38,10 +38,10 @@ class LibraryMatching(EnlightenPluginBase):
         self.pearson = Pearson(self)
 
         self.configure_fields()
-        self.ctl.measurement_factory.register_observer(self.factory_callback)
+        self.ctl.measurement_factory.register_observer(self.factory_save_callback, "save")
 
     def disconnect(self):
-        self.ctl.measurement_factory.unregister_observer(self.factory_callback)
+        self.ctl.measurement_factory.unregister_observer(self.factory_save_callback, "save")
         super().disconnect()
 
     def configure_fields(self):
@@ -179,10 +179,7 @@ class LibraryMatching(EnlightenPluginBase):
         log.debug("add_to_library: triggering save...")
         self.ctl.vcr_controls.save()
 
-    def factory_callback(self, measurement, event):
-        if event != "save":
-            return
-
+    def factory_callback(self, measurement):
         if not self.add_next_to_library:
             return
 

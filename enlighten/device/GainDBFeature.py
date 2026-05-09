@@ -64,7 +64,7 @@ class GainDBFeature(EnlightenFeature):
         cfu.pushButton_gain_dn.clicked.connect(self._dn_callback)
 
         self.ctl.presets.register(self, "gain_db", getter=self.get_db, setter=self.set_db_callback)
-        self.ctl.page_nav.register_observer("mode", self.update_visibility)
+        self.ctl.page_nav.register_observer(self.update_visibility, "mode")
         self.update_visibility()
 
         for widget in self.widgets:

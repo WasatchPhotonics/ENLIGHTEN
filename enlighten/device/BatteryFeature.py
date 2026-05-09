@@ -29,19 +29,8 @@ class BatteryFeature(EnlightenFeature):
         ctl.multispec.register_strip_feature(self)
         ctl.hardware_file_manager.register_feature(self)
 
-        self.observers = set()
-
         cfu.pushButton_battery_clear_history.clicked.connect(self.clear_data)
         cfu.pushButton_battery_copy_history.clicked.connect(self.copy_data) 
-
-    def register_observer(self, callback):
-        self.observers.add(callback)
-
-    def unregister_observer(self, callback):
-        try:
-            self.observers.remove(callback)
-        except:
-            pass
 
     def process_reading(self, spec, reading):
         current_spec = self.ctl.multispec.current_spectrometer()
@@ -74,8 +63,7 @@ class BatteryFeature(EnlightenFeature):
         if spec == current_spec:
             self.lb_perc.setText(f"{perc:.2f} %")
             
-        for cb in self.observers:
-            cb(perc, is_charging)
+        self.notify_observers_with_value( (perc, is_charging) )
 
         # update graph on Factory View
         active_curve = self.ctl.multispec.get_hardware_feature_curve(self.name, spec.device_id)

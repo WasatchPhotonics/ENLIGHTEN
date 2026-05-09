@@ -55,11 +55,10 @@ class DetectorTemperatureFeature(EnlightenFeature):
             self.button_dn
         ]
 
-        self.observers = []
         self.populate_placeholder()
         self.ctl.multispec.register_strip_feature(self)
         self.ctl.hardware_file_manager.register_feature(self)
-        self.ctl.page_nav.register_observer("mode", self.page_nav_mode_callback)
+        self.ctl.page_nav.register_observer(self.page_nav_mode_callback, "mode")
 
         self.page_nav_mode_callback()
 
@@ -72,13 +71,6 @@ class DetectorTemperatureFeature(EnlightenFeature):
     # ##########################################################################
     # public methods
     # ##########################################################################
-
-    def register_observer(self, callback):
-        if callback not in self.observers:
-            self.observers.append(callback)
-
-    def unregister_observer(self, callback):
-        self.observers.pop(callback, None)
 
     def enable_widgets(self, flag):
         for w in [ self.cb_enabled,
@@ -210,8 +202,7 @@ class DetectorTemperatureFeature(EnlightenFeature):
             self.lb_raw.setText("0x%03x" % int(reading.detector_temperature_degC))
 
         # notify observers
-        for callback in self.observers:
-            callback(reading.detector_temperature_degC)
+        self.notify_observers_with_value(reading.detector_temperature_degC)
 
     def apply_setpoint(self, value=None):
         """ Send GUI value downstream (and turns on if it was off). """

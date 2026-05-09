@@ -212,7 +212,7 @@ class BatchCollectionFeature(EnlightenFeature):
 
         # register with VCRButtons
         self.ctl.vcr_controls.batch_collection = self
-        self.ctl.vcr_controls.register_observer("start_collection", self.start_collection)
+        self.ctl.vcr_controls.register_observer(self.start_collection, "start_collection")
 
     def init_from_config(self):
         log.debug("init_from_config")
@@ -355,7 +355,7 @@ class BatchCollectionFeature(EnlightenFeature):
                 log.error("unable to start BatchCollection due to laser password")
                 return False
 
-        self.ctl.vcr_controls.register_observer("stop", self.vcr_stop)
+        self.ctl.vcr_controls.register_observer(self.vcr_stop, "stop")
         self.collection_start_time = datetime.datetime.now()
         if self.spinbox_collection_timeout.value() != 0:
             self.collection_timeout = self.collection_start_time + datetime.timedelta(seconds=self.spinbox_collection_timeout.value())
@@ -558,8 +558,8 @@ class BatchCollectionFeature(EnlightenFeature):
             self.ctl.laser_control.set_laser_enable(False, all_=True)
         self.ctl.auto_raman.force_on(False)
 
-        self.ctl.vcr_controls.unregister_observer("save", self.save_complete)
-        self.ctl.vcr_controls.unregister_observer("stop", self.vcr_stop)
+        self.ctl.vcr_controls.unregister_observer(self.save_complete, "save")
+        self.ctl.vcr_controls.unregister_observer(self.vcr_stop, "stop")
         self.current_batch_start_time = None
 
         self.ctl.multispec.change_device_setting("take_one_request", None)

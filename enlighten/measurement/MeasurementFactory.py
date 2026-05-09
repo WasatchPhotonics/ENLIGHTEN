@@ -6,6 +6,7 @@ import json
 import os
 import re
 
+from enlighten.EnlightenFeature import EnlightenFeature
 from enlighten.measurement.Measurement import Measurement
 from enlighten.parser.ColumnFileParser import ColumnFileParser
 from enlighten.parser.ExportFileParser import ExportFileParser
@@ -25,27 +26,17 @@ else:
 
 log = logging.getLogger(__name__)
 
-##
-# This is a Factory used by Measurements to create Measurement objects, each 
-# coupled to a ThumbnailWidget.
-class MeasurementFactory:
+class MeasurementFactory(EnlightenFeature):
+    """
+    This is a Factory used by Measurements to create Measurement objects, each 
+    coupled to a ThumbnailWidget.
+    """
 
     def clear(self):
         pass
 
     def __init__(self, ctl):
-        self.ctl = ctl
-
-        self.observers = set()
-
-    def register_observer(self, callback):
-        self.observers.add(callback)
-
-    def unregister_observer(self, callback):
-        try:
-            self.observers.remove(callback)
-        except:
-            pass
+        super().__init__(ctl)
 
     # ##########################################################################
     # Live readings
@@ -77,11 +68,9 @@ class MeasurementFactory:
 
         if save:
             try:
-                for observer in self.observers:
-                    observer(measurement=measurement, event="pre-save")
+                self.notify_observers_with_value(measurement, "pre-save")
                 measurement.save()
-                for observer in self.observers:
-                    observer(measurement=measurement, event="save")
+                self.notify_observers_with_value(measurement, "save")
             except:
                 msg = "Failed to dispatch save file.\n\n"+traceback.format_exc()
                 log.error(msg)
@@ -264,8 +253,7 @@ class MeasurementFactory:
                 log.error("create_from_file: error finalizing measurement", exc_info=1)
 
         for m in measurements:
-            for observer in self.observers:
-                observer(measurement=m, event="load")
+            self.notify_observers_with_value(m, "load")
 
         return measurements
 
