@@ -8,24 +8,29 @@ _Note that all classes which start with a capital "Q" are part of Qt._
 ## Infrastructure
 
 The following files and classes represent the overall skeletal structure and 
-scaffolding of ENLIGHTEN "as a generic Qt GUI application" (irrespective of 
-domain particulars like spectroscopy concepts or spectrometer hardware). 
+scaffolding of ENLIGHTEN "as a generic Qt GUI application", irrespective of 
+domain particulars like spectroscopy concepts or spectrometer hardware. 
 Basically these are all the things which are involved in bringing the program up
 and showing the initial (blank) graph.
+
+Although this section is important for understanding how ENLIGHTEN is launched,
+these files are almost never touched. Most actual day-to-day ENLIGHTEN development
+occurs completely within EnlightenFeatures and EnlightenPlugins, so you can skip
+ahead to there if you like.
 
 ### enlighten.py
 
 At its heart, ENLIGHTEN is a Python script. When you "run ENLIGHTEN," you are 
 literally running the script `scripts/enlighten.py`.
 
-(If you installed ENLIGHTEN from a binary Windows installer, you may be running a
-program called "enlighten.exe", but that's just the compiled form of this script.)
+If you installed ENLIGHTEN from a binary Windows installer, you may be running an
+executable called "enlighten.exe", but that's still just the same script after it 
+got run through pyinstaller.
 
-This script does these things:
+This script basically does this:
 
-- instantiates an [EnlightenApplication](#EnlightenApplication)
 - parses command-line arguments
-- tries to hide the Windows console window from the compiled .exe (currently broken)
+- instantiates an [EnlightenApplication](#EnlightenApplication)
 - calls EnlightenApplication.run()
 
 ### EnlightenApplication
@@ -38,16 +43,15 @@ It does these things:
 
 - instantiates a `QApplication`, which will hold the "run loop"
 - instantiates a [BasicWindow](#BasicWindow), which is the GUI you see on-screen
-  (see below)
 - instantiates a `wasatch.applog`, which handles all application logging
 - displays a pretty `QSplashScreen` for you to look at while everything else loads
-- instantiates a [Controller](#Controller), passing in all the above
+- instantiates a [Controller](#Controller), passing in handles to all the above
 - calls `QApplication.exec()`, which basically means "display the form and keep 
   ticking all threads until the form is closed"
 
 Note that no particular method is called on the `Controller`. It doesn't have to, 
 because the `Controller` constructor kicks off various threads (`QTimers`) which go 
-and look for spectrometers to graph, poll data from previously-connected 
+and look for spectrometers to connect, poll data from previously-connected 
 spectrometers, and otherwise wait for you to click things on the GUI.
 
 ### BasicWindow
@@ -57,22 +61,24 @@ extends `QMainWindow`, meaning it is "the main window" of the running
 `QApplication`.
 
 The main thing it does is import [enlighten_layout](#enlighten_layout), 
-which you will see referenced throughout the code-base as `Controller.form.ui` 
+which you will see referenced throughout the code-base as `ctl.form.ui` 
 (sometimes abbreviated as `cfu`).
 
 ### enlighten_layout
 
-`enlighten.assets.uic_qrc.enlighten_layout` is the all-important file which defines
-"the ENLIGHTEN GUI" -- all the `QFrames`, `QPushButtons` and pretty much everything 
-you see on-screen.
+`enlighten.assets.uic_qrc.enlighten_layout` is the all-important Python object 
+which defines "the ENLIGHTEN GUI" -- all the `QFrames`, `QPushButtons` and pretty
+much everything you see on-screen.
 
 The "source code" for this file is:
 
     enlighten/assets/uic_qrc/enlighten_layout.ui
 
-It is literally an XML file, and often I do tweak it directly in the XML.
+It is literally an ordinary XML file, and increasingly I just update it and add 
+new GUI components directly within the XML.
 
-.ui files are normally edited using [Qt Designer](https://doc.qt.io/qt-6/qtdesigner-manual.html).
+.ui files can also be created and edited using 
+[Qt Designer](https://doc.qt.io/qt-6/qtdesigner-manual.html).
 The path at which that utility is installed on your system varies with OS and Qt
 version and seems to change over time. Currently if using PySide6 and `venv` it 
 lands in `VENV_ROOT/Scripts/pyside6-designer`. If not using `venv`, it could be in
@@ -90,12 +96,16 @@ and referenced as `Controller.form.ui`.
 #### CSS
 
 Note that `enlighten_layout.ui` contains a large CSS stylesheet at the top
-of the XML. **DO NOT EDIT THIS STYLESHEET.**
+of the XML. **DO NOT EDIT THE STYLESHEET IN THE .UI**
 
-Instead, edit the file `enlighten/assets/stylesheets/dark/enlighten.css`. 
-`rebuild_resources.sh` calls another script (`embed_stylesheet.sh`) to 
-automatically update the stylesheet in `enlighten_layout.ui` with the one from 
-`enlighten.css`.
+Instead, if you want to change the overall look-and-feel, edit the "master"
+stylesheet `enlighten/assets/stylesheets/dark/enlighten.css`. This file gets
+automatically prepended to `enlighten_layout.ui` during the build process, by
+`rebuild_resources.sh` (via the script `embed_stylesheet.sh`).
+
+Therefore, any edits you make to the CSS in `enlighten_layout.ui` will be 
+automatically reset the next time you rebuild the GUI. To make permanent edits,
+those need to be made in `enlighten.css`.
 
 ### rebuild_resources.sh
 
@@ -111,12 +121,11 @@ The conversion is performed by two programs which come as part of the PySide
 distribution, `rcc` and `uic` (current names are `pyside6-rcc` and `pyside6-uic`).
 
 The actual names and location of these programs varies from release to release,
-and finding / obtaining them is historically one of the thornier bits of porting
-ENLIGHTEN to a new OS.
+and finding / obtaining them can sometimes be challenging.
 
 This script needs to be run when:
 
-- first cloning an ENLIGHTEN distribution 
+- first cloning an ENLIGHTEN distribution
 - changing branches or going back to an earlier tag
 - adding or editting any icons (.qrc)
 - editing [enlighten_layout](#enlighten_layout)
@@ -129,15 +138,27 @@ different operating systems (in a Git Cmd shell on Windows, I use
 Note that PySide2 generated Python 2 source, which needed to be converted through
 `2to3`.
 
+Happily, `rebuild_resources.sh` is now run _automagically_ (when necessary), by 
+Samie's wonderful `scripts/bootstrap/win11/bootstrap.sh`, which is far and away 
+the best way to run ENLIGHTEN at the moment.
+
 ### Controller
+
+Okay, so we've talked about some XML and Bash...when do we get back to Python?
+
+enlighten/Controller.py is the closest thing ENLIGHTEN has to a "main()". It was
+named in the vein of "Model-View-Controller," and it's the big class which pretty
+much kicks-off and runs everything else in the application.
 
 Fundamentally, the `enlighten.Controller` is responsible for four things:
 
-1. Calls [BusinessObjects](#BusinessObjects) to instantiate a long list
-   of "feature objects" which individually represent specific ENLIGHTEN features.
-2. Instantiates a bunch of periodic `QTimers` that go off and do application-level
-   things like monitor status. (Individual business objects may encapsulate their
-   own internal `QTimers` for feature-specific things.)
+1. Calls [BusinessObjects](#BusinessObjects) to instantiate the lengthy (and
+   growing!) list of EnlightenFeature objects which individually implement 
+   specific ENLIGHTEN features.
+2. Instantiates a handful of periodic `QTimers` that go off and do 
+   application-level things like check for new spectrometers, read data from
+   connected spectrometers, and update displays of battery, temperature and 
+   the like.
 3. Handles connection and initialization of newly-detected [Spectrometer](#Spectrometer)s.
 4. Polls connected spectrometers for new spectra to graph.
 
@@ -161,34 +182,32 @@ shorter.  Basically it's just encapsulating construction of all the various
 "feature objects" which individually encapsulate specific application and 
 spectrometer functions.
 
-Note that we would probably benefit from an ABC (Abstract Base Class) 
-`enlighten.FeatureObject` with virtual methods like:
-
-- `update_visibility`
-- `init_hotplug` (anything required when a new `Spectrometer` is connected)
-- `register_observer`
-- `close` (prepare for application shutdown)
+This has become less important as we simplified business objects by giving
+them all a handle to the Controller, and by having them all extend EnlightenFeature.
 
 ## Timing Loops
 
 These are the major event timers that "tick" important ENLIGHTEN activities.
 
 Note that `QTimers` call their "tick" function _on the GUI thread,_ meaning they
-can do what they want with Qt widgets. In contrast, `threading.Threads` are not
-on the GUI thread, and can't change Qt objects. This gets a little weird in
-plugins. 
+can do what they want with Qt widgets. In contrast, standard Python 
+`threading.Threads` are _not_ on the GUI thread, and can't change Qt objects. 
 
-**We should consider changing all `threading.Threads` to `QThreads`.**
+This gets a little weird in plugins, as some plugin methods are called on the
+GUI thread (`get_configuration`), while others aren't (`process_request`).
 
 - `Controller.bus_timer` (~1Hz) - checks for newly-connected USB spectrometers, 
-  newly discovered BLE spectrometers, and unplugged (missing) spectrometers
+  newly discovered BLE spectrometers, and unplugged (missing) spectrometers.
+
 - `Controller.hard_strip_timer` - drives the "strip-charts" in the Factory view
-  (`QTimer` should be encapsulated into `StripChartFeature`)
-- `Controller.acquisition_timer` (~10Hz) - polls each connected `Spectrometer` for 
-  latest spectrum. Note this means that, **regardless of integration time or
+  (this `QTimer` should be moved into `StripChartFeature`)
+
+- `Controller.acquisition_timer` (~20Hz) - polls each connected `Spectrometer` 
+  for latest Reading. Note this means that, **regardless of integration time or
   USB speed or anything else, ENLIGHTEN does not read or graph spectra faster
-  than 10Hz.** That is deliberate and in line with its human-centric performance
+  than 20Hz.** That is deliberate and in line with its human-centric performance
   goals.
+
 - `Controller.status_timer` (~1Hz) - checks memory usage, sends a heartbeat to
   each `Spectrometer` (probably unneeded now that we're multithreaded), polls
   for any "status messages" flowed back from 'Spectrometer` threads, updates
@@ -199,26 +218,34 @@ plugins.
 Other BusinessObjects encapsulate internal `QTimers` for their own purposes,
 including:
 
-- `enlighten.ui.Marquee` encapsulates its own `QTimer` to decide when to hide 
-  messages and `Toasts`
+- `enlighten.ui.MarqueeFeature` encapsulates its own `QTimer` to decide when to 
+  hide messages and `Toasts`
+
 - `enlighten.ui.GuideFeature` has a `QTimer` which probably isn't used ATM
+
 - `enlighten.measurement.AreaScanFeature` has a `QTimer` to show its own
   `QProgressBar` (and should probably be moved to `ui` or `factory`)
-- `enlighten.Plugins.PluginController` has a `QTimer` used in auto-loading a
-  plugin at startup
+
+- `enlighten.Plugins.PluginControllerFeature` has a `QTimer` used in auto-loading
+  a plugin at startup
+
 - `enlighten.file_io.LoggingFeature` uses a `QTimer` to update the scrolling 
   colorized view on the logfile
-- `enlighten.file_io.FileManager` uses a `QTimer` to spread-out large load 
+
+- `enlighten.file_io.FileManagerFeature` uses a `QTimer` to spread-out large load 
   operations (when a hundred measurements are being loaded at once) over time
-- `enlighten.timing.BatchCollection` uses one `QTimer` for batches, and a 
+
+- `enlighten.timing.BatchCollectionFeature` uses one `QTimer` for batches, and a 
   separate one for measurements within a batch
+
+- `enlighten.ui.CorrectionStatusFeature` uses one to dispatch GUI events
 
 Note that most `QTimers` are configured as "SingleShot" deliberately, meaning
 they complete a tick, _then_ schedule their next tick after a fixed "sleep"
-time. That means bus_timer for instance isn't really 1Hz, because ticks don't
-_start_ at 1-sec intervals, but rather the next tick _starts_ 1sec after the
-previous tick _ended._ This is deliberate and makes it impossible for any tick 
-to ever extend into another, and helps the application gracefully adapt to 
+time (or not). That means bus_timer for instance isn't really 1Hz, because ticks
+don't _start_ at 1-sec intervals, but rather the next tick _starts_ 1sec after 
+the previous tick _ended._ This is deliberate and makes it impossible for any 
+tick to ever extend into another, and helps the application gracefully adapt to 
 increased load / slower CPUs / multiple spectrometers.
 
 ## Device Connection
@@ -237,10 +264,17 @@ method.
 If `WasatchDeviceWrapper.connect` returns true, that indicates Wasatch.PY now has
 an active `wasatch.WrapperWorker` object _running in a new thread._
 
-The new `WrapperWorker` has a `WasatchDevice`. The `WasatchDevice` has a `.hardware`
-attribute which is usually a `wasatch.FeatureIdentificationDevice` (a Wasatch 
-Photonics USB spectrometer supporting the "FID" protocol defined in ENG-0001), 
-but sometimes may be a `wasatch.AndorDevice` or `wasatch.BLEDevice` or whatever).
+The new `WrapperWorker` has a `wasatch.InterfaceDevice`, which represents a high-
+level abstract interface to a spectrometer of some type. Common InterfaceDevice
+subclasses include:
+
+- WasatchDevice (used by X, XM, XS and most Wasatch Photonics spectrometers)
+- BLEDevice (used by Bluetooth XS spectrometers)
+- AndorDevice (used by XL)
+- IDSDevice (used for STARVIS prototypes)
+- TCPDevice (used for WISP / LTS)
+- OceanDevice (used for another vendor's spectrometers)
+- etc
 
 After successful `WasatchDeviceWrapper.connect()`, the `WasatchDeviceWrapper` is 
 handed to `enlighten.device.Multispec`, which is responsible for keeping track of 
@@ -251,7 +285,11 @@ Going forward, ENLIGHTEN will primarily communicate with the spectrometer throug
 the `Spectrometer` object, which will internally communicate through its
 `WasatchDeviceWrapper`'s `WrapperWorker`'s `WasatchDevice`.
 
-Conceptually, for any one spectrometer:
+## Spectrometer Entity-Relationship Diagram
+
+This is a conceptual Entity-Relationship diagram for where classes live 
+(Wasatch.PY vs ENLIGHTEN) and run (child thread vs main thread) for any one
+spectrometer:
 
      _____________________________________________________   _______________________________________________
     |____________________Child_Thread_____________________| |__________________Main_Thread__________________|
@@ -260,55 +298,204 @@ Conceptually, for any one spectrometer:
                                                                                                ____________
                                                                                               |_Controller_|
                                                                                                     | has-a 
-                                       __________________                                      _____v______ 
-                                      |_threading.Thread_|                                    |_Multispec__|
+                                         __________________                                    _____v______ 
+                                        |_threading.Thread_|                                  |_Multispec__|
                                                   /\                                                | has-many      
                                                   \/          ______________________   has-a  ______v_______
                                               is-a|          |_WasatchDeviceWrapper_|<-------|_Spectrometer_|
                                             ______|________     |                                   |
                                            |_WrapperWorker_|<---' has-a                             | convenience
                                                   | has-a                                           | handle
-                                           _______v_______                                          |
-                                          |_WasatchDevice_|                                         |
-                   _____________________________  |   |  ______________________                     |
-                  |_FeatureIdentificationDevice_|-+   +-|_SpectrometerSettings_|<-------------------'
-                                   _____________  |        |  ________
-                                  |_AndorDevice_|-+        +-|_EEPROM_|
-                                     ___________  |        |  ___________________
-                                    |_BLEDevice_|-+        +-|_SpectrometerState_|
-                                                  |
-                                                 etc
+                                          ________v________                                         |
+                                         |_InterfaceDevice_|                                        |
+                                                  /\  |                                             |
+                                              is-a\/  | has-a                                       |
+                                 _______________  |   |  ______________________                     |
+                                |_WasatchDevice_|-+   +-|_SpectrometerSettings_|<-------------------'
+                      _______________|________    |  _____________       |  ________
+                     |_FeatureInterfaceDevice_|---+-|_AndorDevice_|      +-|_EEPROM_|
+                                     ___________  |  ___________         |  ___________________
+                                    |_BLEDevice_|-+-|_TCPDevice_|        +-|_SpectrometerState_|
+                                     ___________  |  _____________
+                                    |_SPIDevice_|-+-|_OceanDevice_|
 
-Note that the `wasatch.WasatchDeviceWrapper` is part of Wasatch.PY, but is 
-instantiated by ENLIGHTEN's `Controller` in the main thread. The `wasatch.WrapperWorker`
-and "everything else" in Wasatch.PY is instantiated in the child thread.
+There a number of things worth observing about that diagram:
 
-`enlighten.Spectrometer` receives a "convenience handle" to `wasatch.SpectrometerSettings`, 
-which was instantiated and populated down in Wasatch.PY, and passed back up through the
-`WrapperWorker`.
+- `wasatch.WasatchDeviceWrapper` is part of Wasatch.PY, but is instantiated by 
+  ENLIGHTEN's `Controller` in the main thread. The `wasatch.WrapperWorker` and 
+  "everything else" in Wasatch.PY is instantiated in the per-spectrometer child 
+  thread.
 
-### Multi-Process Legacy
+- `enlighten.Spectrometer` receives a "convenience handle" to 
+  `wasatch.SpectrometerSettings`, which was instantiated and populated down in 
+  Wasatch.PY, and passed back up through the `WrapperWorker`.
 
-If some of the above seems a little overly complex and heavy-handed, you're right.
-Part of that is because ENLIGHTEN was originally designed as a _multi-process_ 
-rather than _multi-threaded_ application. That meant that everything which passed
-between the "spectrometer process" and the "GUI process" (or the "logging process")
-had to be _pickled._ That also meant no (easy) "shared memory" or shared object
-handles.
+- ENLIGHTEN (Spectrometer) and Wasatch.PY aren't just re-using the same class
+  definitions for SpectrometerSettings, SpectrometerState, EEPROM etc -- they
+  are sharing the same object instances. Changes in one appear directly in the
+  other. By and large, this is not deliberately done as a means of communication,
+  but it could be. This is significant because up through ENLIGHTEN 2.4.3, the
+  application was multi-process (not multi-threaded), and so each layer (driver
+  and application) actually held different instances of the same class. This 
+  legacy is still visible in some places.
 
-One obvious part of that multi-process "pickling" architecture meant that most 
-spectrometer settings are set by ENLIGHTEN as key-value pairs, where the key
-is a string ("integration_time_ms") and the value is a Python-native scalar (400).
-Such tuples were easy to pickle and send across `multiprocessing.Queues`.
+- The relationship between WasatchDevice and FeatureInterfaceDevice is confusing,
+  especially since both extend InterfaceDevice. This needs to be refactored.
+  All other spectrometer types are implemented with a single FooDevice class
+  (Andor, BLE, TCP, SPI etc). However, standard Wasatch Photonics spectrometers
+  are unfortunately split across two classes (WasatchDevice and 
+  FeatureInterfaceDevice) for historical reasons. WasatchDevice controls higher-
+  level functions (scan averaging), and FeatureInterfaceDevice does the lower-
+  level hardware communication. They can and should be merged. 
 
-Also, at some point we turned every `FeatureIdentificationDevice` method response 
-into a `SpectrometerResponse`. That was done in an attempt to provide a "wrapping
-message frame" which could stream error responses and other metadata back 
-upstream to ENLIGHTEN. That has grown unnecessarily bulky and could be made much
-more lightweight.
+### Spectrometer Dataflow Diagram
 
-Now that ENLIGHTEN is properly multi-threaded, Some of this could definitely be 
-simplified and cleaned-up, we just haven't yet taken the time.
+There are five queues used to communicate across the four layers of spectrometer
+communication:
+
+        _____________________________________    __
+       |_____________Controller______________|     |
+         |          |          ^           ^       | main 
+         |     _____v__________|_____      |       | thread
+         |    |_WasatchDeviceWrapper_|     |     __|
+         |          |          ^ settings  |
+   alert |  command |          | queue     | message  
+   queue |    queue |          | response  | queue   
+         |          |          | queue     |        
+         |       ___v__________|__         |     __
+         |      |__WrapperWorker__|        |       |
+         |          |          ^           |       | child
+        _v__________v__________|___________|_      | thread
+       |__________InterfaceDevice____________|   __|
+        
+Two queues go downward, from ENLIGHTEN to the InterfaceDevice:
+
+- command_queue - (name, value) settings like integration_time_ms and laser_enable
+- alert_queue (alert_name)) interrupts from ENLIGHTEN to cancel long-running blocking tasks
+
+Three queues go upward from InterfaceDevice back to ENLIGHTEN:
+
+- settings_queue (a single SpectrometerSettings object, confirming successful connection)
+- response_queue (Readings, containing spectra, temperature, battery etc)
+- message_queue (quick messages for the GUI and various EnlightenFeatures)
+
+#### command_queue (downstream, ControlObject(name, value))
+
+This is used to pass (name, value) settings from ENLIGHTEN to the spectrometer, like:
+
+    - ("laser_enable", True)
+    - ("integration_time_ms", 100)
+    - ("vertical_roi", (350, 750))
+
+These commands are ONLY applied (passed from WrapperWorker to InterfaceDevice)
+BETWEEN acquisitions. A WrapperWorker is single-threaded, within its own thread,
+and it only does one thing at a time. If it's taking a spectrum, then it sends
+an ACQUIRE to the spectrometer, and it waits (blocks) until it gets the spectrum.
+
+At that point it wraps the spectrum in a Reading object (along with battery,
+temperatures, and other miscellaneous system state), and pushes the new
+Reading back up the response_queue.
+
+Only after sending the Reading, does WrapperWorker then look at any newly 
+queued commands. Before passing them down to the Interface, WrapperWorker
+"de-dupes" them. That is, if the user clicked the Integration Time down-arrow
+5 times while the last measurement was being collected, generating 5 individual
+integration_time_ms commands, WrapperWorker automatically discards all but the 
+newest command of any given type (so as to not cause the InterfaceDevice to
+send 5 redundant commands over USB or BLE or whatever).
+
+#### alert_queue (downstream, str)
+
+Alerts are a faster way ENLIGHTEN can notify Wasatch.PY about something
+urgent, which otherwise would have been "blocked" by WrapperWorker's single-
+threaded nature. The only alert currently implemented is from ENLIGHTEN's 
+AutoRamanFeature, which can raise an "auto_raman_cancel" alert if the user
+clicks "Stop" during a long-running (30sec+) Auto-Raman measurement because
+they need to shutoff the laser.
+
+Alerts are not currently (name, value). They each just have a name, and
+any code in the InterfaceDevice can check to see if a given alert has been
+raised (and can then clear it after responding).
+
+As shown in the diagram, alerts bypass WrapperWorker, and are sent passed
+instantly from WasatchDeviceWrapper (say, via an EnlightenFeature call to
+enlighten.Spectrometer) to the associated alert_queue.
+
+Long-running Wasatch.PY code, such as wasatch.AutoRaman or a get_spectrum()
+call looping over timeouts while waiting for an external trigger, can read
+the queue (check for alerts) at any time, even while "blocked" on a high-level
+command or data collection process from WrapperWorker.
+
+#### settings_queue (upstream, SpectrometerSettings)
+
+This queue is only used exactly once per spectrometer connection, so arguably
+it could be merged into response_queue or message_queue. However, it has 
+different timeout behavior, so it's just as easy to keep it distinct.
+
+This queue is used at initial spectrometer connection to indicate if a newly
+detected spectrometer was successfully connected. If connection was successful,
+the InterfaceDevice will pass-up a fully-populated SpectrometerSettings object
+including a parsed EEPROM, rendered wavelength and wavenumber axes, SRM
+correction factors and the works.
+
+If connection fails, WrapperWorker will push up...something else. Looking at
+the code, for various failure modes it could be None, could be a caught
+exception, could be a SpectrometerResponse object with populated error_msg...
+there's not a lot of consistency.
+
+But basically, if it's anything other than SpectrometerSettings, something
+went awry, and WasatchDeviceWrapper / Controller abort the connection.
+
+Note that the passed SpectrometerSettings object, being passed by reference,
+is thenceforth shared by both the InterfaceDevice in the child thread, and
+ENLIGHTEN in the main thread. As this object contains the wavecal, all
+calibrations, all EEPROM settings, and tracks dynamic SpectrometerState,
+it is probably the single most important object in the application.
+
+So yeah, it deserves its own Queue :-)
+
+#### response_queue (upstream, Reading)
+
+By far the busiest and highest-volume queue is the response_queue, which
+carries wasatch.Reading objects up from Wasatch.PY into the Controller, where
+they become wasatch.ProcessedReadings and represent the lifeblood of the
+application.
+
+Readings started as a place to hold a spectrum, but have grown over time
+to include temperature data at the time of the measurement (detector temp,
+laser temp, ambient temp, now even battery temp), battery charge state,
+laser and interlock state...basically anything that ENLIGHTEN might want
+to know about "what was going on at the time the spectrum was collected"
+gets rolled into the Reading. 
+
+If Area Scan is enabled, a Reading may include a wasatch.AreaScanImage,
+which can include an entire frame of image data. 
+
+If BatchCollection is enabled, in which a potentially complicated TakeOneRequest
+was sent downstream by ENLIGHTEN, each Reading will be returned with a handle to
+the original TakeOneRequest that generated it, so ENLIGHTEN's Controller will 
+know which EnlightenFeature (or plugin?) requested that measurement.
+
+This pipeline is pumped by InterfaceDevice.acquire_data(), which WrapperWorker 
+essentially calls in an endless loop while a spectrometer is connected.
+
+#### message_queue (upstream, StatusMessage(name, value))
+
+This kind of the upstream equivalent of the downstream alert_queue, similarly
+provided as a lightweight way for InterfaceDevices to flow-up quick status updates
+to the Controller so the GUI can show timely progress indications even while 
+blocked on long-running operations such as AutoRaman, scan averaging, etc.
+
+At writing, according to Controller.process_status_message, these are the currently 
+supported StatusMessage types:
+
+- marquee_info
+- marquee_error
+- scan_averaging
+- progress_bar (Auto-Raman)
+- laser_status_indicators
+- received_ble_firwmare_version
+- firmware_log
 
 ## Data Acquisition
 
@@ -334,19 +521,6 @@ happens" in this ARCHITECTURE.md file, we need to take the time to update the
 class and method documentation across Wasatch.PY itself.
 
 **...TO BE CONTINUED...**
-
-### Dedupping
-
-ENLIGHTEN does not send every command the user clicks downstream. Since the 
-spectrometer is operating in "free-running" mode, and new settings are only 
-applied "between" spectra, we only bother to apply "the most-recent" command of 
-any given type.
-
-Say that, since the last integration (1000ms ago), the user repeatedly hammered 
-the "integration time" down-arrow, changing to values 999, 998, all the way down
-to 974ms. When we're next ready to apply new settings to the spectrometer, we
-only bother to send the most-recent tuple ("integration_time_ms", 974), and 
-discard the others.
 
 ## GUI Philosophy
 

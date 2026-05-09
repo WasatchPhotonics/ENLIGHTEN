@@ -12,12 +12,28 @@ else:
 log = logging.getLogger(__name__)
 
 class EnlightenFeature:
+    """
+    This is the (relatively new) Abstract Base Class (ABC) for virtually all 
+    business objects in ENLIGHTEN.
 
-    all_features = set()
+    Should probably consider having this inherit from some QObject thing to
+    provide access to slots and signals, and probably allow more convenient
+    dispatch to the GUI thread.
+    """
+
+    ############################################################################
+    # static members
+    ############################################################################
+
+    all_features = set() 
 
     @staticmethod
     def get_all():
         return list(EnlightenFeature.all_features)
+
+    ############################################################################
+    # lifecycle
+    ############################################################################
 
     def __init__(self, ctl):
         # keep a handle to the Controller to access all the other Business Objects
@@ -32,32 +48,24 @@ class EnlightenFeature:
     def disconnect(self):
         pass
 
-    def register_observer(self, callback, event=None):
-        if event not in self.observers:
-            self.observers[event] = set()
-        self.observers[event].add(callback)
-        log.debug(f"registering {self._feature_name} event {event} --> callback {callback}")
-
-    def unregister_observer(self, callback, event=None):
-        if event in self.observers:
-            self.observers[event].discard(callback)
-
-    def notify_observers(self, event=None):
-        if event in self.observers:
-            for callback in self.observers[event]:
-                callback()
-
-    def notify_observers_with_value(self, value, event=None):
-        if event in self.observers:
-            for callback in self.observers[event]:
-                callback(value)
-
     def post_init(self):
         """
         May be called by Controller after ALL BusinessObjects / EnlightenFeatures
         have been constructed.
         """
         pass
+
+    def init_hotplug(self, spec):
+        """
+        Some Business Objects may need to know if a spectrometer has just 
+        been connected for the first time (has not yet been seen this session),
+        and needs "initialization" of some sort.
+        """
+        pass
+
+    ############################################################################
+    # ENLIGHTEN runtime
+    ############################################################################
 
     def update_visibility(self):
         """
@@ -82,13 +90,33 @@ class EnlightenFeature:
         """
         pass
 
-    def init_hotplug(self, spec):
-        """
-        Some Business Objects may need to know if a spectrometer has just 
-        been connected for the first time (has not yet been seen this session),
-        and needs "initialization" of some sort.
-        """
-        pass
+    ############################################################################
+    # Observers
+    ############################################################################
+
+    def register_observer(self, callback, event=None):
+        if event not in self.observers:
+            self.observers[event] = set()
+        self.observers[event].add(callback)
+        log.debug(f"registering {self._feature_name} event {event} --> callback {callback}")
+
+    def unregister_observer(self, callback, event=None):
+        if event in self.observers:
+            self.observers[event].discard(callback)
+
+    def notify_observers(self, event=None):
+        if event in self.observers:
+            for callback in self.observers[event]:
+                callback()
+
+    def notify_observers_with_value(self, value, event=None):
+        if event in self.observers:
+            for callback in self.observers[event]:
+                callback(value)
+
+    ############################################################################
+    # utility
+    ############################################################################
 
     def log_header(self, msg):
         log.debug("")
