@@ -291,33 +291,33 @@ This is a conceptual Entity-Relationship diagram for where classes live
 (Wasatch.PY vs ENLIGHTEN) and run (child thread vs main thread) for any one
 spectrometer:
 
-     _____________________________________________________   _______________________________________________
-    |____________________Child_Thread_____________________| |__________________Main_Thread__________________|
-     _______________________________________________________________________________   _____________________
-    |________________________________Wasatch.PY_____________________________________| |______ENLIGHTEN______|
-                                                                                               ____________
-                                                                                              |_Controller_|
-                                                                                                    | has-a 
-                                         __________________                                    _____v______ 
-                                        |_threading.Thread_|                                  |_Multispec__|
-                                                  /\                                                | has-many      
-                                                  \/          ______________________   has-a  ______v_______
-                                              is-a|          |_WasatchDeviceWrapper_|<-------|_Spectrometer_|
-                                            ______|________     |                                   |
-                                           |_WrapperWorker_|<---' has-a                             | convenience
-                                                  | has-a                                           | handle
-                                          ________v________                                         |
-                                         |_InterfaceDevice_|                                        |
-                                                  /\  |                                             |
-                                              is-a\/  | has-a                                       |
-                                 _______________  |   |  ______________________                     |
-                                |_WasatchDevice_|-+   +-|_SpectrometerSettings_|<-------------------'
-                      _______________|________    |  _____________       |  ________
-                     |_FeatureInterfaceDevice_|---+-|_AndorDevice_|      +-|_EEPROM_|
-                                     ___________  |  ___________         |  ___________________
-                                    |_BLEDevice_|-+-|_TCPDevice_|        +-|_SpectrometerState_|
-                                     ___________  |  _____________
-                                    |_SPIDevice_|-+-|_OceanDevice_|
+     _____________________________________   _______________________________________________
+    |____________Child_Thread_____________| |__________________Main_Thread__________________|
+     _______________________________________________________________   _____________________
+    |________________________Wasatch.PY_____________________________| |______ENLIGHTEN______|
+                                                                                ____________
+                                                                               |_Controller_|
+                                                                                     | has-a 
+                          __________________                                    _____v______ 
+                         |_threading.Thread_|                                  |_Multispec__|
+                                   /\                                                | has-many      
+                                   \/          ______________________   has-a  ______v_______
+                               is-a|          |_WasatchDeviceWrapper_|<-------|_Spectrometer_|
+                             ______|________     |                                   |
+                            |_WrapperWorker_|<---' has-a                             | convenience
+                                   | has-a                                           | handle
+                           ________v________                                         |
+                          |_InterfaceDevice_|                                        |
+                                   /\  |                                             |
+                               is-a\/  | has-a                                       |
+                  _______________  |   |  ______________________                     |
+                 |_WasatchDevice_|-+   +-|_SpectrometerSettings_|<-------------------'
+       _______________|________    |  _____________       |  ________
+      |_FeatureInterfaceDevice_|---+-|_AndorDevice_|      +-|_EEPROM_|
+                      ___________  |  ___________         |  ___________________
+                     |_BLEDevice_|-+-|_TCPDevice_|        +-|_SpectrometerState_|
+                      ___________  |  _____________
+                     |_SPIDevice_|-+-|_OceanDevice_|
 
 There a number of things worth observing about that diagram:
 

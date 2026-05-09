@@ -4,6 +4,7 @@
     - Infrastructure
         - added EnlightenFeature
         - generalized observers
+        - ARCHITECTURE docs
     - Laser Control
         - IDS Autonomous Collection
         - BLE laser PWM works
