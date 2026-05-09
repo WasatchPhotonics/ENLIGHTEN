@@ -38,6 +38,7 @@ from enlighten.post_processing.AbsorbanceFeature import AbsorbanceFeature
 from enlighten.post_processing.AutoRamanFeature import AutoRamanFeature
 from enlighten.post_processing.BaselineCorrectionFeature import BaselineCorrectionFeature
 from enlighten.post_processing.BoxcarFeature import BoxcarFeature
+from enlighten.post_processing.DalaiRamanFeature import DalaiRamanFeature
 from enlighten.post_processing.DarkFeature import DarkFeature
 from enlighten.post_processing.ElectricalDarkCorrectionFeature import ElectricalDarkCorrectionFeature
 from enlighten.post_processing.EtalonCorrectionFeature import EtalonCorrectionFeature
@@ -61,6 +62,7 @@ from enlighten.timing.BatchCollectionFeature import BatchCollectionFeature
 from enlighten.ui.AuthenticationFeature import AuthenticationFeature
 from enlighten.ui.ClipboardFeature import ClipboardFeature
 from enlighten.ui.Colors import Colors
+from enlighten.ui.CorrectionStatusFeature import CorrectionStatusFeature
 from enlighten.ui.DidYouKnowFeature import DidYouKnowFeature
 from enlighten.ui.FocusListener import FocusListener
 from enlighten.ui.GuideFeature import GuideFeature
@@ -254,6 +256,8 @@ class BusinessObjects:
         ctl.ble_manager                 = BLEManagerFeature(ctl)
         ctl.pixel_calibration           = PixelCalibrationFeature(ctl)
         ctl.library_matching            = LibraryMatchingFeature(ctl)
+        ctl.dalai                       = DalaiRamanFeature(ctl)
+        ctl.correction_status           = CorrectionStatusFeature(ctl)
 
     def destroy(self):
         log.info("destroying business objects")

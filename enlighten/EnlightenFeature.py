@@ -22,6 +22,7 @@ class EnlightenFeature:
     def __init__(self, ctl):
         # keep a handle to the Controller to access all the other Business Objects
         self.ctl = ctl
+        self.observers = set()
 
         feature_name = type(self).__name__
         self.log_header(f"instantiating {feature_name}")
@@ -30,6 +31,12 @@ class EnlightenFeature:
 
     def disconnect(self):
         pass
+
+    def register_observer(self, callback):
+        self.observers.add(callback)
+
+    def unregister_observer(self, callback):
+        self.observers.discard(callback)
 
     def post_init(self):
         """

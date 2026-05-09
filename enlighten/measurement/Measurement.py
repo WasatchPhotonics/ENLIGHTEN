@@ -214,8 +214,9 @@ class Measurement:
                            'Model',
                            'Detector',
                            'Label',
-                           'Declared Match',
-                           'Declared Score',
+                           'Library Match',
+                           'Library Score',
+                           'Library Engine',
                            'Scan Averaging',
                            'Boxcar',
                            'Technique',
@@ -254,8 +255,6 @@ class Measurement:
         self.appending                = False
         self.baseline_correction_algo = None
         self.basename                 = None
-        self.declared_match           = None
-        self.declared_score           = 0
         self.label                    = None
         self.measurement_id           = None
         self.processed_reading        = None
@@ -870,8 +869,9 @@ class Measurement:
         if field == "laser enable":              return reading.laser_enabled if reading else self.settings.state.laser_enabled 
         if field == "laser temperature":         return reading.laser_temperature_degC if reading and self.settings.is_xs() else "NA"
         if field == "pixel count":               return self.settings.pixels()
-        if field == "declared match":            return str(self.declared_match) if self.declared_match is not None else None
-        if field == "declared score":            return self.declared_match.score if self.declared_match is not None else 0
+        if field == "library match":             return self.processed_reading.library_matching_compound
+        if field == "library score":             return self.processed_reading.library_matching_score
+        if field == "library engine":            return self.processed_reading.library_matching_engine
         if field == "roi pixel start":           return self.settings.eeprom.multi_wavelength_calibration.get("roi_horizontal_start")
         if field == "roi pixel end":             return self.settings.eeprom.multi_wavelength_calibration.get("roi_horizontal_end")
         if field == "roi start line":            return self.settings.eeprom.roi_vertical_region_1_start
@@ -1647,11 +1647,19 @@ class Measurement:
 
         return row
 
-    ## Called (by way of ThumbnailWidget -> KnowItAll.Feature -> Measurements)
-    # when KnowItAll has generated a KnowItAll.DeclaredMatch for this Measurement.
     def id_callback(self, declared_match):
+        """
+        Called (by way of ThumbnailWidget -> KnowItAll.Feature -> Measurements)
+        when KnowItAll has generated a KnowItAll.DeclaredMatch for this Measurement.
+
+        This receives a KnowItAll.Feature.DeclaredMatch object, which has several
+        fields besides name and score. To simplify interaction with LibraryMatching,
+        just pull out the name and score and add them to the ProcessedReading.
+        """
         # store the match
-        self.declared_match = declared_match
+        self.processed_reading.library_matching_compound = declared_match.get_name()
+        self.processed_reading.library_matching_score    = declared_match.get_score()
+        self.processed_reading.library_matching_engine   = "KnowItAll"
 
         # re-save files using current SaveOptions (will store new label, overwriting old files with old name)
         # (these will definitely be in TODAY directory, regardless of where they were loaded from)

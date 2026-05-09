@@ -23,10 +23,9 @@
     - LibraryMatching
         - moved Pearson range from 0-100 to 0-1
         - promoted from Plugin to EnlightenFeature 
-        - TODO: test...
-        - TODO: add * to matching compound name if it came from user-added data
+        - TODO: restore result table
         - TODO: send match spectrum to (Scope, DALAIGraph) as appropriate
-    - DALAIRamanFeature
+    - DalaiRamanFeature
         - TODO: two graphs, side by side, not movable or collapsible
         - TODO: nrd5-r3-model-17-opset18 (https://bitbucket.org/wasatchphotonics/emauihelpers/src/main/models/)
     - CalibrationStatusFeature 

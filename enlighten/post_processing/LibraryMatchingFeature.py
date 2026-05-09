@@ -35,9 +35,11 @@ class LibraryMatchingFeature(EnlightenFeature):
     # binary distributions
     DIST_LIBRARY_DIR = "enlighten/assets/example_data/matching_library"
 
-    # this is the directory, under EnlightenSpectra, where ENLIGHTEN will 
-    # write (and check for) user-generated library spectra
-    USER_LIBRARY_DIR = "matching_library"
+    # this is the default directory where ENLIGHTEN will write (and check for) 
+    # user-generated library spectra
+    DEFAULT_USER_LIBRARY_DIR = os.path.join(common.get_default_data_dir(), "matching_library")
+
+    TIMER_MS = 10 # tick graph update this long after match results
 
     def __init__(self, ctl):
         super().__init__(ctl)
@@ -59,7 +61,7 @@ class LibraryMatchingFeature(EnlightenFeature):
         # start with defaults
         self.enabled = False
         self.dist_library_dir = self.DIST_LIBRARY_DIR
-        self.user_library_dir = os.path.join(common.get_default_data_dir(), self.USER_LIBRARY_DIR)
+        self.user_library_dir = self.DEFAULT_USER_LIBRARY_DIR
         self.min_score = 0.65
         self.max_results = 2
         self.use_dist = True
@@ -132,8 +134,8 @@ class LibraryMatchingFeature(EnlightenFeature):
         spectrum = pr.get_processed()
         reading = pr.reading
 
-        if not reading.laser_enabled and not self.laser_warning_issued:
-            self.ctl.marquee.error("LibraryMatching requires Raman spectra with laser enabled")
+        if self.ctl.page_nav.doing_raman() and not reading.laser_enabled and not self.laser_warning_issued:
+            self.ctl.marquee.error("LibraryMatching in Raman mode requires the laser to be enabled")
             self.laser_warning_issued = True
 
         self.outputs = {
@@ -142,9 +144,13 @@ class LibraryMatchingFeature(EnlightenFeature):
             "Results": pd.DataFrame(data={' Compound ': [], ' Score ': []})
         }
 
-        # try to perform matching
+        # perform matching
         compounds, scores = self.pearson.process(wavenumbers, spectrum)
         if compounds is None or scores is None or len(compounds) == 0:
+            self.last_compound = None
+            self.last_score = None
+            self.curve_scope.setVisible(False)
+            self.timer.start(self.TIMER_MS)
             return
 
         if len(compounds) > self.max_results:
@@ -171,9 +177,17 @@ class LibraryMatchingFeature(EnlightenFeature):
             # curve.setName(f"Library {best_compound}") 
             curve.setData(x=self.pearson.best_library_wavenumbers,
                           y=self.pearson.best_library_spectrum)
+            self.curve_scope.setVisible(True)
+        else:
+            self.curve_scope.setVisible(False)
 
-        # update to GUI
-        self.timer.start(100)
+        # Add to ProcessedReading, so it will be saved with Measurement metadata.
+        # Use fields already allocated for KIA.
+        pr.declared_match = best_compound
+        pr.declared_score = best_score
+
+        # schedule GUI update
+        self.timer.start(self.TIMER_MS)
 
     def set_library_dir(self, path):
         """ 
@@ -191,10 +205,11 @@ class LibraryMatchingFeature(EnlightenFeature):
         self.user_library_dir = path
         os.makedirs(self.user_library_dir, exist_ok=True)
 
-        # TODO
-        # self.colorize_button_field("Select Library", active=True, tooltip=path)
-        self.ctl.gui.colorize_button(self.bt_select_library, True)
+        # only colorize the button if the user has selected a non-standard path
+        is_custom = self.user_library_dir != self.DEFAULT_USER_LIBRARY_DIR
+        self.ctl.gui.colorize_button(self.bt_select_library, is_custom)
 
+        # always show tooltip
         self.bt_select_library.setToolTip(path)
 
         if self.pearson:
@@ -364,7 +379,8 @@ class Pearson:
                     basename = filename.removesuffix(".csv")
                     pathname = os.path.join(dirpath, filename)
 
-                    if library_dir == self.feature.dist_library_dir:
+                    # append asterisk when matching to user-generated spectra
+                    if library_dir == self.feature.user_library_dir:
                         basename += "*"
 
                     self.compound_names.append(basename)

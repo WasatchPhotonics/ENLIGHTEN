@@ -114,6 +114,7 @@ class RamanShiftCorrectionFeature(EnlightenFeature):
 
         self.widgets_visible = False        # whether the "Scope Settings" frame and "Scope Capture" button are visible
         self.curve_visible = False          # whether the selected compound curve is graphed
+        self.enabled = False                # whether a correction is applied on the selected spectrometer
 
         self.curve = self.ctl.graph.add_curve("raman_shift_correction", rehide=False, in_legend=False)
         self.curve.setVisible(False)
@@ -173,7 +174,12 @@ class RamanShiftCorrectionFeature(EnlightenFeature):
         self.button.setVisible(self.widgets_visible)
 
         if self.widgets_visible:
-            self.ctl.gui.colorize_button(self.button, spec.settings.state.wavenumber_correction != 0)
+            self.enabled = spec.settings.state.wavenumber_correction != 0
+            self.ctl.gui.colorize_button(self.button, self.enabled)
+        else:
+            self.enabled = False
+
+        self.notify_observers()
 
         self.checkbox_callback()
 
@@ -182,6 +188,12 @@ class RamanShiftCorrectionFeature(EnlightenFeature):
         # we need to update the curve.  We will also need to ensure this
         # is called if the current excitation or wavecal is updated...this
         # could get tricky. Really need an observer pattern here.
+
+    def notify_observers(self):
+        notification = { "visible": self.widgets_visible,
+                         "enabled": self.enabled }
+        for callback in self.observers:
+            callback(notification)
         
     ## load previous session's selected compound, if any
     def init_from_config(self):

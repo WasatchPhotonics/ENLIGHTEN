@@ -46,6 +46,12 @@ class DeclaredMatch:
         self.hazard         = hazard
         self.benign         = benign
 
+    def get_name(self):
+        return self.aliased_name.preferred
+
+    def get_score(self):
+        return self.score
+
     def __str__(self):
         return self.aliased_name.preferred
 
