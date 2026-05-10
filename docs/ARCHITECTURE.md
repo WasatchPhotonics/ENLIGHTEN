@@ -631,7 +631,7 @@ The enlighten.ui package contains classes controlling major aspects of the user 
 
 - `BasicDialog`: is this even used?
 
-- **`BasicWindow`**: used exclusively(?) by [enlighten_layout](#enlighten_layout)
+- `BasicWindow`: used exclusively(?) by [enlighten_layout](#enlighten_layout)
 
 - `ClipboardFeature`: responsible for interacting with the OS _system_ clipboard for 
   copy-paste (_not_ the set of Measurement thumbnails)
@@ -647,9 +647,10 @@ The enlighten.ui package contains classes controlling major aspects of the user 
 - `GuideFeature`: currently deprecated, idea is to interactively prompt user with 
   "good spectroscopy practices" (think Microsoft's "Clippy")
 
-- `HelpFeature`: responsible for online help
+- `HelpFeature`: responsible for online help, and the tooltip on the [?] button
 
-- `ImageResources`: used to access the various icons and images compiled-in from .rc files via rcc
+- `ImageResources`: used to access the various icons and images compiled into 
+  Python from .rc files via rcc / rebuild_resources.sh (stuff under assets/images)
 
 - **`MarqueeFeature`**: responsible for the "message bar" at the top of the screen
 
@@ -658,39 +659,45 @@ The enlighten.ui package contains classes controlling major aspects of the user 
 - **`PageNavigationFeature`**: used for moving between Views (Scope, Settings, Hardware, 
   Log, Factory) and Modes (Raman, Non-Raman, Expert)
 
-- `ResourceMonitorFeature`: added to track down a memory leak
+- `ResourceMonitorFeature`: added to track down a memory leak (since resolved)
 
 - `ScrollStealFilter`: helps detatch "mouse-wheel" events from accidentally 
-  scrolling QSpinBoxes and QComboBoxes
+  scrolling QSpinBox, QDoubleSpinBox and QComboBox fields when you're trying to 
+  scroll a ScrollArea
 
-- `SoundEffectsFeature`: encapsulates ENLIGHTEN's (currently-limited) array of sound effects
+- `SoundEffectsFeature`: encapsulates ENLIGHTEN's (currently-limited) array of 
+  sound effects
 
 - **`StatusBarFeature`**: responsible for the configurable status bar at the bottom
-  of the scope, showing spectral max, temperature, battery, etc
+  of the Scope, normally showing spectral max, temperature, battery, etc
 
 - **`StatusIndicatorFeature`**: responsible for the 3 "virtual LEDs" at the bottom-right
   of the screen (hardware, laser, temperature)
 
-- **`StylesheetFeature`**: convenient access to CSS files for recoloring and styling widget appearance
+- **`StylesheetFeature`**: convenient access to CSS files for recoloring and 
+  styling widget appearance (access to stuff under assets/stylesheets)
 
 - **`ThumbnailWidget`**: responsible for creating the miniature graph "thumbnails"
-  along the left-hand ENLIGHTEN "Clipboard", and responding to button events
+  along the left-hand ENLIGHTEN "Clipboard", and responding to button-clicks on
+  the thumbnails. Note that the act list of `Measurement`s shown as Thumbnails is
+  appropriately called `Measurements`.
 
-- TimeoutDialog
+- `TimeoutDialog`: used by Controller when spectrometer goes wonky
 
 - **`VCRControlsFeature`**: responsible for the "VCR control" buttons atop the control 
   palette (Play/Pause, Stop, Save, Step, Step-and-Save)
 
 ### enlighten.device
 
-This package contains classes which track state of individual spectrometers, 
-including stateful features corresponding to hardware features implemented in the
-firmware of the spectrometer itself.
+This package contains classes which control specific attributes and groups of 
+related attributes of individual spectrometers, including stateful features 
+corresponding to hardware features implemented in the firmware of the spectrometer itself.
 
-- `AccessoryControlFeature`: not currently used; created for 220190 / 220290 USB 
-  boards with OEM Accessory Connector
+- **`AccessoryControlFeature`**: not used much at present; created for 220190/220290 
+  boards with OEM Accessory Connector. Used a little for XL shutter, and needs 
+  fleshed-out for XS V2 OEM Accessory Connector.
 
-- `AmbientTemperatureFeature`: used for boards with ambient thermistor (typically STM32 ARM)
+- `AmbientTemperatureFeature`: used for boards with ambient thermistor (i.e. XS)
 
 - `BatteryFeature`: used on XS spectrometers with batteries
 
@@ -703,30 +710,36 @@ firmware of the spectrometer itself.
   to non-volitile storage
 
 - `ExternalTriggerFeature`: not recently tested, as most models lack an external
-  triggering connector
+  triggering connector; will need updating for XS V2.
 
-- `GainDBFeature`: control gain (dB) in XS spectrometers
+- `GainDBFeature`: control gain (dB) in XS spectrometers. (On Hamamatsu CCD we 
+  don't let user randomly change gain, and InGaAs gain is handled through 
+  HighGainFeature).
 
 - `HighGainModeFeature`: toggle high-gain mode on InGaAs spectrometers
 
 - **`IntegrationTimeFeature`**: control integration time
 
-- **`LaserControlFeature`**: control laser (dis/enable and power via PWM)
+- **`LaserControlFeature`**: control internal SML or MML laser (dis/enable & PWM)
 
-- `LaserTemperatureFeature`: monitor laser temperature and (if supported) control setpoint
+- `LaserTemperatureFeature`: monitor laser temperature and (if supported) control
+  setpoint
 
 - `LaserWatchdogFeature`: configure / enable laser watchdog on XS spectrometers
 
-- `MultiPosFeature`: experimental class to support spectrometers with multiple grating positions
+- `MultiPosFeature`: experimental class to support spectrometers with multiple 
+  grating positions
 
-- **`MultispecFeature`**: encapsulate management, selection, display and settings across 
-  multiple connected spectrometers
+- **`MultispecFeature`**: encapsulate management, selection, display and settings
+  across multiple connected spectrometers
 
-- `RegionControlFeature`: experimental class to support multiple ROI on 2D detectors
+- `RegionControlFeature`: experimental class to support multiple ROI on 2D sensors 
 
 - **`Spectrometer`**: standard class to control and encapsulate settings/state 
   for a single spectrometer; contains .settings (SpectrometerSettings) and 
-  .app_state (SpectrometerApplicationState)
+  .app_state (SpectrometerApplicationState). This is the class through which most
+  EnlightenFeatures communicate with the spectrometer, typically via
+  `spec = ctl.multispec.current_spectrometer` 
 
 - **`SpectrometerApplicationState`**: holds state relating to a single spectrometer
   which is only relevant to the ENLIGHTEN application (as opposed to the driver-level 
@@ -738,20 +751,26 @@ firmware of the spectrometer itself.
 This package contains classes used to post-process raw spectra received from 
 spectrometers.
 
-- `AbsorbanceFeature`: used for Beer's Law absorbance (builds on TransmissionFeature)
+- `AbsorbanceFeature`: used for Beer's Law absorbance measurements, typically for
+  non-Raman instruments (utilizes TransmissionFeature)
 
 - `AutoRamanFeature`: a software-driven autonomous "Raman Mode" (averaged dark, 
-  laser enable, laser warmup, averaged sample, laser disable, dark subtraction)
+  laser enable, laser warmup, averaged sample, laser disable, dark subtraction).
+  This class basically just sets the parameters of a wasatch.AutoRamanRequest,
+  then sends it downstream via a TakeOneRequest. Wasatch.PY actually implements
+  a software-only Auto-Raman implementation via wasatch.AutoRaman, and can also
+  pass the parameters into an XS spectrometer over USB or BLE.
 
-- `BaselineCorrection`: wraps numerous baseline correction algorithms offered by 
-  the open-source superman package
+- `BaselineCorrection`: wraps numerous baseline correction algorithms (AirPLS etc)
+  offered by the open-source superman package
 
-- `BoxcarFeature`: offers a moving-average convolution to smooth spectra at the 
-  cost of broadened peaks
+- `BoxcarFeature`: offers a moving-average convolution to remove high-frequency 
+  noise at the cost of resolution
 
-- `CorrectionStatusFeature`: new
+- `CorrectionStatusFeature`: a recently requested feature to let the user easily
+  visualize and confirm which calibrations and corrections are currently in effect
 
-- `DalaiRamanFeature`: new
+- `DalaiRamanFeature`: recently integrated from an externally maintained plugin
 
 - `DarkFeature`: encapsulates dark-correction (aka ambient subtraction)
 
@@ -761,30 +780,35 @@ spectrometers.
 - `ElectricalDarkCorrectionFeature`: uses "optically masked" black pixels on the 
   edges of XS detectors to automatically subtract electrical readout noise
 
-- `EtalonCorrectionFeature`: new
+- `EtalonCorrectionFeature`: controls application of an optional calibration
+  to remove detector etaloning from broadband and Raman signal
 
-- `HorizROIFeature`: handles cropping the spectra to the configured horizontal 
-  start/stop pixels
+- `HorizROIFeature`: responsible for cropping the spectra to the calibrated
+  spectral range as defined by the EEPROM's horizontal start and stop (pixel 
+  space)
 
-- `InGaAsCorrectionFeature`: new
+- `InGaAsCorrectionFeature`: an experimental new feature to correct the 
+  divergent detector gain and offset behavior observed on InGaAs photodiode 
+  linear arrays with interleaved electronics
 
-- `InterpolationFeature`: allows interpolating a spectrum to a fixed (regular 
-  incremental) x-axis to ease comparison across units with different wavecals
+- `InterpolationFeature`: allows interpolating a spectrum to a fixed (arithmetic) 
+  x-axis to ease comparison across units with different wavecals
 
-- `LibraryMatchingFeature`: new
+- `LibraryMatchingFeature`: newly promoted from the plugin hinterlands
 
-- **`RamanIntensityCorrectionFeature`**: applies the y-axis intensity correction calibrated 
-  with NIST SRM standards
+- **`RamanIntensityCorrectionFeature`**: applies the y-axis intensity correction
+  calibrated with NIST SRM standards
 
 - `ReferenceFeature`: similar to DarkFeature, responsible for the reference 
   measurement used in many non-Raman techniques
 
-- `RichardsonLucyFeature`: a 
+- `RichardsonLucyFeature`: an experimental 
   [peak-sharpening deconvolution](https://en.wikipedia.org/wiki/Richardson%E2%80%93Lucy_deconvolution) 
-  which reshapes peaks to closer to their "ideal" FWHM (experimental)
+  which reshapes peaks to more closely approximate their optical FWHM 
 
 - `ScanAveragingFeature`: responsible for managing scan averaging; note that scan 
-  averaging itself is currently performed in `wasatch.WasatchDevice`
+  averaging itself is currently performed within InterfaceDevices (i.e. 
+  `wasatch.WasatchDevice`)
 
 - **`TakeOneFeature`**: a class responsible for taking a single, optionally averaged, 
   optionally laser-illuminated, optionally dark-corrected measurement from 

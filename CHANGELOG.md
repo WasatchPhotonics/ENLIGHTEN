@@ -26,17 +26,26 @@
     - LibraryMatching
         - moved Pearson range from 0-100 to 0-1
         - promoted from Plugin to EnlightenFeature 
-        - TODO: restore result table
-        - TODO: send match spectrum to (Scope, DALAIGraph) as appropriate
     - DalaiRamanFeature
-        - TODO: two graphs, side by side, not movable or collapsible
-        - TODO: nrd5-r3-model-17-opset18 (https://bitbucket.org/wasatchphotonics/emauihelpers/src/main/models/)
     - CalibrationStatusFeature 
-        - TODO: support minimize
     - STARTING: 
         - Safe Mode
         - Etalon Correction
         - InGaAs Correction
+    - TODO
+        - CalibrationStatusFeature
+            - support minimize
+        - LibraryMatching
+            restore result table
+            - send match spectrum to (Scope, DALAIGraph) as appropriate
+        - DalaiRamanFeature
+            - two graphs, side by side, not movable or collapsible
+            - nrd5-r3-model-17-opset18 (https://bitbucket.org/wasatchphotonics/emauihelpers/src/main/models/)
+        - DidYouKnowFeature
+            - update LibraryMatching
+            - add DalaiRamanFeature
+        - BatteryFeature
+            - does this report battery temperature?
 
 - 2026-04-16 4.2.1
     - Bluetooth

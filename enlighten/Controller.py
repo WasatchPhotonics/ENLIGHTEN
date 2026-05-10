@@ -2417,23 +2417,30 @@ class Controller:
         self.dialog_open = True # todo make a mutex
 
         log.info(f"displaying MessageBox with the received error and options (Okay, Disconnect, Log): {response_error}")
-        dlg_title = "Spectrometer Error"
-        dlg_msg = ("ENLIGHTEN has encountered an error with the spectrometer. " +
+        title = "Spectrometer Error"
+        msg = ("ENLIGHTEN has encountered an error with the spectrometer. " +
                     "The exception is shown below.  Click 'View Log' to " +
                     "automatically open the logfile in Notepad, 'Disconnect' to " +
                     "retry or 'Okay' to dismiss this dialog:\n\n" + 
                     response_error + "\n\n")
-        dlg_btns = [("Okay", QMessageBox.AcceptRole), ("Disconnect", QMessageBox.RejectRole), ("View Log", QMessageBox.HelpRole)]
+        buttons = [ ("Okay",       QMessageBox.AcceptRole), 
+                    ("Disconnect", QMessageBox.RejectRole), 
+                    ("View Log",   QMessageBox.HelpRole) ]
 
         selection = TimeoutDialog.showWithTimeout(self.form, 
-                                                  10, 
-                                                  dlg_msg, 
-                                                  dlg_title, 
-                                                  QMessageBox.Warning, 
-                                                  dlg_btns)
-        # Generate a bool list by comparing the clicked btn against the btn options
+                                                  seconds = 10, 
+                                                  message = msg, 
+                                                  title   = title, 
+                                                  icon    = QMessageBox.Warning, 
+                                                  buttons = buttons)
         self.dialog_open = False
-        spec.settings.state.ignore_timeouts_until = datetime.datetime(datetime.MAXYEAR,12,1) # MZ: hrmm
+
+        # MZ: we ignore timeouts REGARDLESS of what they clicked?
+        spec.settings.state.ignore_timeouts_until = datetime.datetime(datetime.MAXYEAR, 12, 1)
+
+        # Generate a bool list by comparing the clicked btn against the btn options
+        # MZ: this is a very weird way to do things
+
         if selection == [True, False, False]:
             log.info("user clicked 'Okay' to dismiss the dialog with no action")
         elif selection == [False, True, False]:

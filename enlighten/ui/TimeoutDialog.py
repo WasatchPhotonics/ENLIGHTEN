@@ -53,7 +53,7 @@ class TimeoutDialog(QMessageBox):
             self.done(0)
 
     @staticmethod
-    def showWithTimeout(parent, timeoutSeconds, message, title, icon=QMessageBox.Information, buttons=None):
+    def showWithTimeout(parent, seconds, message, title, icon=QMessageBox.Information, buttons=None):
         if buttons is None:
             log.debug("default buttons")
             buttons = [("Ok", QMessageBox.AcceptRole)]
@@ -62,7 +62,7 @@ class TimeoutDialog(QMessageBox):
             buttons = [buttons]
         w = TimeoutDialog(parent)
         w.autoclose = True
-        w.timeout = timeoutSeconds
+        w.timeout = seconds
         w.setText(message)
         w.msg = message
         w.setWindowTitle(title)

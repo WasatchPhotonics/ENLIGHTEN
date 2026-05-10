@@ -12,6 +12,8 @@ class ClipboardFeature(EnlightenFeature):
     This is NOT related to the "Measurement Capture Bar" along the left-hand
     edge of ENLIGHTEN's GUI, although we seem to be converging toward calling that
     "the ENLIGHTEN Clipboard."
+
+    @todo rename this CopyPasteFeature?
     """
     def __init__(self, ctl):
         super().__init__(ctl)
