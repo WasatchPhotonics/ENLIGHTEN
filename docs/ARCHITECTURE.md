@@ -150,6 +150,10 @@ enlighten/Controller.py is the closest thing ENLIGHTEN has to a "main()". It was
 named in the vein of "Model-View-Controller," and it's the big class which pretty
 much kicks-off and runs everything else in the application.
 
+(Continuing that MVC thought, if enlighten.Controller is the Controller, then
+enlighten_layout.ui is the View, and Wasatch.PY (the spectrometer) is basically
+the Model.)
+
 Fundamentally, the `enlighten.Controller` is responsible for four things:
 
 1. Calls [BusinessObjects](#BusinessObjects) to instantiate the lengthy (and

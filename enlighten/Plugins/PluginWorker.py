@@ -15,7 +15,10 @@ class PluginWorker(threading.Thread):
     """
 
     def __init__(self, request_queue, response_queue, module_info):
-        super().__init__(self)
+        threading.Thread.__init__(self)
+
+        # MZ: why does this not work?
+        # super().__init__(self)
 
         self.request_queue  = request_queue
         self.response_queue = response_queue

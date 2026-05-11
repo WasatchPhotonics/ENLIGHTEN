@@ -38,10 +38,10 @@ class LibraryMatching(EnlightenPluginBase):
         self.pearson = Pearson(self)
 
         self.configure_fields()
-        self.ctl.measurement_factory.register_observer(self.factory_save_callback, "save")
+        self.ctl.measurement_factory.register_observer(self.factory_callback, "save")
 
     def disconnect(self):
-        self.ctl.measurement_factory.unregister_observer(self.factory_save_callback, "save")
+        self.ctl.measurement_factory.unregister_observer(self.factory_callback, "save")
         super().disconnect()
 
     def configure_fields(self):

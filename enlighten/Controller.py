@@ -64,10 +64,8 @@ class Controller:
     Main application controller class for ENLIGHTEN.
     
     This class is still way bigger than it should be, but it's gradually coming
-    under control.
-    
-    - most feature logic has been extracted into "business objects" which own and
-      configure their own GUI widgets and internal state
+    under control. Most feature logic has been extracted into "business objects"
+    which own and configure their own GUI widgets and internal state.
     """
 
     # ##########################################################################
