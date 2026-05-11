@@ -26,7 +26,6 @@ from enlighten.file_io.ConfigurationFeature import ConfigurationFeature
 from enlighten.file_io.FileManagerFeature import FileManagerFeature
 from enlighten.file_io.HardwareFileOutputFeature import HardwareFileOutputFeature
 from enlighten.file_io.LoggingFeature import LoggingFeature
-from enlighten.KnowItAll.Feature import Feature as KIAFeature
 from enlighten.measurement.AreaScanFeature import AreaScanFeature
 from enlighten.measurement.MeasurementFactory import MeasurementFactory
 from enlighten.measurement.Measurements import Measurements
@@ -132,7 +131,6 @@ class BusinessObjects:
         ctl.ingaas_correction = None
         ctl.integration_time_feature = None
         ctl.interp = None
-        ctl.kia_feature = None
         ctl.laser_control = None
         ctl.laser_temperature = None
         ctl.laser_watchdog = None
@@ -236,7 +234,6 @@ class BusinessObjects:
         ctl.integration_time_feature    = IntegrationTimeFeature(ctl)
         ctl.gain_db_feature             = GainDBFeature(ctl)
         ctl.auto_raman                  = AutoRamanFeature(ctl)
-        ctl.kia_feature                 = KIAFeature(ctl)
         ctl.richardson_lucy             = RichardsonLucyFeature(ctl)
         ctl.dfu                         = DFUFeature(ctl)
         ctl.factory_strip_charts        = FactoryStripChartFeature(ctl)
@@ -263,8 +260,7 @@ class BusinessObjects:
         log.info("destroying business objects")
 
         # anything with external processes
-        for feature in [ self.ctl.kia_feature,
-                         self.ctl.plugin_controller ]:
+        for feature in [ self.ctl.plugin_controller ]:
             feature.disconnect()                        
 
         # anything with timers, observers etc

@@ -11,9 +11,6 @@ log = logging.getLogger(__name__)
 # This class provides a deconvolution filter which sharpens peaks back to their 
 # original optical resolution by removing the Gaussian blur point-spread function.
 #
-# This class is responsible for the "[x] Sharpen Peaks" checkbox on the KnowItAll
-# settings.
-#
 # @see https://en.wikipedia.org/wiki/Richardson%E2%80%93Lucy_deconvolution
 class RichardsonLucyFeature(EnlightenFeature):
 
@@ -23,8 +20,7 @@ class RichardsonLucyFeature(EnlightenFeature):
     # @param iterations how many Richardson-Lucy iterations to run
     # @param downgrade how much to downgrade the spectrometer's spec'd (claimed) resolution
     # 
-    # Last updated from "Turn Raman Sample Library into KIA Input Files WP-00413.Rmd" received
-    # 30-Sep-2019 from Dieter.
+    # Last updated 30-Sep-2019 using data from Dieter.
 
     def __init__(self, ctl):
         super().__init__(ctl)

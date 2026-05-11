@@ -215,9 +215,9 @@ GUI thread (`get_configuration`), while others aren't (`process_request`).
 - `Controller.status_timer` (~1Hz) - checks memory usage, sends a heartbeat to
   each `Spectrometer` (probably unneeded now that we're multithreaded), polls
   for any "status messages" flowed back from 'Spectrometer` threads, updates
-  laser status display, checks for any asynchronous plugin responses, and ticks
-  KnowItAll. _IMHO, LaserControlFeature, PluginController, KnowItAll etc should 
-  all encapsulate their own timers and not lean on Controller for this._
+  laser status display, and checks for any asynchronous plugin responses. _IMHO,
+  LaserControlFeature, PluginController etc should all encapsulate their own 
+  timers and not lean on Controller for this._
 
 Other BusinessObjects encapsulate internal `QTimers` for their own purposes,
 including:

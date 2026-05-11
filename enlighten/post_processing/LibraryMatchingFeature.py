@@ -182,7 +182,7 @@ class LibraryMatchingFeature(EnlightenFeature):
             self.curve_scope.setVisible(False)
 
         # Add to ProcessedReading, so it will be saved with Measurement metadata.
-        # Use fields already allocated for KIA.
+        # Use fields previously allocated for KIA.
         pr.declared_match = best_compound
         pr.declared_score = best_score
 

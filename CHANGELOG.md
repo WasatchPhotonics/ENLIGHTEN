@@ -29,6 +29,7 @@
     - LibraryMatching
         - moved Pearson range from 0-100 to 0-1
         - promoted from Plugin to EnlightenFeature 
+        - deprecated KIA
     - DalaiRamanFeature
     - CalibrationStatusFeature 
         - added

@@ -2,7 +2,6 @@ import pyqtgraph
 from datetime import datetime
 import logging
 
-from enlighten import KnowItAll
 from enlighten import common
 from enlighten import util
 
@@ -139,16 +138,11 @@ class ThumbnailWidget(QtWidgets.QFrame):
 
         # TODO: add a "..." drop-down menu of advanced functions, including
         # "choose color"
-        add_id = self.should_add_id_button() 
         width = 31 if add_id else 35
 
         self.button_edit    = self.create_button(callback=self.rename_callback,     icon_name="pencil",        icon_size=(28, 28), size=(width, 30), tooltip="Rename measurement (ctrl-E for latest)")
         self.button_display = self.create_button(callback=self.display_callback,    icon_name="chart",         icon_size=(28, 28), size=(width, 30), tooltip="Toggle graph trace")
         self.button_color   = self.create_button(                                                              icon_size=(28, 28), size=(width, 30), tooltip="Set color", is_color=True)
-        if add_id:
-            self.button_id  = self.create_button(callback=self.id_callback,         icon_name="fingerprint",   icon_size=(28, 28), size=(width, 30), tooltip=KnowItAll.tooltip)
-        else:
-            self.button_id  = None
         self.button_trash   = self.create_button(callback=self.trash_callback,      icon_name="trash",         icon_size=(28, 28), size=(width, 30), tooltip="Delete measurement from disk")
         self.button_expand  = self.create_button(callback=self.expand_callback,     icon_name="down_triangle", icon_size=(10, 10), size=(15, 15), loc=(170,  15))
 
@@ -171,19 +165,9 @@ class ThumbnailWidget(QtWidgets.QFrame):
         else:
             self.expand()
 
-        self.update_kia()
-
     # ##########################################################################
     # Creation
     # ##########################################################################
-
-    def should_add_id_button(self):
-        if not self.ctl.kia_feature.is_installed:
-            # log.debug("KIA not installed")
-            return False
-
-        # only add "identify" button to Raman measurements
-        return self.measurement.technique and "raman" == self.measurement.technique.lower()
 
     ##
     # Called by MeasurementFactory to set the rendered thumbnail image
@@ -296,25 +280,6 @@ class ThumbnailWidget(QtWidgets.QFrame):
             pen = pyqtgraph.mkPen(width=1, color=self.selected_color)
             self.curve.setPen(pen)
 
-    # the user clicked the "thumbnail" icon, starting an ID operation
-    def id_callback(self):
-        self.ctl.kia_feature.enqueue_measurement(self.measurement)
-        self.ctl.gui.colorize_button(self.button_id, True)
-
-    # KIA finished the ID.  For lack of a clear reason to do otherwise, we have
-    # the callback come back to the ThumbnailWidget object which originated the 
-    # request.  However, high-level processing of the response is handled by
-    # the Measurement, which has better visibility on what to do with the ID
-    # declaration.  
-    #
-    # Note that the Measurement MAY elect to call this Thumbnail's rename() 
-    # method to change the text field atop the widget...or it may not.
-    def id_complete_callback(self):
-        dm = self.measurement.declared_match
-        if dm is not None:
-            self.button_id.setToolTip("%s (score %.2f)" % (dm, dm.score))
-        self.ctl.gui.colorize_button(self.button_id, False)
-
     def trash_callback(self):
         self.ctl.gui.colorize_button(self.button_trash, True)
         response = common.msgbox("Also delete measurement from disk?", buttons="Yes, No, Cancel")
@@ -393,10 +358,6 @@ class ThumbnailWidget(QtWidgets.QFrame):
     # rename the Measurement
     def rename(self, label):
         self.le_name.setText(label)
-
-    def update_kia(self):
-        if self.button_id is not None:
-            self.button_id.setEnabled(self.ctl.kia_feature and self.ctl.kia_feature.is_installed)
 
     ## Retain the thumbnail in the session, but remove its graphical trace from 
     # the chart.  This returns a bool so the clickable "toggle trace" button

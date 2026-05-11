@@ -267,7 +267,7 @@ class VCRControlsFeature(EnlightenFeature):
         util.set_enabled(self.bt_step_save, paused and not (bc_enabled or to_running), tooltip=self.tooltips["step_save"])
 
     ##
-    # Called by KnowItAll.Feature, ScanAveragingFeature etc.
+    # Called by ScanAveragingFeature etc.
     #
     # It's debatable whether this method belongs to VCRControls, as it's actually
     # querying Multispec, but...at the moment we're trying to consolidate pause/play

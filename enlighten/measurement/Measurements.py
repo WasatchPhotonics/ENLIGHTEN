@@ -75,15 +75,6 @@ class Measurements:
     #                                                                          #
     # ##########################################################################
 
-    ## called by KnowItAll.Feature on receiving a MatchResponse from KIA.Wrapper
-    # which correponds to a MeasurementID.
-    def id_callback(self, measurement_id, declared_match):
-        for m in self.measurements:
-            if m.measurement_id == measurement_id:
-                m.id_callback(declared_match)
-                return
-        log.error("received DeclaredMatch for missing measurement %s", measurement_id)
-
     def export_callback(self):
         self.export_session()
 
@@ -142,14 +133,6 @@ class Measurements:
     #                                Methods                                   #
     #                                                                          #
     # ##########################################################################
-
-    ##
-    # Enable or disable the Identification button on all Measurement ThumbnailWidgets.
-    #
-    # @todo fold into observers?
-    def update_kia(self):
-        for m in self.measurements:
-            m.thumbnail_widget.update_kia()
 
     ##
     # This is the callback which the FileManager will call, one at a time, with

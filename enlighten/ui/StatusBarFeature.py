@@ -139,7 +139,7 @@ class StatusBarFeature(EnlightenFeature):
     #
     # If we ever create a "ReadingProcessor" or something that handles all new
     # Reading objects, we could always subscribe to notifications from that (as
-    # would Graph, KnowItAll, PluginManager etc).
+    # would Graph, PluginManager etc).
     #
     # Note that there are many other things on the StatusBar which aren't updated
     # here, like Detector Temperature, Battery etc. Many of those are updated by

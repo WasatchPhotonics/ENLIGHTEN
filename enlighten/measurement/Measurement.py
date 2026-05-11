@@ -1322,8 +1322,7 @@ class Measurement:
     # Save the Measurement in a CSV file with the x-axis in one column, spectra
     # in the next column and so on (similar layout as the Excel output).
     #
-    # Note that currently this is NOT writing UTF-8 / Unicode, although KIA-
-    # generated labels are Unicode.  (Dieter doesn't seem to like Unicode CSV)
+    # Note that currently this is NOT writing UTF-8 / Unicode (Dieter doesn't like Unicode CSV)
     def save_csv_file_by_column(self, use_basename=False, ext="csv", delim=",", include_header=True, include_metadata=True, resave=False):
         pr = self.processed_reading
 
@@ -1439,9 +1438,6 @@ class Measurement:
     # hence label, hence filename.  Having serial_number in a row-ordered CSV
     # which aggregates multiple spectrometers is potentially confusing, but when
     # we save the first spectrum we don't know that's the intention.
-    #
-    # Note that currently this is NOT writing UTF-8 / Unicode, although KIA-
-    # generated labels are Unicode.
     #
     # Note that Measurements saved while "appending" are NOT considered renamable
     # at the file level, while Measurements saved to individual files are. 
@@ -1646,29 +1642,6 @@ class Measurement:
             row.append(fmt(pixel))
 
         return row
-
-    def id_callback(self, declared_match):
-        """
-        Called (by way of ThumbnailWidget -> KnowItAll.Feature -> Measurements)
-        when KnowItAll has generated a KnowItAll.DeclaredMatch for this Measurement.
-
-        This receives a KnowItAll.Feature.DeclaredMatch object, which has several
-        fields besides name and score. To simplify interaction with LibraryMatching,
-        just pull out the name and score and add them to the ProcessedReading.
-        """
-        # store the match
-        self.processed_reading.library_matching_compound = declared_match.get_name()
-        self.processed_reading.library_matching_score    = declared_match.get_score()
-        self.processed_reading.library_matching_engine   = "KnowItAll"
-
-        # re-save files using current SaveOptions (will store new label, overwriting old files with old name)
-        # (these will definitely be in TODAY directory, regardless of where they were loaded from)
-        self.save(resave=True)
-
-        # close-out the pending button click on the thumbnail (basically just
-        # turns the button back from red to gray)
-        if self.thumbnail_widget is not None:
-            self.thumbnail_widget.id_complete_callback()
 
     ## Not currently used
     def has_component(self, component):

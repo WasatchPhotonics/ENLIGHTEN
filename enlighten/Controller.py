@@ -107,7 +107,7 @@ class Controller:
         """
 
         self.app                    = app
-        self.log_queue              = log_queue # currently needed for KnowItAll.Wrapper
+        self.log_queue              = log_queue 
         self.log_level              = log_level # passed to LoggingFeature and WasatchDeviceWrapper/Worker
         self.max_memory_growth      = max_memory_growth
         self.max_thumbnails         = max_thumbnails
@@ -154,12 +154,10 @@ class Controller:
         # GUI Configuration
         ########################################################################
 
-        # hide these immediately (KIA shouldn't be visible in Scope)
+        # hide these immediately
         cfu = self.form.ui
-        for widget in [ cfu.frame_kia_outer,
-                        cfu.frame_id_results_white,
-                        cfu.tabWidget_advanced_features
-                      ]:
+        for widget in [ # cfu.frame_id_results_white,
+                        cfu.tabWidget_advanced_features ]:
             widget.setVisible(False)
 
         # @todo this shouldn't go here
@@ -1337,20 +1335,6 @@ class Controller:
         # using PluginController.timer.
         self.plugin_controller.process_responses()
 
-        ########################################################################       
-        # Tick KIA
-        ########################################################################       
-
-        # We're going to tick KnowItAll from here, because we want queued
-        # Measurements (from ThumbnailWidget button clicks) to process even
-        # when spectra is paused, or theoretically even no spectrometers are
-        # connected.
-        #
-        # Note that this in turn calls update_visibility, so there is no separate
-        # external call to update visibility on hotplug or spectrometer selection
-        # events.
-        self.kia_feature.update()
-
         if not self.shutting_down:
             self.status_timer.start(self.STATUS_TIMER_SLEEP_MS)
 
@@ -2000,7 +1984,7 @@ class Controller:
             # live, connected spectrometer.  If we're reprocessing loaded spectra,
             # those loaded Measurements can land on the thumbnail bar, and the 
             # user can display traces themselves.  However, we do want to flow
-            # the reprocessed spectra down into KIA, so keep going.
+            # the reprocessed spectra down into LibraryMatching, so keep going.
             log.debug("not graphing spectra which didn't come from a live spectrometer")
         else:
             graphed = False
@@ -2031,21 +2015,12 @@ class Controller:
                 return
 
         ########################################################################
-        # Library Matching and KnowItAll
+        # Library Matching
         ########################################################################
 
         # only attempt library matching on the "foreground" spectrometer
         if selected:
-            
-            # give KnowItAll first dibs
-            matching_performed = False
-            if self.page_nav.doing_raman():
-                if self.kia_feature.enabled:
-                    self.kia_feature.process(pr, settings)
-                    matching_performed = False
-
-            if not matching_performed: 
-                self.library_matching.process(pr)
+            self.library_matching.process(pr)
 
         ########################################################################
         # Re-Processing complete
