@@ -1,5 +1,7 @@
 # Version History
 
+## 4.2 XS V2 Commercial Release
+
 - 2026-??-?? 4.2.2
     - Infrastructure
         - added EnlightenFeature
