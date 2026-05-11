@@ -14,9 +14,9 @@ from .PluginFieldWidget import PluginFieldWidget
 from .PluginModuleInfo  import PluginModuleInfo
 from .PluginValidator   import PluginValidator
 from .PluginWorker      import PluginWorker
-from .TableModel        import TableModel
 
 from enlighten import common
+from enlighten.ui.TableModel import TableModel
 from enlighten.scope.GraphFeature import GraphFeature
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from enlighten.EnlightenFeature import EnlightenFeature
@@ -489,6 +489,12 @@ class PluginControllerFeature(EnlightenFeature):
         if pos == "none" or config is None or not config.has_other_graph:
             return
 
+        if pos == "right" and self.ctl.dalai.is_visible():
+            log.error("plugins may not use the right pane when DALAI is running")
+            # MZ: in such cases we really should "merge" the top-right or bottom-
+            # right cells, so plugin can be above/below both
+            return
+
         #     0   1   2
         #   +---+---+---+
         # 0 |   | T |   |   T = Top
@@ -497,11 +503,11 @@ class PluginControllerFeature(EnlightenFeature):
         #   +---+---+---+   R = Right
         # 2 |   | B |   |   B = Bottom
         #   +---+---+---+
-
-        if   pos == "top"   : self.layout_graphs.addWidget(self.plugin_plot, 0, 1)
-        elif pos == "bottom": self.layout_graphs.addWidget(self.plugin_plot, 2, 1)
-        elif pos == "left"  : self.layout_graphs.addWidget(self.plugin_plot, 1, 0)
-        elif pos == "right" : self.layout_graphs.addWidget(self.plugin_plot, 1, 2)
+                                                                          # row col
+        if   pos == "top"   : self.layout_graphs.addWidget(self.plugin_plot, 0,  1)
+        elif pos == "bottom": self.layout_graphs.addWidget(self.plugin_plot, 2,  1)
+        elif pos == "left"  : self.layout_graphs.addWidget(self.plugin_plot, 1,  0)
+        elif pos == "right" : self.layout_graphs.addWidget(self.plugin_plot, 1,  2)
 
     ##
     # The user clicked the "process" button on the control panel indicating
@@ -833,9 +839,10 @@ class PluginControllerFeature(EnlightenFeature):
         y_axis_label = "intensity (counts)" if config.y_axis_label is None else config.y_axis_label
         self.plugin_plot.setLabel(text=y_axis_label, axis="left")
 
-    ##
-    # Used to hold the output Pandas table, if one is provided
     def create_output_table(self):
+        """
+        Used to hold the output Pandas table, if one is provided
+        """
         log.debug("creating output table widget")
         self.table_view = QtWidgets.QTableView()
         self.table_view.setAccessibleName("Pandas Output")

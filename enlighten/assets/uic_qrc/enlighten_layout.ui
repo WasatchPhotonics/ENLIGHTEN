@@ -11184,7 +11184,7 @@ QComboBox QListView
                           </widget>
                          </item>
                          <item>
-                          <spacer name="horizontalSpacer_15">
+                          <spacer name="horizontalSpacer_15xyz">
                            <property name="orientation">
                             <enum>Qt::Orientation::Horizontal</enum>
                            </property>
@@ -11730,7 +11730,7 @@ QComboBox QListView
                              </spacer>
                             </item>
                             <item>
-                             <widget class="QPushButton" name="pushButton_correction_status_hide">
+                             <widget class="QPushButton" name="pushButton_correction_status_minimize">
                               <property name="sizePolicy">
                                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                                 <horstretch>0</horstretch>

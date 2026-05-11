@@ -18,10 +18,20 @@ class CorrectionStatusFeature(EnlightenFeature):
     show a given feature if double-clicked.
     """
 
+    ON = "ON"
+    OFF = "off"
+
     def __init__(self, ctl):
         super().__init__(ctl)
 
         cfu = ctl.form.ui
+
+        self.bt_minimize = cfu.pushButton_correction_status_minimize
+        self.frame = cfu.frame_correction_status_1
+
+        self.minimized = False
+
+        self.bt_minimize.clicked.connect(self.minimize_callback)
 
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.tick)
@@ -32,6 +42,7 @@ class CorrectionStatusFeature(EnlightenFeature):
                      "ingaas":      ctl.ingaas_correction,
                      "etalon":      ctl.etalon_correction,
                      "srm":         ctl.raman_intensity_correction,
+                     "edc":         ctl.edc,
                      "dalai":       ctl.dalai,
                      "baseline":    ctl.baseline_correction }
         
@@ -44,7 +55,8 @@ class CorrectionStatusFeature(EnlightenFeature):
                 "label_name":  getattr(cfu, f"label_correction_status_{name}_label"),
                 "callback": callback,
                 "visible": True,
-                "value": "OFF",
+                "value": self.OFF,
+                "tooltip": None
             }
             feature.register_observer(callback)
 
@@ -57,34 +69,64 @@ class CorrectionStatusFeature(EnlightenFeature):
             lb_name = corr["label_name"]
             visible = corr["visible"]
             value = corr["value"]
+            tt = corr["tooltip"]
 
             lb_value.setText(value)
             lb_value.setVisible(visible)
             lb_name.setVisible(visible)
+            lb_value.setToolTip(tt)
 
     ############################################################################
     # Callbacks
     ############################################################################
 
-    def ingaas_notification(self, notification):
-        log.error("ingaas not implemented")
+    def minimize_callback(self):
+        self.minimized = not self.minimized
+        self.frame.setVisible(not self.minimized)
 
-    def etalon_notification(self, notification):
-        log.error("etalon not implemented")
+    def edc_notification(self):
+        corr = self.corrections["edc"]
+        corr["visible"] = self.ctl.edc.visible
+        corr["value"] = self.ON if self.ctl.edc.enabled else self.OFF
+        self.schedule_update()
 
-    def srm_notification(self, notification):
-        log.error("srm not implemented")
+    def ingaas_notification(self):
+        corr = self.corrections["ingaas"]
+        corr["visible"] = self.ctl.ingaas_correction.visible
+        corr["value"] = self.ON if self.ctl.ingaas_correction.enabled else self.OFF
+        self.schedule_update()
 
-    def dalai_notification(self, notification):
+    def etalon_notification(self):
+        corr = self.corrections["etalon"]
+        corr["visible"] = self.ctl.etalon_correction.visible
+        corr["value"] = self.ON if self.ctl.etalon_correction.enabled else self.OFF
+        self.schedule_update()
+
+    def srm_notification(self):
+        corr = self.corrections["srm"]
+        corr["value"] = self.ON if self.ctl.raman_intensity_correction.enabled else self.OFF
+        corr["visible"] = self.ctl.raman_intensity_correction.is_supported()
+        self.schedule_update()
+
+    def dalai_notification(self):
         log.error("dalai not implemented")
 
-    def baseline_notification(self, notification):
-        log.error("baseline not implemented")
+    def baseline_notification(self):
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+        enabled = spec.app_state.baseline_correction_enabled
+        corr = self.corrections["baseline"]
+        corr["value"] = self.ON if enabled else self.OFF
+        corr["visible"] = True
+        corr["tooltip"] = self.ctl.baseline_correction.current_algo_name if enabled else None
+        self.schedule_update()
 
     def raman_shift_notification(self, notification):
+        """ RamanShiftCorrectionFeature sends notifications with dict value """
         corr = self.corrections["raman_shift"]
-
-        corr["value"] = "ON" if notification["enabled"] else "OFF"
+        enabled = notification["enabled"]
+        corr["value"] = self.ON if enabled else self.OFF
         corr["visible"] = notification["visible"]
-
+        corr["tooltip"] = f"{notification['shift']:0.2f}cm⁻¹" if enabled else None
         self.schedule_update()

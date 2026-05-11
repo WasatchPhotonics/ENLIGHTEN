@@ -744,7 +744,10 @@ corresponding to hardware features implemented in the firmware of the spectromet
 - **`SpectrometerApplicationState`**: holds state relating to a single spectrometer
   which is only relevant to the ENLIGHTEN application (as opposed to the driver-level 
   SpectrometerSettings, EEPROM and SpectrometerState of Wasatch.PY, which are 
-  applicable to _any_ spectrometer user and are not "ENLIGHTEN-specific")
+  applicable to _any_ spectrometer user and are not "ENLIGHTEN-specific"). It is a
+  fair question whether it's better for an EnlightenFeature to add its attributes
+  to this this class, or to manage (encapsulate) them internally via multi-
+  spectrometer dictionaries...we currently do a bit of both.
 
 ### enlighten.post_processing
 
@@ -817,23 +820,24 @@ spectrometers.
   (taking a sequence of measurements at a defined interval), `AutoRamanMode` 
   (taking a single dark-corrected Raman `Measurement`). Basically, whereas most 
   of ENLIGHTEN was originally conceived to be "free-running," this was a means
-  to support "operational oddballs" which wanted to work with individual 
-  on-demand measurements. `wasatch.TakeOneRequest` was a recently-added 
-  improvement to simplify specifying what features and settings were to be used 
-  with an individual measurement. As with much soft clay, currently messy.
+  to support features which wanted to work with individual on-demand measurements
+  collected via a specified measurement protocol. The current implementation uses
+  `wasatch.TakeOneRequest` to define the measurement(s) to be collected, and to
+  associate ENLIGHTEN's original TakeOneRequest with Wasatch.PY's Reading responses
+  (each containing a handle to the originating TakeOneRequest).
 
 - `TransmissionFeature`: provides the basic processing used for both transmission 
-  and reflectance measurements, and also the first stage of computing absorbance.
+  and reflectance measurements, and also a key input to computing absorbance.
 
 ### enlighten.scope
 
 This package contains classes relating to the primary on-screen graph in Scope 
 view (more-or-less).
 
-- `CursorFeature`: supports a single red vertical "cursor" which can be dragged back and 
-  forth across the graph, providing the exact x-coordinate on the StatusBar and 
-  y-coordinate on the widget. We should probably make _both_ coordinates optional
-  fields on the StatusBar, and display both on the widget.
+- `CursorFeature`: supports a single red vertical "cursor" which can be dragged 
+  left and right across the graph, showing the exact x-coordinate on the 
+  StatusBar and y-coordinate on the widget. We should probably make _both_ 
+  coordinates optional fields on the StatusBar, and display both on the widget.
 
 - `EmissionLamps`: not sure if this is actually used -- was for an earlier version
   with built-in wavelength calibration. That was deliberately removed so that all
@@ -849,13 +853,13 @@ view (more-or-less).
   (otherwise available by right-clicking on the pyqtgraph)
 
 - `PresetFeature`: a new feature allowing the current settings of a half-dozen 
-  "Feature" objects providing various acquisition parameters and post-processing
-  options to be saved under a handy label (i.e. "Clear liquid vials", "White 
-  powder stand-off" etc). Note that plug-ins can register too, such that plugin
-  state can be instantly reset to one of several named presets.
+  EnlightenFeatures (and even plugins!) providing various acquisition parameters
+  and post-processing options to be saved under a handy label (i.e. "Clear liquid
+  vials", "White powder stand-off" etc). Note that plug-ins can register too, 
+  such that plugin state can be instantly reset to one of several named presets.
 
 - `RamanShiftCorrectionFeature`: responsible for applying 
-  [ASTM E1840-96(2022)](https://www.astm.org/e1840-96r22.html), a session-level 
+  [ASTM E1840-96 (2022)](https://www.astm.org/e1840-96r22.html), a session-level 
   x-axis offset correction which is deliberately not persisted to either EEPROM
   or enlighten.ini (and only affects the wavenumber axis, not wavelength).
 
@@ -863,14 +867,18 @@ view (more-or-less).
 
 This package contains classes involved in saving and graphing individual spectra.
 
-- `AreaScanFeature`: responsible for the little-used and probably-broken ENLIGHTEN
-  area scan image on the Factory view; should maybe be moved to `enlighten.factory`?
+- `AreaScanFeature`: supports 2D full-detector area scan on both Sony IMX CMOS 
+  and Hamamatsu CCD detectors (visualized in the Factory view). At the moment,
+  this probably belongs more in `enlighten.factory`, but hopefully "fast 2D" will
+  eventually become a standard feature, at which time it will just be another 
+  type of measurement.
 
 - **`Measurement`**: encapsulate a single measurement which has been saved to disk
   (optionally to multiple file extensions) with a `ThumbnailWidget` on the 
   scrolling "Clipboard".
 
-- **`MeasurementFactory`**: responsible for generating new `Measurement` instances
+- **`MeasurementFactory`**: responsible for generating new `Measurement` instances,
+  whether from live data (a ProcessedReading), or loading from disk etc.
 
 - **`Measurements`**: encapsulates the set of all `Measurement` instances on the
   scrolling "Clipboard" (i.e., the set of `Measurement` objects which would be
@@ -884,7 +892,7 @@ This package contains classes involved in saving and graphing individual spectra
 ### enlighten.file_io
 
 This package contains classes relating to file storage other than spectral 
-measurements (handled in [Measurements](#measurement).
+measurements (handled in [Measurement](#enlighten.measurement).
 
 - **`ConfigurationFeature`**: wraps `enlighten.ini`, the file responsible for persisting 
   various application settings across executions
@@ -908,19 +916,22 @@ opinion on which is better.
 - `ModelFWHM`: probably used to provide default optical resolution for older units
   before that was calibrated in the EEPROM
 
-- `ModelInfoFeature`: metadata about WP models that can't be readily inferred from the EEPROM
+- `ModelInfoFeature`: static product information about WP models that can't be 
+  readily inferred from the EEPROM. Also provides logic for selecting product 
+  image on Hardware View.
 
 ### enlighten.network
 
-Classes and files used for network communication. (Not a big thing in ENLIGHTEN to date.)
+Classes and files used for network (non-USB) communication. 
 
 - **`BLEManagerFeature`**: connect to BLE spectrometers 
 
 - `CloudManagerFeature`: connect to AWS to download XL (Andor) virtual EEPROM files
 
-- `UpdateCheckerFeature`: check for ENLIGHTEN updates? I forgot this was here. Probably not working...
+- `UpdateCheckerFeature`: check for ENLIGHTEN updates? I forgot this was here. 
+  Probably not working...
 
-- `awsConnect`: probably used with CloudManager? dunno
+- `awsConnect`: probably used with CloudManagerFeature? dunno
 
 - `keys`: this file is not checked into the distribution, but must be present when
   building installers for AWS to work
@@ -930,19 +941,23 @@ Classes and files used for network communication. (Not a big thing in ENLIGHTEN 
 These are classes used in loading spectra files.
 
 - `ColumnFileParser`: loads column-ordered single-measurement CSV files generated
-  from the "Save" button
+  from ENLIGHTEN's "Save" button. Should also load files generated by ENLIGHTEN 
+  Mobile.
 
 - `DashFileParser`: loads the older row-ordered CSV files used by Dash (ENLIGHTEN's
   predecessor)
 
 - `ExportFileParser`: loads the column-ordered "export" multi-measurement CSV files
-  generated from the "Export" button
+  generated from ENLIGHTEN's "Export" button
 
 - `SPCFileParser`: loads Thermo-Galactic GRAMS .SPC files
 
 - `TextFileParser`: loads dirt-simple 2-column x/y files
 
-_We need to add a DXFileParser._
+TODO:
+
+- We need to add a DXFileParser
+- We should probably add the ability to save in Pandas format
 
 ### enlighten.timing
 
@@ -952,43 +967,52 @@ These are classes used to control (or monitor) measurement timing.
   interval, with configured actions to occur before and after each measurement 
   (or each batch)
 
-- `Ramp`: not currently used?
-
 - `RollingDataSet`: a data collection which automatically maintains a "moving 
   window" and "current moving average," used for smoothing noisy readings like 
-  detector or laser temperature
+  detector, laser, and ambient temperature, battery charge, etc. Could arguably 
+  go in enlighten.measurement but that's current for "spectral" measurements.
 
 ### enlighten.factory
 
 These are features only available on the password-protected "Factory" view, not 
 normally visible on the GUI.
 
-- `DFUFeature`: put an ARM-based spectrometer (XS) into DFU (Device Firmware Update) mode
+- `DFUFeature`: put an ARM-based spectrometer (XS) into DFU (Device Firmware 
+  Update) mode
 
-- `FactoryStripChartFeature`: generate "strip-charts" (a single scalar graphed over
-  "time" as the x-axis) for detector temperature, laser temperature, battery etc
+- `FactoryStripChartFeature`: generate "strip-charts" (a single scalar plotted
+  against time as the x-axis) for detector temperature, laser temperature, 
+  battery etc (basically anything using a `RollingDataSet`)
 
 ### enlighten.Plugins
 
-Classes related to plug-ins, from ENLIGHTEN's side. Note that [plugins](#plugins)
-is a different namespace (below).
+Classes related to LOADING adn RUNNING plug-ins, from ENLIGHTEN's side. Note that
+[plugins](#plugins) is a different namespace (below), for "writing" and "being" a
+plugin.
 
-- **`PluginControllerFeature`**: primary controller for all plugins
+- **`PluginControllerFeature`**: responsible for selecting and connecting new
+  plugins, passing new `ProcessedReadings` down to them via 
+  `EnlightenPluginRequests`, and processing received `EnlightenPluginResponses`.
 
-- `PluginFieldWidget`: a single GUI field (either output or input) generated by a 
-  plugin (may be `str`/`QLineEdit`, `bool`/`QCheckbox`, `QComboBox` etc); maps to exactly 
-  one `plugins.EnlightenPluginField` object
+- `PluginFieldWidget`: represents the on-screen Qt GUI widget corresponding to a
+  `plugins.EnlightenPluginField` (a single input or output field declared by the
+  plugin). For instance, if the plugin declares a "string" field with direction,
+  "output", the `PluginFieldWidget` will generate a QLabel; if the same field is
+  and "input", the `PluginFieldWidget` will generate a QLineEdit.
 
-- `PluginGraphSeries`: a graph trace generated by a plugin for display on primary 
-  or plugin graph
+- `PluginGraphSeries`: a graph trace generated by a plugin for display on the
+  primary or plugin `Graph`.
 
 - `PluginModuleInfo`: Python metadata about a dynamically imported plugin (Python 
-  module)
+  module). Responsible for dynamically loading a selected plugin so it can be 
+  called from Python.
 
-- `PluginValidator`: class to validate plugin configuration, fields etc at load time
+- `PluginValidator`: class to validate plugin configuration, fields etc at load 
+  time.
 
-- `PluginWorker`: for plugins which run in their own thread, the interface between
-  `PluginController1 and the plugin
+- `PluginWorker`: for plugins which run in their own background thread, the 
+  interface between `PluginController` and the plugin. It **looks like**, at the
+  moment, ALL plugins run in their own threading.Thread via a PluginWorker.
 
 - `TableModel`: for plugins which generate a Pandas `DataFrame`, used to display 
   scrollable table in Qt
@@ -997,10 +1021,11 @@ is a different namespace (below).
 
 Some points about this directory:
 
-- `plugins/` is currently a directory, _not_ a package. What's the difference?
+- `plugins/` is a directory, but _not_ a Python package. What's the difference?
     - If you look in the `PYTHONPATH` set in `scripts/bootstrap.bat` and various 
       build instructions, it includes both "." (the repo root, parent of 
-      `enlighten/Controller.py`) and `plugins`.
+      `enlighten/Controller.py`) and `plugins`. PYTHONPATH is a list of folders
+      which may hold packages, not a list of packages themselves.
     - That was arguably a mistake; we could remove "plugins" from our `PYTHONPATH`,
       which would make "plugins" a package under the repo root, just like 
       "enlighten" is a package. 
@@ -1009,17 +1034,33 @@ Some points about this directory:
           `plugins.Prod.EmissionLines`, etc.
         - We would then need to change the import statement in `PluginController`
           to `from plugins.EnlightenPlugin import *`.
-        - I have no strong opinion on this.
+        - I have no strong opinion on this...it seems a distinction without
+          a difference.
 
-- There is only one module (.py file) in this package (directory) which is 
-  automatically imported by ENLIGHTEN: `EnlightenPlugin`
+- There is only one (unpackaged) module (.py file) in this directory,
+  `EnlightenPlugin`, which contains the five main classes used by plugins:
+    - `EnlightenPluginBase`: the Abstract Base Class (ABC) of all plugins
+    - `EnlightenPluginConfiguration`
+    - `EnlightenPluginField`
+    - `EnlightenPluginRequest`
+    - `EnlightenPluginResponse`
 
 - Every other directory under plugins/ is treated as a top-level package
   (Prod, Raman, RnD, OEM etc)
 
 - Within a single package directory, every *.py file is assumed to be
   an ENLIGHTEN plugin (so `./plugins/Raman/RamanLines.py` is the plugin
-  Raman.RamanLines).
+  Raman.RamanLines). That file is further expected to contain a class
+  with the same name as the module, and which extends `EnlightenPluginBase`.
+  For example, to create a Raman plugin which does Foo, you would normally
+  start with this::
+
+    $ head enlighten/plugins/Raman/Foo.py
+    from EnlightenPlugin import *
+
+    class Foo(EnlightenPluginBase):
+        def get_configuration(self):
+            ...
 
 - If you want to stick random files with different extensions in those
   directories that's fine; `PluginController` only scans for *.py files.
@@ -1027,9 +1068,12 @@ Some points about this directory:
 - If you have a "complex" plugin that would benefit from multiple files,
   even a whole directory tree of sub-classes, JSON configuration data and
   whatever, you're free to put additional subdirectories within packages.
-      - That is, `PluginController` does not recursively "walk" ./plugins;
-        it only scans for .py files within direct 1st-level subdirectories
-        of ./plugins.
+      - That is, `PluginController` does not recursively "walk" ./plugins; it 
+        only scans for .py files within direct 1st-level subdirectories of 
+        ./plugins.
+      - You can of course also add as many classes to one plugin module as you 
+        like, in addition to the one required class which shares the module
+        name and extends `EnlightenPlugin`.
 
 - Note that when installed on Windows, this whole directory tree gets copied to 
   EnlightenSpectra/plugins, so technically there is a runtime Python package tree 
@@ -1047,8 +1091,8 @@ module:
 - `EnlightenPluginBase`: Abstract Base Class (ABC) for all plugins
 
 - `EnlightenPluginConfiguration`: when a plugin is "connected" (instantiated and
-  loaded), its `get_configuration` method returns this back to the `PluginController` 
-  to configure GUI fields and other plugin features
+  loaded), its `get_configuration` method returns an object of this class back to
+  the `PluginController` to configure GUI fields and other features.
 
 - `EnlightenPluginField`: the back-end datatype and field configuration which 
   generates an on-screen `PluginFieldWidget`
@@ -1061,8 +1105,3 @@ module:
 - `EnlightenPluginResponse`: after a plugin has finished processing an 
   `EnlightenPluginRequest`, it should return an `EnlightenPluginResponse`. The 
   new "functional" plugin API does this automatically.
-
-- `EnlightenApplicationInfo`: this can be be deprecated. It had been used when 
-  ENLIGHTEN was closed-source to provide a handful of key ENLIGHTEN attributes or
-  methods that plugins could access. Now that they have their own handle to the 
-  `Controller`, it's moot.

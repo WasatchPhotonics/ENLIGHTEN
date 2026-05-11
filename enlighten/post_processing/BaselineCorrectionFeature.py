@@ -224,6 +224,7 @@ class BaselineCorrectionFeature(EnlightenFeature):
             self.algo = None
             if spec is not None:
                 spec.app_state.baseline_correction_enabled = self.enabled
+            self.notify_observers()
             return
 
         # apparently we're in a view and spectrometer that supports baseline
@@ -244,6 +245,7 @@ class BaselineCorrectionFeature(EnlightenFeature):
         self.enabled = self.cb_enabled.isChecked()
         if spec is not None:
             spec.app_state.baseline_correction_enabled = self.enabled
+        self.notify_observers()
 
         if self.curve is None:
             return

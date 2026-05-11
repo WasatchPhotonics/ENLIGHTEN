@@ -134,8 +134,16 @@ class RamanIntensityCorrectionFeature(EnlightenFeature):
         else:
             return set_allowed(True, "Can apply NIST SRM-calibrated Raman Intensity Correction")
 
+    def init_hotplug(self):
+        """
+        Per discussion in XS V2 chat 11-May-2026
+        """
+        self.set_enable_when_allowed(True)
+
     def update_visibility(self):
         # log.debug(f"update_visibility: supported was {self.supported}, allowed was {self.allowed}, enabled was {self.enabled}, enable_when_allowed was {self.enable_when_allowed}")
+
+        was_enabled = self.enabled
 
         self.supported = self.is_supported()
         self.button.setVisible(self.supported)
@@ -166,6 +174,9 @@ class RamanIntensityCorrectionFeature(EnlightenFeature):
             # log.debug("setting button gray because neither enabled nor enable_when_allowed")
             self.ctl.gui.colorize_button(self.button, False)
             self.button.setToolTip("Click to apply NIST SRM-calibrated Raman Intensity Correction")
+
+        if was_enabled != self.enabled:
+            self.send_notification()
 
     def button_callback(self):
         # log.debug(f"button_callback: enabled was {self.enabled}, enable_when_allowed was {self.enable_when_allowed}")

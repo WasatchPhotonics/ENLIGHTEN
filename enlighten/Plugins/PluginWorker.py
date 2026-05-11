@@ -5,18 +5,17 @@ import traceback
 
 log = logging.getLogger(__name__)
 
-##
-# This is the lightweight Thread object which "owns and runs" an actual plugin in
-# the background.  It is created with input (request) and output (response) queues,
-# which remain connected to the PluginController which spawned the worker.  The
-# run() method loops indefinitely, relaying requests and responses between the 
-# Controller and plugin, until closed by a poison-pill from either end.
 class PluginWorker(threading.Thread):
+    """
+    This is the lightweight Thread object which "owns and runs" an actual plugin in
+    the background. It is created with input (request) and output (response) queues,
+    which remain connected to the PluginController which spawned the worker. The
+    run() method loops indefinitely, relaying requests and responses between the 
+    Controller and plugin, until closed by a poison-pill from either end.
+    """
 
-    ##
-    # Actually instantiates the plugin.
     def __init__(self, request_queue, response_queue, module_info):
-        threading.Thread.__init__(self)
+        super().__init__(self)
 
         self.request_queue  = request_queue
         self.response_queue = response_queue

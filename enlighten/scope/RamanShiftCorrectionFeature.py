@@ -174,13 +174,16 @@ class RamanShiftCorrectionFeature(EnlightenFeature):
         self.button.setVisible(self.widgets_visible)
 
         if self.widgets_visible:
-            self.enabled = spec.settings.state.wavenumber_correction != 0
+            shift = spec.settings.state.wavenumber_correction
+            self.enabled = 0 != shift
             self.ctl.gui.colorize_button(self.button, self.enabled)
         else:
             self.enabled = False
+            shift = None
 
         self.notify_observers_with_value( { "visible": self.widgets_visible,
-                                            "enabled": self.enabled } )
+                                            "enabled": self.enabled,
+                                            "shift": shift } )
 
         self.checkbox_callback()
 

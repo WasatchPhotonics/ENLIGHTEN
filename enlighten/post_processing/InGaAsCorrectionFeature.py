@@ -13,3 +13,23 @@ class InGaAsCorrectionFeature(EnlightenFeature):
         cfu = ctl.form.ui
 
         self.cb_enable = cfu.checkBox_ingaas_correction
+
+        self.visible = False
+        self.enabled = False
+
+        self.cb_enable.stateChanged.connect(self.enable_callback)
+
+    def update_visibility(self):
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            self.visible = False
+        else:
+            self.visible = spec.settings.ingaas_correction is not None
+
+        self.cb_enable.setVisible(self.visible)
+
+        self.notify_observers()
+
+    def enable_callback(self):
+        self.enabled = self.cb_enable.isChecked()
+        self.update_visibility()

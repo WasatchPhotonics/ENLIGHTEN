@@ -9,3 +9,9 @@ class DalaiRamanFeature(EnlightenFeature):
         super().__init__(ctl)
 
         cfu = ctl.form.ui
+
+        self.visible = False
+        self.enabled = False
+
+    def is_visible(self):
+        return self.visible

@@ -18,25 +18,26 @@ log = logging.getLogger(__name__)
 class TableModel(QtCore.QAbstractTableModel):
 
     def __init__(self, df):
-        super(TableModel, self).__init__()
-        self._df = df
+        super().__init__()
+        self.df = df
 
     def data(self, index, role):
         if role == Qt.DisplayRole:
-            value = self._df.iloc[index.row(), index.column()]
+            value = self.df.iloc[index.row(), index.column()]
             return str(value)
 
     def rowCount(self, index):
-        return self._df.shape[0]
+        # MZ: interesting that index isn't used...apparently assuming rectangular
+        return self.df.shape[0]
 
     def columnCount(self, index):
-        return self._df.shape[1]
+        # MZ: interesting that index isn't used...apparently assuming rectangular
+        return self.df.shape[1]
 
     def headerData(self, section, orientation, role):
         # section is the index of the column/row.
         if role == Qt.DisplayRole:
             if orientation == Qt.Horizontal:
-                return str(self._df.columns[section])
-
-            if orientation == Qt.Vertical:
-                return str(self._df.index[section])
+                return str(self.df.columns[section])
+            elif orientation == Qt.Vertical:
+                return str(self.df.index[section])

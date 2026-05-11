@@ -79,6 +79,8 @@ class EnlightenFeature:
         does not, so LaserControlFeature should disappear. Or perhaps the old
         laser had a power calibration, but the new one does not, so power setting
         should change from mW to duty cycle.
+
+        **This method should always be called on the GUI thread.**
         """
         pass
         

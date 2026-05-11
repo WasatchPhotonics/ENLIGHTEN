@@ -5,6 +5,7 @@
         - added EnlightenFeature
         - generalized observers
         - ARCHITECTURE docs
+        - deprecated timing.Ramp
     - Laser Control
         - IDS Autonomous Collection
         - BLE laser PWM works
@@ -23,29 +24,33 @@
         - fixed tab order for wavecal coeffs
     - BatchCollection
         - [#587] fixed "dropped frames" causing BatchCollection to exit early
+    - RamanIntensityCorrection
+        - on by default when allowed
     - LibraryMatching
         - moved Pearson range from 0-100 to 0-1
         - promoted from Plugin to EnlightenFeature 
     - DalaiRamanFeature
     - CalibrationStatusFeature 
+        - added
     - STARTING: 
         - Safe Mode
         - Etalon Correction
         - InGaAs Correction
     - TODO
-        - CalibrationStatusFeature
-            - support minimize
         - LibraryMatching
-            restore result table
+            - promote Plugins.TableModel out of PluginController to a new ScopeTableFeature
+              (see PluginControllerFeature.create_output_table)
             - send match spectrum to (Scope, DALAIGraph) as appropriate
         - DalaiRamanFeature
             - two graphs, side by side, not movable or collapsible
+              (see PluginControllerFeature.init_plugin_plot)
             - nrd5-r3-model-17-opset18 (https://bitbucket.org/wasatchphotonics/emauihelpers/src/main/models/)
+        - BatteryFeature (in work)
+            - add state.battery_temperature_deg_c
+            - add state.battery_charger_temperature_deg_c
         - DidYouKnowFeature
             - update LibraryMatching
             - add DalaiRamanFeature
-        - BatteryFeature
-            - does this report battery temperature?
 
 - 2026-04-16 4.2.1
     - Bluetooth

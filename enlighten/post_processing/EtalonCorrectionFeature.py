@@ -17,6 +17,7 @@ class EtalonCorrectionFeature(EnlightenFeature):
         self.cb_enable = cfu.checkBox_etalon_correction
         
         self.enabled = False
+        self.visible = False
         self.calibrations = {}
 
         self.cb_enable.stateChanged.connect(self._enable_callback)
@@ -34,7 +35,11 @@ class EtalonCorrectionFeature(EnlightenFeature):
             self._lazy_load_calibration(sn)
 
         calibration = self.calibrations.get(sn, None)
-        self.cb_enable.setVisible(calibration is not None)
+        self.visible = calibration is not None
+
+        self.cb_enable.setVisible(self.visible)
+
+        self.notify_observers()
 
     def process(self, pr):
         """ Called by Controller.process_reading """
@@ -86,3 +91,4 @@ class EtalonCorrectionFeature(EnlightenFeature):
 
     def _enable_callback(self):
         self.enabled = self.cb_enable.isChecked()
+        self.update_visibility()
