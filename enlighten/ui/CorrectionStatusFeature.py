@@ -4,9 +4,9 @@ from enlighten.EnlightenFeature import EnlightenFeature
 from enlighten import common
 
 if common.use_pyside2():
-    from PySide2 import QtCore
+    from PySide2 import QtCore, QtGui
 else:
-    from PySide6 import QtCore
+    from PySide6 import QtCore, QtGui
 
 log = logging.getLogger(__name__)
 
@@ -83,6 +83,10 @@ class CorrectionStatusFeature(EnlightenFeature):
     def minimize_callback(self):
         self.minimized = not self.minimized
         self.frame.setVisible(not self.minimized)
+
+        tri = "up" if self.minimized else "down"
+        icon = f":/greys/images/grey_icons/{tri}_triangle.svg"
+        self.bt_minimize.setIcon(QtGui.QIcon(icon))
 
     def edc_notification(self):
         corr = self.corrections["edc"]
