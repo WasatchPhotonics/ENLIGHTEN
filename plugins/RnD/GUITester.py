@@ -23,4 +23,4 @@ class GUITester(EnlightenPluginBase):
         self.flip(self.ctl.form.ui.page_scope_capture_details_spectrum)
 
     def stackedWidget_scope_capture_details_spectrum_callback(self):
-        self.flip(self.ctl.form.ui.stackedWidget_scope_capture_details_spectrum_callback)
+        self.flip(self.ctl.form.ui.stackedWidget_scope_capture_details_spectrum)
