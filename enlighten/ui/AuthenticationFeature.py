@@ -130,8 +130,7 @@ class AuthenticationFeature(EnlightenFeature):
         if self.level > self.BASIC:
             self.combo_view.addItem("Factory")
 
-        for callback in self.observers:
-            callback()
+        self.notify_observers()
 
         if self.level > self.BASIC and switch_to_factory:
             self.ctl.page_nav.set_view_factory()

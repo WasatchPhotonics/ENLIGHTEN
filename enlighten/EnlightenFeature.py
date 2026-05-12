@@ -108,13 +108,16 @@ class EnlightenFeature:
 
     def notify_observers(self, event=None):
         if event in self.observers:
-            for callback in self.observers[event]:
+            for callback in self.get_observers(event):
                 callback()
 
     def notify_observers_with_value(self, value, event=None):
         if event in self.observers:
-            for callback in self.observers[event]:
+            for callback in self.get_observers(event):
                 callback(value)
+
+    def get_observers(self, event=None):
+        return self.observers[event]
 
     ############################################################################
     # utility

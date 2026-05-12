@@ -32,6 +32,7 @@ class ResourceMonitorFeature(EnlightenFeature):
         self.initial_size = None
         self.last_memory_check = datetime.datetime.now()
         self.exit_code = 0
+        self.is_parallels = None
 
     def copacetic(self):
         """ @returns True if we should keep running, False if shutdown advised. """
@@ -46,6 +47,18 @@ class ResourceMonitorFeature(EnlightenFeature):
             return False
 
         return True
+
+    def under_parallels(self):
+        """
+        @see https://ifnotnil.com/t/if-you-ever-need-to-know-if-your-running-on-parallels/1980
+        """
+        if self.is_parallels is None:
+            self.is_parallels = False
+            for proc in psutil.process_iter(['pid', 'name']):
+                if "prl_cc.exe" in str(proc.info):
+                    self.is_parallels = True
+                    break
+        return self.is_parallels
 
     def check_runtime(self, now):
         """ @returns True if copacetic """

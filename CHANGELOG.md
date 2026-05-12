@@ -24,6 +24,9 @@
         - added AssemblyRevision (packed and expanded)
         - added Power Connection State (pending FW fix)
         - fixed tab order for wavecal coeffs
+    - BLEManager
+        - add "Last Used" column
+        - disable under Parallels
     - BatchCollection
         - [#587] fixed "dropped frames" causing BatchCollection to exit early
     - RamanIntensityCorrection
@@ -33,8 +36,9 @@
         - promoted from Plugin to EnlightenFeature 
         - deprecated KIA
     - DalaiRamanFeature
-    - CalibrationStatusFeature 
-        - added
+    - added CalibrationStatusFeature 
+    - EEPROMEditor
+        - fixed PowerWatchdogSec
     - STARTING: 
         - Safe Mode
         - Etalon Correction
