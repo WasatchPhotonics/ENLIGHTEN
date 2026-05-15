@@ -16004,7 +16004,7 @@ li.checked::marker { content: "\2612"; }
                            </widget>
                           </item>
                           <item row="1" column="0">
-                           <widget class="QCheckBox" name="checkBox_accessory_shutter">
+                           <widget class="QCheckBox" name="checkBox_accessory_shutter_open">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                               <horstretch>0</horstretch>
@@ -16012,7 +16012,7 @@ li.checked::marker { content: "\2612"; }
                              </sizepolicy>
                             </property>
                             <property name="text">
-                             <string>Shutter</string>
+                             <string>Shutter Open</string>
                             </property>
                            </widget>
                           </item>

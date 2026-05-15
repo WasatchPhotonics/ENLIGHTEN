@@ -38,7 +38,7 @@ class AccessoryControlFeature(EnlightenFeature):
         self.cb_enable                  = cfu.checkBox_accessory_cont_strobe_enable
         self.cb_fan                     = cfu.checkBox_accessory_fan
         self.cb_lamp                    = cfu.checkBox_accessory_lamp
-        self.cb_shutter                 = cfu.checkBox_accessory_shutter
+        self.cb_shutter_open            = cfu.checkBox_accessory_shutter_open
         self.frame_cont_strobe          = cfu.frame_accessory_cont_strobe
         self.frame_widget               = cfu.frame_accessory_widget
         self.sb_freq_hz                 = cfu.spinBox_accessory_cont_strobe_freq_hz
@@ -50,7 +50,7 @@ class AccessoryControlFeature(EnlightenFeature):
         # bindings
         self.cb_fan                     .stateChanged   .connect(self.fan_callback)
         self.cb_lamp                    .stateChanged   .connect(self.lamp_callback)
-        self.cb_shutter                 .stateChanged   .connect(self.shutter_callback)
+        self.cb_shutter_open            .stateChanged   .connect(self.shutter_open_callback)
         self.cb_display                 .stateChanged   .connect(self.display_callback)
         self.cb_enable                  .stateChanged   .connect(self.enable_callback)
         self.sb_freq_hz                 .valueChanged   .connect(self.freq_callback)
@@ -59,6 +59,8 @@ class AccessoryControlFeature(EnlightenFeature):
         # disable scroll stealing
         for widget in [ self.sb_freq_hz, self.sb_width_us ]:
             widget.installEventFilter(ScrollStealFilter(widget))
+
+        self.cb_shutter_open.setToolTip("Shutter is OPEN when this checkbox is checked (measuring sample), and shutter is CLOSED when this checkbox is unchecked (taking dark)")
 
         self.update_visibility()
 
@@ -72,8 +74,8 @@ class AccessoryControlFeature(EnlightenFeature):
 
         if spec.settings.eeprom.has_cooling:
             self.cb_fan.setChecked(True)
-        if spec.settings.state.shutter_enabled:
-            self.cb_shutter.setChecked(True)
+        if spec.settings.state.shutter_open:
+            self.cb_shutter_open.setChecked(True)
 
         self.freq_callback()
         self.width_callback()
@@ -86,8 +88,7 @@ class AccessoryControlFeature(EnlightenFeature):
         for setting in [ "fan_enable",
                          "strobe_enable",
                          "mod_enable",
-                         "lamp_enable",
-                         "shutter_enable" ]:
+                         "lamp_enable" ]:
             spec.change_device_setting(setting, False)
 
     def update_visibility(self):
@@ -133,13 +134,13 @@ class AccessoryControlFeature(EnlightenFeature):
         spec.settings.state.lamp_enabled = self.cb_lamp.isChecked()
         spec.change_device_setting("lamp_enable", spec.settings.state.lamp_enabled)
 
-    def shutter_callback(self):
+    def shutter_open_callback(self):
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
 
-        spec.settings.state.shutter_enabled = self.cb_shutter.isChecked()
-        spec.change_device_setting("shutter_enable", spec.settings.state.shutter_enabled)
+        spec.settings.state.shutter_open = self.cb_shutter_open.isChecked()
+        spec.change_device_setting("shutter_open", spec.settings.state.shutter_open)
 
     def display_callback(self):
         self.cont_strobe_visible = self.cb_display.isChecked()

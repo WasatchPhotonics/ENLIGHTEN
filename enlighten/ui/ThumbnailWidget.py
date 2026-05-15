@@ -138,7 +138,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
 
         # TODO: add a "..." drop-down menu of advanced functions, including
         # "choose color"
-        width = 31 if add_id else 35
+        width = 35
 
         self.button_edit    = self.create_button(callback=self.rename_callback,     icon_name="pencil",        icon_size=(28, 28), size=(width, 30), tooltip="Rename measurement (ctrl-E for latest)")
         self.button_display = self.create_button(callback=self.display_callback,    icon_name="chart",         icon_size=(28, 28), size=(width, 30), tooltip="Toggle graph trace")

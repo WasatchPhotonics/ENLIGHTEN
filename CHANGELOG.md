@@ -23,6 +23,7 @@
         - added Laser Max Temp DegC
         - added AssemblyRevision (packed and expanded)
         - added Power Connection State (pending FW fix)
+        - fixed PowerWatchdogSec
         - fixed tab order for wavecal coeffs
     - BLEManager
         - add "Last Used" column
@@ -36,9 +37,15 @@
         - promoted from Plugin to EnlightenFeature 
         - deprecated KIA
     - DalaiRamanFeature
-    - added CalibrationStatusFeature 
-    - EEPROMEditor
-        - fixed PowerWatchdogSec
+        - TODO: move from plugin
+    - CalibrationStatusFeature 
+        - new feature (heavy use of notifications)
+        - collapsible!
+    - Andor / XL Shutter Control
+        - for posterity, before renaming things, empirically validated old 
+          behavior was "shutter is OPEN if '[x] Shutter' checkbox is CHECKED" 
+          (this was not clear in any way)
+        - renaming everything to "Shutter Open" and "Shutter Closed"
     - STARTING: 
         - Safe Mode
         - Etalon Correction
