@@ -55,8 +55,7 @@ class LibraryMatchingFeature(EnlightenFeature):
         self.cb_use_dist        = cfu.checkBox_library_matching_use_dist
         self.bt_save            = cfu.pushButton_library_matching_save_to_library
 
-        # TODO: figure out what to do with Pandas
-        self.df_results = None 
+        self.dataframe = None 
 
         # start with defaults
         self.enabled = False
@@ -102,12 +101,21 @@ class LibraryMatchingFeature(EnlightenFeature):
 
         self.ctl.measurement_factory.register_observer(self.factory_callback, "save")
 
-        # note that this curve is in the SCOPE Graph...we still need to add one in the DalaiRamanFeature Graph
+        # At the moment, LibraryMatching "best library spectrum" curves may be 
+        # graphed on either the main graph (if DALAI is disabled), or the ALT 
+        # graph (if DALAI is running).
+
         self.curve_scope = self.ctl.graph.add_curve("library_spectrum", 
                                                     rehide=False, 
                                                     in_legend=False, 
                                                     pen='#2994d3')
+
+        self.curve_scope_dalai = self.ctl.alt_graph.add_curve("library_spectrum", 
+                                                              rehide=False, 
+                                                              in_legend=False, 
+                                                              pen='#2994d3')
         self.curve_scope.setVisible(False)
+        self.curve_scope_dalai.setVisible(False)
 
     def disconnect(self):
         self.ctl.measurement_factory.unregister_observer(self.factory_callback, "save")
@@ -117,14 +125,20 @@ class LibraryMatchingFeature(EnlightenFeature):
         self.timer.stop()
 
     def update_settings(self):
-        self.min_score = self.ds_min_score.value()
+        was_enabled = self.enabled
+
         self.max_results = self.sb_max_results.value()
+        self.min_score = self.ds_min_score.value()
         self.use_dist = self.cb_use_dist.isChecked()
         self.enabled = self.cb_enable.isChecked()
+
+        if was_enabled != self.enabled:
+            self.ctl.table_scope.set_visible(self.enabled)
 
     def tick(self):
         self.lb_compound.setText(self.last_compound)
         self.lb_score.setText(f"{self.last_score:0.2f}" if self.last_score is not None else "")
+        self.ctl.scope_table.set_dataframe(self.dataframe)
 
     def process(self, pr):
         if not self.enabled:
@@ -138,18 +152,13 @@ class LibraryMatchingFeature(EnlightenFeature):
             self.ctl.marquee.error("LibraryMatching in Raman mode requires the laser to be enabled")
             self.laser_warning_issued = True
 
-        self.outputs = {
-            "Compound": "None",
-            "Score": 0,
-            "Results": pd.DataFrame(data={' Compound ': [], ' Score ': []})
-        }
-
         # perform matching
         compounds, scores = self.pearson.process(wavenumbers, spectrum)
         if compounds is None or scores is None or len(compounds) == 0:
             self.last_compound = None
             self.last_score = None
             self.curve_scope.setVisible(False)
+            self.curve_scope_dalai.setVisible(False)
             self.timer.start(self.TIMER_MS)
             return
 
@@ -159,7 +168,7 @@ class LibraryMatchingFeature(EnlightenFeature):
 
         # spaces improve appearance
         table_data = {' Compound ': compounds, ' Score ': scores}
-        self.df_results = pd.DataFrame(data=table_data).round(2)
+        self.dataframe = pd.DataFrame(data=table_data).round(2)
 
         # if library compound names are pipe-delimited, trim to first sub-field
         best_compound = compounds[0].split("|")[0].strip()
@@ -170,16 +179,16 @@ class LibraryMatchingFeature(EnlightenFeature):
         self.last_score = best_score
 
         # TODO: determine which curve to use
-        curve = self.curve_scope
+        curve = self.curve_scope_dalai if self.ctl.dalai.is_enabled() else self.curve_scope
 
         # plot best-matching Pearson library spectrum
         if self.pearson.best_library_spectrum is not None and self.pearson.best_library_wavenumbers is not None:
             # curve.setName(f"Library {best_compound}") 
             curve.setData(x=self.pearson.best_library_wavenumbers,
                           y=self.pearson.best_library_spectrum)
-            self.curve_scope.setVisible(True)
+            curve.setVisible(True)
         else:
-            self.curve_scope.setVisible(False)
+            curve.setVisible(False)
 
         # Add to ProcessedReading, so it will be saved with Measurement metadata.
         # Use fields previously allocated for KIA.

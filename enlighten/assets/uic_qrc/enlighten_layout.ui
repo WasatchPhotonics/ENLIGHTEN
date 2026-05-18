@@ -17296,6 +17296,367 @@ li.checked::marker { content: "\2612"; }
                </item>
 
 
+               <!-- DALAI-RAMAN -->
+               <!--  ==========================  -->
+               <!-- | [x] Enable               | -->
+               <!-- |                          | -->
+               <!-- | model: [_XM_Wide______v] | -->
+               <!-- |                          | -->
+               <!-- | [x] Left Trim            | -->
+               <!-- |     [v] ____0____ [^]    | -->
+               <!-- | [x] Right Trim           | -->
+               <!-- |     [v] ____0____ [^]    | -->
+               <!-- |                          | -->
+               <!-- | [x] Deconvolute          | -->
+               <!-- |__________________________| -->
+
+               <item>
+                <widget class="QFrame" name="frame_dalai_1">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_dalai_1">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label_dalai_title">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <bold>true</bold>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>DALAI-RAMAN</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QFrame" name="frame_dalai_2">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="lineWidth">
+                     <number>1</number>
+                    </property>
+                    <property name="wpBox" stdset="0">
+                     <bool>false</bool>
+                    </property>
+                    <layout class="QGridLayout" name="grid_dalai_1" rowstretch="0" columnstretch="0">
+                     <property name="sizeConstraint">
+                      <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+                     </property>
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="spacing">
+                      <number>0</number>
+                     </property>
+                     <item row="0" column="0">
+                      <widget class="QFrame" name="frame_dalai_3">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>16777215</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="lineWidth">
+                        <number>1</number>
+                       </property>
+                       <property name="wpGrad" stdset="0">
+                        <bool>false</bool>
+                       </property>
+                       <layout class="QVBoxLayout" name="verticalLayout_dalai_3">
+                        <item>
+                         <widget class="QFrame" name="frame_dalai_form">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="frameShape">
+                           <enum>QFrame::Shape::StyledPanel</enum>
+                          </property>
+                          <property name="frameShadow">
+                           <enum>QFrame::Shadow::Raised</enum>
+                          </property>
+                          <layout class="QFormLayout" name="formLayout_dalai_3">
+                           <property name="labelAlignment">
+                            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                           </property>
+                           <property name="horizontalSpacing">
+                            <number>0</number>
+                           </property>
+                           <property name="verticalSpacing">
+                            <number>3</number>
+                           </property>
+                           <property name="leftMargin">
+                            <number>6</number>
+                           </property>
+                           <property name="topMargin">
+                            <number>6</number>
+                           </property>
+                           <property name="rightMargin">
+                            <number>6</number>
+                           </property>
+                           <property name="bottomMargin">
+                            <number>9</number>
+                           </property>
+
+                           <item row="0" column="0">
+                            <widget class="QCheckBox" name="checkBox_dalai_enable">
+                             <property name="text">
+                              <string />
+                             </property>
+                             <property name="checked">
+                              <bool>false</bool>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="0" column="1">
+                            <widget class="QLabel" name="label_dalai_enable_label">
+                             <property name="text">
+                              <string>Enabled</string>
+                             </property>
+                            </widget>
+                           </item>
+
+                           <item row="1" column="0">
+                            <widget class="QLabel" name="label_dalai_model_label">
+                             <property name="text">
+                              <string>Model</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="1" column="1">
+                            <widget class="QComboBox" name="comboBox_dalai_model">
+                             <property name="minimumSize">
+                              <size>
+                               <width>200</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="font">
+                              <font>
+                               <pointsize>10</pointsize>
+                               <bold>true</bold>
+                              </font>
+                             </property>
+                             <property name="focusPolicy">
+                              <enum>Qt::FocusPolicy::StrongFocus</enum>
+                             </property>
+                            </widget>
+                           </item>
+                          
+                           <item row="2" column="0">
+                            <widget class="QCheckBox" name="checkBox_dalai_left_trim">
+                             <property name="text">
+                              <string />
+                             </property>
+                             <property name="checked">
+                              <bool>false</bool>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="2" column="1">
+                            <widget class="QLabel" name="label_dalai_left_trim_bool_label">
+                             <property name="text">
+                              <string>Left Trim</string>
+                             </property>
+                            </widget>
+                           </item>
+
+                           <item row="3" column="0">
+                            <widget class="QLabel" name="label_dalai_left_trim_value_label">
+                             <property name="font">
+                              <font>
+                               <pointsize>10</pointsize>
+                              </font>
+                             </property>
+                             <property name="text">
+                              <string>Left Trim</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="3" column="1">
+                            <widget class="QSpinBox" name="spinBox_dalai_left_trim_wavenumber">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="focusPolicy">
+                              <enum>Qt::FocusPolicy::StrongFocus</enum>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignmentFlag::AlignCenter</set>
+                             </property>
+                             <property name="buttonSymbols">
+                              <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
+                             </property>
+                             <property name="accelerated">
+                              <bool>true</bool>
+                             </property>
+                             <property name="keyboardTracking">
+                              <bool>false</bool>
+                             </property>
+                             <property name="minimum">
+                              <number>0</number>
+                             </property>
+                             <property name="maximum">
+                              <number>4000</number>
+                             </property>
+                             <property name="singleStep">
+                              <number>1</number>
+                             </property>
+                             <property name="value">
+                              <number>750</number>
+                             </property>
+                            </widget>
+                           </item>
+
+                           <item row="4" column="0">
+                            <widget class="QCheckBox" name="checkBox_dalai_right_trim">
+                             <property name="text">
+                              <string />
+                             </property>
+                             <property name="checked">
+                              <bool>false</bool>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="4" column="1">
+                            <widget class="QLabel" name="label_dalai_right_trim_bool_label">
+                             <property name="text">
+                              <string>Right Trim</string>
+                             </property>
+                            </widget>
+                           </item>
+
+                           <item row="5" column="0">
+                            <widget class="QLabel" name="label_dalai_right_trim_value_label">
+                             <property name="font">
+                              <font>
+                               <pointsize>10</pointsize>
+                              </font>
+                             </property>
+                             <property name="text">
+                              <string>Right Trim</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="5" column="1">
+                            <widget class="QSpinBox" name="spinBox_dalai_right_trim_wavenumber">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="focusPolicy">
+                              <enum>Qt::FocusPolicy::StrongFocus</enum>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignmentFlag::AlignCenter</set>
+                             </property>
+                             <property name="buttonSymbols">
+                              <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
+                             </property>
+                             <property name="accelerated">
+                              <bool>true</bool>
+                             </property>
+                             <property name="keyboardTracking">
+                              <bool>false</bool>
+                             </property>
+                             <property name="minimum">
+                              <number>0</number>
+                             </property>
+                             <property name="maximum">
+                              <number>4000</number>
+                             </property>
+                             <property name="singleStep">
+                              <number>1</number>
+                             </property>
+                             <property name="value">
+                              <number>0</number>
+                             </property>
+                            </widget>
+                           </item>
+
+                           <item row="6" column="0">
+                            <widget class="QCheckBox" name="checkBox_dalai_deconvolute">
+                             <property name="text">
+                              <string />
+                             </property>
+                             <property name="checked">
+                              <bool>false</bool>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="6" column="1">
+                            <widget class="QLabel" name="label_dalai_deconvolute_label">
+                             <property name="text">
+                              <string>Deconvolute</string>
+                             </property>
+                            </widget>
+                           </item>
+
+                          </layout>
+                         </widget>
+                        </item>
+                       </layout>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
                
                <item>
                 <widget class="QFrame" name="frame_library_matching_1">
@@ -17976,61 +18337,6 @@ li.checked::marker { content: "\2612"; }
                            <string>Process</string>
                           </property>
                          </widget>
-                        </item>
-                        <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_79">
-                          <item>
-                           <widget class="QLabel" name="label_plugin_graph_pos">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
-                            <property name="text">
-                             <string>Graph</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item>
-                           <widget class="QComboBox" name="comboBox_plugin_graph_pos">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
-                            <property name="focusPolicy">
-                             <enum>Qt::FocusPolicy::StrongFocus</enum>
-                            </property>
-                            <item>
-                             <property name="text">
-                              <string>Bottom</string>
-                             </property>
-                            </item>
-                            <item>
-                             <property name="text">
-                              <string>Top</string>
-                             </property>
-                            </item>
-                            <item>
-                             <property name="text">
-                              <string>Left</string>
-                             </property>
-                            </item>
-                            <item>
-                             <property name="text">
-                              <string>Right</string>
-                             </property>
-                            </item>
-                            <item>
-                             <property name="text">
-                              <string>None</string>
-                             </property>
-                            </item>
-                           </widget>
-                          </item>
-                         </layout>
                         </item>
                        </layout>
                       </widget>

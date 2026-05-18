@@ -105,11 +105,8 @@ class PluginControllerFeature(EnlightenFeature):
     # ##########################################################################
 
     def clear(self):
-        self.plugin_plot      = None  # a pyqtgraph chart for displaying returned plugin arrays or strip charts
-        self.graph_plugin     = None  # second enlighten.ui.Graph object associated with self.plugin_chart
-        self.table_view       = None  # where panda_field gets displayed
+        # self.plugin_plot      = None  # a pyqtgraph chart for displaying returned plugin arrays or strip charts
         self.panda_field      = None  # if the plugin provided an export of type "pandas", this points to it
-        self.dataframe        = None  # cache for copy button
 
         self.module_infos     = None  # will hold and cache all the metadata (PluginModuleInfo) about each plugin we know about
         self.module_name      = None  # the string module name of the selected plugin
@@ -126,12 +123,8 @@ class PluginControllerFeature(EnlightenFeature):
         self.plugin_field_widgets = []
         self.plugin_curves = {}
 
-        self.max_rows = 0
-        self.max_cols = 0
-
         self.next_request_id = 0
         self.autoload = None
-        self.use_other_graph = True # not yet used
 
     def __init__(self, ctl):
         super().__init__(ctl)
@@ -144,12 +137,9 @@ class PluginControllerFeature(EnlightenFeature):
         # widgets
         self.button_process             = cfu.pushButton_plugin_process
         self.cb_connected               = cfu.checkBox_plugin_connected
-        self.combo_graph_pos            = cfu.comboBox_plugin_graph_pos
         self.combo_module               = cfu.comboBox_plugin_module
         self.frame_control              = cfu.frame_plugin_control
         self.frame_fields               = cfu.frame_plugin_fields
-        self.layout_graphs              = cfu.layout_scope_capture_graphs
-        self.lb_graph_pos               = cfu.label_plugin_graph_pos
         self.lb_title                   = cfu.label_plugin_title
         self.lb_widget                  = cfu.label_plugin_widget
         self.vlayout_fields             = cfu.verticalLayout_plugin_fields
@@ -162,12 +152,9 @@ class PluginControllerFeature(EnlightenFeature):
         self.frame_control.setVisible(False)
         self.plugin_fields_layout = QtWidgets.QVBoxLayout()
         self.vlayout_fields.addLayout(self.plugin_fields_layout)
-        self.combo_graph_pos.setVisible(False)
-        self.combo_graph_pos.setEnabled(False)
         self.button_process.setEnabled(False)
         self.cb_connected.setEnabled(False)
         self.cb_connected.setChecked(False)
-        self.combo_graph_pos.setCurrentIndex(0) # bottom
 
         # configure our search directories
         self.plugin_dirs = [
@@ -185,11 +172,9 @@ class PluginControllerFeature(EnlightenFeature):
         self.button_process.clicked.connect(self.button_process_callback)
         self.cb_connected.clicked.connect(self.connected_callback)
         self.combo_module.currentIndexChanged.connect(self.combo_module_callback)
-        self.combo_graph_pos.currentIndexChanged.connect(self.graph_pos_callback)
 
         # filter scroll-steal
-        for combo in [ self.combo_module, self.combo_graph_pos ]:
-            combo.installEventFilter(ScrollStealFilter(combo))
+        combo.installEventFilter(ScrollStealFilter(self.combo_module))
 
         self.timer = QtCore.QTimer() 
         self.timer.setSingleShot(True)
@@ -466,48 +451,10 @@ class PluginControllerFeature(EnlightenFeature):
     def do_post_disconnect(self):
         log.debug("do_post_disconnect: start")
         self.button_process.setEnabled(False)
-        self.combo_graph_pos.setEnabled(False)
         self.combo_module.setEnabled(True)
         self.cancel_worker()
         self.clear_previous_layout()
         log.debug("do_post_disconnect: done")
-
-    ## The user changed the combobox indicating where the "second graph" should appear
-    # @see Controller.populate_placeholder_scope_capture
-    def graph_pos_callback(self):
-        pos = self.combo_graph_pos.currentText().lower().strip()
-        log.debug("altering graph position to %s", pos)
-
-        if self.plugin_plot is not None:
-            self.plugin_plot.deleteLater()
-            self.plugin_plot = None
-
-        self.plugin_curves = {}
-        self.init_plugin_plot()
-
-        config = self.get_current_configuration()
-        if pos == "none" or config is None or not config.has_other_graph:
-            return
-
-        if pos == "right" and self.ctl.dalai.is_visible():
-            log.error("plugins may not use the right pane when DALAI is running")
-            # MZ: in such cases we really should "merge" the top-right or bottom-
-            # right cells, so plugin can be above/below both
-            return
-
-        #     0   1   2
-        #   +---+---+---+
-        # 0 |   | T |   |   T = Top
-        #   +---+---+---+   L = Left
-        # 1 | L | G | R |   G = Scope Capture Graph
-        #   +---+---+---+   R = Right
-        # 2 |   | B |   |   B = Bottom
-        #   +---+---+---+
-                                                                          # row col
-        if   pos == "top"   : self.layout_graphs.addWidget(self.plugin_plot, 0,  1)
-        elif pos == "bottom": self.layout_graphs.addWidget(self.plugin_plot, 2,  1)
-        elif pos == "left"  : self.layout_graphs.addWidget(self.plugin_plot, 1,  0)
-        elif pos == "right" : self.layout_graphs.addWidget(self.plugin_plot, 1,  2)
 
     ##
     # The user clicked the "process" button on the control panel indicating
@@ -596,7 +543,7 @@ class PluginControllerFeature(EnlightenFeature):
                 else:
                     log.debug(f"process_widgets: panda_field = {epf.name}")
                     self.panda_field = epf
-                # no dynamic widget for pandas fields...they use the TableView
+                # no dynamic widget for pandas fields...they use ctl.scope_table
                 continue
             elif epf.datatype == "radio":
                 # MZ: considering removing support for these in preference for 
@@ -651,7 +598,7 @@ class PluginControllerFeature(EnlightenFeature):
             self.module_name = module_name
 
             log.debug("configure_gui_for_module: configuring graph")
-            self.show_plugin_graph(config.has_other_graph)
+            self.ctl.alt_graph.setVisible(config.has_other_graph)
 
             # set title
             log.debug("configure_gui_for_module: setting title")
@@ -667,7 +614,6 @@ class PluginControllerFeature(EnlightenFeature):
 
             # prepare to create the EnlightenPluginFields for this plugin
             log.debug("configure_gui_for_module: instantiating fields")
-            self.dataframe = None
             self.panda_field = None
             self.plugin_field_widgets = []
 
@@ -696,19 +642,13 @@ class PluginControllerFeature(EnlightenFeature):
             # configure initial visibility
             self.update_field_visibility()
 
-            if self.panda_field:
-                # pandas ignores Expert visibility
-                log.debug("configure_gui_for_module: creating output table")
-                self.create_output_table()
-                self.add_copy_dataframe_to_clipboard_button()
-
             # configure graph series
             if config.series_names is not None and len(config.series_names) > 0:
                 # there are no Expert graphs or series
                 if not config.has_other_graph:
 
                     # note that these are all treated as lines 
-                    # (EnlightenPluginConfiguration.graph_type pertains to graph_plugin)
+                    # (EnlightenPluginConfiguration.graph_type pertains to ctl.alt_graph)
                     log.debug("configure_gui_for_module: adding series to main graph")
                     for name in config.series_names:
                         # keep reference to curve objects so we can later delete them
@@ -727,37 +667,6 @@ class PluginControllerFeature(EnlightenFeature):
 
         log.debug("configure_gui_for_module: successfully reconfigured GUI for plugin %s", module_name)
         return True
-
-    def add_copy_dataframe_to_clipboard_button(self):
-        if not self.panda_field:
-            return
-
-        b = QtWidgets.QPushButton()
-        b.setText("Copy to Clipboard")
-        b.setMinimumHeight(30) 
-        b.pressed.connect(self.copy_dataframe_to_clipboard)
-        b.setToolTip("Copy table to Clipboard")
-
-        hbox = QtWidgets.QHBoxLayout()
-        hbox.addWidget(b)
-
-        self.plugin_fields_layout.addLayout(hbox)
-
-    def copy_dataframe_to_clipboard(self):
-        if self.dataframe is not None:
-            self.ctl.clipboard.copy_dataframe(self.dataframe)
-        
-    def show_plugin_graph(self, flag):
-        """
-        @todo it would be neat if plugins themselves could toggle 
-              self.use_other_graph, but we'd need to move existing 
-              curves between graphs/legends via self.plugin_curves
-        """
-        log.debug(f"show_plugin_graph: flag {flag}")
-        self.use_plugin_graph = flag
-        self.lb_graph_pos.setVisible(flag)
-        self.combo_graph_pos.setVisible(flag)
-        self.combo_graph_pos.setEnabled(flag)
 
     def get_plugin_fields(self):
         """Used by the plugin to programmatically change fields"""
@@ -806,53 +715,22 @@ class PluginControllerFeature(EnlightenFeature):
         if config is None:
             return
 
-        self.plugin_plot = pyqtgraph.PlotWidget(name=f"{config.name}")
-        if self.ctl.grid is not None and self.ctl.grid.enabled:
-            self.plugin_plot.showGrid(True, True)
-        self.combo_graph_pos.setVisible(config.has_other_graph)
-        self.lb_graph_pos.setVisible(config.has_other_graph)
-        self.plugin_plot_legend = self.plugin_plot.addLegend()
-
-        self.graph_plugin = GraphFeature(
-            ctl                 = self.ctl,
-            name                = f"Plugin {config.name}",
-
-            plot                = self.plugin_plot,
-            legend              = self.plugin_plot_legend,
-            lock_marker         = True,  # let EPC.graph_type control this
-        )
-
         # create curves for each series
         log.debug("creating curves for each series")
         if config.series_names is not None and config.has_other_graph:
             for name in config.series_names:
-                self.create_graph_curves(name, self.graph_plugin)
+                self.create_graph_curves(name, self.ctl.alt_graph)
 
         # configure x-axis
         if config.x_axis_label is not None:
-            self.graph_plugin.set_x_axis_label(config.x_axis_label, locked=True)
+            self.ctl.alt_graph.set_x_axis_label(config.x_axis_label, locked=True)
         else:
             # no custom x-axis label provided, so whatever user has currently selected
-            self.graph_plugin.update_axis_callback()
+            self.ctl.alt_graph.update_axis_callback()
 
         # configure y-axis
         y_axis_label = "intensity (counts)" if config.y_axis_label is None else config.y_axis_label
-        self.plugin_plot.setLabel(text=y_axis_label, axis="left")
-
-    def create_output_table(self):
-        """
-        Used to hold the output Pandas table, if one is provided
-        """
-        log.debug("creating output table widget")
-        self.table_view = QtWidgets.QTableView()
-        self.table_view.setAccessibleName("Pandas Output")
-
-        header = self.table_view.horizontalHeader()
-        header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.ResizeToContents)
-
-        self.layout_graphs.addWidget(self.table_view, 3, 0, 1, 3) # YOU ARE HERE (TableView added to row 4 of 3-row Top-Bot-Lft-Rgt, spanning all 3 cols)
-        self.layout_graphs.setRowMinimumHeight(3, 100)
-        self.layout_graphs.setRowStretch(3, 0)
+        self.ctl.alt_graph.plot.setLabel(text=y_axis_label, axis="left")
 
     def create_graph_curves(self, name, graph):
         if name in self.plugin_curves.keys():
@@ -1100,25 +978,15 @@ class PluginControllerFeature(EnlightenFeature):
                         pfw.update_value(outputs[epf.name])
 
                 # handle Pandas output
-                model = None
-                if self.panda_field and self.table_view:
+                dataframe = None
+                if self.panda_field:
                     dataframe = response.outputs.get(self.panda_field.name, None)
-                    if dataframe is not None:
-                        # log.debug(f"pandas dataframe {self.panda_field.name} = %s", dataframe)
-                        model = TableModel(dataframe)
-                        self.table_view.setModel(model)
-                        self.dataframe = dataframe
-
-                # handle functional-plugin Pandas output
-                if "Table" in response.outputs.keys():
-                    if not self.table_view:
-                        self.create_output_table()
-
-                    log.debug("handle_response: functional-plugin using panda table")
+                elif "Table" in response.outputs.keys():
                     dataframe = response.outputs["Table"]
-                    model = TableModel(dataframe)
-                    self.table_view.setModel(model)
-                    self.dataframe = dataframe
+
+                if dataframe is not None:
+                    self.ctl.scope_table.set_visible(True)
+                    self.ctl.scope_table.set_dataframe(dataframe)
 
             self.release_block(request)
 
@@ -1132,7 +1000,7 @@ class PluginControllerFeature(EnlightenFeature):
 
                 # all plugin series are either on the main graph or the secondary
                 # graph -- currently we don't support per-series configuration
-                graph = self.graph_plugin if (config.has_other_graph and self.use_other_graph) else self.ctl.graph
+                graph = self.ctl.alt_graph if config.has_other_graph else self.ctl.graph
 
                 # determine default x-axis for a series, if none is provided
                 x_from_label = None
@@ -1303,13 +1171,10 @@ class PluginControllerFeature(EnlightenFeature):
     def clear_previous_layout(self):
         log.debug("clear_previous_layout: start")
 
-        self.max_cols = 0
-        self.max_rows = 0
         self.blocking_request = None
         self.request_queue = Queue()
         self.response_queue = Queue()
         self.clear_plugin_layout(self.plugin_fields_layout)
-        self.layout_graphs.setRowMinimumHeight(3,0)
 
         log.debug("plugin curves = %s", self.plugin_curves)
         try:
@@ -1320,24 +1185,21 @@ class PluginControllerFeature(EnlightenFeature):
         except:
             log.error(f"While attempting to clear main graph of plugins encountered error", exc_info=1)
 
-        try:
-            if self.plugin_plot is not None:
-                self.plugin_plot.deleteLater()
-                self.plugin_plot = None
-        except:
+        # try:
+        #     if self.plugin_plot is not None:
+        #         self.plugin_plot.deleteLater()
+        #         self.plugin_plot = None
+        # except:
             log.error(f"While trying to clear plugin plot encountered error", exc_info=1)
-
-        try:
-            if self.table_view is not None:
-                self.table_view.deleteLater()
-                self.table_view = None
-        except:
-            log.error(f"While trying to clear table widget ran into error", exc_info=1)
 
         self.plugin_curves = {}
 
     def get_active_graph(self):
         module_info = self.get_current_module_info()
         if module_info and module_info.config:
-            return self.graph_plugin if module_info.config.has_other_graph else self.ctl.graph
+            return self.ctl.alt_graph if module_info.config.has_other_graph else self.ctl.graph
         return self.ctl.graph
+
+    def using_other_graph(self):
+        config = self.get_current_configuration()
+        return config.has_other_graph if config else False

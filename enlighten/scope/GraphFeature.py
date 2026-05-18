@@ -39,23 +39,37 @@ log = logging.getLogger(__name__)
 #
 class GraphFeature(EnlightenFeature):
     """
-    This can be constructed in two ways. By default, the Graph populates its
-    own chart and legend (the one used by most of ENLIGHTEN). However, it
-    also allows an external caller (like PluginController) to pass-in an
-    already-constructed chart and legend. Perhaps we need a GraphFactory?
+    ENLIGHTEN contains two objects of this class. The main one (alt=False) is the
+    primary Scope graph seen when you first launch ENLIGHTEN and connect a 
+    spectrometer. This object is referenced throughout the application as 
+    ctl.graph, and it also controls these widgets:
+
+    - "clipboard copy" button above the graph
+    - left-right invert x-axis button above the graph
+    - lock-axes button above the graph
+    - zoom button above the graph (hides left/right scroll areas)
+    - "marker" checkbox on the X-axis widget
+    - axis combobox on the x-axis widget
+
+    The second instance of this widget is accessed via ctl.alt_graph. It is not
+    normally visible by default, and is primarily used by DalaiRamanFeature and
+    potentially some plugins.
+
+    Note that while I don't conceive of the alt_graph instance "owning" the 
+    affiliated widgets, it does seem to register callbacks on them, and...that's
+    probably okay? A widget can have multiple callbacks. Let's think on this.
+
+    TODO: should split this into "MainGraph" and "DisplayGraph" classes, where 
+    MainGraph has-a DisplayGraph (plus all the other widgets), and "DisplayGraph"
+    is just the plot itself (appropriate for ctl.alt_graph).
     """
 
-    def __init__(self, ctl, name,
-                 legend      = None,
-                 lock_marker = False, # for 'xy' graphs
-                 plot        = None): # pyqtgraph.PlotWidget
+    def __init__(self, ctl, alt=False):
 
         super().__init__(ctl)
-
-        self.name                       = name
-        self.legend                     = legend
-        self.lock_marker                = lock_marker
-        self.plot                       = plot
+        
+        self.ctl = ctl
+        self.alt = alt
 
         cfu = ctl.form.ui
 
@@ -77,20 +91,26 @@ class GraphFeature(EnlightenFeature):
         self.current_y_axis = common.Axes.COUNTS
         self.intended_y_axis= common.Axes.COUNTS
 
+        self.name           = None
+        self.legend         = None
+        self.plot           = None
+        self.lock_marker    = True
         self.zoomed         = False
         self.y_axis_locked  = False
         self.x_axis_locked  = False  # EnlightenPluginConfiguration specified an x_axis_label
         self.show_marker    = False
         self.inverted       = False
+        self.visible        = True
 
         self.combo_axis.setCurrentIndex(self.current_x_axis)
 
-        # if we weren't passed a pre-populated plot, then create one
-        if not self.plot:
-            self.populate_scope_setup()
-            self.populate_scope_capture()
+        if not self.alt:
+            # only the "main" graph owns the "live" plot on Settings View
+            self.populate_live_plot_on_settings_view()
 
-        # bindings
+        self.populate_graph_plot()
+
+        # bindings (both instances can have callbacks)
         self.combo_axis         .currentIndexChanged    .connect(self.update_axis_callback)
         self.combo_axis         .installEventFilter(ScrollStealFilter(self.combo_axis))
         self.button_invert      .clicked                .connect(self.invert_x_axis)
@@ -99,17 +119,18 @@ class GraphFeature(EnlightenFeature):
         self.button_zoom        .clicked                .connect(self.toggle_zoom)
         self.button_copy        .clicked                .connect(self.copy_to_clipboard_callback)
 
-        self.combo_axis         .setWhatsThis("Change the current graph x-axis. By default, Raman shift in wavenumbers (cm⁻¹) is selected in Raman mode, and wavelengths (nm) in Non-Raman mode.")
-        self.button_invert      .setWhatsThis("Flip the graph's x-axis direction from increasing wavelength/wavenumbers to decreasing, as is common in Raman spectroscopy")
-        self.cb_marker          .setWhatsThis("Show visible graph markers on each physical datapoint on the graph, making it easier to see individual pixels")
-        self.button_zoom        .setWhatsThis("Hide the Clipboard and Control Palettes to maximize the on-screen graph")
-        self.button_copy        .setWhatsThis("Copy all spectra currently displayed on the graph to the system copy-paste clipboard, where it can be easily pasted into programs like Microsoft Excel")
-        self.button_lock_axes   .setWhatsThis(unwrap("""
-            Freeze the graph axes so the graph doesn't auto-rescale with each new
-            spectrum. Unfreezing automatically rescales to 'view all', so is a 
-            useful shortcut for resetting the graph after manually panning and 
-            zooming. Note that you can also zoom the X and Y axes individually by
-            'right-dragging' along them."""))
+        if not self.alt:
+            self.combo_axis         .setWhatsThis("Change the current graph x-axis. By default, Raman shift in wavenumbers (cm⁻¹) is selected in Raman mode, and wavelengths (nm) in Non-Raman mode.")
+            self.button_invert      .setWhatsThis("Flip the graph's x-axis direction from increasing wavelength/wavenumbers to decreasing, as is common in Raman spectroscopy")
+            self.cb_marker          .setWhatsThis("Show visible graph markers on each physical datapoint on the graph, making it easier to see individual pixels")
+            self.button_zoom        .setWhatsThis("Hide the Clipboard and Control Palettes to maximize the on-screen graph")
+            self.button_copy        .setWhatsThis("Copy all spectra currently displayed on the graph to the system copy-paste clipboard, where it can be easily pasted into programs like Microsoft Excel")
+            self.button_lock_axes   .setWhatsThis(unwrap("""
+                Freeze the graph axes so the graph doesn't auto-rescale with each new
+                spectrum. Unfreezing automatically rescales to 'view all', so is a 
+                useful shortcut for resetting the graph after manually panning and 
+                zooming. Note that you can also zoom the X and Y axes individually by
+                'right-dragging' along them."""))
 
         self.update_marker()
 
@@ -119,7 +140,13 @@ class GraphFeature(EnlightenFeature):
 
     # PluginController doesn't use these (passes own chart and legend)
 
-    def populate_scope_setup(self):
+    def populate_live_plot_on_settings_view(self):
+        """
+        This is the small "live" scope graph on the Settings View
+        """
+        if self.alt:
+            return
+
         policy = QtWidgets.QSizePolicy()
         policy.setVerticalPolicy(QtWidgets.QSizePolicy.Preferred)
         policy.setHorizontalPolicy(QtWidgets.QSizePolicy.Preferred)
@@ -131,34 +158,57 @@ class GraphFeature(EnlightenFeature):
         self.stacked_widget.addWidget(self.live_plot)
         self.stacked_widget.setCurrentIndex(1)
 
-    def populate_scope_capture(self):
-        self.plot = pyqtgraph.PlotWidget(name="Scope Capture")
+    def populate_graph_plot(self):
+        """
+        This creates and places the graph on the Scope View.
 
+        Although this is an EMPTY QGridLayout, we're adding the MAIN plot at 0-
+        indexed position (1, 1), leaving these four spots available to either 
+        side, above and below:
+
+                0   1   2
+              +---+---+---+
+            0 |   | T |   |   T = Top
+              +---+---+---+   L = Left
+            1 | L | G | R |   G = Graph
+              +---+---+---+   R = Right
+            2 |   | B |   |   B = Bottom
+              +---+---+---+
+
+        FOR NOW, self.alt_plot is being hard-coded to the RIGHT of the main plot.
+        I'm not convinced we won't someday be asked to support the option of 
+        placing it BELOW the main plot.
+
+        Note that this means that anything else in this layout which needs to 
+        span the full horizontal space (LibraryMatchingFeature results table?) 
+        should be in column 0 with colspan=3.
+
+        The actual plot curves are created in Spectrometer (I think) during 
+        initialize_new_device(hotswap).
+        """
+
+        row = 1
+        if self.alt:
+            self.visible = False
+            name = "Alt Graph"
+            col = 2 
+        else:
+            self.visible = True
+            name = "Scope Graph"
+            col = 1
+
+        self.plot = pyqtgraph.PlotWidget(name=name)
         self.plot.setLabel(axis="bottom", text=common.AxesHelper.get_pretty_name(common.Axes.WAVELENGTHS))
         self.plot.setLabel(axis="left",   text=common.AxesHelper.get_pretty_name(common.Axes.COUNTS))
-
         self.legend = self.plot.addLegend() # returns a LegendItem
+        self.layout.addWidget(self.plot, row, col)
 
-        # populate the spectrum curve placeholder last, so it's "on top of" the others in Z-axis
-        # Note: we'll create the curves themselves from initialize_new_device(hotswap)
-        #
-        # For PluginController, the following is very important: note that although this is an 
-        # EMPTY QGridLayout, we're adding the ONLY element at 0-indexed position (1, 1). This 
-        # allows the PluginController to place other elements at any of these spots:
-        #
-        #     0   1   2
-        #   +---+---+---+
-        # 0 |   | T |   |   T = Top
-        #   +---+---+---+   L = Left
-        # 1 | L | G | R |   G = Graph
-        #   +---+---+---+   R = Right
-        # 2 |   | B |   |   B = Bottom
-        #   +---+---+---+
-        #
-        self.layout.addWidget(self.plot, 1, 1)
+        self.plot.setVisible(self.visible)
 
     ## called by Cursor to add its InfiniteLine to the graph
     def add_item(self, item):
+        if self.alt:
+            return
         self.plot.addItem(item)
 
     ## @todo merge with common suffixes
@@ -187,7 +237,7 @@ class GraphFeature(EnlightenFeature):
 
     ## extra <BR> provides margin from the frame bottom...probably would be better with CSS
     def set_x_axis_label(self, text, locked=False):
-        self.plot.setLabel(text=text+"<br>", axis="bottom")
+        self.plot.setLabel(text=f"{text}<br/>", axis="bottom")
         self.x_axis_locked = locked
 
     ## when the Mode changes, update axis as appropriate 
@@ -228,9 +278,16 @@ class GraphFeature(EnlightenFeature):
             box.disableAutoRange()
 
         self.y_axis_locked = not self.y_axis_locked
+
+        if self.alt:
+            return
+
         self.ctl.gui.colorize_button(self.button_lock_axes, self.y_axis_locked)
 
     def toggle_zoom(self):
+        if self.alt:
+            return
+
         self.zoomed = not self.zoomed
         self.ctl.gui.colorize_button(self.button_zoom, self.zoomed)
 
@@ -241,6 +298,9 @@ class GraphFeature(EnlightenFeature):
         self.combo_axis.setEnabled(flag)
 
     def enable_wavenumbers(self, flag):
+        if self.alt:
+            return
+
         if flag:
             if self.combo_axis.count() == 2:
                 self.combo_axis.addItem("Wavenumber")
@@ -257,19 +317,29 @@ class GraphFeature(EnlightenFeature):
         self.reset_axes()
         self.update_visibility()
 
+    def set_visible(self, flag):
+        self.visible = flag
+        self.update_visibility()
+
     def update_visibility(self):
         spec = self.ctl.multispec.current_spectrometer()
 
-        self.current_y_axis = common.Axes.COUNTS
-        if self.ctl.multispec and self.intended_y_axis in [common.Axes.PERCENT, common.Axes.AU]:
-            if spec and spec.app_state.reference is not None:
-                self.current_y_axis = self.intended_y_axis
+        self.plot.setVisible(self.visible)
 
-        self.plot.setLabel(axis="left", text=common.AxesHelper.get_pretty_name(self.current_y_axis))
-        
-        self.update_combo_tooltip()
+        if self.visible:
+            self.current_y_axis = common.Axes.COUNTS
+            if self.ctl.multispec and self.intended_y_axis in [common.Axes.PERCENT, common.Axes.AU]:
+                if spec and spec.app_state.reference is not None:
+                    self.current_y_axis = self.intended_y_axis
+
+            self.plot.setLabel(axis="left", text=common.AxesHelper.get_pretty_name(self.current_y_axis))
+            
+            self.update_combo_tooltip()
 
     def update_combo_tooltip(self):
+        if self.alt:
+            return
+
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             self.combo_axis.setToolTip("")
@@ -309,15 +379,12 @@ class GraphFeature(EnlightenFeature):
     ## 
     # This was originally used used by ThumbnailWidget, when clicking the "show 
     # trace" thumbnail button. It's now also being used by 
-    # BaselineCorrectionFeature, RamanShiftCorrection, etc.
+    # BaselineCorrectionFeature, RamanShiftCorrection, DalaiRamanFeature etc.
     #
     # @todo we should probably create a Curve class to encapsulate data 
     #       associated with a particular on-screen trace, rather than hanging 
     #       attributes off a library class
     def add_curve(self, name, y=[], x=None, pen=None, spec=None, measurement=None, rehide=True, in_legend=True):
-        # I am not 100% sure what datatype is returned from 
-        # pyqtgraph.PlotWidget.plot()...presumably a CurvePlotItem?
-        # SB. actually it returns a PlotDataItem
 
         if x is not None:
             if len(y) < len(x):
@@ -337,19 +404,11 @@ class GraphFeature(EnlightenFeature):
             log.debug(f"making pen for {name}")
             pen = self.ctl.gui.make_pen(widget=name)
 
+        # pyqtgraph.PlotWidget.plot() returns a PlotDataItem
         if in_legend:
-            curve = self.plot.plot(
-                y=y,
-                x=x,
-                pen=pen,
-                name=name
-            )
+            curve = self.plot.plot(y=y, x=x, pen=pen, name=name)
         else:
-            curve = self.plot.plot(
-                y=y,                                                                                                                                                                                                                                         
-                x=x,
-                pen=pen,
-            )
+            curve = self.plot.plot(y=y, x=x, pen=pen)
 
         self.update_curve_marker(curve)
         log.debug("add_curve: added a %s (%s)", type(curve), str(curve))
@@ -405,14 +464,6 @@ class GraphFeature(EnlightenFeature):
     ##
     # @see http://www.pyqtgraph.org/documentation/graphicsItems/plotdataitem.html
     def set_data(self, curve, y=None, x=None, label=None):
-        if x is not None:
-            # log.debug(f"set_data[{label}]: plotting {len(x)} x values {x[:3]} .. {x[-3:]}")
-            pass
-
-        if y is not None:
-            # log.debug(f"set_data[{label}]: plotting {len(y)} y values {y[:3]} .. {y[-3:]}")
-            pass
-
         self.update_curve_marker(curve)
         curve.setData(y=y, x=x)
 
@@ -485,6 +536,9 @@ class GraphFeature(EnlightenFeature):
                         self.set_data(curve=curve, y=yData, x=xData)
 
     def copy_to_clipboard_callback(self):
+        if self.alt:
+            return
+
         if not self.ctl.multispec:
             return
 
@@ -532,4 +586,3 @@ class GraphFeature(EnlightenFeature):
 
     def remove_roi_region(self, region):
         self.plot.removeItem(region)
-

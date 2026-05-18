@@ -57,6 +57,7 @@ from enlighten.scope.GraphFeature import GraphFeature
 from enlighten.scope.GridFeature import GridFeature
 from enlighten.scope.PresetFeature import PresetFeature
 from enlighten.scope.RamanShiftCorrectionFeature import RamanShiftCorrectionFeature
+from enlighten.scope.ScopeTableFeature import ScopeTableFeature
 from enlighten.timing.BatchCollectionFeature import BatchCollectionFeature
 from enlighten.ui.AuthenticationFeature import AuthenticationFeature
 from enlighten.ui.ClipboardFeature import ClipboardFeature
@@ -119,6 +120,7 @@ class BusinessObjects:
         ctl.file_manager = None
         ctl.focus_listener = None
         ctl.gain_db_feature = None
+        ctl.alt_graph = None
         ctl.graph = None
         ctl.grid = None
         ctl.gui = None
@@ -193,7 +195,10 @@ class BusinessObjects:
         ctl.file_manager                = FileManagerFeature(ctl)
         ctl.clipboard                   = ClipboardFeature(ctl)
         ctl.guide                       = GuideFeature(ctl)
-        ctl.graph                       = GraphFeature(ctl, name="Scope")
+
+        ctl.graph                       = GraphFeature(ctl)
+        ctl.alt_graph                   = GraphFeature(ctl, alt=True)
+
         ctl.hardware_file_manager       = HardwareFileOutputFeature(ctl)
         ctl.cursor                      = CursorFeature(ctl)
         ctl.image_resources             = ImageResources()
@@ -220,7 +225,7 @@ class BusinessObjects:
         ctl.take_one                    = TakeOneFeature(ctl)
         ctl.cloud_manager               = CloudManagerFeature(ctl)
 
-        ctl.vcr_controls = VCRControlsFeature(ctl)
+        ctl.vcr_controls                = VCRControlsFeature(ctl)
         ctl.vcr_controls.register_observer(ctl.save_current_spectra, "save")
         ctl.scan_averaging.complete_registrations()
 
@@ -252,6 +257,7 @@ class BusinessObjects:
         ctl.reading_progress_bar        = ReadingProgressBarFeature(ctl)
         ctl.ble_manager                 = BLEManagerFeature(ctl)
         ctl.pixel_calibration           = PixelCalibrationFeature(ctl)
+        ctl.scope_table                 = ScopeTableFeature(ctl)
         ctl.library_matching            = LibraryMatchingFeature(ctl)
         ctl.dalai                       = DalaiRamanFeature(ctl)
         ctl.correction_status           = CorrectionStatusFeature(ctl)
