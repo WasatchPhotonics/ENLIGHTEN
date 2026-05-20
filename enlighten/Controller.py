@@ -1041,12 +1041,9 @@ class Controller:
         self.thumbnail_render_graph = pyqtgraph.PlotWidget(name="Measurement Thumbnail Renderer")
 
         # this is a fake curve (trace) on the chart
-        # TODO: move to Measurement F
-        data = list(range(1024, 1638)) # MZ: ???
-        self.thumbnail_render_curve = self.thumbnail_render_graph.plot(
-            data,
-            pen=self.gui.make_pen(widget="thumbnail"),
-            name="Thumbnail Renderer")
+        data = list(range(10)) # MZ: ???
+        self.thumbnail_render_curve = self.thumbnail_render_graph.plot( data, pen=self.gui.make_pen(widget="thumbnail"), name="Thumbnail Renderer")
+        self.thumbnail_render_alt_curve = self.thumbnail_render_graph.plot( [], pen=self.gui.make_pen(color="#ff0000"), name="Alt Thumbnail Renderer")
 
         # make the graph small, and hide both axes
         self.thumbnail_render_graph.hideAxis("left")
@@ -1946,20 +1943,26 @@ class Controller:
         #     pr = self.despiking_feature.process(pr)
 
         ########################################################################
+        # DALAI-RAMAN
+        ########################################################################
+
+        self.dalai.process(pr)
+
+        ########################################################################
         # Boxcar Smoothing
         ########################################################################
 
         # One could argue whether boxcar should be before or after interpolation;
         # however, it currently calls ProcessedReading.set_processed which does
         # NOT update .interpolated, so for now it must remain before.
+
         self.boxcar.process(pr, spec)
 
         ########################################################################
         # Interpolation
         ########################################################################
 
-        if self.interp.enabled:
-            self.interp.process(pr)
+        self.interp.process(pr)
 
         ########################################################################
         # Plugins
@@ -1972,8 +1975,8 @@ class Controller:
         # Also, if we want to let plugins to TRANSFORM live spectra (actually
         # affect ProcessedReading.processed), we kind of need that to happen 
         # here.
-        if self.plugin_controller.enabled:
-            self.plugin_controller.process_reading(pr, settings, spec)
+
+        self.plugin_controller.process_reading(pr, settings, spec)
 
         ########################################################################
         # Graph 

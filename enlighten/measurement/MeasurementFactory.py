@@ -87,15 +87,17 @@ class MeasurementFactory(EnlightenFeature):
     def create_thumbnail(self, measurement, is_collapsed=False):
         if measurement.plugin_name:
             log.debug(f"measurement came from a plugin so checking for second graph")
-            graph = self.ctl.plugin_controller.get_active_graph()
+            graphs = [ self.ctl.plugin_controller.get_active_graph() ]
         else:
             log.debug("measurement doesn't have a plugin so default graph")
-            graph = self.ctl.graph
+            graphs = [ self.ctl.graph ]
+            if measurement.has_dalai():
+                graphs.append(self.ctl.alt_graph)
 
         measurement.thumbnail_widget = ThumbnailWidget(
             ctl             = self.ctl,
             measurement     = measurement,
-            graph           = graph,        
+            graphs          = graphs,        
             is_collapsed    = is_collapsed)
 
         try:
@@ -109,14 +111,29 @@ class MeasurementFactory(EnlightenFeature):
     #
     # @todo seems like this should be in ThumbnailWidget?
     def render_thumbnail_to_qpixmap(self, measurement):
+        pr = measurement.processed_reading
 
-        spectrum = measurement.processed_reading.get_processed()
+        spectrum = pr.get_processed()
         if spectrum is None:
             log.error("render_thumbnaiL_to_qpixmap: can't render thumbnail w/o spectrum")
             return
 
+        x_axis = pr.get_wavenumbers()
+        if x_axis is None:
+            x_axis = pr.get_wavelengths()
+        if x_axis is None:
+            x_axis = pr.get_pixels()
+
         # apply the spectrum to the curve
-        self.ctl.thumbnail_render_curve.setData(spectrum)
+        self.ctl.thumbnail_render_curve.setData(y=spectrum, x=x_axis)
+
+        # add DALAI spectrum
+        if measurement.has_dalai():
+            log.debug("render_thumbnail_to_qpixmap: adding DALAI curve")
+            self.ctl.thumbnail_render_alt_curve.setData(y=pr.spectrum_dalai, x=pr.wavenumbers_dalai)
+        else:
+            log.debug("render_thumbnail_to_qpixmap: skipping DALAI curve")
+            self.ctl.thumbnail_render_alt_curve.setData(y=[])
 
         # instantiate an exporter (could we re-use one for all thumbnails?)
         exporter = pyqtgraph.exporters.ImageExporter(self.ctl.thumbnail_render_graph.plotItem)

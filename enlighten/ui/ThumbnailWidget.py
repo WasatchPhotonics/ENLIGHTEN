@@ -44,19 +44,19 @@ class ThumbnailWidget(QtWidgets.QFrame):
             ctl,
             measurement,
             is_collapsed,
-            graph):
+            graphs):
         super(ThumbnailWidget, self).__init__()
 
         self.ctl            = ctl
         self.measurement    = measurement
         self.is_collapsed   = is_collapsed
-        self.graph          = graph 
+        self.graphs         = graphs
 
         # log.debug(f"using graph {graph.name}")
 
         self.is_displayed  = False
         self.selected_color = None
-        self.curve = None
+        self.curves = []
         self.old_name = None
         self.last_editted = None
         self.rename_disabled = False
@@ -119,7 +119,6 @@ class ThumbnailWidget(QtWidgets.QFrame):
         # this is where the final Thumbnail goes as well?
 
         self.body = QtWidgets.QLabel("loading")
-        # self.body.setPixmap(":/simulation/images/spectrums/thumbnail_loading.png")
         self.ctl.stylesheets.apply(self.body, "clear_border")
         self.body.move(12, 33)
         self.body.resize(162, 112)
@@ -169,9 +168,8 @@ class ThumbnailWidget(QtWidgets.QFrame):
     # Creation
     # ##########################################################################
 
-    ##
-    # Called by MeasurementFactory to set the rendered thumbnail image
     def set_pixmap(self, pixmap):
+        """ Called by MeasurementFactory to set the rendered thumbnail image """
         self.body.setPixmap(pixmap)
 
     def create_label_widget(self):
@@ -276,9 +274,10 @@ class ThumbnailWidget(QtWidgets.QFrame):
 
     def color_changed_callback(self, btn):
         self.selected_color = btn.color()
-        if self.curve is not None:
+        if len(self.curves) > 0:
             pen = pyqtgraph.mkPen(width=1, color=self.selected_color)
-            self.curve.setPen(pen)
+            for c in self.curves:
+                c.setPen(pen)
 
     def trash_callback(self):
         self.ctl.gui.colorize_button(self.button_trash, True)
@@ -290,10 +289,10 @@ class ThumbnailWidget(QtWidgets.QFrame):
 
     def display_callback(self):
         if self.is_displayed:
-            self.remove_curve_from_graph()
+            self.remove_curve_from_graphs()
         else:
             log.debug("display_callback: adding thumbnail trace to graph")
-            self.add_curve_to_graph()
+            self.add_curve_to_graphs()
 
     ## the user clicked the "pencil" icon to edit the Thumbnail's label
     def rename_callback(self):
@@ -363,63 +362,90 @@ class ThumbnailWidget(QtWidgets.QFrame):
     # the chart.  This returns a bool so the clickable "toggle trace" button
     # can simply try to remove an existing trace as means of checking whether the
     # trace is currently shown on the graph or not.
-    def remove_curve_from_graph(self):
-        if self.measurement is not None:
-            self.graph.remove_curve(measurement_id=self.measurement.measurement_id)
-        else:
-            self.graph.remove_curve(name=self.le_name.text())
+    def remove_curve_from_graphs(self):
+        for g in self.graphs:
+            if self.measurement is not None:
+                g.remove_curve(measurement_id=self.measurement.measurement_id)
+            else:
+                g.remove_curve(name=self.le_name.text())
 
         self.set_active(False)
-        self.curve = None
+        self.curves = []
 
     ##
     # @todo move some of this to Graph?
-    def add_curve_to_graph(self):
-        if self.curve is not None:
+    # YOU ARE HERE
+    def add_curve_to_graphs(self):
+        if len(self.curves) > 0:
             return
 
+        self.add_curve_to_main_graph(self.graphs[0])
+        if len(self.graphs) > 1 and self.measurement.has_dalai():
+            self.add_curve_to_alt_graph(self.graphs[1])
+
+        self.set_active(len(self.curves) > 0)
+
+    def add_curve_to_main_graph(self, graph):
         label = self.measurement.label
         pixels = self.measurement.settings.pixels()
-        if self.measurement.plugin_name != "":
-            log.debug("plugin trying to add save to plot")
 
-        # take axis unit from Graph, then load axis values from Measurement
-        if self.graph.current_x_axis == common.Axes.WAVELENGTHS:
-            log.debug("axis is wavelengths so getting settings wavelengths")
+        if graph.current_x_axis == common.Axes.WAVELENGTHS:
             x_axis = self.measurement.processed_reading.get_wavelengths()
-            log.debug(f"wavelengths len is {len(x_axis)}")
-        elif self.graph.current_x_axis == common.Axes.WAVENUMBERS:
-            log.debug("axis is wavenumbers so getting settings wavenumbers")
+        elif graph.current_x_axis == common.Axes.WAVENUMBERS:
             x_axis = self.measurement.processed_reading.get_wavenumbers()
         else:
-            log.debug("generating from pixels")
             x_axis = list(range(pixels))
 
         if x_axis is None:
             # maybe from a loaded file with insufficient data?
-            log.debug("add_curve_to_graph: somehow have no x-axis?")
+            log.debug("add_curve_to_main_graph: somehow have no x-axis?")
             return
 
-        log.debug("add_curve_to_graph: generated x_axis of %d elements (%.2f to %.2f)", len(x_axis), x_axis[0], x_axis[-1])
+        log.debug("add_curve_to_maingraph: x_axis of %d elements (%.2f to %.2f)", len(x_axis), x_axis[0], x_axis[-1])
         spectrum = self.measurement.processed_reading.get_processed()
 
         color = self.selected_color
         if color is None:
-            # use named color if found in label
             color = self.ctl.colors.color_names.search(label)
         if color is None:
             color = self.ctl.colors.get_next_random()
         pen = pyqtgraph.mkPen(width=1, color=color)
 
-        log.debug("add_curve_to_graph: adding name %s, %d y elements, %d x elements (%.2f to %.2f)",
+        log.debug("add_curve_to_main_graph: adding name %s, %d y elements, %d x elements (%.2f to %.2f)",
             label, len(spectrum), len(x_axis), x_axis[0], x_axis[-1])
 
         try:
-            self.curve = self.graph.add_curve(name=label, y=spectrum, x=x_axis, pen=pen, measurement=self.measurement)
+            self.curves.append(graph.add_curve(name=label, y=spectrum, x=x_axis, pen=pen, measurement=self.measurement))
         except:
-            log.error("couldn't add Thumbnail trace to graph", exc_info=1)
+            log.error("couldn't add Thumbnail trace to alt graph", exc_info=1)
 
-        self.set_active(self.curve is not None)
+    def add_curve_to_alt_graph(self, graph):
+        if not self.measurement.has_dalai():
+            return
+
+        label = self.measurement.label
+        pixels = self.measurement.settings.pixels()
+        pr = self.measurement.processed_reading
+
+        x_axis = pr.wavenumbers_dalai
+        spectrum = pr.spectrum_dalai
+        if x_axis is None:
+            log.debug("add_curve_to_alt_graph: somehow have no x-axis?")
+            return
+
+        log.debug("add_curve_to_alt_graph: x_axis of %d elements (%.2f to %.2f)", len(x_axis), x_axis[0], x_axis[-1])
+
+        color = self.selected_color if self.selected_color else self.ctl.colors.get_next_random()
+        pen = pyqtgraph.mkPen(width=1, color=color)
+
+        log.debug("add_curve_to_alt_graph: adding name %s, %d y elements, %d x elements (%.2f to %.2f)",
+            label, len(spectrum), len(x_axis), x_axis[0], x_axis[-1])
+
+        try:
+            self.curves.append(graph.add_curve(name=label, y=spectrum, x=x_axis, pen=pen, measurement=self.measurement))
+        except:
+            log.error("couldn't add Thumbnail trace to alt graph", exc_info=1)
+
 
     ## Called by Measurement.save_csv_file_by_row to prevent attempts to rename
     # spectra appended as lines to an existing file.

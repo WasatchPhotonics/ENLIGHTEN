@@ -438,9 +438,6 @@ class PluginControllerFeature(EnlightenFeature):
                 self.button_process.setVisible(False)
                 self.enabled = False
 
-            # for some reason, this doesn't work from within configure_gui_for_module
-            self.graph_pos_callback()
-
             log.debug("connected_callback: successfully connected")
         else:
             log.debug("we just disconnected")
@@ -598,7 +595,7 @@ class PluginControllerFeature(EnlightenFeature):
             self.module_name = module_name
 
             log.debug("configure_gui_for_module: configuring graph")
-            self.ctl.alt_graph.setVisible(config.has_other_graph)
+            self.ctl.alt_graph.set_visible(config.has_other_graph)
 
             # set title
             log.debug("configure_gui_for_module: setting title")
@@ -852,7 +849,6 @@ class PluginControllerFeature(EnlightenFeature):
             return False
 
         if not self.enabled and not manual:
-            log.debug("neither enabled nor manual")
             return False
 
         config = self.get_current_configuration()

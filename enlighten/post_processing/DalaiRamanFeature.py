@@ -101,13 +101,14 @@ class DalaiRamanFeature(EnlightenFeature):
         self.cb_right_trim  .stateChanged           .connect(self.update_settings)
         self.sb_left_trim   .valueChanged           .connect(self.update_settings)
         self.sb_right_trim  .valueChanged           .connect(self.update_settings)
-        self.combo_model    .currentIndexChanged    .connect(self.combo_callback)
+        self.combo_model    .currentIndexChanged    .connect(self.select_model_callback)
 
         self.ctl.page_nav.register_observer(self.page_nav_callback)
 
         self.curve = self.ctl.alt_graph.add_curve("DALAI-RAMAN", pen="#f7e842")
 
         self.page_nav_callback()
+        self.lazy_load_model()
 
     def update_settings(self):
         self.enabled       = self.cb_enable.isChecked()
@@ -120,9 +121,6 @@ class DalaiRamanFeature(EnlightenFeature):
         self.right_trim_cm = self.sb_right_trim.value()
 
         self.update_visibility()
-
-    def combo_callback(self):
-        model_label = self.combo_spectrometer.currentText()
 
     def update_visibility(self):
         doing_raman = self.ctl.page_nav.doing_raman()
@@ -178,10 +176,14 @@ class DalaiRamanFeature(EnlightenFeature):
             self.ctl.marquee.error("DALAI-RAMAN requires wavenumber axis [2]")
             return
 
+        log.debug("calling process_dalai")
         AI_wavenumbers, AI_spectrum = self.process_dalai(wavenumbers, spectrum, pr)
+        log.debug("back from process_dalai")
+        log.debug(f"AI_wavenumbers {AI_wavenumbers}")
+        log.debug(f"AI_spectrum {AI_spectrum}")
 
-        pr.dalai_wavenumbers = AI_wavenumbers
-        pr.dalai_spectrum = AI_spectrum
+        pr.wavenumbers_dalai = AI_wavenumbers
+        pr.spectrum_dalai = AI_spectrum
 
         # interpolated arrays are for display only; we use non-interpolated data in matching
         interp = self.ctl.interp
@@ -192,7 +194,9 @@ class DalaiRamanFeature(EnlightenFeature):
             AI_spectrum_display = AI_spectrum
             AI_wavenumbers_display = AI_wavenumbers
 
+        log.debug("graphing data")
         self.curve.setData(x=AI_wavenumbers_display, y=AI_spectrum_display, color="#f7e842")
+        log.debug("back grom graph")
 
     def find_available_models(self):
         found_models = {}
@@ -223,6 +227,7 @@ class DalaiRamanFeature(EnlightenFeature):
                 in self.model_configs by insertion order. Note that this is 
                 ModelConfig.basename, not .label.
         """
+        log.debug(f"attempting to lazy_load model {model_name}")
         if model_name is None:
             model_name = list(self.model_configs.keys())[0]
 
@@ -248,11 +253,9 @@ class DalaiRamanFeature(EnlightenFeature):
         """
         config = self.model_configs[model_name]
 
-        msg = f"loading DALAI model {config.model_pathname}"
-        self.plugin.marquee_message = msg
-        log.debug(msg)
-
+        self.ctl.marquee.info(f"loading DALAI model {config.model_pathname}")
         if 'tflite' == config.model_type:
+            import tensorflow.lite as tfl
             model = tfl.Interpreter(config.model_pathname)
             model.allocate_tensors()
             log.info(f"loaded tflite model {model_name}")
@@ -261,7 +264,7 @@ class DalaiRamanFeature(EnlightenFeature):
 
     def select_model_callback(self):
         log.debug("select_model_callback: start")
-        combo = self.plugin.get_field_widget("DALAI Model")
+        combo = self.cb_model
         if combo:
             label = combo.currentText()
             for basename, config in self.model_configs.items():
@@ -272,7 +275,7 @@ class DalaiRamanFeature(EnlightenFeature):
 
     def process_dalai(self, wavenumbers, spectrum, pr):
         """
-        Process spectrum according to DALAI plugin settings
+        Process spectrum according to DALAI settings
 
         Args:
             wavenumbers: Array of wavenumber values.
@@ -298,7 +301,12 @@ class DalaiRamanFeature(EnlightenFeature):
         wavenumbers = np.array(wavenumbers)
         spectrum = np.array(spectrum)
 
-        if self.current_model_name is None or self.current_model_name not in self.loaded_models:
+        if self.current_model_name is None:
+            log.error("doing nothing because no model selected")
+            return None, None
+
+        if self.current_model_name not in self.loaded_models:
+            log.error(f"doing nothing because current_model_name {self.current_model_name} not in loaded_models: {self.loaded_models}")
             return None, None
 
         model     = self.loaded_models[self.current_model_name]
@@ -308,50 +316,46 @@ class DalaiRamanFeature(EnlightenFeature):
         fwhm      = eeprom.avg_resolution
         serial    = eeprom.serial_number
 
-        deconvolute = request.fields["Deconvolute DALAI spectrum"]
-        etalon_correction_enable = request.fields["Remove Etalon Before DALAI processing"]
-
-        trim_start = request.fields["Left Wavenumber"] if request.fields["Left Trim?"] else wavenumbers[0]
-        trim_end   = request.fields["Right Wavenumber"] if request.fields["Right Trim?"] else wavenumbers[-1]
+        trim_start = self.trim_left_cm  if self.do_left_trim  else wavenumbers[0]
+        trim_end   = self.trim_right_cm if self.do_right_trim else wavenumbers[-1]
 
         if roi_start < 1:
             log.debug("DALAI.process: ROI start is zero - this does not work: DALAI requires a good ROI start just after the filter")
-            self.plugin.marquee_message = "ROI start is zero in EEPROM - DALAI does not work well across the filter edge"
+            self.ctl.marquee.error("ROI start is zero in EEPROM - DALAI does not work well across the filter edge")
 
         # we need to apply ROI here
         wavenumbers = wavenumbers[roi_start : roi_end + 1] 
         spectrum    = spectrum[roi_start : roi_end + 1] 
 
-        if deconvolute and fwhm == 0:
+        if self.deconvolute and fwhm == 0:
             self.ctl.marquee.error("FWHM is zero in EEPROM - no deconvolution possible")
-            deconvolute = False
+            self.deconvolute = False
 
         try:
             if "X" in self.current_model_config.target_spectrometer_families:
                 log.debug("processing spectra with prep_spectra_X.dalai_X_cleanup")
-                wavenumbers, spectrum = prep_spectra_X.clean_spectrum(model, wavenumbers, spectrum, eeprom, deconvolute, model_config=self.current_model_config)
+                wavenumbers, spectrum = prep_spectra_X.clean_spectrum(model, wavenumbers, spectrum, eeprom, self.deconvolute, model_config=self.current_model_config)
 
             elif "XM" in self.current_model_config.target_spectrometer_families:
                 log.debug("processing spectra with prep_spectra_XM.dalai_X_cleanup")
-                wavenumbers, spectrum = prep_spectra_XM.clean_spectrum(model, wavenumbers, spectrum, eeprom, deconvolute, model_config=self.current_model_config)
+                wavenumbers, spectrum = prep_spectra_XM.clean_spectrum(model, wavenumbers, spectrum, eeprom, self.deconvolute, model_config=self.current_model_config)
 
             elif "XS" in self.current_model_config.target_spectrometer_families:
                 log.debug("processing spectra with prep_spectra_XS.clean_spectrum")
-                wavenumbers, spectrum = prep_spectra_XS.clean_spectrum(model, wavenumbers, spectrum, eeprom, deconvolute, model_config=self.current_model_config)
+                wavenumbers, spectrum = prep_spectra_XS.clean_spectrum(model, wavenumbers, spectrum, eeprom, self.deconvolute, model_config=self.current_model_config)
 
             else:
-                msg = "selected DALAI model is not configured to target any known spectrometer family"
-                self.plugin.marquee_message = f"ERROR: {msg}"
-                log.error(msg)
+                self.ctl.marquee.error(f"selected DALAI model is not configured to target any known spectrometer family")
         except:
             msg = f"exception executing model targetting {self.current_model_config.target_spectrometer_families} spectrometers"
-            self.plugin.marquee_message = f"ERROR: {msg}"
+            self.ctl.marquee.error(msg)
             log.error(msg, exc_info=1)
 
         trimmed_indices = (trim_start <= wavenumbers) & (wavenumbers <= trim_end)
         wavenumbers = wavenumbers[trimmed_indices]
         spectrum = spectrum[trimmed_indices]
 
+        log.debug("successful dalai processing")
         return wavenumbers, spectrum
 
     def generate_measurement(self, request, AI_wavenumbers, AI_spectrum):  # -> enlighten.measurement.Measurement
@@ -398,7 +402,6 @@ class DalaiRamanFeature(EnlightenFeature):
             {
                 "Measurement": {
                     "Label": "DalaiRamanID spectrum",
-                    "Plugin Name": self.plugin.name,  # note, not quite what PluginController sets
                     "SpectrometerSettings": settings.to_dict(),
                     "ProcessedReading": pr.to_dict(),
                 }
@@ -410,58 +413,6 @@ class DalaiRamanFeature(EnlightenFeature):
             return
 
         return measurements[0]
-
-    def preset_get_id_engine(self):
-        combo = self.plugin.get_field_widget("ID Engine")
-        if combo:
-            return combo.currentText()
-
-    def preset_set_id_engine(self, value):
-        combo = self.plugin.get_field_widget("ID Engine")
-        if combo:
-            combo.setCurrentText(value)
-
-    def preset_get_model(self):
-        combo = self.plugin.get_field_widget("DALAI Model")
-        if combo:
-            return combo.currentText()
-
-    def preset_set_model(self, value):
-        combo = self.plugin.get_field_widget("DALAI Model")
-        if combo:
-            combo.setCurrentText(value)
-
-    def preset_get_left_trim(self):
-        value = False
-        cb = self.plugin.get_field_widget("Left Trim?")
-        if cb:
-            value = cb.isChecked()
-
-        return value
-
-    def preset_set_left_trim(self, value):
-        cb = self.plugin.get_field_widget("Left Trim?")
-        if cb:
-            flag = "true" == str(value).lower()
-            cb.setChecked(flag)
-        else:
-            log.debug(f"preset_set_left_trim: ignoring value {value}")
-
-    def preset_get_left_wavenumber(self):
-        value = None
-        sb = self.plugin.get_field_widget("Left Wavenumber")
-        if sb:
-            value = sb.value()
-
-        return value
-
-    def preset_set_left_wavenumber(self, value):
-        sb = self.plugin.get_field_widget("Left Wavenumber")
-        if sb:
-            wn = int(value)
-            sb.setValue(wn)
-        else:
-            log.debug(f"preset_set_left_wavenumber: ignoring value {value}")
 
 class ModelConfig:
 

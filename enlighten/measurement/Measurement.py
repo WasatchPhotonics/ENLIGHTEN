@@ -799,6 +799,8 @@ class Measurement:
                 self.save_csv_file_by_row(resave=resave)
             else:
                 self.save_csv_file_by_column(resave=resave)
+                if self.has_dalai():
+                    self.save_csv_file_by_column_dalai(resave=resave)
 
     ##
     # This function is provided because legacy Dash and ENLIGHTEN saved row-
@@ -1088,7 +1090,8 @@ class Measurement:
         m = { # Measurement
             "spectrum": {},
             "metadata": self.get_all_metadata(),
-            "spectrometerSettings": self.settings.to_dict()
+            "spectrometerSettings": self.settings.to_dict(),
+            "dalai": {}
         }
 
         # interpolation
@@ -1119,6 +1122,10 @@ class Measurement:
                 a = pr.get_reference()
                 if a is not None:
                     m["spectrum"]["Reference"] = util.clean_list(a)
+
+        if self.has_dalai():
+            m["dalai"]["spectrum"] = pr.spectrum_dalai
+            m["dalai"]["wavenumbers"] = pr.wavenumbers_dalai
 
         return m
 
@@ -1396,6 +1403,73 @@ class Measurement:
         log.info("saved columnar %s", pathname)
         self.add_pathname(pathname)
 
+    def save_csv_file_by_column_dalai(self, use_basename=False, ext="csv", delim=",", include_header=True, include_metadata=True, resave=False):
+        pr = self.processed_reading
+
+        today_dir = self.generate_today_dir()
+        if use_basename:
+            pathname = "%s-DALAI.%s" % (self.basename, ext)
+        else:
+            pathname = os.path.join(today_dir, "%s-DALAI.%s" % (self.generate_basename(), ext))
+
+        if not self.verify_pathname(pathname, resave):
+            return
+
+        wavenumbers = pr.wavenumbers_dalai
+        spectrum = pr.spectrum_dalai
+        pixels = list(range(len(spectrum)))
+
+        with open(pathname, "w", newline="", encoding='utf-8') as f:
+
+            out = csv.writer(f, delimiter=delim)
+
+            if include_metadata:
+                md = self.get_all_metadata()
+
+                # output additional (name, value) metadata pairs at the top,
+                # not included in row-ordered CSV
+                outputted = set()
+                for field in self.get_extra_header_fields():
+                    if field in md:
+                        out.writerow([field, md[field]])
+                        outputted.add(field)
+
+                # output (name, value) metadata pairs at the top,
+                # using the same names and order as our row-ordered CSV
+                for field in Measurement.CSV_HEADER_FIELDS:
+                    if field not in Measurement.ROW_ONLY_FIELDS and field in md:
+                        out.writerow([field, md[field]])
+                        outputted.add(field)
+
+                if self.processed_reading.plugin_metadata is not None:
+                    for field in self.processed_reading.plugin_metadata.keys():
+                        if field not in outputted:
+                            out.writerow([field, md[field]])
+                            outputted.add(field)
+
+                out.writerow([])
+
+            headers = []
+            if not self.ctl or self.ctl.save_options.save_pixel(): 
+                headers.append("Pixel")
+            headers.append("Wavenumber")
+            headers.append("DALAI")
+
+            if include_header:
+                out.writerow(headers)
+
+            for pixel in range(len(pixels)):
+                values = []
+                if not self.ctl or self.ctl.save_options.save_pixel():
+                    values.append(pixel)
+                values.append(self.csv_formatted(None, 2, wavenumbers, pixel))
+                values.append(self.csv_formatted(None, 2, spectrum,    pixel))
+                out.writerow(values)
+
+        log.info("saved columnar DALAI %s", pathname)
+        self.add_pathname(pathname)
+
+
     # ##########################################################################
     # TXT
     # ##########################################################################
@@ -1643,7 +1717,9 @@ class Measurement:
 
         return row
 
-    ## Not currently used
+    def has_dalai(self):
+        return self.has_component("DALAI")
+
     def has_component(self, component):
         pr = self.processed_reading
         if pr is None:
@@ -1658,6 +1734,11 @@ class Measurement:
             a = pr.reference
         elif component.startswith("processed"):
             a = pr.processed
+        elif component.startswith("dalai"):
+            return (pr.spectrum_dalai is not None and
+                    pr.wavenumbers_dalai is not None and
+                    len(pr.spectrum_dalai) > 0 and
+                    len(pr.wavenumbers_dalai) > 0)
         else:
             return False
 

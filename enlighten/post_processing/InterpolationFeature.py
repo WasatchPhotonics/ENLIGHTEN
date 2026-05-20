@@ -189,6 +189,8 @@ class InterpolationFeature(EnlightenFeature):
         """ 
         This does dark and reference as well as processed and raw.
         """
+        if not self.enabled:
+            return
 
         if self.new_axis is None:
             log.debug("new axis not provided, returning none")
