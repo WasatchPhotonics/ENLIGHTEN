@@ -17296,20 +17296,6 @@ li.checked::marker { content: "\2612"; }
                </item>
 
 
-               <!-- DALAI-RAMAN -->
-               <!--  ==========================  -->
-               <!-- | [x] Enable               | -->
-               <!-- |                          | -->
-               <!-- | model: [_XM_Wide______v] | -->
-               <!-- |                          | -->
-               <!-- | [x] Left Trim            | -->
-               <!-- |     [v] ____0____ [^]    | -->
-               <!-- | [x] Right Trim           | -->
-               <!-- |     [v] ____0____ [^]    | -->
-               <!-- |                          | -->
-               <!-- | [x] Deconvolute          | -->
-               <!-- |__________________________| -->
-
                <item>
                 <widget class="QFrame" name="frame_dalai_1">
                  <property name="sizePolicy">
@@ -17383,271 +17369,210 @@ li.checked::marker { content: "\2612"; }
                       <number>0</number>
                      </property>
                      <item row="0" column="0">
-                      <widget class="QFrame" name="frame_dalai_3">
+                      <widget class="QFrame" name="frame_dalai_form">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                          <horstretch>0</horstretch>
                          <verstretch>0</verstretch>
                         </sizepolicy>
                        </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>0</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>16777215</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="lineWidth">
-                        <number>1</number>
-                       </property>
                        <property name="wpGrad" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_dalai_3">
-                        <item>
-                         <widget class="QFrame" name="frame_dalai_form">
+                       <property name="frameShape">
+                        <enum>QFrame::Shape::StyledPanel</enum>
+                       </property>
+                       <property name="frameShadow">
+                        <enum>QFrame::Shadow::Raised</enum>
+                       </property>
+                       <layout class="QGridLayout" name="grid_dalai_2" rowstretch="0" columnstretch="0">
+                        <property name="horizontalSpacing">
+                         <number>0</number>
+                        </property>
+                        <property name="verticalSpacing">
+                         <number>3</number>
+                        </property>
+                        <property name="leftMargin">
+                         <number>6</number>
+                        </property>
+                        <property name="topMargin">
+                         <number>6</number>
+                        </property>
+                        <property name="rightMargin">
+                         <number>6</number>
+                        </property>
+                        <property name="bottomMargin">
+                         <number>9</number>
+                        </property>
+
+                        <item row="0" column="0" colspan="3">
+                         <widget class="QCheckBox" name="checkBox_dalai_enable">
+                          <property name="text">
+                           <string />
+                          </property>
+                          <property name="checked">
+                           <bool>false</bool>
+                          </property>
+                          <property name="text">
+                           <string>Enabled</string>
+                          </property>
+                         </widget>
+                        </item>
+
+                        <item row="1" column="0">
+                         <widget class="QLabel" name="label_dalai_model_label">
+                          <property name="text">
+                           <string>Model</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="1" column="1" colspan="2">
+                         <widget class="QComboBox" name="comboBox_dalai_model">
+                          <property name="minimumSize">
+                           <size>
+                            <width>80</width>
+                            <height>0</height>
+                           </size>
+                          </property>
+                          <property name="font">
+                           <font>
+                            <pointsize>10</pointsize>
+                            <bold>true</bold>
+                           </font>
+                          </property>
+                          <property name="focusPolicy">
+                           <enum>Qt::FocusPolicy::StrongFocus</enum>
+                          </property>
+                         </widget>
+                        </item>
+                       
+                        <item row="2" column="0">
+                         <widget class="QLabel" name="label_dalai_left_trim_bool_label">
+                          <property name="text">
+                           <string>Left Trim</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="2" column="1">
+                         <widget class="QCheckBox" name="checkBox_dalai_left_trim">
+                          <property name="checked">
+                           <bool>false</bool>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="2" column="2">
+                         <widget class="QSpinBox" name="spinBox_dalai_left_trim_wavenumber">
                           <property name="sizePolicy">
-                           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                             <horstretch>0</horstretch>
                             <verstretch>0</verstretch>
                            </sizepolicy>
                           </property>
-                          <property name="frameShape">
-                           <enum>QFrame::Shape::StyledPanel</enum>
+                          <property name="focusPolicy">
+                           <enum>Qt::FocusPolicy::StrongFocus</enum>
                           </property>
-                          <property name="frameShadow">
-                           <enum>QFrame::Shadow::Raised</enum>
+                          <property name="alignment">
+                           <set>Qt::AlignmentFlag::AlignCenter</set>
                           </property>
-                          <layout class="QFormLayout" name="formLayout_dalai_3">
-                           <property name="labelAlignment">
-                            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                           </property>
-                           <property name="horizontalSpacing">
-                            <number>0</number>
-                           </property>
-                           <property name="verticalSpacing">
-                            <number>3</number>
-                           </property>
-                           <property name="leftMargin">
-                            <number>6</number>
-                           </property>
-                           <property name="topMargin">
-                            <number>6</number>
-                           </property>
-                           <property name="rightMargin">
-                            <number>6</number>
-                           </property>
-                           <property name="bottomMargin">
-                            <number>9</number>
-                           </property>
-
-                           <item row="0" column="0">
-                            <widget class="QCheckBox" name="checkBox_dalai_enable">
-                             <property name="text">
-                              <string />
-                             </property>
-                             <property name="checked">
-                              <bool>false</bool>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="0" column="1">
-                            <widget class="QLabel" name="label_dalai_enable_label">
-                             <property name="text">
-                              <string>Enabled</string>
-                             </property>
-                            </widget>
-                           </item>
-
-                           <item row="1" column="0">
-                            <widget class="QLabel" name="label_dalai_model_label">
-                             <property name="text">
-                              <string>Model</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="1" column="1">
-                            <widget class="QComboBox" name="comboBox_dalai_model">
-                             <property name="minimumSize">
-                              <size>
-                               <width>200</width>
-                               <height>0</height>
-                              </size>
-                             </property>
-                             <property name="font">
-                              <font>
-                               <pointsize>10</pointsize>
-                               <bold>true</bold>
-                              </font>
-                             </property>
-                             <property name="focusPolicy">
-                              <enum>Qt::FocusPolicy::StrongFocus</enum>
-                             </property>
-                            </widget>
-                           </item>
-                          
-                           <item row="2" column="0">
-                            <widget class="QCheckBox" name="checkBox_dalai_left_trim">
-                             <property name="text">
-                              <string />
-                             </property>
-                             <property name="checked">
-                              <bool>false</bool>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="2" column="1">
-                            <widget class="QLabel" name="label_dalai_left_trim_bool_label">
-                             <property name="text">
-                              <string>Left Trim</string>
-                             </property>
-                            </widget>
-                           </item>
-
-                           <item row="3" column="0">
-                            <widget class="QLabel" name="label_dalai_left_trim_value_label">
-                             <property name="font">
-                              <font>
-                               <pointsize>10</pointsize>
-                              </font>
-                             </property>
-                             <property name="text">
-                              <string>Left Trim</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="3" column="1">
-                            <widget class="QSpinBox" name="spinBox_dalai_left_trim_wavenumber">
-                             <property name="sizePolicy">
-                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                               <horstretch>0</horstretch>
-                               <verstretch>0</verstretch>
-                              </sizepolicy>
-                             </property>
-                             <property name="focusPolicy">
-                              <enum>Qt::FocusPolicy::StrongFocus</enum>
-                             </property>
-                             <property name="alignment">
-                              <set>Qt::AlignmentFlag::AlignCenter</set>
-                             </property>
-                             <property name="buttonSymbols">
-                              <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
-                             </property>
-                             <property name="accelerated">
-                              <bool>true</bool>
-                             </property>
-                             <property name="keyboardTracking">
-                              <bool>false</bool>
-                             </property>
-                             <property name="minimum">
-                              <number>0</number>
-                             </property>
-                             <property name="maximum">
-                              <number>4000</number>
-                             </property>
-                             <property name="singleStep">
-                              <number>1</number>
-                             </property>
-                             <property name="value">
-                              <number>750</number>
-                             </property>
-                            </widget>
-                           </item>
-
-                           <item row="4" column="0">
-                            <widget class="QCheckBox" name="checkBox_dalai_right_trim">
-                             <property name="text">
-                              <string />
-                             </property>
-                             <property name="checked">
-                              <bool>false</bool>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="4" column="1">
-                            <widget class="QLabel" name="label_dalai_right_trim_bool_label">
-                             <property name="text">
-                              <string>Right Trim</string>
-                             </property>
-                            </widget>
-                           </item>
-
-                           <item row="5" column="0">
-                            <widget class="QLabel" name="label_dalai_right_trim_value_label">
-                             <property name="font">
-                              <font>
-                               <pointsize>10</pointsize>
-                              </font>
-                             </property>
-                             <property name="text">
-                              <string>Right Trim</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="5" column="1">
-                            <widget class="QSpinBox" name="spinBox_dalai_right_trim_wavenumber">
-                             <property name="sizePolicy">
-                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                               <horstretch>0</horstretch>
-                               <verstretch>0</verstretch>
-                              </sizepolicy>
-                             </property>
-                             <property name="focusPolicy">
-                              <enum>Qt::FocusPolicy::StrongFocus</enum>
-                             </property>
-                             <property name="alignment">
-                              <set>Qt::AlignmentFlag::AlignCenter</set>
-                             </property>
-                             <property name="buttonSymbols">
-                              <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
-                             </property>
-                             <property name="accelerated">
-                              <bool>true</bool>
-                             </property>
-                             <property name="keyboardTracking">
-                              <bool>false</bool>
-                             </property>
-                             <property name="minimum">
-                              <number>0</number>
-                             </property>
-                             <property name="maximum">
-                              <number>4000</number>
-                             </property>
-                             <property name="singleStep">
-                              <number>1</number>
-                             </property>
-                             <property name="value">
-                              <number>0</number>
-                             </property>
-                            </widget>
-                           </item>
-
-                           <item row="6" column="0">
-                            <widget class="QCheckBox" name="checkBox_dalai_deconvolute">
-                             <property name="text">
-                              <string />
-                             </property>
-                             <property name="checked">
-                              <bool>false</bool>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="6" column="1">
-                            <widget class="QLabel" name="label_dalai_deconvolute_label">
-                             <property name="text">
-                              <string>Deconvolute</string>
-                             </property>
-                            </widget>
-                           </item>
-
-                          </layout>
+                          <property name="buttonSymbols">
+                           <enum>QAbstractSpinBox::ButtonSymbols::UpDownArrows</enum>
+                          </property>
+                          <property name="accelerated">
+                           <bool>true</bool>
+                          </property>
+                          <property name="keyboardTracking">
+                           <bool>false</bool>
+                          </property>
+                          <property name="minimum">
+                           <number>0</number>
+                          </property>
+                          <property name="maximum">
+                           <number>4000</number>
+                          </property>
+                          <property name="singleStep">
+                           <number>1</number>
+                          </property>
+                          <property name="value">
+                           <number>750</number>
+                          </property>
+                          <property name="suffix">
+                           <string> cm⁻¹</string>
+                          </property>
                          </widget>
                         </item>
+
+                        <item row="3" column="0">
+                         <widget class="QLabel" name="label_dalai_right_trim_bool_label">
+                          <property name="text">
+                           <string>Right Trim</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="3" column="1">
+                         <widget class="QCheckBox" name="checkBox_dalai_right_trim">
+                          <property name="text">
+                           <string />
+                          </property>
+                          <property name="checked">
+                           <bool>false</bool>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="3" column="2">
+                         <widget class="QSpinBox" name="spinBox_dalai_right_trim_wavenumber">
+                          <property name="sizePolicy">
+                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                            <horstretch>0</horstretch>
+                            <verstretch>0</verstretch>
+                           </sizepolicy>
+                          </property>
+                          <property name="focusPolicy">
+                           <enum>Qt::FocusPolicy::StrongFocus</enum>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignmentFlag::AlignCenter</set>
+                          </property>
+                          <property name="buttonSymbols">
+                           <enum>QAbstractSpinBox::ButtonSymbols::UpDownArrows</enum>
+                          </property>
+                          <property name="accelerated">
+                           <bool>true</bool>
+                          </property>
+                          <property name="keyboardTracking">
+                           <bool>false</bool>
+                          </property>
+                          <property name="minimum">
+                           <number>0</number>
+                          </property>
+                          <property name="maximum">
+                           <number>4000</number>
+                          </property>
+                          <property name="singleStep">
+                           <number>1</number>
+                          </property>
+                          <property name="value">
+                           <number>0</number>
+                          </property>
+                          <property name="suffix">
+                           <string> cm⁻¹</string>
+                          </property>
+                         </widget>
+                        </item>
+
+                        <item row="4" column="1" colspan="2">
+                         <widget class="QCheckBox" name="checkBox_dalai_deconvolute">
+                          <property name="text">
+                           <string />
+                          </property>
+                          <property name="checked">
+                           <bool>false</bool>
+                          </property>
+                          <property name="text">
+                           <string>Deconvolute</string>
+                          </property>
+                         </widget>
+                        </item>
+
                        </layout>
                       </widget>
                      </item>
@@ -17708,9 +17633,6 @@ li.checked::marker { content: "\2612"; }
                     <property name="lineWidth">
                      <number>1</number>
                     </property>
-                    <property name="wpBox" stdset="0">
-                     <bool>false</bool>
-                    </property>
                     <layout class="QGridLayout" name="grid_library_matching_1" rowstretch="0" columnstretch="0">
                      <property name="sizeConstraint">
                       <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
@@ -17753,12 +17675,22 @@ li.checked::marker { content: "\2612"; }
                        <property name="lineWidth">
                         <number>1</number>
                        </property>
+                       
                        <property name="wpGrad" stdset="0">
                         <bool>false</bool>
                        </property>
                        <layout class="QVBoxLayout" name="verticalLayout_23lb">
 
-
+                        <item>
+                         <widget class="QCheckBox" name="checkBox_library_matching_enable">
+                          <property name="checked">
+                           <bool>false</bool>
+                          </property>
+                          <property name="text">
+                           <string>Enabled</string>
+                          </property>
+                         </widget>
+                        </item>
                         
                         <item>
                          <widget class="QPushButton" name="pushButton_library_matching_select_library">
@@ -17790,226 +17722,193 @@ li.checked::marker { content: "\2612"; }
                         </item>
 
                         <item>
-                         <widget class="QFrame" name="frame_library_matching_grid">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
+                         <layout class="QFormLayout" name="formLayout_library_matching_options">
+                          <property name="labelAlignment">
+                           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                           </property>
-                          <property name="frameShape">
-                           <enum>QFrame::Shape::StyledPanel</enum>
+                          <property name="horizontalSpacing">
+                           <number>0</number>
                           </property>
-                          <property name="frameShadow">
-                           <enum>QFrame::Shadow::Raised</enum>
+                          <property name="verticalSpacing">
+                           <number>3</number>
                           </property>
-                          <layout class="QFormLayout" name="formLayout_30lb">
-                           <property name="labelAlignment">
-                            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                           </property>
-                           <property name="horizontalSpacing">
-                            <number>0</number>
-                           </property>
-                           <property name="verticalSpacing">
-                            <number>3</number>
-                           </property>
-                           <property name="leftMargin">
-                            <number>6</number>
-                           </property>
-                           <property name="topMargin">
-                            <number>6</number>
-                           </property>
-                           <property name="rightMargin">
-                            <number>6</number>
-                           </property>
-                           <property name="bottomMargin">
-                            <number>9</number>
-                           </property>
+                          <property name="leftMargin">
+                           <number>6</number>
+                          </property>
+                          <property name="topMargin">
+                           <number>6</number>
+                          </property>
+                          <property name="rightMargin">
+                           <number>6</number>
+                          </property>
+                          <property name="bottomMargin">
+                           <number>9</number>
+                          </property>
 
-                           <item row="0" column="0">
-                            <widget class="QCheckBox" name="checkBox_library_matching_enable">
-                             <property name="text">
-                              <string />
-                             </property>
-                             <property name="checked">
-                              <bool>false</bool>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="0" column="1">
-                            <widget class="QLabel" name="label_library_matching_enable_label">
-                             <property name="text">
-                              <string>Enabled</string>
-                             </property>
-                            </widget>
-                           </item>
-                           
-                           <item row="1" column="0">
-                            <widget class="QLabel" name="label_library_matching_matched_compound_name_label">
-                             <property name="font">
-                              <font>
-                               <pointsize>10</pointsize>
-                              </font>
-                             </property>
-                             <property name="text">
-                              <string>Compound</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="1" column="1">
-                            <widget class="QLabel" name="label_library_matching_matched_compound_name">
-                             <property name="font">
-                              <font>
-                               <pointsize>10</pointsize>
-                              </font>
-                             </property>
-                             <property name="text">
-                              <string>None</string>
-                             </property>
-                            </widget>
-                           </item>
+                          <item row="0" column="0">
+                           <widget class="QLabel" name="label_library_matching_matched_compound_name_label">
+                            <property name="font">
+                             <font>
+                              <pointsize>10</pointsize>
+                             </font>
+                            </property>
+                            <property name="text">
+                             <string>Compound</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="0" column="1">
+                           <widget class="QLabel" name="label_library_matching_matched_compound_name">
+                            <property name="font">
+                             <font>
+                              <pointsize>10</pointsize>
+                             </font>
+                            </property>
+                            <property name="text">
+                             <string>None</string>
+                            </property>
+                           </widget>
+                          </item>
 
-                           <item row="2" column="0">
-                            <widget class="QLabel" name="label_library_matching_matched_compound_score_label">
-                             <property name="font">
-                              <font>
-                               <pointsize>10</pointsize>
-                              </font>
-                             </property>
-                             <property name="text">
-                              <string>Score</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="2" column="1">
-                            <widget class="QLabel" name="label_library_matching_matched_compound_score">
-                             <property name="font">
-                              <font>
-                               <pointsize>10</pointsize>
-                              </font>
-                             </property>
-                             <property name="text">
-                              <string>0.00</string>
-                             </property>
-                            </widget>
-                           </item>
-                           
-                           <item row="3" column="0">
-                            <widget class="QLabel" name="label_library_matching_min_score_label">
-                             <property name="font">
-                              <font>
-                               <pointsize>10</pointsize>
-                              </font>
-                             </property>
-                             <property name="text">
-                              <string>Min Score</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="3" column="1">
-                            <widget class="QDoubleSpinBox" name="doubleSpinBox_library_matching_min_score">
-                             <property name="minimumSize">
-                              <size>
-                               <width>125</width>
-                               <height>0</height>
-                              </size>
-                             </property>
-                             <property name="alignment">
-                              <set>Qt::AlignmentFlag::AlignCenter</set>
-                             </property>
-                             <property name="keyboardTracking">
-                              <bool>false</bool>
-                             </property>
-                             <property name="decimals">
-                              <number>2</number>
-                             </property>
-                             <property name="minimum">
-                              <double>0.05</double>
-                             </property>
-                             <property name="maximum">
-                              <double>0.95</double>
-                             </property>
-                             <property name="singleStep">
-                              <double>0.01</double>
-                             </property>
-                             <property name="value">
-                              <double>0.65</double>
-                             </property>
-                            </widget>
-                           </item>
+                          <item row="1" column="0">
+                           <widget class="QLabel" name="label_library_matching_matched_compound_score_label">
+                            <property name="font">
+                             <font>
+                              <pointsize>10</pointsize>
+                             </font>
+                            </property>
+                            <property name="text">
+                             <string>Score</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="1" column="1">
+                           <widget class="QLabel" name="label_library_matching_matched_compound_score">
+                            <property name="font">
+                             <font>
+                              <pointsize>10</pointsize>
+                             </font>
+                            </property>
+                            <property name="text">
+                             <string>0.00</string>
+                            </property>
+                           </widget>
+                          </item>
                           
-                           <item row="4" column="0">
-                            <widget class="QLabel" name="label_library_matching_max_results_label">
-                             <property name="font">
-                              <font>
-                               <pointsize>10</pointsize>
-                              </font>
-                             </property>
-                             <property name="text">
-                              <string>Min Score</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="4" column="1">
-                            <widget class="QSpinBox" name="spinBox_library_matching_max_results">
-                             <property name="sizePolicy">
-                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                               <horstretch>0</horstretch>
-                               <verstretch>0</verstretch>
-                              </sizepolicy>
-                             </property>
-                             <property name="focusPolicy">
-                              <enum>Qt::FocusPolicy::StrongFocus</enum>
-                             </property>
-                             <property name="alignment">
-                              <set>Qt::AlignmentFlag::AlignCenter</set>
-                             </property>
-                             <property name="buttonSymbols">
-                              <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
-                             </property>
-                             <property name="accelerated">
-                              <bool>true</bool>
-                             </property>
-                             <property name="keyboardTracking">
-                              <bool>false</bool>
-                             </property>
-                             <property name="minimum">
-                              <number>0</number>
-                             </property>
-                             <property name="maximum">
-                              <number>99</number>
-                             </property>
-                             <property name="singleStep">
-                              <number>1</number>
-                             </property>
-                             <property name="value">
-                              <number>2</number>
-                             </property>
-                            </widget>
-                           </item>
+                          <item row="2" column="0">
+                           <widget class="QLabel" name="label_library_matching_min_score_label">
+                            <property name="font">
+                             <font>
+                              <pointsize>10</pointsize>
+                             </font>
+                            </property>
+                            <property name="text">
+                             <string>Min Score</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="2" column="1">
+                           <widget class="QDoubleSpinBox" name="doubleSpinBox_library_matching_min_score">
+                            <property name="minimumSize">
+                             <size>
+                              <width>125</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                            <property name="keyboardTracking">
+                             <bool>false</bool>
+                            </property>
+                            <property name="decimals">
+                             <number>2</number>
+                            </property>
+                            <property name="minimum">
+                             <double>0.05</double>
+                            </property>
+                            <property name="maximum">
+                             <double>0.95</double>
+                            </property>
+                            <property name="singleStep">
+                             <double>0.01</double>
+                            </property>
+                            <property name="value">
+                             <double>0.65</double>
+                            </property>
+                           </widget>
+                          </item>
+                         
+                          <item row="3" column="0">
+                           <widget class="QLabel" name="label_library_matching_max_results_label">
+                            <property name="font">
+                             <font>
+                              <pointsize>10</pointsize>
+                             </font>
+                            </property>
+                            <property name="text">
+                             <string>Max Results</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="3" column="1">
+                           <widget class="QSpinBox" name="spinBox_library_matching_max_results">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="focusPolicy">
+                             <enum>Qt::FocusPolicy::StrongFocus</enum>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                            <property name="buttonSymbols">
+                             <enum>QAbstractSpinBox::ButtonSymbols::UpDownArrows</enum>
+                            </property>
+                            <property name="accelerated">
+                             <bool>true</bool>
+                            </property>
+                            <property name="keyboardTracking">
+                             <bool>false</bool>
+                            </property>
+                            <property name="minimum">
+                             <number>0</number>
+                            </property>
+                            <property name="maximum">
+                             <number>99</number>
+                            </property>
+                            <property name="singleStep">
+                             <number>1</number>
+                            </property>
+                            <property name="value">
+                             <number>2</number>
+                            </property>
+                           </widget>
+                          </item>
 
-                           <item row="5" column="0">
-                            <widget class="QCheckBox" name="checkBox_library_matching_use_dist">
-                             <property name="text">
-                              <string />
-                             </property>
-                             <property name="checked">
-                              <bool>true</bool>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="5" column="1">
-                            <widget class="QLabel" name="label_library_matching_use_dist_label">
-                             <property name="text">
-                              <string>Use standard library</string>
-                             </property>
-                            </widget>
-                           </item>
+                          <item row="4" column="0">
+                           <widget class="QCheckBox" name="checkBox_library_matching_use_dist">
+                            <property name="text">
+                             <string />
+                            </property>
+                            <property name="checked">
+                             <bool>true</bool>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="4" column="1">
+                           <widget class="QLabel" name="label_library_matching_use_dist_label">
+                            <property name="text">
+                             <string>Use standard library</string>
+                            </property>
+                           </widget>
+                          </item>
 
-                          </layout>
-                         </widget>
+                         </layout>
                         </item>
-
                         
                         <item>
                          <widget class="QPushButton" name="pushButton_library_matching_save_to_library">

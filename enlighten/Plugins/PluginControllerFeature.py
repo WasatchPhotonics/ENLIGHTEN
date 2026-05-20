@@ -16,7 +16,7 @@ from .PluginValidator   import PluginValidator
 from .PluginWorker      import PluginWorker
 
 from enlighten import common
-from enlighten.ui.TableModel import TableModel
+from enlighten.data.TableModel import TableModel
 from enlighten.scope.GraphFeature import GraphFeature
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from enlighten.EnlightenFeature import EnlightenFeature
@@ -174,7 +174,7 @@ class PluginControllerFeature(EnlightenFeature):
         self.combo_module.currentIndexChanged.connect(self.combo_module_callback)
 
         # filter scroll-steal
-        combo.installEventFilter(ScrollStealFilter(self.combo_module))
+        self.combo_module.installEventFilter(ScrollStealFilter(self.combo_module))
 
         self.timer = QtCore.QTimer() 
         self.timer.setSingleShot(True)

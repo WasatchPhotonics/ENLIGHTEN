@@ -54,6 +54,22 @@ class LibraryMatchingFeature(EnlightenFeature):
         self.sb_max_results     = cfu.spinBox_library_matching_max_results
         self.cb_use_dist        = cfu.checkBox_library_matching_use_dist
         self.bt_save            = cfu.pushButton_library_matching_save_to_library
+        self.form_layout        = cfu.formLayout_library_matching_options
+
+        self.hide_when_disabled = [
+            self.bt_save,
+            self.bt_select_library,
+            self.cb_use_dist,
+            self.ds_min_score,
+            self.lb_compound,
+            self.lb_score,
+            self.sb_max_results,
+
+            cfu.label_library_matching_matched_compound_name_label,
+            cfu.label_library_matching_matched_compound_score_label,
+            cfu.label_library_matching_max_results_label,
+            cfu.label_library_matching_min_score_label,
+            cfu.label_library_matching_use_dist_label ]
 
         self.dataframe = None 
 
@@ -117,6 +133,8 @@ class LibraryMatchingFeature(EnlightenFeature):
         self.curve_scope.setVisible(False)
         self.curve_scope_dalai.setVisible(False)
 
+        self.show_widgets(False)
+
     def disconnect(self):
         self.ctl.measurement_factory.unregister_observer(self.factory_callback, "save")
         super().disconnect()
@@ -133,7 +151,21 @@ class LibraryMatchingFeature(EnlightenFeature):
         self.enabled = self.cb_enable.isChecked()
 
         if was_enabled != self.enabled:
-            self.ctl.table_scope.set_visible(self.enabled)
+            self.show_widgets(self.enabled)
+
+    def show_widgets(self, flag):
+        for w in self.hide_when_disabled:
+            w.setVisible(flag)
+
+        if flag:
+            self.form_layout.setVerticalSpacing(3)
+            self.form_layout.setContentsMargins(6, 6, 6, 9)
+        else:
+            self.ctl.scope_table.hide()
+            self.curve_scope.setVisible(False)
+            self.curve_scope_dalai.setVisible(False)
+            self.form_layout.setVerticalSpacing(0)
+            self.form_layout.setContentsMargins(0, 0, 0, 0)
 
     def tick(self):
         self.lb_compound.setText(self.last_compound)
@@ -159,6 +191,7 @@ class LibraryMatchingFeature(EnlightenFeature):
             self.last_score = None
             self.curve_scope.setVisible(False)
             self.curve_scope_dalai.setVisible(False)
+            self.dataframe = None
             self.timer.start(self.TIMER_MS)
             return
 

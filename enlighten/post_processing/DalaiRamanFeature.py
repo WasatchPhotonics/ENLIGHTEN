@@ -54,6 +54,7 @@ class DalaiRamanFeature(EnlightenFeature):
         self.frame          = cfu.frame_dalai_1
         self.cb_enable      = cfu.checkBox_dalai_enable
         self.combo_model    = cfu.comboBox_dalai_model
+        self.lb_combo       = cfu.label_dalai_model_label
         self.cb_left_trim   = cfu.checkBox_dalai_left_trim
         self.sb_left_trim   = cfu.spinBox_dalai_left_trim_wavenumber
         self.cb_right_trim  = cfu.checkBox_dalai_right_trim
@@ -66,17 +67,18 @@ class DalaiRamanFeature(EnlightenFeature):
                                 self.sb_right_trim,
                                 self.cb_deconvolute,
                                 cfu.label_dalai_left_trim_bool_label,
-                                cfu.label_dalai_left_trim_value_label,
-                                cfu.label_dalai_right_trim_bool_label,
-                                cfu.label_dalai_right_trim_value_label,
-                                cfu.label_dalai_deconvolute_label ]
+                                cfu.label_dalai_right_trim_bool_label ]
 
         self.model_configs = {}
         self.loaded_models = {}
         self.current_model_name = None
         self.current_model_config = None
 
+        # Visible in this case means the "DALAI-RAMAN" widget is visible on the 
+        # sliding Tool Palette. It does not mean the alt-graph, combobox or other 
+        # options are displayed displayed, which only appear when "enabled.
         self.visible = False
+
         self.enabled = False
         self.deconvolute = False
 
@@ -88,7 +90,7 @@ class DalaiRamanFeature(EnlightenFeature):
 
         self.combo_model.clear()
         self.find_available_models()
-        ordered_model_labels = [config.label for basename, config in self.dalai.model_configs.items()]
+        ordered_model_labels = [config.label for basename, config in self.model_configs.items()]
         for label in ordered_model_labels:
             self.combo_model.addItem(label)
         self.combo_model.setCurrentIndex(0 if len(ordered_model_labels) else -1)
@@ -108,7 +110,7 @@ class DalaiRamanFeature(EnlightenFeature):
         self.page_nav_callback()
 
     def update_settings(self):
-        self.enabled       = self.cb_enabled.isChecked()
+        self.enabled       = self.cb_enable.isChecked()
         self.deconvolute   = self.cb_deconvolute.isChecked()
 
         self.do_left_trim  = self.cb_left_trim.isChecked()
@@ -126,16 +128,24 @@ class DalaiRamanFeature(EnlightenFeature):
         doing_raman = self.ctl.page_nav.doing_raman()
         doing_expert = self.ctl.page_nav.doing_expert()
 
+        # display the WIDGET
         self.visible = DALAI_MODULES_FOUND and (doing_raman or doing_expert)
         self.frame.setVisible(self.visible)
 
-        for w in self.expert_widgets:
-            w.setVisible(doing_expert)
+        # display the COMBO
+        for w in [ self.combo_model, self.lb_combo ]:
+            w.setVisible(self.enabled)
 
-        if self.visible:
-            self.alt_graph.set_visible(True)
-        elif not self.plugin_controller.using_other_graph():
-            self.alt_graph.set_visible(False)
+        # display expert WIDGETS
+        show_expert_widgets = self.visible and self.enabled and doing_expert
+        for w in self.expert_widgets:
+            w.setVisible(show_expert_widgets)
+
+        # display alt GRAPH
+        if self.visible and self.enabled:
+            self.ctl.alt_graph.set_visible(True)
+        elif not self.ctl.plugin_controller.using_other_graph():
+            self.ctl.alt_graph.set_visible(False)
 
     def page_nav_callback(self, arg=None):
         self.update_visibility()
@@ -470,8 +480,8 @@ class ModelConfig:
 
         # generate pathnames
         current_folder = os.path.dirname(os.path.realpath(__file__))
-        self.model_pathname = os.path.join(self.MODEL_DIR, f"{basename}.tflite")
-        self.config_pathname = os.path.join(self.MODEL_DIR, f"{basename}.json")
+        self.model_pathname = os.path.join(DalaiRamanFeature.MODEL_DIR, f"{basename}.tflite")
+        self.config_pathname = os.path.join(DalaiRamanFeature.MODEL_DIR, f"{basename}.json")
 
         if os.path.exists(self.config_pathname):
             with open(self.config_pathname, "r", encoding="utf-8") as infile:
