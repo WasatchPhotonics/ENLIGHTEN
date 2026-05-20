@@ -16,8 +16,6 @@ from typing import List, Optional, Tuple, Union
 
 from scipy.interpolate import interp1d
 
-import tensorflow.lite as tfl
-
 import logging
 
 log = logging.getLogger(__name__)

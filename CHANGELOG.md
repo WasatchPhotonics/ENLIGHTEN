@@ -52,13 +52,10 @@
         - InGaAs Correction
     - TODO
         - LibraryMatching
-            - promote Plugins.TableModel out of PluginController to a new ScopeTableFeature
-              (see PluginControllerFeature.create_output_table)
-            - send match spectrum to (Scope, DALAIGraph) as appropriate
+            - send match spectrum to (Graph, AltGraph) as appropriate
         - DalaiRamanFeature
-            - two graphs, side by side, not movable or collapsible
-              (see PluginControllerFeature.init_plugin_plot)
-            - nrd5-r3-model-17-opset18 (https://bitbucket.org/wasatchphotonics/emauihelpers/src/main/models/)
+            - progress bar on loading
+            - AltGraph shrinks on repeat enable
         - BatteryFeature (in work)
             - add state.battery_temperature_deg_c
             - add state.battery_charger_temperature_deg_c

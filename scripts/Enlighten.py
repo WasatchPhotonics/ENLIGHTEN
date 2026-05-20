@@ -27,11 +27,13 @@ from wasatch   import applog
 if common.use_pyside2():
     from PySide2 import QtGui, QtCore, QtWidgets, QtSvg, QtXml
     from PySide2.QtWidgets import QSplashScreen
-    from PySide2.QtGui import QPixmap, QImageReader
+    from PySide2.QtGui import QPixmap, QImageReader, QColor
+    from PySide2.QtCore import Qt
 else:
     from PySide6 import QtGui, QtCore, QtWidgets, QtSvg, QtXml
     from PySide6.QtWidgets import QSplashScreen
-    from PySide6.QtGui import QPixmap, QImageReader
+    from PySide6.QtGui import QPixmap, QImageReader, QColor
+    from PySide6.QtCore import Qt
 
 log = logging.getLogger(__name__)
 
@@ -113,6 +115,8 @@ class EnlightenApplication:
         self.splash = QSplashScreen()
         self.splash.setPixmap(pixmap)
         self.splash.show()
+        msg = "Please wait...loading photonic goodness"
+        self.splash.showMessage(f"version {common.VERSION}\n\n{msg}\n", alignment=Qt.AlignHCenter | Qt.AlignBottom, color=QColor("#ccc"))
 
         self.main_logger = applog.MainLogger(
             "DEBUG",    # we always start in debug logging to catch startup issues

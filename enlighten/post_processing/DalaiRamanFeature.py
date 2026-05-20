@@ -1,54 +1,52 @@
+import threading
+import logging
 import copy
 import json
-import logging
+import sys
 import os
-import re
-import signal
 import numpy as np
-import pandas as pd
-import pexpect
-
-from typing import List, Optional, Tuple, Union
-from PySide6 import QtWidgets
 
 from enlighten import common
 from enlighten.EnlightenFeature import EnlightenFeature
 
+from .DalaiAdditionalFiles import prep_spectra_X
+from .DalaiAdditionalFiles import prep_spectra_XM
+from .DalaiAdditionalFiles import prep_spectra_XS 
+
 from wasatch import utils
 
-DALAI_MODULES_FOUND = True
-try:
-    from .DalaiAdditionalFiles import prep_spectra_X
-    from .DalaiAdditionalFiles import prep_spectra_XM
-    from .DalaiAdditionalFiles import prep_spectra_XS 
-except ImportError:
-    DALAI_MODULES_FOUND = False
+if common.use_pyside2():
+    from PySide2 import QtCore, QtWidgets
+else:
+    from PySide6 import QtCore, QtWidgets
 
 log = logging.getLogger(__name__)
+
+class ImportWorker(threading.Thread):
+    """
+    This is in a Python thread, instead of a QTimer, because we don't want it to
+    be on the GUI thread. It also could have been done with a QThread or signals.
+    """
+    def __init__(self, feature):
+        threading.Thread.__init__(self)
+        self.feature = feature
+
+    def run(self):
+        log.debug("ImportWorker: start")
+        import tensorflow.lite as tfl
+
+        self.feature.imported = True
+        log.debug("ImportWorker: done")
 
 class DalaiRamanFeature(EnlightenFeature):
 
     SECTION = "DalaiRamanFeature"
     MODEL_DIR = os.path.join("enlighten", "assets", "example_data", "dalai_models")
+    COLOR = "#f7e842"
 
     def __init__(self, ctl):
         super().__init__(ctl)
 
-        """
-        DALAI-RAMAN
-         --------------------------
-        | [x] Enable               |
-        |                          |
-        | model: [_XM_Wide______v] |
-        |                          |
-        | [x] Left Trim            |
-        |     [v] ____0____ [^]    |
-        | [x] Right Trim           |
-        |     [v] ____0____ [^]    |
-        |                          |
-        | [x] Deconvolute          |
-        |__________________________|
-        """
         cfu = ctl.form.ui
 
         self.frame          = cfu.frame_dalai_1
@@ -79,6 +77,9 @@ class DalaiRamanFeature(EnlightenFeature):
         # options are displayed displayed, which only appear when "enabled.
         self.visible = False
 
+        self.import_worker = None
+        self.imported = False
+
         self.enabled = False
         self.deconvolute = False
 
@@ -95,7 +96,7 @@ class DalaiRamanFeature(EnlightenFeature):
             self.combo_model.addItem(label)
         self.combo_model.setCurrentIndex(0 if len(ordered_model_labels) else -1)
 
-        self.cb_enable      .stateChanged           .connect(self.update_settings)
+        self.cb_enable      .stateChanged           .connect(self.enable_callback)
         self.cb_deconvolute .stateChanged           .connect(self.update_settings)
         self.cb_left_trim   .stateChanged           .connect(self.update_settings)
         self.cb_right_trim  .stateChanged           .connect(self.update_settings)
@@ -105,10 +106,16 @@ class DalaiRamanFeature(EnlightenFeature):
 
         self.ctl.page_nav.register_observer(self.page_nav_callback)
 
-        self.curve = self.ctl.alt_graph.add_curve("DALAI-RAMAN", pen="#f7e842")
+        self.curve = self.ctl.alt_graph.add_curve("DALAI-RAMAN", pen=self.COLOR)
+
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(self.monitor_import)
+        self.timer.setSingleShot(True)
 
         self.page_nav_callback()
-        self.lazy_load_model()
+
+    def get_color(self):
+        return self.COLOR
 
     def update_settings(self):
         self.enabled       = self.cb_enable.isChecked()
@@ -120,14 +127,45 @@ class DalaiRamanFeature(EnlightenFeature):
         self.left_trim_cm  = self.sb_left_trim.value()
         self.right_trim_cm = self.sb_right_trim.value()
 
+        if self.enabled:
+            self.lazy_load_model()
+
         self.update_visibility()
+
+    def enable_callback(self):
+        # have we already done the heavy import?
+        if "tensorflow.lite" in sys.modules:
+            self.enabled = self.cb_enable.isChecked()
+            self.update_visibility()
+            return
+
+        # No, we still need to do the import. Do that in a background thread, 
+        # with an activity monitor.
+        self.import_worker = ImportWorker(self)
+        self.import_worker.setDaemon(True)
+        self.ctl.reading_progress_bar.set(-1)
+        self.import_worker.start()
+        self.timer.start(100)
+
+    def monitor_import(self):        
+        if not self.imported:
+            # check again in a bit
+            self.timer.start(100)
+            return
+
+        # we're done!
+        log.debug("monitor_import: loading model")
+        self.lazy_load_model()
+        self.ctl.reading_progress_bar.hide()
+        self.update_visibility()
+        log.debug("monitor_import: done")
 
     def update_visibility(self):
         doing_raman = self.ctl.page_nav.doing_raman()
         doing_expert = self.ctl.page_nav.doing_expert()
 
         # display the WIDGET
-        self.visible = DALAI_MODULES_FOUND and (doing_raman or doing_expert)
+        self.visible = doing_raman or doing_expert
         self.frame.setVisible(self.visible)
 
         # display the COMBO
@@ -160,11 +198,13 @@ class DalaiRamanFeature(EnlightenFeature):
 
         if not (pr.settings.state.laser_enabled or (pr.reading.take_one_request and pr.reading.take_one_request.auto_raman_request)):
             self.ctl.marquee.error("DALAI-RAMAN requires laser")
+            self.curve.setData([])
             return
 
         wavenumbers = pr.get_wavenumbers()
         if wavenumbers is None:
-            self.ctl.marquee.error("DALAI-RAMAN requires wavenumber axis [1]")
+            self.ctl.marquee.error("DALAI-RAMAN requires measurements with wavenumber axis")
+            self.curve.setData([])
             return
 
         wavenumbers = np.array(wavenumbers, dtype=np.float64).tolist()
@@ -173,7 +213,8 @@ class DalaiRamanFeature(EnlightenFeature):
 
         unit = self.ctl.graph.get_x_axis_unit()
         if unit != "cm":
-            self.ctl.marquee.error("DALAI-RAMAN requires wavenumber axis [2]")
+            self.ctl.marquee.error("DALAI-RAMAN requires wavenumber axis selected")
+            self.curve.setData([])
             return
 
         log.debug("calling process_dalai")
@@ -195,7 +236,7 @@ class DalaiRamanFeature(EnlightenFeature):
             AI_wavenumbers_display = AI_wavenumbers
 
         log.debug("graphing data")
-        self.curve.setData(x=AI_wavenumbers_display, y=AI_spectrum_display, color="#f7e842")
+        self.curve.setData(x=AI_wavenumbers_display, y=AI_spectrum_display, color=self.COLOR)
         log.debug("back grom graph")
 
     def find_available_models(self):
@@ -255,8 +296,8 @@ class DalaiRamanFeature(EnlightenFeature):
 
         self.ctl.marquee.info(f"loading DALAI model {config.model_pathname}")
         if 'tflite' == config.model_type:
-            import tensorflow.lite as tfl
-            model = tfl.Interpreter(config.model_pathname)
+            import tensorflow.lite
+            model = tensorflow.lite.Interpreter(config.model_pathname)
             model.allocate_tensors()
             log.info(f"loaded tflite model {model_name}")
             self.loaded_models[model_name] = model

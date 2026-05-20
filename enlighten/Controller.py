@@ -1043,7 +1043,7 @@ class Controller:
         # this is a fake curve (trace) on the chart
         data = list(range(10)) # MZ: ???
         self.thumbnail_render_curve = self.thumbnail_render_graph.plot( data, pen=self.gui.make_pen(widget="thumbnail"), name="Thumbnail Renderer")
-        self.thumbnail_render_alt_curve = self.thumbnail_render_graph.plot( [], pen=self.gui.make_pen(color="#ff0000"), name="Alt Thumbnail Renderer")
+        self.thumbnail_render_alt_curve = self.thumbnail_render_graph.plot( [], pen=self.gui.make_pen(color="#f7e842"), name="Alt Thumbnail Renderer")
 
         # make the graph small, and hide both axes
         self.thumbnail_render_graph.hideAxis("left")
