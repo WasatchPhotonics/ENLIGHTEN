@@ -194,7 +194,7 @@ class DalaiRamanFeature(EnlightenFeature):
             spec_family = "X"
         elif "XM-" in spec_model:
             spec_family = "XM"
-        elif re.match(r"XS-|XSB-|SIG", spec_model):
+        elif re.search(r"XS-|XSB-|SIG", spec_model):
             spec_family = "XS"
         else:
             log.debug(f"cannot determine connected spectrometer family: {spec_model}")

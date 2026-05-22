@@ -6,6 +6,9 @@ from enlighten.EnlightenFeature import EnlightenFeature
 log = logging.getLogger(__name__)
 
 class InGaAsCorrectionFeature(EnlightenFeature):
+    """
+    All processing is currently done in Wasatch.PY.
+    """
 
     def __init__(self, ctl):
         super().__init__(ctl)

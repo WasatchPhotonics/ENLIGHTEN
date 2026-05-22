@@ -45,16 +45,17 @@
         - new feature (heavy use of notifications)
         - collapsible
     - Etalon Correction
-        - added button
-        - can read from EEPROM (XS) or JSON (X, XM, IDS, Andor)
+        - added wave button
+        - should work on XS (EEPROM) or X, XM, IDS, Andor (JSON)
     - InGaAs Correction
-        - added button
-        - can read from JSON (1064, NIR1)
+        - added jaggy-to-smooth button
+        - should work on NIR1, 1064 or Andor (JSON)
     - Andor / XL Shutter Control
         - for posterity, before renaming things, empirically validated old 
           behavior was "shutter is OPEN if '[x] Shutter' checkbox is CHECKED" 
           (this was not clear in any way)
         - renaming everything to "Shutter Open" and "Shutter Closed"
+        - simplified several other things in AndorDevice, so worth re-testing
     - STARTING: 
         - Safe Mode
     - TODO
@@ -62,6 +63,9 @@
             - send match spectrum to (Graph, AltGraph) as appropriate
         - DalaiRamanFeature
             - AltGraph shrinks on repeat enable
+            - bad data on Detectachem?
+        - EtalonCorrection
+            - read from EEPROM in BLEDevice
         - BatteryFeature (in work)
             - add state.battery_temperature_deg_c
             - add state.battery_charger_temperature_deg_c

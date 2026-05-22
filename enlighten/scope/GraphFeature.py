@@ -79,6 +79,7 @@ class GraphFeature(EnlightenFeature):
         self.button_zoom                = cfu.pushButton_zoom_graph
         self.cb_marker                  = cfu.checkBox_graph_marker
         self.combo_axis                 = cfu.displayAxis_comboBox_axis
+        self.frame_enclosing_grid       = cfu.page_scope_capture_details_spectrum
 
         # these are the "main graph" widgets we will populate IFF no ready-made 
         # plot was provided (e.g. by PluginController)
@@ -190,20 +191,28 @@ class GraphFeature(EnlightenFeature):
         row = 1
         if self.alt:
             self.visible = False
-            name = "Alt Graph"
+            self.name = "Alt Graph"
             col = 2 
         else:
             self.visible = True
-            name = "Scope Graph"
+            self.name = "Scope Graph"
             col = 1
 
-        self.plot = pyqtgraph.PlotWidget(name=name)
+        self.plot = pyqtgraph.PlotWidget(name=self.name)
         self.plot.setLabel(axis="bottom", text=common.AxesHelper.get_pretty_name(common.Axes.WAVELENGTHS))
         self.plot.setLabel(axis="left",   text=common.AxesHelper.get_pretty_name(common.Axes.COUNTS))
         self.legend = self.plot.addLegend() # returns a LegendItem
         self.layout.addWidget(self.plot, row, col)
 
         self.plot.setVisible(self.visible)
+
+    # def is_column_empty(self, col):
+    #     for row in range(self.layout.rowCount()):
+    #         item = self.layout.itemAtPosition(row, col):
+    #         if item is not None:
+    #             if item.isVisible():
+    #                 return False
+    #    return True
 
     ## called by Cursor to add its InfiniteLine to the graph
     def add_item(self, item):
@@ -319,6 +328,14 @@ class GraphFeature(EnlightenFeature):
 
     def set_visible(self, flag):
         self.visible = flag
+
+        frame_width = self.frame_enclosing_grid.width()
+        plot_width = frame_width // 2
+        if self.name == "Alt Graph":
+            log.debug(f"Alt-Graph: setting plot width {plot_width} (frame_width {frame_width})")
+            if self.visible:
+                self.plot.setMinimumWidth(plot_width)
+
         self.update_visibility()
 
     def update_visibility(self):
