@@ -50,7 +50,7 @@ class DalaiRamanFeature(EnlightenFeature):
         cfu = ctl.form.ui
 
         self.frame          = cfu.frame_dalai_1
-        self.bt_enable      = cfu.pushButton_dalai_toggle
+        self.bt_toggle      = cfu.pushButton_dalai_toggle
         self.cb_enable      = cfu.checkBox_dalai_enable
         self.combo_model    = cfu.comboBox_dalai_model
         self.lb_combo       = cfu.label_dalai_model_label
@@ -106,6 +106,7 @@ class DalaiRamanFeature(EnlightenFeature):
         self.sb_left_trim   .valueChanged           .connect(self.update_settings)
         self.sb_right_trim  .valueChanged           .connect(self.update_settings)
         self.combo_model    .currentIndexChanged    .connect(self.select_model_callback)
+        self.bt_toggle      .clicked                .connect(self.toggle_callback)
 
         self.ctl.page_nav.register_observer(self.page_nav_callback)
 
@@ -137,6 +138,9 @@ class DalaiRamanFeature(EnlightenFeature):
             self.lazy_load_model()
 
         self.update_visibility()
+
+    def toggle_callback(self):
+        self.cb_enable.setChecked(not self.enabled)
 
     def enable_callback(self):
         # have we already done the heavy import?
