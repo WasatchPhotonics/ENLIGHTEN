@@ -182,6 +182,9 @@ class PluginControllerFeature(EnlightenFeature):
 
         self.ctl.page_nav.register_observer(self.update_field_visibility, "mode")
 
+        # purely for backward compatibility
+        self.combo_graph_pos = QtWidgets.QComboBox()
+
     def start(self, ms):
         """
         The PluginController doesn't normally have an internal event loop (it's 

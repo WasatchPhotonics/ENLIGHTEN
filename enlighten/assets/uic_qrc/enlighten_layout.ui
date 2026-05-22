@@ -6384,6 +6384,7 @@ QComboBox QListView
                           <property name="fieldGrowthPolicy">
                            <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
                           </property>
+
                           <item row="0" column="0">
                            <widget class="QLineEdit" name="lineEdit_ee_laser_password">
                             <property name="echoMode">
@@ -6392,12 +6393,49 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="0" column="1">
-                           <widget class="QLabel" name="label_200x">
+                           <widget class="QLabel" name="label_200xy">
                             <property name="text">
                              <string>XS Laser Password</string>
                             </property>
                            </widget>
                           </item>
+
+                          <item row="1" column="0">
+                           <widget class="QSpinBox" name="spinBox_ee_pixel_correction_type">
+                            <property name="minimumSize">
+                             <size>
+                              <width>125</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                            <property name="keyboardTracking">
+                             <bool>false</bool>
+                            </property>
+                            <property name="minimum">
+                             <number>0</number>
+                            </property>
+                            <property name="maximum">
+                             <number>255</number>
+                            </property>
+                            <property name="singleStep">
+                             <number>1</number>
+                            </property>
+                            <property name="value">
+                             <number>0</number>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="0" column="1">
+                           <widget class="QLabel" name="label_200x">
+                            <property name="text">
+                             <string>Pixel Correction Type</string>
+                            </property>
+                           </widget>
+                          </item>
+
                          </layout>
                         </item>
                        </layout>
@@ -11635,7 +11673,7 @@ QComboBox QListView
                               <widget class="QLabel" name="label_correction_status_dalai_label">
                                <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Preferred"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
                                <property name="text"> 
-                                <string>DALAI Fluorescence Removal</string> 
+                                <string>DALAI-RAMAN</string> 
                                </property>
                               </widget>
                              </item>
@@ -12230,6 +12268,102 @@ QComboBox QListView
                              <property name="icon">
                               <iconset resource="grey_icons.qrc">
                                <normaloff>:/greys/images/grey_icons/srm.svg</normaloff>:/greys/images/grey_icons/srm.svg</iconset>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QPushButton" name="pushButton_dalai_toggle">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>5</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>16</width>
+                               <height>26</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>30</width>
+                               <height>26</height>
+                              </size>
+                             </property>
+                             <property name="toolTip">
+                              <string>toggle DALAI-RAMAN processing</string>
+                             </property>
+                             <property name="text">
+                              <string />
+                             </property>
+                             <property name="icon">
+                              <iconset resource="grey_icons.qrc">
+                               <normaloff>:/greys/images/grey_icons/tf.svg</normaloff>:/greys/images/grey_icons/tf.svg</iconset>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QPushButton" name="pushButton_etalon_correction">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>5</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>16</width>
+                               <height>26</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>30</width>
+                               <height>26</height>
+                              </size>
+                             </property>
+                             <property name="toolTip">
+                              <string>toggle etalon correction</string>
+                             </property>
+                             <property name="text">
+                              <string />
+                             </property>
+                             <property name="icon">
+                              <iconset resource="grey_icons.qrc">
+                               <normaloff>:/greys/images/grey_icons/etalon.svg</normaloff>:/greys/images/grey_icons/etalon.svg</iconset>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QPushButton" name="pushButton_ingaas_correction">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                               <horstretch>5</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>16</width>
+                               <height>26</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>30</width>
+                               <height>26</height>
+                              </size>
+                             </property>
+                             <property name="toolTip">
+                              <string>toggle InGaAs linear correction</string>
+                             </property>
+                             <property name="text">
+                              <string />
+                             </property>
+                             <property name="icon">
+                              <iconset resource="grey_icons.qrc">
+                               <normaloff>:/greys/images/grey_icons/ingaas.svg</normaloff>:/greys/images/grey_icons/ingaas.svg</iconset>
                              </property>
                             </widget>
                            </item>
@@ -16938,27 +17072,6 @@ li.checked::marker { content: "\2612"; }
                           </property>
                          </widget>
                         </item>
-
-                        <item>
-                         <widget class="QCheckBox" name="checkBox_enable_pixel_correction">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="toolTip">
-                           <string>Enable per-pixel intensity correction</string>
-                          </property>
-                          <property name="styleSheet">
-                           <string notr="true" />
-                          </property>
-                          <property name="text">
-                           <string>Pixel Correction</string>
-                          </property>
-                         </widget>
-                        </item>
-
                        </layout>
                       </widget>
                      </item>

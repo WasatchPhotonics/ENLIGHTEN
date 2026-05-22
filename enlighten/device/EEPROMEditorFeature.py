@@ -331,7 +331,7 @@ class EEPROMEditorFeature(EnlightenFeature):
                       "untethered_library_type", "untethered_library_id", "untethered_scans_to_average", 
                       "untethered_min_ramp_pixels", "untethered_min_peak_height", "untethered_match_threshold", "untethered_library_count",
                       "laser_watchdog_sec", "light_source_type", "power_timeout_sec", "detector_timeout_sec",
-                      "startup_scans_to_average", "laser_attenuator", "max_laser_temp_deg_c" ]:
+                      "startup_scans_to_average", "laser_attenuator", "max_laser_temp_deg_c", "pixel_correction_type" ]:
             self.add_attribute("spinbox", name, widget=getattr(cfu, f"spinBox_ee_{name}"))
 
         for name in [ "max_laser_power_mW", "min_laser_power_mW", "detector_gain", "detector_gain_odd", "spline_min", "spline_max" ]:
@@ -887,11 +887,11 @@ class EEPROMEditorFeature(EnlightenFeature):
         pixmap = QtGui.QPixmap(pathname)
         log.debug(f"original pixmap width {pixmap.width()}, height {pixmap.height()}")
 
-        max_width = 200
-        max_height = 200
+        if True:
+            max_width = 300
+            max_height = 300
+            pixmap = pixmap.scaled(max_width, max_height, QtCore.Qt.AspectRatioMode.KeepAspectRatio)
+            log.debug(f"scaled pixmap width {pixmap.width()}, height {pixmap.height()}")
+            # self.lb_product_image.setMinimumHeight(max_height)
 
-        pixmap = pixmap.scaled(max_width, max_height, QtCore.Qt.AspectRatioMode.KeepAspectRatio)
-        log.debug(f"scaled pixmap width {pixmap.width()}, height {pixmap.height()}")
-
-        self.lb_product_image.setMinimumHeight(max_height)
         self.lb_product_image.setPixmap(pixmap)

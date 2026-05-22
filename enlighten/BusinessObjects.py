@@ -45,7 +45,6 @@ from enlighten.post_processing.HorizROIFeature import HorizROIFeature
 from enlighten.post_processing.InGaAsCorrectionFeature import InGaAsCorrectionFeature
 from enlighten.post_processing.InterpolationFeature import InterpolationFeature
 from enlighten.post_processing.LibraryMatchingFeature import LibraryMatchingFeature
-from enlighten.post_processing.PixelCalibrationFeature import PixelCalibrationFeature
 from enlighten.post_processing.RamanIntensityCorrectionFeature import RamanIntensityCorrectionFeature
 from enlighten.post_processing.ReferenceFeature import ReferenceFeature
 from enlighten.post_processing.RichardsonLucyFeature import RichardsonLucyFeature
@@ -256,7 +255,6 @@ class BusinessObjects:
         ctl.status_bar                  = StatusBarFeature(ctl)
         ctl.reading_progress_bar        = ReadingProgressBarFeature(ctl)
         ctl.ble_manager                 = BLEManagerFeature(ctl)
-        ctl.pixel_calibration           = PixelCalibrationFeature(ctl)
         ctl.scope_table                 = ScopeTableFeature(ctl)
         ctl.library_matching            = LibraryMatchingFeature(ctl)
         ctl.dalai                       = DalaiRamanFeature(ctl)

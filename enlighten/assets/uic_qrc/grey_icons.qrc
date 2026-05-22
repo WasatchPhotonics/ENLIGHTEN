@@ -29,10 +29,12 @@
     <file>images/grey_icons/empty_icon.svg</file>
     <file>images/grey_icons/empty_square.svg</file>
     <file>images/grey_icons/eraser.svg</file>
+    <file>images/grey_icons/etalon.svg</file>
     <file>images/grey_icons/eye.svg</file>
     <file>images/grey_icons/fast-forward.svg</file>
     <file>images/grey_icons/fingerprint.svg</file>
     <file>images/grey_icons/flip-horiz.svg</file>
+    <file>images/grey_icons/ingaas.svg</file>
     <file>images/grey_icons/laser.svg</file>
     <file>images/grey_icons/lambda.svg</file>
     <file>images/grey_icons/left_arrow_increment.svg</file>
@@ -61,6 +63,7 @@
     <file>images/grey_icons/step-and-save.svg</file>
     <file>images/grey_icons/step-forward.svg</file>
     <file>images/grey_icons/sun.svg</file>
+    <file>images/grey_icons/tf.svg</file>
     <file>images/grey_icons/thermometer.svg</file>
     <file>images/grey_icons/thermometer_down.svg</file>
     <file>images/grey_icons/trash.svg</file>

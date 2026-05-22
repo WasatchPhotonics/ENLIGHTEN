@@ -1450,8 +1450,6 @@ class Measurement:
                 out.writerow([])
 
             headers = []
-            if not self.ctl or self.ctl.save_options.save_pixel(): 
-                headers.append("Pixel")
             headers.append("Wavenumber")
             headers.append("DALAI")
 
@@ -1460,8 +1458,6 @@ class Measurement:
 
             for pixel in range(len(pixels)):
                 values = []
-                if not self.ctl or self.ctl.save_options.save_pixel():
-                    values.append(pixel)
                 values.append(self.csv_formatted(None, 2, wavenumbers, pixel))
                 values.append(self.csv_formatted(None, 2, spectrum,    pixel))
                 out.writerow(values)

@@ -37,10 +37,19 @@
         - promoted from Plugin to EnlightenFeature 
         - deprecated KIA
     - DalaiRamanFeature
-        - TODO: move from plugin
+        - uses alt-graph
+        - show both on clipboard thumbnail
+        - save as separate CSV or combined in JSON
+        - progress bar during load
     - CalibrationStatusFeature 
         - new feature (heavy use of notifications)
-        - collapsible!
+        - collapsible
+    - Etalon Correction
+        - added button
+        - can read from EEPROM (XS) or JSON (X, XM, IDS, Andor)
+    - InGaAs Correction
+        - added button
+        - can read from JSON (1064, NIR1)
     - Andor / XL Shutter Control
         - for posterity, before renaming things, empirically validated old 
           behavior was "shutter is OPEN if '[x] Shutter' checkbox is CHECKED" 
@@ -48,13 +57,10 @@
         - renaming everything to "Shutter Open" and "Shutter Closed"
     - STARTING: 
         - Safe Mode
-        - Etalon Correction
-        - InGaAs Correction
     - TODO
         - LibraryMatching
             - send match spectrum to (Graph, AltGraph) as appropriate
         - DalaiRamanFeature
-            - progress bar on loading
             - AltGraph shrinks on repeat enable
         - BatteryFeature (in work)
             - add state.battery_temperature_deg_c

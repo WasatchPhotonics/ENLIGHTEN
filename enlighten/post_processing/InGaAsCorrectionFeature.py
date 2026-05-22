@@ -13,6 +13,7 @@ class InGaAsCorrectionFeature(EnlightenFeature):
         cfu = ctl.form.ui
 
         self.cb_enable = cfu.checkBox_ingaas_correction
+        self.bt_enable = cfu.pushButton_ingaas_correction
 
         self.visible = False
         self.enabled = False

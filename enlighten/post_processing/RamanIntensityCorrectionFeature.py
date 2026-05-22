@@ -20,7 +20,13 @@ class RamanIntensityCorrectionFeature(EnlightenFeature):
     - supported: an SRM calibration is found on the current spectrometer's EEPROM,
         and we're in the Raman or Expert view. "Supported" determines whether the
         widget and button are even visible in ENLIGHTEN. If not supported, the
-        button is not visible.
+        button is not visible. Note that when this EnlightenFeature is 
+        instantiated, it will of course not be supported, because nothing has 
+        connected. We need to re-evaluate whether it is supported after a 
+        spectrometer connects, noting that we may not switch to Raman mode until
+        "some point" in a spectrometer's connection sequence. Basically, this 
+        object should subscribe to notifications from PageNav, as that will tell
+        us if we've switched in or out of Raman mode.
 
     - allowed: given that RamanIntensityCorrection is SUPPORTED, this determines
         whether ENLIGHTEN business logic "allows" SRM to be applied. Currently
@@ -41,6 +47,7 @@ class RamanIntensityCorrectionFeature(EnlightenFeature):
     
     def __init__(self, ctl):
         super().__init__(ctl)
+        log.debug("init: start")
 
         cfu = ctl.form.ui
         
@@ -49,7 +56,7 @@ class RamanIntensityCorrectionFeature(EnlightenFeature):
         self.supported           = False
         self.allowed             = False
         self.enabled             = False
-        self.enable_when_allowed = False
+        self.enable_when_allowed = True
 
         self.button.clicked.connect(self.button_callback)
 
@@ -81,6 +88,7 @@ class RamanIntensityCorrectionFeature(EnlightenFeature):
         self.ctl.horiz_roi.register_observer(self.update_visibility)
 
         self.update_visibility()
+        log.debug("init: done")
 
     def is_supported(self):
         """
@@ -93,16 +101,16 @@ class RamanIntensityCorrectionFeature(EnlightenFeature):
         """
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
-            # log.debug("not supported because no spec")
+            log.debug("not supported because no spec")
             self.supported = False
         elif not spec.settings.eeprom.has_raman_intensity_calibration():
-            # log.debug("not supported because no calibration")
+            log.debug("not supported because no calibration")
             self.supported = False
         elif not self.ctl.page_nav.doing_raman():
-            # log.debug("not supported because not doing Raman")
+            log.debug("not supported because not doing Raman")
             self.supported = False
         else:
-            # log.debug("supported because doing Raman and have calibration")
+            log.debug("supported because doing Raman and have calibration")
             self.supported = True
 
         return self.supported
@@ -135,15 +143,14 @@ class RamanIntensityCorrectionFeature(EnlightenFeature):
             return set_allowed(True, "Can apply NIST SRM-calibrated Raman Intensity Correction")
 
     def init_hotplug(self):
-        """
-        Per discussion in XS V2 chat 11-May-2026
-        """
+        """ Per discussion in XS V2 chat 11-May-2026 """
         self.set_enable_when_allowed(True)
 
     def update_visibility(self):
         # log.debug(f"update_visibility: supported was {self.supported}, allowed was {self.allowed}, enabled was {self.enabled}, enable_when_allowed was {self.enable_when_allowed}")
 
         was_enabled = self.enabled
+        was_supported = self.supported
 
         self.supported = self.is_supported()
         self.button.setVisible(self.supported)
@@ -153,7 +160,8 @@ class RamanIntensityCorrectionFeature(EnlightenFeature):
         else:
             self.enabled = False
             self.allowed = False
-            self.enable_when_allowed = False
+
+        log.debug(f"update_visibility: [1] was_enabled {was_enabled}, supported {self.supported}, allowed {self.allowed}, enabled {self.enabled}, enable_when_allowed {self.enable_when_allowed}")
 
         if self.enabled and not self.allowed:
             self.enabled = False
@@ -161,22 +169,23 @@ class RamanIntensityCorrectionFeature(EnlightenFeature):
         if self.enable_when_allowed and self.allowed:
             self.enabled = True
 
-        # log.debug(f"update_visibility: supported now {self.supported}, allowed now {self.allowed}, enabled now {self.enabled}, enable_when_allowed now {self.enable_when_allowed}")
+        log.debug(f"update_visibility: [2] was_enabled {was_enabled}, supported {self.supported}, allowed {self.allowed}, enabled {self.enabled}, enable_when_allowed {self.enable_when_allowed}")
 
         if self.enabled:
-            # log.debug("setting button red because enabled")
+            log.debug("update_visibility: setting button red because enabled")
             self.ctl.gui.colorize_button(self.button, True)
             self.button.setToolTip("Applying NIST SRM-calibrated Raman Intensity Correction")
         elif self.enable_when_allowed:
-            # log.debug("setting button orange because enable_when_allowed")
+            log.debug("update_visibility: setting button orange because enable_when_allowed")
             self.ctl.gui.colorize_button(self.button, None, tristate=True)
         else:
-            # log.debug("setting button gray because neither enabled nor enable_when_allowed")
+            log.debug("update_visibility: setting button gray because neither enabled nor enable_when_allowed")
             self.ctl.gui.colorize_button(self.button, False)
             self.button.setToolTip("Click to apply NIST SRM-calibrated Raman Intensity Correction")
 
-        if was_enabled != self.enabled:
-            self.send_notification()
+        if was_enabled != self.enabled or was_supported != self.supported:
+            log.debug("update_visibility: notifying observers")
+            self.notify_observers()
 
     def button_callback(self):
         # log.debug(f"button_callback: enabled was {self.enabled}, enable_when_allowed was {self.enable_when_allowed}")

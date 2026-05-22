@@ -609,6 +609,8 @@ class LaserControlFeature(EnlightenFeature):
             return False
         if not spec.settings.is_xs():
             return True
+        if self.ctl.authentication.has_production_rights():
+            return True
 
         sn = spec.settings.eeprom.serial_number
         if sn in self.xs_password_provided_by_serial:

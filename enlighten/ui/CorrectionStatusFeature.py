@@ -113,7 +113,10 @@ class CorrectionStatusFeature(EnlightenFeature):
         self.schedule_update()
 
     def dalai_notification(self):
-        log.error("dalai not implemented")
+        corr = self.corrections["dalai"]
+        corr["value"] = self.ON if self.ctl.dalai.enabled else self.OFF
+        corr["visible"] = self.ctl.dalai.visible
+        self.schedule_update()
 
     def baseline_notification(self):
         spec = self.ctl.multispec.current_spectrometer()

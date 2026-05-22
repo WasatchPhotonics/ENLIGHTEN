@@ -104,17 +104,11 @@ class ModelInfoFeature(EnlightenFeature):
         return info
 
     def get_image_name_from_model(self, model):
-        """
-        This is called by enlighten.Spectrometer.get_image_pathname, itself 
-        called by Controller to update the image atop Settings view when a new 
-        spectrometer is connected or selected.
-
-        - note that we're ignoring ƒ-number, cooling, and slit
-        - remember to consider XSB, ILLP
-        """
-        basename = self.get_image_basename_from_model(model)
+        """ unneeded alias? """
+        return self.get_image_basename_from_model(model)
 
     def get_image_basename_from_model(self, model):
+        """ Spectrometer.get_image_resource_pathname prepends "WP-" and appends ".png" """
         model = model.upper()
 
         # note: order matters; check for 785XSB before 785XS, and 785XS, 785XM, 
@@ -127,6 +121,8 @@ class ModelInfoFeature(EnlightenFeature):
         if "633XS" in model: return "633XS-ILP"
         if "785XS" in model: return "785XS-ILP"
         if "830XS" in model: return "830XS-ILP"
+        if "XS"    in model: return "785XS-ILP"
+        if "SIG"   in model: return "785XS-ILP"
 
         # XM series
         if "785XM" in model:

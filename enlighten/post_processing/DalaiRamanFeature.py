@@ -4,7 +4,10 @@ import copy
 import json
 import sys
 import os
+import re
 import numpy as np
+
+from datetime import datetime
 
 from enlighten import common
 from enlighten.EnlightenFeature import EnlightenFeature
@@ -32,11 +35,8 @@ class ImportWorker(threading.Thread):
         self.feature = feature
 
     def run(self):
-        log.debug("ImportWorker: start")
         import tensorflow.lite as tfl
-
         self.feature.imported = True
-        log.debug("ImportWorker: done")
 
 class DalaiRamanFeature(EnlightenFeature):
 
@@ -50,6 +50,7 @@ class DalaiRamanFeature(EnlightenFeature):
         cfu = ctl.form.ui
 
         self.frame          = cfu.frame_dalai_1
+        self.bt_enable      = cfu.pushButton_dalai_toggle
         self.cb_enable      = cfu.checkBox_dalai_enable
         self.combo_model    = cfu.comboBox_dalai_model
         self.lb_combo       = cfu.label_dalai_model_label
@@ -89,6 +90,8 @@ class DalaiRamanFeature(EnlightenFeature):
         self.left_trim_cm = 0
         self.right_trim_cm = 0
 
+        np.set_printoptions(edgeitems=5, threshold=0)
+
         self.combo_model.clear()
         self.find_available_models()
         ordered_model_labels = [config.label for basename, config in self.model_configs.items()]
@@ -107,6 +110,9 @@ class DalaiRamanFeature(EnlightenFeature):
         self.ctl.page_nav.register_observer(self.page_nav_callback)
 
         self.curve = self.ctl.alt_graph.add_curve("DALAI-RAMAN", pen=self.COLOR)
+
+        self.import_time_sec = self.ctl.config.get_int(self.SECTION, "import_time_sec", default=None)
+        self.import_start_time = None
 
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.monitor_import)
@@ -135,53 +141,113 @@ class DalaiRamanFeature(EnlightenFeature):
     def enable_callback(self):
         # have we already done the heavy import?
         if "tensorflow.lite" in sys.modules:
-            self.enabled = self.cb_enable.isChecked()
-            self.update_visibility()
+            self.update_settings()
             return
 
         # No, we still need to do the import. Do that in a background thread, 
         # with an activity monitor.
+
+        self.ctl.marquee.info("Loading machine learning framework", persist=True, token="dalai_load")
+        self.ctl.reading_progress_bar.set(-1 if self.import_time_sec is None else 0)
+
+        # kick-off the thread to import TensorFlow
+        self.import_start_time = datetime.now()
         self.import_worker = ImportWorker(self)
         self.import_worker.setDaemon(True)
-        self.ctl.reading_progress_bar.set(-1)
         self.import_worker.start()
+
+        # kick-off the timer to monitor import progress
         self.timer.start(100)
 
     def monitor_import(self):        
+        """ This is ticked by a QTimer, so runs on GUI thread """
+        elapsed_sec = (datetime.now() - self.import_start_time).total_seconds()
         if not self.imported:
-            # check again in a bit
-            self.timer.start(100)
+            if self.import_time_sec is not None:
+                self.ctl.reading_progress_bar.set(100.0 * elapsed_sec / self.import_time_sec)
+            self.timer.start(250)
             return
 
-        # we're done!
-        log.debug("monitor_import: loading model")
-        self.lazy_load_model()
+        ########################################################################
+        # ImportWorker is done
+        ########################################################################
+
+        self.ctl.marquee.clear(token="dalai_load")
         self.ctl.reading_progress_bar.hide()
-        self.update_visibility()
-        log.debug("monitor_import: done")
+
+        self.ctl.config.set(self.SECTION, "import_time_sec", int(round(elapsed_sec, 0)))
+
+        self.lazy_load_model()
+        self.update_settings()
+
+    def best_model_for_current_spectrometer(self):
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return None
+
+        spec_model = spec.settings.eeprom.model
+        if "X-" in spec_model:
+            spec_family = "X"
+        elif "XM-" in spec_model:
+            spec_family = "XM"
+        elif re.match(r"XS-|XSB-|SIG", spec_model):
+            spec_family = "XS"
+        else:
+            log.debug(f"cannot determine connected spectrometer family: {spec_model}")
+            spec_family = None
+
+        # go through model_configs (which is already ordered per JSON config)
+        # and find the first matching model
+        best_generic = None
+        for basename, config in self.model_configs.items():
+            if spec_family in config.target_spectrometer_families:
+                # we found an explicit match, use that
+                return basename
+            elif len(config.target_spectrometer_families) == 0:
+                # This model had no explicit families, meaning it's "generic"? 
+                # But highly-ordered? Keep it as the new default unless a better
+                # model is found further down the list.
+                if best_generic is None:
+                    best_generic = basename
+        
+        return best_generic
 
     def update_visibility(self):
         doing_raman = self.ctl.page_nav.doing_raman()
         doing_expert = self.ctl.page_nav.doing_expert()
 
-        # display the WIDGET
-        self.visible = doing_raman or doing_expert
+        # is there a suitable DALAI model for the current spectrometer?
+        #
+        # Note that currently we are not forcing or defaulting the user into 
+        # using the selected model...we could add that as an init_hotplug or 
+        # similar.
+        best_model_name = self.best_model_for_current_spectrometer()
+
+        # determine visibility 
+        self.visible = doing_raman and best_model_name is not None
+        if not self.visible:
+            self.enabled = False
+
+        # display the WIDGET (if visible)
         self.frame.setVisible(self.visible)
 
-        # display the COMBO
+        # display the COMBO (if enabled)
         for w in [ self.combo_model, self.lb_combo ]:
             w.setVisible(self.enabled)
 
-        # display expert WIDGETS
+        # display expert WIDGETS (if Expert)
         show_expert_widgets = self.visible and self.enabled and doing_expert
         for w in self.expert_widgets:
             w.setVisible(show_expert_widgets)
 
-        # display alt GRAPH
+        # display alt GRAPH (if enabled)
         if self.visible and self.enabled:
+            log.debug("displaying alt graph")
             self.ctl.alt_graph.set_visible(True)
         elif not self.ctl.plugin_controller.using_other_graph():
             self.ctl.alt_graph.set_visible(False)
+
+        self.notify_observers()
 
     def page_nav_callback(self, arg=None):
         self.update_visibility()
@@ -357,8 +423,8 @@ class DalaiRamanFeature(EnlightenFeature):
         fwhm      = eeprom.avg_resolution
         serial    = eeprom.serial_number
 
-        trim_start = self.trim_left_cm  if self.do_left_trim  else wavenumbers[0]
-        trim_end   = self.trim_right_cm if self.do_right_trim else wavenumbers[-1]
+        trim_start = self.left_trim_cm  if self.do_left_trim  else wavenumbers[0]
+        trim_end   = self.right_trim_cm if self.do_right_trim else wavenumbers[-1]
 
         if roi_start < 1:
             log.debug("DALAI.process: ROI start is zero - this does not work: DALAI requires a good ROI start just after the filter")
@@ -377,13 +443,13 @@ class DalaiRamanFeature(EnlightenFeature):
                 log.debug("processing spectra with prep_spectra_X.dalai_X_cleanup")
                 wavenumbers, spectrum = prep_spectra_X.clean_spectrum(model, wavenumbers, spectrum, eeprom, self.deconvolute, model_config=self.current_model_config)
 
-            elif "XM" in self.current_model_config.target_spectrometer_families:
-                log.debug("processing spectra with prep_spectra_XM.dalai_X_cleanup")
-                wavenumbers, spectrum = prep_spectra_XM.clean_spectrum(model, wavenumbers, spectrum, eeprom, self.deconvolute, model_config=self.current_model_config)
-
             elif "XS" in self.current_model_config.target_spectrometer_families:
                 log.debug("processing spectra with prep_spectra_XS.clean_spectrum")
                 wavenumbers, spectrum = prep_spectra_XS.clean_spectrum(model, wavenumbers, spectrum, eeprom, self.deconvolute, model_config=self.current_model_config)
+
+            elif "XM" in self.current_model_config.target_spectrometer_families:
+                log.debug("processing spectra with prep_spectra_XM.dalai_X_cleanup")
+                wavenumbers, spectrum = prep_spectra_XM.clean_spectrum(model, wavenumbers, spectrum, eeprom, self.deconvolute, model_config=self.current_model_config)
 
             else:
                 self.ctl.marquee.error(f"selected DALAI model is not configured to target any known spectrometer family")
