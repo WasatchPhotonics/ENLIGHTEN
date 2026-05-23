@@ -59,8 +59,6 @@
     - STARTING: 
         - Safe Mode
     - TODO
-        - LibraryMatching
-            - send match spectrum to (Graph, AltGraph) as appropriate
         - DalaiRamanFeature
             - AltGraph shrinks on repeat enable
             - bad data on Detectachem?

@@ -95,10 +95,20 @@ class DalaiRamanFeature(EnlightenFeature):
 
         self.combo_model.clear()
         self.find_available_models()
-        ordered_model_labels = [config.label for basename, config in self.model_configs.items()]
-        for label in ordered_model_labels:
-            self.combo_model.addItem(label)
-        self.combo_model.setCurrentIndex(0 if len(ordered_model_labels) else -1)
+        if not self.model_configs:
+            self.combo_model.setCurrentIndex(-1)
+        else:
+            # populate the combobox with the sorted list of model labels
+            first_name = None
+            for basename, config in self.model_configs.items():
+                self.combo_model.addItem(config.label)
+                if first_name is None:
+                    first_name = basename
+
+            # SELECT the first model, but don't LOAD it -- we don't want to 
+            # trigger the TFL import until the user actually "enables" DALAI
+            self.combo_model.setCurrentIndex(0)
+            self.current_model_name = self.combo_model.currentText()
 
         self.cb_enable      .stateChanged           .connect(self.enable_callback)
         self.cb_deconvolute .stateChanged           .connect(self.update_settings)
@@ -113,17 +123,25 @@ class DalaiRamanFeature(EnlightenFeature):
 
         self.curve = self.ctl.alt_graph.add_curve("DALAI-RAMAN", pen=self.COLOR)
 
+        # these are used to smooth the TFL import process
         self.import_time_sec = self.ctl.config.get_int(self.SECTION, "import_time_sec", default=None)
         self.import_start_time = None
-
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.monitor_import)
         self.timer.setSingleShot(True)
 
         self.page_nav_callback()
 
-    def get_color(self):
-        return self.COLOR
+    def init_hotplug(self):
+        # the user plugged-in a new spectrometer, so select the "best" model for that device
+        best_model_name = self.best_model_for_current_spectrometer()
+        if best_model_name is None:
+            return
+
+        if self.current_model_name != best_model_name:
+            # switch to the best model for thsi device
+            best_model_config = self.model_configs[best_model_name]
+            self.combo_model.setCurrentText(best_model_config.label)
 
     def update_settings(self):
         self.enabled       = self.cb_enable.isChecked()
@@ -146,11 +164,12 @@ class DalaiRamanFeature(EnlightenFeature):
     def enable_callback(self):
         # have we already done the heavy import?
         if "tensorflow.lite" in sys.modules:
+            # we've already imported TFL, so just update state and move on
             self.update_settings()
             return
 
-        # No, we still need to do the import. Do that in a background thread, 
-        # with an activity monitor.
+        # No, we still need to do the import. Do that in a background thread
+        # with progress bar.
 
         self.ctl.marquee.info("Loading machine learning framework", persist=True, token="dalai_load")
         self.ctl.reading_progress_bar.set(-1 if self.import_time_sec is None else 0)
@@ -161,15 +180,22 @@ class DalaiRamanFeature(EnlightenFeature):
         self.import_worker.setDaemon(True)
         self.import_worker.start()
 
-        # kick-off the timer to monitor import progress
+        # kick-off the timer to monitor import progress and cleanup when done
         self.timer.start(100)
 
     def monitor_import(self):        
         """ This is ticked by a QTimer, so runs on GUI thread """
         elapsed_sec = (datetime.now() - self.import_start_time).total_seconds()
+
+        # is the import done?
         if not self.imported:
+            # no, it's not done
+
+            # do we know how long this "usually" takes? If so, update progress bar
             if self.import_time_sec is not None:
                 self.ctl.reading_progress_bar.set(100.0 * elapsed_sec / self.import_time_sec)
+
+            # re-check at 4Hz
             self.timer.start(250)
             return
 
@@ -180,6 +206,7 @@ class DalaiRamanFeature(EnlightenFeature):
         self.ctl.marquee.clear(token="dalai_load")
         self.ctl.reading_progress_bar.hide()
 
+        # persist the "latest" loading time, to make the next progress bar more accurate
         self.ctl.config.set(self.SECTION, "import_time_sec", int(round(elapsed_sec, 0)))
 
         self.lazy_load_model()
@@ -221,11 +248,7 @@ class DalaiRamanFeature(EnlightenFeature):
         doing_raman = self.ctl.page_nav.doing_raman()
         doing_expert = self.ctl.page_nav.doing_expert()
 
-        # is there a suitable DALAI model for the current spectrometer?
-        #
-        # Note that currently we are not forcing or defaulting the user into 
-        # using the selected model...we could add that as an init_hotplug or 
-        # similar.
+        # is there at least one compatible DALAI model for the current spectrometer?
         best_model_name = self.best_model_for_current_spectrometer()
 
         # determine visibility 
@@ -337,7 +360,7 @@ class DalaiRamanFeature(EnlightenFeature):
     def lazy_load_model(self, model_name=None):
         log.debug(f"attempting to lazy_load model {model_name}")
         if model_name is None:
-            model_name = list(self.model_configs.keys())[0]
+            model_name = self.current_model_name
 
         if model_name not in self.model_configs:
             log.debug(f"unknown model {model_name}")
@@ -349,20 +372,25 @@ class DalaiRamanFeature(EnlightenFeature):
             self.current_model_config = self.model_configs[model_name]
             return
 
+        # apparently we have not yet loaded this model, so load it now
+        # (<1sec)
         if self.load_model(model_name):
             log.info(f"selected model {model_name}")
             self.current_model_name = model_name
             self.current_model_config = self.model_configs[model_name]
 
     def load_model(self, model_name):
-        """
-        MZ: Moved out of DalaiAdditionalFiles/*.py because X, XM and XS versions
-        were all the same.
-        """
         config = self.model_configs[model_name]
 
         self.ctl.marquee.info(f"loading DALAI model {config.model_pathname}")
         if 'tflite' == config.model_type:
+            # We re-import the package here because we don't want to import
+            # it at file scope. It can take easily 10sec to load this package,
+            # and we don't want to take that hit until we have to. Note that
+            # "re-importing" it takes no time at all, as Python caches it.
+            # The package is actually imported as soon as the user "enables"
+            # the DALAI feature, using the ImportWorker background thread
+            # and progress bar.
             import tensorflow.lite
             model = tensorflow.lite.Interpreter(config.model_pathname)
             model.allocate_tensors()
@@ -465,6 +493,9 @@ class DalaiRamanFeature(EnlightenFeature):
         spectrum = spectrum[trimmed_indices]
 
         return wavenumbers, spectrum
+
+    def get_color(self):
+        return self.COLOR
 
 class ModelConfig:
 
