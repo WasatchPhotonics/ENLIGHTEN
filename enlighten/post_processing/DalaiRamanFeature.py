@@ -271,14 +271,15 @@ class DalaiRamanFeature(EnlightenFeature):
             self.curve.setData([])
             return
 
+        # note that horizontal ROI has already been applied at this point in the processing pipeline
         wavenumbers = pr.get_wavenumbers()
+        spectrum    = pr.get_processed()
+
         if wavenumbers is None:
             self.ctl.marquee.error("DALAI-RAMAN requires measurements with wavenumber axis")
             self.curve.setData([])
             return
 
-        wavenumbers = np.array(wavenumbers, dtype=np.float64).tolist()
-        spectrum = np.array(pr.get_processed(), dtype=np.float64).tolist()
         log.debug(f"Wavenumbers = {len(wavenumbers)}, spectrum = {len(spectrum)}")
 
         unit = self.ctl.graph.get_x_axis_unit()
@@ -287,9 +288,8 @@ class DalaiRamanFeature(EnlightenFeature):
             self.curve.setData([])
             return
 
-        log.debug("calling process_dalai")
         AI_wavenumbers, AI_spectrum = self.process_dalai(wavenumbers, spectrum, pr)
-        log.debug("back from process_dalai")
+
         log.debug(f"AI_wavenumbers {AI_wavenumbers}")
         log.debug(f"AI_spectrum {AI_spectrum}")
 
@@ -305,9 +305,7 @@ class DalaiRamanFeature(EnlightenFeature):
             AI_spectrum_display = AI_spectrum
             AI_wavenumbers_display = AI_wavenumbers
 
-        log.debug("graphing data")
         self.curve.setData(x=AI_wavenumbers_display, y=AI_spectrum_display, color=self.COLOR)
-        log.debug("back grom graph")
 
     def find_available_models(self):
         found_models = {}
@@ -330,14 +328,6 @@ class DalaiRamanFeature(EnlightenFeature):
             log.debug(f"  {basename}: {config}")
 
     def lazy_load_model(self, model_name=None):
-        """
-        Load TensorFlow model if not already loaded.
-
-        Args:
-            model_name (Optional[str]): Name of model to load, defaults to first
-                in self.model_configs by insertion order. Note that this is 
-                ModelConfig.basename, not .label.
-        """
         log.debug(f"attempting to lazy_load model {model_name}")
         if model_name is None:
             model_name = list(self.model_configs.keys())[0]
@@ -422,41 +412,42 @@ class DalaiRamanFeature(EnlightenFeature):
 
         model     = self.loaded_models[self.current_model_name]
         eeprom    = pr.settings.eeprom
-        roi_start = eeprom.roi_horizontal_start  
-        roi_end   = eeprom.roi_horizontal_end
+        # roi_start = eeprom.roi_horizontal_start  
+        # roi_end   = eeprom.roi_horizontal_end
         fwhm      = eeprom.avg_resolution
         serial    = eeprom.serial_number
 
         trim_start = self.left_trim_cm  if self.do_left_trim  else wavenumbers[0]
         trim_end   = self.right_trim_cm if self.do_right_trim else wavenumbers[-1]
 
-        if roi_start < 1:
-            log.debug("DALAI.process: ROI start is zero - this does not work: DALAI requires a good ROI start just after the filter")
+        if eeprom.roi_horizontal_start < 1:
             self.ctl.marquee.error("ROI start is zero in EEPROM - DALAI does not work well across the filter edge")
 
+        # MZ: ROI was already applied via "pr.get_processed()", "pr.get_wavenumbers()" etc
         # we need to apply ROI here
-        wavenumbers = wavenumbers[roi_start : roi_end + 1] 
-        spectrum    = spectrum[roi_start : roi_end + 1] 
+        # wavenumbers = wavenumbers[roi_start : roi_end + 1] 
+        # spectrum    = spectrum[roi_start : roi_end + 1] 
 
         if self.deconvolute and fwhm == 0:
             self.ctl.marquee.error("FWHM is zero in EEPROM - no deconvolution possible")
             self.deconvolute = False
 
+        log.debug(f"selecting preprocessor based on model config {self.current_model_config}")
         try:
             if "X" in self.current_model_config.target_spectrometer_families:
-                log.debug("processing spectra with prep_spectra_X.dalai_X_cleanup")
+                log.debug("processing spectra with prep_spectra_X.clean_spectrum")
                 wavenumbers, spectrum = prep_spectra_X.clean_spectrum(model, wavenumbers, spectrum, eeprom, self.deconvolute, model_config=self.current_model_config)
+
+            elif "XM" in self.current_model_config.target_spectrometer_families:
+                log.debug("processing spectra with prep_spectra_XM.clean_spectrum")
+                wavenumbers, spectrum = prep_spectra_XM.clean_spectrum(model, wavenumbers, spectrum, eeprom, self.deconvolute, model_config=self.current_model_config)
 
             elif "XS" in self.current_model_config.target_spectrometer_families:
                 log.debug("processing spectra with prep_spectra_XS.clean_spectrum")
                 wavenumbers, spectrum = prep_spectra_XS.clean_spectrum(model, wavenumbers, spectrum, eeprom, self.deconvolute, model_config=self.current_model_config)
 
-            elif "XM" in self.current_model_config.target_spectrometer_families:
-                log.debug("processing spectra with prep_spectra_XM.dalai_X_cleanup")
-                wavenumbers, spectrum = prep_spectra_XM.clean_spectrum(model, wavenumbers, spectrum, eeprom, self.deconvolute, model_config=self.current_model_config)
-
             else:
-                self.ctl.marquee.error(f"selected DALAI model is not configured to target any known spectrometer family")
+                self.ctl.marquee.error(f"selected model is not configured to target any known spectrometer family")
         except:
             msg = f"exception executing model targetting {self.current_model_config.target_spectrometer_families} spectrometers"
             self.ctl.marquee.error(msg)
@@ -466,64 +457,7 @@ class DalaiRamanFeature(EnlightenFeature):
         wavenumbers = wavenumbers[trimmed_indices]
         spectrum = spectrum[trimmed_indices]
 
-        log.debug("successful dalai processing")
         return wavenumbers, spectrum
-
-    def generate_measurement(self, request, AI_wavenumbers, AI_spectrum):  # -> enlighten.measurement.Measurement
-        # log.debug("generate_measurement: trying to generate an ENLIGHTEN Measurement")
-
-        # reset horizontal ROI so it doesn't get re-cropped during saving
-        settings = copy.deepcopy(request.settings)
-        settings.eeprom.roi_horizontal_start = -1
-        settings.eeprom.roi_horizontal_end = -1
-
-        # strip off any .cropped or .interpolated parts, because we want this
-        # ProcessedReading to be DALAI from the ground up
-        pr = copy.deepcopy(request.processed_reading)
-        pr.cropped = None
-        pr.interpolated = None
-
-        # Since this is a "DALAI measurement", the "raw" column should logically
-        # hold an interpolated representation of the "processed ENLIGHTEN
-        # measurement" it was generated from.
-        pr.raw = np.interp(
-            AI_wavenumbers,
-            request.settings.wavenumbers,
-            request.processed_reading.processed,
-        )
-
-        # we might as well similarly interpolate the original dark for completeness
-        if pr.dark is not None:
-            pr.dark = np.interp(
-                AI_wavenumbers,
-                request.settings.wavenumbers,
-                request.processed_reading.dark,
-            )
-
-        # now we can overwrite the "processed" spectrum with the new DALAI intensities
-        pr.processed = AI_spectrum
-
-        settings.wavenumbers = AI_wavenumbers
-        settings.wavelengths = utils.generate_wavelengths_from_wavenumbers(settings.excitation(), AI_wavenumbers)
-
-        pr.wavenumbers = settings.wavenumbers
-        pr.wavelengths = settings.wavelengths
-
-        measurements = self.ctl.measurement_factory.create_from_dict(
-            {
-                "Measurement": {
-                    "Label": "DalaiRamanID spectrum",
-                    "SpectrometerSettings": settings.to_dict(),
-                    "ProcessedReading": pr.to_dict(),
-                }
-            }
-        )
-
-        if measurements is None or (isinstance(measurements, list) and len(measurements) < 1):
-            log.debug("generate_measurement: unable to generate ENLIGHTEN Measurement")
-            return
-
-        return measurements[0]
 
 class ModelConfig:
 
@@ -567,4 +501,4 @@ class ModelConfig:
                     self.target_spectrometer_families = [model.upper() for model in config["target_spectrometer_families"]]
 
     def __repr__(self):
-        return f"ModelConfig<basename {self.basename}, label {self.label}, order {self.order}, type {self.model_type}>"
+        return f"ModelConfig<basename {self.basename}, label {self.label}, order {self.order}, type {self.model_type}, families {self.target_spectrometer_families}>"

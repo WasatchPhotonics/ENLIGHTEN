@@ -185,6 +185,9 @@ class PluginControllerFeature(EnlightenFeature):
         # purely for backward compatibility
         self.combo_graph_pos = QtWidgets.QComboBox()
 
+    def graph_pos_callback(self):
+        log.debug("graph_pos_callback called (backward compatibility)")
+
     def start(self, ms):
         """
         The PluginController doesn't normally have an internal event loop (it's 
@@ -984,8 +987,10 @@ class PluginControllerFeature(EnlightenFeature):
                     dataframe = response.outputs["Table"]
 
                 if dataframe is not None:
-                    self.ctl.scope_table.set_visible(True)
+                    # self.ctl.scope_table.set_visible(True)
                     self.ctl.scope_table.set_dataframe(dataframe)
+                else:
+                    self.ctl.scope_table.hide()
 
             self.release_block(request)
 
