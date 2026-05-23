@@ -17,6 +17,7 @@ from .DalaiAdditionalFiles import prep_spectra_XM
 from .DalaiAdditionalFiles import prep_spectra_XS 
 
 from wasatch import utils
+from wasatch.ProcessedReading import ProcessedReading
 
 if common.use_pyside2():
     from PySide2 import QtCore, QtWidgets
@@ -293,10 +294,16 @@ class DalaiRamanFeature(EnlightenFeature):
         log.debug(f"AI_wavenumbers {AI_wavenumbers}")
         log.debug(f"AI_spectrum {AI_spectrum}")
 
-        pr.wavenumbers_dalai = AI_wavenumbers
-        pr.spectrum_dalai = AI_spectrum
+        child_pr = ProcessedReading()
+        child_pr.wavenumbers = AI_wavenumbers
+        child_pr.processed = AI_spectrum
+        pr.dalai = child_pr
+
+        # pr.wavenumbers_dalai = AI_wavenumbers
+        # pr.spectrum_dalai = AI_spectrum
 
         # interpolated arrays are for display only; we use non-interpolated data in matching
+        # TODO: perhaps the graphing should actually be done at the same point as the main graph is updated?
         interp = self.ctl.interp
         if interp.enabled and interp.new_axis is not None:
             AI_spectrum_display = np.interp(interp.new_axis, AI_wavenumbers, AI_spectrum)

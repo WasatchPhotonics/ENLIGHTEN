@@ -799,7 +799,7 @@ class Measurement:
                 self.save_csv_file_by_row(resave=resave)
             else:
                 self.save_csv_file_by_column(resave=resave)
-                if self.has_dalai():
+                if self.processed_reading.has_dalai():
                     self.save_csv_file_by_column_dalai(resave=resave)
 
     ##
@@ -1124,8 +1124,8 @@ class Measurement:
                     m["spectrum"]["Reference"] = util.clean_list(a)
 
         if self.has_dalai():
-            m["dalai"]["spectrum"] = pr.spectrum_dalai
-            m["dalai"]["wavenumbers"] = pr.wavenumbers_dalai
+            m["dalai"]["spectrum"] = pr.get_processed("dalai")
+            m["dalai"]["wavenumbers"] = pr.get_wavenumbers("dalai")
 
         return m
 
@@ -1415,8 +1415,8 @@ class Measurement:
         if not self.verify_pathname(pathname, resave):
             return
 
-        wavenumbers = pr.wavenumbers_dalai
-        spectrum = pr.spectrum_dalai
+        wavenumbers = pr.get_wavenumbers("dalai")
+        spectrum = pr.get_processed("dalai")
         pixels = list(range(len(spectrum)))
 
         with open(pathname, "w", newline="", encoding='utf-8') as f:
@@ -1713,9 +1713,6 @@ class Measurement:
 
         return row
 
-    def has_dalai(self):
-        return self.has_component("DALAI")
-
     def has_component(self, component):
         pr = self.processed_reading
         if pr is None:
@@ -1730,11 +1727,6 @@ class Measurement:
             a = pr.reference
         elif component.startswith("processed"):
             a = pr.processed
-        elif component.startswith("dalai"):
-            return (pr.spectrum_dalai is not None and
-                    pr.wavenumbers_dalai is not None and
-                    len(pr.spectrum_dalai) > 0 and
-                    len(pr.wavenumbers_dalai) > 0)
         else:
             return False
 

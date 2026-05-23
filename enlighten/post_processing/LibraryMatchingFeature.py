@@ -176,9 +176,13 @@ class LibraryMatchingFeature(EnlightenFeature):
         if not self.enabled:
             return
 
-        wavenumbers = pr.get_wavenumbers()
-        spectrum = pr.get_processed()
         reading = pr.reading
+        if pr.has_dalai():
+            wavenumbers = pr.get_wavenumbers("dalai")
+            spectrum = pr.get_processed("dalai")
+        else:
+            wavenumbers = pr.get_wavenumbers()
+            spectrum = pr.get_processed()
 
         if self.ctl.page_nav.doing_raman() and not reading.laser_enabled and not self.laser_warning_issued:
             self.ctl.marquee.error("LibraryMatching in Raman mode requires the laser to be enabled")
@@ -446,7 +450,6 @@ class Pearson:
 
             match_result = self.generate_result(wavenumbers, spectrum)
             if match_result is None or len(match_result) == 0:
-                log.debug("Pearson.process: ignoring null response for now")
                 return None, None
 
             # extract matches from response

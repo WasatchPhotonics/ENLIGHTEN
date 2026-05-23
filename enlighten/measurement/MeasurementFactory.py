@@ -130,7 +130,7 @@ class MeasurementFactory(EnlightenFeature):
         # add DALAI spectrum
         if measurement.has_dalai():
             log.debug("render_thumbnail_to_qpixmap: adding DALAI curve")
-            self.ctl.thumbnail_render_alt_curve.setData(y=pr.spectrum_dalai, x=pr.wavenumbers_dalai)
+            self.ctl.thumbnail_render_alt_curve.setData(y=pr.get_processed("dalai"), x=pr.get_wavenumbers("dalai"))
         else:
             log.debug("render_thumbnail_to_qpixmap: skipping DALAI curve")
             self.ctl.thumbnail_render_alt_curve.setData(y=[])

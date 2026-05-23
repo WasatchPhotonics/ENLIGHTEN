@@ -427,8 +427,8 @@ class ThumbnailWidget(QtWidgets.QFrame):
         pixels = self.measurement.settings.pixels()
         pr = self.measurement.processed_reading
 
-        x_axis = pr.wavenumbers_dalai
-        spectrum = pr.spectrum_dalai
+        x_axis = pr.get_wavenumbers("dalai")
+        spectrum = pr.get_processed("dalai")
         if x_axis is None:
             log.debug("add_curve_to_alt_graph: somehow have no x-axis?")
             return
