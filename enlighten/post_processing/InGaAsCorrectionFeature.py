@@ -33,6 +33,7 @@ class InGaAsCorrectionFeature(EnlightenFeature):
 
         self.cb_enable.setVisible(self.visible)
         self.bt_toggle.setVisible(self.visible)
+        self.ctl.gui.colorize_button(self.bt_toggle, self.enabled)
 
         self.notify_observers()
 

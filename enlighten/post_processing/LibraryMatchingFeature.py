@@ -46,6 +46,7 @@ class LibraryMatchingFeature(EnlightenFeature):
 
         cfu = self.ctl.form.ui
 
+        self.bt_toggle          = cfu.pushButton_library_matching_toggle
         self.cb_enable          = cfu.checkBox_library_matching_enable
         self.bt_select_library  = cfu.pushButton_library_matching_select_library
         self.lb_compound        = cfu.label_library_matching_matched_compound_name
@@ -91,6 +92,7 @@ class LibraryMatchingFeature(EnlightenFeature):
         self.set_library_dir(self.user_library_dir)
 
         # connect callbacks after initialization
+        self.bt_toggle          .clicked        .connect(self.toggle_callback)
         self.bt_select_library  .clicked        .connect(self.select_library_callback)
         self.bt_save            .clicked        .connect(self.add_to_library)
         self.ds_min_score       .valueChanged   .connect(self.update_settings)
@@ -115,7 +117,7 @@ class LibraryMatchingFeature(EnlightenFeature):
         self.timer.timeout.connect(self.tick)
         self.timer.setSingleShot(True)
 
-        self.ctl.measurement_factory.register_observer(self.factory_callback, "save")
+        self.ctl.measurement_factory.register_observer(self.factory_callback_save_complete, "save")
 
         # At the moment, LibraryMatching "best library spectrum" curves may be 
         # graphed on either the main graph (if DALAI is disabled), or the ALT 
@@ -136,22 +138,30 @@ class LibraryMatchingFeature(EnlightenFeature):
         self.show_widgets(False)
 
     def disconnect(self):
-        self.ctl.measurement_factory.unregister_observer(self.factory_callback, "save")
+        self.ctl.measurement_factory.unregister_observer(self.factory_callback_save_complete, "save")
         super().disconnect()
 
     def stop(self):
         self.timer.stop()
 
+    def toggle_callback(self):
+        self.cb_enable.setChecked(not self.enabled)
+
     def update_settings(self):
         was_enabled = self.enabled
 
-        self.max_results = self.sb_max_results.value()
-        self.min_score = self.ds_min_score.value()
-        self.use_dist = self.cb_use_dist.isChecked()
         self.enabled = self.cb_enable.isChecked()
+        self.use_dist = self.cb_use_dist.isChecked()
+        self.min_score = self.ds_min_score.value()
+        self.max_results = self.sb_max_results.value()
 
         if was_enabled != self.enabled:
             self.show_widgets(self.enabled)
+
+        self.update_visibility()
+
+    def update_visibility(self):
+        self.ctl.gui.colorize_button(self.bt_toggle, self.enabled)
 
     def show_widgets(self, flag):
         for w in self.hide_when_disabled:
@@ -307,16 +317,26 @@ class LibraryMatchingFeature(EnlightenFeature):
             log.debug(f"can't add_to_library w/o library_dir {self.user_library_dir}")
             return
 
+        ########################################################################
+        # We're going to leverage the existing "Save" feature of 
+        # MeasurementFactory here, and simply catch a callback after the 
+        # triggered save completes.
+        ########################################################################
+
+        log.debug("add_to_library: triggering save")
+
+        # flag that we're going to add the next "saved" measurement to the library
         self.add_next_to_library = True
 
-        log.debug("add_to_library: triggering save...")
+        # trigger an actual save
         self.ctl.vcr_controls.save()
 
-    def factory_callback(self, measurement):
+    def factory_callback_save_complete(self, measurement):
         if not self.add_next_to_library:
             return
 
-        # MeasurementFactory has just saved this Measurement
+        # MeasurementFactory has just saved this Measurement, which we had
+        # previously flagged for addition to the library
         m = measurement
         self.add_next_to_library = False
 
@@ -344,6 +364,8 @@ class LibraryMatchingFeature(EnlightenFeature):
             log.debug("empty filename")
             return
 
+        # note that we're not actually _moving_ the saved measurement to the library,
+        # but rather _copying_ it, so they'll technically end up with two
         os.makedirs(self.user_library_dir, exist_ok=True)
         new_pathname = os.path.join(self.user_library_dir, f"{label}.csv")
 
@@ -358,7 +380,7 @@ class LibraryMatchingFeature(EnlightenFeature):
                     else:
                         outfile.write(line)
 
-        log.debug("bouncing engines")
+        log.debug("bouncing matching engine")
         self.pearson.reset()
 
     def wrapped(self, s):

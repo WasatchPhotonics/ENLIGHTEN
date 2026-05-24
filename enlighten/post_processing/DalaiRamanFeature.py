@@ -275,6 +275,8 @@ class DalaiRamanFeature(EnlightenFeature):
         elif not self.ctl.plugin_controller.using_other_graph():
             self.ctl.alt_graph.set_visible(False)
 
+        self.ctl.gui.colorize_button(self.bt_toggle, self.enabled)
+
         self.notify_observers()
 
     def page_nav_callback(self, arg=None):

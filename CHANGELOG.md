@@ -57,9 +57,6 @@
     - STARTING: 
         - Safe Mode
     - TODO
-        - DalaiRamanFeature
-            - AltGraph shrinks on repeat enable
-            - bad data on Detectachem?
         - EtalonCorrection
             - read from EEPROM in BLEDevice
         - BatteryFeature (in work)

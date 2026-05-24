@@ -25,3 +25,12 @@ is provided below.
 - Home: https://github.com/tensorflow
 - Licence: [Apache 2.0](https://github.com/tensorflow/examples/blob/master/LICENSE)
 
+# SciPY
+
+- Home: https://scipy.org/
+- License: [BSD](https://github.com/scipy/scipy/blob/main/LICENSE.txt)
+
+# Bleak
+
+- Home: https://github.com/hbldh/bleak
+- License: [MIT](https://github.com/hbldh/bleak)

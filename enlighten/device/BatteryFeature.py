@@ -33,8 +33,6 @@ class BatteryFeature(EnlightenFeature):
         cfu.pushButton_battery_copy_history.clicked.connect(self.copy_data) 
 
     def process_reading(self, spec, reading):
-        current_spec = self.ctl.multispec.current_spectrometer()
-
         if reading.power_connection_state:
             self.lb_power_connection_state.setText(str(reading.power_connection_state))
 
@@ -45,7 +43,13 @@ class BatteryFeature(EnlightenFeature):
             if not spec.settings.eeprom.has_battery:
                 self.lb_perc.setText("No Battery")
                 return
+    
+        # add state.battery_temperature_deg_c
+        # add state.battery_charger_temperature_deg_c
 
+        self.process_battery_charge_level(spec, reading)
+
+    def process_battery_charge_level(self, spec, reading):
         app_state = spec.app_state
         rds = app_state.battery_data
 
@@ -57,10 +61,10 @@ class BatteryFeature(EnlightenFeature):
         rds.add(perc)
         current_time = datetime.datetime.now()
         if self.output_to_file:
-            self.ctl.hardware_file_manager.write_line(self.name,f"{self.name},{spec.label},{current_time}, {perc}, {charging_label}")
+            self.ctl.hardware_file_manager.write_line(self.name, f"{self.name}, {spec.label}, {current_time}, {perc}, {charging_label}")
 
         self.lb_parsed.setText(f"{perc:.2f}%, {charging_label}")
-        if spec == current_spec:
+        if spec == self.ctl.multispec.current_spectrometer():
             self.lb_perc.setText(f"{perc:.2f} %")
             
         self.notify_observers_with_value( (perc, is_charging) )
@@ -71,7 +75,7 @@ class BatteryFeature(EnlightenFeature):
             return
         try:
             x, y = rds.get_relative_to_now()
-            log.debug(f"updating battery curve ({len(y)} values)")
+            log.debug(f"updating battery charge curve ({len(y)} values)")
             self.ctl.graph.set_data(curve=active_curve, y=y, x=x)
         except:
             log.error("error plotting battery data", exc_info=1)
