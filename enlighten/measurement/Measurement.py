@@ -799,7 +799,7 @@ class Measurement:
                 self.save_csv_file_by_row(resave=resave)
             else:
                 self.save_csv_file_by_column(resave=resave)
-                if self.processed_reading.has_dalai():
+                if self.has_dalai():
                     self.save_csv_file_by_column_dalai(resave=resave)
 
     ##
@@ -1731,6 +1731,9 @@ class Measurement:
             return False
 
         return a is not None and len(a) > 0
+
+    def has_dalai(self):
+        return self.processed_reading.has_dalai()
 
     ##
     # Passed a SpectrometerSettings object (containing wavelengths, wavenumbers

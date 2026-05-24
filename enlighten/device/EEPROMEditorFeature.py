@@ -325,7 +325,8 @@ class EEPROMEditorFeature(EnlightenFeature):
                       "leave_acc_5v_out_powered" ]:
             self.add_attribute("checkbox", name, widget=getattr(cfu, f"checkBox_ee_{name}"))
 
-        # spinboxes (int)
+        # spinboxes (int) -- note these can't actually handle uint32, and throw 
+        # internal errors on uninitialized acc_cont_strobe_FOO_us values (0xffffffff)
         for name in [ "active_pixels_horizontal", "active_pixels_vertical", "actual_pixels_horizontal", 
                       "slit_size_um", "detector_offset", "detector_offset_odd", 
                       "startup_laser_tec_setpoint", "startup_integration_time_ms", "startup_temp_degC", "startup_triggering_scheme",
@@ -352,7 +353,7 @@ class EEPROMEditorFeature(EnlightenFeature):
             self.add_attribute("lineedit", name, is_numeric=False, widget=getattr(cfu, f"lineEdit_ee_{name}"))
 
         # lineedits (binary data in hex, including field length in bytes)
-        for name in [ "assembly_revision_packed", "acc_state", "acc_gpio1_state", "acc_gpio2_state", "latched_hardware_failures" ]:
+        for name in [ "assembly_revision_packed", "acc_state", "acc_state_gpio1", "acc_state_gpio2", "latched_hardware_failures" ]:
             self.add_attribute("lineedit", name, is_numeric=False, widget=getattr(cfu, f"lineEdit_ee_{name}"), is_data=True)
 
         # Arrays (but still not multi-wavelength)

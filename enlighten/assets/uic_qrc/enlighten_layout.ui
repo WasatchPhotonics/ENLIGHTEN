@@ -3017,9 +3017,6 @@ QComboBox QListView
                             </property>
                            </widget>
                           </item>
-
-                           
-
                           <item row="14" column="0">
                            <widget class="QCheckBox" name="checkBox_ee_disable_ble_power">
                             <property name="text">
@@ -3034,7 +3031,6 @@ QComboBox QListView
                             </property>
                            </widget>
                           </item>
-
                           <item row="15" column="0">
                            <widget class="QCheckBox" name="checkBox_ee_disable_laser_armed_indicator">
                             <property name="text">
@@ -3049,7 +3045,6 @@ QComboBox QListView
                             </property>
                            </widget>
                           </item>
-
                           <item row="17" column="0">
                            <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_excitation_nm_float">
                             <property name="minimumSize">
@@ -3341,8 +3336,6 @@ QComboBox QListView
                             </property>
                            </widget>
                           </item>
-
-
                           <item row="26" column="0">
                            <widget class="QSpinBox" name="spinBox_ee_startup_laser_tec_setpoint">
                             <property name="minimumSize">
@@ -3372,10 +3365,8 @@ QComboBox QListView
                             </property>
                            </widget>
                           </item>
-                          
-
                           <item row="27" column="0">
-                           <widget class="QLabel">
+                           <widget class="QLabel" name="label_ee_format">
                             <property name="text">
                              <string>fmt</string>
                             </property>
@@ -6418,14 +6409,14 @@ QComboBox QListView
                           <item row="6" column="1"><widget class="QLabel"><property name="text"><string>Accessory State</string></property></widget></item>
 
                           <item row="7" column="0">
-                           <widget class="QLineEdit" name="lineEdit_ee_acc_gpio1_state">
+                           <widget class="QLineEdit" name="lineEdit_ee_acc_state_gpio1">
                             <property name="inputMask"> <string>\0\xHH</string> </property>
                            </widget>
                           </item>
                           <item row="7" column="1"><widget class="QLabel"><property name="text"><string>Acc. GPIO1 State</string></property></widget></item>
 
                           <item row="8" column="0">
-                           <widget class="QLineEdit" name="lineEdit_ee_acc_gpio2_state">
+                           <widget class="QLineEdit" name="lineEdit_ee_acc_state_gpio2">
                             <property name="inputMask"> <string>\0\xHH</string> </property>
                            </widget>
                           </item>
@@ -6437,7 +6428,7 @@ QComboBox QListView
                             <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
                             <property name="keyboardTracking"> <bool>false</bool> </property>
                             <property name="minimum">    <number>0</number> </property>
-                            <property name="maximum">    <number>4294967295</number> </property>
+                            <property name="maximum">    <number>999999</number> </property>
                             <property name="singleStep"> <number>1</number> </property>
                             <property name="value">      <number>0</number> </property>
                            </widget>
@@ -6450,7 +6441,7 @@ QComboBox QListView
                             <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
                             <property name="keyboardTracking"> <bool>false</bool> </property>
                             <property name="minimum">    <number>0</number> </property>
-                            <property name="maximum">    <number>4294967295</number> </property>
+                            <property name="maximum">    <number>999999</number> </property>
                             <property name="singleStep"> <number>1</number> </property>
                             <property name="value">      <number>0</number> </property>
                            </widget>
@@ -6463,7 +6454,7 @@ QComboBox QListView
                             <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
                             <property name="keyboardTracking"> <bool>false</bool> </property>
                             <property name="minimum">    <number>0</number> </property>
-                            <property name="maximum">    <number>4294967295</number> </property>
+                            <property name="maximum">    <number>999999</number> </property>
                             <property name="singleStep"> <number>1</number> </property>
                             <property name="value">      <number>0</number> </property>
                            </widget>
@@ -6476,7 +6467,7 @@ QComboBox QListView
                             <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
                             <property name="keyboardTracking"> <bool>false</bool> </property>
                             <property name="minimum">    <number>0</number> </property>
-                            <property name="maximum">    <number>4294967295</number> </property>
+                            <property name="maximum">    <number>999999</number> </property>
                             <property name="singleStep"> <number>1</number> </property>
                             <property name="value">      <number>0</number> </property>
                            </widget>
@@ -11683,7 +11674,6 @@ QComboBox QListView
                             </item>
                            </layout>
                           </item>
-
                           
                           <item>
                            <widget class="QFrame" name="frame_correction_status_1">

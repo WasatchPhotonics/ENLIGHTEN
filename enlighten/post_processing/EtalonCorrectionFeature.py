@@ -30,9 +30,12 @@ class EtalonCorrectionFeature(EnlightenFeature):
             self.visible = False
         else:
             self.visible = spec.settings.etalon_correction is not None
+            log.debug("update_visibility: visible = {self.visible}")
 
         self.cb_enable.setVisible(self.visible)
         self.bt_toggle.setVisible(self.visible)
+
+        self.ctl.gui.colorize_button(self.bt_toggle, self.enabled)
 
         self.notify_observers()
 
