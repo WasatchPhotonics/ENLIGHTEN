@@ -936,6 +936,7 @@ class Controller:
                              self.laser_temperature,
                              self.area_scan,
                              self.horiz_roi,
+                             self.dalai,
                              self.raman_intensity_correction ]:
                 feature.init_hotplug()
 

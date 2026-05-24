@@ -20,11 +20,9 @@
         - simplified logic to write EEPROM
         - simplified logic for editing user_text
         - fixed BLE Firmware Rev 
-        - added Laser Max Temp DegC
-        - added AssemblyRevision (packed and expanded)
-        - added Power Connection State (pending FW fix)
         - fixed PowerWatchdogSec
         - fixed tab order for wavecal coeffs
+        - added new Format 19 fields
     - BLEManager
         - add "Last Used" column
         - disable under Parallels

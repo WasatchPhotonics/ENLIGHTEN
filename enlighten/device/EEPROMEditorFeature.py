@@ -25,6 +25,7 @@ class EEPROMAttribute:
     def dump(self, label=None):
         log.debug(f"EEPROMAttribute: {label}")
         log.debug(f"  name         {self.name}")
+        log.debug(f"  is_data      {self.is_data}")
         log.debug(f"  is_numeric   {self.is_numeric}")
         log.debug(f"  is_scalar    {self.is_scalar}")
         log.debug(f"  is_multi     {self.is_multi}")
@@ -37,7 +38,7 @@ class EEPROMAttribute:
         log.debug(f"  widgets      {self.widgets}")
         log.debug(f"  all_widgets  {self.all_widgets}")
     
-    def __init__(self, name, qtype, widget=None, widgets=None, is_numeric=True):
+    def __init__(self, name, qtype, widget=None, widgets=None, is_numeric=True, is_data=False):
         self.name = name
         self.is_numeric = is_numeric    # for lineedit attributes, should this text field be treated as a float for get/set purposes?
 
@@ -50,6 +51,7 @@ class EEPROMAttribute:
         self.widget = None
         self.widgets = None
         self.all_widgets = None
+        self.input_mask = None
 
         # validate qtype
         self.qtype = qtype.lower().lstrip("q") # "lineedit", "spinbox", "doublespinbox"
@@ -276,11 +278,11 @@ class EEPROMEditorFeature(EnlightenFeature):
             "thermistor_res_at298k":    "tec_r298",
             "wavecal_coeffs":           "wavelength_coeffs" }
 
-    def add_attribute(self, qtype, name, is_numeric=None, widget=None, widgets=None):
+    def add_attribute(self, qtype, name, is_numeric=None, widget=None, widgets=None, is_data=False):
         if is_numeric is None:
             is_numeric = qtype in ["spinbox", "doublespinbox"]
 
-        attr = EEPROMAttribute(name=name, qtype=qtype, is_numeric=is_numeric, widget=widget, widgets=widgets)
+        attr = EEPROMAttribute(name=name, qtype=qtype, is_numeric=is_numeric, widget=widget, widgets=widgets, is_data=is_data)
         self.attributes[name] = attr
 
         if qtype == "checkbox":
@@ -315,11 +317,15 @@ class EEPROMEditorFeature(EnlightenFeature):
         # Scalar Attributes (no arrays, no multi-wavelength)
         ########################################################################
 
+        # checkboxes (bool)
         for name in [ "has_battery", "has_cooling", "has_laser", "invert_x_axis", "horiz_binning_enabled", 
                       "gen15", "cutoff_filter_installed", "hardware_even_odd", "sig_laser_tec", 
-                      "has_interlock_feedback", "has_shutter", "disable_ble_power", "disable_laser_armed_indicator" ]:
+                      "has_interlock_feedback", "has_shutter", "disable_ble_power", "disable_laser_armed_indicator",
+                      "ble_door_sensor", "ext_laser_control", "aux_button_laser_enable", "disable_laser_sub_sys",
+                      "leave_acc_5v_out_powered" ]:
             self.add_attribute("checkbox", name, widget=getattr(cfu, f"checkBox_ee_{name}"))
 
+        # spinboxes (int)
         for name in [ "active_pixels_horizontal", "active_pixels_vertical", "actual_pixels_horizontal", 
                       "slit_size_um", "detector_offset", "detector_offset_odd", 
                       "startup_laser_tec_setpoint", "startup_integration_time_ms", "startup_temp_degC", "startup_triggering_scheme",
@@ -331,23 +337,29 @@ class EEPROMEditorFeature(EnlightenFeature):
                       "untethered_library_type", "untethered_library_id", "untethered_scans_to_average", 
                       "untethered_min_ramp_pixels", "untethered_min_peak_height", "untethered_match_threshold", "untethered_library_count",
                       "laser_watchdog_sec", "light_source_type", "power_timeout_sec", "detector_timeout_sec",
-                      "startup_scans_to_average", "laser_attenuator", "max_laser_temp_deg_c", "pixel_correction_type" ]:
+                      "startup_scans_to_average", "laser_attenuator", "max_laser_temp_deg_c", 
+                      "acc_cont_strobe_period_us", "acc_cont_strobe_width_us", "acc_cont_strobe_delay_us", "acc_cont_strobe_count",
+                      "max_battery_temp_deg_c", "pixel_correction_type", "aux_button_function", "aux_button_param" ]:
             self.add_attribute("spinbox", name, widget=getattr(cfu, f"spinBox_ee_{name}"))
 
+        # doublespinbox (float)
         for name in [ "max_laser_power_mW", "min_laser_power_mW", "detector_gain", "detector_gain_odd", "spline_min", "spline_max" ]:
             self.add_attribute("doublespinbox", name, widget=getattr(cfu, f"doubleSpinBox_ee_{name}"))
 
+        # lineedits (string)
         for name in [ "calibrated_by", "calibration_date", "detector", "model", "serial_number", "user_text", 
-                      "laser_password", "assembly_revision_packed" ]:
+                      "laser_password", "usb_manufacturer_name" ]:
             self.add_attribute("lineedit", name, is_numeric=False, widget=getattr(cfu, f"lineEdit_ee_{name}"))
+
+        # lineedits (binary data in hex, including field length in bytes)
+        for name in [ "assembly_revision_packed", "acc_state", "acc_gpio1_state", "acc_gpio2_state", "latched_hardware_failures" ]:
+            self.add_attribute("lineedit", name, is_numeric=False, widget=getattr(cfu, f"lineEdit_ee_{name}"), is_data=True)
 
         # Arrays (but still not multi-wavelength)
         self.add_attribute("lineedit", "laser_power_coeffs", widgets=[ getattr(cfu, f"lineEdit_ee_laser_power_coeff_{i}") for i in range(4) ])
-       #self.add_attribute("lineedit", "linearity_coeffs",   widgets=[ getattr(cfu, f"lineEdit_ee_linearity_coeff_{i}")   for i in range(5) ]) # deprecated
         self.add_attribute("lineedit", "degC_to_dac_coeffs", widgets=[ getattr(cfu, f"lineEdit_ee_degC_to_dac_coeff_{i}") for i in range(3) ])
         self.add_attribute("lineedit", "adc_to_degC_coeffs", widgets=[ getattr(cfu, f"lineEdit_ee_adc_to_degC_coeff_{i}") for i in range(3) ])
         self.add_attribute("lineedit", "spline_wavelengths", widgets=[ getattr(cfu, f"lineEdit_ee_spline_wl_{i}")         for i in range(14) ])
-
         self.add_attribute("spinbox", "bad_pixels", widgets=[ getattr(cfu, f"spinBox_ee_bad_pixel_{i}") for i in range(15) ])
 
         ########################################################################
@@ -356,12 +368,10 @@ class EEPROMEditorFeature(EnlightenFeature):
 
         self.add_attribute("doublespinbox", "excitation_nm_float", widgets=[[cfu.doubleSpinBox_ee_excitation_nm_float], [cfu.doubleSpinBox_ee_sub5_excitation_nm_float]])
         self.add_attribute("doublespinbox", "avg_resolution",      widgets=[[cfu.doubleSpinBox_ee_avg_resolution],      [cfu.doubleSpinBox_ee_sub5_avg_resolution]])
-
         self.add_attribute("lineedit", "wavelength_coeffs",      widgets=[ [ getattr(cfu, f"lineEdit_ee_wavelength_coeff_{i}") for i in range(5) ],
                                                                            [ getattr(cfu, f"lineEdit_ee_sub5_wavelength_coeff_{i}") for i in range(5) ] ])
         self.add_attribute("lineedit", "raman_intensity_coeffs", widgets=[ [ getattr(cfu, f"lineEdit_ee_raman_intensity_coeff_{i}") for i in range(7) ],
                                                                            [ getattr(cfu, f"lineEdit_ee_sub5_raman_intensity_coeff_{i}") for i in range(7) ] ])
-
         self.add_attribute("spinbox", "roi_horizontal_end",   widgets=[ [ cfu.spinBox_ee_roi_horizontal_end   ], [ cfu.spinBox_ee_sub5_roi_horizontal_end   ] ])
         self.add_attribute("spinbox", "roi_horizontal_start", widgets=[ [ cfu.spinBox_ee_roi_horizontal_start ], [ cfu.spinBox_ee_sub5_roi_horizontal_start ] ])
         self.add_attribute("spinbox", "horiz_binning_mode",   widgets=[ [ cfu.spinBox_ee_horiz_binning_mode   ], [ cfu.spinBox_ee_sub5_horiz_binning_mode   ] ])
@@ -636,10 +646,12 @@ class EEPROMEditorFeature(EnlightenFeature):
                                 product_configuration = self.eeprom.multi_wavelength_calibration.get("product_configuration")
                                 if value and product_configuration:
                                     value += product_configuration
-                            elif attr.name == "assembly_revision_packed":
-                                # could generalize this with attr.is_data
+
+                            # could generalize this with attr.is_data
+                            if attr.is_data: # elif attr.name == "assembly_revision_packed":
                                 if value and len(value):
-                                    value = "".join([f"{v:02x}" for v in value])
+                                    value = "0x" + "".join([f"{v:02x}" for v in value])
+
                             attr.widget.setText(str(value))
                         else:                                   # e.g. adc_to_degC, degC_to_dac, laser_power_coeffs
                             a = self.eeprom.multi_wavelength_calibration.get(attr.name)

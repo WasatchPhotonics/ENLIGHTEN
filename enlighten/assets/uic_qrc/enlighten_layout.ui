@@ -2136,7 +2136,7 @@ QComboBox QListView
             <height>60</height>
            </size>
           </property>
-          <layout class="QHBoxLayout" name="horizontalLayout_90" stretch="0,0">
+          <layout class="QHBoxLayout" stretch="0,0">
            <property name="spacing">
             <number>0</number>
            </property>
@@ -2197,7 +2197,7 @@ QComboBox QListView
              <property name="styleSheet">
               <string notr="true" />
              </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_2">
+             <layout class="QHBoxLayout">
               <item>
                <widget class="QComboBox" name="comboBox_view">
                 <property name="sizePolicy">
@@ -2590,7 +2590,7 @@ QComboBox QListView
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_17">
+         <layout class="QHBoxLayout">
           <property name="spacing">
            <number>0</number>
           </property>
@@ -2673,7 +2673,7 @@ QComboBox QListView
               <property name="wpBox" stdset="0">
                <bool>false</bool>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_91">
+              <layout class="QVBoxLayout">
                <property name="spacing">
                 <number>0</number>
                </property>
@@ -2708,9 +2708,9 @@ QComboBox QListView
                  <property name="wpPanel" stdset="0">
                   <bool>false</bool>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_83">
+                 <layout class="QVBoxLayout">
                   <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_80">
+                   <layout class="QHBoxLayout">
                     <property name="sizeConstraint">
                      <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
                     </property>
@@ -2718,7 +2718,7 @@ QComboBox QListView
                      <number>0</number>
                     </property>
                     <item>
-                     <widget class="QLabel" name="label_141">
+                     <widget class="QLabel">
                       <property name="font">
                        <font>
                         <pointsize>10</pointsize>
@@ -2779,7 +2779,7 @@ QComboBox QListView
                     <property name="wpBox" stdset="0">
                      <bool>false</bool>
                     </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_90">
+                    <layout class="QVBoxLayout">
                      <property name="spacing">
                       <number>0</number>
                      </property>
@@ -2806,9 +2806,9 @@ QComboBox QListView
                        <property name="wpPanel" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_73">
+                       <layout class="QVBoxLayout">
                         <item>
-                         <widget class="QLabel" name="label_74">
+                         <widget class="QLabel">
                           <property name="font">
                            <font>
                             <pointsize>10</pointsize>
@@ -2842,7 +2842,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="0" column="1">
-                           <widget class="QLabel" name="label_78">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Serial Number</string>
                             </property>
@@ -2856,7 +2856,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="1" column="1">
-                           <widget class="QLabel" name="label_77">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Model</string>
                             </property>
@@ -2870,7 +2870,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="3" column="1">
-                           <widget class="QLabel" name="label_80">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Cooling Available</string>
                             </property>
@@ -2884,7 +2884,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="4" column="1">
-                           <widget class="QLabel" name="label_81">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Battery Available</string>
                             </property>
@@ -2898,7 +2898,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="5" column="1">
-                           <widget class="QLabel" name="label_82">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Laser Available</string>
                             </property>
@@ -2913,7 +2913,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="6" column="1">
-                           <widget class="QLabel" name="label_217">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Invert X-Axis</string>
                             </property>
@@ -2927,7 +2927,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="7" column="1">
-                           <widget class="QLabel" name="label_219">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Enable Horizontal Binning</string>
                             </property>
@@ -2941,7 +2941,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="8" column="1">
-                           <widget class="QLabel" name="label_235">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Gen 1.5</string>
                             </property>
@@ -2955,7 +2955,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="9" column="1">
-                           <widget class="QLabel" name="label_237">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Cutoff Filter Installed</string>
                             </property>
@@ -2969,7 +2969,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="10" column="1">
-                           <widget class="QLabel" name="label_5">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Hardware Even/Odd Correction</string>
                             </property>
@@ -2983,7 +2983,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="11" column="1">
-                           <widget class="QLabel" name="label_45">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>SiG Laser TEC</string>
                             </property>
@@ -2997,7 +2997,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="12" column="1">
-                           <widget class="QLabel" name="label_46">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Interlock Feedback</string>
                             </property>
@@ -3011,7 +3011,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="13" column="1">
-                           <widget class="QLabel" name="label_46_2">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Internal Shutter</string>
                             </property>
@@ -3028,7 +3028,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="14" column="1">
-                           <widget class="QLabel" name="label_46_2x">
+                           <widget class="QLabel"> 
                             <property name="text">
                              <string>Disable Bluetooth® LE</string>
                             </property>
@@ -3043,7 +3043,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="15" column="1">
-                           <widget class="QLabel" name="label_46_2y">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Disable Laser Armed Indicator</string>
                             </property>
@@ -3082,7 +3082,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="17" column="1">
-                           <widget class="QLabel" name="label_83">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Excitation (nm)</string>
                             </property>
@@ -3117,7 +3117,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="18" column="1">
-                           <widget class="QLabel" name="label_86">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Slit Size (µm)</string>
                             </property>
@@ -3149,7 +3149,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="19" column="1">
-                           <widget class="QLabel" name="label_13">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Startup Integration Time (ms)</string>
                             </property>
@@ -3181,7 +3181,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="20" column="1">
-                           <widget class="QLabel" name="label_21">
+                           <widget class="QLabel">
                             <property name="toolTip">
                              <string>°C for detectors (X/XM/XL), or raw DAC for lasers (XS)</string>
                             </property>
@@ -3210,7 +3210,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="21" column="1">
-                           <widget class="QLabel" name="label_29">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Startup Triggering Scheme</string>
                             </property>
@@ -3245,7 +3245,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="22" column="1">
-                           <widget class="QLabel" name="label_31">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Detector Gain (InGaAs even)</string>
                             </property>
@@ -3274,7 +3274,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="23" column="1">
-                           <widget class="QLabel" name="label_142">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Detector Offset (InGaAs even)</string>
                             </property>
@@ -3306,7 +3306,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="24" column="1">
-                           <widget class="QLabel" name="label_143">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Detector Gain (InGaAs odd)</string>
                             </property>
@@ -3335,7 +3335,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="25" column="1">
-                           <widget class="QLabel" name="label_161">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Detector Offset (InGaAs odd)</string>
                             </property>
@@ -3366,7 +3366,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="26" column="1">
-                           <widget class="QLabel" name="label_161x">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Startup Laser TEC Setpoint (raw)</string>
                             </property>
@@ -3375,14 +3375,14 @@ QComboBox QListView
                           
 
                           <item row="27" column="0">
-                           <widget class="QLabel" name="label_ee_format">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>fmt</string>
                             </property>
                            </widget>
                           </item>
                           <item row="27" column="1">
-                           <widget class="QLabel" name="label_216">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Format</string>
                             </property>
@@ -3401,7 +3401,7 @@ QComboBox QListView
                     <property name="wpBox" stdset="0">
                      <bool>false</bool>
                     </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_101">
+                    <layout class="QVBoxLayout">
                      <property name="spacing">
                       <number>0</number>
                      </property>
@@ -3422,9 +3422,9 @@ QComboBox QListView
                        <property name="wpPanel" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_74">
+                       <layout class="QVBoxLayout">
                         <item>
-                         <widget class="QLabel" name="label_87">
+                         <widget class="QLabel">
                           <property name="font">
                            <font>
                             <pointsize>10</pointsize>
@@ -3458,112 +3458,112 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="0" column="1">
-                           <widget class="QLabel" name="label_88">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Wavecal Coeff0</string>
                             </property>
                            </widget>
                           </item>
                           <item row="1" column="1">
-                           <widget class="QLabel" name="label_89">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Wavecal Coeff1</string>
                             </property>
                            </widget>
                           </item>
                           <item row="2" column="1">
-                           <widget class="QLabel" name="label_90">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Wavecal Coeff2</string>
                             </property>
                            </widget>
                           </item>
                           <item row="3" column="1">
-                           <widget class="QLabel" name="label_91">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Wavecal Coeff3</string>
                             </property>
                            </widget>
                           </item>
                           <item row="5" column="1">
-                           <widget class="QLabel" name="label_92">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>TEC Coeff0 (°C → DAC)</string>
                             </property>
                            </widget>
                           </item>
                           <item row="6" column="1">
-                           <widget class="QLabel" name="label_93">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>TEC Coeff1</string>
                             </property>
                            </widget>
                           </item>
                           <item row="7" column="1">
-                           <widget class="QLabel" name="label_94">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>TEC Coeff2</string>
                             </property>
                            </widget>
                           </item>
                           <item row="8" column="1">
-                           <widget class="QLabel" name="label_95">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Max Temp (°C)</string>
                             </property>
                            </widget>
                           </item>
                           <item row="9" column="1">
-                           <widget class="QLabel" name="label_96">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Min Temp (°C)</string>
                             </property>
                            </widget>
                           </item>
                           <item row="10" column="1">
-                           <widget class="QLabel" name="label_97">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Thermistor Coeff0 (ADC → °C)</string>
                             </property>
                            </widget>
                           </item>
                           <item row="11" column="1">
-                           <widget class="QLabel" name="label_98">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Thermistor Coeff1</string>
                             </property>
                            </widget>
                           </item>
                           <item row="12" column="1">
-                           <widget class="QLabel" name="label_99">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Thermistor Coeff2</string>
                             </property>
                            </widget>
                           </item>
                           <item row="13" column="1">
-                           <widget class="QLabel" name="label_100">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Thermistor Resistance at 298K</string>
                             </property>
                            </widget>
                           </item>
                           <item row="14" column="1">
-                           <widget class="QLabel" name="label_101">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Thermistor Beta Value</string>
                             </property>
                            </widget>
                           </item>
                           <item row="15" column="1">
-                           <widget class="QLabel" name="label_102">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Manufacture Date</string>
                             </property>
                            </widget>
                           </item>
                           <item row="16" column="1">
-                           <widget class="QLabel" name="label_103">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Technician</string>
                             </property>
@@ -3748,7 +3748,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="4" column="1">
-                           <widget class="QLabel" name="label_214">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Wavecal Coeff4</string>
                             </property>
@@ -3773,7 +3773,7 @@ QComboBox QListView
                     <property name="wpBox" stdset="0">
                      <bool>false</bool>
                     </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_116">
+                    <layout class="QVBoxLayout">
                      <property name="spacing">
                       <number>0</number>
                      </property>
@@ -3800,9 +3800,9 @@ QComboBox QListView
                        <property name="wpPanel" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_75">
+                       <layout class="QVBoxLayout">
                         <item>
-                         <widget class="QLabel" name="label_104">
+                         <widget class="QLabel">
                           <property name="font">
                            <font>
                             <pointsize>10</pointsize>
@@ -3833,84 +3833,84 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="0" column="1">
-                           <widget class="QLabel" name="label_105">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Detector Name</string>
                             </property>
                            </widget>
                           </item>
                           <item row="1" column="1">
-                           <widget class="QLabel" name="label_106">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Active Pixels (Horiz)</string>
                             </property>
                            </widget>
                           </item>
                           <item row="2" column="1">
-                           <widget class="QLabel" name="label_107">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Active Pixels (Vertical)</string>
                             </property>
                            </widget>
                           </item>
                           <item row="5" column="1">
-                           <widget class="QLabel" name="label_110">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Actual Horiz Pixels</string>
                             </property>
                            </widget>
                           </item>
                           <item row="6" column="1">
-                           <widget class="QLabel" name="label_111">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>ROI Horiz Start</string>
                             </property>
                            </widget>
                           </item>
                           <item row="7" column="1">
-                           <widget class="QLabel" name="label_112">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>ROI Horiz End</string>
                             </property>
                            </widget>
                           </item>
                           <item row="8" column="1">
-                           <widget class="QLabel" name="label_113">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>ROI Vertical Region 1 Start</string>
                             </property>
                            </widget>
                           </item>
                           <item row="9" column="1">
-                           <widget class="QLabel" name="label_114">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>ROI Vertical Region 1 End</string>
                             </property>
                            </widget>
                           </item>
                           <item row="10" column="1">
-                           <widget class="QLabel" name="label_115">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>ROI Vertical Region 2 Start</string>
                             </property>
                            </widget>
                           </item>
                           <item row="11" column="1">
-                           <widget class="QLabel" name="label_116">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>ROI Vertical Region 2 End</string>
                             </property>
                            </widget>
                           </item>
                           <item row="12" column="1">
-                           <widget class="QLabel" name="label_117">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>ROI Vertical Region 3 Start</string>
                             </property>
                            </widget>
                           </item>
                           <item row="13" column="1">
-                           <widget class="QLabel" name="label_118">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>ROI Vertical Region 3 End</string>
                             </property>
@@ -4208,7 +4208,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="3" column="1">
-                           <widget class="QLabel" name="label_238">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Laser Warmup Time (sec)</string>
                             </property>
@@ -4227,7 +4227,7 @@ QComboBox QListView
                     <property name="wpBox" stdset="0">
                      <bool>false</bool>
                     </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_117">
+                    <layout class="QVBoxLayout">
                      <property name="spacing">
                       <number>0</number>
                      </property>
@@ -4254,9 +4254,9 @@ QComboBox QListView
                        <property name="wpPanel" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QFormLayout" name="formLayout_15">
+                       <layout class="QFormLayout">
                         <item row="0" column="0">
-                         <widget class="QLabel" name="label_124">
+                         <widget class="QLabel">
                           <property name="font">
                            <font>
                             <pointsize>10</pointsize>
@@ -4308,7 +4308,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="2" column="1">
-                           <widget class="QLabel" name="label_127">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Max Laser Temperature (°C)</string>
                             </property>
@@ -4322,7 +4322,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="4" column="1">
-                           <widget class="QLabel" name="label_131">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Laser Power Coeff0</string>
                             </property>
@@ -4336,7 +4336,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="5" column="1">
-                           <widget class="QLabel" name="label_132">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Laser Power Coeff1</string>
                             </property>
@@ -4350,7 +4350,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="6" column="1">
-                           <widget class="QLabel" name="label_133">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Laser Power Coeff2</string>
                             </property>
@@ -4364,7 +4364,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="7" column="1">
-                           <widget class="QLabel" name="label_134">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Laser Power Coeff3</string>
                             </property>
@@ -4396,7 +4396,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="8" column="1">
-                           <widget class="QLabel" name="label_129">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Max Laser Power (mW)</string>
                             </property>
@@ -4428,7 +4428,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="9" column="1">
-                           <widget class="QLabel" name="label_130">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Min Laser Power (mW)</string>
                             </property>
@@ -4460,7 +4460,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="10" column="1">
-                           <widget class="QLabel" name="label_109">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Max Integration Time (ms)</string>
                             </property>
@@ -4492,7 +4492,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="11" column="1">
-                           <widget class="QLabel" name="label_108">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Min Integration Time (ms)</string>
                             </property>
@@ -4512,7 +4512,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="12" column="1">
-                           <widget class="QLabel" name="label_220">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Average Resolution (FWHM)</string>
                             </property>
@@ -4542,7 +4542,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="13" column="1">
-                           <widget class="QLabel" name="label_47">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Laser Watchdog (sec)</string>
                             </property>
@@ -4569,7 +4569,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="14" column="1">
-                           <widget class="QLabel" name="label_48">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Light Source Type</string>
                             </property>
@@ -4597,7 +4597,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="15" column="1">
-                           <widget class="QLabel" name="label_48a">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Power Timeout Sec</string>
                             </property>
@@ -4624,7 +4624,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="16" column="1">
-                           <widget class="QLabel" name="label_48b">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Detector Timeout Sec</string>
                             </property>
@@ -4651,7 +4651,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="17" column="1">
-                           <widget class="QLabel" name="label_48c">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Horizontal Binning Mode</string>
                             </property>
@@ -4681,7 +4681,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="18" column="1">
-                           <widget class="QLabel" name="label_48d">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Startup Scans to Average</string>
                             </property>
@@ -4711,7 +4711,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="19" column="1">
-                           <widget class="QLabel" name="label_48e">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>XS Laser Attenuator</string>
                             </property>
@@ -4738,7 +4738,7 @@ QComboBox QListView
                     <property name="wpBox" stdset="0">
                      <bool>false</bool>
                     </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_118">
+                    <layout class="QVBoxLayout">
                      <property name="spacing">
                       <number>0</number>
                      </property>
@@ -4765,9 +4765,9 @@ QComboBox QListView
                        <property name="wpPanel" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_76">
+                       <layout class="QVBoxLayout">
                         <item>
-                         <widget class="QLabel" name="label_160">
+                         <widget class="QLabel">
                           <property name="font">
                            <font>
                             <pointsize>10</pointsize>
@@ -4785,7 +4785,7 @@ QComboBox QListView
                            <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
                           </property>
                           <item row="0" column="0">
-                           <widget class="QLabel" name="label_200">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>User Data</string>
                             </property>
@@ -4818,7 +4818,7 @@ QComboBox QListView
                     <property name="wpBox" stdset="0">
                      <bool>false</bool>
                     </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_119">
+                    <layout class="QVBoxLayout">
                      <property name="spacing">
                       <number>0</number>
                      </property>
@@ -4845,9 +4845,9 @@ QComboBox QListView
                        <property name="wpPanel" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_77">
+                       <layout class="QVBoxLayout">
                         <item>
-                         <widget class="QLabel" name="label_144">
+                         <widget class="QLabel">
                           <property name="font">
                            <font>
                             <pointsize>10</pointsize>
@@ -4893,7 +4893,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="0" column="1">
-                           <widget class="QLabel" name="label_145">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Bad Pixel 1</string>
                             </property>
@@ -4925,7 +4925,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="1" column="1">
-                           <widget class="QLabel" name="label_146">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Bad Pixel 2</string>
                             </property>
@@ -4957,7 +4957,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="2" column="1">
-                           <widget class="QLabel" name="label_147">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Bad Pixel 3</string>
                             </property>
@@ -4989,7 +4989,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="3" column="1">
-                           <widget class="QLabel" name="label_148">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Bad Pixel 4</string>
                             </property>
@@ -5021,7 +5021,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="4" column="1">
-                           <widget class="QLabel" name="label_149">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Bad Pixel 5</string>
                             </property>
@@ -5053,7 +5053,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="5" column="1">
-                           <widget class="QLabel" name="label_150">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Bad Pixel 6</string>
                             </property>
@@ -5085,7 +5085,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="6" column="1">
-                           <widget class="QLabel" name="label_151">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Bad Pixel 7</string>
                             </property>
@@ -5117,7 +5117,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="7" column="1">
-                           <widget class="QLabel" name="label_152">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Bad Pixel 8</string>
                             </property>
@@ -5149,7 +5149,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="8" column="1">
-                           <widget class="QLabel" name="label_153">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Bad Pixel 9</string>
                             </property>
@@ -5181,7 +5181,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="9" column="1">
-                           <widget class="QLabel" name="label_154">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Bad Pixel 10</string>
                             </property>
@@ -5213,7 +5213,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="10" column="1">
-                           <widget class="QLabel" name="label_155">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Bad Pixel 11</string>
                             </property>
@@ -5245,7 +5245,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="11" column="1">
-                           <widget class="QLabel" name="label_156">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Bad Pixel 12</string>
                             </property>
@@ -5277,7 +5277,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="12" column="1">
-                           <widget class="QLabel" name="label_157">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Bad Pixel 13</string>
                             </property>
@@ -5309,7 +5309,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="13" column="1">
-                           <widget class="QLabel" name="label_158">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Bad Pixel 14</string>
                             </property>
@@ -5341,7 +5341,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="14" column="1">
-                           <widget class="QLabel" name="label_159">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Bad Pixel 15</string>
                             </property>
@@ -5355,10 +5355,13 @@ QComboBox QListView
                               <height>0</height>
                              </size>
                             </property>
+                            <property name="inputMask">
+                              <string>\0\xHHHHHH</string>
+                            </property>
                            </widget>
                           </item>
                           <item row="16" column="1">
-                           <widget class="QLabel" name="label_69x">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Assembly Revision Packed</string>
                             </property>
@@ -5375,7 +5378,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="17" column="1">
-                           <widget class="QLabel" name="label_69">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Page 6-7 Subformat</string>
                             </property>
@@ -5397,7 +5400,7 @@ QComboBox QListView
                     <property name="frameShadow">
                      <enum>QFrame::Shadow::Raised</enum>
                     </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_135">
+                    <layout class="QVBoxLayout">
                      <property name="spacing">
                       <number>0</number>
                      </property>
@@ -5424,7 +5427,7 @@ QComboBox QListView
                        <property name="wpBox" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_118x">
+                       <layout class="QVBoxLayout">
                         <property name="spacing">
                          <number>0</number>
                         </property>
@@ -5445,9 +5448,9 @@ QComboBox QListView
                           <property name="wpPanel" stdset="0">
                            <bool>false</bool>
                           </property>
-                          <layout class="QVBoxLayout" name="verticalLayout_76x">
+                          <layout class="QVBoxLayout">
                            <item>
-                            <widget class="QLabel" name="label_160x">
+                            <widget class="QLabel">
                              <property name="font">
                               <font>
                                <pointsize>10</pointsize>
@@ -5535,49 +5538,49 @@ QComboBox QListView
                               </widget>
                              </item>
                              <item row="1" column="1">
-                              <widget class="QLabel" name="label_2">
+                              <widget class="QLabel">
                                <property name="text">
                                 <string>Raman Intensity Coeff0</string>
                                </property>
                               </widget>
                              </item>
                              <item row="2" column="1">
-                              <widget class="QLabel" name="label_10">
+                              <widget class="QLabel">
                                <property name="text">
                                 <string>Raman Intensity Coeff1</string>
                                </property>
                               </widget>
                              </item>
                              <item row="3" column="1">
-                              <widget class="QLabel" name="label_62">
+                              <widget class="QLabel">
                                <property name="text">
                                 <string>Raman Intensity Coeff2</string>
                                </property>
                               </widget>
                              </item>
                              <item row="4" column="1">
-                              <widget class="QLabel" name="label_170">
+                              <widget class="QLabel">
                                <property name="text">
                                 <string>Raman Intensity Coeff3</string>
                                </property>
                               </widget>
                              </item>
                              <item row="5" column="1">
-                              <widget class="QLabel" name="label_182">
+                              <widget class="QLabel">
                                <property name="text">
                                 <string>Raman Intensity Coeff4</string>
                                </property>
                               </widget>
                              </item>
                              <item row="6" column="1">
-                              <widget class="QLabel" name="label_194">
+                              <widget class="QLabel">
                                <property name="text">
                                 <string>Raman Intensity Coeff5</string>
                                </property>
                               </widget>
                              </item>
                              <item row="7" column="1">
-                              <widget class="QLabel" name="label_195">
+                              <widget class="QLabel">
                                <property name="text">
                                 <string>Raman Intensity Coeff6</string>
                                </property>
@@ -5605,7 +5608,7 @@ QComboBox QListView
                     <property name="wpBox" stdset="0">
                      <bool>false</bool>
                     </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_13">
+                    <layout class="QVBoxLayout">
                      <property name="leftMargin">
                       <number>1</number>
                      </property>
@@ -5629,7 +5632,7 @@ QComboBox QListView
                        <property name="wpPanel" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_11">
+                       <layout class="QVBoxLayout">
                         <property name="leftMargin">
                          <number>1</number>
                         </property>
@@ -5643,7 +5646,7 @@ QComboBox QListView
                          <number>1</number>
                         </property>
                         <item>
-                         <widget class="QLabel" name="label_160x_2">
+                         <widget class="QLabel">
                           <property name="font">
                            <font>
                             <pointsize>10</pointsize>
@@ -5658,7 +5661,7 @@ QComboBox QListView
                         <item>
                          <layout class="QFormLayout" name="formLayout_ee_sub3_page_7">
                           <item row="1" column="1">
-                           <widget class="QLabel" name="label_4">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Library Type</string>
                             </property>
@@ -5761,35 +5764,35 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="2" column="1">
-                           <widget class="QLabel" name="label_8">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Library ID</string>
                             </property>
                            </widget>
                           </item>
                           <item row="3" column="1">
-                           <widget class="QLabel" name="label_9">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Scans to Average</string>
                             </property>
                            </widget>
                           </item>
                           <item row="4" column="1">
-                           <widget class="QLabel" name="label_12">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Min Ramp Pixels</string>
                             </property>
                            </widget>
                           </item>
                           <item row="5" column="1">
-                           <widget class="QLabel" name="label_15">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Min Peak Height</string>
                             </property>
                            </widget>
                           </item>
                           <item row="6" column="1">
-                           <widget class="QLabel" name="label_17">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Match Threshold</string>
                             </property>
@@ -5812,7 +5815,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item row="7" column="1">
-                           <widget class="QLabel" name="label_23">
+                           <widget class="QLabel">
                             <property name="text">
                              <string>Library Count</string>
                             </property>
@@ -5834,7 +5837,7 @@ QComboBox QListView
                     <property name="frameShadow">
                      <enum>QFrame::Shadow::Raised</enum>
                     </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_134">
+                    <layout class="QVBoxLayout">
                      <property name="spacing">
                       <number>0</number>
                      </property>
@@ -5861,7 +5864,7 @@ QComboBox QListView
                        <property name="wpBox" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_133">
+                       <layout class="QVBoxLayout">
                         <property name="spacing">
                          <number>0</number>
                         </property>
@@ -5888,9 +5891,9 @@ QComboBox QListView
                           <property name="wpPanel" stdset="0">
                            <bool>false</bool>
                           </property>
-                          <layout class="QVBoxLayout" name="verticalLayout_131">
+                          <layout class="QVBoxLayout">
                            <item>
-                            <widget class="QLabel" name="label_70">
+                            <widget class="QLabel">
                              <property name="font">
                               <font>
                                <pointsize>10</pointsize>
@@ -5918,7 +5921,7 @@ QComboBox QListView
                               </widget>
                              </item>
                              <item row="0" column="1">
-                              <widget class="QLabel" name="label_71">
+                              <widget class="QLabel">
                                <property name="text">
                                 <string>Spline Point Count</string>
                                </property>
@@ -5935,7 +5938,7 @@ QComboBox QListView
                               </widget>
                              </item>
                              <item row="1" column="1">
-                              <widget class="QLabel" name="label_72">
+                              <widget class="QLabel">
                                <property name="text">
                                 <string>Wavelength Min</string>
                                </property>
@@ -5952,7 +5955,7 @@ QComboBox QListView
                               </widget>
                              </item>
                              <item row="2" column="1">
-                              <widget class="QLabel" name="label_189">
+                              <widget class="QLabel">
                                <property name="text">
                                 <string>Wavelength Max</string>
                                </property>
@@ -5968,7 +5971,7 @@ QComboBox QListView
                              <property name="frameShadow">
                               <enum>QFrame::Shadow::Raised</enum>
                              </property>
-                             <layout class="QGridLayout" name="gridLayout_5">
+                             <layout class="QGridLayout">
                               <item row="13" column="0">
                                <widget class="QLineEdit" name="lineEdit_ee_spline_wl_12" />
                               </item>
@@ -5994,7 +5997,7 @@ QComboBox QListView
                                <widget class="QLineEdit" name="lineEdit_ee_spline_y2_7" />
                               </item>
                               <item row="0" column="2">
-                               <widget class="QLabel" name="label_198">
+                               <widget class="QLabel">
                                 <property name="text">
                                  <string>Y2</string>
                                 </property>
@@ -6016,7 +6019,7 @@ QComboBox QListView
                                <widget class="QLineEdit" name="lineEdit_ee_spline_y2_2" />
                               </item>
                               <item row="0" column="0">
-                               <widget class="QLabel" name="label_191">
+                               <widget class="QLabel">
                                 <property name="text">
                                  <string>Wavelength</string>
                                 </property>
@@ -6041,7 +6044,7 @@ QComboBox QListView
                                <widget class="QLineEdit" name="lineEdit_ee_spline_y2_0" />
                               </item>
                               <item row="0" column="1">
-                               <widget class="QLabel" name="label_197">
+                               <widget class="QLabel">
                                 <property name="text">
                                  <string>Y</string>
                                 </property>
@@ -6136,7 +6139,7 @@ QComboBox QListView
                     <property name="frameShadow">
                      <enum>QFrame::Shadow::Raised</enum>
                     </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_130">
+                    <layout class="QVBoxLayout">
                      <property name="leftMargin">
                       <number>0</number>
                      </property>
@@ -6162,7 +6165,7 @@ QComboBox QListView
                     <property name="frameShadow">
                      <enum>QFrame::Shadow::Raised</enum>
                     </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_130x">
+                    <layout class="QVBoxLayout">
                      <property name="leftMargin">
                       <number>0</number>
                      </property>
@@ -6186,7 +6189,7 @@ QComboBox QListView
                        <property name="wpBox" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_129x">
+                       <layout class="QVBoxLayout">
                         <property name="leftMargin">
                          <number>0</number>
                         </property>
@@ -6210,9 +6213,9 @@ QComboBox QListView
                           <property name="wpPanel" stdset="0">
                            <bool>false</bool>
                           </property>
-                          <layout class="QVBoxLayout" name="verticalLayout_128x">
+                          <layout class="QVBoxLayout">
                            <item>
-                            <widget class="QLabel" name="label_199x">
+                            <widget class="QLabel">
                              <property name="font">
                               <font>
                                <pointsize>10</pointsize>
@@ -6227,7 +6230,7 @@ QComboBox QListView
                            <item>
                             <layout class="QFormLayout" name="formLayout_ee_sub5_page_7">
 
-                             <item row="0" column="1"> <widget class="QLabel" name="label_24x"> <property name="text"> <string>2nd Excitation Wavelength (nm)</string> </property> </widget> </item>
+                             <item row="0" column="1"> <widget class="QLabel"> <property name="text"> <string>2nd Excitation Wavelength (nm)</string> </property> </widget> </item>
                              <item row="0" column="0">
                               <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_excitation_nm_float">
                                <property name="sizePolicy"> <sizepolicy hsizetype="Minimum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
@@ -6240,22 +6243,22 @@ QComboBox QListView
                               </widget>
                              </item>
 
-                             <item row="1" column="1"> <widget class="QLabel" name="label_32x"> <property name="text"> <string>2nd Wavelength Coeff 0</string> </property> </widget> </item>
+                             <item row="1" column="1"> <widget class="QLabel"> <property name="text"> <string>2nd Wavelength Coeff 0</string> </property> </widget> </item>
                              <item row="1" column="0"> <widget class="QLineEdit" name="lineEdit_ee_sub5_wavelength_coeff_0"> <property name="text"> <string>0</string> </property> </widget> </item>
 
-                             <item row="2" column="1"> <widget class="QLabel" name="label_34x"> <property name="text"> <string>2nd Wavelength Coeff 1</string> </property> </widget> </item>
+                             <item row="2" column="1"> <widget class="QLabel"> <property name="text"> <string>2nd Wavelength Coeff 1</string> </property> </widget> </item>
                              <item row="2" column="0"> <widget class="QLineEdit" name="lineEdit_ee_sub5_wavelength_coeff_1"> <property name="text"> <string>0</string> </property> </widget> </item>
 
-                             <item row="3" column="1"> <widget class="QLabel" name="label_35x"> <property name="text"> <string>2nd Wavelength Coeff 2</string> </property> </widget> </item>
+                             <item row="3" column="1"> <widget class="QLabel"> <property name="text"> <string>2nd Wavelength Coeff 2</string> </property> </widget> </item>
                              <item row="3" column="0"> <widget class="QLineEdit" name="lineEdit_ee_sub5_wavelength_coeff_2"> <property name="text"> <string>0</string> </property> </widget> </item>
 
-                             <item row="4" column="1"> <widget class="QLabel" name="label_36x"> <property name="text"> <string>2nd Wavelength Coeff 3</string> </property> </widget> </item>
+                             <item row="4" column="1"> <widget class="QLabel"> <property name="text"> <string>2nd Wavelength Coeff 3</string> </property> </widget> </item>
                              <item row="4" column="0"> <widget class="QLineEdit" name="lineEdit_ee_sub5_wavelength_coeff_3"> <property name="text"> <string>0</string> </property> </widget> </item>
 
-                             <item row="5" column="1"> <widget class="QLabel" name="label_37x"> <property name="text"> <string>2nd Wavelength Coeff 4</string> </property> </widget> </item>
+                             <item row="5" column="1"> <widget class="QLabel"> <property name="text"> <string>2nd Wavelength Coeff 4</string> </property> </widget> </item>
                              <item row="5" column="0"> <widget class="QLineEdit" name="lineEdit_ee_sub5_wavelength_coeff_4"> <property name="text"> <string>0</string> </property> </widget> </item>
 
-                             <item row="6" column="1"> <widget class="QLabel" name="label_38x"> <property name="text"> <string>2nd Horizontal ROI Start Pixel</string> </property> </widget> </item>
+                             <item row="6" column="1"> <widget class="QLabel"> <property name="text"> <string>2nd Horizontal ROI Start Pixel</string> </property> </widget> </item>
                              <item row="6" column="0">
                               <widget class="QSpinBox" name="spinBox_ee_sub5_roi_horizontal_start">
                                <property name="sizePolicy"> <sizepolicy hsizetype="Maximum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
@@ -6265,7 +6268,7 @@ QComboBox QListView
                               </widget>
                              </item>
 
-                             <item row="7" column="1"> <widget class="QLabel" name="label_39x"> <property name="text"> <string>2nd Horizontal ROI End Pixel</string> </property> </widget> </item>
+                             <item row="7" column="1"> <widget class="QLabel"> <property name="text"> <string>2nd Horizontal ROI End Pixel</string> </property> </widget> </item>
                              <item row="7" column="0">
                               <widget class="QSpinBox" name="spinBox_ee_sub5_roi_horizontal_end">
                                <property name="sizePolicy"> <sizepolicy hsizetype="Maximum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
@@ -6275,7 +6278,7 @@ QComboBox QListView
                               </widget>
                              </item>
 
-                             <item row="8" column="1"> <widget class="QLabel" name="label_39aa"> <property name="text"> <string>2nd Average FWHM</string> </property> </widget> </item>
+                             <item row="8" column="1"> <widget class="QLabel"> <property name="text"> <string>2nd Average FWHM</string> </property> </widget> </item>
                              <item row="8" column="0">
                               <widget class="QDoubleSpinBox" name="doubleSpinBox_ee_sub5_avg_resolution">
                                <property name="sizePolicy"> <sizepolicy hsizetype="Minimum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
@@ -6285,28 +6288,28 @@ QComboBox QListView
                               </widget>
                              </item>
 
-                             <item row="9" column="1"> <widget class="QLabel" name="label_39ab"> <property name="text"> <string>2nd Raman Intensity Coeff0</string> </property> </widget> </item>
+                             <item row="9" column="1"> <widget class="QLabel"> <property name="text"> <string>2nd Raman Intensity Coeff0</string> </property> </widget> </item>
                              <item row="9" column="0"> <widget class="QLineEdit" name="lineEdit_ee_sub5_raman_intensity_coeff_0"> <property name="text"> <string>0</string> </property> </widget> </item>
 
-                             <item row="10" column="1"> <widget class="QLabel" name="label_39ac"> <property name="text"> <string>2nd Raman Intensity Coeff1</string> </property> </widget> </item>
+                             <item row="10" column="1"> <widget class="QLabel"> <property name="text"> <string>2nd Raman Intensity Coeff1</string> </property> </widget> </item>
                              <item row="10" column="0"> <widget class="QLineEdit" name="lineEdit_ee_sub5_raman_intensity_coeff_1"> <property name="text"> <string>0</string> </property> </widget> </item>
 
-                             <item row="11" column="1"> <widget class="QLabel" name="label_39ad"> <property name="text"> <string>2nd Raman Intensity Coeff2</string> </property> </widget> </item>
+                             <item row="11" column="1"> <widget class="QLabel"> <property name="text"> <string>2nd Raman Intensity Coeff2</string> </property> </widget> </item>
                              <item row="11" column="0"> <widget class="QLineEdit" name="lineEdit_ee_sub5_raman_intensity_coeff_2"> <property name="text"> <string>0</string> </property> </widget> </item>
 
-                             <item row="12" column="1"> <widget class="QLabel" name="label_39ae"> <property name="text"> <string>2nd Raman Intensity Coeff3</string> </property> </widget> </item>
+                             <item row="12" column="1"> <widget class="QLabel"> <property name="text"> <string>2nd Raman Intensity Coeff3</string> </property> </widget> </item>
                              <item row="12" column="0"> <widget class="QLineEdit" name="lineEdit_ee_sub5_raman_intensity_coeff_3"> <property name="text"> <string>0</string> </property> </widget> </item>
 
-                             <item row="13" column="1"> <widget class="QLabel" name="label_39af"> <property name="text"> <string>2nd Raman Intensity Coeff4</string> </property> </widget> </item>
+                             <item row="13" column="1"> <widget class="QLabel"> <property name="text"> <string>2nd Raman Intensity Coeff4</string> </property> </widget> </item>
                              <item row="13" column="0"> <widget class="QLineEdit" name="lineEdit_ee_sub5_raman_intensity_coeff_4"> <property name="text"> <string>0</string> </property> </widget> </item>
 
-                             <item row="14" column="1"> <widget class="QLabel" name="label_39ag"> <property name="text"> <string>2nd Raman Intensity Coeff5</string> </property> </widget> </item>
+                             <item row="14" column="1"> <widget class="QLabel"> <property name="text"> <string>2nd Raman Intensity Coeff5</string> </property> </widget> </item>
                              <item row="14" column="0"> <widget class="QLineEdit" name="lineEdit_ee_sub5_raman_intensity_coeff_5"> <property name="text"> <string>0</string> </property> </widget> </item>
 
-                             <item row="15" column="1"> <widget class="QLabel" name="label_39ah"> <property name="text"> <string>2nd Raman Intensity Coeff6</string> </property> </widget> </item>
+                             <item row="15" column="1"> <widget class="QLabel"> <property name="text"> <string>2nd Raman Intensity Coeff6</string> </property> </widget> </item>
                              <item row="15" column="0"> <widget class="QLineEdit" name="lineEdit_ee_sub5_raman_intensity_coeff_6"> <property name="text"> <string>0</string> </property> </widget> </item>
 
-                             <item row="16" column="1"> <widget class="QLabel" name="label_39ai"> <property name="text"> <string>2nd Horizontal Binning Mode</string> </property> </widget> </item>
+                             <item row="16" column="1"> <widget class="QLabel"> <property name="text"> <string>2nd Horizontal Binning Mode</string> </property> </widget> </item>
                              <item row="16" column="0">
                               <widget class="QSpinBox" name="spinBox_ee_sub5_horiz_binning_mode">
                                <property name="sizePolicy"> <sizepolicy hsizetype="Maximum" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
@@ -6338,7 +6341,7 @@ QComboBox QListView
                     <property name="wpBox" stdset="0">
                      <bool>false</bool>
                     </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_118y">
+                    <layout class="QVBoxLayout">
                      <property name="spacing">
                       <number>0</number>
                      </property>
@@ -6365,9 +6368,9 @@ QComboBox QListView
                        <property name="wpPanel" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_76y">
+                       <layout class="QVBoxLayout">
                         <item>
-                         <widget class="QLabel" name="label_160y">
+                         <widget class="QLabel">
                           <property name="font">
                            <font>
                             <pointsize>10</pointsize>
@@ -6387,54 +6390,160 @@ QComboBox QListView
 
                           <item row="0" column="0">
                            <widget class="QLineEdit" name="lineEdit_ee_laser_password">
-                            <property name="echoMode">
-                             <enum>QLineEdit::PasswordEchoOnEdit</enum>
-                            </property>
+                            <property name="echoMode"> <enum>QLineEdit::PasswordEchoOnEdit</enum> </property>
                            </widget>
                           </item>
-                          <item row="0" column="1">
-                           <widget class="QLabel" name="label_200xy">
-                            <property name="text">
-                             <string>XS Laser Password</string>
-                            </property>
-                           </widget>
-                          </item>
+                          <item row="0" column="1"> <widget class="QLabel"> <property name="text"> <string>XS Laser Password</string> </property> </widget> </item>
 
-                          <item row="1" column="0">
+                          <item row="1" column="0"> <widget class="QCheckBox" name="checkBox_ee_ble_door_sensor" /> </item>
+                          <item row="1" column="1"> <widget class="QLabel"><property name="text"><string>BLE Door Sensor</string></property></widget> </item>
+
+                          <item row="2" column="0"> <widget class="QCheckBox" name="checkBox_ee_ext_laser_control" /> </item>
+                          <item row="2" column="1"> <widget class="QLabel"><property name="text"><string>External Laser Control</string></property></widget> </item>
+
+                          <item row="3" column="0"> <widget class="QCheckBox" name="checkBox_ee_aux_button_laser_enable" /> </item>
+                          <item row="3" column="1"> <widget class="QLabel"><property name="text"><string>Aux Button can enable laser</string></property></widget> </item>
+
+                          <item row="4" column="0"> <widget class="QCheckBox" name="checkBox_ee_disable_laser_sub_sys" /> </item>
+                          <item row="4" column="1"> <widget class="QLabel"><property name="text"><string>Disable laser sub-system</string></property></widget> </item>
+
+                          <item row="5" column="0"> <widget class="QCheckBox" name="checkBox_ee_leave_acc_5v_out_powered" /> </item>
+                          <item row="5" column="1"> <widget class="QLabel"><property name="text"><string>Leave ACC_5V_OUT powered on disconnect</string></property></widget> </item>
+
+                          <item row="6" column="0">
+                           <widget class="QLineEdit" name="lineEdit_ee_acc_state">
+                            <property name="inputMask"> <string>\0\xHHHH</string> </property>
+                           </widget>
+                          </item>
+                          <item row="6" column="1"><widget class="QLabel"><property name="text"><string>Accessory State</string></property></widget></item>
+
+                          <item row="7" column="0">
+                           <widget class="QLineEdit" name="lineEdit_ee_acc_gpio1_state">
+                            <property name="inputMask"> <string>\0\xHH</string> </property>
+                           </widget>
+                          </item>
+                          <item row="7" column="1"><widget class="QLabel"><property name="text"><string>Acc. GPIO1 State</string></property></widget></item>
+
+                          <item row="8" column="0">
+                           <widget class="QLineEdit" name="lineEdit_ee_acc_gpio2_state">
+                            <property name="inputMask"> <string>\0\xHH</string> </property>
+                           </widget>
+                          </item>
+                          <item row="8" column="1"><widget class="QLabel"><property name="text"><string>Acc. GPIO2 State</string></property></widget></item>
+
+                          <item row="9" column="0">
+                           <widget class="QSpinBox" name="spinBox_ee_acc_cont_strobe_period_us">
+                            <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
+                            <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                            <property name="keyboardTracking"> <bool>false</bool> </property>
+                            <property name="minimum">    <number>0</number> </property>
+                            <property name="maximum">    <number>4294967295</number> </property>
+                            <property name="singleStep"> <number>1</number> </property>
+                            <property name="value">      <number>0</number> </property>
+                           </widget>
+                          </item>
+                          <item row="9" column="1"><widget class="QLabel"><property name="text"><string>Acc. Cont. Strobe Period (µs)</string></property></widget></item>
+
+                          <item row="10" column="0">
+                           <widget class="QSpinBox" name="spinBox_ee_acc_cont_strobe_width_us">
+                            <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
+                            <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                            <property name="keyboardTracking"> <bool>false</bool> </property>
+                            <property name="minimum">    <number>0</number> </property>
+                            <property name="maximum">    <number>4294967295</number> </property>
+                            <property name="singleStep"> <number>1</number> </property>
+                            <property name="value">      <number>0</number> </property>
+                           </widget>
+                          </item>
+                          <item row="10" column="1"><widget class="QLabel"><property name="text"><string>Acc. Cont. Strobe Width (µs)</string></property></widget></item>
+
+                          <item row="11" column="0">
+                           <widget class="QSpinBox" name="spinBox_ee_acc_cont_strobe_delay_us">
+                            <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
+                            <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                            <property name="keyboardTracking"> <bool>false</bool> </property>
+                            <property name="minimum">    <number>0</number> </property>
+                            <property name="maximum">    <number>4294967295</number> </property>
+                            <property name="singleStep"> <number>1</number> </property>
+                            <property name="value">      <number>0</number> </property>
+                           </widget>
+                          </item>
+                          <item row="11" column="1"><widget class="QLabel"><property name="text"><string>Acc. Cont. Strobe Delay (µs)</string></property></widget></item>
+
+                          <item row="12" column="0">
+                           <widget class="QSpinBox" name="spinBox_ee_acc_cont_strobe_count">
+                            <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
+                            <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                            <property name="keyboardTracking"> <bool>false</bool> </property>
+                            <property name="minimum">    <number>0</number> </property>
+                            <property name="maximum">    <number>4294967295</number> </property>
+                            <property name="singleStep"> <number>1</number> </property>
+                            <property name="value">      <number>0</number> </property>
+                           </widget>
+                          </item>
+                          <item row="12" column="1"><widget class="QLabel"><property name="text"><string>Acc. Cont. Strobe Count</string></property></widget></item>
+
+                          <item row="13" column="0">
+                           <widget class="QSpinBox" name="spinBox_ee_max_battery_temp_deg_c">
+                            <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
+                            <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                            <property name="keyboardTracking"> <bool>false</bool> </property>
+                            <property name="minimum">    <number>0</number> </property>
+                            <property name="maximum">    <number>100</number> </property>
+                            <property name="singleStep"> <number>1</number> </property>
+                            <property name="value">      <number>0</number> </property>
+                           </widget>
+                          </item>
+                          <item row="13" column="1"><widget class="QLabel"><property name="text"><string>Max Battery Temp (Celsius)</string></property></widget></item>
+
+                          <item row="14" column="0">
                            <widget class="QSpinBox" name="spinBox_ee_pixel_correction_type">
-                            <property name="minimumSize">
-                             <size>
-                              <width>125</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="alignment">
-                             <set>Qt::AlignmentFlag::AlignCenter</set>
-                            </property>
-                            <property name="keyboardTracking">
-                             <bool>false</bool>
-                            </property>
-                            <property name="minimum">
-                             <number>0</number>
-                            </property>
-                            <property name="maximum">
-                             <number>255</number>
-                            </property>
-                            <property name="singleStep">
-                             <number>1</number>
-                            </property>
-                            <property name="value">
-                             <number>0</number>
-                            </property>
+                            <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
+                            <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                            <property name="keyboardTracking"> <bool>false</bool> </property>
+                            <property name="minimum">    <number>0</number> </property>
+                            <property name="maximum">    <number>255</number> </property>
+                            <property name="singleStep"> <number>1</number> </property>
+                            <property name="value">      <number>0</number> </property>
                            </widget>
                           </item>
-                          <item row="0" column="1">
-                           <widget class="QLabel" name="label_200x">
-                            <property name="text">
-                             <string>Pixel Correction Type</string>
-                            </property>
+                          <item row="14" column="1"><widget class="QLabel"><property name="text"><string>Pixel Correction Type</string></property></widget></item>
+
+                          <item row="15" column="0"> <widget class="QLineEdit" name="lineEdit_ee_usb_manufacturer_name"> </widget> </item>
+                          <item row="15" column="1"><widget class="QLabel"><property name="text"><string>USB Manufacturer Name</string></property></widget></item>
+
+                          <item row="16" column="0">
+                           <widget class="QSpinBox" name="spinBox_ee_aux_button_function">
+                            <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
+                            <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                            <property name="keyboardTracking"> <bool>false</bool> </property>
+                            <property name="minimum">    <number>0</number> </property>
+                            <property name="maximum">    <number>255</number> </property>
+                            <property name="singleStep"> <number>1</number> </property>
+                            <property name="value">      <number>0</number> </property>
                            </widget>
                           </item>
+                          <item row="16" column="1"><widget class="QLabel"><property name="text"><string>Aux Button Function</string></property></widget></item>
+
+                          <item row="17" column="0">
+                           <widget class="QSpinBox" name="spinBox_ee_aux_button_param">
+                            <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
+                            <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                            <property name="keyboardTracking"> <bool>false</bool> </property>
+                            <property name="minimum">    <number>0</number> </property>
+                            <property name="maximum">    <number>255</number> </property>
+                            <property name="singleStep"> <number>1</number> </property>
+                            <property name="value">      <number>0</number> </property>
+                           </widget>
+                          </item>
+                          <item row="17" column="1"><widget class="QLabel"><property name="text"><string>Aux Button Param</string></property></widget></item>
+
+                          <item row="18" column="0">
+                           <widget class="QLineEdit" name="lineEdit_ee_latched_hardware_failures">
+                            <property name="inputMask"> <string>\0\xHH</string> </property>
+                           </widget>
+                          </item>
+                          <item row="18" column="1"><widget class="QLabel"><property name="text"><string>Latched Hardware Failures</string></property></widget></item>
 
                          </layout>
                         </item>
@@ -6459,9 +6568,9 @@ QComboBox QListView
                 <height>0</height>
                </size>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_78">
+              <layout class="QVBoxLayout">
                <item>
-                <widget class="QLabel" name="label_139">
+                <widget class="QLabel">
                  <property name="font">
                   <font>
                    <pointsize>10</pointsize>
@@ -6474,7 +6583,7 @@ QComboBox QListView
                 </widget>
                </item>
                <item>
-                <layout class="QFormLayout" name="formLayout_19">
+                <layout class="QFormLayout">
                  <item row="0" column="0">
                   <widget class="QLabel" name="label_fpga_integration_time_resolution">
                    <property name="text">
@@ -6483,7 +6592,7 @@ QComboBox QListView
                   </widget>
                  </item>
                  <item row="0" column="1">
-                  <widget class="QLabel" name="label_14">
+                  <widget class="QLabel">
                    <property name="text">
                     <string>Integration Time Resolution</string>
                    </property>
@@ -6497,7 +6606,7 @@ QComboBox QListView
                   </widget>
                  </item>
                  <item row="1" column="1">
-                  <widget class="QLabel" name="label_18">
+                  <widget class="QLabel">
                    <property name="text">
                     <string>Data Header</string>
                    </property>
@@ -6511,7 +6620,7 @@ QComboBox QListView
                   </widget>
                  </item>
                  <item row="2" column="1">
-                  <widget class="QLabel" name="label_20">
+                  <widget class="QLabel">
                    <property name="text">
                     <string>Has CF_SELECT</string>
                    </property>
@@ -6525,7 +6634,7 @@ QComboBox QListView
                   </widget>
                  </item>
                  <item row="3" column="1">
-                  <widget class="QLabel" name="label_22">
+                  <widget class="QLabel">
                    <property name="text">
                     <string>Laser Type</string>
                    </property>
@@ -6539,7 +6648,7 @@ QComboBox QListView
                   </widget>
                  </item>
                  <item row="4" column="1">
-                  <widget class="QLabel" name="label_26">
+                  <widget class="QLabel">
                    <property name="text">
                     <string>Laser Control</string>
                    </property>
@@ -6553,7 +6662,7 @@ QComboBox QListView
                   </widget>
                  </item>
                  <item row="5" column="1">
-                  <widget class="QLabel" name="label_28">
+                  <widget class="QLabel">
                    <property name="text">
                     <string>Has Area Scan</string>
                    </property>
@@ -6567,7 +6676,7 @@ QComboBox QListView
                   </widget>
                  </item>
                  <item row="6" column="1">
-                  <widget class="QLabel" name="label_30">
+                  <widget class="QLabel">
                    <property name="text">
                     <string>Has Actual Integration Time</string>
                    </property>
@@ -6581,7 +6690,7 @@ QComboBox QListView
                   </widget>
                  </item>
                  <item row="7" column="1">
-                  <widget class="QLabel" name="label_33">
+                  <widget class="QLabel">
                    <property name="text">
                     <string>Has Horizontal Binning</string>
                    </property>
@@ -6600,9 +6709,9 @@ QComboBox QListView
                 <height>0</height>
                </size>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_79">
+              <layout class="QVBoxLayout">
                <item>
-                <widget class="QLabel" name="label_140">
+                <widget class="QLabel">
                  <property name="font">
                   <font>
                    <pointsize>10</pointsize>
@@ -6615,7 +6724,7 @@ QComboBox QListView
                 </widget>
                </item>
                <item>
-                <layout class="QFormLayout" name="formLayout_20">
+                <layout class="QFormLayout">
                  <property name="fieldGrowthPolicy">
                   <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
                  </property>
@@ -6627,7 +6736,7 @@ QComboBox QListView
                   </widget>
                  </item>
                  <item row="0" column="0">
-                  <widget class="QLabel" name="label_27">
+                  <widget class="QLabel">
                    <property name="text">
                     <string>Microcontroller Firmware</string>
                    </property>
@@ -6641,7 +6750,7 @@ QComboBox QListView
                   </widget>
                  </item>
                  <item row="1" column="0">
-                  <widget class="QLabel" name="label_165">
+                  <widget class="QLabel">
                    <property name="text">
                     <string>FPGA Firmware</string>
                    </property>
@@ -6655,7 +6764,7 @@ QComboBox QListView
                   </widget>
                  </item>
                  <item row="2" column="0">
-                  <widget class="QLabel" name="label_165x">
+                  <widget class="QLabel">
                    <property name="text">
                     <string>Bluetooth® LE Firmware Version</string>
                    </property>
@@ -6669,7 +6778,7 @@ QComboBox QListView
                   </widget>
                  </item>
                  <item row="3" column="0">
-                  <widget class="QLabel" name="label_172">
+                  <widget class="QLabel">
                    <property name="text">
                     <string>Microcontroller Serial Number</string>
                    </property>
@@ -6683,7 +6792,7 @@ QComboBox QListView
                   </widget>
                  </item>
                  <item row="4" column="0">
-                  <widget class="QLabel" name="label_172x">
+                  <widget class="QLabel">
                    <property name="text">
                     <string>Detector Serial Number</string>
                    </property>
@@ -6697,7 +6806,7 @@ QComboBox QListView
                   </widget>
                  </item>
                  <item row="5" column="0">
-                  <widget class="QLabel" name="label_19">
+                  <widget class="QLabel">
                    <property name="text">
                     <string>Raw CCD Temperature</string>
                    </property>
@@ -6711,7 +6820,7 @@ QComboBox QListView
                   </widget>
                  </item>
                  <item row="6" column="0">
-                  <widget class="QLabel" name="label_25">
+                  <widget class="QLabel">
                    <property name="text">
                     <string>Raw Secondary ADC</string>
                    </property>
@@ -6739,7 +6848,7 @@ QComboBox QListView
                   </widget>
                  </item>
                  <item row="8" column="0">
-                  <widget class="QLabel" name="label_236">
+                  <widget class="QLabel">
                    <property name="text">
                     <string>Ambient Temperature</string>
                    </property>
@@ -6756,7 +6865,7 @@ QComboBox QListView
                   </widget>
                  </item>
                  <item row="9" column="0">
-                  <widget class="QLabel" name="label_236y">
+                  <widget class="QLabel">
                    <property name="text">
                     <string>Power Connection State</string>
                    </property>
@@ -6773,7 +6882,7 @@ QComboBox QListView
                   </widget>
                  </item>
                  <item row="10" column="0">
-                  <widget class="QLabel" name="label_236x">
+                  <widget class="QLabel">
                    <property name="text">
                     <string>Assembly Revision</string>
                    </property>
@@ -6786,9 +6895,9 @@ QComboBox QListView
             </item>
             <item>
              <widget class="QFrame" name="frame_python_settings">
-              <layout class="QVBoxLayout" name="verticalLayout_102">
+              <layout class="QVBoxLayout">
                <item>
-                <widget class="QLabel" name="label_181">
+                <widget class="QLabel">
                  <property name="font">
                   <font>
                    <pointsize>10</pointsize>
@@ -6801,7 +6910,7 @@ QComboBox QListView
                 </widget>
                </item>
                <item>
-                <layout class="QFormLayout" name="formLayout_25">
+                <layout class="QFormLayout">
                  <property name="fieldGrowthPolicy">
                   <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
                  </property>
@@ -6813,7 +6922,7 @@ QComboBox QListView
                   </widget>
                  </item>
                  <item row="0" column="1">
-                  <widget class="QLabel" name="label_186">
+                  <widget class="QLabel">
                    <property name="text">
                     <string>Python Version</string>
                    </property>
@@ -6827,7 +6936,7 @@ QComboBox QListView
                   </widget>
                  </item>
                  <item row="1" column="1">
-                  <widget class="QLabel" name="label_183">
+                  <widget class="QLabel">
                    <property name="text">
                     <string>Process Size (RSS)</string>
                    </property>
@@ -6841,7 +6950,7 @@ QComboBox QListView
                   </widget>
                  </item>
                  <item row="2" column="1">
-                  <widget class="QLabel" name="label_184">
+                  <widget class="QLabel">
                    <property name="text">
                     <string>Process Growth</string>
                    </property>
@@ -6860,9 +6969,9 @@ QComboBox QListView
                 <height>0</height>
                </size>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_80">
+              <layout class="QVBoxLayout">
                <item>
-                <layout class="QFormLayout" name="formLayout_21">
+                <layout class="QFormLayout">
                  <item row="0" column="0">
                   <widget class="QPushButton" name="pushButton_save_ini">
                    <property name="minimumSize">
@@ -7048,9 +7157,9 @@ QComboBox QListView
              <attribute name="title">
               <string>Manufacturing</string>
              </attribute>
-             <layout class="QVBoxLayout" name="verticalLayout_12">
+             <layout class="QVBoxLayout">
               <item>
-               <widget class="QLabel" name="label_68">
+               <widget class="QLabel">
                 <property name="text">
                  <string>Firmware Updates</string>
                 </property>
@@ -7067,7 +7176,7 @@ QComboBox QListView
                 <property name="wpBox" stdset="0">
                  <bool>false</bool>
                 </property>
-                <layout class="QVBoxLayout" name="verticalLayout_132">
+                <layout class="QVBoxLayout">
                  <property name="spacing">
                   <number>0</number>
                  </property>
@@ -7094,7 +7203,7 @@ QComboBox QListView
                    <property name="wpGrad" stdset="0">
                     <bool>false</bool>
                    </property>
-                   <layout class="QHBoxLayout" name="horizontalLayout_23">
+                   <layout class="QHBoxLayout">
                     <item>
                      <widget class="QPushButton" name="pushButton_mfg_dfu">
                       <property name="minimumSize">
@@ -7146,9 +7255,9 @@ QComboBox QListView
              <attribute name="title">
               <string>OEM</string>
              </attribute>
-             <layout class="QVBoxLayout" name="verticalLayout_67">
+             <layout class="QVBoxLayout">
               <item>
-               <widget class="QLabel" name="label_56">
+               <widget class="QLabel">
                 <property name="text">
                  <string>Graph Control</string>
                 </property>
@@ -7159,7 +7268,7 @@ QComboBox QListView
                 <property name="wpBox" stdset="0">
                  <bool>false</bool>
                 </property>
-                <layout class="QVBoxLayout" name="verticalLayout_121">
+                <layout class="QVBoxLayout">
                  <property name="spacing">
                   <number>0</number>
                  </property>
@@ -7180,7 +7289,7 @@ QComboBox QListView
                    <property name="wpGrad" stdset="0">
                     <bool>false</bool>
                    </property>
-                   <layout class="QVBoxLayout" name="verticalLayout_122">
+                   <layout class="QVBoxLayout">
                     <item>
                      <widget class="QCheckBox" name="checkBox_graph_alternating_pixels">
                       <property name="text">
@@ -7241,7 +7350,7 @@ QComboBox QListView
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <layout class="QHBoxLayout">
          <property name="spacing">
           <number>0</number>
          </property>
@@ -7274,7 +7383,7 @@ QComboBox QListView
            <property name="lineWidth">
             <number>1</number>
            </property>
-           <layout class="QGridLayout" name="gridLayout_38">
+           <layout class="QGridLayout">
             <property name="leftMargin">
              <number>0</number>
             </property>
@@ -7307,7 +7416,7 @@ QComboBox QListView
               <property name="lineWidth">
                <number>1</number>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_25">
+              <layout class="QVBoxLayout">
                <item>
                 <widget class="QScrollArea" name="scrollArea">
                  <property name="sizePolicy">
@@ -7344,7 +7453,7 @@ QComboBox QListView
                       <string notr="true" />
                      </property>
                      <widget class="QWidget" name="page_hardware_capture_details_spectrum">
-                      <layout class="QVBoxLayout" name="verticalLayout_43">
+                      <layout class="QVBoxLayout">
                        <item>
 
                         <widget class="QFrame" name="frame_area_scan_image">
@@ -7361,7 +7470,7 @@ QComboBox QListView
                           <enum>QFrame::Shadow::Raised</enum>
                          </property>
 
-                         <layout class="QHBoxLayout" name="horizontalLayout_54" stretch="0">
+                         <layout class="QHBoxLayout" stretch="0">
                           <item>
                            <layout class="QHBoxLayout" name="layout_area_scan_image">
                             <property name="spacing">
@@ -7405,7 +7514,7 @@ QComboBox QListView
                          <property name="frameShadow">
                           <enum>QFrame::Shadow::Raised</enum>
                          </property>
-                         <layout class="QHBoxLayout" name="horizontalLayout_57">
+                         <layout class="QHBoxLayout">
                           <item>
                            <layout class="QHBoxLayout" name="layout_area_scan_live" />
                           </item>
@@ -7457,9 +7566,9 @@ QComboBox QListView
                          <property name="frameShadow">
                           <enum>QFrame::Shadow::Raised</enum>
                          </property>
-                         <layout class="QHBoxLayout" name="horizontalLayout_5">
+                         <layout class="QHBoxLayout">
                           <item>
-                           <widget class="QLabel" name="label_43">
+                           <widget class="QLabel">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
                               <horstretch>0</horstretch>
@@ -7519,7 +7628,7 @@ QComboBox QListView
                          <property name="frameShadow">
                           <enum>QFrame::Shadow::Raised</enum>
                          </property>
-                         <layout class="QHBoxLayout" name="horizontalLayout_7">
+                         <layout class="QHBoxLayout">
                           <item>
                            <widget class="QLabel" name="label_continuous_file_capture">
                             <property name="sizePolicy">
@@ -7550,7 +7659,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item>
-                           <widget class="QLabel" name="label_44">
+                           <widget class="QLabel">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
                               <horstretch>0</horstretch>
@@ -7613,7 +7722,7 @@ QComboBox QListView
                          <property name="frameShadow">
                           <enum>QFrame::Shadow::Raised</enum>
                          </property>
-                         <layout class="QHBoxLayout" name="horizontalLayout_381">
+                         <layout class="QHBoxLayout">
                           <item>
                            <widget class="QSplitter" name="splitter_3">
                             <property name="orientation">
@@ -7629,7 +7738,7 @@ QComboBox QListView
                              <property name="lineWidth">
                               <number>1</number>
                              </property>
-                             <layout class="QHBoxLayout" name="horizontalLayout_58">
+                             <layout class="QHBoxLayout">
                               <property name="spacing">
                                <number>0</number>
                               </property>
@@ -7656,7 +7765,7 @@ QComboBox QListView
                                 <property name="frameShadow">
                                  <enum>QFrame::Shadow::Raised</enum>
                                 </property>
-                                <layout class="QVBoxLayout" name="verticalLayout_99">
+                                <layout class="QVBoxLayout">
                                  <property name="spacing">
                                   <number>0</number>
                                  </property>
@@ -7680,7 +7789,7 @@ QComboBox QListView
                                    <property name="frameShadow">
                                     <enum>QFrame::Shadow::Raised</enum>
                                    </property>
-                                   <layout class="QHBoxLayout" name="horizontalLayout_41">
+                                   <layout class="QHBoxLayout">
                                     <item>
                                      <widget class="QLabel" name="label_battery">
                                       <property name="font">
@@ -7799,7 +7908,7 @@ QComboBox QListView
                          <property name="frameShadow">
                           <enum>QFrame::Shadow::Raised</enum>
                          </property>
-                         <layout class="QHBoxLayout" name="horizontalLayout_8">
+                         <layout class="QHBoxLayout">
                           <item>
                            <widget class="QSplitter" name="splitter_laser_temperature">
                             <property name="orientation">
@@ -7815,7 +7924,7 @@ QComboBox QListView
                              <property name="lineWidth">
                               <number>1</number>
                              </property>
-                             <layout class="QHBoxLayout" name="horizontalLayout_56_laser">
+                             <layout class="QHBoxLayout">
                               <property name="spacing">
                                <number>0</number>
                               </property>
@@ -7842,7 +7951,7 @@ QComboBox QListView
                                 <property name="frameShadow">
                                  <enum>QFrame::Shadow::Raised</enum>
                                 </property>
-                                <layout class="QVBoxLayout" name="verticalLayout_82_laser">
+                                <layout class="QVBoxLayout">
                                  <property name="spacing">
                                   <number>0</number>
                                  </property>
@@ -7866,7 +7975,7 @@ QComboBox QListView
                                    <property name="frameShadow">
                                     <enum>QFrame::Shadow::Raised</enum>
                                    </property>
-                                   <layout class="QHBoxLayout" name="horizontalLayout_39">
+                                   <layout class="QHBoxLayout">
                                     <item>
                                      <widget class="QLabel" name="label_random_23525">
                                       <property name="font">
@@ -7985,7 +8094,7 @@ QComboBox QListView
                          <property name="frameShadow">
                           <enum>QFrame::Shadow::Raised</enum>
                          </property>
-                         <layout class="QHBoxLayout" name="horizontalLayout_8_amb">
+                         <layout class="QHBoxLayout">
                           <item>
                            <widget class="QSplitter" name="splitter_ambient_temperature">
                             <property name="orientation">
@@ -8001,7 +8110,7 @@ QComboBox QListView
                              <property name="lineWidth">
                               <number>1</number>
                              </property>
-                             <layout class="QHBoxLayout" name="horizontalLayout_56_amb">
+                             <layout class="QHBoxLayout">
                               <property name="spacing">
                                <number>0</number>
                               </property>
@@ -8028,7 +8137,7 @@ QComboBox QListView
                                 <property name="frameShadow">
                                  <enum>QFrame::Shadow::Raised</enum>
                                 </property>
-                                <layout class="QVBoxLayout" name="verticalLayout_82_amb">
+                                <layout class="QVBoxLayout">
                                  <property name="spacing">
                                   <number>0</number>
                                  </property>
@@ -8052,7 +8161,7 @@ QComboBox QListView
                                    <property name="frameShadow">
                                     <enum>QFrame::Shadow::Raised</enum>
                                    </property>
-                                   <layout class="QHBoxLayout" name="horizontalLayout_39_amb">
+                                   <layout class="QHBoxLayout">
                                     <item>
                                      <widget class="QLabel" name="label_random_23525_amb">
                                       <property name="font">
@@ -8171,7 +8280,7 @@ QComboBox QListView
                          <property name="frameShadow">
                           <enum>QFrame::Shadow::Raised</enum>
                          </property>
-                         <layout class="QHBoxLayout" name="horizontalLayout_25">
+                         <layout class="QHBoxLayout">
                           <item>
                            <widget class="QSplitter" name="splitter_detector_temperature">
                             <property name="orientation">
@@ -8187,7 +8296,7 @@ QComboBox QListView
                              <property name="lineWidth">
                               <number>1</number>
                              </property>
-                             <layout class="QHBoxLayout" name="horizontalLayout_64">
+                             <layout class="QHBoxLayout">
                               <property name="spacing">
                                <number>0</number>
                               </property>
@@ -8214,7 +8323,7 @@ QComboBox QListView
                                 <property name="frameShadow">
                                  <enum>QFrame::Shadow::Raised</enum>
                                 </property>
-                                <layout class="QVBoxLayout" name="verticalLayout_104">
+                                <layout class="QVBoxLayout">
                                  <property name="spacing">
                                   <number>0</number>
                                  </property>
@@ -8238,7 +8347,7 @@ QComboBox QListView
                                    <property name="frameShadow">
                                     <enum>QFrame::Shadow::Raised</enum>
                                    </property>
-                                   <layout class="QHBoxLayout" name="horizontalLayout_94">
+                                   <layout class="QHBoxLayout">
                                     <item>
                                      <widget class="QLabel" name="label_random_617">
                                       <property name="text">
@@ -8350,7 +8459,7 @@ QComboBox QListView
                  <property name="lineWidth">
                   <number>1</number>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_26">
+                 <layout class="QVBoxLayout">
                   <property name="spacing">
                    <number>0</number>
                   </property>
@@ -8377,7 +8486,7 @@ QComboBox QListView
                     <property name="frameShadow">
                      <enum>QFrame::Shadow::Raised</enum>
                     </property>
-                    <layout class="QHBoxLayout" name="horizontalLayout_4">
+                    <layout class="QHBoxLayout">
                      <property name="spacing">
                       <number>0</number>
                      </property>
@@ -8414,7 +8523,7 @@ QComboBox QListView
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_43">
+        <layout class="QHBoxLayout">
          <property name="spacing">
           <number>0</number>
          </property>
@@ -8456,7 +8565,7 @@ QComboBox QListView
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <layout class="QVBoxLayout" name="verticalLayout_92">
+            <layout class="QVBoxLayout">
              <property name="spacing">
               <number>0</number>
              </property>
@@ -8480,7 +8589,7 @@ QComboBox QListView
                  <height>16777215</height>
                 </size>
                </property>
-               <layout class="QHBoxLayout" name="horizontalLayout_27">
+               <layout class="QHBoxLayout">
                 <property name="spacing">
                  <number>0</number>
                 </property>
@@ -8510,13 +8619,13 @@ QComboBox QListView
                   <property name="frameShadow">
                    <enum>QFrame::Shadow::Raised</enum>
                   </property>
-                  <layout class="QVBoxLayout" name="verticalLayout_3">
+                  <layout class="QVBoxLayout">
                    <item>
                     <widget class="QFrame" name="frame_scopeSetup_saveLocation_white">
                      <property name="wpBox" stdset="0">
                       <bool>false</bool>
                      </property>
-                     <layout class="QVBoxLayout" name="verticalLayout_111">
+                     <layout class="QVBoxLayout">
                       <property name="spacing">
                        <number>0</number>
                       </property>
@@ -8537,7 +8646,7 @@ QComboBox QListView
                         <property name="wpPanel" stdset="0">
                          <bool>false</bool>
                         </property>
-                        <layout class="QVBoxLayout" name="verticalLayout_110">
+                        <layout class="QVBoxLayout">
                          <item>
                           <widget class="QLabel" name="label_rssd_timestamp_69">
                            <property name="sizePolicy">
@@ -8558,7 +8667,7 @@ QComboBox QListView
                           </widget>
                          </item>
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_9">
+                          <layout class="QHBoxLayout">
                            <property name="sizeConstraint">
                             <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
                            </property>
@@ -8579,12 +8688,12 @@ QComboBox QListView
                             </spacer>
                            </item>
                            <item>
-                            <layout class="QVBoxLayout" name="verticalLayout_125">
+                            <layout class="QVBoxLayout">
                              <property name="spacing">
                               <number>3</number>
                              </property>
                              <item>
-                              <layout class="QFormLayout" name="formLayout">
+                              <layout class="QFormLayout">
                                <property name="sizeConstraint">
                                 <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
                                </property>
@@ -8598,14 +8707,14 @@ QComboBox QListView
                                 <number>0</number>
                                </property>
                                <item row="0" column="0">
-                                <widget class="QLabel" name="label_rssd_timestamp_73">
+                                <widget class="QLabel">
                                  <property name="text">
                                   <string>Save Directory</string>
                                  </property>
                                 </widget>
                                </item>
                                <item row="0" column="1">
-                                <layout class="QHBoxLayout" name="horizontalLayout_20">
+                                <layout class="QHBoxLayout"> 
                                  <item>
                                   <widget class="QLabel" name="label_scope_setup_save_location">
                                    <property name="toolTip">
@@ -8747,7 +8856,7 @@ QComboBox QListView
                      <property name="wpBox" stdset="0">
                       <bool>false</bool>
                      </property>
-                     <layout class="QVBoxLayout" name="verticalLayout_109">
+                     <layout class="QVBoxLayout">
                       <property name="spacing">
                        <number>0</number>
                       </property>
@@ -8768,7 +8877,7 @@ QComboBox QListView
                         <property name="wpPanel" stdset="0">
                          <bool>false</bool>
                         </property>
-                        <layout class="QVBoxLayout" name="verticalLayout_8">
+                        <layout class="QVBoxLayout">
                          <item>
                           <widget class="QLabel" name="label_Saved_Data_Options">
                            <property name="sizePolicy">
@@ -8844,14 +8953,14 @@ QComboBox QListView
                                 <number>0</number>
                                </property>
                                <item row="0" column="0">
-                                <widget class="QLabel" name="label">
+                                <widget class="QLabel">
                                  <property name="text">
                                   <string>File Formats</string>
                                  </property>
                                 </widget>
                                </item>
                                <item row="0" column="2">
-                                <widget class="QLabel" name="label_6">
+                                <widget class="QLabel">
                                  <property name="text">
                                   <string>Optional Fields</string>
                                  </property>
@@ -8875,7 +8984,7 @@ QComboBox QListView
                                  <property name="title">
                                   <string />
                                  </property>
-                                 <layout class="QHBoxLayout" name="horizontalLayout_33">
+                                 <layout class="QHBoxLayout">
                                   <property name="spacing">
                                    <number>0</number>
                                   </property>
@@ -9104,7 +9213,7 @@ QComboBox QListView
                      <property name="wpBox" stdset="0">
                       <bool>false</bool>
                      </property>
-                     <layout class="QVBoxLayout" name="verticalLayout_126">
+                     <layout class="QVBoxLayout">
                       <property name="spacing">
                        <number>0</number>
                       </property>
@@ -9131,7 +9240,7 @@ QComboBox QListView
                         <property name="wpPanel" stdset="0">
                          <bool>false</bool>
                         </property>
-                        <layout class="QVBoxLayout" name="verticalLayout_127">
+                        <layout class="QVBoxLayout">
                          <item>
                           <widget class="QLabel" name="label_interpolation_title">
                            <property name="sizePolicy">
@@ -9152,7 +9261,7 @@ QComboBox QListView
                           </widget>
                          </item>
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_22">
+                          <layout class="QHBoxLayout">
                            <item>
                             <spacer name="horizontalSpacer_17">
                              <property name="orientation">
@@ -9170,7 +9279,7 @@ QComboBox QListView
                             </spacer>
                            </item>
                            <item>
-                            <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0" rowminimumheight="0,0,0" columnminimumwidth="100,100,100">
+                            <layout class="QGridLayout" rowstretch="0,0,0" rowminimumheight="0,0,0" columnminimumwidth="100,100,100">
                              <property name="sizeConstraint">
                               <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
                              </property>
@@ -9185,7 +9294,7 @@ QComboBox QListView
                               </widget>
                              </item>
                              <item row="0" column="1">
-                              <widget class="QLabel" name="label_179">
+                              <widget class="QLabel">
                                <property name="text">
                                 <string>Start X</string>
                                </property>
@@ -9233,7 +9342,7 @@ QComboBox QListView
                               </widget>
                              </item>
                              <item row="1" column="1">
-                              <widget class="QLabel" name="label_178">
+                              <widget class="QLabel">
                                <property name="text">
                                 <string>End X</string>
                                </property>
@@ -9287,7 +9396,7 @@ QComboBox QListView
                               </widget>
                              </item>
                              <item row="2" column="1">
-                              <widget class="QLabel" name="label_180">
+                              <widget class="QLabel">
                                <property name="text">
                                 <string>X Increment</string>
                                </property>
@@ -9358,7 +9467,7 @@ QComboBox QListView
                      <property name="wpBox" stdset="0">
                       <bool>false</bool>
                      </property>
-                     <layout class="QHBoxLayout" name="horizontalLayout_63">
+                     <layout class="QHBoxLayout">
                       <property name="spacing">
                        <number>6</number>
                       </property>
@@ -9385,9 +9494,9 @@ QComboBox QListView
                         <property name="wpPanel" stdset="0">
                          <bool>false</bool>
                         </property>
-                        <layout class="QVBoxLayout" name="verticalLayout_140">
+                        <layout class="QVBoxLayout">
                          <item>
-                          <widget class="QLabel" name="label_225">
+                          <widget class="QLabel">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -9406,7 +9515,7 @@ QComboBox QListView
                           </widget>
                          </item>
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_35">
+                          <layout class="QHBoxLayout">
                            <item>
                             <spacer name="horizontalSpacer_44">
                              <property name="orientation">
@@ -9424,9 +9533,9 @@ QComboBox QListView
                             </spacer>
                            </item>
                            <item>
-                            <layout class="QGridLayout" name="gridLayout_6">
+                            <layout class="QGridLayout">
                              <item row="0" column="0">
-                              <widget class="QLabel" name="label_227">
+                              <widget class="QLabel">
                                <property name="text">
                                 <string>ASTM Standard</string>
                                </property>
@@ -9492,7 +9601,7 @@ QComboBox QListView
                      <property name="wpBox" stdset="0">
                       <bool>false</bool>
                      </property>
-                     <layout class="QVBoxLayout" name="verticalLayout_113">
+                     <layout class="QVBoxLayout">
                       <property name="spacing">
                        <number>0</number>
                       </property>
@@ -9519,7 +9628,7 @@ QComboBox QListView
                         <property name="wpPanel" stdset="0">
                          <bool>false</bool>
                         </property>
-                        <layout class="QVBoxLayout" name="verticalLayout_112">
+                        <layout class="QVBoxLayout">
                          <item>
                           <widget class="QLabel" name="label_BatchCollection_title">
                            <property name="sizePolicy">
@@ -9540,7 +9649,7 @@ QComboBox QListView
                           </widget>
                          </item>
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_74">
+                          <layout class="QHBoxLayout">
                            <item>
                             <spacer name="horizontalSpacer_29">
                              <property name="orientation">
@@ -9558,14 +9667,14 @@ QComboBox QListView
                             </spacer>
                            </item>
                            <item>
-                            <layout class="QHBoxLayout" name="horizontalLayout_75">
+                            <layout class="QHBoxLayout">
                              <item>
-                              <layout class="QVBoxLayout" name="verticalLayout_32">
+                              <layout class="QVBoxLayout">
                                <property name="spacing">
                                 <number>3</number>
                                </property>
                                <item>
-                                <layout class="QHBoxLayout" name="horizontalLayout_24">
+                                <layout class="QHBoxLayout">
                                  <item>
                                   <widget class="QCheckBox" name="checkBox_BatchCollection_enabled">
                                    <property name="sizePolicy">
@@ -9613,7 +9722,7 @@ QComboBox QListView
                                 </layout>
                                </item>
                                <item>
-                                <layout class="QFormLayout" name="formLayout_24">
+                                <layout class="QFormLayout">
                                  <property name="fieldGrowthPolicy">
                                   <enum>QFormLayout::FieldGrowthPolicy::AllNonFixedFieldsGrow</enum>
                                  </property>
@@ -9621,7 +9730,7 @@ QComboBox QListView
                                   <number>0</number>
                                  </property>
                                  <item row="0" column="0">
-                                  <widget class="QLabel" name="label_166">
+                                  <widget class="QLabel">
                                    <property name="text">
                                     <string>Measurement Count</string>
                                    </property>
@@ -9665,7 +9774,7 @@ QComboBox QListView
                                   </widget>
                                  </item>
                                  <item row="1" column="0">
-                                  <widget class="QLabel" name="label_167">
+                                  <widget class="QLabel">
                                    <property name="text">
                                     <string>Measurement Period</string>
                                    </property>
@@ -9728,7 +9837,7 @@ QComboBox QListView
                                   </spacer>
                                  </item>
                                  <item row="3" column="0">
-                                  <widget class="QLabel" name="label_3">
+                                  <widget class="QLabel">
                                    <property name="text">
                                     <string>Batch Count</string>
                                    </property>
@@ -9760,7 +9869,7 @@ QComboBox QListView
                                   </widget>
                                  </item>
                                  <item row="4" column="0">
-                                  <widget class="QLabel" name="label_169">
+                                  <widget class="QLabel">
                                    <property name="text">
                                     <string>Batch Period</string>
                                    </property>
@@ -9823,7 +9932,7 @@ QComboBox QListView
                                   </spacer>
                                  </item>
                                  <item row="6" column="0">
-                                  <widget class="QLabel" name="label_173">
+                                  <widget class="QLabel">
                                    <property name="text">
                                     <string>Collection Timeout</string>
                                    </property>
@@ -9936,7 +10045,7 @@ QComboBox QListView
                               </spacer>
                              </item>
                              <item>
-                              <layout class="QVBoxLayout" name="verticalLayout_87">
+                              <layout class="QVBoxLayout">
                                <property name="spacing">
                                 <number>0</number>
                                </property>
@@ -9957,7 +10066,7 @@ QComboBox QListView
                                  <property name="checkable">
                                   <bool>false</bool>
                                  </property>
-                                 <layout class="QVBoxLayout" name="verticalLayout_97">
+                                 <layout class="QVBoxLayout">
                                   <property name="spacing">
                                    <number>0</number>
                                   </property>
@@ -10020,12 +10129,12 @@ QComboBox QListView
                                 </widget>
                                </item>
                                <item>
-                                <layout class="QFormLayout" name="formLayout_23">
+                                <layout class="QFormLayout">
                                  <property name="verticalSpacing">
                                   <number>0</number>
                                  </property>
                                  <item row="0" column="0">
-                                  <widget class="QLabel" name="label_164">
+                                  <widget class="QLabel">
                                    <property name="text">
                                     <string>Warm-up</string>
                                    </property>
@@ -10109,7 +10218,7 @@ QComboBox QListView
                      <property name="wpBox" stdset="0">
                       <bool>false</bool>
                      </property>
-                     <layout class="QVBoxLayout" name="verticalLayout_21">
+                     <layout class="QVBoxLayout">
                       <property name="spacing">
                        <number>0</number>
                       </property>
@@ -10136,7 +10245,7 @@ QComboBox QListView
                         <property name="wpPanel" stdset="0">
                          <bool>false</bool>
                         </property>
-                        <layout class="QVBoxLayout" name="verticalLayout_20">
+                        <layout class="QVBoxLayout">
                          <item>
                           <widget class="QLabel" name="label_BatchCollection_title_2">
                            <property name="sizePolicy">
@@ -10157,7 +10266,7 @@ QComboBox QListView
                           </widget>
                          </item>
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_34">
+                          <layout class="QHBoxLayout">
                            <item>
                             <spacer name="horizontalSpacer_12">
                              <property name="orientation">
@@ -10175,7 +10284,7 @@ QComboBox QListView
                             </spacer>
                            </item>
                            <item>
-                            <layout class="QGridLayout" name="gridLayout_3">
+                            <layout class="QGridLayout">
                              <item row="0" column="0">
                               <widget class="QCheckBox" name="checkBox_cloud_config_download_enabled">
                                <property name="text">
@@ -10198,7 +10307,7 @@ QComboBox QListView
                      <property name="wpPanel" stdset="0">
                       <bool>false</bool>
                      </property>
-                     <layout class="QVBoxLayout" name="verticalLayout_17">
+                     <layout class="QVBoxLayout">
                       <item>
                        <widget class="QLabel" name="label_Theme">
                         <property name="sizePolicy">
@@ -10219,7 +10328,7 @@ QComboBox QListView
                        </widget>
                       </item>
                       <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_6">
+                       <layout class="QHBoxLayout">
                         <item>
                          <widget class="QComboBox" name="comboBox_Theme">
                           <property name="minimumSize">
@@ -10231,7 +10340,7 @@ QComboBox QListView
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_42">
+                         <widget class="QLabel">
                           <property name="text">
                            <string>Additional themes beyond light and dark</string>
                           </property>
@@ -10302,7 +10411,7 @@ QComboBox QListView
              <height>16777215</height>
             </size>
            </property>
-           <layout class="QVBoxLayout" name="verticalLayout_84">
+           <layout class="QVBoxLayout">
             <property name="spacing">
              <number>9</number>
             </property>
@@ -10329,7 +10438,7 @@ QComboBox QListView
               <property name="wpBox" stdset="0">
                <bool>false</bool>
               </property>
-              <layout class="QHBoxLayout" name="horizontalLayout_13">
+              <layout class="QHBoxLayout">
                <property name="spacing">
                 <number>0</number>
                </property>
@@ -10350,7 +10459,7 @@ QComboBox QListView
                  <property name="wpPanel" stdset="0">
                   <bool>false</bool>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_7">
+                 <layout class="QVBoxLayout">
                   <item>
                    <widget class="QLabel" name="label_Live_Preview_Unprocessed">
                     <property name="font">
@@ -10373,7 +10482,7 @@ QComboBox QListView
                    </widget>
                   </item>
                   <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_14">
+                   <layout class="QHBoxLayout">
                     <item>
                      <widget class="QPushButton" name="pushButton_dark_store">
                       <property name="sizePolicy">
@@ -10482,7 +10591,7 @@ QComboBox QListView
               <property name="wpBox" stdset="0">
                <bool>false</bool>
               </property>
-              <layout class="QHBoxLayout" name="horizontalLayout_19">
+              <layout class="QHBoxLayout">
                <property name="spacing">
                 <number>0</number>
                </property>
@@ -10503,7 +10612,7 @@ QComboBox QListView
                  <property name="wpPanel" stdset="0">
                   <bool>false</bool>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_2">
+                 <layout class="QVBoxLayout">
                   <item>
                    <widget class="QLabel" name="label_rsrd_label_header_3">
                     <property name="sizePolicy">
@@ -10535,7 +10644,7 @@ QComboBox QListView
                    </widget>
                   </item>
                   <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_15">
+                   <layout class="QHBoxLayout">
                     <item>
                      <widget class="QPushButton" name="pushButton_dark_clear">
                       <property name="minimumSize">
@@ -10633,7 +10742,7 @@ QComboBox QListView
               <property name="wpBox" stdset="0">
                <bool>false</bool>
               </property>
-              <layout class="QHBoxLayout" name="horizontalLayout_21">
+              <layout class="QHBoxLayout">
                <property name="spacing">
                 <number>0</number>
                </property>
@@ -10654,7 +10763,7 @@ QComboBox QListView
                  <property name="wpPanel" stdset="0">
                   <bool>false</bool>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_4">
+                 <layout class="QVBoxLayout">
                   <item>
                    <widget class="QLabel" name="label_tsrl_label_header_3">
                     <property name="font">
@@ -10674,7 +10783,7 @@ QComboBox QListView
                    </widget>
                   </item>
                   <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_18">
+                   <layout class="QHBoxLayout">
                     <item>
                      <widget class="QPushButton" name="pushButton_reference_clear">
                       <property name="sizePolicy">
@@ -10880,7 +10989,7 @@ QComboBox QListView
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
-                <layout class="QVBoxLayout" name="verticalLayout_34">
+                <layout class="QVBoxLayout">
                  <property name="spacing">
                   <number>6</number>
                  </property>
@@ -10913,7 +11022,7 @@ QComboBox QListView
                    <property name="wpBox" stdset="0">
                     <bool>false</bool>
                    </property>
-                   <layout class="QVBoxLayout" name="verticalLayout_31">
+                   <layout class="QVBoxLayout">
                     <property name="spacing">
                      <number>0</number>
                     </property>
@@ -10954,7 +11063,7 @@ QComboBox QListView
                         <number>5</number>
                        </property>
                        <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_31">
+                        <layout class="QHBoxLayout">
                          <property name="spacing">
                           <number>3</number>
                          </property>
@@ -11159,7 +11268,7 @@ QComboBox QListView
                                <verstretch>0</verstretch>
                               </sizepolicy>
                              </property>
-                             <layout class="QVBoxLayout" name="verticalLayout_96">
+                             <layout class="QVBoxLayout">
                               <property name="spacing">
                                <number>0</number>
                               </property>
@@ -11321,7 +11430,7 @@ QComboBox QListView
                                <verstretch>0</verstretch>
                               </sizepolicy>
                              </property>
-                             <layout class="QVBoxLayout" name="verticalLayout_98">
+                             <layout class="QVBoxLayout">
                               <property name="spacing">
                                <number>0</number>
                               </property>
@@ -11417,7 +11526,7 @@ QComboBox QListView
                          <property name="lineWidth">
                           <number>0</number>
                          </property>
-                         <layout class="QVBoxLayout" name="verticalLayout_10">
+                         <layout class="QVBoxLayout">
                           <property name="leftMargin">
                            <number>0</number>
                           </property>
@@ -11447,7 +11556,7 @@ QComboBox QListView
                            </widget>
                           </item>
                           <item>
-                           <layout class="QHBoxLayout" name="horizontalLayout_30">
+                           <layout class="QHBoxLayout">
                             <item>
                              <widget class="QPushButton" name="pushButton_scope_capture_load">
                               <property name="sizePolicy">
@@ -11707,9 +11816,9 @@ QComboBox QListView
                           </item>
 
                           <item>
-                           <layout class="QFormLayout" name="formLayout_2">
+                           <layout class="QFormLayout">
                             <item row="0" column="0">
-                             <widget class="QLabel" name="label_16">
+                             <widget class="QLabel">
                               <property name="sizePolicy">
                                <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                                 <horstretch>0</horstretch>
@@ -11729,7 +11838,7 @@ QComboBox QListView
                              </widget>
                             </item>
                             <item row="2" column="0">
-                             <widget class="QLabel" name="label_168">
+                             <widget class="QLabel">
                               <property name="sizePolicy">
                                <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                                 <horstretch>0</horstretch>
@@ -11752,7 +11861,7 @@ QComboBox QListView
                              </widget>
                             </item>
                             <item row="1" column="0">
-                             <widget class="QLabel" name="label_171">
+                             <widget class="QLabel">
                               <property name="sizePolicy">
                                <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                                 <horstretch>0</horstretch>
@@ -11792,7 +11901,7 @@ QComboBox QListView
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <layout class="QVBoxLayout" name="verticalLayout_147">
+            <layout class="QVBoxLayout"> 
              <property name="leftMargin">
               <number>0</number>
              </property>
@@ -11810,7 +11919,7 @@ QComboBox QListView
                <property name="wpBox" stdset="0">
                 <bool>false</bool>
                </property>
-               <layout class="QGridLayout" name="gridLayout_57">
+               <layout class="QGridLayout">
                 <property name="leftMargin">
                  <number>0</number>
                 </property>
@@ -11840,7 +11949,7 @@ QComboBox QListView
                   <property name="wpPanel" stdset="0">
                    <bool>false</bool>
                   </property>
-                  <layout class="QVBoxLayout" name="verticalLayout_93">
+                  <layout class="QVBoxLayout">
                    <item>
                     <widget class="QFrame" name="frame_scope_capture_buttons">
                      <property name="sizePolicy">
@@ -11864,7 +11973,7 @@ QComboBox QListView
                      <property name="wpBox" stdset="0">
                       <bool>false</bool>
                      </property>
-                     <layout class="QGridLayout" name="gridLayout_58" rowstretch="0" columnstretch="0">
+                     <layout class="QGridLayout" rowstretch="0" columnstretch="0">
                       <property name="sizeConstraint">
                        <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
                       </property>
@@ -11906,7 +12015,7 @@ QComboBox QListView
                         <property name="wpGrad" stdset="0">
                          <bool>false</bool>
                         </property>
-                        <layout class="QHBoxLayout" name="horizontalLayout_44" stretch="0">
+                        <layout class="QHBoxLayout" stretch="0">
                          <property name="spacing">
                           <number>0</number>
                          </property>
@@ -12550,7 +12659,7 @@ QComboBox QListView
                      <property name="wpBox" stdset="0">
                       <bool>false</bool>
                      </property>
-                     <layout class="QVBoxLayout" name="verticalLayout_94">
+                     <layout class="QVBoxLayout">
                       <property name="spacing">
                        <number>0</number>
                       </property>
@@ -12580,7 +12689,7 @@ QComboBox QListView
                         <property name="wpPanel" stdset="0">
                          <bool>false</bool>
                         </property>
-                        <layout class="QHBoxLayout" name="horizontalLayout_46">
+                        <layout class="QHBoxLayout">
                          <property name="spacing">
                           <number>0</number>
                          </property>
@@ -12620,7 +12729,7 @@ QComboBox QListView
                             <property name="styleSheet">
                              <string notr="true" />
                             </property>
-                            <layout class="QHBoxLayout" name="horizontalLayout_47">
+                            <layout class="QHBoxLayout">
                              <property name="spacing">
                               <number>0</number>
                              </property>
@@ -12677,7 +12786,7 @@ QComboBox QListView
                                 <property name="wpClear" stdset="0">
                                  <bool>false</bool>
                                 </property>
-                                <layout class="QVBoxLayout" name="verticalLayout_95">
+                                <layout class="QVBoxLayout">
                                  <property name="spacing">
                                   <number>6</number>
                                  </property>
@@ -12725,7 +12834,7 @@ QComboBox QListView
                                    <property name="wpClear" stdset="0">
                                     <bool>false</bool>
                                    </property>
-                                   <layout class="QGridLayout" name="gridLayout_11">
+                                   <layout class="QGridLayout">
                                     <property name="leftMargin">
                                      <number>0</number>
                                     </property>
@@ -12759,7 +12868,7 @@ QComboBox QListView
                                        <string>MZ: pyqtgraph widgets are inserted here</string>
                                       </property>
                                       <widget class="QWidget" name="page_scope_capture_details_spectrum">
-                                       <layout class="QGridLayout" name="gridLayout_15">
+                                       <layout class="QGridLayout">
                                         <item row="0" column="0">
                                          <layout class="QGridLayout" name="layout_scope_capture_graphs">
                                           <property name="sizeConstraint">
@@ -12802,7 +12911,7 @@ QComboBox QListView
                      <property name="wpBox" stdset="0">
                       <bool>false</bool>
                      </property>
-                     <layout class="QHBoxLayout" name="horizontalLayout_29">
+                     <layout class="QHBoxLayout">
                       <property name="spacing">
                        <number>0</number>
                       </property>
@@ -12823,7 +12932,7 @@ QComboBox QListView
                         <property name="wpGrad" stdset="0">
                          <bool>false</bool>
                         </property>
-                        <layout class="QHBoxLayout" name="horizontalLayout_40">
+                        <layout class="QHBoxLayout">
                          <item>
                           <layout class="QHBoxLayout" name="horizontalLayout_scope_status_bar">
                            <property name="spacing">
@@ -13263,9 +13372,9 @@ QComboBox QListView
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout_6">
+        <layout class="QVBoxLayout">
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_91">
+          <layout class="QHBoxLayout">
            <property name="topMargin">
             <number>0</number>
            </property>
@@ -13372,7 +13481,7 @@ QComboBox QListView
            <property name="wpBox" stdset="0">
             <bool>false</bool>
            </property>
-           <layout class="QVBoxLayout" name="verticalLayout_15">
+           <layout class="QVBoxLayout">
             <property name="leftMargin">
              <number>0</number>
             </property>
@@ -13402,7 +13511,7 @@ QComboBox QListView
               <property name="wpPanel" stdset="0">
                <bool>false</bool>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_5">
+              <layout class="QVBoxLayout">
                <item>
                 <widget class="QTextEdit" name="textEdit_log">
                  <property name="enabled">
@@ -13499,7 +13608,7 @@ li.checked::marker { content: "\2612"; }
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_153">
+          <layout class="QVBoxLayout">
            <property name="leftMargin">
             <number>0</number>
            </property>
@@ -13523,7 +13632,7 @@ li.checked::marker { content: "\2612"; }
              <property name="wpBox" stdset="0">
               <bool>false</bool>
              </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_38">
+             <layout class="QHBoxLayout">
               <property name="spacing">
                <number>0</number>
               </property>
@@ -13544,12 +13653,12 @@ li.checked::marker { content: "\2612"; }
                 <property name="wpGrad" stdset="0">
                  <bool>false</bool>
                 </property>
-                <layout class="QHBoxLayout" name="horizontalLayout_42">
+                <layout class="QHBoxLayout">
                  <property name="spacing">
                   <number>0</number>
                  </property>
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_26">
+                  <layout class="QHBoxLayout">
                    <property name="spacing">
                     <number>9</number>
                    </property>
@@ -13892,7 +14001,7 @@ li.checked::marker { content: "\2612"; }
                </property>
                <item>
                 <widget class="QFrame" name="frame_FactoryMode_Options">
-                 <layout class="QVBoxLayout" name="verticalLayout_24">
+                 <layout class="QVBoxLayout">
                   <property name="leftMargin">
                    <number>0</number>
                   </property>
@@ -13934,7 +14043,7 @@ li.checked::marker { content: "\2612"; }
                     <property name="wpBox" stdset="0">
                      <bool>false</bool>
                     </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_22">
+                    <layout class="QVBoxLayout">
                      <property name="spacing">
                       <number>0</number>
                      </property>
@@ -13967,7 +14076,7 @@ li.checked::marker { content: "\2612"; }
                        <property name="wpGrad" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_155">
+                       <layout class="QVBoxLayout">
                         <property name="leftMargin">
                          <number>9</number>
                         </property>
@@ -14042,7 +14151,7 @@ li.checked::marker { content: "\2612"; }
                    <height>0</height>
                   </size>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_88">
+                 <layout class="QVBoxLayout">
                   <property name="leftMargin">
                    <number>0</number>
                   </property>
@@ -14120,7 +14229,7 @@ li.checked::marker { content: "\2612"; }
                        <property name="wpGrad" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_89">
+                       <layout class="QVBoxLayout">
                         <property name="spacing">
                          <number>7</number>
                         </property>
@@ -14327,7 +14436,7 @@ li.checked::marker { content: "\2612"; }
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_55_2">
+                 <layout class="QVBoxLayout">
                   <property name="leftMargin">
                    <number>0</number>
                   </property>
@@ -14484,7 +14593,7 @@ li.checked::marker { content: "\2612"; }
                    <height>0</height>
                   </size>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_48">
+                 <layout class="QVBoxLayout">
                   <property name="leftMargin">
                    <number>0</number>
                   </property>
@@ -14583,7 +14692,7 @@ li.checked::marker { content: "\2612"; }
                        <property name="wpGrad" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_47">
+                       <layout class="QVBoxLayout">
                         <item>
                          <widget class="QPushButton" name="pushButton_laser_toggle">
                           <property name="sizePolicy">
@@ -14623,7 +14732,7 @@ li.checked::marker { content: "\2612"; }
                          </widget>
                         </item>
                         <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_10">
+                         <layout class="QHBoxLayout">
                           <item>
                            <widget class="QSlider" name="verticalSlider_laser_power">
                             <property name="sizePolicy">
@@ -14656,9 +14765,9 @@ li.checked::marker { content: "\2612"; }
                            </widget>
                           </item>
                           <item>
-                           <layout class="QVBoxLayout" name="verticalLayout_64">
+                           <layout class="QVBoxLayout">
                             <item>
-                             <layout class="QHBoxLayout" name="horizontalLayout_32">
+                             <layout class="QHBoxLayout">
                               <item>
                                <widget class="QPushButton" name="pushButton_laser_power_dn">
                                 <property name="sizePolicy">
@@ -15086,7 +15195,7 @@ li.checked::marker { content: "\2612"; }
                           <property name="wpBox" stdset="0">
                            <bool>false</bool>
                           </property>
-                          <layout class="QFormLayout" name="formLayout_30">
+                          <layout class="QFormLayout">
                            <property name="labelAlignment">
                             <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
                            </property>
@@ -16043,7 +16152,7 @@ li.checked::marker { content: "\2612"; }
                  <property name="frameShadow">
                   <enum>QFrame::Shadow::Raised</enum>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_143">
+                 <layout class="QVBoxLayout">
                   <property name="leftMargin">
                    <number>0</number>
                   </property>
@@ -16057,7 +16166,7 @@ li.checked::marker { content: "\2612"; }
                    <number>0</number>
                   </property>
                   <item>
-                   <widget class="QLabel" name="label_229">
+                   <widget class="QLabel">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                       <horstretch>0</horstretch>
@@ -16091,7 +16200,7 @@ li.checked::marker { content: "\2612"; }
                     <property name="wpBox" stdset="0">
                      <bool>false</bool>
                     </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_142">
+                    <layout class="QVBoxLayout">
                      <property name="leftMargin">
                       <number>0</number>
                      </property>
@@ -16121,9 +16230,9 @@ li.checked::marker { content: "\2612"; }
                        <property name="wpGrad" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_141">
+                       <layout class="QVBoxLayout">
                         <item>
-                         <layout class="QGridLayout" name="gridLayout_8">
+                         <layout class="QGridLayout">
                           <item row="0" column="0">
                            <widget class="QCheckBox" name="checkBox_accessory_lamp">
                             <property name="sizePolicy">
@@ -16182,7 +16291,7 @@ li.checked::marker { content: "\2612"; }
                           <property name="wpBox" stdset="0">
                            <bool>false</bool>
                           </property>
-                          <layout class="QFormLayout" name="formLayout_30x">
+                          <layout class="QFormLayout">
                            <property name="labelAlignment">
                             <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
                            </property>
@@ -16261,7 +16370,7 @@ li.checked::marker { content: "\2612"; }
                             </widget>
                            </item>
                            <item row="1" column="1">
-                            <widget class="QLabel" name="label_231">
+                            <widget class="QLabel">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                                <horstretch>0</horstretch>
@@ -16317,7 +16426,7 @@ li.checked::marker { content: "\2612"; }
                             </widget>
                            </item>
                            <item row="2" column="1">
-                            <widget class="QLabel" name="label_232">
+                            <widget class="QLabel">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                                <horstretch>0</horstretch>
@@ -16362,7 +16471,7 @@ li.checked::marker { content: "\2612"; }
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_28">
+                 <layout class="QVBoxLayout">
                   <property name="spacing">
                    <number>6</number>
                   </property>
@@ -16443,12 +16552,12 @@ li.checked::marker { content: "\2612"; }
                        <property name="wpGrad" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_46">
+                       <layout class="QVBoxLayout">
                         <property name="spacing">
                          <number>3</number>
                         </property>
                         <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_66">
+                         <layout class="QHBoxLayout">
                           <item>
                            <widget class="QSlider" name="slider_integration_time_ms">
                             <property name="sizePolicy">
@@ -16481,7 +16590,7 @@ li.checked::marker { content: "\2612"; }
                            </widget>
                           </item>
                           <item>
-                           <layout class="QVBoxLayout" name="verticalLayout_66">
+                           <layout class="QVBoxLayout">
                             <property name="spacing">
                              <number>3</number>
                             </property>
@@ -16505,7 +16614,7 @@ li.checked::marker { content: "\2612"; }
                              </widget>
                             </item>
                             <item>
-                             <layout class="QHBoxLayout" name="horizontalLayout_67">
+                             <layout class="QHBoxLayout">
                               <item>
                                <widget class="QPushButton" name="pushButton_integration_time_ms_dn">
                                 <property name="sizePolicy">
@@ -16638,7 +16747,7 @@ li.checked::marker { content: "\2612"; }
                          </layout>
                         </item>
                         <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_37">
+                         <layout class="QHBoxLayout">
                           <property name="leftMargin">
                            <number>0</number>
                           </property>
@@ -16680,7 +16789,7 @@ li.checked::marker { content: "\2612"; }
                            </widget>
                           </item>
                           <item>
-                           <layout class="QVBoxLayout" name="verticalLayout_57">
+                           <layout class="QVBoxLayout">
                             <item>
                              <widget class="QLabel" name="detectorControlWidget_label_detectorTemperature">
                               <property name="maximumSize">
@@ -16701,7 +16810,7 @@ li.checked::marker { content: "\2612"; }
                              </widget>
                             </item>
                             <item>
-                             <layout class="QHBoxLayout" name="horizontalLayout_59">
+                             <layout class="QHBoxLayout">
                               <item>
                                <widget class="QPushButton" name="temperatureWidget_pushButton_detector_setpoint_dn">
                                 <property name="sizePolicy">
@@ -16867,7 +16976,7 @@ li.checked::marker { content: "\2612"; }
                          </widget>
                         </item>
                         <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_69">
+                         <layout class="QHBoxLayout">
                           <item>
                            <widget class="QSlider" name="slider_gain">
                             <property name="sizePolicy">
@@ -16900,7 +17009,7 @@ li.checked::marker { content: "\2612"; }
                            </widget>
                           </item>
                           <item>
-                           <layout class="QVBoxLayout" name="verticalLayout_139">
+                           <layout class="QVBoxLayout">
                             <property name="spacing">
                              <number>3</number>
                             </property>
@@ -16930,7 +17039,7 @@ li.checked::marker { content: "\2612"; }
                              </widget>
                             </item>
                             <item>
-                             <layout class="QHBoxLayout" name="horizontalLayout_76">
+                             <layout class="QHBoxLayout">
                               <item>
                                <widget class="QPushButton" name="pushButton_gain_dn">
                                 <property name="sizePolicy">
@@ -17089,7 +17198,7 @@ li.checked::marker { content: "\2612"; }
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_55">
+                 <layout class="QVBoxLayout">
                   <property name="leftMargin">
                    <number>0</number>
                   </property>
@@ -17179,7 +17288,7 @@ li.checked::marker { content: "\2612"; }
                        <property name="wpGrad" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_23">
+                       <layout class="QVBoxLayout">
                         <item>
                          <widget class="QComboBox" name="displayAxis_comboBox_axis">
                           <property name="sizePolicy">
@@ -17224,7 +17333,7 @@ li.checked::marker { content: "\2612"; }
                          </widget>
                         </item>
                         <item>
-                         <layout class="QGridLayout" name="gridLayout_7">
+                         <layout class="QGridLayout">
                           <item row="1" column="1">
                            <widget class="QDoubleSpinBox" name="doubleSpinBox_cursor_scope">
                             <property name="enabled">
@@ -17282,7 +17391,7 @@ li.checked::marker { content: "\2612"; }
                            </widget>
                           </item>
                           <item row="0" column="1">
-                           <layout class="QHBoxLayout" name="horizontalLayout_49">
+                           <layout class="QHBoxLayout">
                             <item>
                              <widget class="QPushButton" name="pushButton_cursor_dn">
                               <property name="enabled">
@@ -17704,7 +17813,7 @@ li.checked::marker { content: "\2612"; }
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_55lb">
+                 <layout class="QVBoxLayout">
                   <property name="leftMargin">
                    <number>0</number>
                   </property>
@@ -17792,7 +17901,7 @@ li.checked::marker { content: "\2612"; }
                        <property name="wpGrad" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_23lb">
+                       <layout class="QVBoxLayout">
 
                         <item>
                          <widget class="QCheckBox" name="checkBox_library_matching_enable">
@@ -18091,7 +18200,7 @@ li.checked::marker { content: "\2612"; }
                  <property name="wpBox" stdset="0">
                   <bool>false</bool>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_154">
+                 <layout class="QVBoxLayout">
                   <property name="leftMargin">
                    <number>0</number>
                   </property>
@@ -18118,7 +18227,7 @@ li.checked::marker { content: "\2612"; }
                     <property name="wpGrad" stdset="0">
                      <bool>false</bool>
                     </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_151">
+                    <layout class="QVBoxLayout">
                      <item>
                       <widget class="QComboBox" name="comboBox_plugin_module">
                        <property name="sizePolicy">
@@ -18177,7 +18286,7 @@ li.checked::marker { content: "\2612"; }
                  <property name="lineWidth">
                   <number>1</number>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_152">
+                 <layout class="QVBoxLayout">
                   <property name="leftMargin">
                    <number>0</number>
                   </property>
@@ -18267,7 +18376,7 @@ li.checked::marker { content: "\2612"; }
                        <property name="wpGrad" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_9">
+                       <layout class="QVBoxLayout">
                         <item>
                          <widget class="QLabel" name="label_plugin_title">
                           <property name="sizePolicy">
@@ -18318,7 +18427,7 @@ li.checked::marker { content: "\2612"; }
                           <property name="wpBox" stdset="0">
                            <bool>false</bool>
                           </property>
-                          <layout class="QVBoxLayout" name="verticalLayout_148">
+                          <layout class="QVBoxLayout">
                            <item>
                             <layout class="QVBoxLayout" name="verticalLayout_plugin_fields" />
                            </item>
@@ -18361,7 +18470,7 @@ li.checked::marker { content: "\2612"; }
                </item>
                <item>
                 <widget class="QFrame" name="frame_scanAveraging">
-                 <layout class="QVBoxLayout" name="verticalLayout_45">
+                 <layout class="QVBoxLayout">
                   <property name="leftMargin">
                    <number>0</number>
                   </property>
@@ -18427,7 +18536,7 @@ li.checked::marker { content: "\2612"; }
                        <property name="wpGrad" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_49">
+                       <layout class="QVBoxLayout">
                         <property name="spacing">
                          <number>0</number>
                         </property>
@@ -18444,7 +18553,7 @@ li.checked::marker { content: "\2612"; }
                          <number>5</number>
                         </property>
                         <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_36">
+                         <layout class="QHBoxLayout">
                           <property name="leftMargin">
                            <number>9</number>
                           </property>
@@ -18613,7 +18722,7 @@ li.checked::marker { content: "\2612"; }
                    <height>0</height>
                   </size>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_50">
+                 <layout class="QVBoxLayout">
                   <property name="leftMargin">
                    <number>0</number>
                   </property>
@@ -18703,7 +18812,7 @@ li.checked::marker { content: "\2612"; }
                        <property name="wpGrad" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_51">
+                       <layout class="QVBoxLayout">
                         <property name="spacing">
                          <number>1</number>
                         </property>
@@ -18720,7 +18829,7 @@ li.checked::marker { content: "\2612"; }
                          <number>5</number>
                         </property>
                         <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_62">
+                         <layout class="QHBoxLayout">
                           <property name="leftMargin">
                            <number>9</number>
                           </property>
@@ -18875,7 +18984,7 @@ li.checked::marker { content: "\2612"; }
                    <height>0</height>
                   </size>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_53">
+                 <layout class="QVBoxLayout">
                   <property name="leftMargin">
                    <number>0</number>
                   </property>
@@ -18965,7 +19074,7 @@ li.checked::marker { content: "\2612"; }
                        <property name="wpGrad" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_54">
+                       <layout class="QVBoxLayout">
                         <property name="spacing">
                          <number>6</number>
                         </property>
@@ -18982,7 +19091,7 @@ li.checked::marker { content: "\2612"; }
                          <number>9</number>
                         </property>
                         <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_12">
+                         <layout class="QHBoxLayout">
                           <item>
                            <widget class="QCheckBox" name="checkBox_baselineCorrection_enable">
                             <property name="sizePolicy">
@@ -19069,7 +19178,7 @@ li.checked::marker { content: "\2612"; }
                  <property name="frameShadow">
                   <enum>QFrame::Shadow::Raised</enum>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_150">
+                 <layout class="QVBoxLayout">
                   <property name="leftMargin">
                    <number>0</number>
                   </property>
@@ -19117,7 +19226,7 @@ li.checked::marker { content: "\2612"; }
                     <property name="wpBox" stdset="0">
                      <bool>false</bool>
                     </property>
-                    <layout class="QVBoxLayout" name="verticalLayout_138x">
+                    <layout class="QVBoxLayout">
                      <property name="leftMargin">
                       <number>1</number>
                      </property>
@@ -19147,7 +19256,7 @@ li.checked::marker { content: "\2612"; }
                        <property name="wpGrad" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QGridLayout" name="gridLayout_12" columnstretch="0,0" columnminimumwidth="0,0">
+                       <layout class="QGridLayout" columnstretch="0,0" columnminimumwidth="0,0">
 
                         <item row="0" column="0" colspan="2">
                          <widget class="QCheckBox" name="checkBox_richardson_lucy">
@@ -19213,7 +19322,7 @@ li.checked::marker { content: "\2612"; }
                    <height>0</height>
                   </size>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_85_x">
+                 <layout class="QVBoxLayout">
                   <property name="leftMargin">
                    <number>0</number>
                   </property>
@@ -19303,7 +19412,7 @@ li.checked::marker { content: "\2612"; }
                        <property name="wpGrad" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_86x">
+                       <layout class="QVBoxLayout">
                         <property name="spacing">
                          <number>1</number>
                         </property>
@@ -19320,7 +19429,7 @@ li.checked::marker { content: "\2612"; }
                          <number>5</number>
                         </property>
                         <item>
-                         <layout class="QFormLayout" name="formLayout_28x">
+                         <layout class="QFormLayout">
 
                           <property name="leftMargin">
                            <number>0</number>
@@ -19350,7 +19459,7 @@ li.checked::marker { content: "\2612"; }
                            </widget>
                           </item>
                           <item row="0" column="1">
-                           <widget class="QLabel" name="label_222">
+                           <widget class="QLabel">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                               <horstretch>0</horstretch>
@@ -19379,7 +19488,7 @@ li.checked::marker { content: "\2612"; }
                            </widget>
                           </item>
                           <item row="1" column="1">
-                           <widget class="QLabel" name="label_228">
+                           <widget class="QLabel">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                               <horstretch>0</horstretch>
@@ -19408,7 +19517,7 @@ li.checked::marker { content: "\2612"; }
                            </widget>
                           </item>
                           <item row="2" column="1">
-                           <widget class="QLabel" name="label_228x">
+                           <widget class="QLabel">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                               <horstretch>0</horstretch>
@@ -19434,7 +19543,7 @@ li.checked::marker { content: "\2612"; }
                            </widget>
                           </item>
                           <item row="3" column="1">
-                           <widget class="QLabel" name="label_226">
+                           <widget class="QLabel">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                               <horstretch>0</horstretch>
@@ -19460,7 +19569,7 @@ li.checked::marker { content: "\2612"; }
                            </widget>
                           </item>
                           <item row="4" column="1">
-                           <widget class="QLabel" name="label_234">
+                           <widget class="QLabel">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                               <horstretch>0</horstretch>
@@ -19504,7 +19613,7 @@ li.checked::marker { content: "\2612"; }
                            </widget>
                           </item>
                           <item row="5" column="1">
-                           <widget class="QLabel" name="label_223">
+                           <widget class="QLabel">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                               <horstretch>0</horstretch>
@@ -19545,7 +19654,7 @@ li.checked::marker { content: "\2612"; }
                            </widget>
                           </item>
                           <item row="6" column="1">
-                           <widget class="QLabel" name="label_224">
+                           <widget class="QLabel">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                               <horstretch>0</horstretch>
@@ -19589,7 +19698,7 @@ li.checked::marker { content: "\2612"; }
                            </widget>
                           </item>
                           <item row="7" column="1">
-                           <widget class="QLabel" name="label_223x">
+                           <widget class="QLabel">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                               <horstretch>0</horstretch>
@@ -19636,7 +19745,7 @@ li.checked::marker { content: "\2612"; }
                            </widget>
                           </item>
                           <item row="8" column="1">
-                           <widget class="QLabel" name="label_223x2b">
+                           <widget class="QLabel">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                               <horstretch>0</horstretch>
@@ -19680,7 +19789,7 @@ li.checked::marker { content: "\2612"; }
                            </widget>
                           </item>
                           <item row="9" column="1">
-                           <widget class="QLabel" name="label_223x2">
+                           <widget class="QLabel">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                               <horstretch>0</horstretch>
@@ -19709,7 +19818,7 @@ li.checked::marker { content: "\2612"; }
                            </widget>
                           </item>
                           <item row="10" column="1">
-                           <widget class="QLabel" name="label_228_x">
+                           <widget class="QLabel">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                               <horstretch>0</horstretch>
@@ -19735,7 +19844,7 @@ li.checked::marker { content: "\2612"; }
                            </widget>
                           </item>
                           <item row="11" column="1">
-                           <widget class="QLabel" name="label_234_x">
+                           <widget class="QLabel">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                               <horstretch>0</horstretch>
@@ -19800,7 +19909,7 @@ li.checked::marker { content: "\2612"; }
                    <height>0</height>
                   </size>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_85">
+                 <layout class="QVBoxLayout">
                   <property name="leftMargin">
                    <number>0</number>
                   </property>
@@ -19890,7 +19999,7 @@ li.checked::marker { content: "\2612"; }
                        <property name="wpGrad" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_86">
+                       <layout class="QVBoxLayout">
                         <property name="spacing">
                          <number>1</number>
                         </property>
@@ -19907,7 +20016,7 @@ li.checked::marker { content: "\2612"; }
                          <number>5</number>
                         </property>
                         <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_70">
+                         <layout class="QHBoxLayout">
                           <property name="leftMargin">
                            <number>0</number>
                           </property>
@@ -20000,7 +20109,7 @@ li.checked::marker { content: "\2612"; }
                <height>80</height>
               </size>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_100">
+             <layout class="QVBoxLayout">
               <property name="spacing">
                <number>0</number>
               </property>
@@ -20051,7 +20160,7 @@ li.checked::marker { content: "\2612"; }
                 <property name="wpBox" stdset="0">
                  <bool>false</bool>
                 </property>
-                <layout class="QVBoxLayout" name="verticalLayout_120">
+                <layout class="QVBoxLayout">
                  <property name="spacing">
                   <number>0</number>
                  </property>
@@ -20090,7 +20199,7 @@ li.checked::marker { content: "\2612"; }
                    <property name="wpPanel" stdset="0">
                     <bool>false</bool>
                    </property>
-                   <layout class="QHBoxLayout" name="horizontalLayout_78" stretch="0,0,0">
+                   <layout class="QHBoxLayout" stretch="0,0,0">
                     <property name="spacing">
                      <number>0</number>
                     </property>
@@ -20223,7 +20332,7 @@ li.checked::marker { content: "\2612"; }
       <property name="wpBox" stdset="0">
        <bool>false</bool>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_136">
+      <layout class="QVBoxLayout">
        <property name="spacing">
         <number>0</number>
        </property>
@@ -20250,7 +20359,7 @@ li.checked::marker { content: "\2612"; }
          <property name="wpPanel" stdset="0">
           <bool>false</bool>
          </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_11">
+         <layout class="QHBoxLayout">
           <property name="leftMargin">
            <number>9</number>
           </property>
