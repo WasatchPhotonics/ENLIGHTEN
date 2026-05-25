@@ -48,6 +48,6 @@ class EtalonCorrectionFeature(EnlightenFeature):
 
         spec = self.ctl.multispec.current_spectrometer()
         if spec:
-            spec.change_device_settings("etalon_correction_enable", self.enabled)
+            spec.change_device_setting("etalon_correction_enable", self.enabled)
 
         self.update_visibility()

@@ -15969,320 +15969,58 @@ li.checked::marker { content: "\2612"; }
                  </layout>
                 </widget>
                </item>
+
                <item>
-                <widget class="QFrame" name="frame_accessory_widget">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="frameShape">
-                  <enum>QFrame::Shape::StyledPanel</enum>
-                 </property>
-                 <property name="frameShadow">
-                  <enum>QFrame::Shadow::Raised</enum>
-                 </property>
+                <widget class="QFrame" name="frame_acc_xl">
+                 <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Preferred"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                 <property name="frameShape"> <enum>QFrame::Shape::StyledPanel</enum> </property>
+                 <property name="frameShadow"> <enum>QFrame::Shadow::Raised</enum> </property>
                  <layout class="QVBoxLayout">
-                  <property name="leftMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="topMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>0</number>
-                  </property>
+                  <property name="leftMargin"> <number>0</number> </property>
+                  <property name="topMargin"> <number>0</number> </property>
+                  <property name="rightMargin"> <number>0</number> </property>
+                  <property name="bottomMargin"> <number>0</number> </property>
                   <item>
                    <widget class="QLabel">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <bold>true</bold>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>Accessory Control</string>
-                    </property>
+                    <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Preferred"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                    <property name="font"> <font> <bold>true</bold> </font> </property>
+                    <property name="text"> <string>Accessory Control</string> </property>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QFrame" name="frame_accessory_white">
+                   <widget class="QFrame" name="frame_acc_xl_white">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                       <horstretch>0</horstretch>
                       <verstretch>0</verstretch>
                      </sizepolicy>
                     </property>
-                    <property name="frameShape">
-                     <enum>QFrame::Shape::StyledPanel</enum>
-                    </property>
-                    <property name="frameShadow">
-                     <enum>QFrame::Shadow::Raised</enum>
-                    </property>
-                    <property name="wpBox" stdset="0">
-                     <bool>false</bool>
-                    </property>
+                    <property name="frameShape"> <enum>QFrame::Shape::StyledPanel</enum> </property>
+                    <property name="frameShadow"> <enum>QFrame::Shadow::Raised</enum> </property>
+                    <property name="wpBox" stdset="0"> <bool>false</bool> </property>
                     <layout class="QVBoxLayout">
-                     <property name="leftMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="topMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="rightMargin">
-                      <number>0</number>
-                     </property>
-                     <property name="bottomMargin">
-                      <number>0</number>
-                     </property>
+                     <property name="leftMargin"> <number>0</number> </property>
+                     <property name="topMargin"> <number>0</number> </property>
+                     <property name="rightMargin"> <number>0</number> </property>
+                     <property name="bottomMargin"> <number>0</number> </property>
                      <item>
-                      <widget class="QFrame" name="frame_accessory_grad">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="frameShape">
-                        <enum>QFrame::Shape::StyledPanel</enum>
-                       </property>
-                       <property name="frameShadow">
-                        <enum>QFrame::Shadow::Raised</enum>
-                       </property>
-                       <property name="wpGrad" stdset="0">
-                        <bool>false</bool>
-                       </property>
+                      <widget class="QFrame" name="frame_acc_xl_grad">
+                       <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Preferred"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                       <property name="frameShape"> <enum>QFrame::Shape::StyledPanel</enum> </property>
+                       <property name="frameShadow"> <enum>QFrame::Shadow::Raised</enum> </property>
+                       <property name="wpGrad" stdset="0"> <bool>false</bool> </property>
                        <layout class="QVBoxLayout">
+
                         <item>
-                         <layout class="QGridLayout">
-                          <item row="0" column="0">
-                           <widget class="QCheckBox" name="checkBox_accessory_lamp">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
-                            <property name="text">
-                             <string>Lamp</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="1" column="0">
-                           <widget class="QCheckBox" name="checkBox_accessory_shutter_open">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
-                            <property name="text">
-                             <string>Shutter Open</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="1" column="1">
-                           <widget class="QCheckBox" name="checkBox_accessory_fan">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
-                            <property name="text">
-                             <string>Fan</string>
-                            </property>
-                           </widget>
-                          </item>
-                         </layout>
+                         <widget class="QCheckBox" name="checkBox_acc_xl_shutter">
+                          <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                          <property name="text"> <string>Shutter Open</string> </property>
+                         </widget>
                         </item>
                         <item>
-                         <widget class="QFrame" name="frame_accessory_cont_strobe">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="frameShape">
-                           <enum>QFrame::Shape::StyledPanel</enum>
-                          </property>
-                          <property name="frameShadow">
-                           <enum>QFrame::Shadow::Raised</enum>
-                          </property>
-                          <property name="wpBox" stdset="0">
-                           <bool>false</bool>
-                          </property>
-                          <layout class="QFormLayout">
-                           <property name="labelAlignment">
-                            <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
-                           </property>
-                           <property name="horizontalSpacing">
-                            <number>0</number>
-                           </property>
-                           <property name="verticalSpacing">
-                            <number>3</number>
-                           </property>
-                           <property name="leftMargin">
-                            <number>6</number>
-                           </property>
-                           <property name="topMargin">
-                            <number>6</number>
-                           </property>
-                           <property name="rightMargin">
-                            <number>6</number>
-                           </property>
-                           <property name="bottomMargin">
-                            <number>9</number>
-                           </property>
-                           <item row="0" column="0">
-                            <widget class="QCheckBox" name="checkBox_accessory_cont_strobe_enable">
-                             <property name="sizePolicy">
-                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                               <horstretch>0</horstretch>
-                               <verstretch>0</verstretch>
-                              </sizepolicy>
-                             </property>
-                             <property name="layoutDirection">
-                              <enum>Qt::LayoutDirection::LeftToRight</enum>
-                             </property>
-                             <property name="text">
-                              <string>Strobe</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="1" column="0">
-                            <widget class="QSpinBox" name="spinBox_accessory_cont_strobe_freq_hz">
-                             <property name="sizePolicy">
-                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                               <horstretch>0</horstretch>
-                               <verstretch>0</verstretch>
-                              </sizepolicy>
-                             </property>
-                             <property name="minimumSize">
-                              <size>
-                               <width>75</width>
-                               <height>0</height>
-                              </size>
-                             </property>
-                             <property name="maximumSize">
-                              <size>
-                               <width>75</width>
-                               <height>16777215</height>
-                              </size>
-                             </property>
-                             <property name="focusPolicy">
-                              <enum>Qt::FocusPolicy::StrongFocus</enum>
-                             </property>
-                             <property name="alignment">
-                              <set>Qt::AlignmentFlag::AlignCenter</set>
-                             </property>
-                             <property name="minimum">
-                              <number>1</number>
-                             </property>
-                             <property name="maximum">
-                              <number>1000</number>
-                             </property>
-                             <property name="singleStep">
-                              <number>1</number>
-                             </property>
-                             <property name="value">
-                              <number>10</number>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="1" column="1">
-                            <widget class="QLabel">
-                             <property name="sizePolicy">
-                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                               <horstretch>0</horstretch>
-                               <verstretch>0</verstretch>
-                              </sizepolicy>
-                             </property>
-                             <property name="layoutDirection">
-                              <enum>Qt::LayoutDirection::RightToLeft</enum>
-                             </property>
-                             <property name="text">
-                              <string>Frequency (Hz)</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="2" column="0">
-                            <widget class="QSpinBox" name="spinBox_accessory_cont_strobe_width_us">
-                             <property name="sizePolicy">
-                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                               <horstretch>0</horstretch>
-                               <verstretch>0</verstretch>
-                              </sizepolicy>
-                             </property>
-                             <property name="minimumSize">
-                              <size>
-                               <width>75</width>
-                               <height>0</height>
-                              </size>
-                             </property>
-                             <property name="maximumSize">
-                              <size>
-                               <width>75</width>
-                               <height>16777215</height>
-                              </size>
-                             </property>
-                             <property name="focusPolicy">
-                              <enum>Qt::FocusPolicy::StrongFocus</enum>
-                             </property>
-                             <property name="alignment">
-                              <set>Qt::AlignmentFlag::AlignCenter</set>
-                             </property>
-                             <property name="minimum">
-                              <number>1</number>
-                             </property>
-                             <property name="maximum">
-                              <number>1000000</number>
-                             </property>
-                             <property name="singleStep">
-                              <number>10</number>
-                             </property>
-                             <property name="value">
-                              <number>100</number>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="2" column="1">
-                            <widget class="QLabel">
-                             <property name="sizePolicy">
-                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                               <horstretch>0</horstretch>
-                               <verstretch>0</verstretch>
-                              </sizepolicy>
-                             </property>
-                             <property name="text">
-                              <string>Width (µs)</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="0" column="1">
-                            <widget class="QCheckBox" name="checkBox_accessory_cont_strobe_display">
-                             <property name="sizePolicy">
-                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                               <horstretch>0</horstretch>
-                               <verstretch>0</verstretch>
-                              </sizepolicy>
-                             </property>
-                             <property name="text">
-                              <string>Sync</string>
-                             </property>
-                            </widget>
-                           </item>
-                          </layout>
+                         <widget class="QCheckBox" name="checkBox_acc_xl_fan">
+                          <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Fixed"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                          <property name="text"> <string>Shutter Open</string> </property>
                          </widget>
                         </item>
                        </layout>
@@ -16294,6 +16032,9 @@ li.checked::marker { content: "\2612"; }
                  </layout>
                 </widget>
                </item>
+
+               
+
                <item>
                 <widget class="QFrame" name="detectorControlWidget">
                  <property name="sizePolicy">
@@ -19909,6 +19650,261 @@ li.checked::marker { content: "\2612"; }
                  </layout>
                 </widget>
                </item>
+               
+               
+               <item>
+                <widget class="QFrame" name="frame_xs_acc">
+                 <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Preferred"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                 <property name="lineWidth"> <number>1</number> </property>
+                 <layout class="QVBoxLayout">
+                  <property name="leftMargin"> <number>0</number> </property>
+                  <property name="topMargin"> <number>0</number> </property>
+                  <property name="rightMargin"> <number>0</number> </property>
+                  <property name="bottomMargin"> <number>0</number> </property>
+                  <item>
+                   <widget class="QLabel">
+                    <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Preferred"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                    <property name="font"> <font> <bold>true</bold> </font> </property>
+                    <property name="text"> <string>XS Accessory Connector</string> </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QFrame">
+                    <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Preferred"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                    <property name="lineWidth"> <number>1</number> </property>
+                    <property name="wpBox" stdset="0"> <bool>false</bool> </property>
+                    <layout class="QVBoxLayout">
+                     <property name="leftMargin"> <number>0</number> </property>
+                     <property name="topMargin"> <number>0</number> </property>
+                     <property name="rightMargin"> <number>0</number> </property>
+                     <property name="bottomMargin"> <number>0</number> </property>
+                     <item>
+                      <widget class="QFrame">
+                       <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Preferred"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                       <property name="minimumSize"> <size> <width>0</width> <height>0</height> </size> </property>
+                       <property name="maximumSize"> <size> <width>16777215</width> <height>16777215</height> </size> </property>
+                       <property name="lineWidth"> <number>1</number> </property>
+                       <property name="wpGrad" stdset="0"> <bool>false</bool> </property>
+                       <layout class="QVBoxLayout" name="layout_xs_acc">
+                        
+                        <item>
+                         <widget class="QCheckBox" name="checkBox_xs_acc_gpio_enable">
+                          <property name="text"> <string>GPIO Enable</string> </property>
+                          <property name="toolTip"> <string>all GPIO pins remain inactive until the GPIO feature is enabled</string> </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QCheckBox" name="checkBox_xs_acc_5V_enable">
+                          <property name="text"> <string>5V Supply Enable</string> </property>
+                          <property name="toolTip"> <string>the 5V output supply is inactive until explicitly enabled</string> </property>
+                         </widget>
+                        </item>
+                        
+                        
+                        <item>
+                         <widget class="QLabel" name="label_xs_acc_gpio1">
+                          <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Preferred"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                          <property name="font"> <font> <bold>true</bold> </font> </property>
+                          <property name="text"> <string>GPIO1</string> </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QFrame" name="frame_xs_acc_gpio1">
+                          <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Preferred"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                          <property name="minimumSize"> <size> <width>0</width> <height>20</height> </size> </property>
+                          <property name="frameShape"> <enum>QFrame::Shape::StyledPanel</enum> </property>
+                          <property name="frameShadow"> <enum>QFrame::Shadow::Raised</enum> </property>
+                          <property name="wpBox" stdset="0"> <bool>false</bool> </property>
+                          <layout class="QFormLayout">
+                           <item row="0" column="0"><widget class="QLabel"><property name="text"><string>Mode</string></property></widget></item>
+                           <item row="0" column="1">
+                            <widget class="QComboBox" name="comboBox_xs_acc_gpio1_mode">
+                             <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Preferred"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                             <property name="minimumSize"> <size> <width>80</width> <height>22</height> </size> </property>
+                             <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
+                             <item> <property name="text"> <string>Function</string> </property> </item>
+                             <item> <property name="text"> <string>Manual</string> </property> </item>
+                            </widget>
+                           </item>
+                           <item row="1" column="0"><widget class="QLabel"><property name="text"><string>Direction</string></property></widget></item>
+                           <item row="1" column="1">
+                            <widget class="QComboBox" name="comboBox_xs_acc_gpio1_dir">
+                             <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Preferred"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                             <property name="minimumSize"> <size> <width>80</width> <height>22</height> </size> </property>
+                             <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
+                             <item> <property name="text"> <string>Input</string> </property> </item>
+                             <item> <property name="text"> <string>Output</string> </property> </item>
+                            </widget>
+                           </item>
+                           <item row="2" column="0"><widget class="QLabel"><property name="text"><string>Function</string></property></widget></item>
+                           <item row="2" column="1">
+                            <widget class="QComboBox" name="comboBox_xs_acc_gpio1_function">
+                             <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Preferred"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                             <property name="minimumSize"> <size> <width>80</width> <height>22</height> </size> </property>
+                             <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
+                             <item> <property name="text"> <string>Disabled</string> </property> </item>
+                             <item> <property name="text"> <string>Ext Trigger</string> </property> </item>
+                             <item> <property name="text"> <string>Laser Override</string> </property> </item>
+                            </widget>
+                           </item>
+                           <item row="3" column="0"><widget class="QLabel"><property name="text"><string>Value</string></property></widget></item>
+                           <item row="3" column="1">
+                            <widget class="QComboBox" name="comboBox_xs_acc_gpio1_value">
+                             <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Preferred"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                             <property name="minimumSize"> <size> <width>80</width> <height>22</height> </size> </property>
+                             <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
+                             <item> <property name="text"> <string>Low</string> </property> </item>
+                             <item> <property name="text"> <string>High</string> </property> </item>
+                            </widget>
+                           </item>
+                          </layout>
+                         </widget>
+                        </item>
+
+                        
+                        <item>
+                         <widget class="QLabel" name="label_xs_acc_gpio2">
+                          <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Preferred"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                          <property name="font"> <font> <bold>true</bold> </font> </property>
+                          <property name="text"> <string>GPIO2</string> </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QFrame" name="frame_xs_acc_gpio2">
+                          <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Preferred"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                          <property name="minimumSize"> <size> <width>0</width> <height>20</height> </size> </property>
+                          <property name="frameShape"> <enum>QFrame::Shape::StyledPanel</enum> </property>
+                          <property name="frameShadow"> <enum>QFrame::Shadow::Raised</enum> </property>
+                          <property name="wpBox" stdset="0"> <bool>false</bool> </property>
+                          <layout class="QFormLayout">
+                           <item row="0" column="0"><widget class="QLabel"><property name="text"><string>Mode</string></property></widget></item>
+                           <item row="0" column="1">
+                            <widget class="QComboBox" name="comboBox_xs_acc_gpio2_mode">
+                             <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Preferred"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                             <property name="minimumSize"> <size> <width>80</width> <height>22</height> </size> </property>
+                             <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
+                             <item> <property name="text"> <string>Function</string> </property> </item>
+                             <item> <property name="text"> <string>Manual</string> </property> </item>
+                            </widget>
+                           </item>
+                           <item row="1" column="0"><widget class="QLabel"><property name="text"><string>Direction</string></property></widget></item>
+                           <item row="1" column="1">
+                            <widget class="QComboBox" name="comboBox_xs_acc_gpio2_dir">
+                             <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Preferred"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                             <property name="minimumSize"> <size> <width>80</width> <height>22</height> </size> </property>
+                             <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
+                             <item> <property name="text"> <string>Input</string> </property> </item>
+                             <item> <property name="text"> <string>Output</string> </property> </item>
+                            </widget>
+                           </item>
+                           <item row="2" column="0"><widget class="QLabel"><property name="text"><string>Function</string></property></widget></item>
+                           <item row="2" column="1">
+                            <widget class="QComboBox" name="comboBox_xs_acc_gpio2_function">
+                             <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Preferred"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                             <property name="minimumSize"> <size> <width>80</width> <height>22</height> </size> </property>
+                             <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
+                             <item> <property name="text"> <string>Disabled</string> </property> </item>
+                             <item> <property name="text"> <string>Cont Strobe</string> </property> </item>
+                             <item> <property name="text"> <string>Data Ready</string> </property> </item>
+                             <item> <property name="text"> <string>Laser Mirror</string> </property> </item>
+                             <item> <property name="text"> <string>Laser Error</string> </property> </item>
+                            </widget>
+                           </item>
+                           <item row="3" column="0"><widget class="QLabel"><property name="text"><string>Value</string></property></widget></item>
+                           <item row="3" column="1">
+                            <widget class="QComboBox" name="comboBox_xs_acc_gpio2_value">
+                             <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Preferred"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                             <property name="minimumSize"> <size> <width>80</width> <height>22</height> </size> </property>
+                             <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
+                             <item> <property name="text"> <string>Low</string> </property> </item>
+                             <item> <property name="text"> <string>High</string> </property> </item>
+                            </widget>
+                           </item>
+                          </layout>
+                         </widget>
+                        </item>
+                        
+                        <item>
+                         <widget class="QLabel" name="label_xs_acc_cont_strobe">
+                          <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Preferred"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                          <property name="font"> <font> <bold>true</bold> </font> </property>
+                          <property name="text"> <string>Continuous Strobe</string> </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QFrame" name="frame_xs_acc_cont_strobe">
+                          <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Preferred"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                          <property name="minimumSize"> <size> <width>0</width> <height>20</height> </size> </property>
+                          <property name="frameShape"> <enum>QFrame::Shape::StyledPanel</enum> </property>
+                          <property name="frameShadow"> <enum>QFrame::Shadow::Raised</enum> </property>
+                          <property name="wpBox" stdset="0"> <bool>false</bool> </property>
+                          <layout class="QFormLayout">
+                           <item row="0" column="0"><widget class="QLabel"><property name="text"><string>Period</string></property></widget></item>
+                           <item row="0" column="1">
+                            <widget class="QSpinBox" name="spinBox_xs_acc_cont_strobe_period_us">
+                             <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
+                             <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                             <property name="keyboardTracking"> <bool>false</bool> </property>
+                             <property name="minimum"> <number>2</number> </property>
+                             <property name="maximum"> <number>999999999</number> </property>
+                             <property name="singleStep"> <number>1000</number> </property>
+                             <property name="value"> <number>1000000</number> </property>
+                             <property name="suffix"> <string> µs</string> </property>
+                            </widget>
+                           </item>
+                           <item row="1" column="0"><widget class="QLabel"><property name="text"><string>Width</string></property></widget></item>
+                           <item row="1" column="1">
+                            <widget class="QSpinBox" name="spinBox_xs_acc_cont_strobe_width_us">
+                             <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
+                             <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                             <property name="keyboardTracking"> <bool>false</bool> </property>
+                             <property name="minimum"> <number>1</number> </property>
+                             <property name="maximum"> <number>999999999</number> </property>
+                             <property name="singleStep"> <number>1000</number> </property>
+                             <property name="value"> <number>100000</number> </property>
+                             <property name="suffix"> <string> µs</string> </property>
+                            </widget>
+                           </item>
+                           <item row="2" column="0"><widget class="QLabel"><property name="text"><string>Delay</string></property></widget></item>
+                           <item row="2" column="1">
+                            <widget class="QSpinBox" name="spinBox_xs_acc_cont_strobe_delay_us">
+                             <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
+                             <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                             <property name="keyboardTracking"> <bool>false</bool> </property>
+                             <property name="minimum"> <number>0</number> </property>
+                             <property name="maximum"> <number>999999999</number> </property>
+                             <property name="singleStep"> <number>1000</number> </property>
+                             <property name="value"> <number>0</number> </property>
+                             <property name="suffix"> <string> µs</string> </property>
+                            </widget>
+                           </item>
+                           <item row="3" column="0"><widget class="QLabel"><property name="text"><string>Count</string></property></widget></item>
+                           <item row="3" column="1">
+                            <widget class="QSpinBox" name="spinBox_xs_acc_cont_strobe_count">
+                             <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
+                             <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
+                             <property name="keyboardTracking"> <bool>false</bool> </property>
+                             <property name="minimum"> <number>0</number> </property>
+                             <property name="maximum"> <number>999999999</number> </property>
+                             <property name="singleStep"> <number>10</number> </property>
+                             <property name="value"> <number>0</number> </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </widget>
+                        </item>
+
+                       </layout>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+
+
                <item>
                 <spacer name="verticalSpacer_7">
                  <property name="orientation">

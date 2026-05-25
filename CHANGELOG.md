@@ -57,8 +57,12 @@
     - STARTING: 
         - Safe Mode
     - TODO
+        - StripChartFeature
+            - refactor
+        - AccessoryControlFeature
+            - need USB opcodes
         - EtalonCorrection
-            - read from EEPROM in BLEDevice
+            - read and cache from EEPROM in BLEDevice
         - BatteryFeature (in work)
             - add state.battery_temperature_deg_c
             - add state.battery_charger_temperature_deg_c

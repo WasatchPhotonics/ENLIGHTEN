@@ -5,7 +5,8 @@ from enlighten import common
 log = logging.getLogger(__name__)
 
 from enlighten.data.ModelInfoFeature import ModelInfoFeature
-from enlighten.device.AccessoryControlFeature import AccessoryControlFeature
+from enlighten.device.AccessoryControlXLFeature import AccessoryControlXLFeature
+from enlighten.device.AccessoryControlXSFeature import AccessoryControlXSFeature
 from enlighten.device.AmbientTemperatureFeature import AmbientTemperatureFeature
 from enlighten.device.BatteryFeature import BatteryFeature
 from enlighten.device.DetectorTemperatureFeature import DetectorTemperatureFeature
@@ -95,7 +96,8 @@ class BusinessObjects:
         ctl = self.ctl
 
         ctl.absorbance = None
-        ctl.accessory_control = None
+        ctl.accessory_control_xl = None
+        ctl.accessory_control_xs = None
         ctl.area_scan = None
         ctl.authentication = None
         ctl.auto_raman = None
@@ -247,7 +249,8 @@ class BusinessObjects:
         ctl.etalon_correction           = EtalonCorrectionFeature(ctl)
         ctl.ingaas_correction           = InGaAsCorrectionFeature(ctl)
         ctl.raman_shift_correction      = RamanShiftCorrectionFeature(ctl)
-        ctl.accessory_control           = AccessoryControlFeature(ctl)
+        ctl.accessory_control_xl        = AccessoryControlXLFeature(ctl)
+        ctl.accessory_control_xs        = AccessoryControlXSFeature(ctl)
         ctl.high_gain_mode              = HighGainModeFeature(ctl)
         ctl.sounds                      = SoundEffectsFeature(ctl)
         ctl.help                        = HelpFeature(ctl)
