@@ -1,7 +1,6 @@
 import logging
 
 from enlighten.common import LaserStates
-from enlighten.timing.RollingDataSet import RollingDataSet
 
 log = logging.getLogger(__name__)
 
@@ -59,8 +58,6 @@ class SpectrometerApplicationState:
         # to track separately from SpectrometerState, which is shared with Wasatch.PY thread
         # self.laser_gui_firing = False 
         # self.last_laser_toggle = None
-
-        self.reset_rolling_data()
 
     def __init__(self, ctl, device_id):
         self.ctl = ctl
@@ -130,39 +127,3 @@ class SpectrometerApplicationState:
         self.reference_timestamp = None
         self.reference_is_dark_corrected = False
         self.reference_excitation = None
-
-    ## @todo remove cfu (add setters for secondary adc windows)
-    def reset_rolling_data(self, cfu=None, time_window=3, hotplug=True):
-        # 1. raw data (all recent measurements, updated at a FAST rate)
-        # 2. smoothed (use to display on-screen label at a MEDIUM rate)
-        # 3. historical (on-screen graph trendline, updated at a SLOW rate)
-        if not hotplug:
-            return
-
-        self.ambient_temperature_data = RollingDataSet(time_window)
-        self.laser_temperature_data   = RollingDataSet(time_window)
-        self.battery_data             = RollingDataSet(time_window)
-
-        self.detector_temperatures_degC                  = RollingDataSet(time_window)
-        self.detector_temperatures_degC_averaged         = RollingDataSet(time_window) # MZ: basically just slows down display graph rate
-        self.detector_temperatures_degC_averaged_display = RollingDataSet(time_window)
-        self.detector_temperature_degC_latest = None
-
-        windows = (2, 2, 500)
-        if cfu is not None:
-            windows = (cfu.spinBox_secondary_adc_rolling_window_fast.value(),
-                       cfu.spinBox_secondary_adc_rolling_window_medium.value(),
-                       cfu.spinBox_secondary_adc_rolling_graph.value()) 
-
-        self.secondary_adc_data_fast   = RollingDataSet(windows[0])
-        self.secondary_adc_data_medium = RollingDataSet(windows[1])
-        self.secondary_adc_data_slow   = RollingDataSet(windows[2])
-
-    def update_rolling_data(self, window_value):
-
-        self.battery_data.update_window(window_value)
-        self.laser_temperature_data.update_window(window_value)
-        self.detector_temperatures_degC.update_window(window_value)
-        self.detector_temperatures_degC_averaged.update_window(window_value) 
-        self.detector_temperatures_degC_averaged_display.update_window(window_value)
-

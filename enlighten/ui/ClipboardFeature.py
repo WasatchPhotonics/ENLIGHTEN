@@ -101,3 +101,9 @@ class ClipboardFeature(EnlightenFeature):
 
     def raw_set_text(self, text):
         self.ctl.app.clipboard().setText(text)
+
+    def copy_rds(self, rds):
+        s = ""
+        for ts, value in rds.data:
+            s += "{ts}\t{value}\n"
+        self.ctl.app.clipboard().setText(s)

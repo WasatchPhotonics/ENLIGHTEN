@@ -69,7 +69,6 @@ class MultispecFeature(EnlightenFeature):
 
         # There's a bunch of stuff here that I think would more cleanly go into 
         # SpectrometerApplicationState...
-        self.strip_features = [] # this may mean "StripChart"?
         self.spec_laser_temp_curves = {}
         self.spec_hardware_live_curves = {}
         self.spec_detector_temp_curves = {}
@@ -137,12 +136,6 @@ class MultispecFeature(EnlightenFeature):
         self.set_ignore(device.device_id)
         return True # failed filter
 
-    def register_strip_feature(self, feature):
-        """
-        MZ: Whut?
-        """
-        self.strip_features.append(feature)
-
     ##
     # The Qt Designer doesn't let us emplace pyqtgraph objects (I think?), so
     # add this button at runtime.
@@ -163,8 +156,6 @@ class MultispecFeature(EnlightenFeature):
         spec.color = btn.color()
         self.serial_colors[spec.settings.eeprom.serial_number] = spec.color
         self.update_spectrometer_colors()
-        for feature in self.strip_features:
-            feature.update_curve_color(spec)
 
     def update_color(self):
         spec = self.current_spectrometer()

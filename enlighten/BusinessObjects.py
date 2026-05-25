@@ -22,10 +22,9 @@ from enlighten.device.LaserWatchdogFeature import LaserWatchdogFeature
 from enlighten.device.MultispecFeature import MultispecFeature
 from enlighten.EnlightenFeature import EnlightenFeature
 from enlighten.factory.DFUFeature import DFUFeature
-from enlighten.factory.FactoryStripChartFeature import FactoryStripChartFeature
+from enlighten.factory.StripChartsFeature import StripChartsFeature
 from enlighten.file_io.ConfigurationFeature import ConfigurationFeature
 from enlighten.file_io.FileManagerFeature import FileManagerFeature
-from enlighten.file_io.HardwareFileOutputFeature import HardwareFileOutputFeature
 from enlighten.file_io.LoggingFeature import LoggingFeature
 from enlighten.measurement.AreaScanFeature import AreaScanFeature
 from enlighten.measurement.MeasurementFactory import MeasurementFactory
@@ -117,7 +116,6 @@ class BusinessObjects:
         ctl.eeprom_writer = None
         ctl.etalon_correction = None
         ctl.external_trigger = None
-        ctl.factory_strip_feature = None
         ctl.file_manager = None
         ctl.focus_listener = None
         ctl.gain_db_feature = None
@@ -126,7 +124,6 @@ class BusinessObjects:
         ctl.grid = None
         ctl.gui = None
         ctl.guide = None
-        ctl.hardware_file_manager = None
         ctl.help = None
         ctl.high_gain_mode = None
         ctl.horiz_roi = None
@@ -157,6 +154,7 @@ class BusinessObjects:
         ctl.sounds = None
         ctl.status_bar = None
         ctl.status_indicators = None
+        ctl.strip_charts = None
         ctl.stylesheets = None
         ctl.take_one = None
         ctl.transmission = None
@@ -200,10 +198,11 @@ class BusinessObjects:
         ctl.graph                       = GraphFeature(ctl)
         ctl.alt_graph                   = GraphFeature(ctl, alt=True)
 
-        ctl.hardware_file_manager       = HardwareFileOutputFeature(ctl)
         ctl.cursor                      = CursorFeature(ctl)
         ctl.image_resources             = ImageResources()
         ctl.multispec                   = MultispecFeature(ctl)
+        ctl.save_options                = SaveOptionsFeature(ctl)
+        ctl.strip_charts                = StripChartsFeature(ctl)
         ctl.battery_feature             = BatteryFeature(ctl)
         ctl.status_indicators           = StatusIndicatorFeature(ctl)
         ctl.detector_temperature        = DetectorTemperatureFeature(ctl)
@@ -212,7 +211,6 @@ class BusinessObjects:
         ctl.absorbance                  = AbsorbanceFeature(ctl)
         ctl.interp                      = InterpolationFeature(ctl)
         ctl.external_trigger            = ExternalTriggerFeature(ctl)
-        ctl.save_options                = SaveOptionsFeature(ctl)
         ctl.measurement_factory         = MeasurementFactory(ctl)
         ctl.measurements                = Measurements(ctl)
         ctl.authentication              = AuthenticationFeature(ctl)
@@ -242,7 +240,6 @@ class BusinessObjects:
         ctl.auto_raman                  = AutoRamanFeature(ctl)
         ctl.richardson_lucy             = RichardsonLucyFeature(ctl)
         ctl.dfu                         = DFUFeature(ctl)
-        ctl.factory_strip_charts        = FactoryStripChartFeature(ctl)
         ctl.plugin_controller           = PluginControllerFeature(ctl)
         ctl.grid                        = GridFeature(ctl)
         ctl.area_scan                   = AreaScanFeature(ctl)

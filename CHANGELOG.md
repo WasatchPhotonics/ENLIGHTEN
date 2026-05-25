@@ -54,12 +54,17 @@
           (this was not clear in any way)
         - renaming everything to "Shutter Open" and "Shutter Closed"
         - simplified several other things in AndorDevice, so worth re-testing
+    - added AccessoryControlXSFeature
+    - refactored FactoryStripChartFeature -> StripChartsFeature
+        - deprecated HardwareFileOutputFeature
+        - simplified BatteryFeature,
+	                 LaserTemperatureFeature,
+                     AmbientTemperatureFeature,
+	                 DetectorTemperatureFeature
     - STARTING: 
         - Safe Mode
     - TODO
-        - StripChartFeature
-            - refactor
-        - AccessoryControlFeature
+        - AccessoryControlXSFeature
             - need USB opcodes
         - EtalonCorrection
             - read and cache from EEPROM in BLEDevice

@@ -975,10 +975,6 @@ class Controller:
         # done
         ########################################################################
 
-        # updates from initialization to match time window in spinbox
-        # call StripChartFeature getter
-        spec.app_state.reset_rolling_data(time_window=cfu.spinBox_strip_window.value(), hotplug=hotplug)
-
     def update_ble_firmware_version(self):
         cfu = self.form.ui
         spec = self.multispec.current_spectrometer()
@@ -1074,9 +1070,6 @@ class Controller:
         # appropriate for Controller
         self.form.exit_signal                       .exit               .connect(self.close)
 
-        ## move to StripChartFeature
-        cfu.spinBox_strip_window                    .valueChanged       .connect(self.update_hardware_window)
-        
         # OEM tab
         cfu.checkBox_swap_alternating_pixels        .stateChanged       .connect(self.swap_alternating_pixels_callback)
         cfu.checkBox_graph_alternating_pixels       .stateChanged       .connect(self.graph_alternating_pixels_callback)
@@ -2360,11 +2353,6 @@ class Controller:
 
     def perform_fpga_reset(self, spec=None):
         self.multispec.change_device_setting("reset_fpga")
-
-    def update_hardware_window(self):
-        for spec in self.multispec.spectrometers.values():
-            # call StripChartFeature getter
-            spec.app_state.update_rolling_data(self.form.ui.spinBox_strip_window.value())
 
     def display_response_error(self, spec: Spectrometer, response_error: str) -> bool:
         """
