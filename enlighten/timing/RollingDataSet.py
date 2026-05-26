@@ -19,7 +19,6 @@ class RollingDataSet:
         self.size_sec = size_seconds
 
         self.data = deque()
-        self.window_limit = timedelta(minutes=0, seconds=self.size_sec, milliseconds=0)
 
     def __str__(self):
         return f"RollingDataSet(size_sec {self.size_sec}, latest {self.latest()})"
@@ -42,7 +41,7 @@ class RollingDataSet:
         if len(self.data) == 0:
             return
 
-        while (datetime.now() - self.data[0][0]) > self.window_limit:
+        while (datetime.now() - self.data[0][0]).total_seconds() > self.size_sec:
             self.data.popleft()
 
     def __len__(self):
@@ -105,4 +104,3 @@ class RollingDataSet:
 
     def update_window(self, size_seconds):
         self.size_sec = size_seconds
-        self.window_limit = timedelta(minutes=0, seconds=self.size_sec, milliseconds=0)

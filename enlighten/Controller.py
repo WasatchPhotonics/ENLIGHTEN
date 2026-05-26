@@ -221,7 +221,7 @@ class Controller:
 
         # setup timers
         self.setup_bus_listener()
-        self.setup_strip_charts_listener() 
+        #self.setup_strip_charts_listener() 
         self.setup_main_event_loops() 
 
         # bind keyboard shortcuts
@@ -297,9 +297,9 @@ class Controller:
         log.debug("disconnect_device[%s]: closing", device_id)
         spec.close()
 
+        # is there actually any reason to remove them from StripCharts?
+
         log.debug("disconnect_device[%s]: removing from Multispec", device_id)
-        #self.detector_temperature.remove_spec_curve(spec)
-        #self.laser_temperature.remove_spec_curve(spec)
         if not self.multispec.remove(spec):
             log.error("disconnect_device[%s]: failed to remove from Multispec", device_id)
             return False
@@ -343,8 +343,8 @@ class Controller:
 
         for timer in [ self.bus_timer,
                        self.acquisition_timer,
-                       self.status_timer,
-                       self.strip_chart_timer ]: # StripChartFeature
+                       self.status_timer ]:
+                       # self.strip_chart_timer ]: # StripChartFeature
             if timer is not None:
                 timer.stop()
 
@@ -408,48 +408,41 @@ class Controller:
         self.bus_timer.setSingleShot(True)
         self.bus_timer.start(500)
 
-    def setup_strip_charts_listener(self):
-        """ @todo move to StripChartsFeature """
-        self.strip_chart_timer = QtCore.QTimer()
-        self.strip_chart_timer.timeout.connect(self.process_strip_charts)
-        self.strip_chart_timer.setSingleShot(True)
-
-    def process_strip_charts(self):
-        """ 
-        @todo move to StripChartsFeature 
-
-        So, it's worth noting that the data we collect for the Factory view seems
-        to be coming from here, which only updates from the "latest" reading at 
-        1Hz, regardless of integration time or incoming data rate. 
-
-        We could probably be more event-driven and "timely" than this, but on the
-        other hand these metrics probably don't need to be updated at especially
-        high frequencies...this seems okay for now.
-        """
-        for spec in self.multispec.get_spectrometers():
-            if spec.app_state.paused:
-                log.debug("declining to re-process paused result") # will corrupt running averages
-                continue
-
-            pr = spec.app_state.processed_reading
-            if pr:
-                self.process_strip_chart_reading(spec, pr.reading)
-
-        # tick strip charts at 1Hz, unless the user is watching them, in which case update them with spectra
-        sleep_ms = 1000
-        if self.page_nav.doing_hardware():
-            sleep_ms = self.integration_time_feature.get_ms()
-        self.strip_chart_timer.start(sleep_ms)
-
-    def process_strip_chart_reading(self, spec, reading):
-        if reading is None:
-            return
-
-        for feature in [ self.detector_temperature,
-                         self.laser_temperature,
-                         self.ambient_temperature,
-                         self.battery_feature ]:
-            feature.process_reading(spec, reading) 
+    # def setup_strip_charts_listener(self):
+    #     """ @todo move to StripChartsFeature """
+    #     self.strip_chart_timer = QtCore.QTimer()
+    #     self.strip_chart_timer.timeout.connect(self.process_strip_charts)
+    #     self.strip_chart_timer.setSingleShot(True)
+    #
+    # def process_strip_charts(self):
+    #     """ 
+    #     @todo move to StripChartsFeature 
+    #
+    #     So, it's worth noting that the data we collect for the Factory view seems
+    #     to be coming from here, which only updates from the "latest" reading at 
+    #     1Hz, regardless of integration time or incoming data rate. 
+    #
+    #     We could probably be more event-driven and "timely" than this, but on the
+    #     other hand these metrics probably don't need to be updated at especially
+    #     high frequencies...this seems okay for now.
+    #
+    #     MZ: this seems incorrect, as strip_charts.process_reading is clearly 
+    #     called from the acquisition pipeline.
+    #     """
+    #     for spec in self.multispec.get_spectrometers():
+    #         if spec.app_state.paused:
+    #             log.debug("declining to re-process paused result") # will corrupt running averages
+    #             continue
+    #
+    #         pr = spec.app_state.processed_reading
+    #         if pr:
+    #             self.strip_charts.process_reading(spec, pr.reading) 
+    #
+    #     # tick strip charts at 1Hz, unless the user is watching them, in which case update them with spectra
+    #     sleep_ms = 1000
+    #     if self.page_nav.doing_hardware():
+    #         sleep_ms = self.integration_time_feature.get_ms()
+    #     self.strip_chart_timer.start(sleep_ms)
 
     def tick_bus_listener(self):
         """
@@ -901,18 +894,6 @@ class Controller:
         # update all curves
         self.graph.rescale_curves()
 
-        # MZ: revisit multi-spectrometer support on StripCharts
-        #
-        # if hotplug:
-        #     if spec.settings.eeprom.has_laser:
-        #         self.laser_temperature.add_spec_curve(spec)
-        #     if spec.settings.eeprom.has_cooling:
-        #         self.detector_temperature.add_spec_curve(spec)
-        #     if spec.settings.eeprom.has_battery:
-        #         self.battery_feature.add_spec_curve(spec)
-        #     if spec.settings.is_xs() or spec.settings.is_gen15():
-        #         self.ambient_temperature.add_spec_curve(spec)
-
         # scope capture buttons
         if hotplug:
             spec.app_state.paused = False
@@ -1239,7 +1220,7 @@ class Controller:
         self.acquisition_timer  .start(1000)
         self.status_timer       .start(1100)
         self.status_indicators  .start(1200)
-        self.strip_chart_timer  .start(1300)
+        # self.strip_chart_timer  .start(1300)
 
     def tick_acquisition(self):
         """
@@ -1410,16 +1391,15 @@ class Controller:
             return
 
         reading = acquired_reading.reading
+        self.strip_charts.process_reading(spec, reading) 
 
         # we collected the reading (to clear the queue), but don't do anything with it
         if spec.app_state.paused and not (self.batch_collection.running or spec.app_state.take_one_request):
-            # pull out any useful metadata (detector temperature etc), but stop before graphing
-            self.process_strip_chart_reading(spec, reading)
+            log.debug("attempt_reading: ignored while paused")
             return
 
         if reading.keep_alive:
-            log.debug("attempt_reading: received reading.keep_alive, but passing to hardware strip at least")
-            self.process_strip_chart_reading(spec, reading)
+            log.debug("attempt_reading: received reading.keep_alive")
             return
 
         # are we waiting on a SPECIFIC Reading (or series of Readings)?

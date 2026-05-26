@@ -20,7 +20,12 @@ class LaserTemperatureFeature(EnlightenFeature):
 
         self.combo_mode  .currentIndexChanged .connect(self.combo_callback)
 
-        self.strip_chart = self.ctl.strip_charts.create_chart(name="Laser Temperature", y_unit="Celsius (°C)", format="{value:.2f}°C", warn_hi=36)
+        self.strip_chart = self.ctl.strip_charts.create_chart(
+            name="Laser Temperature", 
+            y_unit="Celsius (°C)", 
+            format="{value:.2f}°C", 
+            warn_hi=36,
+            process_reading_callback=self.process_reading_callback)
 
         self.update_visibility()
 
@@ -43,7 +48,8 @@ class LaserTemperatureFeature(EnlightenFeature):
         for widget in [ self.combo_mode, self.lb_widget ]:
             widget.setVisible(visible)
 
-        self.strip_chart.set_visible(visible)
+        # chart should always be visible, even if TEC-control widget is not
+        # self.strip_chart.set_visible(visible)
 
     def combo_callback(self):
         spec = self.ctl.multispec.current_spectrometer()
@@ -57,7 +63,8 @@ class LaserTemperatureFeature(EnlightenFeature):
 
         self.notify_observers_with_value(s)
 
-    def process_reading(self, spec, reading):
+    def process_reading_callback(self, spec, reading):
+        """ Called by StripCharts """
         if spec is None:
             return self.notify(spec, "disconnected")
 
@@ -75,6 +82,6 @@ class LaserTemperatureFeature(EnlightenFeature):
         if degC is None:
             return
 
-        self.strip_chart.add_value(degC)
+        self.strip_chart.add_value(spec, degC)
 
         self.notify(spec, f"{degC:-.2f} °C")

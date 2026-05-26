@@ -15,6 +15,8 @@ from PySide6.QtWidgets import QPushButton, QCheckBox, QFrame,QHBoxLayout, QLabel
 log = logging.getLogger(__name__)
 
 class StripChartsFeature(EnlightenFeature):
+    """ 
+    """
 
     def __init__(self, ctl):
         super().__init__(ctl)
@@ -26,8 +28,8 @@ class StripChartsFeature(EnlightenFeature):
 
         self.charts = {}
 
-    def create_chart(self, name, window_sec=180, y_unit=None, warn_hi=None, warn_lo=None, format=None):
-        chart = StripChart(self.ctl, name=name, window_sec=window_sec, y_unit=y_unit, warn_hi=warn_hi, warn_lo=warn_lo, format=format, parent=self.parent)
+    def create_chart(self, name, window_sec=180, y_unit=None, warn_hi=None, warn_lo=None, format=None, process_reading_callback=None):
+        chart = StripChart(self.ctl, name=name, window_sec=window_sec, y_unit=y_unit, warn_hi=warn_hi, warn_lo=warn_lo, format=format, parent=self.parent, process_reading_callback=process_reading_callback)
         self.charts[name] = chart
 
         # chart.layout.setParent(self.layout_charts)
@@ -35,30 +37,16 @@ class StripChartsFeature(EnlightenFeature):
 
         return chart
 
+    def process_reading(self, spec, reading):
+        """ We have received a new Reading from a Spectrometer, so process it for every chart  """
+        for name, chart in self.charts.items():
+            callback = chart.process_reading_callback
+            if callback is not None:
+                callback(spec, reading)
+
 class StripChart:
-    """
-    Each of these should instantiate and own:
-
-    * a RollingDataSet to hold the data
-    * a name
-    * a spinBox to determine window age in sec
-    * a checkbox to log data to a file
-    * a checkbox to display the chart
-    * a clipboard icon to copy data to the system clipboard
-    * potentially, warn_hi and warn_lo thresholds to colorize
-    * a plot to graph the value over time
-
-    We should be tracking these for:
-
-    - detector temperature
-    - laser temperature
-    - µC temperature
-    - battery charge level
-    - battery temperature
-    - battery IC temperature
-    """
     
-    def __init__(self, ctl, name, window_sec=180, y_unit=None, warn_hi=None, warn_lo=None, format=None, parent=None):
+    def __init__(self, ctl, name, window_sec=180, y_unit=None, warn_hi=None, warn_lo=None, format=None, parent=None, process_reading_callback=None):
         self.ctl = ctl
         self.name = name
         self.y_unit = y_unit
@@ -67,13 +55,14 @@ class StripChart:
         self.window_sec = window_sec
         self.format = format 
         self.parent = parent
+        self.process_reading_callback = process_reading_callback
 
         self.plot = None
-        self.rds = RollingDataSet(size_seconds=window_sec)
         self.visible = True
 
+        self.spec_data = {} # hash from serial to curve and RollingDataSet 
+
         self.saving = False
-        self.pathname = os.path.join(self.ctl.save_options.generate_today_dir(), f"{self.name}.txt")
 
         self.create_widgets()
 
@@ -108,6 +97,7 @@ class StripChart:
         # [x] Display
         self.cb_display = QCheckBox(self.parent)
         self.cb_display.setText("Display")
+        self.cb_display.setChecked(True)
         self.cb_display.stateChanged.connect(self.display_callback)
 
         # [x] Save
@@ -149,19 +139,19 @@ class StripChart:
         self.plot.setLabel(axis="left", text=self.y_unit)
         self.plot.invertX(True)
         self.plot.setMouseEnabled(x=False, y=False)
-        self.curve = self.plot.plot([])
+        # todo: add legend
 
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(1)
         sizePolicy.setVerticalStretch(0)
 
-        sw = QStackedWidget(self.parent)
-        sw.setSizePolicy(sizePolicy)
-        sw.setMinimumSize(QSize(300, 300))
-        sw.setMaximumSize(QSize(16777215, 300))
-        sw.addWidget(self.plot)
+        self.stacked_widget = QStackedWidget(self.parent)
+        self.stacked_widget.setSizePolicy(sizePolicy)
+        self.stacked_widget.setMinimumSize(QSize(300, 300))
+        self.stacked_widget.setMaximumSize(QSize(16777215, 300))
+        self.stacked_widget.addWidget(self.plot)
 
-        self.layout.addWidget(sw)
+        self.layout.addWidget(self.stacked_widget)
 
     def make_icon_button(self, icon_name):
         pb = QPushButton(self.parent)
@@ -178,10 +168,20 @@ class StripChart:
         pb.setIconSize(QSize(24, 24))
         return pb
 
-    def add_value(self, value, spec=None):
+    def add_value(self, spec, value):
         """
         todo maintain multiple RDS and curves for multiple connected spectrometers
         """
+        sn = spec.settings.eeprom.serial_number
+        if sn not in self.spec_data:
+            self.spec_data[sn] = { 
+                "RDS": RollingDataSet(size_seconds=self.window_sec),
+                "curve": self.plot.plot([]),
+                "pathname": os.path.join(self.ctl.save_options.generate_today_dir(), f"{self.name}-{sn}.txt")
+            }
+
+        rds = self.spec_data[sn]["RDS"]
+        curve = self.spec_data[sn]["curve"]
         now = datetime.now()
 
         # display latest value in chart header row
@@ -189,15 +189,16 @@ class StripChart:
         self.lb_value.setText(text)
 
         # add to rolling dataset
-        self.rds.add(value)
+        rds.add(value)
 
         # update graph
-        x, y = self.rds.get_relative_to_now()
-        self.curve.setData(y=y, x=x)
+        x, y = rds.get_relative_to_now()
+        curve.setData(y=y, x=x)
 
         # write file
         if self.saving:
-            with open(self.pathname, "a") as outfile:
+            pathname = self.spec_data[sn]["pathname"]
+            with open(pathname, "a") as outfile:
                 outfile.write(f"{now}, {value}\n")
 
     def set_warn_hi(self, hi):
@@ -211,23 +212,49 @@ class StripChart:
 
     def sec_callback(self):
         self.window_sec = self.sb_sec.value()
-        self.rds = RollingDataSet(size_seconds=self.window_sec)
+        for sn in self.spec_data:
+            self.spec_data[sn]["RDS"].update_window(self.window_sec)
 
     def display_callback(self):
         self.set_visible(self.cb_display.isChecked())
 
     def clear_callback(self):
-        self.rds.clear()
+        for sn in self.spec_data:
+            self.spec_data[sn]["RDS"].clear()
 
     def copy_callback(self):
-        self.ctl.clipboard.copy_rds(self.rds)
+        cols = []
+        longest = -1
+        for sn in self.spec_data:
+            rds = self.spec_data["RDS"]
+            x, y = rds.get_relative_to_now()
+            cols.append(x)
+            cols.append(y)
+            longest = max(longest, x)
+
+        s = ""
+        for i in range(longest):
+            row = []
+            for col in cols:
+                if i < len(col):
+                    row.append(col[i])
+                else:
+                    row.append("")
+            s += "\t".join(row) + "\n"
+
+        self.ctl.app.clipboard().setText(s)
 
     def set_visible(self, flag):
+        if flag is None:
+            # this can happen during Controller initialization
+            flag = False
         self.visible = flag
+        self.cb_display.setChecked(flag)
 
-    def get_latest(self):
-        if self.rds.empty():
-            return
+        # MZ: this is "greying-out" the graph, but not recapturing the space :-(
+        self.stacked_widget.setVisible(flag)
 
-        (_, value) = self.rds.latest()
-        return value
+        # if flag and self.layout.count() < 2:
+        #     self.layout.addWidget(self.stacked_widget)
+        # elif not flag and self.layout.count() > 1:
+        #     self.layout.takeAt(1)

@@ -13,15 +13,20 @@ class AmbientTemperatureFeature(EnlightenFeature):
 
         cfu = ctl.form.ui
 
-        self.strip_chart = self.ctl.strip_charts.create_chart(name="Ambient Temperature", y_unit="Celsius (°C)", format="{value:.2f}°C", warn_hi=35)
+        self.strip_chart = self.ctl.strip_charts.create_chart(
+            name="Ambient Temperature", 
+            y_unit="Celsius (°C)", 
+            format="{value:.2f}°C", 
+            warn_hi=35,
+            process_reading_callback=self.process_reading_callback)
 
     def notify(self, spec, s):
         if spec != self.ctl.multispec.current_spectrometer():
             return
         self.notify_observers_with_value(s)
 
-    def process_reading(self, spec, reading):
-        log.debug("process_reading: start")
+    def process_reading_callback(self, spec, reading):
+        """ Called by StripCharts """
         if spec is None:
             return self.notify(spec, "disconnected")
 
@@ -32,6 +37,6 @@ class AmbientTemperatureFeature(EnlightenFeature):
         if degC is None:
             return self.notify(spec, "none")
 
-        self.strip_chart.add_value(degC)
+        self.strip_chart.add_value(spec, degC)
 
         self.notify(spec, f"{degC:-.2f} °C")

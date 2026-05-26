@@ -44,7 +44,12 @@ class DetectorTemperatureFeature(EnlightenFeature):
             self.button_dn
         ]
 
-        self.strip_chart = self.ctl.strip_charts.create_chart(name="Detector Temperature", y_unit="Celsius (°C)", format="{value:.2f}°C", warn_hi=26)
+        self.strip_chart = self.ctl.strip_charts.create_chart(
+            name="Detector Temperature", 
+            y_unit="Celsius (°C)", 
+            format="{value:.2f}°C", 
+            warn_hi=26,
+            process_reading_callback=self.process_reading_callback)
 
         self.ctl.page_nav.register_observer(self.page_nav_mode_callback, "mode")
 
@@ -136,7 +141,8 @@ class DetectorTemperatureFeature(EnlightenFeature):
         self.slider.blockSignals(False)
         self.spinbox.blockSignals(False)
 
-    def process_reading(self, spec, reading):
+    def process_reading_callback(self, spec, reading):
+        """ Called by StripCharts """
         current_spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
@@ -152,7 +158,7 @@ class DetectorTemperatureFeature(EnlightenFeature):
         if reading.detector_temperature_degC is None:
             return
 
-        self.strip_chart.add_value(reading.detector_temperature_degC)
+        self.strip_chart.add_value(spec, reading.detector_temperature_degC)
 
         self.notify_observers_with_value(reading.detector_temperature_degC)
 

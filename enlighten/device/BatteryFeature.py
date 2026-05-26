@@ -16,30 +16,33 @@ class BatteryFeature(EnlightenFeature):
         self.lb_hw_view_level = cfu.label_hw_view_battery_parsed
         self.lb_power_connection_state = cfu.label_hw_view_power_connection_state
 
-        self.strip_chart_level = self.ctl.strip_charts.create_chart(name="Battery Charge Level", y_unit="Percent (%)", format="{value:.2f}%", warn_lo=0.20)
+        self.strip_chart_level = self.ctl.strip_charts.create_chart(
+            name="Battery Charge Level", 
+            y_unit="Percent (%)", 
+            format="{value:.2f}%", 
+            warn_lo=0.20,
+            process_reading_callback=self.process_reading_level)
 
         # todo: add strip_charts for:
         # - reading.battery_temperature_deg_c
         # - reading.battery_charger_temperature_deg_c
 
-    def process_reading(self, spec, reading):
-        if reading.power_connection_state:
-            self.lb_power_connection_state.setText(str(reading.power_connection_state))
-
+    def process_reading_level(self, spec, reading):
+        """ Called by StripCharts """
         if reading.battery_percentage is None:
             return
 
         if not spec.settings.eeprom.has_battery:
             return
     
-        self.process_battery_charge_level(spec, reading)
+        if reading.power_connection_state:
+            self.lb_power_connection_state.setText(str(reading.power_connection_state))
 
-    def process_battery_charge_level(self, spec, reading):
         perc = reading.battery_percentage
         is_charging = reading.battery_charging
         charging_label = 'charging' if is_charging else 'discharging'
 
-        self.strip_chart_level.add_value(perc, spec=spec)
+        self.strip_chart_level.add_value(spec, perc)
 
         self.lb_hw_view_level.setText(f"{perc:.2f}%, {charging_label}")
             
