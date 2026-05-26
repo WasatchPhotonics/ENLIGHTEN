@@ -252,9 +252,5 @@ class StripChart:
         self.cb_display.setChecked(flag)
 
         # MZ: this is "greying-out" the graph, but not recapturing the space :-(
+        # solution is probably to nest StackedWidget in a Frame, and hide the Frame
         self.stacked_widget.setVisible(flag)
-
-        # if flag and self.layout.count() < 2:
-        #     self.layout.addWidget(self.stacked_widget)
-        # elif not flag and self.layout.count() > 1:
-        #     self.layout.takeAt(1)

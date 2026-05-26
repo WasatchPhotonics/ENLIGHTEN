@@ -165,7 +165,6 @@ class PageNavigationFeature(EnlightenFeature):
         self.set_main_page(common.Pages.SCOPE)
         self.set_view(common.Views.SCOPE)
 
-        cfu.frame_FactoryMode_Options.hide()
         cfu.frame_transmission_options.hide()        # todo move to TransmissionFeature
         self.set_operation_mode_non_raman()
 
@@ -209,8 +208,6 @@ class PageNavigationFeature(EnlightenFeature):
     # called whenever the user changes the view via the GUI combobox
     def update_view_callback(self):
         self.current_view = self.determine_current_view()
-
-        self.ctl.form.ui.frame_FactoryMode_Options.setVisible(self.doing_factory())
 
         if self.doing_hardware()        : return self.set_view_hardware()
         if self.doing_factory()         : return self.set_view_factory()

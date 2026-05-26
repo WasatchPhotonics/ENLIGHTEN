@@ -108,7 +108,7 @@ class DalaiRamanFeature(EnlightenFeature):
             # SELECT the first model, but don't LOAD it -- we don't want to 
             # trigger the TFL import until the user actually "enables" DALAI
             self.combo_model.setCurrentIndex(0)
-            self.current_model_name = self.combo_model.currentText()
+            self.current_model_name = self.get_model_name_from_label(self.combo_model.currentText())
 
         self.cb_enable      .stateChanged           .connect(self.enable_callback)
         self.cb_deconvolute .stateChanged           .connect(self.update_settings)
@@ -213,6 +213,7 @@ class DalaiRamanFeature(EnlightenFeature):
         self.update_settings()
 
     def best_model_for_current_spectrometer(self):
+        prefix = "best_model_for_current_spectrometer"
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return None
@@ -225,7 +226,7 @@ class DalaiRamanFeature(EnlightenFeature):
         elif re.search(r"XS-|XSB-|SIG", spec_model):
             spec_family = "XS"
         else:
-            log.debug(f"cannot determine connected spectrometer family: {spec_model}")
+            log.debug(f"{prefix}: cannot determine connected spectrometer family: {spec_model}")
             spec_family = None
 
         # go through model_configs (which is already ordered per JSON config)
@@ -234,6 +235,7 @@ class DalaiRamanFeature(EnlightenFeature):
         for basename, config in self.model_configs.items():
             if spec_family in config.target_spectrometer_families:
                 # we found an explicit match, use that
+                log.debug(f"{prefix}: returning {basename}")
                 return basename
             elif len(config.target_spectrometer_families) == 0:
                 # This model had no explicit families, meaning it's "generic"? 
@@ -242,6 +244,7 @@ class DalaiRamanFeature(EnlightenFeature):
                 if best_generic is None:
                     best_generic = basename
         
+        log.debug(f"{prefix}: returning best_generic {best_generic}")
         return best_generic
 
     def update_visibility(self):
@@ -498,6 +501,11 @@ class DalaiRamanFeature(EnlightenFeature):
 
     def get_color(self):
         return self.COLOR
+
+    def get_model_name_from_label(self, label):
+        for basename, config in self.model_configs.items():
+            if label == config.label:
+                return basename
 
 class ModelConfig:
 
