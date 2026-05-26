@@ -221,7 +221,7 @@ class Controller:
 
         # setup timers
         self.setup_bus_listener()
-        self.setup_hardware_strip_listener() 
+        self.setup_strip_charts_listener() 
         self.setup_main_event_loops() 
 
         # bind keyboard shortcuts
@@ -343,7 +343,7 @@ class Controller:
         for timer in [ self.bus_timer,
                        self.acquisition_timer,
                        self.status_timer,
-                       self.hard_strip_timer ]: # StripChartFeature
+                       self.strip_chart_timer ]: # StripChartFeature
             if timer is not None:
                 timer.stop()
 
@@ -407,15 +407,15 @@ class Controller:
         self.bus_timer.setSingleShot(True)
         self.bus_timer.start(500)
 
-    def setup_hardware_strip_listener(self):
-        """ @todo move to StripChartFeature """
-        self.hard_strip_timer = QtCore.QTimer()
-        self.hard_strip_timer.timeout.connect(self.process_hardware_strip)
-        self.hard_strip_timer.setSingleShot(True)
+    def setup_strip_charts_listener(self):
+        """ @todo move to StripChartsFeature """
+        self.strip_chart_timer = QtCore.QTimer()
+        self.strip_chart_timer.timeout.connect(self.process_strip_charts)
+        self.strip_chart_timer.setSingleShot(True)
 
-    def process_hardware_strip(self):
+    def process_strip_charts(self):
         """ 
-        @todo move to StripChartFeature 
+        @todo move to StripChartsFeature 
 
         So, it's worth noting that the data we collect for the Factory view seems
         to be coming from here, which only updates from the "latest" reading at 
@@ -432,14 +432,15 @@ class Controller:
 
             pr = spec.app_state.processed_reading
             if pr:
-                self.process_hardware_strip_reading(spec, pr.reading)
+                self.process_strip_charts_reading(spec, pr.reading)
 
+        # tick strip charts at 1Hz, unless the user is watching them, in which case update them with spectra
         sleep_ms = 1000
-        if self.page_nav.get_current_view() == common.Views.HARDWARE or self.hardware_file_manager.enabled:
+        if self.page_nav.doing_hardware():
             sleep_ms = self.integration_time_feature.get_ms()
-        self.hard_strip_timer.start(sleep_ms)
+        self.strip_chart_timer.start(sleep_ms)
 
-    def process_hardware_strip_reading(self, spec, reading):
+    def process_strip_chart_reading(self, spec, reading):
         if reading is None:
             return
 
@@ -1234,7 +1235,7 @@ class Controller:
         self.acquisition_timer  .start(1000)
         self.status_timer       .start(1100)
         self.status_indicators  .start(1200)
-        self.hard_strip_timer   .start(1300)
+        self.strip_chart_timer  .start(1300)
 
     def tick_acquisition(self):
         """
@@ -1409,12 +1410,12 @@ class Controller:
         # we collected the reading (to clear the queue), but don't do anything with it
         if spec.app_state.paused and not (self.batch_collection.running or spec.app_state.take_one_request):
             # pull out any useful metadata (detector temperature etc), but stop before graphing
-            self.process_hardware_strip_reading(spec, reading)
+            self.process_strip_chart_reading(spec, reading)
             return
 
         if reading.keep_alive:
             log.debug("attempt_reading: received reading.keep_alive, but passing to hardware strip at least")
-            self.process_hardware_strip_reading(spec, reading)
+            self.process_strip_chart_reading(spec, reading)
             return
 
         # are we waiting on a SPECIFIC Reading (or series of Readings)?

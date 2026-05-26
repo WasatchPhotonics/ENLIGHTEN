@@ -7478,8 +7478,6 @@ QComboBox QListView
                         </widget>
                        </item>
 
-                       
-
                        <item>
                         <layout class="QVBoxLayout" name="layout_strip_charts" />
                        </item>
