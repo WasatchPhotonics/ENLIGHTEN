@@ -55,7 +55,7 @@ class EnlightenFeature:
         """
         pass
 
-    def init_hotplug(self, spec):
+    def init_hotplug(self):
         """
         Some Business Objects may need to know if a spectrometer has just 
         been connected for the first time (has not yet been seen this session),

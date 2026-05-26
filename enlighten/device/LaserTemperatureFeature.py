@@ -20,7 +20,7 @@ class LaserTemperatureFeature(EnlightenFeature):
 
         self.combo_mode  .currentIndexChanged .connect(self.combo_callback)
 
-        self.strip_chart = self.ctl.strip_charts.create_chart(name="Laser Temperature", y_unit="Celsius (°C)", fmt="%.2f%%", warn_hi=36)
+        self.strip_chart = self.ctl.strip_charts.create_chart(name="Laser Temperature", y_unit="Celsius (°C)", format="{value:.2f}°C", warn_hi=36)
 
         self.update_visibility()
 

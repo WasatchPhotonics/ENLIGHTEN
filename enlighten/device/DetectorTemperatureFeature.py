@@ -44,7 +44,7 @@ class DetectorTemperatureFeature(EnlightenFeature):
             self.button_dn
         ]
 
-        self.strip_chart = self.ctl.strip_charts.create_chart(name="Detector Temperature", y_unit="Celsius (°C)", fmt="%.2f%%", warn_hi=26)
+        self.strip_chart = self.ctl.strip_charts.create_chart(name="Detector Temperature", y_unit="Celsius (°C)", format="{value:.2f}°C", warn_hi=26)
 
         self.ctl.page_nav.register_observer(self.page_nav_mode_callback, "mode")
 

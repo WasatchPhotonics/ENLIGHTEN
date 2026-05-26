@@ -13,7 +13,7 @@ class AmbientTemperatureFeature(EnlightenFeature):
 
         cfu = ctl.form.ui
 
-        self.strip_chart = self.ctl.strip_charts.create_chart(name="Ambient Temperature", y_unit="Celsius (°C)", fmt="%.2f%%", warn_hi=35)
+        self.strip_chart = self.ctl.strip_charts.create_chart(name="Ambient Temperature", y_unit="Celsius (°C)", format="{value:.2f}°C", warn_hi=35)
 
     def notify(self, spec, s):
         if spec != self.ctl.multispec.current_spectrometer():

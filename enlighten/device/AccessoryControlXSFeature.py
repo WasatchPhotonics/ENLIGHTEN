@@ -123,7 +123,7 @@ class AccessoryControlXSFeature(EnlightenFeature):
         if spec is None:
             return
         
-        acc = spec.settings.state.accessory_connector
+        acc = spec.settings.state.acc_connector
         if acc is None:
             return
 

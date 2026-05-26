@@ -2,6 +2,8 @@ import os
 import logging
 import pyqtgraph
 
+from datetime import datetime
+
 from enlighten.EnlightenFeature import EnlightenFeature
 from enlighten.timing.RollingDataSet import RollingDataSet
 from enlighten import common
@@ -24,8 +26,8 @@ class StripChartsFeature(EnlightenFeature):
 
         self.charts = {}
 
-    def create_chart(self, name, window_sec=180, y_unit=None, warn_hi=None, warn_lo=None, fmt=None):
-        chart = StripChart(self.ctl, name=name, window_sec=window_sec, y_unit=y_unit, warn_hi=warn_hi, warn_lo=warn_lo, fmt=fmt, parent=self.parent)
+    def create_chart(self, name, window_sec=180, y_unit=None, warn_hi=None, warn_lo=None, format=None):
+        chart = StripChart(self.ctl, name=name, window_sec=window_sec, y_unit=y_unit, warn_hi=warn_hi, warn_lo=warn_lo, format=format, parent=self.parent)
         self.charts[name] = chart
 
         # chart.layout.setParent(self.layout_charts)
@@ -56,14 +58,14 @@ class StripChart:
     - battery IC temperature
     """
     
-    def __init__(self, ctl, name, window_sec=180, y_unit=None, warn_hi=None, warn_lo=None, fmt=None, parent=None):
+    def __init__(self, ctl, name, window_sec=180, y_unit=None, warn_hi=None, warn_lo=None, format=None, parent=None):
         self.ctl = ctl
         self.name = name
         self.y_unit = y_unit
         self.warn_hi = warn_hi
         self.warn_lo = warn_lo
         self.window_sec = window_sec
-        self.format = fmt
+        self.format = format 
         self.parent = parent
 
         self.plot = None
@@ -87,7 +89,7 @@ class StripChart:
         self.layout = QVBoxLayout()
 
         font = QFont()
-        font.setPointSize(12)
+        font.setPointSize(10)
         font.setBold(True)
 
         # chart title
@@ -183,7 +185,7 @@ class StripChart:
         now = datetime.now()
 
         # display latest value in chart header row
-        text = self.fmt.format(value)
+        text = self.format.format(value=value)
         self.lb_value.setText(text)
 
         # add to rolling dataset
@@ -191,7 +193,7 @@ class StripChart:
 
         # update graph
         x, y = self.rds.get_relative_to_now()
-        self.curve.set_data(y=y, x=x)
+        self.curve.setData(y=y, x=x)
 
         # write file
         if self.saving:

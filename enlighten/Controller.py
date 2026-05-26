@@ -298,8 +298,8 @@ class Controller:
         spec.close()
 
         log.debug("disconnect_device[%s]: removing from Multispec", device_id)
-        self.detector_temperature.remove_spec_curve(spec)
-        self.laser_temperature.remove_spec_curve(spec)
+        #self.detector_temperature.remove_spec_curve(spec)
+        #self.laser_temperature.remove_spec_curve(spec)
         if not self.multispec.remove(spec):
             log.error("disconnect_device[%s]: failed to remove from Multispec", device_id)
             return False
@@ -321,7 +321,8 @@ class Controller:
         """
         log.debug("disconnect_features: start")
         for feature in [ self.laser_control,
-                         self.accessory_control,
+                         self.accessory_control_xl,
+                         self.accessory_control_xs,
                          self.area_scan,
                          self.auto_raman,
                          self.ble_manager ]:
@@ -432,7 +433,7 @@ class Controller:
 
             pr = spec.app_state.processed_reading
             if pr:
-                self.process_strip_charts_reading(spec, pr.reading)
+                self.process_strip_chart_reading(spec, pr.reading)
 
         # tick strip charts at 1Hz, unless the user is watching them, in which case update them with spectra
         sleep_ms = 1000
@@ -900,15 +901,17 @@ class Controller:
         # update all curves
         self.graph.rescale_curves()
 
-        if hotplug:
-            if spec.settings.eeprom.has_laser:
-                self.laser_temperature.add_spec_curve(spec)
-            if spec.settings.eeprom.has_cooling:
-                self.detector_temperature.add_spec_curve(spec)
-            if spec.settings.eeprom.has_battery:
-                self.battery_feature.add_spec_curve(spec)
-            if spec.settings.is_xs() or spec.settings.is_gen15():
-                self.ambient_temperature.add_spec_curve(spec)
+        # MZ: revisit multi-spectrometer support on StripCharts
+        #
+        # if hotplug:
+        #     if spec.settings.eeprom.has_laser:
+        #         self.laser_temperature.add_spec_curve(spec)
+        #     if spec.settings.eeprom.has_cooling:
+        #         self.detector_temperature.add_spec_curve(spec)
+        #     if spec.settings.eeprom.has_battery:
+        #         self.battery_feature.add_spec_curve(spec)
+        #     if spec.settings.is_xs() or spec.settings.is_gen15():
+        #         self.ambient_temperature.add_spec_curve(spec)
 
         # scope capture buttons
         if hotplug:
@@ -930,7 +933,8 @@ class Controller:
 
         if hotplug:
             self.cursor.center()
-            for feature in [ self.accessory_control,
+            for feature in [ self.accessory_control_xl,
+                             self.accessory_control_xs,
                              self.ble_manager,
                              self.laser_control,
                              self.laser_watchdog,
@@ -987,7 +991,7 @@ class Controller:
     def update_power_connection_state(self):
         """ USB adapter info """
         cfu = self.form.ui
-        lb = cfu.label_power_connection_state
+        lb = cfu.label_hw_view_power_connection_state
         lb.clear()
         lb.setToolTip(None)
 

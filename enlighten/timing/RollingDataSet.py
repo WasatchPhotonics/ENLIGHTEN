@@ -34,7 +34,7 @@ class RollingDataSet:
             values = [ value ]
 
         for value in values:
-            self.data.append( (datatime.now(), value) )
+            self.data.append( (datetime.now(), value) )
 
         self.filter_limit()
 

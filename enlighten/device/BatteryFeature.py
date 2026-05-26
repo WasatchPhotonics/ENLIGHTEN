@@ -16,7 +16,7 @@ class BatteryFeature(EnlightenFeature):
         self.lb_hw_view_level = cfu.label_hw_view_battery_parsed
         self.lb_power_connection_state = cfu.label_hw_view_power_connection_state
 
-        self.strip_chart_level = self.ctl.strip_charts.create_chart(name="Battery Charge Level", y_unit="Percent (%)", fmt="%.2f%%", warn_lo=0.20)
+        self.strip_chart_level = self.ctl.strip_charts.create_chart(name="Battery Charge Level", y_unit="Percent (%)", format="{value:.2f}%", warn_lo=0.20)
 
         # todo: add strip_charts for:
         # - reading.battery_temperature_deg_c
