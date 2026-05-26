@@ -158,9 +158,10 @@ class DetectorTemperatureFeature(EnlightenFeature):
         if reading.detector_temperature_degC is None:
             return
 
-        self.strip_chart.add_value(spec, reading.detector_temperature_degC)
+        degC = reading.detector_temperature_degC
 
-        self.notify_observers_with_value(reading.detector_temperature_degC)
+        self.strip_chart.add_value(spec, degC)
+        self.notify_observers_with_value(degC)
 
     def apply_setpoint(self, value=None):
         """ Send GUI value downstream (and turns on if it was off). """

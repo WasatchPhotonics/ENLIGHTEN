@@ -471,6 +471,19 @@ class ThumbnailWidget(QtWidgets.QFrame):
             return
 
         tt = f"Max {int(max(proc))}, Avg {int(sum(proc)/len(proc))}, Min {int(min(proc))}"
+
+        # optionally extend for AutoRaman
+        pr = self.measurement.processed_reading
+        reading = pr.reading
+        if reading and reading.new_integration_time_ms:
+            tt += f"\nIntegration {reading.new_integration_time_ms}ms"
+            if reading.new_gain_db:
+                tt += f", gain {reading.new_gain_db}dB"
+            if reading.sum_count:
+                tt += f", avg {reading.sum_count}"
+            if pr.raman_intensity_corrected:
+                tt += f"\nRaman intensity corrected"
+
         self.body.setToolTip(tt)
         self.ctl.stylesheets.apply(self.body, "tooltip")
 

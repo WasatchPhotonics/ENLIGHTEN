@@ -29,6 +29,8 @@ class InGaAsCorrectionFeature(EnlightenFeature):
         if spec is None:
             self.visible = False
         else:
+            # only display the feature at all if on a spectrometer with an 
+            # InGaAs correction (very few of those at this time)
             self.visible = spec.settings.ingaas_correction is not None
 
         self.cb_enable.setVisible(self.visible)
@@ -49,3 +51,16 @@ class InGaAsCorrectionFeature(EnlightenFeature):
             spec.change_device_settings("ingaas_correction_enable", self.enabled)
 
         self.update_visibility()
+
+    def process(self, pr):
+        if not pr.settings.ingaas_correction:
+            return
+
+        try:
+            log.debug("applying InGaAs correction")
+            spectrum = pr.get_processed()
+            corrected = pr.settings.ingaas_correction.apply(spectrum)
+            pr.set_processed(corrected)
+        except:
+            log.error("error applying InGaAs correction", exc_info=1)
+            pass

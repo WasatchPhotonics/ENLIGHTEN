@@ -405,12 +405,13 @@ class DalaiRamanFeature(EnlightenFeature):
 
     def select_model_callback(self):
         log.debug("select_model_callback: start")
-        combo = self.cb_model
+        combo = self.combo_model
         if combo:
             label = combo.currentText()
             for basename, config in self.model_configs.items():
                 if label == config.label:
-                    self.lazy_load_model(basename)
+                    if self.enabled:
+                        self.lazy_load_model(basename)
                     return
             log.error(f"unknown model label {label}")
 

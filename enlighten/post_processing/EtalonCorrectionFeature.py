@@ -51,3 +51,16 @@ class EtalonCorrectionFeature(EnlightenFeature):
             spec.change_device_setting("etalon_correction_enable", self.enabled)
 
         self.update_visibility()
+
+    def process(self, pr):
+        if not pr.settings.etalon_correction:
+            return
+
+        try:
+            log.debug("applying etalon correction")
+            spectrum = pr.get_processed()
+            corrected = pr.settings.etalon_correction.apply(spectrum)
+            pr.set_processed(corrected)
+        except:
+            log.error("error applying etalon correction", exc_info=1)
+            pass

@@ -66,6 +66,31 @@ class Controller:
     This class is still way bigger than it should be, but it's gradually coming
     under control. Most feature logic has been extracted into "business objects"
     which own and configure their own GUI widgets and internal state.
+
+    These are the fundamental things provided by the Controller:
+
+    - Spawn the application. This includes instantiating all the various 
+      EnlightenFeature business objects (mostly done in BusinessObjects).
+
+    - Create and "tick" various timers which "keep things going."
+
+    - Discover and connect new spectrometers (CONNECT-n).
+
+    - Acquire spectra from connected spectrometers for processing and graphing
+      (ACQUIRE-n).
+
+    (the trails listed below are aspirational and not yet complete)
+
+    The later two functions end up being spread across a variety of classes and
+    files, both within the ENLIGHTEN repository as well as the associated 
+    Wasatch.PY repository. Both "trails" are blazed with a series of numbered 
+    comments which can be located via `grep` or similar.
+
+    Connection Trail: Discovery and Enumeration of new Spectrometers. These steps
+    are blazed with the tokens CONNECT-1 through CONNECT-n.
+
+    Acquisition Trail: A Spectrum's Journey from Device to Screen. These steps 
+    are blazed ACQUIRE-1 through ACQUIRE-n.
     """
 
     # ##########################################################################
@@ -105,7 +130,6 @@ class Controller:
         All of the parameters are normally set via command-line arguments
         in Enlighten.py.  
         """
-
         self.app                    = app
         self.log_queue              = log_queue 
         self.log_level              = log_level # passed to LoggingFeature and WasatchDeviceWrapper/Worker
@@ -221,7 +245,6 @@ class Controller:
 
         # setup timers
         self.setup_bus_listener()
-        #self.setup_strip_charts_listener() 
         self.setup_main_event_loops() 
 
         # bind keyboard shortcuts
@@ -398,15 +421,20 @@ class Controller:
 
     def setup_bus_listener(self):
         """
-        Poll the USB bus periodically for new connection events (including 
-        devices connected at application launch).
+        CONNECT-1: Poll the USB bus periodically for new connection events 
+        (including devices already connected at application launch).
+
+        Create an automated timer to check for new devices. The timer is 
+        "singleshot," meaning it only fires ONCE per call to start(). At the
+        end of one check, you need to call start() again to schedule the next
+        tick. This prevents the possibility of overlapping ticks.
         """
         self.marquee.info("searching for spectrometers", immediate=True, persist=True)
         self.bus = WasatchBus()
         self.bus_timer = QtCore.QTimer()
         self.bus_timer.timeout.connect(self.tick_bus_listener)
         self.bus_timer.setSingleShot(True)
-        self.bus_timer.start(500)
+        self.bus_timer.start(500) # start the first check in 0.5 sec
 
     # def setup_strip_charts_listener(self):
     #     """ @todo move to StripChartsFeature """
@@ -462,7 +490,8 @@ class Controller:
             self.check_ready_initialize()
             return self.bus_timer.start(self.BUS_TIMER_SLEEP_MS)
 
-        # refresh the list of visible spectrometers on the USB bus
+        # CONNECT-2: refresh the list of visible spectrometers on the USB bus
+        # (CONNECT-3 is in Wasatch.PY/wasatch/WasatchBus.py)
         self.bus.update()
 
         # refresh the list of visible spectrometers on the BLE list
@@ -475,6 +504,7 @@ class Controller:
         # device on the list
         ########################################################################
 
+        # CONNECT-8: ...
         self.connect_new()
 
         # Continue polling bus at 1Hz.
@@ -1478,12 +1508,13 @@ class Controller:
         if reading.dark is not None:
 
             # DO NOT blindly store dark if this was an Auto-Raman measurement;
-            # leave that to AutoRamanFeature.process_reading to determine. Note
-            # that while we do pass the Reading to AutoRamanFeature here, the
-            # Feature doesn't yet save the measurement, even if auto-save is 
-            # enabled, because (for instance) dark correction has not yet been
-            # applied; that is done automatically at the end of 
-            # Controller.process_reading by TakeOneFeature.
+            # leave that to AutoRamanFeature.process_reading to determine, based
+            # on retain_settings. Note that while we do pass the Reading to 
+            # AutoRamanFeature here, the Feature won't yet save the measurement, 
+            # even if auto-save is enabled, because (for instance) Raman 
+            # Intensity correction has not yet been applied; that is done 
+            # automatically at the end of Controller.process_reading by 
+            # TakeOneFeature.
             if reading.take_one_request is not None and reading.take_one_request.auto_raman_request:
                 self.auto_raman.process_reading(reading)
             else:
@@ -1840,6 +1871,20 @@ class Controller:
             best_dark = app_state.dark  # otherwise, what has been stored
 
         pr.correct_dark(best_dark)
+
+        ########################################################################
+        # InGaAs Correction (experimental)
+        ########################################################################
+
+        if settings.ingaas_correction:
+            self.ingaas_correction.process(pr)
+        
+        ########################################################################
+        # Etalon Correction (experimental)
+        ########################################################################
+       
+        if settings.etalon_correction:
+            self.etalon_correction.process(pr)
 
         ########################################################################
         # Cropping

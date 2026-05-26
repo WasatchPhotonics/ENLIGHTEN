@@ -129,6 +129,7 @@ class StatusIndicatorFeature(EnlightenFeature):
         if spec is not None:
             app_state = spec.app_state
             settings = spec.settings
+            sn = settings.eeprom.serial_number
 
             reading = None
             if app_state is not None and app_state.processed_reading is not None:
@@ -220,21 +221,27 @@ class StatusIndicatorFeature(EnlightenFeature):
             if settings.eeprom.has_cooling:
                 setpoint = settings.state.tec_setpoint_degC
                 enabled = settings.state.tec_enabled
-                latest = app_state.detector_temperature_degC_latest
+                rds = self.ctl.strip_charts.get_rds(sn, "Detector Temperature")
+                if rds:
+                    latest = rds.latest()
 
-                if enabled:
-                    if latest is not None:
-                        if app_state.detector_temperatures_degC.all_within(setpoint, 1.0, window_sec=self.TEMPERATURE_WINDOW_SEC):
-                            temp = "connected"
-                            temp_tt = "temperature stable around {setpoint}°C"
+                    if enabled:
+                        if latest is not None:
+                            if rds.all_within(setpoint, 1.0, window_sec=self.TEMPERATURE_WINDOW_SEC):
+                                temp = "connected"
+                                temp_tt = "temperature stable around {setpoint}°C"
+                            else:
+                                temp = "warning" 
+                                temp_tt = f"temperature stabilizing toward {setpoint}°C"
                         else:
-                            temp = "warning" 
-                            temp_tt = f"temperature stabilizing toward {setpoint}°C"
+                            temp = "warning"
+                            temp_tt = "no temperature data"
                     else:
-                        temp = "warning"
+                        temp = "disconnected" # user disabled TEC
+                        temp_tt = "TEC disabled"
                 else:
-                    temp = "disconnected" # user disabled TEC
-                    temp_tt = "TEC disabled"
+                    temp = "disconnected"
+                    temp_tt = "no temperature data"
             else:
                 temp = "connected" # if there is no TEC, leave green
                 temp_tt = "ambient detector"

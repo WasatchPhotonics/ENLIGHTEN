@@ -39,10 +39,23 @@ class StripChartsFeature(EnlightenFeature):
 
     def process_reading(self, spec, reading):
         """ We have received a new Reading from a Spectrometer, so process it for every chart  """
-        for name, chart in self.charts.items():
+        for sn, chart in self.charts.items():
             callback = chart.process_reading_callback
             if callback is not None:
                 callback(spec, reading)
+
+    def get_rds(self, sn, name):
+        if name in self.charts:
+            if sn in self.charts[name].spec_data:
+                rds = self.charts[name][sn].get("RDS", None)
+                if rds:
+                    return rds
+                else:
+                    log.error(f"get_rds: RDS not in self.charts[{name}][{sn}]")
+            else:
+                log.error(f"get_rds: sn {sn} not in self.charts[{name}]")
+        else:
+            log.error(f"get_rds: name {name} not in self.charts")
 
 class StripChart:
     
@@ -226,18 +239,18 @@ class StripChart:
         cols = []
         longest = -1
         for sn in self.spec_data:
-            rds = self.spec_data["RDS"]
+            rds = self.spec_data[sn]["RDS"]
             x, y = rds.get_relative_to_now()
             cols.append(x)
             cols.append(y)
-            longest = max(longest, x)
+            longest = max(longest, len(x))
 
         s = ""
         for i in range(longest):
             row = []
             for col in cols:
                 if i < len(col):
-                    row.append(col[i])
+                    row.append(str(col[i]))
                 else:
                     row.append("")
             s += "\t".join(row) + "\n"

@@ -115,7 +115,7 @@ class RamanIntensityCorrectionFeature(EnlightenFeature):
 
         return self.supported
 
-    def is_allowed(self, update_tooltip=True):
+    def is_allowed(self, update_tooltip=True, auto_raman=False):
         """
         Whether application logic will allow us to enable the feature.
         This decides whether the "[ ] enable" checkbox is clickable.
@@ -137,7 +137,7 @@ class RamanIntensityCorrectionFeature(EnlightenFeature):
             return set_allowed(False, "Raman Intensity Correction requires an SRM calibration and Raman technique")
         elif not self.ctl.horiz_roi.enabled:
             return set_allowed(False, "Raman Intensity Correction requires horizontal ROI to be enabled")
-        elif spec.app_state.dark is None:
+        elif spec.app_state.dark is None and not auto_raman:
             return set_allowed(False, "Raman Intensity Correction requires a dark measurement")
         else:
             return set_allowed(True, "Can apply NIST SRM-calibrated Raman Intensity Correction")
@@ -227,12 +227,13 @@ class RamanIntensityCorrectionFeature(EnlightenFeature):
         if factors is None or len(factors) != len(pr.raw):
             return 
 
-        if not self.is_allowed(update_tooltip=False):
-            # log.debug("process: not allowed")
+        is_auto_raman = pr.reading and pr.reading.is_auto_raman()
+        if not self.is_allowed(update_tooltip=False, auto_raman=is_auto_raman):
+            log.debug("process: not allowed")
             return
 
-        if not self.enabled:
-            # log.debug("process: not enabled")
+        if not self.enabled and not (is_auto_raman and self.enable_when_allowed):
+            log.debug("process: not enabled")
             return
 
         if pr.interpolated:
