@@ -3,7 +3,7 @@ import logging
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from enlighten.EnlightenFeature import EnlightenFeature
 
-from wasatch.AccessoryConnector import AccessoryConnector
+from wasatch.AccessoryConnector import GPIOState
 
 log = logging.getLogger(__name__)
 
@@ -86,27 +86,27 @@ class AccessoryControlXSFeature(EnlightenFeature):
     def update_settings(self):
         self.acc_gpio_enabled = self.cb_gpio_enable.isChecked()
         self.acc_5v_enabled = self.cb_acc_5v_enable.isChecked()
-        self.cont_strobe_enabled = self.acc_gpio_enabled and self.combo_gpio2_func.currentIndex() == AccessoryConnector.GPIO2_FUNCTION_CONT_STROBE
+        self.cont_strobe_enabled = self.acc_gpio_enabled and self.combo_gpio2_func.currentIndex() == GPIOState.GPIO2_FUNCTION_CONT_STROBE
 
         spec = self.ctl.multispec.current_spectrometer()
         if spec:
-            acc = spec.settings.state.accessory_connector
+            acc = spec.settings.state.acc_connector
             if acc:
                 acc.acc_gpio_enabled = self.acc_gpio_enabled
                 acc.acc_5v_enabled = self.acc_5v_enabled
 
                 acc.state_gpio1.mode = self.combo_gpio1_mode.currentIndex()
                 acc.state_gpio1.dir = self.combo_gpio1_dir.currentIndex()
-                if acc.state_gpio1.mode == AccessoryConnector.MODE_FUNCTION:
+                if acc.state_gpio1.mode == GPIOState.MODE_FUNCTION:
                     acc.state_gpio1.function = self.combo_gpio1_func.currentIndex()
-                if acc.state_gpio1.dir == AccessoryConnector.DIR_OUTPUT:
+                if acc.state_gpio1.dir == GPIOState.DIR_OUTPUT:
                     acc.state_gpio1.value = self.combo_gpio1_value.currentIndex()
 
                 acc.state_gpio2.mode = self.combo_gpio2_mode.currentIndex()
                 acc.state_gpio2.dir = self.combo_gpio2_dir.currentIndex()
-                if acc.state_gpio2.mode == AccessoryConnector.MODE_FUNCTION:
+                if acc.state_gpio2.mode == GPIOState.MODE_FUNCTION:
                     acc.state_gpio2.function = self.combo_gpio2_func.currentIndex()
-                if acc.state_gpio2.dir == AccessoryConnector.DIR_OUTPUT:
+                if acc.state_gpio2.dir == GPIOState.DIR_OUTPUT:
                     acc.state_gpio2.value = self.combo_gpio2_value.currentIndex()
 
                 acc.strobe_period_us = self.sb_strobe_period_us.value()

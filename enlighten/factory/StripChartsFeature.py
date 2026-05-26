@@ -45,15 +45,17 @@ class StripChartsFeature(EnlightenFeature):
                 callback(spec, reading)
 
     def get_rds(self, sn, name):
+        """ 'name' would be one of the same labels passed to create_chart() above """
         if name in self.charts:
-            if sn in self.charts[name].spec_data:
-                rds = self.charts[name][sn].get("RDS", None)
-                if rds:
-                    return rds
+            chart = self.charts[name]
+            if sn in chart.spec_data:
+                data = self.charts[name].spec_data[sn]
+                if "RDS" in data:
+                    return data["RDS"]
                 else:
-                    log.error(f"get_rds: RDS not in self.charts[{name}][{sn}]")
+                    log.error(f"get_rds: RDS not in self.charts[{name}].spec_data[{sn}]")
             else:
-                log.error(f"get_rds: sn {sn} not in self.charts[{name}]")
+                log.error(f"get_rds: sn {sn} not in self.charts[{name}].spec_data")
         else:
             log.error(f"get_rds: name {name} not in self.charts")
 
