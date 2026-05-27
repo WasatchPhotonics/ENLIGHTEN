@@ -45,11 +45,6 @@ class EtalonCorrectionFeature(EnlightenFeature):
 
     def enable_callback(self):
         self.enabled = self.cb_enable.isChecked()
-
-        spec = self.ctl.multispec.current_spectrometer()
-        if spec:
-            spec.change_device_setting("etalon_correction_enable", self.enabled)
-
         self.update_visibility()
 
     def process(self, pr):
