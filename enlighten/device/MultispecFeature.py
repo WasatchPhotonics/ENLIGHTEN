@@ -419,12 +419,8 @@ class MultispecFeature(EnlightenFeature):
     def is_connected(self, device_id) -> bool:
         return device_id in self.spectrometers
 
-    def count(self) -> int:
-        try:
-            return len(self.spectrometers)
-        except:
-            log.error("error returning spec length")
-            return 0
+    def count(self):
+        return len(self.spectrometers)
 
     def is_current_spectrometer(self, spec) -> bool:
         return self.device_id is not None and self.device_id == spec.device_id
