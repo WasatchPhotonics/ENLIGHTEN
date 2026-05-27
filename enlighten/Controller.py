@@ -1140,6 +1140,7 @@ class Controller:
         make_shortcut("Ctrl+*", self.auto_raman.measure_callback)
         make_shortcut("Ctrl+%", self.laser_control.set_focus_power)
         make_shortcut("Ctrl+&", self.measurements.add_trace_from_last_measurement)
+        make_shortcut("Ctrl+^", self.plugin_controller.connect_currently_selected_plugin)
         make_shortcut("Ctrl+,", self.multispec.select_prev_spectrometer)
         make_shortcut("Ctrl+.", self.multispec.select_next_spectrometer)
 
@@ -1318,7 +1319,7 @@ class Controller:
                     if spec.device is None:
                         break
 
-                    log.debug(f"polling for status message: {spec.device}")
+                    # log.debug(f"polling for status message: {spec.device}")
                     msg = spec.device.acquire_status_message()
                     if msg is None:
                         break
@@ -2059,6 +2060,7 @@ class Controller:
             app_state.processed_reading = pr
 
         # Were we only taking one measurement? This allows "completing" an open 
+        # TakeOneRequest
         log.debug("calling TakeOneFeature.process")
         self.take_one.process(pr)
 
