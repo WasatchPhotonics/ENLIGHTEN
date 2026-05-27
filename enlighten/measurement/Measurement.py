@@ -876,8 +876,8 @@ class Measurement:
         if field == "library match":             return self.processed_reading.library_matching_compound
         if field == "library score":             return self.processed_reading.library_matching_score
         if field == "library engine":            return self.processed_reading.library_matching_engine
-        if field == "dalai model name":          return self.processed_reading.dalai.dalai_model_name if self.has_dalai else ""
-        if field == "dalai model label":         return self.processed_reading.dalai.dalai_model_label if self.has_dalai else ""
+        if field == "dalai model name":          return self.processed_reading.dalai.dalai_model_name if self.has_dalai() else ""
+        if field == "dalai model label":         return self.processed_reading.dalai.dalai_model_label if self.has_dalai() else ""
         if field == "roi pixel start":           return self.settings.eeprom.multi_wavelength_calibration.get("roi_horizontal_start")
         if field == "roi pixel end":             return self.settings.eeprom.multi_wavelength_calibration.get("roi_horizontal_end")
         if field == "roi start line":            return self.settings.eeprom.roi_vertical_region_1_start
