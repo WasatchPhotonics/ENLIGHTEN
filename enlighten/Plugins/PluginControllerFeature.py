@@ -170,7 +170,7 @@ class PluginControllerFeature(EnlightenFeature):
 
         # bindings
         self.button_process.clicked.connect(self.button_process_callback)
-        self.cb_connected.clicked.connect(self.connected_callback)
+        self.cb_connected.stateChanged.connect(self.connected_callback)
         self.combo_module.currentIndexChanged.connect(self.combo_module_callback)
 
         # filter scroll-steal
@@ -341,6 +341,9 @@ class PluginControllerFeature(EnlightenFeature):
         self.cb_connected.setChecked(False) # should be in this state anyway
 
         self.ctl.config.set(self.SECTION, "selected_plugin", module_name)
+
+    def connect_currently_selected_plugin(self):
+        self.cb_connected.setChecked(True)
 
     # - [3] when you click Connect (which is only visible when a valid plugin is
     #     selected)
