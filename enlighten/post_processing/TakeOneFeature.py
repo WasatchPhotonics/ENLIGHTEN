@@ -55,6 +55,8 @@ class TakeOneFeature(EnlightenFeature):
         # process the upcoming measurement
         self.notify_observers("start")
 
+        # MZ: note that we don't store the TakeOneRequest in this class, but we 
+        # do store it in app_data
         take_one_request = TakeOneRequest(
             scans_to_average=self.ctl.scan_averaging.get_scans_to_average(), 
             template=template)
@@ -91,28 +93,34 @@ class TakeOneFeature(EnlightenFeature):
 
         self.reset()
 
-    def process(self, processed_reading):
+    def process(self, pr):
         """
         Accept a newly ProcessedReading from the Controller.  If the measurement is 
         fully averaged, complete the TakeOne and optionally save.
-        
-        @returns True if it "completed" a TakeOneRequest
+
+        MZ: It is interesting that we don't look at either pr.reading.take_one_request 
+            nor app_state.take_one_request here.
         """
         if not self.running:
             log.debug("process: not running")
             return
 
-        if processed_reading is None or processed_reading.reading is None:
+        if pr is None or pr.reading is None:
             log.debug("process: no Reading")
             return
 
         log.debug("process: start")
 
         # did we get an averaged reading (completing a single TakeOne within a spectrometer?)
-        if not processed_reading.reading.averaged:
+        if not pr.reading.averaged:
             log.debug("process: insufficiently averaged")
             return
         self.completion_count += 1
+
+        if pr.reading.take_one_request and pr.reading.take_one_request.auto_raman_request and pr.settings.is_ids():
+            # kludge to deal with the fact that IDS+laser units are connected as
+            # two spectrometers
+            self.completion_count += 1
 
         # does this complete the overall TakeOne operation?
         log.debug("process: checking for completion")
