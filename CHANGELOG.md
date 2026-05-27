@@ -35,7 +35,7 @@
         - normalized Pearson score range 
         - deprecated KIA
     - Laser Control
-        - IDS Autonomous Collection (key requested feature)
+        - IDS added Auto-Collection (key requested feature)
         - BLE laser PWM (key requested feature)
         - ctrl-% shortcut for laser percent
         - simplified password entry
@@ -62,7 +62,7 @@
     - refactored FactoryStripChartFeature -> StripChartsFeature
         - deprecated HardwareFileOutputFeature
         - simplified DetectorTemperatureFeature, LaserTemperatureFeature,
-                     AmbientTemperatureFeature and BatteryFeature
+          AmbientTemperatureFeature and BatteryFeature
     - BLEManager
         - add "Last Used" column (laser safety feature)
         - disable under Parallels (avoid sad developers)
@@ -87,6 +87,7 @@
           integration with DALAI.
         - Many plugins probably need to be re-tested.
         - removed Raman.LibraryMatching
+        - added ctrl-^ shortcut to connect currently-selected plugin
     - STARTING: 
         - Safe Mode
     - TODO
