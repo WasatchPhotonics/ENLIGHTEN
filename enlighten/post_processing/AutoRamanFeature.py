@@ -238,7 +238,7 @@ class AutoRamanFeature(EnlightenFeature):
         take_one_request = TakeOneRequest(auto_raman_request=auto_raman_request)
 
         self.request_time = datetime.now()
-        log.debug("measure_callback: calling take_one.start with AutoRamanRequest {auto_raman_request}")
+        log.debug(f"measure_callback: calling take_one.start with AutoRamanRequest {auto_raman_request}")
         self.ctl.take_one.start(completion_callback=self.completion_callback, stop_callback=self.stop_callback, template=take_one_request, save=self.auto_save)
 
     def generate_auto_raman_request(self):
