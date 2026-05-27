@@ -66,6 +66,7 @@ class HelpFeature(EnlightenFeature):
             Ctrl-* Auto-Raman
             Ctrl-% enter laser power
             Ctrl-& toggle trace of last measurement
+            Ctrl-^ connect currently-selected plugin
             Ctrl-, Prev Spectrometer
             Ctrl-. Next Spectrometer
             
