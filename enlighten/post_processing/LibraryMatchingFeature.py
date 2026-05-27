@@ -238,9 +238,9 @@ class LibraryMatchingFeature(EnlightenFeature):
             curve.setVisible(False)
 
         # Add to ProcessedReading, so it will be saved with Measurement metadata.
-        # Use fields previously allocated for KIA.
-        pr.declared_match = best_compound
-        pr.declared_score = best_score
+        pr.library_matching_compound = best_compound
+        pr.library_matching_score = best_score
+        pr.library_matching_engine = "Pearson"
 
         # schedule GUI update
         self.timer.start(self.TIMER_MS)

@@ -97,6 +97,7 @@ class DalaiRamanFeature(EnlightenFeature):
         self.find_available_models()
         if not self.model_configs:
             self.combo_model.setCurrentIndex(-1)
+            self.current_model_label = None
         else:
             # populate the combobox with the sorted list of model labels
             first_name = None
@@ -108,7 +109,8 @@ class DalaiRamanFeature(EnlightenFeature):
             # SELECT the first model, but don't LOAD it -- we don't want to 
             # trigger the TFL import until the user actually "enables" DALAI
             self.combo_model.setCurrentIndex(0)
-            self.current_model_name = self.get_model_name_from_label(self.combo_model.currentText())
+            self.current_model_label = self.combo_model.currentText()
+            self.current_model_name = self.get_model_name_from_label(self.current_model_label)
 
         self.cb_enable      .stateChanged           .connect(self.enable_callback)
         self.cb_deconvolute .stateChanged           .connect(self.update_settings)
@@ -142,6 +144,7 @@ class DalaiRamanFeature(EnlightenFeature):
             # switch to the best model for thsi device
             best_model_config = self.model_configs[best_model_name]
             self.combo_model.setCurrentText(best_model_config.label)
+            self.current_model_label = best_model_config.label
 
     def update_settings(self):
         self.enabled       = self.cb_enable.isChecked()
@@ -322,13 +325,14 @@ class DalaiRamanFeature(EnlightenFeature):
         log.debug(f"AI_wavenumbers {AI_wavenumbers}")
         log.debug(f"AI_spectrum {AI_spectrum}")
 
+        # store the DALAI spectrum in a child of the ProcessedReading
         child_pr = ProcessedReading()
         child_pr.wavenumbers = AI_wavenumbers
         child_pr.processed = AI_spectrum
-        pr.dalai = child_pr
+        child_pr.dalai_model_name = self.current_model_name
+        child_pr.dalai_model_label = self.current_model_label
 
-        # pr.wavenumbers_dalai = AI_wavenumbers
-        # pr.spectrum_dalai = AI_spectrum
+        pr.dalai = child_pr
 
         # interpolated arrays are for display only; we use non-interpolated data in matching
         # TODO: perhaps the graphing should actually be done at the same point as the main graph is updated?
@@ -406,14 +410,13 @@ class DalaiRamanFeature(EnlightenFeature):
     def select_model_callback(self):
         log.debug("select_model_callback: start")
         combo = self.combo_model
-        if combo:
-            label = combo.currentText()
-            for basename, config in self.model_configs.items():
-                if label == config.label:
-                    if self.enabled:
-                        self.lazy_load_model(basename)
-                    return
-            log.error(f"unknown model label {label}")
+        self.current_model_label = combo.currentText()
+        for basename, config in self.model_configs.items():
+            if label == config.label:
+                if self.enabled:
+                    self.lazy_load_model(basename)
+                return
+        log.error(f"unknown model label {label}")
 
     def process_dalai(self, wavenumbers, spectrum, pr):
         """
