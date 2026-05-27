@@ -1681,7 +1681,7 @@ class Controller:
             self.marquee.error(msg.value) 
 
         elif msg.setting == "progress_bar": 
-            self.reading_progress_bar.set(msg.value)
+            self.progress_bar.set(msg.value)
 
         elif msg.setting == "laser_firing_indicators": 
             self.laser_control.update_laser_firing_indicators(msg.value)

@@ -48,8 +48,7 @@ class BLEManagerFeature(EnlightenFeature):
         self.ble_selector = BLESelector(ble_manager=self, parent=self.bt_ble)
         self.bt_ble.clicked.connect(self.button_callback)
 
-        # @todo move to AutoRaman
-        cfu.readingProgressBar.hide()
+        self.ctl.progress_bar.hide()
 
         # grab an asyncio run_loop in which to call DeviceFinderBLE's async methods
         self.scan_loop = BLEDevice.get_run_loop()

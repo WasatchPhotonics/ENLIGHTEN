@@ -70,7 +70,7 @@ from enlighten.ui.HelpFeature import HelpFeature
 from enlighten.ui.ImageResources import ImageResources
 from enlighten.ui.MarqueeFeature import MarqueeFeature
 from enlighten.ui.PageNavigationFeature import PageNavigationFeature
-from enlighten.ui.ReadingProgressBarFeature import ReadingProgressBarFeature
+from enlighten.ui.ProgressBarFeature import ProgressBarFeature
 from enlighten.ui.ResourceMonitorFeature import ResourceMonitorFeature
 from enlighten.ui.SoundEffectsFeature import SoundEffectsFeature
 from enlighten.ui.StatusBarFeature import StatusBarFeature
@@ -253,7 +253,7 @@ class BusinessObjects:
         ctl.help                        = HelpFeature(ctl)
         ctl.did_you_know                = DidYouKnowFeature(ctl)
         ctl.status_bar                  = StatusBarFeature(ctl)
-        ctl.reading_progress_bar        = ReadingProgressBarFeature(ctl)
+        ctl.progress_bar                = ProgressBarFeature(ctl)
         ctl.ble_manager                 = BLEManagerFeature(ctl)
         ctl.scope_table                 = ScopeTableFeature(ctl)
         ctl.library_matching            = LibraryMatchingFeature(ctl)

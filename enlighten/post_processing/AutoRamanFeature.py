@@ -272,7 +272,7 @@ class AutoRamanFeature(EnlightenFeature):
         spec.send_alert("auto_raman_cancel")
 
         # hide the progress bar
-        self.ctl.reading_progress_bar.hide()
+        self.ctl.progress_bar.hide()
 
         # forcibly disable the laser, regardless of inferred state
         self.ctl.laser_control.set_laser_enable(False)

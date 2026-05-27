@@ -1,3 +1,5 @@
+import logging
+
 from enlighten import common
 from enlighten.EnlightenFeature import EnlightenFeature
 
@@ -6,7 +8,9 @@ if common.use_pyside2():
 else:
     from PySide6 import QtCore
 
-class ReadingProgressBarFeature(EnlightenFeature):
+log = logging.getLogger(__name__)
+
+class ProgressBarFeature(EnlightenFeature):
 
     def __init__(self, ctl):
         super().__init__(ctl)
@@ -32,6 +36,7 @@ class ReadingProgressBarFeature(EnlightenFeature):
             # round to int 0-100
             self.pb.setRange(0, 100)
             value = int(min(100, max(0, round(value, 0))))
+            log.debug(f"setting {value}")
             
             if value == 0:
                 self.pb.setVisible(False)
