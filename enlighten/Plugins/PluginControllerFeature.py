@@ -1189,13 +1189,6 @@ class PluginControllerFeature(EnlightenFeature):
         except:
             log.error(f"While attempting to clear main graph of plugins encountered error", exc_info=1)
 
-        # try:
-        #     if self.plugin_plot is not None:
-        #         self.plugin_plot.deleteLater()
-        #         self.plugin_plot = None
-        # except:
-            log.error(f"While trying to clear plugin plot encountered error", exc_info=1)
-
         self.plugin_curves = {}
 
     def get_active_graph(self):
