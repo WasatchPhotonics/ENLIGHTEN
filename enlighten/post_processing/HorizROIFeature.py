@@ -2,10 +2,11 @@ import logging
 
 from wasatch.ProcessedReading import ProcessedReading
 from enlighten.util import unwrap
+from enlighten.EnlightenFeature import EnlightenFeature
 
 log = logging.getLogger(__name__)
 
-class HorizROIFeature:
+class HorizROIFeature(EnlightenFeature):
     """
     Encapsulate the Horizontal ROI feature.
 
@@ -64,7 +65,7 @@ class HorizROIFeature:
     """
     
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
 
         self.button = self.ctl.form.ui.pushButton_roi_toggle 
         self.cb_editing = self.ctl.form.ui.checkBox_edit_horiz_roi
@@ -76,9 +77,8 @@ class HorizROIFeature:
             self.user_requested_enabled = True
         self.enabled = True
 
-        self.observers = set()
-        self.ctl.graph.register_observer("change_axis", self.change_axis_callback)
-        self.ctl.page_nav.register_observer("mode", self.update_visibility)
+        self.ctl.graph.register_observer(self.change_axis_callback, "change_axis")
+        self.ctl.page_nav.register_observer(self.update_visibility, "mode")
 
         self.button.clicked.connect(self.button_callback)
         self.cb_editing.stateChanged.connect(self.cb_editing_callback)
@@ -110,7 +110,7 @@ class HorizROIFeature:
 
         self.update_visibility()
 
-    def change_axis_callback(self, old_axis_enum, new_axis_enum):
+    def change_axis_callback(self, pair):
         self.update_regions()
 
     def button_callback(self):
@@ -125,10 +125,6 @@ class HorizROIFeature:
     def cb_editing_callback(self):
         for spec in self.ctl.multispec.get_spectrometers():
             self.update_regions(spec)
-
-    ## provided for RichardsonLucy to flush its Gaussian cache
-    def register_observer(self, callback):
-        self.observers.add(callback)
 
     def init_hotplug(self):
         """ auto-enable for spectrometers with ROI """
@@ -173,8 +169,7 @@ class HorizROIFeature:
         for spec in self.ctl.multispec.get_spectrometers():
             self.update_regions(spec)
 
-        for callback in self.observers:
-            callback()
+        self.notify_observers()
 
     def is_editing(self):
         return self.cb_editing.isChecked()

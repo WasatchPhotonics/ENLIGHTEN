@@ -5,8 +5,9 @@ log = logging.getLogger(__name__)
 
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from enlighten.ui.MouseWheelFilter import MouseWheelFilter
+from enlighten.EnlightenFeature import EnlightenFeature
 
-class GainDBFeature:
+class GainDBFeature(EnlightenFeature):
     """
     This class encapsulates control of detector gain (decibels), currently used 
     only for Sony IMX detectors (SiG).  
@@ -38,10 +39,12 @@ class GainDBFeature:
     MAX_GAIN_DB = 72
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.spinbox = cfu.doubleSpinBox_gain 
+        self.scrollable = cfu.controlWidget_scrollArea
 
         self.widgets = [
             cfu.pushButton_gain_dn,
@@ -62,7 +65,7 @@ class GainDBFeature:
         cfu.pushButton_gain_dn.clicked.connect(self._dn_callback)
 
         self.ctl.presets.register(self, "gain_db", getter=self.get_db, setter=self.set_db_callback)
-        self.ctl.page_nav.register_observer("mode", self.update_visibility)
+        self.ctl.page_nav.register_observer(self.update_visibility, "mode")
         self.update_visibility()
 
         for widget in self.widgets:
@@ -145,6 +148,7 @@ class GainDBFeature:
         if self.visible:
             self.spinbox.setFocus()
             self.spinbox.selectAll()
+            self.scrollable.ensureWidgetVisible(self.spinbox)
 
     def set_db(self, db, quiet=False):
         spec = self.ctl.multispec.current_spectrometer()

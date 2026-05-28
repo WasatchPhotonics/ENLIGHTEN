@@ -3,6 +3,7 @@ import logging
 
 from enlighten import common
 from enlighten.util import unwrap, undent
+from enlighten.EnlightenFeature import EnlightenFeature
 
 if common.use_pyside2():
     from PySide2 import QtWidgets
@@ -11,12 +12,13 @@ else:
 
 log = logging.getLogger(__name__)
 
-class HelpFeature:
+class HelpFeature(EnlightenFeature):
     
     HELP_URL = "https://wasatchphotonics.com/software-support/enlighten/"
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.bt_help = cfu.pushButton_help
@@ -62,7 +64,9 @@ class HelpFeature:
             Ctrl-X toggle eXpert mode
 
             Ctrl-* Auto-Raman
+            Ctrl-% enter laser power
             Ctrl-& toggle trace of last measurement
+            Ctrl-^ connect currently-selected plugin
             Ctrl-, Prev Spectrometer
             Ctrl-. Next Spectrometer
             

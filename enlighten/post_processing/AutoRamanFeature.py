@@ -5,11 +5,12 @@ from wasatch.TakeOneRequest   import TakeOneRequest
 from wasatch.AutoRamanRequest import AutoRamanRequest 
 
 from enlighten.util import unwrap
+from enlighten.EnlightenFeature import EnlightenFeature
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 
 log = logging.getLogger(__name__)
 
-class AutoRamanFeature:
+class AutoRamanFeature(EnlightenFeature):
     """
     This feature controls the (normally-hidden) "Auto-Raman Measurement" button 
     on the Laser Control Widget.
@@ -23,7 +24,8 @@ class AutoRamanFeature:
     LASER_CONTROL_DISABLE_REASON = "Auto-Raman enabled"
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = self.ctl.form.ui
 
         self.bt_laser           = cfu.pushButton_laser_toggle
@@ -236,7 +238,7 @@ class AutoRamanFeature:
         take_one_request = TakeOneRequest(auto_raman_request=auto_raman_request)
 
         self.request_time = datetime.now()
-        log.debug("measure_callback: calling take_one.start with AutoRamanRequest {auto_raman_request}")
+        log.debug(f"measure_callback: calling take_one.start with AutoRamanRequest {auto_raman_request}")
         self.ctl.take_one.start(completion_callback=self.completion_callback, stop_callback=self.stop_callback, template=take_one_request, save=self.auto_save)
 
     def generate_auto_raman_request(self):
@@ -270,7 +272,7 @@ class AutoRamanFeature:
         spec.send_alert("auto_raman_cancel")
 
         # hide the progress bar
-        self.ctl.reading_progress_bar.hide()
+        self.ctl.progress_bar.hide()
 
         # forcibly disable the laser, regardless of inferred state
         self.ctl.laser_control.set_laser_enable(False)

@@ -11,6 +11,24 @@ set start_time=%time%
 set "PYTHONPATH=%cd%/../Wasatch.PY;%cd%/../jcamp;%cd%/plugins;%cd%;%cd%/enlighten/assets/uic_qrc"
 echo PYTHONPATH %PYTHONPATH%
 
+echo.
+echo %date% %time% ======================================================
+echo %date% %time% Confirming we're not running under Parallels
+echo %date% %time% ======================================================
+echo.
+
+wmic computersystem get manufacturer /format:list | grep -qi parallels && (
+    echo You appear to be running under Parallels:
+    wmic computersystem get manufacturer,model /format:list 
+    goto script_failure
+)
+
+echo.
+echo %date% %time% ======================================================
+echo %date% %time% Validating key artifacts
+echo %date% %time% ======================================================
+echo.
+
 if exist "C:\Program Files (x86)" (
     set "PROGRAM_FILES_X86=C:\Program Files (x86)"
 ) else (
@@ -22,6 +40,20 @@ set inno_exe="%PROGRAM_FILES_X86%\Inno Setup 6\iscc.exe"
 if not exist %inno_exe% (
     echo %inno_exe% not found
     goto script_failure
+)
+
+if exist "enlighten\network\keys.py" (
+    echo enlighten/network/keys.py found
+) else (
+    echo enlighten/network/keys.py not found, so AWS cloud access will not be available.
+    pause
+)
+
+if exist "enlighten\assets\example_data\dalai_models\*.tflite" (
+    echo one or more DALAI models found
+) else (
+    echo No DALAI models found in enlighten/assets/example_data/dalai_models, so DALAI processing will not be available.
+    pause
 )
 
 echo.

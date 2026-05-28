@@ -1,15 +1,17 @@
 import logging
 
+from enlighten.EnlightenFeature import EnlightenFeature
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from enlighten.util import unwrap
 from enlighten import common
 
 log = logging.getLogger(__name__)
 
-class LaserWatchdogFeature:
+class LaserWatchdogFeature(EnlightenFeature):
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.enabled = False

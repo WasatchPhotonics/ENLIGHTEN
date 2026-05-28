@@ -13,7 +13,7 @@ application.
       can be modules (files) within it
 """
 
-VERSION = "4.2.1"
+VERSION = "4.2.2"
 
 ctl = None
 
@@ -249,3 +249,4 @@ def is_rpi():
 def use_pyside2():
     result = is_rpi() or "USE_PYSIDE_2" in os.environ
     return result
+

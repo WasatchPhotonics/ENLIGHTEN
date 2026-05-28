@@ -3,6 +3,7 @@ import re
 
 from enlighten import common
 from enlighten.util import unwrap
+from enlighten.EnlightenFeature import EnlightenFeature
 
 if common.use_pyside2():
     from PySide2 import QtWidgets
@@ -15,7 +16,7 @@ from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 
 log = logging.getLogger(__name__)
 
-class PresetFeature:
+class PresetFeature(EnlightenFeature):
     """
     This feature allows the user to save named presets (referring to a snapshot 
     of key acquisition parameters), irrespective of spectrometer serial number.
@@ -59,9 +60,11 @@ class PresetFeature:
     SECTION = "Presets"
     
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
 
-        self.combo = ctl.form.ui.comboBox_presets
+        cfu = ctl.form.ui
+
+        self.combo = cfu.comboBox_presets
         self.selected_preset = None
 
         self.presets = self.get_default_configuration() # { "Winchester bottles": { "IntegrationTimeFeature": { "integration_time_ms": "2000" } } }

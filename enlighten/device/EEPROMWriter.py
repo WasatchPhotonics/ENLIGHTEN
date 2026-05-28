@@ -61,14 +61,6 @@ class EEPROMWriter:
 
         log.debug("user elected to write EEPROM on %s", label)
 
-        # send the contents of the new/updated EEPROM to the subprocess,
-        # first so the subprocess will USE the new settings, but also so
-        # that the following command can tell the subprocess to WRITE its
-        # cached copy to the hardware.
-        if not self.send_to_subprocess():
-            self.ctl.marquee.error("failed to send EEPROM to subprocess")
-            return
-
         # now take a backup of the EEPROM, just to be paranoid
         if not self.backup():
             self.ctl.marquee.error("failed to backup EEPROM")
@@ -78,36 +70,6 @@ class EEPROMWriter:
         self.ctl.marquee.info("writing EEPROM")
         spec.change_device_setting("write_eeprom", (sn, spec.settings.eeprom))
         self.ctl.clear_response_errors(spec)
-
-    def send_to_subprocess(self):
-        log.debug("sending EEPROM to subprocess")
-
-        spec = self.ctl.multispec.current_spectrometer()
-        if spec is None:
-            return
-
-        if spec.settings.eeprom_backup is None:
-            sn = spec.settings.eeprom.serial_number
-        else:
-            sn = spec.settings.eeprom_backup.serial_number
-
-        # note that the order of these checks is significant
-        if self.ctl.authentication.has_production_rights():
-            # update all EEPROM fields
-            log.debug("sending 'replace_eeprom'")
-            spec.change_device_setting("replace_eeprom", (sn, spec.settings.eeprom))
-        elif self.ctl.authentication.has_advanced_rights():
-            # update editable EEPROM fields
-            spec.change_device_setting("update_eeprom", (sn, spec.settings.eeprom))
-        else:
-            # log.critical("authentication error")
-            # return False
-            
-            # okay, we previously didn't let people update the EEPROM at all without
-            # some level of login, but I guess we have to for FieldWavecalFeature
-            spec.change_device_setting("update_eeprom", (sn, spec.settings.eeprom))
-
-        return True
 
     def backup(self, output_path=None):
         """
@@ -129,10 +91,13 @@ class EEPROMWriter:
         
         @param output_path[in] if provided, should be a scalar string pathname of an existing directory
         """
-        log.debug("backing up EEPROM")
-
         spec = self.ctl.multispec.current_spectrometer()
+        if not spec:
+            return
+
+        log.debug("backing up EEPROM")
         try:
+            # this should have been populated when Spectrometer was instantiated
             text = spec.settings.eeprom_backup.json()
             digest = hashlib.sha1(text.encode("UTF-8")).hexdigest()
             digest_short = digest[:10]

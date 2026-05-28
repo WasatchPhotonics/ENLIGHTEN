@@ -35,6 +35,7 @@ from enlighten import common
 from enlighten.device.Spectrometer import Spectrometer
 from enlighten.ui.ThumbnailWidget import ThumbnailWidget
 from enlighten.ui.TimeoutDialog import TimeoutDialog
+from enlighten.EnlightenFeature import EnlightenFeature
 from enlighten.BusinessObjects import BusinessObjects
 
 if common.use_pyside2():
@@ -50,23 +51,45 @@ log = logging.getLogger(__name__)
 
 class AcquiredReading():
     """ Trivial class to eliminate a tuple during memory profiling. """
-    def __init__(self, reading=None, progress=0, disconnect=False):
+    def __init__(self, reading=None, disconnect=False):
         self.reading    = reading
         self.disconnect = disconnect
-        self.progress = progress
 
     def __repr__(self):
-        return f"AcquiredReading <disconnect {self.disconnect}, progress {self.progress}, reading {self.reading}>"
+        return f"AcquiredReading <disconnect {self.disconnect}, reading {self.reading}>"
 
 class Controller:
     """
     Main application controller class for ENLIGHTEN.
     
     This class is still way bigger than it should be, but it's gradually coming
-    under control.
-    
-    - most feature logic has been extracted into "business objects" which own and
-      configure their own GUI widgets and internal state
+    under control. Most feature logic has been extracted into "business objects"
+    which own and configure their own GUI widgets and internal state.
+
+    These are the fundamental things provided by the Controller:
+
+    - Spawn the application. This includes instantiating all the various 
+      EnlightenFeature business objects (mostly done in BusinessObjects).
+
+    - Create and "tick" various timers which "keep things going."
+
+    - Discover and connect new spectrometers (CONNECT-n).
+
+    - Acquire spectra from connected spectrometers for processing and graphing
+      (ACQUIRE-n).
+
+    (the trails listed below are aspirational and not yet complete)
+
+    The later two functions end up being spread across a variety of classes and
+    files, both within the ENLIGHTEN repository as well as the associated 
+    Wasatch.PY repository. Both "trails" are blazed with a series of numbered 
+    comments which can be located via `grep` or similar.
+
+    Connection Trail: Discovery and Enumeration of new Spectrometers. These steps
+    are blazed with the tokens CONNECT-1 through CONNECT-n.
+
+    Acquisition Trail: A Spectrum's Journey from Device to Screen. These steps 
+    are blazed ACQUIRE-1 through ACQUIRE-n.
     """
 
     # ##########################################################################
@@ -106,9 +129,8 @@ class Controller:
         All of the parameters are normally set via command-line arguments
         in Enlighten.py.  
         """
-
         self.app                    = app
-        self.log_queue              = log_queue # currently needed for KnowItAll.Wrapper
+        self.log_queue              = log_queue 
         self.log_level              = log_level # passed to LoggingFeature and WasatchDeviceWrapper/Worker
         self.max_memory_growth      = max_memory_growth
         self.max_thumbnails         = max_thumbnails
@@ -125,6 +147,7 @@ class Controller:
 
         self.spec_timeout_sec       = 30
         self.dialog_open            = False
+        self.safe_mode              = False
 
         if form is None:
             log.error("Got a None value for form. Cannot start without QResources")
@@ -154,12 +177,10 @@ class Controller:
         # GUI Configuration
         ########################################################################
 
-        # hide these immediately (KIA shouldn't be visible in Scope)
+        # hide these immediately
         cfu = self.form.ui
-        for widget in [ cfu.frame_kia_outer,
-                        cfu.frame_id_results_white,
-                        cfu.tabWidget_advanced_features
-                      ]:
+        for widget in [ # cfu.frame_id_results_white,
+                        cfu.tabWidget_advanced_features ]:
             widget.setVisible(False)
 
         # @todo this shouldn't go here
@@ -217,9 +238,12 @@ class Controller:
         self.business_objects.create_rest()
         self.update_feature_visibility()
 
+        # check for Safe Mode before starting timers
+        self.safe_mode = self.config.get_bool("Safe Mode", "enabled")
+        log.debug(f"safe_mode {self.safe_mode}")
+
         # setup timers
         self.setup_bus_listener()
-        self.setup_hardware_strip_listener() 
         self.setup_main_event_loops() 
 
         # bind keyboard shortcuts
@@ -295,9 +319,9 @@ class Controller:
         log.debug("disconnect_device[%s]: closing", device_id)
         spec.close()
 
+        # is there actually any reason to remove them from StripCharts?
+
         log.debug("disconnect_device[%s]: removing from Multispec", device_id)
-        self.detector_temperature.remove_spec_curve(spec)
-        self.laser_temperature.remove_spec_curve(spec)
         if not self.multispec.remove(spec):
             log.error("disconnect_device[%s]: failed to remove from Multispec", device_id)
             return False
@@ -310,10 +334,17 @@ class Controller:
         return True
 
     def disconnect_features(self):
-        """ tell any features supporting disconnect events that we have disconnected the current spectrometer """
+        """ 
+        Tell any features supporting disconnect events that we have disconnected
+        the current spectrometer.
+
+        We could turn this to a self-registered notification, but I think I like 
+        being able to control the order here.
+        """
         log.debug("disconnect_features: start")
         for feature in [ self.laser_control,
-                         self.accessory_control,
+                         self.accessory_control_xl,
+                         self.accessory_control_xs,
                          self.area_scan,
                          self.auto_raman,
                          self.ble_manager ]:
@@ -334,8 +365,8 @@ class Controller:
 
         for timer in [ self.bus_timer,
                        self.acquisition_timer,
-                       self.status_timer,
-                       self.hard_strip_timer ]: # StripChartFeature
+                       self.status_timer ]:
+                       # self.strip_chart_timer ]: # StripChartFeature
             if timer is not None:
                 timer.stop()
 
@@ -389,57 +420,56 @@ class Controller:
 
     def setup_bus_listener(self):
         """
-        Poll the USB bus periodically for new connection events (including 
-        devices connected at application launch).
+        CONNECT-1: Poll the USB bus periodically for new connection events 
+        (including devices already connected at application launch).
+
+        Create an automated timer to check for new devices. The timer is 
+        "singleshot," meaning it only fires ONCE per call to start(). At the
+        end of one check, you need to call start() again to schedule the next
+        tick. This prevents the possibility of overlapping ticks.
         """
         self.marquee.info("searching for spectrometers", immediate=True, persist=True)
         self.bus = WasatchBus()
         self.bus_timer = QtCore.QTimer()
         self.bus_timer.timeout.connect(self.tick_bus_listener)
         self.bus_timer.setSingleShot(True)
-        self.bus_timer.start(500)
+        self.bus_timer.start(500) # start the first check in 0.5 sec
 
-    def setup_hardware_strip_listener(self):
-        """ @todo move to StripChartFeature """
-        self.hard_strip_timer = QtCore.QTimer()
-        self.hard_strip_timer.timeout.connect(self.process_hardware_strip)
-        self.hard_strip_timer.setSingleShot(True)
-
-    def process_hardware_strip(self):
-        """ 
-        @todo move to StripChartFeature 
-
-        So, it's worth noting that the data we collect for the Factory view seems
-        to be coming from here, which only updates from the "latest" reading at 
-        1Hz, regardless of integration time or incoming data rate. 
-
-        We could probably be more event-driven and "timely" than this, but on the
-        other hand these metrics probably don't need to be updated at especially
-        high frequencies...this seems okay for now.
-        """
-        for spec in self.multispec.get_spectrometers():
-            if spec.app_state.paused:
-                log.debug("declining to re-process paused result") # will corrupt running averages
-                continue
-
-            pr = spec.app_state.processed_reading
-            if pr:
-                self.process_hardware_strip_reading(spec, pr.reading)
-
-        sleep_ms = 1000
-        if self.page_nav.get_current_view() == common.Views.HARDWARE or self.hardware_file_manager.enabled:
-            sleep_ms = self.integration_time_feature.get_ms()
-        self.hard_strip_timer.start(sleep_ms)
-
-    def process_hardware_strip_reading(self, spec, reading):
-        if reading is None:
-            return
-
-        for feature in [ self.detector_temperature,
-                         self.laser_temperature,
-                         self.ambient_temperature,
-                         self.battery_feature ]:
-            feature.process_reading(spec, reading) 
+    # def setup_strip_charts_listener(self):
+    #     """ @todo move to StripChartsFeature """
+    #     self.strip_chart_timer = QtCore.QTimer()
+    #     self.strip_chart_timer.timeout.connect(self.process_strip_charts)
+    #     self.strip_chart_timer.setSingleShot(True)
+    #
+    # def process_strip_charts(self):
+    #     """ 
+    #     @todo move to StripChartsFeature 
+    #
+    #     So, it's worth noting that the data we collect for the Factory view seems
+    #     to be coming from here, which only updates from the "latest" reading at 
+    #     1Hz, regardless of integration time or incoming data rate. 
+    #
+    #     We could probably be more event-driven and "timely" than this, but on the
+    #     other hand these metrics probably don't need to be updated at especially
+    #     high frequencies...this seems okay for now.
+    #
+    #     MZ: this seems incorrect, as strip_charts.process_reading is clearly 
+    #     called from the acquisition pipeline.
+    #     """
+    #     for spec in self.multispec.get_spectrometers():
+    #         if spec.app_state.paused:
+    #             log.debug("declining to re-process paused result") # will corrupt running averages
+    #             continue
+    #
+    #         pr = spec.app_state.processed_reading
+    #         if pr:
+    #             self.strip_charts.process_reading(spec, pr.reading) 
+    #
+    #     # tick strip charts at 1Hz, unless the user is watching them, in which case update them with spectra
+    #     sleep_ms = 1000
+    #     if self.page_nav.doing_hardware():
+    #         sleep_ms = self.integration_time_feature.get_ms()
+    #     self.strip_chart_timer.start(sleep_ms)
 
     def tick_bus_listener(self):
         """
@@ -459,7 +489,8 @@ class Controller:
             self.check_ready_initialize()
             return self.bus_timer.start(self.BUS_TIMER_SLEEP_MS)
 
-        # refresh the list of visible spectrometers on the USB bus
+        # CONNECT-2: refresh the list of visible spectrometers on the USB bus
+        # (CONNECT-3 is in Wasatch.PY/wasatch/WasatchBus.py)
         self.bus.update()
 
         # refresh the list of visible spectrometers on the BLE list
@@ -472,6 +503,7 @@ class Controller:
         # device on the list
         ########################################################################
 
+        # CONNECT-8: ...
         self.connect_new()
 
         # Continue polling bus at 1Hz.
@@ -590,7 +622,7 @@ class Controller:
             self.marquee.info(f"connecting to {new_device_id}", persist=True)
         
         log.debug(f"connect_new: instantiating WasatchDeviceWrapper with {new_device_id}")
-        device = WasatchDeviceWrapper(device_id=new_device_id, log_level=self.log_level)
+        device = WasatchDeviceWrapper(device_id=new_device_id, log_level=self.log_level, safe_mode=self.safe_mode)
 
         # flag that an attempt to connect to the device is ongoing
         self.header(f"connect_new: setting in-process {new_device_id}")
@@ -670,7 +702,7 @@ class Controller:
         (including whether we're in Expert mode or not).
 
         This is called by PageNavigation.set_view_common, for instance when
-        changing Operation Mode (Ranam, Non-Raman, Expert) or View (Scope, 
+        changing Operation Mode (Raman, Non-Raman, Expert) or View (Scope, 
         Settings, Hardware, Logging, Factory) or Technique (Raman, Emission,
         Absorbance, Transmission/Reflectance), etc.
 
@@ -679,30 +711,8 @@ class Controller:
         It also helps to "re-hide" pyqtgraph curves which had been previously
         hidden, but then erroneously re-show themselves when a curve is removed
         from the chart.  (I'm assuming that pyqtgraph bug hasn't been fixed?)
-
-        IMHO we should give self.bus_obj an iterable list of all business
-        objects, all of which should extend EnlightenBusinessObject or whatever,
-        with overridable methods update_visibility, post_init (to be fired after
-        all Business Objects are instantiated), etc.
         """
-        for feature in [ self.accessory_control,
-                         self.auto_raman,
-                         self.baseline_correction,
-                         self.dark_feature,
-                         self.edc,
-                         self.external_trigger,
-                         self.graph,
-                         self.horiz_roi,
-                         self.kia_feature,
-                         self.laser_control,
-                         self.laser_temperature,
-                         self.laser_watchdog,
-                         self.logging_feature,
-                         self.pixel_calibration,
-                         self.raman_intensity_correction,
-                         self.raman_shift_correction,
-                         self.reference_feature,
-                         self.status_bar ]:
+        for feature in EnlightenFeature.get_all():
             feature.update_visibility()
 
     # ##########################################################################
@@ -821,13 +831,16 @@ class Controller:
             self.eeprom_writer.backup()
 
         ########################################################################
-        # display firmware
+        # update hardware details (move to class)
         ########################################################################
 
         cfu.label_microcontroller_firmware_version.setText(spec.settings.microcontroller_firmware_version)
         cfu.label_fpga_firmware_version.setText(spec.settings.fpga_firmware_version)
         cfu.label_microcontroller_serial_number.setText(spec.settings.microcontroller_serial_number)
-        cfu.label_ble_firmware_version.setText(spec.settings.ble_firmware_version)
+
+        self.update_ble_firmware_version()
+        self.update_power_connection_state()
+        self.update_assembly_revision()
 
         ########################################################################
         # update EEPROM Editor
@@ -858,8 +871,6 @@ class Controller:
 
         if hotplug:
             self.detector_temperature.init_hotplug()
-        self.detector_temperature.update_visibility()
-        self.battery_feature.update_visibility()
 
         ########################################################################
         # Now override the EEPROM and Detector defaults with the .INI file
@@ -912,16 +923,6 @@ class Controller:
         # update all curves
         self.graph.rescale_curves()
 
-        if hotplug:
-            if spec.settings.eeprom.has_laser:
-                self.laser_temperature.add_spec_curve(spec)
-            if spec.settings.eeprom.has_cooling:
-                self.detector_temperature.add_spec_curve(spec)
-            if spec.settings.eeprom.has_battery:
-                self.battery_feature.add_spec_curve(spec)
-            if spec.settings.is_xs() or spec.settings.is_gen15():
-                self.ambient_temperature.add_spec_curve(spec)
-
         # scope capture buttons
         if hotplug:
             spec.app_state.paused = False
@@ -941,39 +942,21 @@ class Controller:
         # Activate business objects which have connection / selection events
 
         if hotplug:
-            # cursor
             self.cursor.center()
-            for feature in [ self.accessory_control,
+            for feature in [ self.accessory_control_xl,
+                             self.accessory_control_xs,
                              self.ble_manager,
                              self.laser_control,
                              self.laser_watchdog,
                              self.laser_temperature,
                              self.area_scan,
-                             self.horiz_roi ]:
+                             self.horiz_roi,
+                             self.dalai,
+                             self.raman_intensity_correction ]:
                 feature.init_hotplug()
 
-        for feature in [ self.accessory_control,
-                         self.area_scan,
-                         self.auto_raman,
-                         self.boxcar,
-                         self.dark_feature,
-                         self.external_trigger,
-                         self.gain_db_feature,
-                         self.graph,
-                         self.high_gain_mode,
-                         self.laser_control,
-                         self.laser_temperature,
-                         self.laser_watchdog,
-                         self.plugin_controller,
-                         self.raman_shift_correction,
-                         self.raman_intensity_correction,
-                         self.reference_feature,
-                         self.richardson_lucy,
-                         self.status_indicators,
-                         self.vcr_controls,
-                         self.edc,
-                         self.horiz_roi ]:
-            feature.update_visibility()
+        # poke everything else
+        self.update_feature_visibility()
 
         ########################################################################
         # Change to Raman if first connected device is Raman
@@ -1007,9 +990,39 @@ class Controller:
         # done
         ########################################################################
 
-        # updates from initialization to match time window in spinbox
-        # call StripChartFeature getter
-        spec.app_state.reset_rolling_data(time_window=cfu.spinBox_strip_window.value(), hotplug=hotplug)
+    def update_ble_firmware_version(self):
+        cfu = self.form.ui
+        spec = self.multispec.current_spectrometer()
+        if spec is None:
+            return
+
+        cfu.label_ble_firmware_version.setText(spec.settings.ble_firmware_version)
+
+    def update_power_connection_state(self):
+        """ USB adapter info """
+        cfu = self.form.ui
+        lb = cfu.label_hw_view_power_connection_state
+        lb.clear()
+        lb.setToolTip(None)
+
+        spec = self.multispec.current_spectrometer()
+        if spec is None:
+            return
+
+        pcs = spec.settings.state.power_connection_state
+        if not pcs:
+            return
+            
+        lb.setText(pcs.short())
+        lb.setToolTip(pcs.long())
+
+    def update_assembly_revision(self):
+        spec = self.multispec.current_spectrometer()
+        if spec is None:
+            return
+
+        cfu = self.form.ui
+        cfu.label_assembly_revision.setText(str(spec.settings.eeprom.assembly_revision))
 
     # ##########################################################################
     # Setup (populate widget placeholders)
@@ -1040,12 +1053,9 @@ class Controller:
         self.thumbnail_render_graph = pyqtgraph.PlotWidget(name="Measurement Thumbnail Renderer")
 
         # this is a fake curve (trace) on the chart
-        # TODO: move to Measurement F
-        data = list(range(1024, 1638)) # MZ: ???
-        self.thumbnail_render_curve = self.thumbnail_render_graph.plot(
-            data,
-            pen=self.gui.make_pen(widget="thumbnail"),
-            name="Thumbnail Renderer")
+        data = list(range(10)) # MZ: ???
+        self.thumbnail_render_curve = self.thumbnail_render_graph.plot( data, pen=self.gui.make_pen(widget="thumbnail"), name="Thumbnail Renderer")
+        self.thumbnail_render_alt_curve = self.thumbnail_render_graph.plot( [], pen=self.gui.make_pen(color="#f7e842"), name="Alt Thumbnail Renderer")
 
         # make the graph small, and hide both axes
         self.thumbnail_render_graph.hideAxis("left")
@@ -1075,9 +1085,6 @@ class Controller:
         # appropriate for Controller
         self.form.exit_signal                       .exit               .connect(self.close)
 
-        ## move to StripChartFeature
-        cfu.spinBox_strip_window                    .valueChanged       .connect(self.update_hardware_window)
-        
         # OEM tab
         cfu.checkBox_swap_alternating_pixels        .stateChanged       .connect(self.swap_alternating_pixels_callback)
         cfu.checkBox_graph_alternating_pixels       .stateChanged       .connect(self.graph_alternating_pixels_callback)
@@ -1130,7 +1137,9 @@ class Controller:
         make_shortcut("Ctrl+T", self.integration_time_feature.set_focus)
         make_shortcut("Ctrl+X", self.page_nav.toggle_expert)
         make_shortcut("Ctrl+*", self.auto_raman.measure_callback)
+        make_shortcut("Ctrl+%", self.laser_control.set_focus_power)
         make_shortcut("Ctrl+&", self.measurements.add_trace_from_last_measurement)
+        make_shortcut("Ctrl+^", self.plugin_controller.connect_currently_selected_plugin)
         make_shortcut("Ctrl+,", self.multispec.select_prev_spectrometer)
         make_shortcut("Ctrl+.", self.multispec.select_next_spectrometer)
 
@@ -1241,7 +1250,7 @@ class Controller:
         self.acquisition_timer  .start(1000)
         self.status_timer       .start(1100)
         self.status_indicators  .start(1200)
-        self.hard_strip_timer   .start(1300)
+        # self.strip_chart_timer  .start(1300)
 
     def tick_acquisition(self):
         """
@@ -1309,7 +1318,7 @@ class Controller:
                     if spec.device is None:
                         break
 
-                    log.debug(f"polling for status message: {spec.device}")
+                    # log.debug(f"polling for status message: {spec.device}")
                     msg = spec.device.acquire_status_message()
                     if msg is None:
                         break
@@ -1332,20 +1341,6 @@ class Controller:
         # manner using QSignals from PluginWorker. We could also encapsulate this
         # using PluginController.timer.
         self.plugin_controller.process_responses()
-
-        ########################################################################       
-        # Tick KIA
-        ########################################################################       
-
-        # We're going to tick KnowItAll from here, because we want queued
-        # Measurements (from ThumbnailWidget button clicks) to process even
-        # when spectra is paused, or theoretically even no spectrometers are
-        # connected.
-        #
-        # Note that this in turn calls update_visibility, so there is no separate
-        # external call to update visibility on hotplug or spectrometer selection
-        # events.
-        self.kia_feature.update()
 
         if not self.shutting_down:
             self.status_timer.start(self.STATUS_TIMER_SLEEP_MS)
@@ -1426,16 +1421,15 @@ class Controller:
             return
 
         reading = acquired_reading.reading
+        self.strip_charts.process_reading(spec, reading) 
 
         # we collected the reading (to clear the queue), but don't do anything with it
         if spec.app_state.paused and not (self.batch_collection.running or spec.app_state.take_one_request):
-            # pull out any useful metadata (detector temperature etc), but stop before graphing
-            self.process_hardware_strip_reading(spec, reading)
+            log.debug("attempt_reading: ignored while paused")
             return
 
         if reading.keep_alive:
-            log.debug("attempt_reading: received reading.keep_alive, but passing to hardware strip at least")
-            self.process_hardware_strip_reading(spec, reading)
+            log.debug("attempt_reading: received reading.keep_alive")
             return
 
         # are we waiting on a SPECIFIC Reading (or series of Readings)?
@@ -1514,12 +1508,13 @@ class Controller:
         if reading.dark is not None:
 
             # DO NOT blindly store dark if this was an Auto-Raman measurement;
-            # leave that to AutoRamanFeature.process_reading to determine. Note
-            # that while we do pass the Reading to AutoRamanFeature here, the
-            # Feature doesn't yet save the measurement, even if auto-save is 
-            # enabled, because (for instance) dark correction has not yet been
-            # applied; that is done automatically at the end of 
-            # Controller.process_reading by TakeOneFeature.
+            # leave that to AutoRamanFeature.process_reading to determine, based
+            # on retain_settings. Note that while we do pass the Reading to 
+            # AutoRamanFeature here, the Feature won't yet save the measurement, 
+            # even if auto-save is enabled, because (for instance) Raman 
+            # Intensity correction has not yet been applied; that is done 
+            # automatically at the end of Controller.process_reading by 
+            # TakeOneFeature.
             if reading.take_one_request is not None and reading.take_one_request.auto_raman_request:
                 self.auto_raman.process_reading(reading)
             else:
@@ -1542,7 +1537,7 @@ class Controller:
 
         log.debug("attempt_reading: done")
 
-    def acquire_reading(self, spec: Spectrometer) -> AcquiredReading:
+    def acquire_reading(self, spec):
         """
         Poll the spectrometer thread (WasatchDeviceWrapper) for a 
         SpectrometerResponse.
@@ -1570,7 +1565,7 @@ class Controller:
         device_id = spec.device_id
 
         try:
-            spectrometer_response = device.acquire_data()
+            spectrometer_response = device.acquire_data() # wasatch.SpectrometerResponse
 
             if spectrometer_response.poison_pill:
                 log.error(f"acquire_reading: received poison-pill from spectrometer: {spectrometer_response}") # disposition AFTER displaying user message
@@ -1608,7 +1603,6 @@ class Controller:
                     self.seen_errors[spec][spectrometer_response.error_msg] = 0
                     device.reset()
                     self.disconnect_device(spec)
-                   #log.debug(f"adding spec model and serial to be reset on connect")
                     self.bus.update(poll=True)
                     return
 
@@ -1638,7 +1632,7 @@ class Controller:
 
                 # apparently it was a GOOD reading!
                 spec.reset_acquisition_timeout()
-                return AcquiredReading(reading=reading, progress=spectrometer_response.progress)
+                return AcquiredReading(reading=reading)
 
             else:
                 log.error(f"received a SpectrometerResponse where data is {type(spectrometer_response.data)}")
@@ -1685,7 +1679,7 @@ class Controller:
             self.marquee.error(msg.value) 
 
         elif msg.setting == "progress_bar": 
-            self.reading_progress_bar.set(msg.value)
+            self.progress_bar.set(msg.value)
 
         elif msg.setting == "laser_firing_indicators": 
             self.laser_control.update_laser_firing_indicators(msg.value)
@@ -1695,6 +1689,9 @@ class Controller:
 
         elif msg.setting == "scan_averaging": 
             self.scan_averaging.process_status_message(msg.value, spec)
+
+        elif msg.setting == "received_ble_firmware_version": 
+            self.update_ble_firmware_version()
 
         else:
             log.debug("unsupported StatusMessage: %s", msg.setting)
@@ -1809,8 +1806,6 @@ class Controller:
         - apply business logic
         """
 
-        log.debug("process_reading: start")
-
         if settings is None:
             # we are NOT reprocessing
             reprocessing = False
@@ -1875,6 +1870,20 @@ class Controller:
             best_dark = app_state.dark  # otherwise, what has been stored
 
         pr.correct_dark(best_dark)
+
+        ########################################################################
+        # InGaAs Correction (experimental)
+        ########################################################################
+
+        if settings.ingaas_correction:
+            self.ingaas_correction.process(pr)
+        
+        ########################################################################
+        # Etalon Correction (experimental)
+        ########################################################################
+       
+        if settings.etalon_correction:
+            self.etalon_correction.process(pr)
 
         ########################################################################
         # Cropping
@@ -1943,8 +1952,18 @@ class Controller:
             if not self.page_nav.using_reference():
                 self.richardson_lucy.process(pr, spec)
 
+        ########################################################################
+        # Despiking
+        ########################################################################
+
         # if self.form.ui.checkBox_despike_enable.isChecked():
         #     pr = self.despiking_feature.process(pr)
+
+        ########################################################################
+        # DALAI-RAMAN
+        ########################################################################
+
+        self.dalai.process(pr)
 
         ########################################################################
         # Boxcar Smoothing
@@ -1953,14 +1972,14 @@ class Controller:
         # One could argue whether boxcar should be before or after interpolation;
         # however, it currently calls ProcessedReading.set_processed which does
         # NOT update .interpolated, so for now it must remain before.
+
         self.boxcar.process(pr, spec)
 
         ########################################################################
         # Interpolation
         ########################################################################
 
-        if self.interp.enabled:
-            self.interp.process(pr)
+        self.interp.process(pr)
 
         ########################################################################
         # Plugins
@@ -1973,8 +1992,8 @@ class Controller:
         # Also, if we want to let plugins to TRANSFORM live spectra (actually
         # affect ProcessedReading.processed), we kind of need that to happen 
         # here.
-        if self.plugin_controller.enabled:
-            self.plugin_controller.process_reading(pr, settings, spec)
+
+        self.plugin_controller.process_reading(pr, settings, spec)
 
         ########################################################################
         # Graph 
@@ -1985,7 +2004,7 @@ class Controller:
             # live, connected spectrometer.  If we're reprocessing loaded spectra,
             # those loaded Measurements can land on the thumbnail bar, and the 
             # user can display traces themselves.  However, we do want to flow
-            # the reprocessed spectra down into KIA, so keep going.
+            # the reprocessed spectra down into LibraryMatching, so keep going.
             log.debug("not graphing spectra which didn't come from a live spectrometer")
         else:
             graphed = False
@@ -2016,12 +2035,12 @@ class Controller:
                 return
 
         ########################################################################
-        # KnowItAll
+        # Library Matching
         ########################################################################
 
-        if selected and self.page_nav.doing_raman():
-            # log.debug("process_reading: sending KIA request (reprocessing = %s)", reprocessing)
-            self.kia_feature.process(pr, settings)
+        # only attempt library matching on the "foreground" spectrometer
+        if selected:
+            self.library_matching.process(pr)
 
         ########################################################################
         # Re-Processing complete
@@ -2039,6 +2058,7 @@ class Controller:
             app_state.processed_reading = pr
 
         # Were we only taking one measurement? This allows "completing" an open 
+        # TakeOneRequest
         log.debug("calling TakeOneFeature.process")
         self.take_one.process(pr)
 
@@ -2364,11 +2384,6 @@ class Controller:
     def perform_fpga_reset(self, spec=None):
         self.multispec.change_device_setting("reset_fpga")
 
-    def update_hardware_window(self):
-        for spec in self.multispec.spectrometers.values():
-            # call StripChartFeature getter
-            spec.app_state.update_rolling_data(self.form.ui.spinBox_strip_window.value())
-
     def display_response_error(self, spec: Spectrometer, response_error: str) -> bool:
         """
         @returns True if:
@@ -2392,23 +2407,30 @@ class Controller:
         self.dialog_open = True # todo make a mutex
 
         log.info(f"displaying MessageBox with the received error and options (Okay, Disconnect, Log): {response_error}")
-        dlg_title = "Spectrometer Error"
-        dlg_msg = ("ENLIGHTEN has encountered an error with the spectrometer. " +
+        title = "Spectrometer Error"
+        msg = ("ENLIGHTEN has encountered an error with the spectrometer. " +
                     "The exception is shown below.  Click 'View Log' to " +
                     "automatically open the logfile in Notepad, 'Disconnect' to " +
                     "retry or 'Okay' to dismiss this dialog:\n\n" + 
                     response_error + "\n\n")
-        dlg_btns = [("Okay", QMessageBox.AcceptRole), ("Disconnect", QMessageBox.RejectRole), ("View Log", QMessageBox.HelpRole)]
+        buttons = [ ("Okay",       QMessageBox.AcceptRole), 
+                    ("Disconnect", QMessageBox.RejectRole), 
+                    ("View Log",   QMessageBox.HelpRole) ]
 
         selection = TimeoutDialog.showWithTimeout(self.form, 
-                                                  10, 
-                                                  dlg_msg, 
-                                                  dlg_title, 
-                                                  QMessageBox.Warning, 
-                                                  dlg_btns)
-        # Generate a bool list by comparing the clicked btn against the btn options
+                                                  seconds = 10, 
+                                                  message = msg, 
+                                                  title   = title, 
+                                                  icon    = QMessageBox.Warning, 
+                                                  buttons = buttons)
         self.dialog_open = False
-        spec.settings.state.ignore_timeouts_until = datetime.datetime(datetime.MAXYEAR,12,1) # MZ: hrmm
+
+        # MZ: we ignore timeouts REGARDLESS of what they clicked?
+        spec.settings.state.ignore_timeouts_until = datetime.datetime(datetime.MAXYEAR, 12, 1)
+
+        # Generate a bool list by comparing the clicked btn against the btn options
+        # MZ: this is a very weird way to do things
+
         if selection == [True, False, False]:
             log.info("user clicked 'Okay' to dismiss the dialog with no action")
         elif selection == [False, True, False]:
@@ -2437,8 +2459,11 @@ class Controller:
         spec.settings.state.ignore_timeouts_until = None
         self.seen_errors[spec].clear()
 
-    ## can't be in LoggingFeature unless log was a parameter...
     def header(self, s):
+        """
+        can't be in LoggingFeature unless log was a parameter...
+        and yes, this is similar to EnlightenFeature.log_header
+        """
         log.debug("")
         log.debug('=' * len(s))
         log.debug(s)

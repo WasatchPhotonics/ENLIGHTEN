@@ -6,6 +6,7 @@ import json
 import os
 import re
 
+from enlighten.EnlightenFeature import EnlightenFeature
 from enlighten.measurement.Measurement import Measurement
 from enlighten.parser.ColumnFileParser import ColumnFileParser
 from enlighten.parser.ExportFileParser import ExportFileParser
@@ -25,27 +26,17 @@ else:
 
 log = logging.getLogger(__name__)
 
-##
-# This is a Factory used by Measurements to create Measurement objects, each 
-# coupled to a ThumbnailWidget.
-class MeasurementFactory:
+class MeasurementFactory(EnlightenFeature):
+    """
+    This is a Factory used by Measurements to create Measurement objects, each 
+    coupled to a ThumbnailWidget.
+    """
 
     def clear(self):
         pass
 
     def __init__(self, ctl):
-        self.ctl = ctl
-
-        self.observers = set()
-
-    def register_observer(self, callback):
-        self.observers.add(callback)
-
-    def unregister_observer(self, callback):
-        try:
-            self.observers.remove(callback)
-        except:
-            pass
+        super().__init__(ctl)
 
     # ##########################################################################
     # Live readings
@@ -77,11 +68,9 @@ class MeasurementFactory:
 
         if save:
             try:
-                for observer in self.observers:
-                    observer(measurement=measurement, event="pre-save")
+                self.notify_observers_with_value(measurement, "pre-save")
                 measurement.save()
-                for observer in self.observers:
-                    observer(measurement=measurement, event="save")
+                self.notify_observers_with_value(measurement, "save")
             except:
                 msg = "Failed to dispatch save file.\n\n"+traceback.format_exc()
                 log.error(msg)
@@ -98,15 +87,17 @@ class MeasurementFactory:
     def create_thumbnail(self, measurement, is_collapsed=False):
         if measurement.plugin_name:
             log.debug(f"measurement came from a plugin so checking for second graph")
-            graph = self.ctl.plugin_controller.get_active_graph()
+            graphs = [ self.ctl.plugin_controller.get_active_graph() ]
         else:
             log.debug("measurement doesn't have a plugin so default graph")
-            graph = self.ctl.graph
+            graphs = [ self.ctl.graph ]
+            if measurement.has_dalai():
+                graphs.append(self.ctl.alt_graph)
 
         measurement.thumbnail_widget = ThumbnailWidget(
             ctl             = self.ctl,
             measurement     = measurement,
-            graph           = graph,        
+            graphs          = graphs,        
             is_collapsed    = is_collapsed)
 
         try:
@@ -120,14 +111,29 @@ class MeasurementFactory:
     #
     # @todo seems like this should be in ThumbnailWidget?
     def render_thumbnail_to_qpixmap(self, measurement):
+        pr = measurement.processed_reading
 
-        spectrum = measurement.processed_reading.get_processed()
+        spectrum = pr.get_processed()
         if spectrum is None:
             log.error("render_thumbnaiL_to_qpixmap: can't render thumbnail w/o spectrum")
             return
 
+        x_axis = pr.get_wavenumbers()
+        if x_axis is None:
+            x_axis = pr.get_wavelengths()
+        if x_axis is None:
+            x_axis = pr.get_pixels()
+
         # apply the spectrum to the curve
-        self.ctl.thumbnail_render_curve.setData(spectrum)
+        self.ctl.thumbnail_render_curve.setData(y=spectrum, x=x_axis)
+
+        # add DALAI spectrum
+        if measurement.has_dalai():
+            log.debug("render_thumbnail_to_qpixmap: adding DALAI curve")
+            self.ctl.thumbnail_render_alt_curve.setData(y=pr.get_processed("dalai"), x=pr.get_wavenumbers("dalai"))
+        else:
+            log.debug("render_thumbnail_to_qpixmap: skipping DALAI curve")
+            self.ctl.thumbnail_render_alt_curve.setData(y=[])
 
         # instantiate an exporter (could we re-use one for all thumbnails?)
         exporter = pyqtgraph.exporters.ImageExporter(self.ctl.thumbnail_render_graph.plotItem)
@@ -264,8 +270,7 @@ class MeasurementFactory:
                 log.error("create_from_file: error finalizing measurement", exc_info=1)
 
         for m in measurements:
-            for observer in self.observers:
-                observer(measurement=m, event="load")
+            self.notify_observers_with_value(m, "load")
 
         return measurements
 

@@ -1,5 +1,119 @@
 # Version History
 
+## 4.2 XS V2 Commercial Release
+
+- 2026-05-27 4.2.2
+    - Infrastructure
+        - added EnlightenFeature
+            - This was a major architectural change. We previously had a great 
+              number of classes loosely called "business objects" (Java term) 
+              which had "similar" external interfaces (update_visibility,
+              register_observer etc), but they didn't actually utilize 
+              inheritance to enforce that commonality. This new ABC provides 
+              greater consistency across the growing fleet of ENLIGHTEN feature 
+              classes.
+            - In the new nomenclature, classes ending with "Feature" should 
+              extend EnlightenFeature, and those which don't, should not.
+        - ARCHITECTURE docs
+        - deprecated timing.Ramp (old utility class)
+    - DalaiRamanFeature
+        - This was a major goal of this release, to promote DALAI-RAMAN from 
+          private plugin to public feature. Note that at present, the .tflite
+          models themselves are not stored in this repository. Released
+          installers should contain models for "fingerprint" (XM/XS) and 
+          "functional" (X) Raman regions.
+        - uses alt-graph to RIGHT of Scope
+        - show both raw and DALAI on shared clipboard thumbnail
+        - save as separate CSV, or combined in JSON
+        - displays progress bar during load
+    - LibraryMatching
+        - Another key goal of this release was to promote LibraryMatching up 
+          from plugin status and integrate it as a core feature. 
+        - moved standard library to example_data
+        - added "[x] use standard library"
+        - indicate matches to user-generated library via (*)
+        - normalized Pearson score range 
+        - deprecated KIA
+    - Laser Control
+        - IDS added Auto-Collection (key requested feature)
+        - BLE laser PWM (key requested feature)
+        - ctrl-% shortcut for laser percent
+        - simplified password entry
+        - add production override (either using production password, or obviating
+          due to existing production privs)
+    - CalibrationStatusFeature 
+        - Another requested feature in this release was this simple on-screen 
+          table making it easy to see which of the growing set of corrections and 
+          calibrations are in effect.
+    - Etalon Correction
+        - This new pixel correction improves unit-to-unit library matching
+        - should work on XS (EEPROM) or X, XM, IDS, Andor (JSON)
+    - InGaAs Correction (experimental)
+        - testable on NIR1, 1064 or Andor via JSON
+    - Hardware view
+        - simplified logic to select and scale product image
+        - simplified logic to write EEPROM
+        - simplified logic for editing user_text
+        - fixed BLE Firmware Rev 
+        - fixed PowerWatchdogSec
+        - fixed tab order for wavecal coeffs
+        - added new Format 19 fields
+        - deprecated Baud Rate and Linearity Coeffs
+    - refactored FactoryStripChartFeature -> StripChartsFeature
+        - deprecated HardwareFileOutputFeature
+        - simplified DetectorTemperatureFeature, LaserTemperatureFeature,
+          AmbientTemperatureFeature and BatteryFeature
+    - BLEManager
+        - add "Last Used" column (laser safety feature)
+        - disable under Parallels (avoid sad developers)
+    - BatchCollection
+        - [#587] fixed "dropped frames" causing BatchCollection to exit early
+    - RamanIntensityCorrection
+        - on by default when allowed
+        - still considering UI changes here, such as eliminating "tri-state"
+          on ILP / ILC units and automatically only applying on laser-excited 
+          spectra
+    - XS
+        - resolved race condition when re-applying persisted integration time
+    - Andor / XL Shutter Control
+        - for posterity, before renaming things, empirically validated old 
+          behavior was "shutter is OPEN if '[x] Shutter' checkbox is CHECKED" 
+          (this was not clear in any way)
+        - renaming everything to "Shutter Open" and "Shutter Closed"
+        - simplified several other things in AndorDevice, so worth re-testing
+    - AccessoryControlXSFeature (UI preview)
+        - functionality pending FW
+    - misc UI
+        - keyboard shortcuts to control palette inputs now auto-scroll to the 
+          selected widget
+    - Plugins
+        - The old ability to move the "other" graph to any position is gone; it 
+          is now "locked" to the RIGHT of the Scope Graph, to simplify initial 
+          integration with DALAI.
+        - Many plugins probably need to be re-tested.
+        - removed Raman.LibraryMatching
+        - added ctrl-^ shortcut to connect currently-selected plugin
+    - build process
+        - decline to build installer when running Windows as guest OS under 
+          Parallels (BLE notifications fail)
+        - warn on missing AWS keys or .tflite models
+    - STARTING: 
+        - Safe Mode
+    - TODO
+        - XS
+            - weird shift in dark about 10 frames after launch, irrespective of integration time?
+        - AccessoryControlXSFeature
+            - need USB opcodes
+        - EtalonCorrection
+            - read and cache from EEPROM in BLEDevice
+        - BatteryFeature (in work)
+            - add state.battery_temperature_deg_c
+            - add state.battery_charger_temperature_deg_c
+        - StripChartsFeature
+            - add legends
+        - DidYouKnowFeature
+            - update LibraryMatching
+            - add DalaiRamanFeature
 - 2026-04-16 4.2.1
     - Bluetooth
         - added RnD.BluetoothTester plugin

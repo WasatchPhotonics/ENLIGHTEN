@@ -1,11 +1,14 @@
 import logging
 
+from enlighten.EnlightenFeature import EnlightenFeature
+
 log = logging.getLogger(__name__)
 
-class DFUFeature:
+class DFUFeature(EnlightenFeature):
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         cfu.pushButton_mfg_dfu.clicked.connect(self.dfu_enable)

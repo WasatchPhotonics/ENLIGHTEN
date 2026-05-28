@@ -214,8 +214,9 @@ class Measurement:
                            'Model',
                            'Detector',
                            'Label',
-                           'Declared Match',
-                           'Declared Score',
+                           'Library Match',
+                           'Library Score',
+                           'Library Engine',
                            'Scan Averaging',
                            'Boxcar',
                            'Technique',
@@ -244,6 +245,8 @@ class Measurement:
                            'Suffix',
                            'Preset',
                            'Auto-Raman',
+                           'DALAI Model Label',
+                           'DALAI Model Name',
                            'Image Format',
                            'Session Count',
                            'Plugin Name']
@@ -254,8 +257,6 @@ class Measurement:
         self.appending                = False
         self.baseline_correction_algo = None
         self.basename                 = None
-        self.declared_match           = None
-        self.declared_score           = 0
         self.label                    = None
         self.measurement_id           = None
         self.processed_reading        = None
@@ -466,7 +467,7 @@ class Measurement:
 
               Also I'd pull this out into a TemplateFeature.
         """
-        log.debug(f"expand_template: starting with template {template}")
+        # log.debug(f"expand_template: starting with template {template}")
         while True:
             # macros look like {integration_time_ms} or {gain_db:0.1f}
             m = re.search(r"{([a-z0-9_ ]+)(:\d*\.\d*f)?}", template, re.IGNORECASE)
@@ -526,7 +527,7 @@ class Measurement:
                     value = macro
 
             template = template.replace(orig, str(value))
-            log.debug(f"expand_template: {orig} -> {value} (now {template})")
+            # log.debug(f"expand_template: {orig} -> {value} (now {template})")
 
     # Note that this wraps the prefix and suffix around the expanded template.
     # Prefix and Suffix are not retained in manually-renamed measurements (ctrl-E).
@@ -800,6 +801,8 @@ class Measurement:
                 self.save_csv_file_by_row(resave=resave)
             else:
                 self.save_csv_file_by_column(resave=resave)
+                if self.has_dalai():
+                    self.save_csv_file_by_column_dalai(resave=resave)
 
     ##
     # This function is provided because legacy Dash and ENLIGHTEN saved row-
@@ -870,8 +873,11 @@ class Measurement:
         if field == "laser enable":              return reading.laser_enabled if reading else self.settings.state.laser_enabled 
         if field == "laser temperature":         return reading.laser_temperature_degC if reading and self.settings.is_xs() else "NA"
         if field == "pixel count":               return self.settings.pixels()
-        if field == "declared match":            return str(self.declared_match) if self.declared_match is not None else None
-        if field == "declared score":            return self.declared_match.score if self.declared_match is not None else 0
+        if field == "library match":             return self.processed_reading.library_matching_compound
+        if field == "library score":             return self.processed_reading.library_matching_score
+        if field == "library engine":            return self.processed_reading.library_matching_engine
+        if field == "dalai model name":          return self.processed_reading.dalai.dalai_model_name if self.has_dalai() else ""
+        if field == "dalai model label":         return self.processed_reading.dalai.dalai_model_label if self.has_dalai() else ""
         if field == "roi pixel start":           return self.settings.eeprom.multi_wavelength_calibration.get("roi_horizontal_start")
         if field == "roi pixel end":             return self.settings.eeprom.multi_wavelength_calibration.get("roi_horizontal_end")
         if field == "roi start line":            return self.settings.eeprom.roi_vertical_region_1_start
@@ -1088,7 +1094,8 @@ class Measurement:
         m = { # Measurement
             "spectrum": {},
             "metadata": self.get_all_metadata(),
-            "spectrometerSettings": self.settings.to_dict()
+            "spectrometerSettings": self.settings.to_dict(),
+            "dalai": {}
         }
 
         # interpolation
@@ -1119,6 +1126,10 @@ class Measurement:
                 a = pr.get_reference()
                 if a is not None:
                     m["spectrum"]["Reference"] = util.clean_list(a)
+
+        if self.has_dalai():
+            m["dalai"]["spectrum"] = pr.get_processed("dalai")
+            m["dalai"]["wavenumbers"] = pr.get_wavenumbers("dalai")
 
         return m
 
@@ -1322,8 +1333,7 @@ class Measurement:
     # Save the Measurement in a CSV file with the x-axis in one column, spectra
     # in the next column and so on (similar layout as the Excel output).
     #
-    # Note that currently this is NOT writing UTF-8 / Unicode, although KIA-
-    # generated labels are Unicode.  (Dieter doesn't seem to like Unicode CSV)
+    # Note that currently this is NOT writing UTF-8 / Unicode (Dieter doesn't like Unicode CSV)
     def save_csv_file_by_column(self, use_basename=False, ext="csv", delim=",", include_header=True, include_metadata=True, resave=False):
         pr = self.processed_reading
 
@@ -1397,6 +1407,69 @@ class Measurement:
         log.info("saved columnar %s", pathname)
         self.add_pathname(pathname)
 
+    def save_csv_file_by_column_dalai(self, use_basename=False, ext="csv", delim=",", include_header=True, include_metadata=True, resave=False):
+        pr = self.processed_reading
+
+        today_dir = self.generate_today_dir()
+        if use_basename:
+            pathname = "%s-DALAI.%s" % (self.basename, ext)
+        else:
+            pathname = os.path.join(today_dir, "%s-DALAI.%s" % (self.generate_basename(), ext))
+
+        if not self.verify_pathname(pathname, resave):
+            return
+
+        wavenumbers = pr.get_wavenumbers("dalai")
+        spectrum = pr.get_processed("dalai")
+        pixels = list(range(len(spectrum)))
+
+        with open(pathname, "w", newline="", encoding='utf-8') as f:
+
+            out = csv.writer(f, delimiter=delim)
+
+            if include_metadata:
+                md = self.get_all_metadata()
+
+                # output additional (name, value) metadata pairs at the top,
+                # not included in row-ordered CSV
+                outputted = set()
+                for field in self.get_extra_header_fields():
+                    if field in md:
+                        out.writerow([field, md[field]])
+                        outputted.add(field)
+
+                # output (name, value) metadata pairs at the top,
+                # using the same names and order as our row-ordered CSV
+                for field in Measurement.CSV_HEADER_FIELDS:
+                    if field not in Measurement.ROW_ONLY_FIELDS and field in md:
+                        out.writerow([field, md[field]])
+                        outputted.add(field)
+
+                if self.processed_reading.plugin_metadata is not None:
+                    for field in self.processed_reading.plugin_metadata.keys():
+                        if field not in outputted:
+                            out.writerow([field, md[field]])
+                            outputted.add(field)
+
+                out.writerow([])
+
+            headers = []
+            headers.append("Wavenumber")
+            headers.append("DALAI")
+
+            if include_header:
+                out.writerow(headers)
+
+            for pixel in range(len(pixels)):
+                values = []
+                values.append(self.csv_formatted(None, 2, wavenumbers, pixel))
+                values.append(self.csv_formatted(None, 2, spectrum,    pixel))
+                out.writerow(values)
+
+        log.info("saved columnar DALAI %s", pathname)
+        self.add_pathname(pathname)
+
+
     # ##########################################################################
     # TXT
     # ##########################################################################
@@ -1439,9 +1512,6 @@ class Measurement:
     # hence label, hence filename.  Having serial_number in a row-ordered CSV
     # which aggregates multiple spectrometers is potentially confusing, but when
     # we save the first spectrum we don't know that's the intention.
-    #
-    # Note that currently this is NOT writing UTF-8 / Unicode, although KIA-
-    # generated labels are Unicode.
     #
     # Note that Measurements saved while "appending" are NOT considered renamable
     # at the file level, while Measurements saved to individual files are. 
@@ -1647,22 +1717,6 @@ class Measurement:
 
         return row
 
-    ## Called (by way of ThumbnailWidget -> KnowItAll.Feature -> Measurements)
-    # when KnowItAll has generated a KnowItAll.DeclaredMatch for this Measurement.
-    def id_callback(self, declared_match):
-        # store the match
-        self.declared_match = declared_match
-
-        # re-save files using current SaveOptions (will store new label, overwriting old files with old name)
-        # (these will definitely be in TODAY directory, regardless of where they were loaded from)
-        self.save(resave=True)
-
-        # close-out the pending button click on the thumbnail (basically just
-        # turns the button back from red to gray)
-        if self.thumbnail_widget is not None:
-            self.thumbnail_widget.id_complete_callback()
-
-    ## Not currently used
     def has_component(self, component):
         pr = self.processed_reading
         if pr is None:
@@ -1681,6 +1735,9 @@ class Measurement:
             return False
 
         return a is not None and len(a) > 0
+
+    def has_dalai(self):
+        return self.processed_reading.has_dalai()
 
     ##
     # Passed a SpectrometerSettings object (containing wavelengths, wavenumbers

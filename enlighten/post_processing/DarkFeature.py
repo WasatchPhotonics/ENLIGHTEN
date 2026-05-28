@@ -6,6 +6,7 @@ import pyqtgraph
 
 from enlighten import common
 from enlighten.util import unwrap
+from enlighten.EnlightenFeature import EnlightenFeature
 
 if common.use_pyside2():
     from PySide2 import QtWidgets
@@ -14,16 +15,17 @@ else:
 
 log = logging.getLogger(__name__)
 
-class DarkFeature:
+class DarkFeature(EnlightenFeature):
 
     def __init__(self, ctl):
         """
         Encapsulates storage and display of dark spectra (but not the actual dark
         correction).
         """
-        self.ctl = ctl
+        super().__init__(ctl)
 
         cfu = ctl.form.ui
+
         self.button_toggle = cfu.pushButton_scope_toggle_dark
 
         self.populate_placeholder_scope_setup()
@@ -70,17 +72,12 @@ class DarkFeature:
 
                 Darks are cheap, signal is priceless!"""))
 
-        self.ctl.laser_control.register_observer("enabled", self.laser_control_enabled)
+        self.ctl.laser_control.register_observer(self.laser_control_enabled, "enabled")
         ctl.presets.register(self, "dark", setter=self.preset_changed, getter=None)
-
-        self.observers = set()
 
     # ##########################################################################
     # public methods
     # ##########################################################################
-
-    def register_observer(self, callback):
-        self.observers.add(callback)
 
     def update_visibility(self):
         spec = self.ctl.multispec.current_spectrometer()
@@ -190,8 +187,7 @@ class DarkFeature:
         self.ctl.save_options.update_widgets()
         self.ctl.gui.colorize_button(self.button_toggle, spec.app_state.has_dark())
 
-        for callback in self.observers:
-            callback()
+        self.notify_observers()
 
     # ##########################################################################
     # callbacks (truncates any widget arguments)
@@ -285,6 +281,8 @@ class DarkFeature:
         self._enable_buttons(True)
 
     def populate_placeholder_scope_setup(self):
+        cfu = self.ctl.form.ui
+
         policy = QtWidgets.QSizePolicy()
         policy.setVerticalPolicy(QtWidgets.QSizePolicy.Preferred)
         policy.setHorizontalPolicy(QtWidgets.QSizePolicy.Preferred)
@@ -294,6 +292,6 @@ class DarkFeature:
 
         self.curve = chart.plot([], pen=self.ctl.gui.make_pen(widget="dark"))
 
-        sw = self.ctl.form.ui.stackedWidget_scope_setup_dark_spectrum
+        sw = cfu.stackedWidget_scope_setup_dark_spectrum
         sw.addWidget(chart)
         sw.setCurrentIndex(1)

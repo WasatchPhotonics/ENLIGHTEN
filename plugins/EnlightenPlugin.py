@@ -423,19 +423,19 @@ class EnlightenPluginConfiguration:
     #        from multiple spectrometers (tracks requests by serial_number etc)
     def __init__(self, 
             name, 
-            fields          = None, 
-            has_other_graph = False, 
-            x_axis_label    = None, 
-            y_axis_label    = None, 
-            is_blocking     = True,
-            block_enlighten = False,
-            auto_enable     = None,  # legacy compatibility only
-            streaming       = True,
-            process_requests= True,
-            lock_enable     = False,
-            series_names    = None,
-            multi_devices   = False,
-            graph_type      = "line"):  # "line" or "xy"
+            fields           = None, 
+            has_other_graph  = False, 
+            x_axis_label     = None, 
+            y_axis_label     = None, 
+            is_blocking      = True,
+            block_enlighten  = False,
+            auto_enable      = None,  # legacy compatibility only
+            streaming        = True,
+            process_requests = True,
+            lock_enable      = False,
+            series_names     = None,
+            multi_devices    = False,
+            graph_type       = "line"):  # "line" or "xy"
 
         self.name            = name
         self.fields          = fields

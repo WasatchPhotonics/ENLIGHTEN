@@ -4,6 +4,7 @@ import json
 import scipy.signal as signal
 import numpy as np
 
+from enlighten.EnlightenFeature import EnlightenFeature
 from enlighten.util import unwrap
 from wasatch import utils as wasatch_utils
 
@@ -81,44 +82,31 @@ class ASTMPeak:
 #   - update "session" wavenumber_correction
 # - otherwise, display error message "can't match ASTM compound <name>"
 
-class RamanShiftCorrectionFeature:
+class RamanShiftCorrectionFeature(EnlightenFeature):
 
-    ## This file is installed as part of the ENLIGHTEN distribution and contains
-    #  our supported compounds and their peaks
+    # This file is installed as part of the ENLIGHTEN distribution and contains
+    # our supported compounds and their peaks
     ASTM_PATHNAME = "enlighten/assets/example_data/ASTM-E1840-96.json"
 
-    ## if calibration is off by more than this, display error message
+    # if calibration is off by more than this, display error message
     MAX_WAVENUMBER_SHIFT = 20 
 
-    ## if we find more than this many peaks in the Raman spectra, it's too peaky
+    # if we find more than this many peaks in the Raman spectra, it's too peaky
     #  (Tylenol has 24 ASTM peaks)
     MAX_PEAKS_FOUND = 50
 
-    ## require that we match at least this many ASTM peaks
+    # require that we match at least this many ASTM peaks
     MIN_PEAKS_FOUND = 4
     
-    ## constructor
-    def __init__(self,
-            button,
-            cb_visible,
-            combo,
-            config,
-            frame,
-            graph,
-            gui,
-            marquee,
-            multispec,
-            page_nav):
+    def __init__(self, ctl):
+        super().__init__(ctl)
+        
+        cfu = ctl.form.ui
 
-        self.button         = button
-        self.cb_visible     = cb_visible     # whether CURVE is visible, not widget
-        self.combo          = combo
-        self.config         = config
-        self.frame          = frame
-        self.gui            = gui
-        self.marquee        = marquee
-        self.multispec      = multispec
-        self.page_nav       = page_nav
+        self.button         = cfu.pushButton_ramanCorrection
+        self.cb_visible     = cfu.checkBox_ramanCorrection_visible # whether curve is visible, not widget
+        self.combo          = cfu.comboBox_ramanCorrection_compoundName
+        self.frame          = cfu.frame_ramanCorrection_white
 
         self.astm_compounds = None
         self.compound_name = None
@@ -126,8 +114,9 @@ class RamanShiftCorrectionFeature:
 
         self.widgets_visible = False        # whether the "Scope Settings" frame and "Scope Capture" button are visible
         self.curve_visible = False          # whether the selected compound curve is graphed
+        self.enabled = False                # whether a correction is applied on the selected spectrometer
 
-        self.curve = graph.add_curve("raman_shift_correction", rehide=False, in_legend=False)
+        self.curve = self.ctl.graph.add_curve("raman_shift_correction", rehide=False, in_legend=False)
         self.curve.setVisible(False)
 
         if not self.load_astm():
@@ -174,18 +163,27 @@ class RamanShiftCorrectionFeature:
     ## determine whether widget is visible and usable
     def update_visibility(self):
         self.widgets_visible = False
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
 
         self.widgets_visible = self.astm_compounds is not None and \
                                spec is not None and \
                                spec.settings.has_excitation() and \
-                               self.page_nav.doing_raman()
+                               self.ctl.page_nav.doing_raman()
 
         self.frame.setVisible(self.widgets_visible)
         self.button.setVisible(self.widgets_visible)
 
         if self.widgets_visible:
-            self.gui.colorize_button(self.button, spec.settings.state.wavenumber_correction != 0)
+            shift = spec.settings.state.wavenumber_correction
+            self.enabled = 0 != shift
+            self.ctl.gui.colorize_button(self.button, self.enabled)
+        else:
+            self.enabled = False
+            shift = None
+
+        self.notify_observers_with_value( { "visible": self.widgets_visible,
+                                            "enabled": self.enabled,
+                                            "shift": shift } )
 
         self.checkbox_callback()
 
@@ -194,12 +192,12 @@ class RamanShiftCorrectionFeature:
         # we need to update the curve.  We will also need to ensure this
         # is called if the current excitation or wavecal is updated...this
         # could get tricky. Really need an observer pattern here.
-        
+
     ## load previous session's selected compound, if any
     def init_from_config(self):
         s = "RamanShiftCorrection"
-        if self.config.has_option(s, "CompoundName"):
-            self.compound_name = self.config.get(s, "CompoundName")
+        if self.ctl.config.has_option(s, "CompoundName"):
+            self.compound_name = self.ctl.config.get(s, "CompoundName")
 
     ## initialize the comboBox from the loaded ASTM compound names
     def init_combo(self):
@@ -221,7 +219,7 @@ class RamanShiftCorrectionFeature:
         name = self.combo.currentText()
         if name in self.astm_compounds:
             self.compound_name = name
-            self.config.set("RamanShiftCorrection", "CompoundName", self.compound_name)
+            self.ctl.config.set("RamanShiftCorrection", "CompoundName", self.compound_name)
         else:
             self.compound_name = None
         log.debug("compound = %s", self.compound_name)
@@ -324,7 +322,7 @@ class RamanShiftCorrectionFeature:
         # get min/max intensity
         ########################################################################
 
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             log.debug("no spec")
             self.curve.setData([])
@@ -418,7 +416,7 @@ class RamanShiftCorrectionFeature:
         if len(compound.peaks) < 1:
             return
 
-        spec = self.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
 
@@ -431,7 +429,7 @@ class RamanShiftCorrectionFeature:
         ########################################################################
 
         if spec.settings.state.wavenumber_correction != 0:
-            self.marquee.info("Cleared Raman shift correction")
+            self.ctl.marquee.info("Cleared Raman shift correction")
             spec.settings.set_wavenumber_correction(0)
             self.update_visibility()
             return
@@ -482,10 +480,10 @@ class RamanShiftCorrectionFeature:
         log.debug(f"wavenumbers: {list(wavenumbers)}")
 
         if len(found_peak_indices) > self.MAX_PEAKS_FOUND:
-            self.marquee.error("Sample is too peaky...ensure laser on, increase integration time or enable boxcar")
+            self.ctl.marquee.error("Sample is too peaky...ensure laser on, increase integration time or enable boxcar")
             return
         elif len(found_peak_indices) < self.MIN_PEAKS_FOUND:
-            self.marquee.error(f"failed to find sufficient peaks ({len(found_peak_indices)} < {self.MIN_PEAKS_FOUND}), increase integration time")
+            self.ctl.marquee.error(f"failed to find sufficient peaks ({len(found_peak_indices)} < {self.MIN_PEAKS_FOUND}), increase integration time")
             return
 
         ########################################################################
@@ -541,7 +539,7 @@ class RamanShiftCorrectionFeature:
                     continue
 
                 # ...but not the primary
-                self.marquee.error(f"failed to match primary ASTM peak at {peak.wavenumber:.1f}cm⁻¹")
+                self.ctl.marquee.error(f"failed to match primary ASTM peak at {peak.wavenumber:.1f}cm⁻¹")
                 return
 
             log.debug(f"  peak {peak.wavenumber:.2f}cm-1 found on pixel {measured_px} ({measured_cm:.2f}cm⁻¹, {measured_nm:.2f}nm), "
@@ -554,7 +552,7 @@ class RamanShiftCorrectionFeature:
 
         matched_peak_count = len(matched_peak_indices)
         if matched_peak_count < self.MIN_PEAKS_FOUND:
-            self.marquee.error(f"failed to match sufficient ASTM peaks ({matched_peak_count} < {self.MIN_PEAKS_FOUND})")
+            self.ctl.marquee.error(f"failed to match sufficient ASTM peaks ({matched_peak_count} < {self.MIN_PEAKS_FOUND})")
             return
 
         avg_shift_cm = total_shift_cm / matched_peak_count
@@ -565,7 +563,7 @@ class RamanShiftCorrectionFeature:
         ########################################################################
 
         # persist message so user can read both it and the pop-up dialog
-        self.marquee.info(f"Set Raman correction to {avg_shift_cm:.2f}cm⁻¹ ({matched_peak_count} of {visible_peaks} peaks matched, ~{avg_shift_nm:.2f}nm)")
+        self.ctl.marquee.info(f"Set Raman correction to {avg_shift_cm:.2f}cm⁻¹ ({matched_peak_count} of {visible_peaks} peaks matched, ~{avg_shift_nm:.2f}nm)")
         spec.settings.set_wavenumber_correction(avg_shift_cm)
 
         self.update_visibility()

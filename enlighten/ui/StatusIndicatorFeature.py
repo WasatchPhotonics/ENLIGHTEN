@@ -1,0 +1,265 @@
+import datetime
+import logging
+
+from enlighten import common
+from enlighten.EnlightenFeature import EnlightenFeature
+
+if common.use_pyside2():
+    from PySide2 import QtCore
+else:
+    from PySide6 import QtCore
+
+log = logging.getLogger(__name__)
+
+class StatusIndicatorFeature(EnlightenFeature):
+    """
+    Encapsulates the 3 virtual status "LEDs" in the bottom-right of ENLIGHTEN's 
+    Scope view:
+
+    - hardware status 
+    - lamp/laser status
+    - detector temperature status 
+
+    Each "LED" has three potential colors / states:
+
+    - grey ("disconnected")
+    - green ("connected")
+    - orange ("warning")
+
+    See WhatsThis for meanings.
+
+    Note that this feature incapsulates its own QTimer and updates itself at 4Hz.
+    It does not update on received spectra (has no process_reading() method), but 
+    on scheduled updates does look at the most-recent ProcessedReading of the
+    currently selected spectrometer.
+
+    @todo Laser and temperature indicators should probably represent the UNION of
+          connected spectrometers, so if at least one is firing, or has unstable
+          temperature, that should probably be indicated. We could provide more
+          data on "which" spectrometers contribute to a particular reading via
+          tooltip.
+    """
+
+    SLEEP_BETWEEN_UPDATES_MS = 250
+    HARDWARE_WARNING_WINDOW_SEC = 3
+    TEMPERATURE_WINDOW_SEC = 10
+
+    def __init__(self, ctl):
+        super().__init__(ctl)
+
+        cfu = ctl.form.ui
+
+        # MZ: why are these buttons rather than labels?
+        self.button_hardware    = cfu.systemStatusWidget_pushButton_hardware
+        self.button_lamp        = cfu.systemStatusWidget_pushButton_light
+        self.button_temperature = cfu.systemStatusWidget_pushButton_temperature
+
+        # can be used to force the laser warning to illuminate
+        self.force_laser_on = False
+
+        def style(color, msg):
+            return f"<p><span style='color:{color}; font-weight:bold'>{color.upper()}:</span> {msg}</p>"
+
+        # These are the 9 basic options. Note that what we're doing here is 
+        # setting a STATIC "What's This?" pop-up (not ToolTip) summarizing the 
+        # meaning of all 3 possible colors on all 3 indicators. These "What's 
+        # This?" explanations are not intended to be dynamic, or change with 
+        # spectrometer state.
+        self.button_hardware.setWhatsThis(
+            style('orange', f"device error logged within the last {self.HARDWARE_WARNING_WINDOW_SEC}sec") +
+            style('green',  "spectrometer connected") +
+            style('gray',   "no spectrometers found"))
+            
+        self.button_lamp.setWhatsThis(
+            style('orange', "laser/lamp emitting") +
+            style('gray',   "laser safety interlock open, password required or battery too low") +
+            style('green',  "no laser/lamp found, or interlock closed but not emitting"))
+
+        self.button_temperature.setWhatsThis(
+            style("orange", "TEC enabled but not yet stable") +
+            style("gray",   "TEC disabled") + 
+            style("green",  "TEC enabled and stable (or ambient detector)"))
+
+        # self-register
+        self.ctl.logging_feature.status_indicators = self
+                
+        self.last_hardware_error_time = None
+
+        # don't start on construction
+        self.timer = QtCore.QTimer() 
+        self.timer.setSingleShot(True)
+        self.timer.timeout.connect(self.tick)
+
+        # default to "disconnected"
+        self.update_visibility()
+
+    # ##########################################################################
+    # public methods
+    # ##########################################################################
+
+    def start(self, ms):
+        self.timer.start(ms)
+
+    def stop(self):
+        self.timer.stop()
+
+    def raise_hardware_error(self, msg=None):
+        # uncommenting this will generate a recursively self-appending string!
+        # log.debug(f"raising hardware error ({msg})")
+        self.last_hardware_error_time = datetime.datetime.now()
+
+    ##
+    # Control the trio of "connection status" colored buttons (should be QLabels)
+    # at the lower-right of the GUI (below control widget column). Also
+    # disable indicators if no spectrometer is connected.
+    def update_visibility(self):
+        spec = self.ctl.multispec.current_spectrometer()
+
+        # the existing stylesheets are named "foo_connected" and "foo_disconnected"
+        hw   = "disconnected"
+        lamp = "disconnected"
+        temp = "disconnected"
+
+        hw_tt   = "disconnected"
+        lamp_tt = ""
+        temp_tt = ""
+
+        lamp_text = "Laser"
+
+        if spec is not None:
+            app_state = spec.app_state
+            settings = spec.settings
+            sn = settings.eeprom.serial_number
+
+            reading = None
+            if app_state is not None and app_state.processed_reading is not None:
+                reading = app_state.processed_reading.reading
+
+            log.debug(f"update_visibility: reading {reading}")
+
+            ####################################################################
+            # hardware status
+            ####################################################################
+
+            hw_tt = f"no hardware errors within last {self.HARDWARE_WARNING_WINDOW_SEC} sec"
+            if self.last_hardware_error_time is not None:
+                elapsed_sec = int(round((datetime.datetime.now() - self.last_hardware_error_time).total_seconds()))
+                if elapsed_sec <= self.HARDWARE_WARNING_WINDOW_SEC:
+                    hw = "warning"
+                    hw_tt = f"hardware error logged {elapsed_sec} sec ago"
+                else:
+                    hw = "connected"
+            else:
+                hw = "connected"
+
+            ####################################################################
+            # Light Source (Lamp, Laser etc)
+            ####################################################################
+
+            all_specs = self.ctl.multispec.get_spectrometers()
+            if settings.eeprom.has_laser and len(all_specs) <= 1:
+                
+                if self.force_laser_on:
+                    lamp = "warning"
+                    lamp_tt = "Laser is FIRING"
+                    
+                elif reading is None:
+                    if settings.state.laser_enabled:
+                        lamp = "warning"
+                        lamp_tt = "laser enabled"
+                    else:
+                        lamp = "connected"
+                        lamp_tt = "laser not enabled"
+
+                else:
+                    if reading.laser_is_firing or spec.app_state.laser_state == common.LaserStates.FIRING:
+                        lamp = "warning"
+                        lamp_tt = "Laser is FIRING"
+                    elif reading.laser_enabled and not reading.is_auto_raman() and not spec.app_state.laser_state == common.LaserStates.DISABLED:
+                        lamp = "transitioning"
+                        lamp_tt = "Laser is CHARGING (about to fire)"
+                        lamp_text = "Charging"
+                        log.debug(f"setting LED to CHARGING (laser_state {spec.app_state.laser_state})")
+                    elif reading.laser_can_fire:
+                        if settings.is_xs():
+                            if self.ctl.laser_control.laser_can_fire_per_password(prompt=False):
+                                lamp = "connected"
+                                lamp_tt = "Laser is ARMED (password valid, can fire)"
+                            else:
+                                lamp = "disconnected"
+                                lamp_tt = "Interlock is closed (accessory present), but requires password"
+                        else:
+                            lamp = "connected"
+                            lamp_tt = "Laser is ARMED (can fire)"
+                    elif self.ctl.laser_control.cant_fire_because_battery(spec):
+                        perc = self.ctl.battery_feature.get_perc(spec)
+                        lamp = "disconnected"
+                        lamp_tt = f"low battery ({perc:.2f}%)"
+                    else:
+                        lamp = "disconnected"
+                        lamp_tt = "Laser is disarmed (cannot fire)"
+
+            elif settings.eeprom.gen15 and len(all_specs) <= 1:
+                if settings.state.laser_enabled:
+                    lamp = "warning"
+                    lamp_tt = "lamp enabled"
+                else:
+                    lamp = "connected"
+                    lamp_tt = "lamp disabled"
+            else:
+                # default behavior should be to do the normal processing
+                # Multispec case here checks all and will overwrite if a laser is on
+                specs_lasers_on = [s.settings.state.laser_enabled for s in all_specs]
+                if any(specs_lasers_on):
+                    lamp = "warning"
+                    lamp_tt = "Laser is FIRING"
+
+            ####################################################################
+            # Detector Temperature
+            ####################################################################
+
+            if settings.eeprom.has_cooling:
+                setpoint = settings.state.tec_setpoint_degC
+                enabled = settings.state.tec_enabled
+                rds = self.ctl.strip_charts.get_rds(sn, "Detector Temperature")
+                if rds:
+                    latest = rds.latest()
+
+                    if enabled:
+                        if latest is not None:
+                            if rds.all_within(setpoint, 1.0, window_sec=self.TEMPERATURE_WINDOW_SEC):
+                                temp = "connected"
+                                temp_tt = "temperature stable around {setpoint}°C"
+                            else:
+                                temp = "warning" 
+                                temp_tt = f"temperature stabilizing toward {setpoint}°C"
+                        else:
+                            temp = "warning"
+                            temp_tt = "no temperature data"
+                    else:
+                        temp = "disconnected" # user disabled TEC
+                        temp_tt = "TEC disabled"
+                else:
+                    temp = "disconnected"
+                    temp_tt = "no temperature data"
+            else:
+                temp = "connected" # if there is no TEC, leave green
+                temp_tt = "ambient detector"
+
+        self.ctl.stylesheets.apply(self.button_hardware,    "hardware_%s"    % hw)
+        self.ctl.stylesheets.apply(self.button_lamp,        "light_%s"       % lamp)
+        self.ctl.stylesheets.apply(self.button_temperature, "temperature_%s" % temp)
+
+        self.button_hardware    .setToolTip(hw_tt)
+        self.button_lamp        .setToolTip(lamp_tt)
+        self.button_temperature .setToolTip(temp_tt)
+
+        self.button_lamp        .setText(lamp_text)
+
+    # ##########################################################################
+    # private methods
+    # ##########################################################################
+
+    def tick(self):
+        self.update_visibility()
+        self.timer.start(self.SLEEP_BETWEEN_UPDATES_MS)

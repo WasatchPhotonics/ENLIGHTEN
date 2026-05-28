@@ -1,14 +1,14 @@
 import logging
 import numpy as np
-from datetime import timedelta
-from datetime import datetime as dt
+
+from datetime import datetime, timedelta
 from collections import deque
 
 log = logging.getLogger(__name__)
 
 ##
 # Encapsulates a "moving window" dataset such as used for detector temperature,
-# laser temperature etc.
+# laser temperature, battery charge, battery temperature, ambient temperature  etc.
 #
 # @todo We may need to track these by timestamp, so that things like StatusIndicators
 #       can base an LED's color on "all_within(-55C, 1C, window=10sec)" (more-or-less).
@@ -16,27 +16,32 @@ log = logging.getLogger(__name__)
 #       analytical / status window size.
 class RollingDataSet:
     def __init__(self, size_seconds):
+        self.size_sec = size_seconds
+
         self.data = deque()
-        self.window_limit = timedelta(minutes=0, seconds=size_seconds, milliseconds=0)
 
     def __str__(self):
-        return "RollingDataSet(size %d, latest %s)" % (self.size, self.latest())
+        return f"RollingDataSet(size_sec {self.size_sec}, latest {self.latest()})"
 
     def add(self, value):
+        """
+        Note that we track values by the timestamp when they were added to the RDS, not measured / generated.
+        """
         if value and type(value) is list:
             values = value
         else:
             values = [ value ]
 
         for value in values:
-            self.data.append((dt.now(),value))
+            self.data.append( (datetime.now(), value) )
 
         self.filter_limit()
 
     def filter_limit(self):
         if len(self.data) == 0:
             return
-        while (dt.now()-self.data[0][0]) > self.window_limit:
+
+        while (datetime.now() - self.data[0][0]).total_seconds() > self.size_sec:
             self.data.popleft()
 
     def __len__(self):
@@ -56,7 +61,7 @@ class RollingDataSet:
 
     def get_relative_to_now(self):
         """ Return graphable x, y arrays by elapsed sec """
-        now = dt.now()
+        now = datetime.now()
         x = []
         y = []
         for k, v in self.data:
@@ -64,8 +69,8 @@ class RollingDataSet:
             y.append(v)
         return x, y
 
-    def all_within(self, value, delta, window_sec=None) -> bool:
-        now = dt.now()
+    def all_within(self, value, delta, window_sec=None):
+        now = datetime.now()
         for k, v in self.data:
             if abs(value - v) > delta:
                 if window_sec is not None:
@@ -76,7 +81,7 @@ class RollingDataSet:
         return True
 
     def one_within(self, value, delta, window_sec=None):
-        now = dt.now()
+        now = datetime.now()
         for k, v in self.data:
             if abs(value - v) <= delta:
                 if window_sec is not None:
@@ -90,7 +95,7 @@ class RollingDataSet:
             return self.data[-1]
 
     def get_csv_data(self, source_attr, spec_label):
-        data_strings = [f"{source_attr},{spec_label},{x},{y}" for x,y in self.data]
+        data_strings = [ f"{source_attr}, {spec_label}, {x}, {y}" for x, y in self.data]
         csv_str = '\n'.join(data_strings)
         return csv_str
 
@@ -98,4 +103,4 @@ class RollingDataSet:
         self.data = deque()
 
     def update_window(self, size_seconds):
-        self.window_limit = timedelta(minutes=0,seconds=size_seconds,milliseconds=000)
+        self.size_sec = size_seconds

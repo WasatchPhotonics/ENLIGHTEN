@@ -3,12 +3,13 @@ import logging
 from enlighten import util
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from enlighten.ui.MouseWheelFilter import MouseWheelFilter
+from enlighten.EnlightenFeature import EnlightenFeature
 
 from enlighten.common import msgbox
 
 log = logging.getLogger(__name__)
 
-class IntegrationTimeFeature:
+class IntegrationTimeFeature(EnlightenFeature):
 
     # integration time slider steps in 100ms increments, and only goes up to 5sec
     MILLISEC_TO_TENTHS = 0.01
@@ -16,13 +17,15 @@ class IntegrationTimeFeature:
     MAX_SLIDER_SEC = 5
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
 
         cfu = ctl.form.ui
+
         self.bt_dn = cfu.pushButton_integration_time_ms_dn
         self.bt_up = cfu.pushButton_integration_time_ms_up
         self.slider = cfu.slider_integration_time_ms
         self.spinbox = cfu.spinBox_integration_time_ms
+        self.scrollable = cfu.controlWidget_scrollArea
 
         # bindings
         self.slider.valueChanged.connect(self.slider_callback)
@@ -65,7 +68,7 @@ class IntegrationTimeFeature:
         if (max_tenths * self.TENTHS_TO_SEC > self.MAX_SLIDER_SEC):
             max_tenths = self.MAX_SLIDER_SEC / self.TENTHS_TO_SEC
 
-        now_ms = self.ctl.config.get_float(spec.settings.eeprom.serial_number, "integration_time_ms")
+        now_ms = int(self.ctl.config.get_float(spec.settings.eeprom.serial_number, "integration_time_ms"))
         log.info("integration time from config: %d" % now_ms)
         
         self.slider.blockSignals(True)
@@ -83,7 +86,7 @@ class IntegrationTimeFeature:
         # case for some hotplug events).
         if hotplug:
             # cap at 5sec, else application seems dead
-            now_ms = min(max_ms, max(min_ms, min(5000, now_ms)))
+            now_ms = int(min(max_ms, max(min_ms, min(5000, now_ms))))
             
         self.spinbox.blockSignals(True)
         self.spinbox.setMinimum(min_ms)
@@ -92,8 +95,8 @@ class IntegrationTimeFeature:
 
         self.set_ms(now_ms)
 
-        log.info("spinbox integration limits updated to (%.2f, %.2fms) (current %.2fms)",
-            self.spinbox.minimum(), self.spinbox.maximum(), self.spinbox.value())
+        log.info("spinbox integration limits updated to (%d, %dms) (current %dms)",
+            int(self.spinbox.minimum()), int(self.spinbox.maximum()), int(self.spinbox.value()))
 
         if hotplug:
             # save integration time to application state
@@ -168,12 +171,13 @@ class IntegrationTimeFeature:
         self.set_ms(ms) 
 
     def spinbox_callback(self):
-        ms = self.spinbox.value()
+        ms = int(self.spinbox.value())
         self.set_ms(ms)
 
     def set_focus(self):
         self.spinbox.setFocus()
         self.spinbox.selectAll()
+        self.scrollable.ensureWidgetVisible(self.spinbox)
 
     def get_ms(self):
-        return self.spinbox.value()
+        return int(self.spinbox.value())

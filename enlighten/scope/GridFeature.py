@@ -1,12 +1,15 @@
 import functools
 import logging
 
+from enlighten.EnlightenFeature import EnlightenFeature
+
 log = logging.getLogger(__name__)
 
-class GridFeature:
+class GridFeature(EnlightenFeature):
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.button = cfu.pushButton_graphGrid

@@ -2,14 +2,16 @@ import logging
 
 from enlighten.util import incr_spinbox, decr_spinbox, unwrap
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
+from enlighten.EnlightenFeature import EnlightenFeature
 
 log = logging.getLogger(__name__)
 
-class ScanAveragingFeature:
+class ScanAveragingFeature(EnlightenFeature):
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
 
         cfu = ctl.form.ui
+
         self.bt_dn      = cfu.pushButton_scan_averaging_dn
         self.bt_up      = cfu.pushButton_scan_averaging_up
         self.spinbox    = cfu.spinBox_scan_averaging
@@ -48,7 +50,7 @@ class ScanAveragingFeature:
         self.set_scans_to_average(spec.settings.state.scans_to_average)
 
     def complete_registrations(self):
-        self.ctl.vcr_controls.register_observer("pause", self.reset)
+        self.ctl.vcr_controls.register_observer(self.reset, "pause")
 
     ##
     # When VCRControls are paused or stopped, hide the label and reset the count

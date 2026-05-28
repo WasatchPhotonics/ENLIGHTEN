@@ -1,5 +1,6 @@
 import logging
 from wasatch.TakeOneRequest import TakeOneRequest
+from enlighten.EnlightenFeature import EnlightenFeature
 
 log = logging.getLogger(__name__)
 
@@ -7,14 +8,12 @@ log = logging.getLogger(__name__)
 # Encapsulates the collection of one averaged spectrum (optionally saved), either
 # from one spectrometer or all.
 #
-class TakeOneFeature:
+class TakeOneFeature(EnlightenFeature):
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
 
         self.reset()
-
-        self.observers = {}
 
     def reset(self):
         log.debug("resetting")
@@ -29,14 +28,9 @@ class TakeOneFeature:
         # anyone waiting on the NEXT completion
 
         if self.ctl.vcr_controls:
-            self.ctl.vcr_controls.unregister_observer("stop", self.stop)
+            self.ctl.vcr_controls.unregister_observer(self.stop, "stop")
             self.ctl.vcr_controls.update_visibility()
         self.ctl.scan_averaging.reset()
-
-    def register_observer(self, event, callback):
-        if event not in self.observers:
-            self.observers[event] = set()
-        self.observers[event].add(callback)
 
     ##
     # @param spec   which spectrometer to use, or None for all
@@ -54,18 +48,15 @@ class TakeOneFeature:
         self.stop_callback = stop_callback
 
         log.debug("registering VCRControls.stop -> self.stop")
-        self.ctl.vcr_controls.register_observer("stop", self.stop)
+        self.ctl.vcr_controls.register_observer(self.stop, "stop")
 
         # note that we trigger callbacks before actually unpausing and sending 
         # the take_one, so subscribers can prepare themselves to "catch" / 
         # process the upcoming measurement
-        if "start" in self.observers:
-            for callback in self.observers["start"]:
-                try:
-                    callback()
-                except:
-                    log.critical("start: caught exception on observer callback {callback}", exc_info=1)
+        self.notify_observers("start")
 
+        # MZ: note that we don't store the TakeOneRequest in this class, but we 
+        # do store it in app_data
         take_one_request = TakeOneRequest(
             scans_to_average=self.ctl.scan_averaging.get_scans_to_average(), 
             template=template)
@@ -102,28 +93,34 @@ class TakeOneFeature:
 
         self.reset()
 
-    def process(self, processed_reading):
+    def process(self, pr):
         """
         Accept a newly ProcessedReading from the Controller.  If the measurement is 
         fully averaged, complete the TakeOne and optionally save.
-        
-        @returns True if it "completed" a TakeOneRequest
+
+        MZ: It is interesting that we don't look at either pr.reading.take_one_request 
+            nor app_state.take_one_request here.
         """
         if not self.running:
             log.debug("process: not running")
             return
 
-        if processed_reading is None or processed_reading.reading is None:
+        if pr is None or pr.reading is None:
             log.debug("process: no Reading")
             return
 
         log.debug("process: start")
 
         # did we get an averaged reading (completing a single TakeOne within a spectrometer?)
-        if not processed_reading.reading.averaged:
+        if not pr.reading.averaged:
             log.debug("process: insufficiently averaged")
             return
         self.completion_count += 1
+
+        if pr.reading.take_one_request and pr.reading.take_one_request.auto_raman_request and pr.settings.is_ids():
+            # kludge to deal with the fact that IDS+laser units are connected as
+            # two spectrometers
+            self.completion_count += 1
 
         # does this complete the overall TakeOne operation?
         log.debug("process: checking for completion")
@@ -174,12 +171,7 @@ class TakeOneFeature:
         log.debug("complete: resetting")
         self.reset()
 
-        if "complete" in self.observers:
-            for callback in self.observers["complete"]:
-                try:
-                    callback()
-                except:
-                    log.critical("complete: caught exception on observer callback {callback}", exc_info=1)
+        self.notify_observers("complete")
 
         log.debug("complete: done")
 

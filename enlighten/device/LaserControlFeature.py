@@ -2,13 +2,14 @@ import logging
 
 from enlighten import util
 from enlighten.common import LaserStates
+from enlighten.EnlightenFeature import EnlightenFeature
 
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from enlighten.ui.MouseWheelFilter import MouseWheelFilter
 
 log = logging.getLogger(__name__)
 
-class LaserControlFeature:
+class LaserControlFeature(EnlightenFeature):
     """
     Encapsulate laser control from the application side.
     """
@@ -24,22 +25,23 @@ class LaserControlFeature:
     SECTION = "LaserControlFeature"
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
+        cfu = self.ctl.form.ui
+
+        self.scrollable = cfu.controlWidget_scrollArea
 
         self.ctl.battery_feature.register_observer(self.battery_callback)
 
         self.slider_stop_usb = False
         self.locked = False
         self.restrictions = set()
-        self.observers = { "enabled": set(), "disabled": set() }
 
         self.initializing = False
         self.area_at_start = None
         self.min_at_start = None
         self.xs_password_provided_by_serial = set()
         self.current_spectrometer_callback = None # override callback to ctl.multispec.current_spectrometer()
-
-        cfu = self.ctl.form.ui
 
         cfu.pushButton_laser_power_dn   .clicked            .connect(self.dn_callback)
         cfu.pushButton_laser_power_up   .clicked            .connect(self.up_callback)
@@ -71,7 +73,7 @@ class LaserControlFeature:
                         cfu.comboBox_laser_power_unit ]:
             widget.installEventFilter(ScrollStealFilter(widget))
 
-        self.ctl.page_nav.register_observer("mode", self.page_nav_mode_callback)
+        self.ctl.page_nav.register_observer(self.page_nav_mode_callback, "mode")
 
     def page_nav_mode_callback(self):
         cfu = self.ctl.form.ui
@@ -100,12 +102,6 @@ class LaserControlFeature:
     # ##########################################################################
     # Public Methods
     # ##########################################################################
-
-    def register_observer(self, event, callback):
-        if event not in self.observers:
-            log.error(f"register_observer: unsupported event {event}")
-            return
-        self.observers[event].add(callback)
 
     def set_locked(self, flag):
         self.locked = flag
@@ -245,11 +241,7 @@ class LaserControlFeature:
 
         self.ctl.status_indicators.update_visibility()
 
-        event = "enabled" if flag else "disabled"
-        for callback in self.observers[event]:
-            log.debug(f"set_laser_enable: calling {event} callback {callback}")
-            callback()
-
+        self.notify_observers("enabled" if flag else "disabled")
         self.ctl.sounds.play("laser_on" if flag else "laser_off")
 
     def tick_status(self):
@@ -572,7 +564,10 @@ class LaserControlFeature:
         spec.settings.update_wavecal()
 
     # gets called by BatteryFeature when a new battery reading is received
-    def battery_callback(self, perc, charging):
+    def battery_callback(self, state):
+        perc = state[0]
+        charging = state[1]
+
         enough_for_laser = perc >= self.MIN_BATTERY_PERC
         log.debug("enough_for_laser = %s (%.2f%%)" % (enough_for_laser, perc))
 
@@ -598,6 +593,13 @@ class LaserControlFeature:
         self.ctl.form.ui.doubleSpinBox_laser_power.setValue(position)
         self.set_laser_power_callback()
 
+    def set_focus_power(self):
+        cfu = self.ctl.form.ui
+        sb = cfu.doubleSpinBox_laser_power
+        sb.setFocus()
+        sb.selectAll()
+        self.scrollable.ensureWidgetVisible(sb)
+
     # set a flag to prevent sending a command to the spectrometer
     # This prevents flooding the spec with laser values while the slider is moving
     # When it releases, the flag will be cleared and then it will send one, final, laser value
@@ -610,6 +612,8 @@ class LaserControlFeature:
             return False
         if not spec.settings.is_xs():
             return True
+        if self.ctl.authentication.has_production_rights():
+            return True
 
         sn = spec.settings.eeprom.serial_number
         if sn in self.xs_password_provided_by_serial:
@@ -619,11 +623,12 @@ class LaserControlFeature:
             return False
 
         title = "XS Laser Safety PIN"
-        label_text = "Enter password to allow XS laser to fire"
+        label_text = "Enter password to allow XS laser to fire.\n(Default is serial number)"
         result = self.ctl.gui.msgbox_with_lineedit(title=title, label_text=label_text, lineedit_text=None)
         if not result["ok"]:
             log.debug("user cancelled laser password prompt")
             return False
+        entered_password = result["lineedit"]
 
         # if no password was set in the EEPROM, use serial number
         expected_password = spec.settings.eeprom.laser_password
@@ -631,7 +636,7 @@ class LaserControlFeature:
             expected_password = spec.settings.eeprom.serial_number
 
         # case-sensitive comparison
-        if result["lineedit"] == expected_password:
+        if entered_password == expected_password or self.ctl.authentication.is_production_password(entered_password):
             log.debug("correct laser password entered")
             self.ctl.marquee.info("Laser authenticated for session", benign=True)
             self.xs_password_provided_by_serial.add(sn)

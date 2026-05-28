@@ -10,6 +10,7 @@ from datetime import datetime
 
 from enlighten import common
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
+from enlighten.EnlightenFeature import EnlightenFeature
 
 if common.use_pyside2():
     from PySide2 import QtCore, QtWidgets, QtGui
@@ -18,7 +19,7 @@ else:
 
 log = logging.getLogger(__name__)
 
-class AreaScanFeature:
+class AreaScanFeature(EnlightenFeature):
     """
     Implements a 2D "area scan," displaying the full detector rows and columns
     rather than the usual 1D vertically-binned spectrum.
@@ -69,7 +70,8 @@ class AreaScanFeature:
     # ##########################################################################
 
     def __init__(self, ctl):
-        self.ctl = ctl
+        super().__init__(ctl)
+
         cfu = ctl.form.ui
 
         self.bt_save            = cfu.pushButton_area_scan_save
