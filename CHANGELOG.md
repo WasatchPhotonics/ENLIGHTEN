@@ -88,6 +88,10 @@
         - Many plugins probably need to be re-tested.
         - removed Raman.LibraryMatching
         - added ctrl-^ shortcut to connect currently-selected plugin
+    - build process
+        - decline to build installer when running Windows as guest OS under 
+          Parallels (BLE notifications fail)
+        - warn on missing AWS keys or .tflite models
     - STARTING: 
         - Safe Mode
     - TODO

@@ -13,6 +13,18 @@ echo PYTHONPATH %PYTHONPATH%
 
 echo.
 echo %date% %time% ======================================================
+echo %date% %time% Confirming we're not running under Parallels
+echo %date% %time% ======================================================
+echo.
+
+wmic computersystem get manufacturer /format:list | grep -qi parallels && (
+    echo You appear to be running under Parallels:
+    wmic computersystem get manufacturer,model /format:list 
+    goto script_failure
+)
+
+echo.
+echo %date% %time% ======================================================
 echo %date% %time% Validating key artifacts
 echo %date% %time% ======================================================
 echo.
