@@ -175,7 +175,7 @@ class DalaiRamanFeature(EnlightenFeature):
         # with progress bar.
 
         self.ctl.marquee.info("Loading machine learning framework", persist=True, token="dalai_load")
-        self.ctl._progress_bar.set(-1 if self.import_time_sec is None else 0)
+        self.ctl.progress_bar.set(-1 if self.import_time_sec is None else 0)
 
         # kick-off the thread to import TensorFlow
         self.import_start_time = datetime.now()
@@ -196,7 +196,7 @@ class DalaiRamanFeature(EnlightenFeature):
 
             # do we know how long this "usually" takes? If so, update progress bar
             if self.import_time_sec is not None:
-                self.ctl._progress_bar.set(100.0 * elapsed_sec / self.import_time_sec)
+                self.ctl.progress_bar.set(100.0 * elapsed_sec / self.import_time_sec)
 
             # re-check at 4Hz
             self.timer.start(250)
@@ -207,7 +207,7 @@ class DalaiRamanFeature(EnlightenFeature):
         ########################################################################
 
         self.ctl.marquee.clear(token="dalai_load")
-        self.ctl._progress_bar.hide()
+        self.ctl.progress_bar.hide()
 
         # persist the "latest" loading time, to make the next progress bar more accurate
         self.ctl.config.set(self.SECTION, "import_time_sec", int(round(elapsed_sec, 0)))
