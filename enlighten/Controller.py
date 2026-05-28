@@ -51,13 +51,12 @@ log = logging.getLogger(__name__)
 
 class AcquiredReading():
     """ Trivial class to eliminate a tuple during memory profiling. """
-    def __init__(self, reading=None, progress=0, disconnect=False):
+    def __init__(self, reading=None, disconnect=False):
         self.reading    = reading
         self.disconnect = disconnect
-        self.progress = progress
 
     def __repr__(self):
-        return f"AcquiredReading <disconnect {self.disconnect}, progress {self.progress}, reading {self.reading}>"
+        return f"AcquiredReading <disconnect {self.disconnect}, reading {self.reading}>"
 
 class Controller:
     """
@@ -1538,7 +1537,7 @@ class Controller:
 
         log.debug("attempt_reading: done")
 
-    def acquire_reading(self, spec: Spectrometer) -> AcquiredReading:
+    def acquire_reading(self, spec):
         """
         Poll the spectrometer thread (WasatchDeviceWrapper) for a 
         SpectrometerResponse.
@@ -1566,7 +1565,7 @@ class Controller:
         device_id = spec.device_id
 
         try:
-            spectrometer_response = device.acquire_data()
+            spectrometer_response = device.acquire_data() # wasatch.SpectrometerResponse
 
             if spectrometer_response.poison_pill:
                 log.error(f"acquire_reading: received poison-pill from spectrometer: {spectrometer_response}") # disposition AFTER displaying user message
@@ -1604,7 +1603,6 @@ class Controller:
                     self.seen_errors[spec][spectrometer_response.error_msg] = 0
                     device.reset()
                     self.disconnect_device(spec)
-                   #log.debug(f"adding spec model and serial to be reset on connect")
                     self.bus.update(poll=True)
                     return
 
@@ -1634,7 +1632,7 @@ class Controller:
 
                 # apparently it was a GOOD reading!
                 spec.reset_acquisition_timeout()
-                return AcquiredReading(reading=reading, progress=spectrometer_response.progress)
+                return AcquiredReading(reading=reading)
 
             else:
                 log.error(f"received a SpectrometerResponse where data is {type(spectrometer_response.data)}")
