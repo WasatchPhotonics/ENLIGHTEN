@@ -2072,7 +2072,7 @@ QComboBox QListView
    <set>QMainWindow::DockOption::AnimatedDocks</set>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,0,1">
+   <layout class="QGridLayout" rowstretch="0,0,1">
     <property name="leftMargin">
      <number>5</number>
     </property>
@@ -2247,7 +2247,7 @@ QComboBox QListView
                </widget>
               </item>
               <item>
-               <spacer name="horizontalSpacer_8">
+               <spacer>
                 <property name="orientation">
                  <enum>Qt::Orientation::Horizontal</enum>
                 </property>
@@ -2353,7 +2353,7 @@ QComboBox QListView
                </widget>
               </item>
               <item>
-               <spacer name="horizontalSpacer_6">
+               <spacer>
                 <property name="orientation">
                  <enum>Qt::Orientation::Horizontal</enum>
                 </property>
@@ -2731,7 +2731,7 @@ QComboBox QListView
                      </widget>
                     </item>
                     <item>
-                     <spacer name="horizontalSpacer_46">
+                     <spacer>
                       <property name="orientation">
                        <enum>Qt::Orientation::Horizontal</enum>
                       </property>
@@ -5955,7 +5955,7 @@ QComboBox QListView
                             </layout>
                            </item>
                            <item>
-                            <widget class="QFrame" name="frame_3">
+                            <widget class="QFrame">
                              <property name="frameShape">
                               <enum>QFrame::Shape::StyledPanel</enum>
                              </property>
@@ -7058,7 +7058,7 @@ QComboBox QListView
            </layout>
           </item>
           <item>
-           <spacer name="verticalSpacer_2">
+           <spacer>
             <property name="orientation">
              <enum>Qt::Orientation::Vertical</enum>
             </property>
@@ -7072,90 +7072,44 @@ QComboBox QListView
           </item>
           <item>
            <widget class="QTabWidget" name="tabWidget_advanced_features">
-            <property name="styleSheet">
-             <string notr="true" />
-            </property>
-            <property name="currentIndex">
-             <number>1</number>
-            </property>
-            <property name="initiallyVisible" stdset="0">
-             <bool>false</bool>
-            </property>
+            <property name="currentIndex"> <number>1</number> </property>
+            <property name="initiallyVisible" stdset="0"> <bool>false</bool> </property>
             <widget class="QWidget" name="tab_manufacturing">
-             <attribute name="title">
-              <string>Manufacturing</string>
-             </attribute>
+             <attribute name="title"> <string>Manufacturing</string> </attribute>
              <layout class="QVBoxLayout">
+              <item> <widget class="QLabel"> <property name="text"> <string>Firmware Updates</string> </property> </widget> </item>
               <item>
-               <widget class="QLabel">
-                <property name="text">
-                 <string>Firmware Updates</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QFrame" name="frame">
-                <property name="frameShape">
-                 <enum>QFrame::Shape::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Shadow::Raised</enum>
-                </property>
-                <property name="wpBox" stdset="0">
-                 <bool>false</bool>
-                </property>
+               <widget class="QFrame">
+                <property name="frameShape"> <enum>QFrame::Shape::StyledPanel</enum> </property>
+                <property name="frameShadow"> <enum>QFrame::Shadow::Raised</enum> </property>
+                <property name="wpBox" stdset="0"> <bool>false</bool> </property>
                 <layout class="QVBoxLayout">
-                 <property name="spacing">
-                  <number>0</number>
-                 </property>
-                 <property name="leftMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
+                 <property name="spacing"> <number>0</number> </property>
+                 <property name="leftMargin"> <number>0</number> </property>
+                 <property name="topMargin"> <number>0</number> </property>
+                 <property name="rightMargin"> <number>0</number> </property>
+                 <property name="bottomMargin"> <number>0</number> </property>
                  <item>
-                  <widget class="QFrame" name="frame_2">
-                   <property name="frameShape">
-                    <enum>QFrame::Shape::StyledPanel</enum>
-                   </property>
-                   <property name="frameShadow">
-                    <enum>QFrame::Shadow::Raised</enum>
-                   </property>
-                   <property name="wpGrad" stdset="0">
-                    <bool>false</bool>
-                   </property>
+                  <widget class="QFrame">
+                   <property name="frameShape"> <enum>QFrame::Shape::StyledPanel</enum> </property>
+                   <property name="frameShadow"> <enum>QFrame::Shadow::Raised</enum> </property>
+                   <property name="wpGrad" stdset="0"> <bool>false</bool> </property>
                    <layout class="QHBoxLayout">
                     <item>
                      <widget class="QPushButton" name="pushButton_mfg_dfu">
-                      <property name="minimumSize">
-                       <size>
-                        <width>130</width>
-                        <height>30</height>
-                       </size>
-                      </property>
-                      <property name="text">
-                       <string>Enable DFU</string>
-                      </property>
+                      <property name="minimumSize"> <size> <width>130</width> <height>30</height> </size> </property>
+                      <property name="text"> <string>Enable DFU</string> </property>
                      </widget>
                     </item>
                     <item>
-                     <spacer name="horizontalSpacer_18">
-                      <property name="orientation">
-                       <enum>Qt::Orientation::Horizontal</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
-                       <size>
-                        <width>40</width>
-                        <height>20</height>
-                       </size>
-                      </property>
+                     <widget class="QCheckBox" name="checkBox_diagnostic_mode">
+                      <property name="text"> <string>Developer diagnostic mode</string> </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <spacer>
+                      <property name="orientation"> <enum>Qt::Orientation::Horizontal</enum> </property>
+                      <property name="sizeHint" stdset="0"> <size> <width>40</width> <height>20</height> </size> </property>
                      </spacer>
                     </item>
                    </layout>
@@ -7165,71 +7119,38 @@ QComboBox QListView
                </widget>
               </item>
               <item>
-               <spacer name="verticalSpacer_3">
-                <property name="orientation">
-                 <enum>Qt::Orientation::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
+               <spacer>
+                <property name="orientation"> <enum>Qt::Orientation::Vertical</enum> </property>
+                <property name="sizeHint" stdset="0"> <size> <width>20</width> <height>40</height> </size> </property>
                </spacer>
               </item>
              </layout>
             </widget>
             <widget class="QWidget" name="tab_oem">
-             <attribute name="title">
-              <string>OEM</string>
-             </attribute>
+             <attribute name="title"> <string>OEM</string> </attribute>
              <layout class="QVBoxLayout">
-              <item>
-               <widget class="QLabel">
-                <property name="text">
-                 <string>Graph Control</string>
-                </property>
-               </widget>
-              </item>
+              <item> <widget class="QLabel"> <property name="text"> <string>Graph Control</string> </property> </widget> </item>
               <item>
                <widget class="QFrame" name="frame_oem_post_processing_white">
-                <property name="wpBox" stdset="0">
-                 <bool>false</bool>
-                </property>
+                <property name="wpBox" stdset="0"> <bool>false</bool> </property>
                 <layout class="QVBoxLayout">
-                 <property name="spacing">
-                  <number>0</number>
-                 </property>
-                 <property name="leftMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
+                 <property name="spacing"> <number>0</number> </property>
+                 <property name="leftMargin"> <number>0</number> </property>
+                 <property name="topMargin"> <number>0</number> </property>
+                 <property name="rightMargin"> <number>0</number> </property>
+                 <property name="bottomMargin"> <number>0</number> </property>
                  <item>
                   <widget class="QFrame" name="frame_oem_post_processing_black">
-                   <property name="wpGrad" stdset="0">
-                    <bool>false</bool>
-                   </property>
+                   <property name="wpGrad" stdset="0"> <bool>false</bool> </property>
                    <layout class="QVBoxLayout">
                     <item>
                      <widget class="QCheckBox" name="checkBox_graph_alternating_pixels">
-                      <property name="text">
-                       <string>Graph Alternating Pixels</string>
-                      </property>
+                      <property name="text"> <string>Graph Alternating Pixels</string> </property>
                      </widget>
                     </item>
                     <item>
                      <widget class="QCheckBox" name="checkBox_swap_alternating_pixels">
-                      <property name="text">
-                       <string>Swap Alternating Pixels</string>
-                      </property>
+                      <property name="text"> <string>Swap Alternating Pixels</string> </property>
                      </widget>
                     </item>
                    </layout>
@@ -7239,16 +7160,9 @@ QComboBox QListView
                </widget>
               </item>
               <item>
-               <spacer name="verticalSpacer_8">
-                <property name="orientation">
-                 <enum>Qt::Orientation::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
+               <spacer>
+                <property name="orientation"> <enum>Qt::Orientation::Vertical</enum> </property>
+                <property name="sizeHint" stdset="0"> <size> <width>20</width> <height>40</height> </size> </property>
                </spacer>
               </item>
              </layout>
@@ -7256,7 +7170,7 @@ QComboBox QListView
            </widget>
           </item>
           <item>
-           <spacer name="horizontalSpacer_9">
+           <spacer>
             <property name="orientation">
              <enum>Qt::Orientation::Horizontal</enum>
             </property>
@@ -7359,7 +7273,7 @@ QComboBox QListView
                  <property name="widgetResizable">
                   <bool>true</bool>
                  </property>
-                 <widget class="QWidget" name="scrollAreaWidgetContents_3">
+                 <widget class="QWidget">
                   <property name="geometry">
                    <rect>
                     <x>0</x>
@@ -7726,7 +7640,7 @@ QComboBox QListView
                             <enum>QLayout::SizeConstraint::SetMinimumSize</enum>
                            </property>
                            <item>
-                            <spacer name="horizontalSpacer_3">
+                            <spacer>
                              <property name="orientation">
                               <enum>Qt::Orientation::Horizontal</enum>
                              </property>
@@ -7969,7 +7883,7 @@ QComboBox QListView
                             <number>0</number>
                            </property>
                            <item>
-                            <spacer name="horizontalSpacer_2">
+                            <spacer>
                              <property name="orientation">
                               <enum>Qt::Orientation::Horizontal</enum>
                              </property>
@@ -8236,7 +8150,7 @@ QComboBox QListView
                             </layout>
                            </item>
                            <item>
-                            <spacer name="horizontalSpacer_4">
+                            <spacer>
                              <property name="orientation">
                               <enum>Qt::Orientation::Horizontal</enum>
                              </property>
@@ -8317,7 +8231,7 @@ QComboBox QListView
                          <item>
                           <layout class="QHBoxLayout">
                            <item>
-                            <spacer name="horizontalSpacer_17">
+                            <spacer>
                              <property name="orientation">
                               <enum>Qt::Orientation::Horizontal</enum>
                              </property>
@@ -8490,7 +8404,7 @@ QComboBox QListView
                             </layout>
                            </item>
                            <item>
-                            <spacer name="horizontalSpacer_23">
+                            <spacer>
                              <property name="orientation">
                               <enum>Qt::Orientation::Horizontal</enum>
                              </property>
@@ -8571,7 +8485,7 @@ QComboBox QListView
                          <item>
                           <layout class="QHBoxLayout">
                            <item>
-                            <spacer name="horizontalSpacer_44">
+                            <spacer>
                              <property name="orientation">
                               <enum>Qt::Orientation::Horizontal</enum>
                              </property>
@@ -8596,7 +8510,7 @@ QComboBox QListView
                               </widget>
                              </item>
                              <item row="0" column="2">
-                              <spacer name="horizontalSpacer_45">
+                              <spacer>
                                <property name="orientation">
                                 <enum>Qt::Orientation::Horizontal</enum>
                                </property>
@@ -8705,7 +8619,7 @@ QComboBox QListView
                          <item>
                           <layout class="QHBoxLayout">
                            <item>
-                            <spacer name="horizontalSpacer_29">
+                            <spacer>
                              <property name="orientation">
                               <enum>Qt::Orientation::Horizontal</enum>
                              </property>
@@ -8875,7 +8789,7 @@ QComboBox QListView
                                   </widget>
                                  </item>
                                  <item row="2" column="0">
-                                  <spacer name="verticalSpacer_4">
+                                  <spacer>
                                    <property name="orientation">
                                     <enum>Qt::Orientation::Vertical</enum>
                                    </property>
@@ -8970,7 +8884,7 @@ QComboBox QListView
                                   </widget>
                                  </item>
                                  <item row="5" column="0">
-                                  <spacer name="verticalSpacer_5">
+                                  <spacer>
                                    <property name="orientation">
                                     <enum>Qt::Orientation::Vertical</enum>
                                    </property>
@@ -9083,7 +8997,7 @@ QComboBox QListView
                               </layout>
                              </item>
                              <item>
-                              <spacer name="horizontalSpacer_33">
+                              <spacer>
                                <property name="orientation">
                                 <enum>Qt::Orientation::Horizontal</enum>
                                </property>
@@ -9232,7 +9146,7 @@ QComboBox QListView
                             </layout>
                            </item>
                            <item>
-                            <spacer name="horizontalSpacer_34">
+                            <spacer>
                              <property name="orientation">
                               <enum>Qt::Orientation::Horizontal</enum>
                              </property>
@@ -9322,7 +9236,7 @@ QComboBox QListView
                          <item>
                           <layout class="QHBoxLayout">
                            <item>
-                            <spacer name="horizontalSpacer_12">
+                            <spacer>
                              <property name="orientation">
                               <enum>Qt::Orientation::Horizontal</enum>
                              </property>
@@ -9614,7 +9528,7 @@ QComboBox QListView
                      </widget>
                     </item>
                     <item>
-                     <spacer name="horizontalSpacer_5">
+                     <spacer>
                       <property name="orientation">
                        <enum>Qt::Orientation::Horizontal</enum>
                       </property>
@@ -10152,7 +10066,7 @@ QComboBox QListView
                           </widget>
                          </item>
                          <item>
-                          <spacer name="horizontalSpacer_15xyz">
+                          <spacer>
                            <property name="orientation">
                             <enum>Qt::Orientation::Horizontal</enum>
                            </property>
@@ -10685,7 +10599,7 @@ QComboBox QListView
                              </widget>
                             </item>
                             <item>
-                             <spacer name="horizontalSpacer_15">
+                             <spacer>
                               <property name="orientation">
                                <enum>Qt::Orientation::Horizontal</enum>
                               </property>
@@ -12204,7 +12118,7 @@ QComboBox QListView
                           </layout>
                          </item>
                          <item>
-                          <spacer name="horizontalSpacer_11">
+                          <spacer>
                            <property name="orientation">
                             <enum>Qt::Orientation::Horizontal</enum>
                            </property>
@@ -12312,7 +12226,7 @@ QComboBox QListView
             </widget>
            </item>
            <item>
-            <spacer name="horizontalSpacer_48">
+            <spacer>
              <property name="orientation">
               <enum>Qt::Orientation::Horizontal</enum>
              </property>
@@ -13282,7 +13196,7 @@ li.checked::marker { content: "\2612"; }
                        <property name="wpGrad" stdset="0">
                         <bool>false</bool>
                        </property>
-                       <layout class="QVBoxLayout" name="verticalLayout_58">
+                       <layout class="QVBoxLayout">
                         <item>
                          <widget class="QComboBox" name="comboBox_technique">
                           <property name="sizePolicy">
@@ -18831,7 +18745,7 @@ li.checked::marker { content: "\2612"; }
 
 
                <item>
-                <spacer name="verticalSpacer_7">
+                <spacer>
                  <property name="orientation">
                   <enum>Qt::Orientation::Vertical</enum>
                  </property>
@@ -19122,7 +19036,7 @@ li.checked::marker { content: "\2612"; }
            <number>4</number>
           </property>
           <item>
-           <spacer name="horizontalSpacer_30">
+           <spacer>
             <property name="orientation">
              <enum>Qt::Orientation::Horizontal</enum>
             </property>

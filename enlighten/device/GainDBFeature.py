@@ -44,6 +44,7 @@ class GainDBFeature(EnlightenFeature):
         cfu = ctl.form.ui
 
         self.spinbox = cfu.doubleSpinBox_gain 
+        self.scrollable = cfu.controlWidget_scrollArea
 
         self.widgets = [
             cfu.pushButton_gain_dn,
@@ -147,6 +148,7 @@ class GainDBFeature(EnlightenFeature):
         if self.visible:
             self.spinbox.setFocus()
             self.spinbox.selectAll()
+            self.scrollable.ensureWidgetVisible(self.spinbox)
 
     def set_db(self, db, quiet=False):
         spec = self.ctl.multispec.current_spectrometer()

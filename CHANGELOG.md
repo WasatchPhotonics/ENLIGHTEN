@@ -73,6 +73,8 @@
         - still considering UI changes here, such as eliminating "tri-state"
           on ILP / ILC units and automatically only applying on laser-excited 
           spectra
+    - XS
+        - resolved race condition when re-applying persisted integration time
     - Andor / XL Shutter Control
         - for posterity, before renaming things, empirically validated old 
           behavior was "shutter is OPEN if '[x] Shutter' checkbox is CHECKED" 
@@ -81,6 +83,9 @@
         - simplified several other things in AndorDevice, so worth re-testing
     - AccessoryControlXSFeature (UI preview)
         - functionality pending FW
+    - misc UI
+        - keyboard shortcuts to control palette inputs now auto-scroll to the 
+          selected widget
     - Plugins
         - The old ability to move the "other" graph to any position is gone; it 
           is now "locked" to the RIGHT of the Scope Graph, to simplify initial 
@@ -95,6 +100,8 @@
     - STARTING: 
         - Safe Mode
     - TODO
+        - XS
+            - weird shift in dark about 10 frames after launch, irrespective of integration time?
         - AccessoryControlXSFeature
             - need USB opcodes
         - EtalonCorrection

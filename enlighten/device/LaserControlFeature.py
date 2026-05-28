@@ -29,6 +29,8 @@ class LaserControlFeature(EnlightenFeature):
 
         cfu = self.ctl.form.ui
 
+        self.scrollable = cfu.controlWidget_scrollArea
+
         self.ctl.battery_feature.register_observer(self.battery_callback)
 
         self.slider_stop_usb = False
@@ -596,6 +598,7 @@ class LaserControlFeature(EnlightenFeature):
         sb = cfu.doubleSpinBox_laser_power
         sb.setFocus()
         sb.selectAll()
+        self.scrollable.ensureWidgetVisible(sb)
 
     # set a flag to prevent sending a command to the spectrometer
     # This prevents flooding the spec with laser values while the slider is moving
