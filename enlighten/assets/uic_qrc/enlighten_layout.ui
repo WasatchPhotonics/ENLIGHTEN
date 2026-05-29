@@ -11272,7 +11272,7 @@ QComboBox QListView
                              <property name="minimumSize"> <size> <width>16</width> <height>26</height> </size> </property>
                              <property name="maximumSize"> <size> <width>30</width> <height>26</height> </size> </property>
                              <property name="toolTip"> <string>toggle DALAI-RAMAN processing</string> </property>
-                             <property name="icon"> <iconset resource="grey_icons.qrc"> <normaloff>:/greys/images/grey_icons/tf.svg</normaloff>:/greys/images/grey_icons/tf.svg</iconset> </property>
+                             <property name="icon"> <iconset resource="grey_icons.qrc"> <normaloff>:/greys/images/grey_icons/dalai.svg</normaloff>:/greys/images/grey_icons/dalai.svg</iconset> </property>
                             </widget>
                            </item>
                            <item>

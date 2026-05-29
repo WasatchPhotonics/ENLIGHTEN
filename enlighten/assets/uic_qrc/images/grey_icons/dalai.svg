@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg viewBox="5 5 80 80"
+     id="svg5"
+     xml:space="preserve"
+     xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:svg="http://www.w3.org/2000/svg">
+    <g>
+        <!-- spectrum -->
+        <path style="fill:none; fill-opacity:1; stroke:#ccc; stroke-width:5; stroke-linecap:square; stroke-linejoin:bevel; stroke-dasharray:none; stroke-opacity:1"
+           d="m 7.8741983,36.971003 c 0,0 6.8649947,-8.98492 10.2932207,-11.23723 1.653473,-1.08632 1.353773,-17.43574 3.520762,-17.37845 2.095676,0.0554 2.120738,13.87697 4.127973,13.37165 6.348872,-1.5983 12.321658,1.77605 18.215229,11.52826 0.514026,0.85057 0.76608,-8.41949 2.166649,-8.40895 1.64476,0.0124 1.67925,14.85629 2.54086,16.68942 13.89475,29.56192 37.30716,36.28255 37.30716,36.28255" />
+
+        <!-- DALAI -->
+        <path style="fill:none; fill-opacity:1; stroke:#ccc; stroke-width:5; stroke-linecap:square; stroke-linejoin:bevel; stroke-dasharray:none; stroke-opacity:1"
+           d="m 7.4227013,82.924353 c 0,0 10.4180677,0.007 10.7447177,-0.0143 1.618199,-0.1062 1.353773,-16.37741 3.520762,-16.32012 2.095676,0.0554 2.419007,16.11831 3.869975,16.1833 0.36837,0.0165 17.197288,0.18855 17.801892,0.13682 0.990203,-0.0847 1.437415,-10.42303 2.837984,-10.41249 1.64476,0.0124 1.66738,10.3537 2.92786,10.35259 l 35.64313,-0.0313" />
+
+        <!-- arrow -->
+        <path style="fill:#ccc; fill-opacity:1; stroke:#ccc; stroke-width:5; stroke-linecap:square; stroke-linejoin:bevel; stroke-dasharray:none; stroke-opacity:1" 
+            d="m 33,  36 
+                  0,  26
+                -10, -10
+                +20,   0
+                -10, +10" />
+    </g>
+</svg>
