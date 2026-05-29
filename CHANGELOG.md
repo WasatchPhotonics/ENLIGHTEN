@@ -5,6 +5,7 @@
 - 2026-??-?? 4.2.3
     - fixed(?) EtalonCorrection JSON
     - replaced DALAI SVG
+    - applied Grid to alt-graph
 - 2026-05-27 4.2.2
     - Infrastructure
         - added EnlightenFeature
