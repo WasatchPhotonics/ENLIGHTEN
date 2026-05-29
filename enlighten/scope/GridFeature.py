@@ -1,4 +1,3 @@
-import functools
 import logging
 
 from enlighten.EnlightenFeature import EnlightenFeature
