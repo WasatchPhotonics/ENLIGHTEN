@@ -156,7 +156,7 @@ then
     make doc
     rsync --archive --delete docs/doxygen/html/ $USERNAME@wasatchphotonics.com:www/api/ENLIGHTEN/
     scp docs/ENLIGHTEN_CHANGELOG.html $USERNAME@wasatchphotonics.com:www/binaries/apps/enlighten/README.html
-end
+fi
 
 if $DOCS_ONLY
 then
