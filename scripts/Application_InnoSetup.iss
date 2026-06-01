@@ -67,7 +67,6 @@ Source: "support_files\libusb_drivers\amd64\libusb0.dll"; DestDir: "{app}\enligh
 Source: "..\enlighten\assets\stylesheets\*"; DestDir: "{app}\enlighten\enlighten\assets\stylesheets\"; Flags: recursesubdirs ignoreversion
 Source: "..\enlighten\assets\example_data\*"; DestDir: "{app}\enlighten\enlighten\assets\example_data\"; Flags: recursesubdirs ignoreversion
 Source: "..\enlighten\assets\uic_qrc\images\EnlightenIcon.ico"; DestDir: "{app}\enlighten"; DestName: "default_icon.ico"
-Source: "..\dist\KIAConsole.exe"; DestDir: "{app}\enlighten"
 Source: "..\dist\CyUSB3-Win10.zip"; DestDir: "{app}\enlighten"
 Source: "..\dist\DFU_Drivers.zip"; DestDir: "{app}\enlighten"
 
