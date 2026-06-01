@@ -2,6 +2,8 @@
 
 ## 4.2 XS V2 Commercial Release
 
+- 2026-06-01 4.2.4
+    - added BLE FW checks to EEPROM page 9 and 5-byte BATTERY_STATE responses
 - 2026-06-01 4.2.3
     - fixed EtalonCorrection JSON
     - replaced DALAI SVG
