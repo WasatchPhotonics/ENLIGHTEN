@@ -54,4 +54,12 @@ class BatteryFeature(EnlightenFeature):
         self.strip_chart_level.set_visible(visible)
 
     def get_perc(self, spec=None):
-        return self.strip_chart_level.get_latest()
+        if spec is None:
+            spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+
+        sn = spec.settings.eeprom.serial_number
+        rds = self.ctl.strip_charts.get_rds(sn, "Battery Charge Level")
+        if rds:
+            return rds.latest_value()

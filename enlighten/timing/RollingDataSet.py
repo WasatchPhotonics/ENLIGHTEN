@@ -90,9 +90,13 @@ class RollingDataSet:
                 log.debug("one_within: at least one of %d elements within delta %.2f of value %.2f", len(self.data), delta, value)
                 return True
 
-    def latest(self):
+    def latest_tuple(self):
         if len(self.data) > 0:
             return self.data[-1]
+
+    def latest_value(self):
+        if len(self.data) > 0:
+            return self.data[-1][1]
 
     def get_csv_data(self, source_attr, spec_label):
         data_strings = [ f"{source_attr}, {spec_label}, {x}, {y}" for x, y in self.data]

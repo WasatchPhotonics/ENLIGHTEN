@@ -2,7 +2,10 @@
 
 ## 4.2 XS V2 Commercial Release
 
-- 2026-06-01 4.2.4
+- 2026-06-02 4.2.5
+    - fixed poorly-tested bugs in 4.2.4
+    - working on BLE support for XS V1
+- 2026-06-01 4.2.4 (bad)
     - added BLE FW checks to EEPROM page 9 and 5-byte BATTERY_STATE responses
 - 2026-06-01 4.2.3
     - fixed EtalonCorrection JSON
