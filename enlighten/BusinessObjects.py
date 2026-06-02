@@ -27,6 +27,7 @@ from enlighten.file_io.ConfigurationFeature import ConfigurationFeature
 from enlighten.file_io.FileManagerFeature import FileManagerFeature
 from enlighten.file_io.LoggingFeature import LoggingFeature
 from enlighten.measurement.AreaScanFeature import AreaScanFeature
+from enlighten.measurement.BatchCollectionFeature import BatchCollectionFeature
 from enlighten.measurement.MeasurementFactory import MeasurementFactory
 from enlighten.measurement.Measurements import Measurements
 from enlighten.measurement.SaveOptionsFeature import SaveOptionsFeature
@@ -57,7 +58,6 @@ from enlighten.scope.GridFeature import GridFeature
 from enlighten.scope.PresetFeature import PresetFeature
 from enlighten.scope.RamanShiftCorrectionFeature import RamanShiftCorrectionFeature
 from enlighten.scope.ScopeTableFeature import ScopeTableFeature
-from enlighten.timing.BatchCollectionFeature import BatchCollectionFeature
 from enlighten.ui.AuthenticationFeature import AuthenticationFeature
 from enlighten.ui.ClipboardFeature import ClipboardFeature
 from enlighten.ui.Colors import Colors
