@@ -73,7 +73,7 @@ class AccessoryControlXSFeature(EnlightenFeature):
         self.cb_gpio_enable.stateChanged.connect(self.update_settings)
         self.cb_acc_5v_enable.stateChanged.connect(self.update_settings)
         for widget in [ self.combo_gpio1_mode, self.combo_gpio1_dir, self.combo_gpio1_func, self.combo_gpio1_value,
-                        self.combo_gpio2_mode, self.combo_gpio2_dir, self.combo_gpio2_func, self.combo_gpio2_value ]:
+                       self.combo_gpio2_mode, self.combo_gpio2_dir, self.combo_gpio2_func, self.combo_gpio2_value ]:
             widget.currentIndexChanged.connect(self.update_settings)
             widget.installEventFilter(ScrollStealFilter(widget))
 
