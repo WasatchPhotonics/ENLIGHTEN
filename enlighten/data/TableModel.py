@@ -28,11 +28,12 @@ class TableModel(QtCore.QAbstractTableModel):
 
     def rowCount(self, index):
         # MZ: interesting that index isn't used...apparently assuming rectangular
-        return self.df.shape[0]
+        return self.df.shape[0] if self.df is not None else 0
+        
 
     def columnCount(self, index):
         # MZ: interesting that index isn't used...apparently assuming rectangular
-        return self.df.shape[1]
+        return self.df.shape[1] if self.df is not None else 0
 
     def headerData(self, section, orientation, role):
         # section is the index of the column/row.
