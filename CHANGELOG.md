@@ -13,7 +13,7 @@
     - LibraryMatching
         - fixed TableModel crashing bug
         - fixed ScopeTable visibility bug
-    - fixed bug deleting thumbnails
+    - fixed bugs deleting and editing thumbnails
     - fixed FileManager bug
 - 2026-06-01 4.2.4 (bad)
     - added BLE FW checks to EEPROM page 9 and 5-byte BATTERY_STATE responses
