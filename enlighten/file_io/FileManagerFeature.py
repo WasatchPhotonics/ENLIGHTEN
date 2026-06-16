@@ -41,7 +41,7 @@ class FileManagerFeature(EnlightenFeature):
 
     def get_pathname(self, caption="Select file to load", filter_=None):
         if filter_ is None:
-            filter_ = FileManager.FILTER
+            filter_ = self.FILTER
         result = QtWidgets.QFileDialog.getOpenFileName(self.ctl.form, caption, self.last_load_dir, filter_)
         if result is None or len(result) < 1:
             return
@@ -59,7 +59,7 @@ class FileManagerFeature(EnlightenFeature):
     ## not currently used
     def load_file(self, caption="Select file to load", filter_=None):
         if filter_ is None:
-            filter_ = FileManager.FILTER
+            filter_ = self.FILTER
         pathname = self.get_pathname(caption, filter_)
         if pathname is None:
             return
@@ -75,7 +75,7 @@ class FileManagerFeature(EnlightenFeature):
         result = QtWidgets.QFileDialog.getOpenFileNames(self.ctl.form, 
             "Select spectra to load", 
             self.last_load_dir,
-            FileManager.FILTER)
+            self.FILTER)
         if result is None or len(result) == 0:
             return
 
