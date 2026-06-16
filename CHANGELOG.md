@@ -10,7 +10,9 @@
         - moved RollingDataSet from timing --> data
     - RollingDataSet
         - distinguished latest_tuple (time, value) from latest_value
-    - fixed TableModel bug
+    - LibraryMatching
+        - fixed TableModel crashing bug
+        - fixed ScopeTable visibility bug
 - 2026-06-01 4.2.4 (bad)
     - added BLE FW checks to EEPROM page 9 and 5-byte BATTERY_STATE responses
 - 2026-06-01 4.2.3

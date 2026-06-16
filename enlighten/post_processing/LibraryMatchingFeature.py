@@ -161,6 +161,7 @@ class LibraryMatchingFeature(EnlightenFeature):
         self.update_visibility()
 
     def update_visibility(self):
+        self.show_widgets(self.enabled)
         self.ctl.gui.colorize_button(self.bt_toggle, self.enabled)
 
     def show_widgets(self, flag):
@@ -178,9 +179,13 @@ class LibraryMatchingFeature(EnlightenFeature):
             self.form_layout.setContentsMargins(0, 0, 0, 0)
 
     def tick(self):
+        if not self.enabled:
+            return
+
         self.lb_compound.setText(self.last_compound)
         self.lb_score.setText(f"{self.last_score:0.2f}" if self.last_score is not None else "")
-        self.ctl.scope_table.set_dataframe(self.dataframe)
+        if self.dataframe is not None:
+            self.ctl.scope_table.set_dataframe(self.dataframe)
 
     def process(self, pr):
         if not self.enabled:
