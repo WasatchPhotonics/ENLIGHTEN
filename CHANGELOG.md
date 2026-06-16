@@ -2,9 +2,14 @@
 
 ## 4.2 XS V2 Commercial Release
 
-- 2026-06-02 4.2.5
+- 2026-??-?? 4.2.5
     - fixed poorly-tested bugs in 4.2.4
     - working on BLE support for XS V1
+    - package tidy
+        - moved BatchCollectionFeature from timing --> measurement
+        - moved RollingDataSet from timing --> data
+    - RollingDataSet
+        - distinguished latest_tuple (time, value) from latest_value
 - 2026-06-01 4.2.4 (bad)
     - added BLE FW checks to EEPROM page 9 and 5-byte BATTERY_STATE responses
 - 2026-06-01 4.2.3
