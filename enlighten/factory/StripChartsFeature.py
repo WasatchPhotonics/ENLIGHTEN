@@ -5,7 +5,7 @@ import pyqtgraph
 from datetime import datetime
 
 from enlighten.EnlightenFeature import EnlightenFeature
-from enlighten.timing.RollingDataSet import RollingDataSet
+from enlighten.data.RollingDataSet import RollingDataSet
 from enlighten import common
 
 from PySide6.QtGui import QIcon, QFont
