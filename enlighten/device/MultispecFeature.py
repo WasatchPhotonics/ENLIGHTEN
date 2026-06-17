@@ -453,11 +453,12 @@ class MultispecFeature(EnlightenFeature):
         except Exception as e:
             log.error(f"error in read {e}")
 
-    def add(self, device):
-        device_id = device.device_id
+    def add(self, wdw):
+        """ wdw is a WasatchDeviceWrapper """
+        device_id = wdw.device_id
 
         log.debug("Multispec.add: instantiating Spectrometer for device_id %s", device_id)
-        spec = Spectrometer(device, self.ctl)
+        spec = Spectrometer(wdw, self.ctl)
 
         log.debug("Multispec.add: adding to self.spectrometers: %s", device_id)
         self.spectrometers[device_id] = spec

@@ -622,14 +622,14 @@ class Controller:
             self.marquee.info(f"connecting to {new_device_id}", persist=True)
         
         log.debug(f"connect_new: instantiating WasatchDeviceWrapper with {new_device_id}")
-        device = WasatchDeviceWrapper(device_id=new_device_id, log_level=self.log_level, safe_mode=self.safe_mode)
+        wdw = WasatchDeviceWrapper(device_id=new_device_id, log_level=self.log_level, safe_mode=self.safe_mode)
 
-        # flag that an attempt to connect to the device is ongoing
+        # flag that an attempt to connect to the WasatchDeviceWrapper is ongoing
         self.header(f"connect_new: setting in-process {new_device_id}")
-        self.multispec.set_in_process(new_device_id, device)
+        self.multispec.set_in_process(new_device_id, wdw)
 
         log.debug("connect_new: calling WasatchDeviceWrapper.connect()")
-        if not device.connect():
+        if not wdw.connect():
             log.critical(f"connect_new: giving up, can't connect to {new_device_id}")
             self.multispec.set_gave_up(new_device_id)
             return
@@ -656,15 +656,15 @@ class Controller:
         With this complete, initialize and start operating the spec
         """
         in_process_specs = list(self.multispec.in_process.items()) 
-        for device_id, device in in_process_specs:
-            if device is None or isinstance(device, bool):
-                log.debug("check_ready_initialize: ignoring {device_id} ({device})")
+        for device_id, wdw in in_process_specs:
+            if wdw is None or isinstance(wdw, bool):
+                log.debug("check_ready_initialize: ignoring {device_id} ({wdw})")
                 continue
 
             log.debug(f"checking {device_id} for settings results")
             disconnect_device = False
 
-            poll_result = device.poll_settings()
+            poll_result = wdw.poll_settings()
             if poll_result is not None:
                 # we got something, so stop polling (either we successfully read
                 # SpectrometerSettings, or an error occurred and we should give up)
@@ -675,8 +675,8 @@ class Controller:
                     disconnect_device = True
                 else:
                     self.header(f"check_ready_initialize: successfully connected {device_id}")
-                    device.settings.state.dump("Controller.check_ready_initialize")
-                    self.initialize_new_device(device)
+                    wdw.settings.state.dump("Controller.check_ready_initialize")
+                    self.initialize_new_device(wdw)
 
                     # remove the "in-process" flag, as it's now in the "connected" list
                     # and fully initialized
@@ -685,13 +685,13 @@ class Controller:
                     
             else:
                 # didn't get settings so check for timeout
-                if device.connect_start_time + datetime.timedelta(seconds=self.spec_timeout_sec) < datetime.datetime.now():
+                if wdw.connect_start_time + datetime.timedelta(seconds=self.spec_timeout_sec) < datetime.datetime.now():
                     log.error(f"{device_id} settings timed out, giving up on the spec")
                     self.marquee.error(f"timed-out connecting to {device_id}")
                     disconnect_device = True
 
             if disconnect_device:
-                device.disconnect()
+                wdw.disconnect()
                 self.multispec.set_gave_up(device_id)
                 self.multispec.remove_in_process(device_id)
 
@@ -719,8 +719,10 @@ class Controller:
     # Spectrometer Initialization
     # ##########################################################################
 
-    def initialize_new_device(self, device):
+    def initialize_new_device(self, wdw):
         """
+        wdw is a WasatchDeviceWrapper
+
         This method is called in two very different circumstances:
         
         - by Controller.connect_new(), when we connect to a new spectrometer
@@ -731,7 +733,7 @@ class Controller:
           spectrometer" select-box on the GUI (frequent)
         
         The method itself determines the calling case by inferring a "hotplug"
-        variable from whether the passed device was already connected or not.
+        variable from whether the passed wdw was already connected or not.
         
         Probably we should split this function into two:
         
@@ -746,35 +748,35 @@ class Controller:
             return
 
         # reject filtered spectrometers
-        if self.multispec.reject_undesireable(device):
-            self.marquee.error("rejecting %s" % device.settings.eeprom.serial_number)
-            device.disconnect()
+        if self.multispec.reject_undesireable(wdw):
+            self.marquee.error("rejecting %s" % wdw.settings.eeprom.serial_number)
+            wdw.disconnect()
             return
 
         # a very rare setting -- user has asked us to flip every connected 
         # spectrometer to DFU and then disconnect, as a convenience when updating
         # firmware
         if self.set_all_dfu:
-            self.marquee.info("enabling DFU mode on %s" % device.settings.eeprom.serial_number)
-            self.multispec.set_ignore(device.device_id)
-            device.change_setting("dfu_enable", 1)
+            self.marquee.info("enabling DFU mode on %s" % wdw.settings.eeprom.serial_number)
+            self.multispec.set_ignore(wdw.device_id)
+            wdw.change_setting("dfu_enable", 1)
             time.sleep(0.2)
-            device.disconnect()
+            wdw.disconnect()
             return
 
         ########################################################################
         # initialize from cloud
         ########################################################################
 
-        if device.device_id.is_andor():
-            if device.settings.eeprom.stubbed:
+        if wdw.device_id.is_andor():
+            if wdw.settings.eeprom.stubbed:
                 log.debug("Andor EEPROM is stubbed, so attempting cloud download")
-                self.cloud_manager.download_andor_eeprom(device)
+                self.cloud_manager.download_andor_eeprom(wdw)
             else:
                 log.debug("Andor EEPROM not stubbed, so sticking with cached file")
 
             # only Andor units have a (readable) detector serial number
-            cfu.label_detector_serial_number.setText(device.settings.eeprom.detector_serial_number)
+            cfu.label_detector_serial_number.setText(wdw.settings.eeprom.detector_serial_number)
         else:
             cfu.label_detector_serial_number.setText("")
 
@@ -782,7 +784,7 @@ class Controller:
         # update Multispec
         ########################################################################
 
-        device_id = device.device_id
+        device_id = wdw.device_id
 
         log.info("initialize_new_device: device_id %s", device_id)
 
@@ -795,7 +797,7 @@ class Controller:
                 self.multispec.read_spec_object(device_id)
         else:
             log.debug("initialize_new_device: initializing newly-connected device")
-            self.multispec.add(device)
+            self.multispec.add(wdw)
             hotplug = True
 
         spec = self.current_spectrometer()
@@ -807,7 +809,7 @@ class Controller:
         self.multispec.update_hide_others()
         self.multispec.update_color()
 
-        if device.device_id.is_andor:
+        if wdw.device_id.is_andor:
             self.update_wavecal()
 
         ########################################################################
