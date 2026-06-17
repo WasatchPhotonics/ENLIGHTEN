@@ -580,7 +580,7 @@ class Measurement:
     # Display on the graph, if not already shown.
     def display(self):
         if self.thumbnail_widget is not None:
-            self.thumbnail_widget.add_curve_to_graph()
+            self.thumbnail_widget.add_curve_to_graphs()
 
     def is_displayed(self):
         if self.thumbnail_widget is not None:
@@ -663,7 +663,7 @@ class Measurement:
 
         # re-apply trace with new legend
         if was_displayed:
-            self.thumbnail_widget.add_curve_to_graph()
+            self.thumbnail_widget.add_curve_to_graphs()
 
         if manual:
             self.renamed_manually = True
