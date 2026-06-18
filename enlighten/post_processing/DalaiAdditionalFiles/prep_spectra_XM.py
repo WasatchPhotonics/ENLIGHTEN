@@ -176,7 +176,7 @@ def clean_spectrum(
     wavenumbers_out = wavenumbers_AI[start_index:end_index+1]
     spectrum_out = spectrum_AI[start_index:end_index+1]
 
-    log.debug(f"clean_spectrum: wavenumbers_out[0] {wavenumbers_out[0]}, wavenumbers_out[-1] {wavenumbers_out[-1]}")
+    log.debug(f"clean_spectrum: wavenumbers_out[0] {wavenumbers_out[0]:.2f}, wavenumbers_out[-1] {wavenumbers_out[-1]:.2f}")
     log.debug(f"clean_spectrum: wavenumbers_out len {len(wavenumbers_out)}")
 
     if deconvolute:
