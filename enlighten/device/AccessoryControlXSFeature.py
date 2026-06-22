@@ -3,7 +3,7 @@ import logging
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from enlighten.EnlightenFeature import EnlightenFeature
 
-from wasatch.AccessoryConnector import GPIOState
+from wasatch.AccessoryConnector import GPIOState, AccessoryConnector
 
 log = logging.getLogger(__name__)
 
@@ -94,27 +94,34 @@ class AccessoryControlXSFeature(EnlightenFeature):
             if acc:
                 acc.acc_gpio_enabled = self.acc_gpio_enabled
                 acc.acc_5v_enabled = self.acc_5v_enabled
+                log.debug("Accessory Enabled")
 
                 acc.state_gpio1.mode = self.combo_gpio1_mode.currentIndex()
                 acc.state_gpio1.dir = self.combo_gpio1_dir.currentIndex()
                 if acc.state_gpio1.mode == GPIOState.MODE_FUNCTION:
                     acc.state_gpio1.function = self.combo_gpio1_func.currentIndex()
+                    log.debug("GPIO1 Mode/Function Set")
+                    
                 if acc.state_gpio1.dir == GPIOState.DIR_OUTPUT:
                     acc.state_gpio1.value = self.combo_gpio1_value.currentIndex()
-
+                    log.debug("GPIO1 Value Set")
+                    
                 acc.state_gpio2.mode = self.combo_gpio2_mode.currentIndex()
                 acc.state_gpio2.dir = self.combo_gpio2_dir.currentIndex()
                 if acc.state_gpio2.mode == GPIOState.MODE_FUNCTION:
                     acc.state_gpio2.function = self.combo_gpio2_func.currentIndex()
+                    log.debug("GPIO2 Mode/Function Set")
+                    
                 if acc.state_gpio2.dir == GPIOState.DIR_OUTPUT:
                     acc.state_gpio2.value = self.combo_gpio2_value.currentIndex()
-
+                    log.debug("GPIO2 Value Set")
+                    
                 acc.strobe_period_us = self.sb_strobe_period_us.value()
                 acc.strobe_width_us = self.sb_strobe_width_us.value()
                 acc.strobe_delay_us = self.sb_strobe_delay_us.value()
                 acc.strobe_count = self.sb_strobe_count.value()
 
-                spec.change_device_setting("sync_acc")
+                spec.change_device_setting("sync_acc")        
 
         self.update_visibility()
 
@@ -127,7 +134,7 @@ class AccessoryControlXSFeature(EnlightenFeature):
         if acc is None:
             return
 
-        # might want some logic around these
+        # might want some logic around these        
         acc.acc_gpio_enabled = False
         acc.acc_5v_enabled = False
         spec.change_device_setting("sync_acc")
