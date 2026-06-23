@@ -92,8 +92,8 @@ class AccessoryControlXSFeature(EnlightenFeature):
         if spec:
             acc = spec.settings.state.acc_connector
             if acc:
-                acc.acc_gpio_enabled = self.acc_gpio_enabled
-                acc.acc_5v_enabled = self.acc_5v_enabled
+                acc.acc_state.acc_gpio_enabled = self.acc_gpio_enabled
+                acc.acc_state.acc_5v_enabled = self.acc_5v_enabled
 
                 acc.state_gpio1.mode = self.combo_gpio1_mode.currentIndex()
                 acc.state_gpio1.dir = self.combo_gpio1_dir.currentIndex()
@@ -109,6 +109,7 @@ class AccessoryControlXSFeature(EnlightenFeature):
                 if acc.state_gpio2.dir == GPIOState.DIR_OUTPUT:
                     acc.state_gpio2.value = self.combo_gpio2_value.currentIndex()
 
+                # these attributes don't exist yet.
                 acc.strobe_period_us = self.sb_strobe_period_us.value()
                 acc.strobe_width_us = self.sb_strobe_width_us.value()
                 acc.strobe_delay_us = self.sb_strobe_delay_us.value()
