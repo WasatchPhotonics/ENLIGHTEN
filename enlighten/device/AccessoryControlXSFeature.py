@@ -122,7 +122,7 @@ class AccessoryControlXSFeature(EnlightenFeature):
                 acc.strobe_delay_us = self.sb_strobe_delay_us.value()
                 acc.strobe_count = self.sb_strobe_count.value()
 
-                spec.change_device_setting("sync_acc")        
+                spec.change_device_setting("sync_acc_to_device")
 
         self.update_visibility()
 
@@ -138,7 +138,7 @@ class AccessoryControlXSFeature(EnlightenFeature):
         # might want some logic around these        
         acc.acc_gpio_enabled = False
         acc.acc_5v_enabled = False
-        spec.change_device_setting("sync_acc")
+        spec.change_device_setting("sync_acc_to_device")
 
     def update_visibility(self):
         spec = self.ctl.multispec.current_spectrometer()
