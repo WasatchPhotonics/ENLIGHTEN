@@ -93,8 +93,8 @@ class AccessoryControlXSFeature(EnlightenFeature):
             acc = spec.settings.state.acc_connector
             if acc:
                 acc.acc_state.acc_gpio_enabled = self.acc_gpio_enabled
-                acc.acc_state.acc_5v_enabled = self.acc_5v_enabled
-                log.debug(f"Accessory Enabled: {acc.acc_state.acc_5v_enabled}")
+                acc.acc_state.acc_5V_enabled = self.acc_5v_enabled
+                log.debug(f"Accessory Enabled: {acc.acc_state.acc_5V_enabled}")
 
                 acc.state_gpio1.mode = self.combo_gpio1_mode.currentIndex()
                 acc.state_gpio1.dir = self.combo_gpio1_dir.currentIndex()
@@ -123,7 +123,7 @@ class AccessoryControlXSFeature(EnlightenFeature):
                 acc.cont_strobe.repeat_count = self.sb_strobe_count.value()
 
                 spec.change_device_setting("sync_acc_to_device")
-
+        
         self.update_visibility()
 
     def disconnect(self):
