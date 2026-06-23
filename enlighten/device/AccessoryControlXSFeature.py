@@ -117,10 +117,10 @@ class AccessoryControlXSFeature(EnlightenFeature):
                     log.debug("GPIO2 Value Set")
 
                 # these attributes don't exist yet.
-                acc.strobe_period_us = self.sb_strobe_period_us.value()
-                acc.strobe_width_us = self.sb_strobe_width_us.value()
-                acc.strobe_delay_us = self.sb_strobe_delay_us.value()
-                acc.strobe_count = self.sb_strobe_count.value()
+                acc.cont_strobe.period_us = self.sb_strobe_period_us.value()
+                acc.cont_strobe.width_us = self.sb_strobe_width_us.value()
+                acc.cont_strobe.delay_us = self.sb_strobe_delay_us.value()
+                acc.cont_strobe.repeat_count = self.sb_strobe_count.value()
 
                 spec.change_device_setting("sync_acc_to_device")
 
