@@ -92,7 +92,8 @@ class AccessoryControlXSFeature(EnlightenFeature):
         if spec:
             acc = spec.settings.state.acc_connector
             if acc:
-                acc.acc_state.acc_gpio_enabled = self.acc_gpio_enabled
+                acc.acc_state.gpio_enabled = self.acc_gpio_enabled
+                log.debug(f"GPIO Enabled: {acc.acc_state.gpio_enabled}")
                 acc.acc_state.acc_5V_enabled = self.acc_5v_enabled
                 log.debug(f"Accessory Enabled: {acc.acc_state.acc_5V_enabled}")
 
@@ -100,21 +101,22 @@ class AccessoryControlXSFeature(EnlightenFeature):
                 acc.state_gpio1.dir = self.combo_gpio1_dir.currentIndex()
                 if acc.state_gpio1.mode == XSGPIOState.CONTROL_FUNCTION:
                     acc.state_gpio1.function = self.combo_gpio1_func.currentIndex()
-                    log.debug("GPIO1 Mode/Function Set")
+                    log.debug(f"GPIO1 Mode/Function Set: {acc.state_gpio1.function}")
                     
                 if acc.state_gpio1.dir == XSGPIOState.DIR_OUTPUT:
                     acc.state_gpio1.value = self.combo_gpio1_value.currentIndex()
-                    log.debug("GPIO1 Value Set")
+                    log.debug(f"GPIO1 Value Set: {acc.state_gpio1.value}")
                     
                 acc.state_gpio2.mode = self.combo_gpio2_mode.currentIndex()
                 acc.state_gpio2.dir = self.combo_gpio2_dir.currentIndex()
                 if acc.state_gpio2.mode == XSGPIOState.CONTROL_FUNCTION:
                     acc.state_gpio2.function = self.combo_gpio2_func.currentIndex()
-                    log.debug("GPIO2 Mode/Function Set")
-                    
+                    log.debug(f"GPIO2 Mode/Function Set: {acc.state_gpio2.function}")
+                
+                acc.state_gpio2.value = self.combo_gpio2_value.currentIndex()
                 if acc.state_gpio2.dir == XSGPIOState.DIR_OUTPUT:
                     acc.state_gpio2.value = self.combo_gpio2_value.currentIndex()
-                    log.debug("GPIO2 Value Set")
+                    log.debug(f"GPIO2 Value Set: {acc.state_gpio2.value}")
 
                 # these attributes don't exist yet.
                 acc.cont_strobe.period_us = self.sb_strobe_period_us.value()
@@ -136,7 +138,7 @@ class AccessoryControlXSFeature(EnlightenFeature):
             return
 
         # might want some logic around these        
-        acc.acc_gpio_enabled = False
+        acc.gpio_enabled = False
         acc.acc_5v_enabled = False
         spec.change_device_setting("sync_acc_to_device")
 
