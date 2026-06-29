@@ -221,6 +221,9 @@ class LibraryMatchingFeature(EnlightenFeature):
         # spaces improve appearance
         table_data = {' Compound ': compounds, ' Score ': scores}
         self.dataframe = pd.DataFrame(data=table_data).round(2)
+        
+        # Changes the displayed score to a percent
+        self.dataframe[' Score '] = (self.dataframe[' Score '] * 100).astype(str) + "%"        
 
         # if library compound names are pipe-delimited, trim to first sub-field
         best_compound = compounds[0].split("|")[0].strip()
