@@ -13,6 +13,8 @@
     - LibraryMatching
         - fixed TableModel crashing bug
         - fixed ScopeTable visibility bug
+    - AccessoryControlXS
+        - successfully tested GPIO2 (MANUAL, OUTPUT)
     - fixed bugs deleting and editing thumbnails
     - fixed FileManager bug
 - 2026-06-01 4.2.4 (bad)
