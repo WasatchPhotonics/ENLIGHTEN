@@ -18561,8 +18561,8 @@ li.checked::marker { content: "\2612"; }
                              <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Preferred"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
                              <property name="minimumSize"> <size> <width>80</width> <height>22</height> </size> </property>
                              <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
-                             <item> <property name="text"> <string>Function</string> </property> </item>
                              <item> <property name="text"> <string>Manual</string> </property> </item>
+                             <item> <property name="text"> <string>Function</string> </property> </item>
                             </widget>
                            </item>
                            <item row="1" column="0"><widget class="QLabel"><property name="text"><string>Direction</string></property></widget></item>
@@ -18622,8 +18622,8 @@ li.checked::marker { content: "\2612"; }
                              <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Preferred"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
                              <property name="minimumSize"> <size> <width>80</width> <height>22</height> </size> </property>
                              <property name="focusPolicy"> <enum>Qt::FocusPolicy::StrongFocus</enum> </property>
-                             <item> <property name="text"> <string>Function</string> </property> </item>
                              <item> <property name="text"> <string>Manual</string> </property> </item>
+                             <item> <property name="text"> <string>Function</string> </property> </item>
                             </widget>
                            </item>
                            <item row="1" column="0"><widget class="QLabel"><property name="text"><string>Direction</string></property></widget></item>
@@ -18646,7 +18646,6 @@ li.checked::marker { content: "\2612"; }
                              <item> <property name="text"> <string>Cont Strobe</string> </property> </item>
                              <item> <property name="text"> <string>Data Ready</string> </property> </item>
                              <item> <property name="text"> <string>Laser Mirror</string> </property> </item>
-                             <item> <property name="text"> <string>Laser Error</string> </property> </item>
                             </widget>
                            </item>
                            <item row="3" column="0"><widget class="QLabel"><property name="text"><string>Value</string></property></widget></item>
