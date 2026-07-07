@@ -3,7 +3,6 @@ import sys
 import copy
 import shutil
 import logging
-import pyqtgraph
 import traceback
 import numpy as np
 
@@ -16,8 +15,8 @@ from .PluginValidator   import PluginValidator
 from .PluginWorker      import PluginWorker
 
 from enlighten import common
-from enlighten.data.TableModel import TableModel
-from enlighten.scope.GraphFeature import GraphFeature
+#from enlighten.data.TableModel import TableModel
+#from enlighten.scope.GraphFeature import GraphFeature
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from enlighten.EnlightenFeature import EnlightenFeature
 
@@ -105,7 +104,6 @@ class PluginControllerFeature(EnlightenFeature):
     # ##########################################################################
 
     def clear(self):
-        # self.plugin_plot      = None  # a pyqtgraph chart for displaying returned plugin arrays or strip charts
         self.panda_field      = None  # if the plugin provided an export of type "pandas", this points to it
 
         self.module_infos     = None  # will hold and cache all the metadata (PluginModuleInfo) about each plugin we know about
@@ -716,6 +714,8 @@ class PluginControllerFeature(EnlightenFeature):
                 self.clear_plugin_layout(layout_item.layout())
 
     def init_plugin_plot(self):
+        """ MZ: no longer used? """
+
         log.debug("init_plugin_plot: start")
         config = self.get_current_configuration()
         if config is None:

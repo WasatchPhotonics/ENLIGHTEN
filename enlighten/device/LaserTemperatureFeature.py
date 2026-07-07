@@ -1,6 +1,4 @@
 import logging
-import datetime
-import pyqtgraph
 
 from enlighten.EnlightenFeature import EnlightenFeature
 
@@ -77,7 +75,6 @@ class LaserTemperatureFeature(EnlightenFeature):
         if not reading.laser_tec_enabled:
             return self.notify(spec, "disabled")
             
-        app_state = spec.app_state
         degC = reading.laser_temperature_degC
         if degC is None:
             return

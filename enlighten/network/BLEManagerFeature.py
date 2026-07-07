@@ -1,9 +1,7 @@
-import time
 import asyncio
 import logging
 from queue import Queue
 
-from threading import Thread
 from datetime import datetime
 
 from enlighten import common, util
@@ -12,11 +10,9 @@ from wasatch.DeviceFinderBLE import DeviceFinderBLE
 from wasatch.BLEDevice       import BLEDevice # for get_run_loop
 
 if common.use_pyside2():
-    from PySide2 import QtCore, QtGui
-    from PySide2.QtWidgets import QDialog, QPushButton, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QLabel, QAbstractItemView
+    from PySide2.QtWidgets import QDialog, QPushButton, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QAbstractItemView
 else:
-    from PySide6 import QtCore, QtGui
-    from PySide6.QtWidgets import QDialog, QPushButton, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QLabel, QAbstractItemView
+    from PySide6.QtWidgets import QDialog, QPushButton, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QAbstractItemView
 
 log = logging.getLogger(__name__)
 
@@ -270,7 +266,8 @@ class BLESelector(QDialog):
         if not sec:
             return
         elif sec < 60:
-            return f"{sec} sec"
+            n = int(sec)
+            return f"{n} sec"
         elif sec < 3600:
             n = int(round(sec/60, 0))
             return f"{n} min"

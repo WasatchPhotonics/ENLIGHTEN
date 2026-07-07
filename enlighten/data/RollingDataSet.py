@@ -1,7 +1,7 @@
 import logging
 import numpy as np
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from collections import deque
 
 log = logging.getLogger(__name__)

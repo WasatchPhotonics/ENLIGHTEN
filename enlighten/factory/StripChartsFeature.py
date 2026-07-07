@@ -6,11 +6,10 @@ from datetime import datetime
 
 from enlighten.EnlightenFeature import EnlightenFeature
 from enlighten.data.RollingDataSet import RollingDataSet
-from enlighten import common
 
 from PySide6.QtGui import QIcon, QFont
 from PySide6.QtCore import QSize
-from PySide6.QtWidgets import QPushButton, QCheckBox, QFrame,QHBoxLayout, QLabel, QSizePolicy, QSpacerItem, QSpinBox, QVBoxLayout, QWidget, QStackedWidget
+from PySide6.QtWidgets import QPushButton, QCheckBox, QHBoxLayout, QLabel, QSizePolicy, QSpacerItem, QSpinBox, QVBoxLayout, QStackedWidget
 
 log = logging.getLogger(__name__)
 

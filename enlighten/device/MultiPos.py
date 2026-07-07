@@ -5,13 +5,19 @@ from enlighten.EnlightenFeature import EnlightenFeature
 log = logging.getLogger(__name__)
 
 class MultiPos(EnlightenFeature):
-    """ Used for spectrometers with articulated optics. """
+    """ 
+    Used for spectrometers with articulated optics. 
+
+    Note that this class is not currently instantiated by BusinessObjects, and 
+    would not work as enlighten_layout.ui does not currently include a MultiPos 
+    spinbox.
+    """
     
     def __init__(self, ctl):
         super().__init__(ctl)
 
         # need to point these to new widgets
-        self.sb_pos    = sb_pos
+        self.sb_pos    = spinBox_multipos_position # currently no such widget
 
         self.sb_pos.valueChanged.connect(self.position_changed)
 

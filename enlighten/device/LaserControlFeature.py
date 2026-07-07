@@ -566,7 +566,7 @@ class LaserControlFeature(EnlightenFeature):
     # gets called by BatteryFeature when a new battery reading is received
     def battery_callback(self, state):
         perc = state[0]
-        charging = state[1]
+        #charging = state[1]
 
         enough_for_laser = perc >= self.MIN_BATTERY_PERC
         log.debug("enough_for_laser = %s (%.2f%%)" % (enough_for_laser, perc))

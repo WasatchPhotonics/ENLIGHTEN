@@ -1,7 +1,5 @@
 import logging
 
-from enlighten import common
-
 log = logging.getLogger(__name__)
 
 from enlighten.data.ModelInfoFeature import ModelInfoFeature
@@ -20,7 +18,6 @@ from enlighten.device.LaserControlFeature import LaserControlFeature
 from enlighten.device.LaserTemperatureFeature import LaserTemperatureFeature
 from enlighten.device.LaserWatchdogFeature import LaserWatchdogFeature
 from enlighten.device.MultispecFeature import MultispecFeature
-from enlighten.EnlightenFeature import EnlightenFeature
 from enlighten.factory.DFUFeature import DFUFeature
 from enlighten.factory.StripChartsFeature import StripChartsFeature
 from enlighten.file_io.ConfigurationFeature import ConfigurationFeature
@@ -185,7 +182,6 @@ class BusinessObjects:
         populated. No spectrometers will have connected at this time.
         """
         ctl = self.ctl
-        cfu = ctl.form.ui
 
         ctl.resource_monitor            = ResourceMonitorFeature(ctl)
         ctl.focus_listener              = FocusListener(ctl)

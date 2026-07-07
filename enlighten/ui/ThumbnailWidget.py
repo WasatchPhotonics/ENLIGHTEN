@@ -424,7 +424,6 @@ class ThumbnailWidget(QtWidgets.QFrame):
             return
 
         label = self.measurement.label
-        pixels = self.measurement.settings.pixels()
         pr = self.measurement.processed_reading
 
         x_axis = pr.get_wavenumbers("dalai")

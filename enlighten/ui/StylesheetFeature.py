@@ -112,7 +112,7 @@ class StylesheetFeature(EnlightenFeature):
             log.error("no CSS found for style_name {style_name}, theme {self.theme}")
             return
 
-        widget_name = widget.objectName()
+        # widget_name = widget.objectName()
         old = widget.styleSheet()
 
         # This screws up ThumbnailWidgets...

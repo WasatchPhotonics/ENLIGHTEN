@@ -1,5 +1,4 @@
 import logging
-import datetime
 
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from enlighten.EnlightenFeature import EnlightenFeature
@@ -143,7 +142,7 @@ class DetectorTemperatureFeature(EnlightenFeature):
 
     def process_reading_callback(self, spec, reading):
         """ Called by StripCharts """
-        current_spec = self.ctl.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return
 

@@ -3,7 +3,7 @@ import logging
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from enlighten.EnlightenFeature import EnlightenFeature
 
-from wasatch.XSAccessoryConnector import XSGPIOState, XSAccState
+from wasatch.XSAccessoryConnector import XSGPIOState
 
 log = logging.getLogger(__name__)
 
