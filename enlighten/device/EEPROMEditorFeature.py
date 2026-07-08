@@ -21,6 +21,10 @@ else:
 log = logging.getLogger(__name__)
 
 class EEPROMAttribute:
+    """
+    Note that Qt widgets associated with EEPROM attributes are still bound to 
+    EEPROMEditorFeature.widget_callback.
+    """
 
     def dump(self, label=None):
         log.debug(f"EEPROMAttribute: {label}")
@@ -431,7 +435,7 @@ class EEPROMEditorFeature(EnlightenFeature):
 
     def widget_callback(self, value=None, attr=None, widget=None, calibration=None, index=None):
         """
-        The user has changed a value in the enlighten.EEPROMEditor, which we need to save 
+        The user has changed a value in an EEPROMAttribute's widget, which we need to copy
         back to the wasatch.EEPROM object.
         """
         # log.debug(f"widget_callback: called for calibration {calibration}, index {index}, value {value}, widget {widget}, attr {attr}")
@@ -440,22 +444,25 @@ class EEPROMEditorFeature(EnlightenFeature):
             if attr.is_scalar:
                 value = attr.get_widget_value(calibration=calibration)
                 self.eeprom.multi_wavelength_calibration.set(name=attr.name, value=value, calibration=calibration)
+                # log.debug(f"widget_callback: received value {value} for is_multi is_scalar attr {attr}")
             elif index is not None:
                 value = attr.get_widget_value(calibration=calibration, index=index)
                 self.eeprom.multi_wavelength_calibration.set(name=attr.name, value=value, calibration=calibration, index=index)
+                # log.debug(f"widget_callback: received value {value} for is_multi index {index} attr {attr}")
             else:
                 raise AttributeError(f"widget_callback does not support multi, non-scalar attributes without index: {attr}")
         else:
             if attr.is_scalar:
                 value = attr.get_widget_value()
+                # log.debug(f"widget_callback: received value {value} for is_scalar attr {attr}")
                 setattr(self.eeprom, attr.name, value)
             elif index is not None:
                 value = attr.get_widget_value(index=index)
                 old = getattr(self.eeprom, attr.name)
-                # log.debug(f"widget_callback: value {value}, old {old}")
+                # log.debug(f"widget_callback: received old {old} -> value {value} for index {index} attr {attr}")
                 while len(old) < index + 1:
                     default = -1 if attr.name == "bad_pixels" else 0
-                    log.debug(f"widget_callback: appending {default} to {attr.name}")
+                    # log.debug(f"widget_callback: appending {default} to {attr.name}")
                     old.append(default)
                 old[index] = value
             else:

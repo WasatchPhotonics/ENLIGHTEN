@@ -4,6 +4,7 @@
 
 - 2026-??-?? 4.2.5
     - fixed poorly-tested bugs in 4.2.4
+        - including inability to write horiz ROI in EEPROM
     - working on BLE support for XS V1
     - package tidy
         - moved BatchCollectionFeature from timing --> measurement
