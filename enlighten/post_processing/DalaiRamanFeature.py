@@ -1,6 +1,5 @@
 import threading
 import logging
-import copy
 import json
 import sys
 import os
@@ -16,13 +15,12 @@ from .DalaiAdditionalFiles import prep_spectra_X
 from .DalaiAdditionalFiles import prep_spectra_XM
 from .DalaiAdditionalFiles import prep_spectra_XS 
 
-from wasatch import utils
 from wasatch.ProcessedReading import ProcessedReading
 
 if common.use_pyside2():
-    from PySide2 import QtCore, QtWidgets
+    from PySide2 import QtCore
 else:
-    from PySide6 import QtCore, QtWidgets
+    from PySide6 import QtCore
 
 log = logging.getLogger(__name__)
 
@@ -36,7 +34,7 @@ class ImportWorker(threading.Thread):
         self.feature = feature
 
     def run(self):
-        import tensorflow.lite as tfl
+        import tensorflow.lite 
         self.feature.imported = True
 
 class DalaiRamanFeature(EnlightenFeature):
@@ -351,10 +349,6 @@ class DalaiRamanFeature(EnlightenFeature):
         for filename in sorted(os.listdir(self.MODEL_DIR)):
             pathname = os.path.join(self.MODEL_DIR, filename)
 
-            config_pathname = None
-            model_type = None
-            basename = None
-
             # only support tflite models
             if os.path.isfile(pathname) and filename.endswith(".tflite"):
                 basename = filename.removesuffix(".tflite")
@@ -412,11 +406,11 @@ class DalaiRamanFeature(EnlightenFeature):
         combo = self.combo_model
         self.current_model_label = combo.currentText()
         for basename, config in self.model_configs.items():
-            if label == config.label:
+            if self.current_model_label == config.label:
                 if self.enabled:
                     self.lazy_load_model(basename)
                 return
-        log.error(f"unknown model label {label}")
+        log.error(f"unknown model label {self.current_model_label}")
 
     def process_dalai(self, wavenumbers, spectrum, pr):
         """
@@ -459,7 +453,6 @@ class DalaiRamanFeature(EnlightenFeature):
         # roi_start = eeprom.roi_horizontal_start  
         # roi_end   = eeprom.roi_horizontal_end
         fwhm      = eeprom.avg_resolution
-        serial    = eeprom.serial_number
 
         trim_start = self.left_trim_cm  if self.do_left_trim  else wavenumbers[0]
         trim_end   = self.right_trim_cm if self.do_right_trim else wavenumbers[-1]
@@ -527,7 +520,6 @@ class ModelConfig:
         self.is_wide = False
 
         # generate pathnames
-        current_folder = os.path.dirname(os.path.realpath(__file__))
         self.model_pathname = os.path.join(DalaiRamanFeature.MODEL_DIR, f"{basename}.tflite")
         self.config_pathname = os.path.join(DalaiRamanFeature.MODEL_DIR, f"{basename}.json")
 

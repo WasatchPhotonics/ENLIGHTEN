@@ -68,7 +68,7 @@ class EEPROMWriter:
 
         # we're now ready to actually send the "write" command to the subprocess
         self.ctl.marquee.info("writing EEPROM")
-        spec.change_device_setting("write_eeprom", (sn, spec.settings.eeprom))
+        spec.change_device_setting("write_eeprom")
         self.ctl.clear_response_errors(spec)
 
     def backup(self, output_path=None):

@@ -1,7 +1,5 @@
 import logging
 
-from enlighten import common
-
 log = logging.getLogger(__name__)
 
 from enlighten.data.ModelInfoFeature import ModelInfoFeature
@@ -20,13 +18,13 @@ from enlighten.device.LaserControlFeature import LaserControlFeature
 from enlighten.device.LaserTemperatureFeature import LaserTemperatureFeature
 from enlighten.device.LaserWatchdogFeature import LaserWatchdogFeature
 from enlighten.device.MultispecFeature import MultispecFeature
-from enlighten.EnlightenFeature import EnlightenFeature
 from enlighten.factory.DFUFeature import DFUFeature
 from enlighten.factory.StripChartsFeature import StripChartsFeature
 from enlighten.file_io.ConfigurationFeature import ConfigurationFeature
 from enlighten.file_io.FileManagerFeature import FileManagerFeature
 from enlighten.file_io.LoggingFeature import LoggingFeature
 from enlighten.measurement.AreaScanFeature import AreaScanFeature
+from enlighten.measurement.BatchCollectionFeature import BatchCollectionFeature
 from enlighten.measurement.MeasurementFactory import MeasurementFactory
 from enlighten.measurement.Measurements import Measurements
 from enlighten.measurement.SaveOptionsFeature import SaveOptionsFeature
@@ -57,7 +55,6 @@ from enlighten.scope.GridFeature import GridFeature
 from enlighten.scope.PresetFeature import PresetFeature
 from enlighten.scope.RamanShiftCorrectionFeature import RamanShiftCorrectionFeature
 from enlighten.scope.ScopeTableFeature import ScopeTableFeature
-from enlighten.timing.BatchCollectionFeature import BatchCollectionFeature
 from enlighten.ui.AuthenticationFeature import AuthenticationFeature
 from enlighten.ui.ClipboardFeature import ClipboardFeature
 from enlighten.ui.Colors import Colors
@@ -185,7 +182,6 @@ class BusinessObjects:
         populated. No spectrometers will have connected at this time.
         """
         ctl = self.ctl
-        cfu = ctl.form.ui
 
         ctl.resource_monitor            = ResourceMonitorFeature(ctl)
         ctl.focus_listener              = FocusListener(ctl)

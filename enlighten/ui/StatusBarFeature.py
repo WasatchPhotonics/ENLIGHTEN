@@ -180,7 +180,7 @@ class StatusBarFeature(EnlightenFeature):
         self.show(s, action.isChecked())
 
     def cursor_updated(self, pos):
-        x = pos[0]
+        #x = pos[0]
         y = pos[1]
         self.set("Cursor Intensity", f"{y:.2f}")
 
@@ -194,7 +194,7 @@ class StatusBarFeature(EnlightenFeature):
 
     def battery_updated(self, state):
         perc = state[0]
-        charging = state[1]
+        #charging = state[1]
         spec = self.ctl.multispec.current_spectrometer()
         if spec and spec.settings.eeprom.has_battery:
             self.set("Battery", f"{perc:.2f}%")

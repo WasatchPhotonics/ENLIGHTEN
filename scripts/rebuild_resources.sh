@@ -13,9 +13,9 @@ BOOTSTRAP=false
 while [ "$1" != "" ]
 do
     case $1 in
-         --quick) QUICK=true; ;;
-         --pause) PAUSE=true; ;;
-         --bootstrap) BOOTSTRAP=true; ;;
+	    --quick) QUICK=true; ;;
+	    --pause) PAUSE=true; ;;
+	    --bootstrap) BOOTSTRAP=true; ;;
     esac
     shift
 done

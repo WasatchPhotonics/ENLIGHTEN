@@ -223,10 +223,9 @@ class StatusIndicatorFeature(EnlightenFeature):
                 enabled = settings.state.tec_enabled
                 rds = self.ctl.strip_charts.get_rds(sn, "Detector Temperature")
                 if rds:
-                    latest = rds.latest()
-
+                    latest_value = rds.latest_value()
                     if enabled:
-                        if latest is not None:
+                        if latest_value is not None:
                             if rds.all_within(setpoint, 1.0, window_sec=self.TEMPERATURE_WINDOW_SEC):
                                 temp = "connected"
                                 temp_tt = "temperature stable around {setpoint}°C"

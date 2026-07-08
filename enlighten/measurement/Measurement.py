@@ -580,7 +580,7 @@ class Measurement:
     # Display on the graph, if not already shown.
     def display(self):
         if self.thumbnail_widget is not None:
-            self.thumbnail_widget.add_curve_to_graph()
+            self.thumbnail_widget.add_curve_to_graphs()
 
     def is_displayed(self):
         if self.thumbnail_widget is not None:
@@ -619,8 +619,8 @@ class Measurement:
 
         # Take extra care releasing Qt resources associated with the ThumbnailWidget
         if self.thumbnail_widget is not None:
-            # remove the trace from the graph
-            self.thumbnail_widget.remove_curve_from_graph()
+            # remove the trace from active graphs
+            self.thumbnail_widget.remove_curve_from_graphs()
 
             # delete from Qt
             layout = self.thumbnail_widget.layout()
@@ -646,7 +646,7 @@ class Measurement:
         if self.thumbnail_widget:
             self.thumbnail_widget.rename(label)
             was_displayed = self.thumbnail_widget.is_displayed
-            self.thumbnail_widget.remove_curve_from_graph()
+            self.thumbnail_widget.remove_curve_from_graphs()
 
         # if they removed the label, nothing more to do
         if label is None:
@@ -663,7 +663,7 @@ class Measurement:
 
         # re-apply trace with new legend
         if was_displayed:
-            self.thumbnail_widget.add_curve_to_graph()
+            self.thumbnail_widget.add_curve_to_graphs()
 
         if manual:
             self.renamed_manually = True

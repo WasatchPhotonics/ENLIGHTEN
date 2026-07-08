@@ -150,7 +150,6 @@ class RamanIntensityCorrectionFeature(EnlightenFeature):
         # log.debug(f"update_visibility: supported was {self.supported}, allowed was {self.allowed}, enabled was {self.enabled}, enable_when_allowed was {self.enable_when_allowed}")
 
         was_enabled = self.enabled
-        was_supported = self.supported
 
         self.supported = self.is_supported()
         self.button.setVisible(self.supported)
@@ -183,9 +182,9 @@ class RamanIntensityCorrectionFeature(EnlightenFeature):
             self.ctl.gui.colorize_button(self.button, False)
             self.button.setToolTip("Click to apply NIST SRM-calibrated Raman Intensity Correction")
 
-        if was_enabled != self.enabled or was_supported != self.supported:
-            log.debug("update_visibility: notifying observers")
-            self.notify_observers()
+        # always send notifications (regardless of was_*) because button_callback may have changed state
+        log.debug("update_visibility: notifying observers")
+        self.notify_observers()
 
     def button_callback(self):
         # log.debug(f"button_callback: enabled was {self.enabled}, enable_when_allowed was {self.enable_when_allowed}")
@@ -208,7 +207,6 @@ class RamanIntensityCorrectionFeature(EnlightenFeature):
                     self.enable_when_allowed = True
 
         # log.debug(f"button_callback: enabled now {self.enabled}, enable_when_allowed now {self.enable_when_allowed}")
-
         self.update_visibility()
 
     ##

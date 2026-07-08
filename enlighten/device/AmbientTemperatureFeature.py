@@ -1,6 +1,4 @@
 import logging
-import datetime
-import pyqtgraph
 
 from enlighten.EnlightenFeature import EnlightenFeature
 

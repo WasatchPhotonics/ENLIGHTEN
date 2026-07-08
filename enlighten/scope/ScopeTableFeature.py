@@ -5,11 +5,9 @@ from enlighten.EnlightenFeature import EnlightenFeature
 from enlighten.data.TableModel import TableModel
 
 if common.use_pyside2():
-    from PySide2 import QtWidgets, QtCore
-    from PySide2.QtCore import Qt
+    from PySide2 import QtWidgets
 else:
-    from PySide6 import QtWidgets, QtCore
-    from PySide6.QtCore import Qt
+    from PySide6 import QtWidgets
 
 log = logging.getLogger(__name__)
 

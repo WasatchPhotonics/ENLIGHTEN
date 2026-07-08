@@ -37,6 +37,10 @@ class AccessoryControlXLFeature(EnlightenFeature):
         if not self.visible:
             return
 
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+
         if spec.settings.eeprom.has_cooling:
             self.cb_fan.setChecked(True)
         if spec.settings.state.shutter_open:

@@ -1,10 +1,8 @@
 import re
 import os
-import shutil
 import pandas as pd
 import logging
 
-from PySide6 import QtWidgets
 from functools import cmp_to_key
 from scipy.stats import pearsonr
 from scipy.interpolate import interp1d
@@ -161,6 +159,7 @@ class LibraryMatchingFeature(EnlightenFeature):
         self.update_visibility()
 
     def update_visibility(self):
+        self.show_widgets(self.enabled)
         self.ctl.gui.colorize_button(self.bt_toggle, self.enabled)
 
     def show_widgets(self, flag):
@@ -178,9 +177,13 @@ class LibraryMatchingFeature(EnlightenFeature):
             self.form_layout.setContentsMargins(0, 0, 0, 0)
 
     def tick(self):
+        if not self.enabled:
+            return
+
         self.lb_compound.setText(self.last_compound)
         self.lb_score.setText(f"{self.last_score:0.2f}" if self.last_score is not None else "")
-        self.ctl.scope_table.set_dataframe(self.dataframe)
+        if self.dataframe is not None:
+            self.ctl.scope_table.set_dataframe(self.dataframe)
 
     def process(self, pr):
         if not self.enabled:
@@ -216,6 +219,9 @@ class LibraryMatchingFeature(EnlightenFeature):
         # spaces improve appearance
         table_data = {' Compound ': compounds, ' Score ': scores}
         self.dataframe = pd.DataFrame(data=table_data).round(2)
+        
+        # Changes the displayed score to a percent
+        self.dataframe[' Score '] = (self.dataframe[' Score '] * 100).astype(str) + "%"        
 
         # if library compound names are pipe-delimited, trim to first sub-field
         best_compound = compounds[0].split("|")[0].strip()

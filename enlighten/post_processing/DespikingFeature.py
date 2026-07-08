@@ -15,6 +15,10 @@ class DespikingFeature(EnlightenFeature):
     analysis. Currently only implements the algorithm in the paper by
     Whitaker and Hayes. Future improvements will provide different 
     algorithms to choose from.
+
+    THIS CLASS IS NOT CURRENTLY INSTANTIATED BY BUSINESS_OBJECTS, 
+    AND WILL NOT IN FACT COMPILE AS THE CURRENT ENLIGHTEN_LAYOUT.UI
+    DOES NOT INCLUDE DESPIKE SPINBOXES.
     """
 
     def __init__(self, ctl):
