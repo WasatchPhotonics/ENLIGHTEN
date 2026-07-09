@@ -510,8 +510,6 @@ class MultispecFeature(EnlightenFeature):
         log.debug("add: calling update_regions")
         self.ctl.horiz_roi.update_regions(spec)
 
-        log.debug("add: back from scary changed stuff")
-
         # done
         self.update_widget()
 
@@ -558,7 +556,7 @@ class MultispecFeature(EnlightenFeature):
         if index < 0:
             try:
                 del self.spectrometers[self.device_id]
-                log.error("Multispec.remove: can't find index")
+                log.error(f"Multispec.remove: can't find index {index}, removing current device_id {self.device_id}")
                 return False
             except Exception as e:
                 log.error(f"Multispec.remove: failed to delete from spectrometers with error {e}")
@@ -597,11 +595,13 @@ class MultispecFeature(EnlightenFeature):
 
         serial = m.group(1)
         model  = m.group(2)
-        log.debug(f"get_combo_device_id: serial {serial}, model {model}")
+        log.debug(f"get_combo_device_id: parsed serial {serial}, model {model} from label {label}")
 
         for device_id in sorted(self.spectrometers, key=str):
-            if ( serial == self.spectrometers[device_id].settings.eeprom.serial_number and 
-                 model  == self.spectrometers[device_id].settings.eeprom.model):
+            temp_spec = self.spectrometers[device_id]
+            temp_sn = temp_spec.settings.eeprom.serial_number
+            temp_model = temp_spec.settings.full_model()
+            if serial == temp_sn and model == temp_model:
                 log.debug(f"get_combo_device_id: returning device_id {device_id}")
                 return device_id 
 

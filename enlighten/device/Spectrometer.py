@@ -131,8 +131,11 @@ class Spectrometer:
             log.error(f"Spectrometer either does not exist or already disconnected {e}")
         log.info(f"Spectrometer: closed {self.device_id}")
 
-    def __str__(self):
-        return str(self.device_id).replace("DeviceID", "Spectrometer Object")
+    def __repr__(self):
+        sn = self.settings.eeprom.serial_number
+        model = self.settings.full_model()
+        dev = str(self.device_id)
+        return f"Spectrometer <serial {sn}, model {model}, device_id {dev}>"
 
     def __eq__(self, other):
         return str(self) == str(other)
