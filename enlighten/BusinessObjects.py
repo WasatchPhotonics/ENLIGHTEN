@@ -26,7 +26,7 @@ from enlighten.file_io.LoggingFeature import LoggingFeature
 from enlighten.measurement.AreaScanFeature import AreaScanFeature
 from enlighten.measurement.BatchCollectionFeature import BatchCollectionFeature
 from enlighten.measurement.MeasurementFactory import MeasurementFactory
-from enlighten.measurement.Measurements import Measurements
+from enlighten.measurement.MeasurementsFeature import MeasurementsFeature
 from enlighten.measurement.SaveOptionsFeature import SaveOptionsFeature
 from enlighten.network.BLEManagerFeature import BLEManagerFeature
 from enlighten.network.CloudManagerFeature import CloudManagerFeature
@@ -208,7 +208,7 @@ class BusinessObjects:
         ctl.interp                      = InterpolationFeature(ctl)
         ctl.external_trigger            = ExternalTriggerFeature(ctl)
         ctl.measurement_factory         = MeasurementFactory(ctl)
-        ctl.measurements                = Measurements(ctl)
+        ctl.measurements                = MeasurementsFeature(ctl)
         ctl.authentication              = AuthenticationFeature(ctl)
         ctl.eeprom_writer               = EEPROMWriter(ctl)
         ctl.eeprom_editor               = EEPROMEditorFeature(ctl)

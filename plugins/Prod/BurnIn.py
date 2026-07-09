@@ -121,13 +121,11 @@ class BurnIn(EnlightenPluginBase):
 
         if self.darks_remaining > 0:
             self.log("storing dark")
-            # self.ctl.dark_feature.store(request.processed_reading.processed)
             self.signals.append("self.ctl.dark_feature.store()")
             self.darks_remaining -= 1
 
             if self.darks_remaining == 0 and request.fields["Use Laser"]:
                 self.log("firing laser")
-                # self.ctl.laser_control.set_laser_enable(True)
                 self.signals.append("self.ctl.laser_control.set_laser_enable(True)")
         
         if request.fields["Save Each"]:
@@ -138,11 +136,9 @@ class BurnIn(EnlightenPluginBase):
 
         if request.fields["Export Every"] > 0 and self.ctl.measurements.count() >= request.fields["Export Every"]:
             self.log("exporting session")
-            # self.ctl.measurements.export_session(prompt=False)
             self.signals.append("self.ctl.measurements.export_session(prompt=False)")
 
             self.log("clearing clipboard")
-            # self.ctl.measurements.erase_all()
             self.signals.append("self.ctl.measurements.erase_all()")
 
         self.measurement_count += 1
@@ -266,11 +262,9 @@ class BurnIn(EnlightenPluginBase):
 
         if request.fields["Use Laser"]:
             if request.fields["Take Dark"]:
-                # self.ctl.laser_control.set_laser_enable(False)
                 self.signals.append("self.ctl.dark_feature.clear()")
                 self.signals.append("self.ctl.laser_control.set_laser_enable(False)")
             else:
-                # self.ctl.laser_control.set_laser_enable(True)
                 self.signals.append("self.ctl.laser_control.set_laser_enable(True)")
 
         if request.fields["Take Dark"]:

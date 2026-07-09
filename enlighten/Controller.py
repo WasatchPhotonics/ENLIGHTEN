@@ -1735,10 +1735,10 @@ class Controller:
 
         self.cursor.update()
 
-    # TODO: can this method be moved into Measurements class?
+    # TODO: can this method be moved into MeasurementsFeature class?
     def reprocess(self, measurement):
         """
-        Called by Measurements.create_from_file if save_options.load_raw.  This
+        Called by MeasurementsFeature.create_from_file if save_options.load_raw.  This
         takes the loaded raw, dark and reference, and re-feeds them back through
         process_reading, along with the loaded Settings object containing wavecal,
         pixel count etc.  This will display the re-processed spectrum on screen,

@@ -36,7 +36,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
     MIN_WIDTH = 160
     MAX_WIDTH = 170
 
-    ## allows deep-copying of Measurements
+    ## allows deep-copying of Measurement objects
     def __deepcopy__(self, memo):
         log.debug("blocking deep-copy")
 
