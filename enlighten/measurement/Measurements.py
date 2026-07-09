@@ -469,7 +469,7 @@ class Measurements:
             filename += ".json"
         pathname = os.path.join(directory, filename)
 
-        s = json.dumps(export, sort_keys=True, indent=2)
+        s = json.dumps(export, sort_keys=True, indent=2, default=str)
         with open(pathname, "w") as f:
             f.write(util.clean_json(s))
 
