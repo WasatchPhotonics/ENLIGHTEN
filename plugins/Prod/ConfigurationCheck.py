@@ -208,7 +208,7 @@ class ConfigurationCheck(EnlightenPluginBase):
         self.ctl.gui.msgbox_with_scrolling_html("Configuration Check", label_text, html)
 
     def html_list(self, name, a):
-        if a is None:
+        if len(a) == 0:
             return ""
         return f"{name}:<ul><li>" + "</li><li>".join(a) + "</li></ul>"
 

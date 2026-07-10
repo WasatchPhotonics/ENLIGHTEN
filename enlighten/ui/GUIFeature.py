@@ -261,28 +261,32 @@ class GUIFeature(EnlightenFeature):
         dialog.exec_()
 
     def msgbox_with_scrolling_html(self, title, label_text, html):
+        # create a dialog box
         dialog = QDialog(parent=self.ctl.form)
         dialog.setModal(True)
         dialog.setWindowTitle(title)
         dialog.setSizeGripEnabled(True)
+        dialog_layout = QVBoxLayout(dialog)
 
+        # add a scrolling area to the dialog
+        sa = QScrollArea(dialog)
+        sa.setWidgetResizable(True)
+        dialog_layout.addWidget(sa)
+
+        # Scroll areas contain (scroll) exactly one widget. 
+        # In this case, give it a vertical container widget.
+        container = QWidget() 
+        sa.setWidget(container)
+        vb = QVBoxLayout(container)
+
+        # now we can add our standard label and textedit widgets to the container
         lb = QLabel(label_text, parent=dialog)
 
         te = QTextEdit(parent=dialog)
         te.setHtml(html)
         te.setReadOnly(True)
 
-        sa = QScrollArea(dialog)
-        sa.setWidgetResizable(True)
-
-        w = QWidget()
-        sa.setWidget(w)
-
-        vb = QVBoxLayout(w)
         vb.addWidget(lb)
         vb.addWidget(te)
-
-        vb2 = QVBoxLayout(dialog)
-        vb2.addWidget(sa)
 
         dialog.exec_()
