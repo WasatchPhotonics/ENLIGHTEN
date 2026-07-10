@@ -1144,6 +1144,8 @@ class Controller:
         make_shortcut("Ctrl+^", self.plugin_controller.connect_currently_selected_plugin)
         make_shortcut("Ctrl+,", self.multispec.select_prev_spectrometer)
         make_shortcut("Ctrl+.", self.multispec.select_next_spectrometer)
+        make_shortcut("Ctrl+up", self.page_nav.scroll_up)
+        make_shortcut("Ctrl+down",self.page_nav.scroll_down)
 
         # Cursor
         make_shortcut(QtGui.QKeySequence.MoveToPreviousWord, self.cursor.dn_callback) # ctrl-left

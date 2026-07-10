@@ -69,8 +69,8 @@ class HelpFeature(EnlightenFeature):
             Ctrl-^ connect currently-selected plugin
             Ctrl-, Prev Spectrometer
             Ctrl-. Next Spectrometer
-            
-            Ctrl-Up/Down step values
+
+            Ctrl-Up/Down scroll palette/hardware
             Ctrl-Left/Right move Scope cursor"""))
 
     def help_callback(self):

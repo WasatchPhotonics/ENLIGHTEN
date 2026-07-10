@@ -7,6 +7,7 @@
     - fixed JSON export bug
     - moved Measurements -> MeasurementsFeature (extended EnlightenFeature)
     - fixed EtalonCorrection
+    - remapped ctrl-up/down to scroll control palette and hardware view
 - 2026-07-08 4.2.5
     - fixed poorly-tested bugs in 4.2.4
         - including inability to write horiz ROI in EEPROM
