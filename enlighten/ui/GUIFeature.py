@@ -6,10 +6,10 @@ from enlighten.EnlightenFeature import EnlightenFeature
 
 if common.use_pyside2():
     from PySide2 import QtGui
-    from PySide2.QtWidgets import QMessageBox, QCheckBox, QDialog, QLineEdit, QDialogButtonBox, QVBoxLayout, QLabel, QTextEdit
+    from PySide2.QtWidgets import QMessageBox, QCheckBox, QDialog, QLineEdit, QDialogButtonBox, QVBoxLayout, QLabel, QTextEdit, QScrollArea, QWidget
 else:
     from PySide6 import QtGui
-    from PySide6.QtWidgets import QMessageBox, QCheckBox, QDialog, QLineEdit, QDialogButtonBox, QVBoxLayout, QLabel, QTextEdit
+    from PySide6.QtWidgets import QMessageBox, QCheckBox, QDialog, QLineEdit, QDialogButtonBox, QVBoxLayout, QLabel, QTextEdit, QScrollArea, QWidget
 
 log = logging.getLogger(__name__)
 
@@ -259,4 +259,30 @@ class GUIFeature(EnlightenFeature):
         vb.addWidget(te)
 
         dialog.exec_()
-        # no return value, this is "display-only"
+
+    def msgbox_with_scrolling_html(self, title, label_text, html):
+        dialog = QDialog(parent=self.ctl.form)
+        dialog.setModal(True)
+        dialog.setWindowTitle(title)
+        dialog.setSizeGripEnabled(True)
+
+        lb = QLabel(label_text, parent=dialog)
+
+        te = QTextEdit(parent=dialog)
+        te.setHtml(html)
+        te.setReadOnly(True)
+
+        sa = QScrollArea(dialog)
+        sa.setWidgetResizable(True)
+
+        w = QWidget()
+        sa.setWidget(w)
+
+        vb = QVBoxLayout(w)
+        vb.addWidget(lb)
+        vb.addWidget(te)
+
+        vb2 = QVBoxLayout(dialog)
+        vb2.addWidget(sa)
+
+        dialog.exec_()

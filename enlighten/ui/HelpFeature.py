@@ -56,6 +56,7 @@ class HelpFeature(EnlightenFeature):
             Ctrl-G enter Gain
             Ctrl-H toggle between Hardware and scope
             Ctrl-L toggle Laser firing
+            Ctrl-M toggle library Matching
             Ctrl-N enter new Note
             Ctrl-P Pause/Play
             Ctrl-Q Quit
@@ -65,7 +66,6 @@ class HelpFeature(EnlightenFeature):
             Ctrl-X toggle eXpert mode
 
             Ctrl-Shift-D toggle DALAI-RAMAN
-            Ctrl-Shift-L toggle Library matching
             Ctrl-Shift-S export all Saved measurements
 
             Ctrl-* Auto-Raman

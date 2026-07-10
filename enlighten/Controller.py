@@ -1133,6 +1133,7 @@ class Controller:
         make_shortcut("Ctrl+G", self.gain_db_feature.set_focus)
         make_shortcut("Ctrl+H", self.page_nav.toggle_hardware_and_scope)
         make_shortcut("Ctrl+L", self.laser_control.toggle_laser)
+        make_shortcut("Ctrl+M", self.library_matching.toggle_callback)
         make_shortcut("Ctrl+N", self.save_options.focus_note) # note this gives easy access to prefix/suffix as well via shift-tab
         make_shortcut("Ctrl+Q", partial(self.close, "ctrl-Q pressed"))
         make_shortcut("Ctrl+P", self.vcr_controls.toggle) # pause/play
@@ -1142,7 +1143,6 @@ class Controller:
         make_shortcut("Ctrl+X", self.page_nav.toggle_expert)
 
         make_shortcut("Ctrl+Shift+D", self.dalai.toggle_callback)
-        make_shortcut("Ctrl+Shift+L", self.library_matching.toggle_callback)
         make_shortcut("Ctrl+Shift+S", self.measurements.export_session)
 
         make_shortcut("Ctrl+*", self.auto_raman.measure_callback)
