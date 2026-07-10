@@ -80,10 +80,9 @@ class HelpFeature(EnlightenFeature):
 
         """
         Unused:
-            ctrl-I (tab?)
+            ctrl-I
             ctrl-J
             ctrl-K
-            ctrl-M (enter?)
             ctrl-O
             ctrl-U
             ctrl-V
