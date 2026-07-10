@@ -10,6 +10,7 @@ import sys
 import os
 
 from collections import defaultdict
+from functools import partial
 
 if "macOS" in platform.platform():
     # solves an import issue for MacOS
@@ -1133,11 +1134,17 @@ class Controller:
         make_shortcut("Ctrl+H", self.page_nav.toggle_hardware_and_scope)
         make_shortcut("Ctrl+L", self.laser_control.toggle_laser)
         make_shortcut("Ctrl+N", self.save_options.focus_note) # note this gives easy access to prefix/suffix as well via shift-tab
+        make_shortcut("Ctrl+Q", partial(self.close, "ctrl-Q pressed"))
         make_shortcut("Ctrl+P", self.vcr_controls.toggle) # pause/play
         make_shortcut("Ctrl+R", self.reference_feature.toggle)
         make_shortcut("Ctrl+S", self.vcr_controls.save)
         make_shortcut("Ctrl+T", self.integration_time_feature.set_focus)
         make_shortcut("Ctrl+X", self.page_nav.toggle_expert)
+
+        make_shortcut("Ctrl+Shift+D", self.dalai.toggle_callback)
+        make_shortcut("Ctrl+Shift+L", self.library_matching.toggle_callback)
+        make_shortcut("Ctrl+Shift+S", self.measurements.export_session)
+
         make_shortcut("Ctrl+*", self.auto_raman.measure_callback)
         make_shortcut("Ctrl+%", self.laser_control.set_focus_power)
         make_shortcut("Ctrl+&", self.measurements.add_trace_from_last_measurement)

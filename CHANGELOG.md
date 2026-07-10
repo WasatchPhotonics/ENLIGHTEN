@@ -5,9 +5,14 @@
 - 2026-07-?? 4.2.6
     - fixed Multispec combobox for long model names
     - fixed JSON export bug
-    - moved Measurements -> MeasurementsFeature (extended EnlightenFeature)
+    - moved Measurements -> MeasurementsFeature (extends EnlightenFeature)
     - fixed EtalonCorrection
-    - remapped ctrl-up/down to scroll control palette and hardware view
+    - shortcuts
+        - ctrl-Q quits
+        - ctrl-shift-D toggles DALAI
+        - ctrl-shift-L toggles Library Matching
+        - ctrl-shift-S exports all Saved measurements
+        - ctrl-up/dn scrolls control palette or hardware view as appropriate
 - 2026-07-08 4.2.5
     - fixed poorly-tested bugs in 4.2.4
         - including inability to write horiz ROI in EEPROM

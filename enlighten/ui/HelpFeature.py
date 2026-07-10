@@ -58,10 +58,15 @@ class HelpFeature(EnlightenFeature):
             Ctrl-L toggle Laser firing
             Ctrl-N enter new Note
             Ctrl-P Pause/Play
+            Ctrl-Q Quit
             Ctrl-R take/clear Reference
             Ctrl-S Save measurement
             Ctrl-T enter integration Time
             Ctrl-X toggle eXpert mode
+
+            Ctrl-Shift-D toggle DALAI-RAMAN
+            Ctrl-Shift-L toggle Library matching
+            Ctrl-Shift-S export all Saved measurements
 
             Ctrl-* Auto-Raman
             Ctrl-% enter laser power
@@ -72,6 +77,20 @@ class HelpFeature(EnlightenFeature):
 
             Ctrl-Up/Down scroll palette/hardware
             Ctrl-Left/Right move Scope cursor"""))
+
+        """
+        Unused:
+            ctrl-I (tab?)
+            ctrl-J
+            ctrl-K
+            ctrl-M (enter?)
+            ctrl-O
+            ctrl-U
+            ctrl-V
+            ctrl-W
+            ctrl-Y
+            ctrl-Z
+        """
 
     def help_callback(self):
         url = self.HELP_URL
