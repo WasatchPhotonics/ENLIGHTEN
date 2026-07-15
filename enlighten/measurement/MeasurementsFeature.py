@@ -469,7 +469,8 @@ class MeasurementsFeature(EnlightenFeature):
             filename += ".json"
         pathname = os.path.join(directory, filename)
 
-        s = json.dumps(export, sort_keys=True, indent=2, default=lambda o: o.to_json())
+        s = json.dumps(export, sort_keys=True, indent=4, default=lambda o: o.to_json())
+        s = s[1:-1]
         with open(pathname, "w") as f:
             f.write(util.clean_json(s))
 
