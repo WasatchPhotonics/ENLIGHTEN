@@ -45,11 +45,82 @@ class ConfigurationCheck(EnlightenPluginBase):
         notes = []
 
         ########################################################################
+        # Serial / Model
+        ########################################################################
+
+        sn = ee.serial_number
+        if re.match(r"WP-\d{5}", sn):
+            notes.append(f"standard serial number {sn}")
+        else:
+            bad.append(f"non-standard serial number {sn}")
+
+        ########################################################################
+        # Detector Cooling
+        ########################################################################
+
+        if ee.has_cooling:
+            if is_xs:
+                bad.append(f"has_cooling {has_cooling} but is XS")
+            else:
+                bad.append(f"has_cooling {has_cooling} (typical for non-XS)")
+        else:
+            if not is_xs:
+                bad.append(f"has_cooling {has_cooling} is unusual for non-XS")
+
+        ########################################################################
+        # Gain / Offset
+        ########################################################################
+
+        gain = ee.detector_gain
+        offset = ee.detector_offset
+        if is_xs:
+            if gain == 8.0:
+                notes.append(f"gain {gain} is typical for XS")
+            else:
+                bad.append(f"gain {gain} is unusual for XS")
+        else:
+            if gain < 1 or gain > 1.5:
+                bad.append(f"gain {gain} is unusual for non-XS")
+            else:
+                notes.append(f"gain {gain} seems reasonable for non-XS")
+
+        if offset < 0:
+            bad.append(f"negative offset {offset} is unusual")
+        elif offset > 3000:
+            bad.append(f"offset {offset} seems excessive")
+
+        ########################################################################
+        # Wavecal
+        ########################################################################
+
+        if ee.wavelength_coeffs is None or len(ee.wavelength_coeffs) == 0 or ss.wavelengths is None or len(ss.wavelengths) < ss.pixels():
+            bad.append(f"wavecal seems bad or missing")
+
+        ########################################################################
+        # Detector
+        ########################################################################
+
+        detector = ee.detector
+        if is_xs:
+            if detector != "IMX385":
+                bad.append(f"detector {detector} is unusual for XS")
+
+        ########################################################################
+        # Pixels
+        ########################################################################
+
+        pixels = ss.pixels()
+        if is_xs:
+            if pixels != 1952:
+                bad.append(f"pixels {pixels} seems unusual for XS")
+
+        ########################################################################
         # Laser / Raman / Excitation
         ########################################################################
 
         # does this look like it's supposed to be a Raman unit?
-        intended_for_raman = ss.excitation() > 0 or ee.has_laser or re.search(r"\d+X", model)
+        has_laser = ee.has_laser
+        intended_for_raman = ss.excitation() > 0 or has_laser or re.search(r"\d+X", model)
         notes.append(f"{'is' if intended_for_raman else 'is not'} intended for Raman")
 
         # determine closest "official" excitation
@@ -69,7 +140,7 @@ class ConfigurationCheck(EnlightenPluginBase):
             else:
                 bad.append(f"excitation {excitation} but {std_excitation} not in model {model}")
 
-        if ee.has_laser:
+        if has_laser:
             if ee.disable_laser_armed_indicator and not "DT" in model:
                 bad.append(f"laser armed indicator disabled in non-DT model")
 
@@ -80,9 +151,103 @@ class ConfigurationCheck(EnlightenPluginBase):
                     bad.append(f"laser TEC setpoint {laser_tec_setpoint} seems low")
                 elif laser_tec_setpoint > 1000:
                     bad.append(f"laser TEC setpoint {laser_tec_setpoint} seems high")
+        else:
+            if is_xs:
+                bad.append(f"has_laser {has_laser} is unusual for XS")
+            else:
+                for tok in ["-ILC", "-ILP"]:
+                    if tok in model:
+                        bad.append(f"has_laser {has_laser} is unusual for model {model}")
+
+        # laser temperature
+        if is_xs:
+            if has_laser:
+                if ee.max_laser_temp_deg_c < 50 or ee.max_laser_temp_deg_c > 60:
+                    bad.append(f"max_laser_temp_deg_c {ee.max_laser_temp_deg_c} is unusual for XS (recommend 50-60)")
+                else:
+                    notes.append(f"max_laser_temp_deg_c {ee.max_laser_temp_deg_c} is reasonable for XS")
+
+            if ee.sig_laser_tec:
+                notes.append(f"XS laser TEC enabled (ok)")
+            else:
+                bad.append(f"XS laser TEC disabled (unusual)")
+        else:
+            if ee.sig_laser_tec:
+                bad.append(f"XS laser TEC enabled on non-XS unit")
+
+        # laser power
+        is_xm = any([ext in model for ext in ['XM', 'XR', 'XC']])
+        has_laser_power_cal = ee.has_laser_power_calibration()
+        if has_laser:
+            if is_xs:
+                if has_laser_power_cal:
+                    bad.append(f"it is unusual for an XS unit to have a laser power calibration")
+            else:
+                if has_laser_power_cal:
+                    notes.append(f"it seems reasonable for laser-equipped model {model} to have a laser power calibration")
+                else:
+                    bad.append(f"it seems unusual for laser-equipped model {model} to lack a laser power calibration")
+
+        if has_laser_power_cal:
+            if ee.max_laser_mW < 3 or ee.max_laser_mW > 485:
+                bad.append(f"max_laser_mW {ee.max_laser_mW} seems unusual for units with a laser power calibration")
+
+        # attenuator (XS)
+        laser_attenuator = ee.laser_attenuator
+        if is_xs:
+            if laser_attenuator == 127:
+                bad.append("laser attenuator appears non-calibrated")
+            elif 10 <= laser_attenuator <= 40:
+                notes.append(f"laser attenuator {laser_attenuator} seems reasonable")
+            else:
+                bad.append(f"laser attenuator {laser_attenuator} seems unreasonable")
+        else:
+            if laser_attenuator != 0:
+                bad.append(f"laser attenuator {laser_attenuator} unusual for non-XS")
+
+        # longpass filter
+        if intended_for_raman and not ee.cutoff_filter_installed:
+            bad.append("intended for Raman but cutoff filter not installed?")
+
+        # horizontal binning (intended for 633XS and XS-VIS)
+        has_horiz_binning = ee.horiz_binning_mode != 0
+        if has_horiz_binning:
+            if is_xs:
+                if std_excitation and std_excitation >= 785:
+                    bad.append(f"horizontal binning is not recommended for {std_excitation}nm excitation") 
+                else:
+                    notes.append(f"horizontal binning is reasonable for {model}")
+            else:
+                bad.append(f"horizontal binning is enabled on non-XS unit")
+
+        # password
+        if is_xs:
+            if ee.laser_password:
+                if ee.laser_password == sn:
+                    notes.append(f"standard laser password is set (ok)")
+                else:
+                    bad.append(f"custom laser password is set")
+            else:
+                notes.append(f"no laser password set (ok)")
+        else:
+            bad.append(f"laser password is set on non-XS unit")
+                    
+        ########################################################################
+        # Integration Time
+        ########################################################################
+
+        max_integ = ee.max_integration_time_ms
+        if is_xs:
+            if max_integ < 5_000:
+                bad.append(f"max_integ {max_integ} seems low for XS")
+            elif max_integ > 10_000:
+                bad.append(f"max_integ {max_integ} seems high for XS")
+        else:
+            if max_integ < 60_000:
+                bad.append(f"max_integ {max_integ} seems low for non-XS")
 
         ########################################################################
-        # Horiz ROI / SRM
+        # Horiz ROI / SRM / DALAI
         ########################################################################
 
         has_srm = ss.raman_intensity_factors is not None
@@ -101,13 +266,28 @@ class ConfigurationCheck(EnlightenPluginBase):
                 notes.append(f"has SRM calibration and horiz ROI")
             else:
                 bad.append(f"has SRM calibration but no horiz ROI")
+
+        has_fwhm = ee.avg_resolution != 0.0
+        if intended_for_raman:
+            if not has_fwhm:
+                bad.append(f"intended for Raman but no average resolution (will prevent DALAI deconvolution)")
         
         ########################################################################
         # Battery
         ########################################################################
 
         has_batt = ee.has_battery
-        notes.append(f"{'does' if has_batt else 'does not'} have battery")
+
+        if ss.is_xs():
+            if has_batt:
+                notes.append(f"has_battery {has_batt} reasonable for XS")
+            else:
+                bad.append(f"has_battery {has_batt} unusual for XS")
+        else:
+            if has_batt:
+                bad.append(f"has_battery {has_batt} unusual for non-XS")
+            else:
+                notes.append(f"has_battery {has_batt} reasonable for non-XS")
 
         if has_batt:
             rds = self.ctl.strip_charts.get_rds(sn, "Battery Charge Level")
@@ -136,19 +316,23 @@ class ConfigurationCheck(EnlightenPluginBase):
 
         if is_xs:
             laser_watchdog_sec = ee.laser_watchdog_sec
-            notes.append(f"laser_watchdog_sec {laser_watchdog_sec}")
-            if laser_watchdog_sec < 1:
-                bad.append(f"laser watchdog is disabled at boot")
+            if laser_watchdog_sec == 0:
+                notes.append(f"laser watchdog is disabled at boot (okay)")
+            else:
+                bad.append(f"laser watchdog {laser_watchdog_sec}sec is not currently recommended for XS")
 
             detector_timeout_sec = ee.detector_timeout_sec
             notes.append(f"detector_timeout_sec {detector_timeout_sec}")
             if detector_timeout_sec < 1:
-                bad.append(f"detector timeout is disabled at boot")
+                notes.append(f"detector timeout is disabled at boot (ok)")
 
             power_timeout_sec = ee.power_timeout_sec
-            notes.append(f"power_timeout_sec {power_timeout_sec}")
             if power_timeout_sec < 1:
                 bad.append(f"power timeout is disabled at boot")
+            elif power_timeout_sec < 120:
+                bad.append(f"power timeout {power_timeout_sec}sec seems low for XS")
+            elif power_timeout_sec > 600: # 10min
+                bad.append(f"power timeout {power_timeout_sec}sec seems high for XS")
     
         ########################################################################
         # Vertical ROI
@@ -196,6 +380,101 @@ class ConfigurationCheck(EnlightenPluginBase):
                 bad.append("InGaAs unit has neither even-odd gain/offset nor InGaAs pixel correction")
 
         ########################################################################
+        # XS-only stuff
+        ########################################################################
+
+        scan_averaging = ee.startup_scans_to_average 
+        if scan_averaging > 1:
+            if is_xs:
+                bad.append(f"startup_scans_to_average {scan_averaging} is unusual on XS")
+            else:
+                bad.append(f"startup_scans_to_average {scan_averaging} is unusual on non-XS")
+
+        if is_xs:
+
+            assembly_rev = ee.assembly_revision
+            if assembly_rev:
+                notes.append(f"XS Assembly Revision {assembly_rev}")
+            else:
+                bad.append(f"XS unit missing assembly revision")
+
+            if ee.has_interlock_feedback:
+                notes.append(f"has laser interlock feedback (ok)")
+            else:
+                bad.append(f"laser interlock feedback disabled (unusual)")
+
+            if ee.disable_ble_power:
+                bad.append(f"BLE power disabled (unusual)")
+
+            if ee.ble_door_sensor:
+                bad.append("BLE Door Sensor is set (unusual)")
+            if ee.ext_laser_control:
+                bad.append("External Laser Control is set (unusual)")
+            if ee.aux_button_laser_enable:
+                bad.append("Auxillary Button can Control Laser is set (unusual)")
+            if ee.disable_laser_sub_sys:
+                bad.append("Disable Laser Sub-System is set (unusual)")
+            if ee.leave_acc_5v_out_powered:
+                bad.append("Leave ACC_5V_OUT Powered is set (unusual)")
+
+        ########################################################################
+        # Misc
+        ########################################################################
+
+        if ee.invert_x_axis:
+            if is_xs:
+                bad.append("unusual to invert_x_axis on XS")
+            notes.append("okay to invert_x_axis on non-XS")
+
+        if ee.horiz_binning_enabled:
+            if is_xs:
+                notes.append("horiz binning enabled (ok)")
+            else:
+                bad.append("unusual to enable horiz binning on non-XS")
+
+        if ee.gen15:
+            bad.append("unusual to enable Gen1.5 (220190/290)")
+
+        if ee.is_oem:
+            bad.append("is_oem set (unusual)")
+
+        if ee.hardware_even_odd:
+            bad.append("hardware_even_odd set (unusual)")
+
+        is_xl = "XL" in model
+        if ee.has_shutter:
+            if is_xl:
+                notes.append("has_shutter enabled (ok on XL)")
+            else:
+                bad.append("has_shutter enabled (unusual on non-XL)")
+
+        if ee.laser_interlock_excluded:
+            bad.append("laser interlock is excluded (unusual)")
+
+        if ee.laser_timeout_after_count:
+            bad.append("laser timeout configured to use frame-count rather than seconds (unusual)")
+
+        subformat = ee.subformat
+        if subformat == 0:
+            notes.append(f"subformat {subformat} (User Data) okay")
+        elif subformat == 1:
+            notes.append(f"subformat {subformat} (SRM) okay")
+        elif subformat == 2:
+            bad.append(f"subformat {subformat} (spline) unusual")
+        elif subformat == 3:
+            bad.append(f"subformat {subformat} (untethered) unusual")
+        elif subformat == 4:
+            bad.append(f"subformat {subformat} (detector regions) unusual")
+        elif subformat == 5:
+            bad.append(f"subformat {subformat} (multi-wavelength) unusual")
+        else:
+            bad.append(f"subformat {subformat} (undefined) unusual")
+
+        ########################################################################
+        # Pixel Correction
+        ########################################################################
+
+        ########################################################################
         # Output report
         ########################################################################
 
@@ -213,6 +492,44 @@ class ConfigurationCheck(EnlightenPluginBase):
         return f"{name}:<ul><li>" + "</li><li>".join(a) + "</li></ul>"
 
 """
+Reading EEPROM (9 pages)
+Parsing EEPROM
+               feature_mask_xs 0
+                     acc_state 0
+               acc_state_gpio1 0
+               acc_state_gpio2 0
+     acc_cont_strobe_period_us 0
+      acc_cont_strobe_width_us 0
+      acc_cont_strobe_delay_us 0
+         acc_cont_strobe_count 0
+        max_battery_temp_deg_c 0
+        pixel_calibration_type 0
+         usb_manufacturer_name
+           aux_button_function 0
+              aux_button_param 0
+        laser_firing_delay_sec 255
+     latched_hardware_failures 255
+FeatureMask 0x42a:
+Current EEPROM:
+  Page 0: 57 50 2d 37 38 35 58 53 2d 4f 45 4d 2d 44 54 34 57 50 2d 54 45 53 54 00 00 00 00 00 00 00 00 00
+          2c 01 00 00 00 01 01 2a 04 19 00 01 00 20 03 00 00 00 00 41 00 00 00 00 00 41 00 00 20 03 ff 13
+  Page 1: 00 00 00 00 00 00 80 3f 00 00 00 00 00 00 00 00 00 00 00 00 00 00 80 3f 00 00 00 00 84 03 20 03
+          00 00 00 00 00 00 80 3f 00 00 00 00 10 27 7a 0d 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ff
+  Page 2: 49 4d 58 33 38 35 00 00 00 00 00 00 00 00 00 00 a0 07 00 38 04 00 00 00 00 a0 07 00 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ff
+  Page 3: ff ff ff ff ff ff ff ff ff ff ff 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          00 00 00 00 00 40 44 44 01 00 00 00 60 ea 00 00 00 00 00 00 00 00 fe 00 00 00 00 00 ff 7f ff ff
+  Page 4: 00 50 50 52 45 4c 49 4d 00 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+          ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+  Page 5: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 dd 2e 00 00 00 00 ff ff ff ff ff ff ff ff ff ff ff 01
+  Page 6: 00 00 00 00 00 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+          ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+  Page 7: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+          ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
+  Page 8: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+          00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ff ff
+
 generated 1952 wavelengths from 755.40 to 1017.50
 generated 1952 wavenumbers from -497.72 to 2912.35 (after correction 0.00) using excitation 784.907
 update_raman_intensity_factors: coeffs [0.4636397957801819, -0.002109522931277752, 2.919365897469106e-06, -9.726768279705311e-10, -1.3242339625026134e-13, 1.1693930405511977e-16]
