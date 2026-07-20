@@ -1138,7 +1138,7 @@ class Measurement:
     # and External.Feature.
     def to_json(self):
         m = self.to_dict()
-        s = json.dumps(m, sort_keys=True, indent=2, default=str)
+        s = json.dumps(m, sort_keys=True, indent=2, default=lambda o: o.to_json())
         return util.clean_json(s)
 
     def save_spc_file(self, use_basename=False, resave=False):

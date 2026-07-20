@@ -344,5 +344,29 @@ def normalize_decimal(obj):
             elif isinstance(obj[i], (list, dict)):
                 normalize_decimal(obj[i])
 
+def traverse_json(obj, label="root", indent=2):
+    spc = " " * indent
+    t = type(obj).__name__
+    spc += " "
+
+    if hasattr(obj, "to_json"):
+        json = obj.to_json()
+        log.debug(f"{spc}{label}: {t}.to_json: {json}")
+    elif isinstance(obj, dict):
+        log.debug(f"{spc}{label}: traversing {t}")
+        spc += " "
+        for k, v in obj.items():
+            traverse_json(v, k, indent+2)
+    elif isinstance(obj, list):
+        if len(obj) > 0 and isinstance(obj[0], (int, float)): # , np.float32, np.float64, np.ndarray)):
+            # flatten simple lists
+            log.debug(f"{spc}{label}: {t} {obj}")
+        else:
+            log.debug(f"{spc}{label}: iterating {t}")
+            for i, v in enumerate(obj):
+                traverse_json(v, f"index {i}", indent+2)
+    else:
+        log.debug(f"{spc}{label}: {obj} ({t})")
+
 def python_version():
     return ".".join([str(x) for x in sys.version_info])
