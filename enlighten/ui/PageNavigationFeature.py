@@ -131,6 +131,8 @@ class PageNavigationFeature(EnlightenFeature):
         self.combo_view         = cfu.comboBox_view
         self.stack_main         = cfu.stackedWidget_low
         self.combo_technique    = cfu.comboBox_technique
+        self.scroll_controls    = cfu.controlWidget_scrollArea
+        self.scroll_hardware    = cfu.scrollArea_hardware
 
         self.button_raman       .setWhatsThis("Switch to Raman mode, which enables Raman-relevant features in the Control Palette.")
         self.button_non_raman   .setWhatsThis("Switch to non-Raman mode, which hides Raman-only features while adding features for absorbance, reflectance etc.")
@@ -439,3 +441,29 @@ class PageNavigationFeature(EnlightenFeature):
 
         log.error("unknown view %s", label)
         return common.Views.HARDWARE
+
+    # ##########################################################################
+    # General navigation utilities
+    # ##########################################################################
+
+    def _scroll(self, offset):
+        if self.doing_hardware():
+            scroll_area = self.scroll_hardware
+        else:
+            scroll_area = self.scroll_controls
+
+        scroll_bar = scroll_area.verticalScrollBar()
+        old = scroll_bar.value()
+        lo = scroll_bar.minimum()
+        hi = scroll_bar.maximum()
+
+        new = min(hi, max(lo, old + offset))
+        scroll_bar.setValue(new)
+
+    def scroll_up(self):
+        """ Controller ctrl-up shortcut """
+        self._scroll(-500)
+
+    def scroll_down(self):
+        """ Controller ctrl-down shortcut """
+        self._scroll(+500)

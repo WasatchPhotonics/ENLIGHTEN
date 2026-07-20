@@ -34,6 +34,8 @@ class StripChartsFeature(EnlightenFeature):
         # chart.layout.setParent(self.layout_charts)
         self.layout_charts.addItem(chart.layout)
 
+        log.debug(f"created StripChart for {name}")
+
         return chart
 
     def process_reading(self, spec, reading):

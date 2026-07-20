@@ -6,10 +6,10 @@ from enlighten.EnlightenFeature import EnlightenFeature
 
 if common.use_pyside2():
     from PySide2 import QtGui
-    from PySide2.QtWidgets import QMessageBox, QCheckBox, QDialog, QLineEdit, QDialogButtonBox, QVBoxLayout, QLabel, QTextEdit
+    from PySide2.QtWidgets import QMessageBox, QCheckBox, QDialog, QLineEdit, QDialogButtonBox, QVBoxLayout, QLabel, QTextEdit, QScrollArea, QWidget
 else:
     from PySide6 import QtGui
-    from PySide6.QtWidgets import QMessageBox, QCheckBox, QDialog, QLineEdit, QDialogButtonBox, QVBoxLayout, QLabel, QTextEdit
+    from PySide6.QtWidgets import QMessageBox, QCheckBox, QDialog, QLineEdit, QDialogButtonBox, QVBoxLayout, QLabel, QTextEdit, QScrollArea, QWidget
 
 log = logging.getLogger(__name__)
 
@@ -259,4 +259,34 @@ class GUIFeature(EnlightenFeature):
         vb.addWidget(te)
 
         dialog.exec_()
-        # no return value, this is "display-only"
+
+    def msgbox_with_scrolling_html(self, title, label_text, html):
+        # create a dialog box
+        dialog = QDialog(parent=self.ctl.form)
+        dialog.setModal(True)
+        dialog.setWindowTitle(title)
+        dialog.setSizeGripEnabled(True)
+        dialog_layout = QVBoxLayout(dialog)
+
+        # add a scrolling area to the dialog
+        sa = QScrollArea(dialog)
+        sa.setWidgetResizable(True)
+        dialog_layout.addWidget(sa)
+
+        # Scroll areas contain (scroll) exactly one widget. 
+        # In this case, give it a vertical container widget.
+        container = QWidget() 
+        sa.setWidget(container)
+        vb = QVBoxLayout(container)
+
+        # now we can add our standard label and textedit widgets to the container
+        lb = QLabel(label_text, parent=dialog)
+
+        te = QTextEdit(parent=dialog)
+        te.setHtml(html)
+        te.setReadOnly(True)
+
+        vb.addWidget(lb)
+        vb.addWidget(te)
+
+        dialog.exec_()

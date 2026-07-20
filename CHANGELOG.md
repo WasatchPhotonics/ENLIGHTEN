@@ -2,6 +2,21 @@
 
 ## 4.2 XS V2 Commercial Release
 
+- 2026-07-?? 4.2.6
+    - fixed Multispec combobox for long model names
+    - fixed JSON export bug
+    - improved JSON format
+    - moved Measurements -> MeasurementsFeature (extends EnlightenFeature)
+    - fixed EtalonCorrection
+    - save laser temperature on XS Auto-Raman
+    - shortcuts
+        - ctrl-M toggles library Matching
+        - ctrl-Q quits
+        - ctrl-shift-D toggles DALAI
+        - ctrl-shift-S exports all Saved measurements
+        - ctrl-up/dn scrolls control palette or hardware view as appropriate
+    - plugins
+        - added Prod.ConfigurationCheck
 - 2026-07-08 4.2.5
     - fixed poorly-tested bugs in 4.2.4
         - including inability to write horiz ROI in EEPROM

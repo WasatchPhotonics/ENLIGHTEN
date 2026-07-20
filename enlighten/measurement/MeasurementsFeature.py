@@ -12,6 +12,7 @@ from SPyC_Writer.SPCEnums import SPCFileType, SPCXType, SPCYType, SPCTechType
 from enlighten import util
 from enlighten import common
 from enlighten.common import msgbox
+from enlighten.EnlightenFeature import EnlightenFeature
 from enlighten.measurement.Measurement import Measurement
 
 if common.use_pyside2():
@@ -26,18 +27,17 @@ log = logging.getLogger(__name__)
 # during this session via the Acquire button or BatchCollection, or which have
 # been loaded from disk via the Load button.  It can be considered to be the set
 # of ThumbnailWidgets which fill the left-hand capture column in the GUI.
-class Measurements:
+class MeasurementsFeature(EnlightenFeature):
 
     # I see no need to deepcopy this Singleton (and this allows us to deepcopy
-    # Measurements freely).
+    # Measurement objects freely).
     def __deepcopy__(self, memo):
         log.debug("blocking deep-copy")
 
     def __init__(self, ctl):
+        super().__init__(ctl)
 
-        self.ctl = ctl
-
-        cfu = self.ctl.form.ui
+        cfu = ctl.form.ui
 
         self.measurements = []
 
@@ -469,7 +469,10 @@ class Measurements:
             filename += ".json"
         pathname = os.path.join(directory, filename)
 
-        s = json.dumps(export, sort_keys=True, indent=2)
+        # log.debug("traversing 'export' to look for non-exportable blocks...")
+        # util.traverse_json(export)
+
+        s = json.dumps(export, sort_keys=True, indent=2, default=lambda o: o.to_json())
         with open(pathname, "w") as f:
             f.write(util.clean_json(s))
 

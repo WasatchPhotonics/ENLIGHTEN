@@ -29,7 +29,7 @@ class EtalonCorrectionFeature(EnlightenFeature):
             self.visible = False
         else:
             self.visible = spec.settings.etalon_correction is not None
-            log.debug("update_visibility: visible = {self.visible}")
+            log.debug(f"update_visibility: visible = {self.visible}")
 
         self.cb_enable.setVisible(self.visible)
         self.bt_toggle.setVisible(self.visible)
@@ -47,7 +47,7 @@ class EtalonCorrectionFeature(EnlightenFeature):
         self.update_visibility()
 
     def process(self, pr):
-        if not pr.settings.etalon_correction:
+        if not self.enabled or not pr.settings.etalon_correction:
             return
 
         try:
