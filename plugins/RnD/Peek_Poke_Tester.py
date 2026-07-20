@@ -18,11 +18,11 @@ TIMEOUT_MS = 1000
 class Peek_Poke_Tester(EnlightenPluginBase):    
     
     def get_configuration(self):        
-        self.name = "Registry Peek"
+        self.name = "Registrar Peek"
         self.process_requests = False
         
         self.field(name = "Address", datatype = str, direction = "input")
-        self.field(name = "Length", datatype = str, direction = "input", initial = 64)
+        self.field(name = "Length", datatype = str, direction = "input")
         self.field(name = "Peek", datatype = "button", callback = self.run_peek)
         
         #self.run_peek()
@@ -36,7 +36,8 @@ class Peek_Poke_Tester(EnlightenPluginBase):
         
         progname = sys.argv.pop(0)
         
-        data = self.get_cmd(0x91, self.address, length = self.length)
+        #data = self.get_cmd(0x91, self.address, length = self.length)
+        data = self.get_cmd(address = self.address, length = self.length)
         data_hex = " ".join([f"{v:02x}" for v in data])
         values = f"0x{self.address:02x} << 0x{data_hex} ({len(data)} bytes)"
         
@@ -46,7 +47,7 @@ class Peek_Poke_Tester(EnlightenPluginBase):
         ########################################################################
         
         
-        label_text = f"Registry peek on {model} {sn} at {self.address}:"
+        label_text = f"Registrar peek on {model} {sn} at {self.address}:"
 
         html = ""
         html += self.html_list("Notes", values)
@@ -55,6 +56,7 @@ class Peek_Poke_Tester(EnlightenPluginBase):
 
     def get_cmd(self, address, value = 0, index = 0, length = 64, lsb_len=None, msb_len=None):
         
+        log.debug(f"Device: {DEVICE_TO_HOST}")
         log.debug(f"Address: {address}")
         log.debug(f"value: {value}")
         log.debug(f"index: {index}")
@@ -63,12 +65,12 @@ class Peek_Poke_Tester(EnlightenPluginBase):
         log.debug(f"msb_len: {msb_len}")
         
         result = dev.ctrl_transfer(
-            DEVICE_TO_HOST, 
-            address, 
-            value, 
-            index, 
-            length, 
-            TIMEOUT_MS)              
+            bmRequestType = DEVICE_TO_HOST, 
+            bRequest = address, 
+            wValue = value, 
+            wIndex = index, 
+            data_or_wLength = length, 
+            timeout = TIMEOUT_MS)              
 
         value = 0
         if msb_len is not None:
