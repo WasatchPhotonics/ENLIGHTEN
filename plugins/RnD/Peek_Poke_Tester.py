@@ -3,7 +3,6 @@ import argparse
 import sys
 import logging
 import os
-import platform
 from EnlightenPlugin import EnlightenPluginBase
 log = logging.getLogger(__name__)
 #from wasatch.FeatureIdentificationDevice import FeatureIdentificationDevice
@@ -23,6 +22,7 @@ class Peek_Poke_Tester(EnlightenPluginBase):
         
         self.field(name = "Address", datatype = str, direction = "input")
         self.field(name = "Length", datatype = str, direction = "input")
+        self.field(name = "Value", datatype = str, direction = "output")
         self.field(name = "Peek", datatype = "button", callback = self.run_peek)
         
         #self.run_peek()
@@ -32,29 +32,23 @@ class Peek_Poke_Tester(EnlightenPluginBase):
         self.length = str(request.fields["Length"])
     
     def run_peek(self):
-        values = []
+        values = ""
         
-        progname = sys.argv.pop(0)
+        #progname = sys.argv.pop(0)
         
         #data = self.get_cmd(0x91, self.address, length = self.length)
         data = self.get_cmd(address = self.address, length = self.length)
         data_hex = " ".join([f"{v:02x}" for v in data])
-        values = f"0x{self.address:02x} << 0x{data_hex} ({len(data)} bytes)"
+        log.debug(f"data: {data}")
+        log.debug(f"data_hex: {data_hex}")
+        log.debug(f'Result Print: {self.address} << 0x{data_hex} ({len(data)} bytes)')
+        #values = f"0x{self.address:02x} << 0x{data_hex} ({len(data)} bytes)"
+        #values = f"Result: {self.address} << 0x{data_hex} ({len(data)} bytes)"
+        #values = str(self.address) + "<< 0x" + str(data_hex) + str(len(data))
+        self.outputs["Value"] = f'0x{data_hex}'
         
-        
-        ########################################################################
-        # Output report
-        ########################################################################
-        
-        
-        label_text = f"Registrar peek on {model} {sn} at {self.address}:"
-
-        html = ""
-        html += self.html_list("Notes", values)
-            
-        self.ctl.gui.msgbox_with_scrolling_html("Registry Check", label_text, html)
-
-    def get_cmd(self, address, value = 0, index = 0, length = 64, lsb_len=None, msb_len=None):
+    def get_cmd(self, address: int, value: int = 0, index: int = 0, length: int = 64, lsb_len: int = None, msb_len: int = None):
+        result = None
         
         log.debug(f"Device: {DEVICE_TO_HOST}")
         log.debug(f"Address: {address}")
@@ -65,12 +59,12 @@ class Peek_Poke_Tester(EnlightenPluginBase):
         log.debug(f"msb_len: {msb_len}")
         
         result = dev.ctrl_transfer(
-            bmRequestType = DEVICE_TO_HOST, 
-            bRequest = address, 
-            wValue = value, 
-            wIndex = index, 
-            data_or_wLength = length, 
-            timeout = TIMEOUT_MS)              
+            DEVICE_TO_HOST, 
+            int(address, 16), 
+            value, 
+            index, 
+            length)
+        log.debug(f"Result: {result}")
 
         value = 0
         if msb_len is not None:
