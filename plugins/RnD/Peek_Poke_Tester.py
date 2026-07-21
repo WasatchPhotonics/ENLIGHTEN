@@ -3,44 +3,82 @@ import argparse
 import sys
 import logging
 import os
+
 from EnlightenPlugin import EnlightenPluginBase
+
 log = logging.getLogger(__name__)
 
-#pid = 0x4000
-dev = usb.core.find(idVendor = 0x24aa, idProduct = 0x4000)
 HOST_TO_DEVICE = 0x40
 DEVICE_TO_HOST = 0xC0
 Timeout_ms = 1000  
 
-
-class Peek_Poke_Tester(EnlightenPluginBase):    
+class Peek_Poke_Tester(EnlightenPluginBase):
+    """
+    Besides meeting an immediate need for technicians and engineers desiring to 
+    use the new USB "peek/poke" functionality to directly read and write FPGA 
+    registers from ENLIGHTEN, also provides an example of how to directly talk
+    to a spectrometer's low-level USB interface from an ENLIGHTEN plugin (not
+    that this is something we'd want to commonly do).
+    """
     
     def get_configuration(self):         
         self.name = "Register Peek"
         self.process_requests = False
         
-        self.field(name = "Address", datatype = str, direction = "input") 
-        self.field(name = "Length", datatype = str, direction = "input") 
+        self.field(name = "Address", datatype = str, direction = "input", tooltip="values should be entered in hex (leading 0x optional)") 
+        self.field(name = "Length", datatype = int, direction = "input", minimum=1, maximum=64, initial=1) 
         self.field(name = "Value", datatype = str, direction = "output")
         self.field(name = "Peek", datatype = "button", callback = self.run_peek)
         
-    def process_request(self, request):        
-        self.address = request.fields["Address"]
-        self.length = request.fields["Length"]
-    
     def run_peek(self):               
-        data = self.get_cmd(address = self.address, length = self.length)
+        ########################################################################
+        # get existing handle to usb.core.Device
+        ########################################################################
+
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            self.ctl.marquee.error("PeekPokeTester requires spectrometer")
+            return
+
+        if not spec.settings.is_xs():
+            self.ctl.marquee.error("PeekPokeTester requires XS")
+            return
+
+        wdw = spec.device # a wasatch.WasatchDeviceWrapper
+        worker = wdw.wrapper_worker # a wasatch.WrapperWorker
+        wasatch_device = worker.connected_device # a wasatch.WasatchDevice (since we already confirmed it's an XS)
+        fid = wasatch_device.hardware # a wasatch.FeatureInterfaceDevice
+        usb_core_device = fid.device # a usb.core.Device from pyusb
+
+        ########################################################################
+        # get address and length
+        ########################################################################
+
+        address = int(self.get_widget_from_name("Address").text().lower().removeprefix("0x"), 16)
+        length = int(self.get_widget_from_name("Length").value())
+
+        ########################################################################
+        # perform the peek
+        ########################################################################
+
+        data = self.get_cmd(dev=usb_core_device, cmd=0x91, value=address, length=length)
+        if data is None:
+            self.ctl.marquee.error("PeekPokeTester peek returned None")
+            return
+
         data_hex = " ".join([f"{v:02x}" for v in data])
         log.debug(f"data: {data}")
         log.debug(f"data_hex: {data_hex}")
-        log.debug(f'Result Print: {self.address} << 0x{data_hex} ({len(data)} bytes)')
-        self.outputs["Value"] = f'0x{data_hex}'
+        log.debug(f'Result Print: {address} << 0x{data_hex} ({len(data)} bytes)')
+
+        self.get_widget_from_name("Value").setText(f"0x{data_hex}")
+        self.ctl.marquee.info(f"Peek 0x{address:02x} -> 0x{data_hex}")
         
-    def get_cmd(self, address: int, value: int = 0, index: int = 0, length: int = 64, lsb_len: int = None, msb_len: int = None):
+    def get_cmd(self, dev, cmd: int, value: int = 0, index: int = 0, length: int = 64, lsb_len: int = None, msb_len: int = None):
         result = None
         
-        log.debug(f"Device: {DEVICE_TO_HOST}")
-        log.debug(f"Address: {address}")
+        log.debug(f"Device: {dev}")
+        log.debug(f"cmd: {cmd}")
         log.debug(f"value: {value}")
         log.debug(f"index: {index}")
         log.debug(f"length: {length}")
@@ -49,7 +87,7 @@ class Peek_Poke_Tester(EnlightenPluginBase):
         
         result = dev.ctrl_transfer(
             bmRequestType =     DEVICE_TO_HOST, 
-            bRequest =          int(address, 16),
+            bRequest =          cmd,
             wValue =            value, 
             wIndex =            index, 
             data_or_wLength =   length,
