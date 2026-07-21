@@ -323,10 +323,11 @@ class DalaiRamanFeature(EnlightenFeature):
         log.debug(f"AI_wavenumbers {AI_wavenumbers}")
         log.debug(f"AI_spectrum {AI_spectrum}")
 
-        # store the DALAI spectrum in a child of the ProcessedReading
+        # Store the DALAI spectrum in a child of the ProcessedReading.
+        # Convert Numpy classes to native types to simplify JSON exports etc.
         child_pr = ProcessedReading()
-        child_pr.wavenumbers = AI_wavenumbers
-        child_pr.processed = AI_spectrum
+        child_pr.wavenumbers = AI_wavenumbers.tolist()
+        child_pr.processed = AI_spectrum.tolist()
         child_pr.dalai_model_name = self.current_model_name
         child_pr.dalai_model_label = self.current_model_label
 

@@ -50,7 +50,7 @@ class BasicWindow(QtWidgets.QMainWindow):
         else:
             self.ui.frame_scopeSetup_spectra.show()
 
-    def closeEvent(self, event):
+    def closeEvent(self, event=None):
         log.debug("BasicWindow (QMainWindow) received close event")
 
         if self.prompt_on_exit:
@@ -64,10 +64,12 @@ class BasicWindow(QtWidgets.QMainWindow):
 
             if reply != QtWidgets.QMessageBox.Yes:
                 log.debug('"We are cancelling the apocalypse!"')
-                event.ignore()
+                if event is not None:
+                    event.ignore()
                 return
 
         log.debug("exit confirmed...accepting event")
-        event.accept()
+        if event is not None:
+            event.accept()
         log.debug("emitting BasicWindow.ViewClose.exit signal")
         self.exit_signal.exit.emit("close event")

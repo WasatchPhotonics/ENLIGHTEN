@@ -469,6 +469,9 @@ class MeasurementsFeature(EnlightenFeature):
             filename += ".json"
         pathname = os.path.join(directory, filename)
 
+        # log.debug("traversing 'export' to look for non-exportable blocks...")
+        # util.traverse_json(export)
+
         s = json.dumps(export, sort_keys=True, indent=2, default=lambda o: o.to_json())
         with open(pathname, "w") as f:
             f.write(util.clean_json(s))

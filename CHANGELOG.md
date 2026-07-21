@@ -5,8 +5,10 @@
 - 2026-07-?? 4.2.6
     - fixed Multispec combobox for long model names
     - fixed JSON export bug
+    - improved JSON format
     - moved Measurements -> MeasurementsFeature (extends EnlightenFeature)
     - fixed EtalonCorrection
+    - save laser temperature on XS Auto-Raman
     - shortcuts
         - ctrl-M toggles library Matching
         - ctrl-Q quits

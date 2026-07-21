@@ -1135,7 +1135,7 @@ class Controller:
         make_shortcut("Ctrl+L", self.laser_control.toggle_laser)
         make_shortcut("Ctrl+M", self.library_matching.toggle_callback)
         make_shortcut("Ctrl+N", self.save_options.focus_note) # note this gives easy access to prefix/suffix as well via shift-tab
-        make_shortcut("Ctrl+Q", partial(self.close, "ctrl-Q pressed"))
+        make_shortcut("Ctrl+Q", self.form.close)
         make_shortcut("Ctrl+P", self.vcr_controls.toggle) # pause/play
         make_shortcut("Ctrl+R", self.reference_feature.toggle)
         make_shortcut("Ctrl+S", self.vcr_controls.save)
