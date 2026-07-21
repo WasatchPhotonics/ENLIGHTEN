@@ -2,7 +2,10 @@
 
 ## 4.2 XS V2 Commercial Release
 
-- 2026-07-?? 4.2.6
+- 2026-??-??
+	- plugins
+		- added RnD.Peek_Poke_Tester
+- 2026-07-20 4.2.6
     - fixed Multispec combobox for long model names
     - fixed JSON export bug
     - improved JSON format
