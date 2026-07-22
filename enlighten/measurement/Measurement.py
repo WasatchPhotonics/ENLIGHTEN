@@ -1138,6 +1138,10 @@ class Measurement:
     # and External.Feature.
     def to_json(self):
         m = self.to_dict()
+
+        # log.debug("traversing Measurement to look for non-exportable blocks...")
+        # util.traverse_json(m)
+
         s = json.dumps(m, sort_keys=True, indent=2, default=lambda o: o.to_json())
         return util.clean_json(s)
 
