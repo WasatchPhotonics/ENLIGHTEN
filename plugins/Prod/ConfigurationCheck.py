@@ -182,15 +182,19 @@ class ConfigurationCheck(EnlightenPluginBase):
             if is_xs:
                 if has_laser_power_cal:
                     bad.append(f"it is unusual for an XS unit to have a laser power calibration")
+                elif ee.max_laser_power_mW < 90 or ee.max_laser_power_mW > 110:
+                    bad.append(f"max_laser_power_mW {ee.max_laser_power_mW} seems unusual for xs units")
+                elif ee.max_laser_power_mW > 90 and ee.max_laser_power_mW < 110:
+                    notes.append(f"max_laser_power_mW {ee.max_laser_power_mW} seems reasonable")
             else:
                 if has_laser_power_cal:
                     notes.append(f"it seems reasonable for laser-equipped model {model} to have a laser power calibration")
                 else:
                     bad.append(f"it seems unusual for laser-equipped model {model} to lack a laser power calibration")
-
+                       
         if has_laser_power_cal:
-            if ee.max_laser_mW < 3 or ee.max_laser_mW > 485:
-                bad.append(f"max_laser_mW {ee.max_laser_mW} seems unusual for units with a laser power calibration")
+            if ee.max_laser_power_mW < 3 or ee.max_laser_power_mW > 485:
+                bad.append(f"max_laser_power_mW {ee.max_laser_power_mW} seems unusual for units with a laser power calibration")
 
         # attenuator (XS)
         laser_attenuator = ee.laser_attenuator
