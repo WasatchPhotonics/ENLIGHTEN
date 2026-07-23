@@ -38,6 +38,13 @@ class ImportWorker(threading.Thread):
         self.feature.imported = True
 
 class DalaiRamanFeature(EnlightenFeature):
+    """
+    DALAI-RAMAN is an acronym for:
+
+        Dieters Augmented Library Artificial Intelligence 
+                            for 
+            Really Awesome Mega-fast Analysis Network
+    """
 
     SECTION = "DalaiRamanFeature"
     MODEL_DIR = os.path.join("enlighten", "assets", "example_data", "dalai_models")
