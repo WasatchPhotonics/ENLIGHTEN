@@ -4,6 +4,7 @@
 
 - 2026-??-?? 4.2.7
     - add resource monitor checks around DALAI import, load and execution
+    - show progress bar while loading PixelCorrection over BLE
 	- plugins
 		- added RnD.Peek_Poke_Tester
 - 2026-07-20 4.2.6
