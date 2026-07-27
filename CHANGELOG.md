@@ -2,7 +2,8 @@
 
 ## 4.2 XS V2 Commercial Release
 
-- 2026-??-??
+- 2026-??-?? 4.2.7
+    - add resource monitor checks around DALAI import, load and execution
 	- plugins
 		- added RnD.Peek_Poke_Tester
 - 2026-07-20 4.2.6

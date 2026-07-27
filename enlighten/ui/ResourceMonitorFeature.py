@@ -68,11 +68,14 @@ class ResourceMonitorFeature(EnlightenFeature):
         
         return True
 
-    def check_memory_usage(self, now):
+    def check_memory_usage(self, now=None, label=None):
         """ Check memory usage every 5sec.@returns True if copacetic """
-        if (now - self.last_memory_check).total_seconds() < ResourceMonitorFeature.UPDATE_RATE_SEC:
+        if now is None:
+            now = datetime.datetime.now()
+        if label is None and (now - self.last_memory_check).total_seconds() < ResourceMonitorFeature.UPDATE_RATE_SEC:
             return True
 
+        label = f" ({label})"
         gc.collect()
         self.last_memory_check = now
         size_in_bytes = psutil.Process(self.process_id).memory_info().rss
@@ -91,7 +94,7 @@ class ResourceMonitorFeature(EnlightenFeature):
         self.lb_size  .setText(formatted_size)
         self.lb_growth.setText(formatted_growth)
 
-        log.info("PID %d memory = %d bytes (%s growth)", self.process_id, size_in_bytes, formatted_growth)
+        log.info("PID %d memory = %d bytes (%s growth)%s", self.process_id, size_in_bytes, formatted_growth, label)
 
         # see if we've exceeded our maximum allowed memory size
         if self.max_allowed_size is not None and size_in_bytes > self.max_allowed_size:

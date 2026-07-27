@@ -34,7 +34,11 @@ class ImportWorker(threading.Thread):
         self.feature = feature
 
     def run(self):
+        rm = self.feature.ctl.resource_monitor
+
+        rm.check_memory_usage(label="before importing TensorFlow")
         import tensorflow.lite 
+        rm.check_memory_usage(label="after importing TensorFlow")
         self.feature.imported = True
 
 class DalaiRamanFeature(EnlightenFeature):
@@ -403,11 +407,35 @@ class DalaiRamanFeature(EnlightenFeature):
             # the DALAI feature, using the ImportWorker background thread
             # and progress bar.
             import tensorflow.lite
+
+            rm = self.ctl.resource_monitor
+            rm.check_memory_usage(label=f"before loading {config.model_pathname}")
             model = tensorflow.lite.Interpreter(config.model_pathname)
+            rm.check_memory_usage(label=f"after loading {config.model_pathname}")
             model.allocate_tensors()
+            rm.check_memory_usage(label=f"after allocating tensors")
+
+            if True:
+                log.debug(f"counting parameters")
+                parameter_count = self.count_model_parameters(model)
+                log.debug(f"tflite model has {parameter_count} parameters")
+
             log.info(f"loaded tflite model {model_name}")
             self.loaded_models[model_name] = model
             return True
+
+    def count_model_parameters(self, model):
+        tensor_details = model.get_tensor_details()
+        total_parameters = 0
+        for tensor in tensor_details:
+            # Parameters (weights/biases) are stored as variables or constants
+            # Check if the tensor has a valid shape and contains data
+            shape = tensor['shape']
+            if len(shape) > 0:
+                # Multiply all dimensions of the tensor shape to get element count
+                num_elements = np.prod(shape)
+                total_parameters += num_elements
+        return total_parameters
 
     def select_model_callback(self):
         log.debug("select_model_callback: start")
@@ -478,6 +506,8 @@ class DalaiRamanFeature(EnlightenFeature):
             self.deconvolute = False
 
         log.debug(f"selecting preprocessor based on model config {self.current_model_config}")
+        rm = self.ctl.resource_monitor
+        rm.check_memory_usage(label=f"before calling clean_spectrum")
         try:
             if "X" in self.current_model_config.target_spectrometer_families:
                 log.debug("processing spectra with prep_spectra_X.clean_spectrum")
@@ -497,6 +527,7 @@ class DalaiRamanFeature(EnlightenFeature):
             msg = f"exception executing model targetting {self.current_model_config.target_spectrometer_families} spectrometers"
             self.ctl.marquee.error(msg)
             log.error(msg, exc_info=1)
+        rm.check_memory_usage(label=f"after calling clean_spectrum")
 
         trimmed_indices = (trim_start <= wavenumbers) & (wavenumbers <= trim_end)
         wavenumbers = wavenumbers[trimmed_indices]
