@@ -141,8 +141,11 @@ class ConfigurationCheck(EnlightenPluginBase):
                 bad.append(f"excitation {excitation} but {std_excitation} not in model {model}")
 
         if has_laser:
-            if ee.disable_laser_armed_indicator and not "DT" in model:
-                bad.append(f"laser armed indicator disabled in non-DT model")
+            if ee.disable_laser_armed_indicator:
+                if "DT" in model:
+                    bad.append(f"laser armed indicator disabled <b>(okay for DT)</b>")
+                else:
+                    bad.append(f"laser armed indicator disabled")
 
             if is_xs:
                 laser_tec_setpoint = ee.startup_laser_tec_setpoint
