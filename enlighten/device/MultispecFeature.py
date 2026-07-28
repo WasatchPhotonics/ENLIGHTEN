@@ -234,6 +234,13 @@ class MultispecFeature(EnlightenFeature):
     def remove_in_process(self, device_id):
         del self.in_process[device_id]
 
+    def get_in_process_wrappers(self):
+        retval = []    
+        for device_id, wdw in self.in_process.items():
+            if wdw:
+                retval.append(wdw)
+        return retval
+        
     def reset_seen(self):
         self.seen_colors = set() # '#abcdef' etc
 

@@ -146,7 +146,6 @@ class Controller:
         self.plugin                 = plugin 
         self.password               = password
 
-        self.spec_timeout_sec       = 30
         self.dialog_open            = False
         self.safe_mode              = False
 
@@ -685,9 +684,10 @@ class Controller:
                     self.header(f"connect_new: done ({device_id})")
                     
             else:
-                # didn't get settings so check for timeout
-                if wdw.connect_start_time + datetime.timedelta(seconds=self.spec_timeout_sec) < datetime.datetime.now():
-                    log.error(f"{device_id} settings timed out, giving up on the spec")
+                # have not yet received SpectrometerSettings, so check for timeout
+                connect_timeout_sec = wdw.get_connection_timeout_sec()
+                if wdw.connect_start_time + datetime.timedelta(seconds=connect_timeout_sec) < datetime.datetime.now():
+                    log.error(f"{device_id} settings timed out after {connect_timeout_sec}sec, giving up on the spec")
                     self.marquee.error(f"timed-out connecting to {device_id}")
                     disconnect_device = True
 
@@ -1338,6 +1338,22 @@ class Controller:
                 except:
                     log.debug("Error reading or processing StatusMessage on %s", spec.device_id, exc_info=1)
 
+        # quick check of in-process spectrometers (kludged to support lengthy BLE
+        # EEPROM PixelCorrection load time)
+        for wdw in self.multispec.get_in_process_wrappers():
+            while True:
+                try:
+                    if wdw is None:
+                        break
+
+                    msg = wdw.acquire_status_message()
+                    if msg is None:
+                        break
+
+                    self.process_status_message(msg)
+                except:
+                    log.debug(f"Error reading or processing StatusMessage on {wdw}", exc_info=1)
+
         ########################################################################       
         # Tick laser status
         ########################################################################       
@@ -1660,7 +1676,7 @@ class Controller:
         log.critical("acquire_reading(%s): how did we get here?!", str(device_id))
         return AcquiredReading(disconnect=True)
 
-    def process_status_message(self, msg, spec):
+    def process_status_message(self, msg, spec=None):
         """
         Used to handle StatusMessage objects received from spectrometer
         threads (as opposed to the Readings we normally receive).
@@ -1680,7 +1696,8 @@ class Controller:
             log.error("received invalid StatusMessage", exc_info=1)
             return
 
-        spec.app_state.last_status_message_time = datetime.datetime.now()
+        if spec is not None:
+            spec.app_state.last_status_message_time = datetime.datetime.now()
 
         # @todo make this a hash
         if   msg.setting == "marquee_info":
