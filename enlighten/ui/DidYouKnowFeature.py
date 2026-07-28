@@ -105,7 +105,7 @@ class DidYouKnowFeature(EnlightenFeature):
                laser excitation wavelength stored in the EEPROM to picometer precision.
                However, if you are using external lasers, you may need to tell ENLIGHTEN
                the exact wavelength of your laser to ensure the wavenumber axis is computed
-               accurately. You can do this in Expert mode, which adds a "Wavenumber" control
+               accurately. You can do this in Expert mode, which adds a "Wavelength" control
                to the Laser Control panel in 0.001nm precision.</p>""")
         tip("Audible Laser Warning", "ear", """
             <p>Wasatch spectrometers and ENLIGHTEN™ software try hard to make it extremely
