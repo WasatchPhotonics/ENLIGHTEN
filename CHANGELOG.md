@@ -5,8 +5,10 @@
 - 2026-??-?? 4.2.7
     - add resource monitor checks around DALAI import, load and execution
     - show progress bar while loading PixelCorrection over BLE
+    - fixed scope graph marker
 	- plugins
 		- added RnD.Peek_Poke_Tester
+        - extended Prod.ConfigurationCheck
 - 2026-07-20 4.2.6
     - fixed Multispec combobox for long model names
     - fixed JSON export bug
