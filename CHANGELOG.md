@@ -7,6 +7,7 @@
     - show progress bar while loading PixelCorrection over BLE
 	- plugins
 		- added RnD.Peek_Poke_Tester
+		- add RnD.Mapper
 - 2026-07-20 4.2.6
     - fixed Multispec combobox for long model names
     - fixed JSON export bug
