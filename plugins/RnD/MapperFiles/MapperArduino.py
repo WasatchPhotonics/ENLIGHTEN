@@ -320,7 +320,6 @@ class Stepper(object):
         resp = self.send_cmd(cmd)
         return resp
 
-
 # mA^###  = move_absolute(long new_target)
 
     def move_absolute(self, new_target):
@@ -336,7 +335,6 @@ class Stepper(object):
         new_target = self.mm_to_steps(new_target_mm)
         return self.move_absolute(new_target)
 
-
 # mR^###  = move_relative(long distance)
 
     def move_relative(self, distance):
@@ -351,32 +349,3 @@ class Stepper(object):
     def move_relative_mm(self, distance_mm):
         distance = self.mm_to_steps(distance_mm)
         return self.move_relative(distance)
-
-
-
-# Test
-
-#if __name__ == "__main__":
-
-    #mapper = Mapper()
-    #if mapper.device:
-        #print("Current Position: ", mapper.x.read_position(), mapper.y.read_position())
-        #print("Move 2000 Steps in X... ", mapper.x.move_relative(2000))
-        #print("Move 1000 Steps in Y... ", mapper.y.move_relative(1000))
-        #print("Current Position: ", mapper.x.read_position(), mapper.y.read_position())
-        #print("Current Position (mm): ", mapper.x.read_position_mm(), mapper.y.read_position_mm())
-        #print("Find Home Position in X... ", mapper.x.find_home_position())
-        #print("Find Home Position in Y... ", mapper.y.find_home_position())
-        #print("Current Position: ", mapper.x.read_position(), mapper.y.read_position())
-        #print("Move 5000 Steps in X... ", mapper.x.move_relative(5000))
-        #print("Move 20 mm in Y... ", mapper.y.move_relative_mm(20))
-        #print("Current Position: ", mapper.x.read_position(), mapper.y.read_position())
-        #print("Current Position (mm): ", mapper.x.read_position_mm(), mapper.y.read_position_mm())
-        #print("Move 100 um in X... ", mapper.x.move_relative_um(100))
-        #print("Current Position (mm): ", mapper.x.read_position_mm(), mapper.y.read_position_mm())
-        #print("Closing...: ", mapper.disconnect())
-    #else:
-        #print("Mapper not found!")
-
-    #print('### DONE ###')
-
