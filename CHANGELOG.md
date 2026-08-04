@@ -6,8 +6,12 @@
     - add resource monitor checks around DALAI import, load and execution
     - show progress bar while loading PixelCorrection over BLE
     - fixed scope graph marker
-    - sped JSON export by simplifying util.clean_json
 	- fixed an error while editing horizontal ROI live
+    - moved ProgressBarFeature onto its own QTimer (allows control from non-GUI threads)
+    - exports
+        - added file_io.EnlightenJSONEncoder (simplified util.clean_json)
+        - moved exports onto new ExportWorker thread in MeasurementsFeature
+        - show progress bar during exports
 	- plugins
 		- added RnD.Peek_Poke_Tester
         - extended Prod.ConfigurationCheck
