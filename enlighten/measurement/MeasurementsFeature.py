@@ -1,4 +1,3 @@
-import datetime
 import logging
 import json
 import csv
@@ -6,6 +5,7 @@ import os
 
 import numpy as np
 
+from datetime import datetime
 from SPyC_Writer import SPCFileWriter
 from SPyC_Writer.SPCEnums import SPCFileType, SPCXType, SPCYType, SPCTechType
 
@@ -331,7 +331,7 @@ class MeasurementsFeature(EnlightenFeature):
 
         visible_only = False
         if filename is None:
-            now = datetime.datetime.now()
+            now = datetime.now()
 
             default_filename = f"{self.ctl.save_options.prefix()}-" if self.ctl.save_options.has_prefix() else "Session-"
             default_filename += now.strftime("%Y%m%d-%H%M%S")
@@ -828,6 +828,7 @@ class MeasurementsFeature(EnlightenFeature):
                 if wavenumbers is not None and pixel < len(wavenumbers):
                     result = f"{wavenumbers[pixel]:.2f}"
             # log.debug(f"get_x_header_value: header {header}, pixel {pixel}, result {result}")
+
             return result
 
         def get_pr_header_value(m, header, pixel, pr=None):
@@ -838,13 +839,13 @@ class MeasurementsFeature(EnlightenFeature):
 
             a = None
             if header == "processed":
-                a = pr.get_processed()
+                a = pr.get_processed(fast=True)
             elif header == "reference":
-                a = pr.get_reference()
+                a = pr.get_reference(fast=True)
             elif header == "dark":
-                a = pr.get_dark()
+                a = pr.get_dark(fast=True)
             elif header == "raw":
-                a = pr.get_raw()        
+                a = pr.get_raw(fast=True)
 
             if a is None:
                 return "NA"
@@ -958,6 +959,7 @@ class MeasurementsFeature(EnlightenFeature):
                                 row.append(get_pr_header_value(m, header, pixel))
                         else:
                             row.extend(BLANK * len(pr_headers))
+
                 csv_writer.writerow(row)
 
     ##
