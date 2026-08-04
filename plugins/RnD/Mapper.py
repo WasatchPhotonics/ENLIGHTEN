@@ -17,6 +17,8 @@ Change Log:
     - a sleep of 0.5 added to home_mapper
     - the directional controls (forward, back, right and left) funtion using the um scale for fine control
     - Version updated to 1.1
+- 08-04-2026    
+    - Updated update_display to allow for changes in um and mm
 
 Questions:
 - should the "Home Mapper" button be removed?  if we home at startup is there ever a reason to home after?
@@ -24,7 +26,6 @@ Questions:
 - Should the directional controls work from the camera perspective?
 
 To Do:
-- Update update_dislay to account for the um changes as well as the mm changes.
 - Remove the commented code sections once confirmed it is liked that way.
 - Shortcut keys for the fine tuning directional controls?
 """
@@ -47,7 +48,6 @@ class Mapper(EnlightenPluginBase):
     ############################################################################
 
     def get_configuration(self):
-
         self.name = f"Mapper {self.VERSION}"
 
         self.field(
@@ -80,7 +80,7 @@ class Mapper(EnlightenPluginBase):
                    datatype=float, 
                    precision=2,
                    initial=1.0, 
-                   minimum=-100.0,
+                   minimum=0.0,
                    maximum = 1000.0,
                    callback=self.update_variables,
                    tooltip="How far to move the mapper in x/y in a single step")
@@ -195,7 +195,7 @@ class Mapper(EnlightenPluginBase):
             
         self.mapper.y.move_relative_um(self.step_size)
         # update internal variables
-        self.position_y += self.step_size
+        self.position_y += (self.step_size / 1000)
         self.update_display()
         
 # Moving negative on the Y-axis based on the current value of step_size
@@ -212,7 +212,7 @@ class Mapper(EnlightenPluginBase):
             
         self.mapper.y.move_relative_um(-self.step_size)
         # update internal variables
-        self.position_y -= self.step_size
+        self.position_y -= (self.step_size / 1000)
         self.update_display()
 
 # Moving positive on the X-axis based on the current value of step_size 
@@ -229,7 +229,7 @@ class Mapper(EnlightenPluginBase):
             
         self.mapper.x.move_relative_um(-self.step_size)
         # update internal variables
-        self.position_x -= self.step_size
+        self.position_x -= (self.step_size / 1000)
         self.update_display()
 
 # Moving negative on the X-axis based on the current value of step_size   
@@ -246,7 +246,7 @@ class Mapper(EnlightenPluginBase):
             
         self.mapper.x.move_relative_um(self.step_size)
         # update internal variables
-        self.position_x += self.step_size
+        self.position_x += (self.step_size / 1000)
         self.update_display()
 
 # Moves to the specific position, based on 0,0 mapping position and user inputs
@@ -302,3 +302,5 @@ class Mapper(EnlightenPluginBase):
     def disconnect(self):
         self.mapper.disconnect()
         super().disconnect()
+        
+    
