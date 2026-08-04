@@ -311,17 +311,18 @@ def _json_object_hook(d):
 # @note this is assuming arrays of numbers...if the input JSON includes arrays of
 #       strings, and strings could contain ] characters, this would probably 
 #       corrupt data.
-def clean_json(s):
-    pattern = r'^(.*)' + r'\[' + "[\n\r]+" + r'([^\]]+)' + r'\]' + r'(.*)$'
-    pat = re.compile(pattern, flags=re.DOTALL)
+def clean_json(s, reformat=True):
+    if reformat:
+        pattern = r'^(.*)' + r'\[' + "[\n\r]+" + r'([^\]]+)' + r'\]' + r'(.*)$'
+        pat = re.compile(pattern, flags=re.DOTALL)
 
-    m = pat.match(s)
-    while m is not None:
-        array_contents = m.group(2).strip()
-        contents_as_line = re.sub(r",\s+", ", ", array_contents)
-        new_list = "[ " + contents_as_line + " ]"
-        s = m.group(1) + new_list + m.group(3)
         m = pat.match(s)
+        while m is not None:
+            array_contents = m.group(2).strip()
+            contents_as_line = re.sub(r",\s+", ", ", array_contents)
+            new_list = "[ " + contents_as_line + " ]"
+            s = m.group(1) + new_list + m.group(3)
+            m = pat.match(s)
 
     # Java's JSON parser breaks on NaN...the spec is iffy
     return re.sub(r"\bNaN\b", "null", s)

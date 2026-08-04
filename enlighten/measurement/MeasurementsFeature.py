@@ -395,6 +395,8 @@ class MeasurementsFeature(EnlightenFeature):
             if self.ctl.save_options.save_spc():
                 self.export_session_spc(directory, filename, visible_only=visible_only)
 
+        # MZ: this seems weird...why are we sending visible_only as the value, 
+        # instead of 'export' (the dict)? Who subscribes to this?
         self.notify_observers_with_value(visible_only, "export")
 
     def read_measurements(self):
@@ -402,9 +404,16 @@ class MeasurementsFeature(EnlightenFeature):
 
     def generate_export_dict(self, visible_only=False) -> list[dict]:
         if visible_only:
-            export = [ m.to_dict() for m in self.measurements if m.is_displayed() ]
+            exportable = [ m for m in self.measurements if m.is_displayed() ]
         else:
-            export = [ m.to_dict() for m in self.measurements ]
+            exportable = list(self.measurements)
+
+        export = []
+        for i, m in enumerate(exportable):
+            # do these one at a time to assist profiling
+            # log.debug(f"generate_export_dict: converting measurement {i} of {len(exportable)} to dict")
+            export.append(m.to_dict())
+
         return export
 
     def export_session_spc(self, directory, filename, visible_only=False):
@@ -473,8 +482,11 @@ class MeasurementsFeature(EnlightenFeature):
         # util.traverse_json(export)
 
         s = json.dumps(export, sort_keys=True, indent=2, default=lambda o: o.to_json())
+        s = util.clean_json(s, reformat=False)
+
+        log.debug(f"export_session_json: writing {pathname}")
         with open(pathname, "w") as f:
-            f.write(util.clean_json(s))
+            f.write(s)
 
     def export_session_csv(self, directory, filename, visible_only=False):
         if not filename.endswith(".csv"):

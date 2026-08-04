@@ -6,6 +6,7 @@
     - add resource monitor checks around DALAI import, load and execution
     - show progress bar while loading PixelCorrection over BLE
     - fixed scope graph marker
+    - sped JSON export by simplifying util.clean_json
 	- plugins
 		- added RnD.Peek_Poke_Tester
         - extended Prod.ConfigurationCheck
