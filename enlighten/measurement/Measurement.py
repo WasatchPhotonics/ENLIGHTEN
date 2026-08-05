@@ -1143,7 +1143,7 @@ class Measurement:
         # log.debug("traversing Measurement to look for non-exportable blocks...")
         # util.traverse_json(m)
 
-        s = json.dumps(m, cls=EnlightenJSONEncoder, sort_keys=True, indent=2, default=lambda o: o.to_json())
+        s = json.dumps(m, cls=EnlightenJSONEncoder, sort_keys=True, indent=2)
         return util.clean_json(s)
 
     def save_spc_file(self, use_basename=False, resave=False):

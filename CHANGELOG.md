@@ -3,15 +3,16 @@
 ## 4.2 XS V2 Commercial Release
 
 - 2026-??-?? 4.2.7
-    - add resource monitor checks around DALAI import, load and execution
-    - show progress bar while loading PixelCorrection over BLE
+    - add ResourceMonitor profiling around DALAI import, load and execution
     - fixed scope graph marker
 	- fixed an error while editing horizontal ROI live
-    - moved ProgressBarFeature onto its own QTimer (allows control from non-GUI threads)
+    - ProgressBar
+        - show while loading PixelCorrection over BLE
+        - moved onto its own QTimer (allows control from non-GUI threads)
+        - show during exports
     - exports
         - added file_io.EnlightenJSONEncoder (simplified util.clean_json)
         - moved exports onto new ExportWorker thread in MeasurementsFeature
-        - show progress bar during exports
 	- plugins
 		- added RnD.Peek_Poke_Tester
         - extended Prod.ConfigurationCheck

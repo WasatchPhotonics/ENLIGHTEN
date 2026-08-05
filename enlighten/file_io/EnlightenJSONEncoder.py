@@ -2,21 +2,26 @@ import json
 import numpy as np
 import logging
 
+from enlighten import common
+
 log = logging.getLogger(__name__)
 
 class EnlightenJSONEncoder(json.JSONEncoder):
     """
     Optimizes JSON output format by keeping simple lists/arrays on a single line.
 
-    MZ: I honestly don't know how to properly attribute this. I Googled something
-    like "python json.dumps list on one line", and it generated a basic 
-    CompactArrayEncoder, but I've re-written about 50% of it. I'd normally link 
-    to a StackOverflow thread or something, but...*shrug.* 
+    Gemini deserves a hat-tip on this. I Googled something like "python 
+    json.dumps list on one line", and it generated a basic CompactArrayEncoder. 
+    I've re-written about 50% of it, but props where due.
     """
 
     def __init__(self, *args, **kwargs):
+        self.use_progress_bar = kwargs.pop('use_progress_bar', False)
+
         self.indent_per_level = kwargs.get('indent', 4)
+        self.indentation_level = 0
         self.seen_types = set()
+        self.ctl = common.get_controller_instance()
 
         super().__init__(*args, **kwargs)
 
@@ -40,11 +45,15 @@ class EnlightenJSONEncoder(json.JSONEncoder):
 
                 # start the list and increase indentation
                 yield '[\n'
-                self.indentation_level = getattr(self, 'indentation_level', 0) + 1
+                self.indentation_level += 1
                 space = ' ' * (self.indent_per_level * self.indentation_level)
 
                 # iterate the list, one element per line
+                count = len(o)
                 for i, v in enumerate(o):
+                    if self.use_progress_bar and self.indentation_level == 1:
+                        self.ctl.progress_bar.set(100 * i / count)
+
                     # Recursively process the value
                     yield f"{space}"
                     yield from self.iterencode(v)
@@ -52,6 +61,8 @@ class EnlightenJSONEncoder(json.JSONEncoder):
                         yield ',\n'
 
                 # restore indentation and close the list
+                if self.use_progress_bar and self.indentation_level == 1:
+                    self.ctl.progress_bar.set(100)
                 self.indentation_level -= 1
                 closing_space = ' ' * (self.indent_per_level * self.indentation_level)
                 yield f'\n{closing_space}]'
@@ -62,7 +73,7 @@ class EnlightenJSONEncoder(json.JSONEncoder):
                 yield '{}'
             else:
                 yield '{\n'
-                self.indentation_level = getattr(self, 'indentation_level', 0) + 1
+                self.indentation_level += 1
                 space = ' ' * (self.indent_per_level * self.indentation_level)
                 
                 for i, (k, v) in enumerate(o.items()):

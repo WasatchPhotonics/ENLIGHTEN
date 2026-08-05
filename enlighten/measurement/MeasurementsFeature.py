@@ -506,12 +506,11 @@ class MeasurementsFeature(EnlightenFeature):
         pathname = os.path.join(directory, filename)
 
         self.ctl.marquee.info("exporting %d spectra to JSON..." % len(export))
-        self.ctl.progress_bar.show_continuous()
 
         # log.debug("traversing 'export' to look for non-exportable blocks...")
         # util.traverse_json(export)
 
-        s = json.dumps(export, cls=EnlightenJSONEncoder, sort_keys=True, indent=2, default=lambda o: o.to_json())
+        s = json.dumps(export, cls=EnlightenJSONEncoder, sort_keys=True, indent=2, use_progress_bar=True)
         s = util.clean_json(s)
 
         log.debug(f"export_session_json: writing {pathname}")

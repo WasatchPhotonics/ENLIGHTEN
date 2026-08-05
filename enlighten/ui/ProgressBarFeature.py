@@ -32,7 +32,7 @@ class ProgressBarFeature(EnlightenFeature):
 
         self.visible = self.value < 0 or self.value > 0
 
-        log.debug(f"tick: visible {self.visible}, value {self.value}")
+        # log.debug(f"tick: visible {self.visible}, value {self.value}")
 
         if not self.visible:
             self.pb.setVisible(False)
