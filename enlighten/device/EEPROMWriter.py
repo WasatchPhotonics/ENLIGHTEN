@@ -97,8 +97,8 @@ class EEPROMWriter:
 
         log.debug("backing up EEPROM")
         try:
-            # this should have been populated when Spectrometer was instantiated
-            text = spec.settings.eeprom_backup.json()
+            # settings.eeprom_backup should have been populated when Spectrometer was instantiated
+            text = spec.settings.eeprom_backup.to_json()
             digest = hashlib.sha1(text.encode("UTF-8")).hexdigest()
             digest_short = digest[:10]
 

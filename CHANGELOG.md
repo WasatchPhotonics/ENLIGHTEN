@@ -11,8 +11,9 @@
         - moved onto its own QTimer (allows control from non-GUI threads)
         - show during exports
     - exports
-        - added file_io.EnlightenJSONEncoder (simplified util.clean_json)
         - moved exports onto new ExportWorker thread in MeasurementsFeature
+        - added wasatch.WasatchJSONEncoder to properly export all supported types
+          and support optional progress bar
 	- plugins
 		- added RnD.Peek_Poke_Tester
         - extended Prod.ConfigurationCheck

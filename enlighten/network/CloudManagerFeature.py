@@ -240,7 +240,7 @@ class CloudManagerFeature(EnlightenFeature):
         local_file = ''
         try:
             log.debug(f"downloading EEPROM for serial {serial_number}")
-            local_file = os.path.join(common.get_default_data_dir(), "eeprom_backups", f"{serial_number}.json")
+            local_file = os.path.join(common.get_default_data_dir(), "config", f"{serial_number}.json")
             response = self.eeprom_table.get_item(Key={"serialNumber": serial_number})
             eeprom_response = response["Item"]
             # default is required, see function definition

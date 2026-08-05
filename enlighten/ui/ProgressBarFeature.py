@@ -77,5 +77,6 @@ class ProgressBarFeature(EnlightenFeature):
         Can be called from outside GUI thread.
         New settings get applied on next tick.
         """
-        log.debug(f"set: {value}")
-        self.value = value
+        if value != self.value:
+            # log.debug(f"set: {value}")
+            self.value = value

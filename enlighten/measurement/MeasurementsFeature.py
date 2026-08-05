@@ -15,7 +15,8 @@ from enlighten import common
 from enlighten.common import msgbox
 from enlighten.EnlightenFeature import EnlightenFeature
 from enlighten.measurement.Measurement import Measurement
-from enlighten.file_io.EnlightenJSONEncoder import EnlightenJSONEncoder
+
+from wasatch.WasatchJSONEncoder import WasatchJSONEncoder
 
 if common.use_pyside2():
     from PySide2 import QtWidgets
@@ -510,7 +511,7 @@ class MeasurementsFeature(EnlightenFeature):
         # log.debug("traversing 'export' to look for non-exportable blocks...")
         # util.traverse_json(export)
 
-        s = json.dumps(export, cls=EnlightenJSONEncoder, sort_keys=True, indent=2, use_progress_bar=True)
+        s = json.dumps(export, cls=WasatchJSONEncoder, sort_keys=True, indent=2, set_progress_bar=self.ctl.progress_bar.set)
         s = util.clean_json(s)
 
         log.debug(f"export_session_json: writing {pathname}")
