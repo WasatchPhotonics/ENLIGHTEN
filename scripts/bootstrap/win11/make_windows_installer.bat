@@ -17,10 +17,16 @@ echo %date% %time% Confirming we're not running under Parallels
 echo %date% %time% ======================================================
 echo.
 
-wmic computersystem get manufacturer /format:list | grep -qi parallels && (
-    echo You appear to be running under Parallels:
-    wmic computersystem get manufacturer,model /format:list 
-    goto script_failure
+where wmic >nul 2>nul
+if %errorlevel% equ 0 (
+    echo wmic found in PATH
+    wmic computersystem get manufacturer /format:list | grep -qi parallels && (
+        echo You appear to be running under Parallels:
+        wmic computersystem get manufacturer,model /format:list 
+        goto script_failure
+    )
+) else (
+    echo Can't run wmic
 )
 
 echo.
