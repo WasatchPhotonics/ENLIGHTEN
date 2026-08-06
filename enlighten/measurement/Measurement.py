@@ -9,14 +9,15 @@ import csv
 import re
 import os
 
-from wasatch.ProcessedReading import ProcessedReading
-
-from enlighten import common
 from enlighten import util
+from enlighten import common
+
 from SPyC_Writer import SPCFileWriter
 from SPyC_Writer.SPCEnums import SPCFileType, SPCXType, SPCYType, SPCTechType
 
 from wasatch.SpectrometerSettings import SpectrometerSettings
+from wasatch.WasatchJSONEncoder import WasatchJSONEncoder
+from wasatch.ProcessedReading import ProcessedReading
 from wasatch import utils as wasatch_utils
 
 log = logging.getLogger(__name__)
@@ -1142,7 +1143,7 @@ class Measurement:
         # log.debug("traversing Measurement to look for non-exportable blocks...")
         # util.traverse_json(m)
 
-        s = json.dumps(m, sort_keys=True, indent=2, default=lambda o: o.to_json())
+        s = json.dumps(m, cls=WasatchJSONEncoder, sort_keys=True, indent=2)
         return util.clean_json(s)
 
     def save_spc_file(self, use_basename=False, resave=False):

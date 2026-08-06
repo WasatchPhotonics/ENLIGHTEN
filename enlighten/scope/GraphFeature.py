@@ -95,7 +95,6 @@ class GraphFeature(EnlightenFeature):
         self.name           = None
         self.legend         = None
         self.plot           = None
-        self.lock_marker    = True
         self.zoomed         = False
         self.y_axis_locked  = False
         self.x_axis_locked  = False  # EnlightenPluginConfiguration specified an x_axis_label
@@ -111,7 +110,7 @@ class GraphFeature(EnlightenFeature):
 
         self.populate_graph_plot()
 
-        # bindings (both instances can have callbacks)
+        # bindings (both instances add callbacks, so a widget event will affect both Graphs)
         self.combo_axis         .currentIndexChanged    .connect(self.update_axis_callback)
         self.combo_axis         .installEventFilter(ScrollStealFilter(self.combo_axis))
         self.button_invert      .clicked                .connect(self.invert_x_axis)
@@ -121,6 +120,9 @@ class GraphFeature(EnlightenFeature):
         self.button_copy        .clicked                .connect(self.copy_to_clipboard_callback)
 
         if not self.alt:
+            # since the same Qt widgets are shared by every Graph instance, 
+            # there's no reason to configure them multiple times -- just let the
+            # main graph do it
             self.combo_axis         .setWhatsThis("Change the current graph x-axis. By default, Raman shift in wavenumbers (cm⁻¹) is selected in Raman mode, and wavelengths (nm) in Non-Raman mode.")
             self.button_invert      .setWhatsThis("Flip the graph's x-axis direction from increasing wavelength/wavenumbers to decreasing, as is common in Raman spectroscopy")
             self.cb_marker          .setWhatsThis("Show visible graph markers on each physical datapoint on the graph, making it easier to see individual pixels")
@@ -206,14 +208,6 @@ class GraphFeature(EnlightenFeature):
 
         self.plot.setVisible(self.visible)
 
-    # def is_column_empty(self, col):
-    #     for row in range(self.layout.rowCount()):
-    #         item = self.layout.itemAtPosition(row, col):
-    #         if item is not None:
-    #             if item.isVisible():
-    #                 return False
-    #    return True
-
     ## called by Cursor to add its InfiniteLine to the graph
     def add_item(self, item):
         if self.alt:
@@ -242,6 +236,7 @@ class GraphFeature(EnlightenFeature):
 
     def update_marker(self):
         self.show_marker = self.cb_marker.isChecked()
+        log.debug(f"show_marker {self.show_marker} on {self.name}")
         self.rescale_curves()
 
     ## extra <BR> provides margin from the frame bottom...probably would be better with CSS
@@ -251,13 +246,11 @@ class GraphFeature(EnlightenFeature):
 
     ## when the Mode changes, update axis as appropriate 
     def set_x_axis(self, enum):
-        log.debug("set_x_axis: %s", enum)
         old_axis = self.current_x_axis
         self.current_x_axis = enum
         self.set_x_axis_label(common.AxesHelper.get_pretty_name(enum))
 
         try:
-
             # update the widget
             self.combo_axis.setCurrentIndex(enum)
 
@@ -268,10 +261,9 @@ class GraphFeature(EnlightenFeature):
             # traces or paused acquisition)
             self.rescale_curves()
 
-            self.notify_observers_with_value( (old_axis, enum), "change_axis")
+            self.notify_observers_with_value((old_axis, enum), "change_axis")
         except:
             log.error("Error setting suffix", exc_info=1)
-            pass
 
     def reset_axes(self):
         if not self.y_axis_locked:
@@ -288,10 +280,8 @@ class GraphFeature(EnlightenFeature):
 
         self.y_axis_locked = not self.y_axis_locked
 
-        if self.alt:
-            return
-
-        self.ctl.gui.colorize_button(self.button_lock_axes, self.y_axis_locked)
+        if not self.alt:
+            self.ctl.gui.colorize_button(self.button_lock_axes, self.y_axis_locked)
 
     def toggle_zoom(self):
         if self.alt:
@@ -331,7 +321,7 @@ class GraphFeature(EnlightenFeature):
 
         frame_width = self.frame_enclosing_grid.width()
         plot_width = frame_width // 2
-        if self.name == "Alt Graph":
+        if self.alt:
             log.debug(f"Alt-Graph: setting plot width {plot_width} (frame_width {frame_width})")
             if self.visible:
                 self.plot.setMinimumWidth(plot_width)
@@ -468,9 +458,6 @@ class GraphFeature(EnlightenFeature):
             return False
 
     def update_curve_marker(self, curve):
-        if self.lock_marker:
-            return
-
         if self.show_marker:
             if curve.opts['symbol'] is None:
                 curve.setSymbol('o')
@@ -554,6 +541,7 @@ class GraphFeature(EnlightenFeature):
 
     def copy_to_clipboard_callback(self):
         if self.alt:
+            # TODO: instead of ignoring Alt-graph, maybe copy BOTH spectra to clipboard if doing_dalai?
             return
 
         if not self.ctl.multispec:

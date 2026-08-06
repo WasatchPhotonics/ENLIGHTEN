@@ -45,6 +45,12 @@ class MeasurementFactory(EnlightenFeature):
     ## Create a Measurement from a Spectrometer, using its most-recent 
     #  ProcessedReading.
     def create_from_spectrometer(self, spec, is_collapsed, generate_thumbnail=True, save=True, label=None):
+
+        def cleanup_batch():
+            if self.ctl.batch_collection.enabled:
+                self.ctl.marquee.error("aborting batch collection")
+                self.ctl.batch_collection.stop()
+            
         log.debug("creating Measurement from spec %s", spec.label)
 
         # instantiate the Measurement
@@ -53,6 +59,7 @@ class MeasurementFactory(EnlightenFeature):
         except:
             msg = "Failed to create measurement\n\n"+traceback.format_exc()
             log.error(msg)
+            cleanup_batch()
             msgbox(msg, "Error")
             return
 
@@ -64,6 +71,7 @@ class MeasurementFactory(EnlightenFeature):
             except:
                 msg = "Failed to create thumbnail.\n\n"+traceback.format_exc()
                 log.error(msg)
+                cleanup_batch()
                 msgbox(msg, "Error")
 
         if save:
@@ -72,8 +80,9 @@ class MeasurementFactory(EnlightenFeature):
                 measurement.save()
                 self.notify_observers_with_value(measurement, "save")
             except:
-                msg = "Failed to dispatch save file.\n\n"+traceback.format_exc()
+                msg = "Failed to save file.\n\n" + traceback.format_exc()
                 log.error(msg)
+                cleanup_batch()
                 msgbox(msg, "Error")
 
         if label is not None:

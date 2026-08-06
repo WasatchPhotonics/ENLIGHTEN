@@ -172,7 +172,7 @@ class EmissionLines(EnlightenPluginBase):
                 1504.6500: 1,
                 1656.0460: 1
             },
-            "Hg": {
+            "Ar/Hg": {
                  253.652: 0,
                  296.728: 0,
                  302.150: 0,

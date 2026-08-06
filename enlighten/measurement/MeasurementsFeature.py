@@ -1,4 +1,4 @@
-import datetime
+import threading
 import logging
 import json
 import csv
@@ -6,6 +6,7 @@ import os
 
 import numpy as np
 
+from datetime import datetime
 from SPyC_Writer import SPCFileWriter
 from SPyC_Writer.SPCEnums import SPCFileType, SPCXType, SPCYType, SPCTechType
 
@@ -15,12 +16,25 @@ from enlighten.common import msgbox
 from enlighten.EnlightenFeature import EnlightenFeature
 from enlighten.measurement.Measurement import Measurement
 
+from wasatch.WasatchJSONEncoder import WasatchJSONEncoder
+
 if common.use_pyside2():
     from PySide2 import QtWidgets
 else:
     from PySide6 import QtWidgets
 
 log = logging.getLogger(__name__)
+
+class ExportWorker(threading.Thread):
+
+    def __init__(self, measurements):
+        threading.Thread.__init__(self)
+        self.measurements = measurements
+
+    def run(self):
+        log.debug("ExportWorker: calling perform_export_from_worker")
+        self.measurements.perform_export_from_worker()
+        log.debug("ExportWorker: back from perform_export_from_worker")
 
 ##
 # This class represents the set of Measurement objects which have been saved
@@ -68,6 +82,8 @@ class MeasurementsFeature(EnlightenFeature):
         cfu.verticalLayout_scope_capture_save.addItem(spacer)
 
         self.update_count()
+
+        self.export_worker = None
 
     # ##########################################################################
     #                                                                          #
@@ -317,21 +333,20 @@ class MeasurementsFeature(EnlightenFeature):
     # @param filename: BatchCollection generates one so we needn't prompt user
     # @param prompt: prompt for verification (False for unattended operation)
     def export_session(self, filename=None, prompt=True):
+        self.export_filename = filename
+        self.export_directory = common.get_default_data_dir()
 
         if not self.count():
             log.warn("no measurements to export")
             return
 
-        # by default, all Sessions are stored in ~/EnlightenSpectra
-        directory = common.get_default_data_dir()
-
         ########################################################################
         # Generate pathname
         ########################################################################
 
-        visible_only = False
-        if filename is None:
-            now = datetime.datetime.now()
+        self.export_visible_only = False
+        if self.export_filename is None:
+            now = datetime.now()
 
             default_filename = f"{self.ctl.save_options.prefix()}-" if self.ctl.save_options.has_prefix() else "Session-"
             default_filename += now.strftime("%Y%m%d-%H%M%S")
@@ -340,7 +355,7 @@ class MeasurementsFeature(EnlightenFeature):
             default_filename = self.measurements[-1].expand_template(default_filename)
 
             if not prompt:
-                filename = default_filename
+                self.export_filename = default_filename
             else:
                 # prompt the user to override the default filename
                 result = self.ctl.gui.msgbox_with_lineedit_and_checkbox(
@@ -350,61 +365,83 @@ class MeasurementsFeature(EnlightenFeature):
                     extra_button_label = "Browse",
                     checkbox_text = "Only export displayed traces")
                 log.debug(f"msgbox result: {result}")
-                filename = result["lineedit"]
+                self.export_filename = result["lineedit"]
                 visible_only = result["checked"]
                 if not result["ok"]:
                     log.info("cancelling export")
                     return
 
                 # if the user clicked 'Browse', let them navigate to where they want the export saved [#420]
-                if result["extra_button_clicked"] or not filename:
-                    pathname = self.ctl.file_manager.save_dialog(filename=filename, caption="Select where to save your exported measurements")
-                    directory, filename = os.path.split(pathname)
+                if result["extra_button_clicked"] or not self.export_filename:
+                    pathname = self.ctl.file_manager.save_dialog(filename=self.export_filename, caption="Select where to save your exported measurements")
+                    self.export_directory, self.export_filename = os.path.split(pathname)
 
-                if not filename:
+                if not self.export_filename:
                     log.info("cancelling export")
                     return
 
         # warn user if they are about to overwrite an existing file
         # it looks like only risk is for .csv and .json extensions
-        file_exists = (os.path.exists(os.path.join(directory, f'{filename}.csv'))
-                       or os.path.exists(os.path.join(directory, f'{filename}.json'))
-                       or os.path.exists(os.path.join(directory, f'{filename}.spc')))
+        file_exists = (os.path.exists(os.path.join(self.export_directory, f'{self.export_filename}.csv'))
+                       or os.path.exists(os.path.join(self.export_directory, f'{self.export_filename}.json'))
+                       or os.path.exists(os.path.join(self.export_directory, f'{self.export_filename}.spc')))
 
-        log.info(f"checking for: {os.path.join(directory, filename)}, file exists={file_exists}")
+        log.info(f"checking for: {os.path.join(self.export_directory, self.export_filename)}, file exists={file_exists}")
 
         if file_exists:
-            should_overwrite = msgbox(prompt=f"Do you wish to overwrite the existing file: {filename}?",
+            should_overwrite = msgbox(prompt=f"Do you wish to overwrite the existing file: {self.export_filename}?",
                                       informative_text="All data in the previous file will be lost.",
                                       buttons="Yes|No") == "Yes"
         else:
             should_overwrite = False
 
         if not file_exists or should_overwrite:
-            # doesn't use the dict
-            if self.ctl.save_options.save_csv():
-                self.export_session_csv(directory, filename, visible_only=visible_only)
+            self.export_worker = ExportWorker(self)
+            self.export_worker.setDaemon(True)
+            self.export_worker.start()
 
-            # cache export dictionary so we can re-use it between JSON and ExternalAPI
-            if self.ctl.save_options.save_json() or "export" in self.observers:
-                export = self.generate_export_dict(visible_only=visible_only)
+    def perform_export_from_worker(self):
+        """ Note this is called from ExportWorker's Python thread, not the Qt GUI thread...should be okay? """
 
-            if self.ctl.save_options.save_json():
-                self.export_session_json(directory, filename, export)
+        log.debug("perform_export_from_worker: start")
 
-            if self.ctl.save_options.save_spc():
-                self.export_session_spc(directory, filename, visible_only=visible_only)
+        if self.ctl.save_options.save_csv():
+            self.export_session_csv(self.export_directory, self.export_filename, visible_only=self.export_visible_only)
 
-        self.notify_observers_with_value(visible_only, "export")
+        # cache export dictionary so we can re-use it between JSON and ExternalAPI
+        if self.ctl.save_options.save_json() or "export" in self.observers:
+            export = self.generate_export_dict(visible_only=self.export_visible_only)
+
+        if self.ctl.save_options.save_json():
+            self.export_session_json(self.export_directory, self.export_filename, export)
+
+        if self.ctl.save_options.save_spc():
+            self.export_session_spc(self.export_directory, self.export_filename, visible_only=self.export_visible_only)
+
+        self.ctl.progress_bar.hide()
+
+        # MZ: this seems weird...why are we sending visible_only as the value, 
+        # instead of 'export' (the dict)? Who subscribes to this? A: NOBODY?
+        #
+        # self.notify_observers_with_value(self.export_visible_only, "export")
+
+        log.debug("perform_export_from_worker: done")
 
     def read_measurements(self):
         return self.generate_export_dict()
 
     def generate_export_dict(self, visible_only=False) -> list[dict]:
         if visible_only:
-            export = [ m.to_dict() for m in self.measurements if m.is_displayed() ]
+            exportable = [ m for m in self.measurements if m.is_displayed() ]
         else:
-            export = [ m.to_dict() for m in self.measurements ]
+            exportable = list(self.measurements)
+
+        export = []
+        for i, m in enumerate(exportable):
+            # do these one at a time to assist profiling
+            # log.debug(f"generate_export_dict: converting measurement {i} of {len(exportable)} to dict")
+            export.append(m.to_dict())
+
         return export
 
     def export_session_spc(self, directory, filename, visible_only=False):
@@ -469,12 +506,19 @@ class MeasurementsFeature(EnlightenFeature):
             filename += ".json"
         pathname = os.path.join(directory, filename)
 
+        self.ctl.marquee.info("exporting %d spectra to JSON..." % len(export))
+
         # log.debug("traversing 'export' to look for non-exportable blocks...")
         # util.traverse_json(export)
 
-        s = json.dumps(export, sort_keys=True, indent=2, default=lambda o: o.to_json())
+        s = json.dumps(export, cls=WasatchJSONEncoder, sort_keys=True, indent=2, set_progress_bar=self.ctl.progress_bar.set)
+        s = util.clean_json(s)
+
+        log.debug(f"export_session_json: writing {pathname}")
         with open(pathname, "w") as f:
-            f.write(util.clean_json(s))
+            f.write(s)
+
+        self.ctl.marquee.info("exported %d spectra to JSON" % len(export))
 
     def export_session_csv(self, directory, filename, visible_only=False):
         if not filename.endswith(".csv"):
@@ -489,6 +533,7 @@ class MeasurementsFeature(EnlightenFeature):
             export_measurements = self.measurements
 
         log.info("exporting %d measurements in %s order to %s", len(export_measurements), order, pathname)
+        self.ctl.marquee.info("exporting %d spectra to CSV" % len(export_measurements))
 
         ########################################################################
         # Generate the export
@@ -502,7 +547,7 @@ class MeasurementsFeature(EnlightenFeature):
                 else:
                     self.export_by_column(csv_writer, visible_only)
 
-            self.ctl.marquee.info("exported %d spectra" % len(export_measurements))
+            self.ctl.marquee.info("exported %d spectra to CSV" % len(export_measurements))
             log.info("exported %d measurements in %s order to %s", self.count(), order, pathname)
 
         except Exception:
@@ -828,6 +873,7 @@ class MeasurementsFeature(EnlightenFeature):
                 if wavenumbers is not None and pixel < len(wavenumbers):
                     result = f"{wavenumbers[pixel]:.2f}"
             # log.debug(f"get_x_header_value: header {header}, pixel {pixel}, result {result}")
+
             return result
 
         def get_pr_header_value(m, header, pixel, pr=None):
@@ -838,13 +884,13 @@ class MeasurementsFeature(EnlightenFeature):
 
             a = None
             if header == "processed":
-                a = pr.get_processed()
+                a = pr.get_processed(fast=True)
             elif header == "reference":
-                a = pr.get_reference()
+                a = pr.get_reference(fast=True)
             elif header == "dark":
-                a = pr.get_dark()
+                a = pr.get_dark(fast=True)
             elif header == "raw":
-                a = pr.get_raw()        
+                a = pr.get_raw(fast=True)
 
             if a is None:
                 return "NA"
@@ -918,6 +964,8 @@ class MeasurementsFeature(EnlightenFeature):
                             row.append(get_pr_header_value(m, header, pixel, pr=interpolated[m]))
                 csv_writer.writerow(row)
 
+                self.ctl.progress_bar.set(100 * pixel / self.ctl.interp.total_pixels())
+
         else:
 
             #####################################################################
@@ -958,7 +1006,9 @@ class MeasurementsFeature(EnlightenFeature):
                                 row.append(get_pr_header_value(m, header, pixel))
                         else:
                             row.extend(BLANK * len(pr_headers))
+
                 csv_writer.writerow(row)
+                self.ctl.progress_bar.set(100 * pixel / max_pixels)
 
     ##
     # In the row-based export, try to follow historical Dash conventions, as

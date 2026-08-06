@@ -305,23 +305,8 @@ def json2obj(text):
 def _json_object_hook(d): 
     return namedtuple('X', d.keys())(*d.values())
 
-## Assuming JSON has been rendered with indentation, leave the dicts indented but 
-#  flatten arrays to single lines.  Also, normalize NaN.
-# 
-# @note this is assuming arrays of numbers...if the input JSON includes arrays of
-#       strings, and strings could contain ] characters, this would probably 
-#       corrupt data.
 def clean_json(s):
-    pattern = r'^(.*)' + r'\[' + "[\n\r]+" + r'([^\]]+)' + r'\]' + r'(.*)$'
-    pat = re.compile(pattern, flags=re.DOTALL)
-
-    m = pat.match(s)
-    while m is not None:
-        array_contents = m.group(2).strip()
-        contents_as_line = re.sub(r",\s+", ", ", array_contents)
-        new_list = "[ " + contents_as_line + " ]"
-        s = m.group(1) + new_list + m.group(3)
-        m = pat.match(s)
+    """ Normalize NaN """
 
     # Java's JSON parser breaks on NaN...the spec is iffy
     return re.sub(r"\bNaN\b", "null", s)

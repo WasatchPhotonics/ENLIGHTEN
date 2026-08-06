@@ -354,7 +354,9 @@ class DalaiRamanFeature(EnlightenFeature):
             AI_spectrum_display = AI_spectrum
             AI_wavenumbers_display = AI_wavenumbers
 
-        self.curve.setData(x=AI_wavenumbers_display, y=AI_spectrum_display, color=self.COLOR)
+        # MZ: YOU ARE HERE
+        # self.curve.setData(x=AI_wavenumbers_display, y=AI_spectrum_display, color=self.COLOR)
+        self.ctl.alt_graph.set_data(self.curve, x=AI_wavenumbers_display, y=AI_spectrum_display)
 
     def find_available_models(self):
         found_models = {}

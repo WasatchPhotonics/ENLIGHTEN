@@ -182,6 +182,10 @@ def set_controller_instance(inst):
     global ctl
     ctl = inst
 
+def get_controller_instance():
+    global ctl
+    return ctl
+
 def msgbox(prompt, title="Alert", buttons="", detail=None, informative_text=None):
     """
     Display an interupting message to the user.  In common rather than GUI so it can

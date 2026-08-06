@@ -318,7 +318,8 @@ class Spectrometer:
     
         log.debug(f"left_region_changed_callback: setting roi_horizontal_start to pixel {pixel} based on region end {end}")
         self.settings.eeprom.multi_wavelength_calibration.set("roi_horizontal_start", pixel)
-        self.ctl.horiz_roi.update_regions(spec=self, left_pixel=pixel)
+        #self.ctl.horiz_roi.update_regions(spec=self, left_pixel=pixel)
+        self.ctl.horiz_roi.region_updated_callback(spec=self, left_pixel=pixel)
 
     def right_region_changed_callback(self):
         (start, _) = self.roi_region_right.getRegion()
@@ -329,7 +330,8 @@ class Spectrometer:
     
         log.debug(f"right_region_changed_callback: setting roi_horizontal_end to pixel {pixel} based on region start {start}")
         self.settings.eeprom.multi_wavelength_calibration.set("roi_horizontal_end", pixel)
-        self.ctl.horiz_roi.update_regions(spec=self, right_pixel=pixel)
+        #self.ctl.horiz_roi.update_regions(spec=self, right_pixel=pixel)
+        self.ctl.horiz_roi.region_updated_callback(spec=self, right_pixel=pixel)
 
     def get_x_from_pixel(self, px):
         x_axis = self.ctl.generate_x_axis(spec=self) 
