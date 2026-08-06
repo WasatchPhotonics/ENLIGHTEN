@@ -2,6 +2,9 @@
 
 ## 4.2 XS V2 Commercial Release
 
+- 2026-08-06 4.2.8
+    - Prod.ConfigurationCheck fixes
+    - JSON export fixes
 - 2026-08-06 4.2.7
     - add ResourceMonitor profiling around DALAI import, load and execution
     - fixed scope graph marker
