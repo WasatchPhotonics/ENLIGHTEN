@@ -2,7 +2,7 @@
 
 ## 4.2 XS V2 Commercial Release
 
-- 2026-??-?? 4.2.7
+- 2026-08-06 4.2.7
     - add ResourceMonitor profiling around DALAI import, load and execution
     - fixed scope graph marker
 	- fixed an error while editing horizontal ROI live
