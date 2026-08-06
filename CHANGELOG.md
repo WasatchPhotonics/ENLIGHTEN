@@ -21,7 +21,8 @@
         - properly apply TakeOneRequest template
 	- plugins
 		- added RnD.Peek_Poke_Tester
-        - extended Prod.ConfigurationCheck
+		- add RnD.Mapper
+    - extended Prod.ConfigurationCheck
 - 2026-07-20 4.2.6
     - fixed Multispec combobox for long model names
     - fixed JSON export bug
