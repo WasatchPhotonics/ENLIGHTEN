@@ -219,10 +219,16 @@ class RamanIntensityCorrectionFeature(EnlightenFeature):
         if pr is None or \
            spec is None or \
            not spec.settings.eeprom.has_raman_intensity_calibration():
+            # log.debug(f"process: skipping because pr None or spec None or not has_raman_intensity_correction")
             return
 
         factors = spec.settings.raman_intensity_factors
-        if factors is None or len(factors) != len(pr.raw):
+        if factors is None:
+            # log.debug(f"process: skipping because no factors")
+            return 
+
+        if len(factors) != len(pr.raw):
+            # log.debug(f"process: skipping because len factors ({len(factors)}) != len raw ({len(pr.raw)})")
             return 
 
         is_auto_raman = pr.reading and pr.reading.is_auto_raman()
@@ -239,12 +245,16 @@ class RamanIntensityCorrectionFeature(EnlightenFeature):
             self.ctl.marquee.error("Raman Intensity Correction cannot be applied AFTER interpolation")
             return
 
-        if pr.cropped:
-            log.debug("applying SRM correction to ROI")
-            roi = spec.settings.eeprom.get_horizontal_roi()
-            for i in range(len(pr.cropped.processed)):
-                pr.cropped.processed[i] *= factors[i + roi.start]
-            pr.raman_intensity_corrected = True
+        if pr.cropped is None:
+            # this shouldn't happen, but just in case
+            # log.debug(f"process: skipping because not cropped")
+            return
+
+        log.debug("applying SRM correction to ROI")
+        roi = spec.settings.eeprom.get_horizontal_roi()
+        for i in range(len(pr.cropped.processed)):
+            pr.cropped.processed[i] *= factors[i + roi.start]
+        pr.raman_intensity_corrected = True
 
     def set_enable_when_allowed(self, value):
         self.enable_when_allowed = value if isinstance(value, bool) else value.lower() == "true"
