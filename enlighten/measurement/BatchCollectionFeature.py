@@ -459,7 +459,7 @@ class BatchCollectionFeature(EnlightenFeature):
             # Wasatch.PY device classes should allow change_setting("scans_to_average")
             # to "stomp" whatever value was already in TakeOneRequest.scans_to_average.
             
-            take_one_streaming = TakeOneRequest(self.take_one_template)
+            take_one_streaming = TakeOneRequest(template=self.take_one_template)
             take_one_streaming.scans_to_average = self.ctl.scan_averaging.get_scans_to_average()
             take_one_streaming.readings_target = self.measurement_count
             take_one_streaming.readings_current = 0

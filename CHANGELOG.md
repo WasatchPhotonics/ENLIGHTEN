@@ -17,6 +17,8 @@
     - XL
         - fixed Raman Intensity Correction
         - fixed High-Gain Mode
+    - BatchCollection
+        - properly apply TakeOneRequest template
 	- plugins
 		- added RnD.Peek_Poke_Tester
         - extended Prod.ConfigurationCheck
