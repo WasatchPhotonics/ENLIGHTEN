@@ -146,12 +146,16 @@ class DalaiRamanFeature(EnlightenFeature):
     def init_hotplug(self):
         # the user plugged-in a new spectrometer, so select the "best" model for that device
         best_model_name = self.best_model_for_current_spectrometer()
+        log.debug(f"best_model_name: {best_model_name}")
+        log.debug(f"current_model_name: {self.current_model_name}")
         if best_model_name is None:
             return
 
         if self.current_model_name != best_model_name:
-            # switch to the best model for thsi device
+            # switch to the best model for this device
             best_model_config = self.model_configs[best_model_name]
+            self.current_model_name = best_model_config.basename
+            log.debug(f"best_model_config: {best_model_config}")
             self.combo_model.setCurrentText(best_model_config.label)
             self.current_model_label = best_model_config.label
 
