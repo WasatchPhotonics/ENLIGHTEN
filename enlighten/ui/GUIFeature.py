@@ -46,6 +46,8 @@ class GUIFeature(EnlightenFeature):
         self.init_graph_color()
         self.update_theme()
 
+        self.ctl.page_nav.register_observer(callback=self.update_window_title, event="mode")
+
     def init_graph_color(self, init=True):
         """
         Call with init=True if this is being done BEFORE the graph widget was 
@@ -141,16 +143,23 @@ class GUIFeature(EnlightenFeature):
 
         return pyqtgraph.mkPen(color=color, width=width, style=style)
 
-    def update_window_title(self, spec):
-        ver   = common.VERSION
-        model = spec.settings.full_model()
-        sn    = spec.settings.eeprom.serial_number
-        cnt   = self.ctl.multispec.count()
+    def update_window_title(self, spec=None):
+        if spec is None:
+            spec = self.ctl.multispec.current_spectrometer()
 
-        title = f"ENLIGHTEN {ver}: {model} [{sn}]"
+        if self.ctl.page_nav.doing_expert():
+            title = f"ENLIGHTEN™ {common.VERSION}"
+        else:
+            title = f"ENLIGHTEN™"
+    
+        if spec:
+            model = spec.settings.full_model()
+            sn    = spec.settings.eeprom.serial_number
+            cnt   = self.ctl.multispec.count()
 
-        if cnt > 1:
-            title += " (+%d)" % (cnt - 1)
+            title += f": {model} [{sn}]"
+            if cnt > 1:
+                title += f" (+{cnt - 1})"
 
         self.ctl.form.setWindowTitle(title)
 

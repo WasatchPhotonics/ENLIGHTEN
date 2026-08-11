@@ -169,8 +169,8 @@ class BusinessObjects:
         ctl.logging_feature     = LoggingFeature(ctl)
         ctl.colors              = Colors(ctl.config)
         ctl.stylesheets         = StylesheetFeature(ctl)
-        ctl.gui                 = GUIFeature(ctl)
         ctl.page_nav            = PageNavigationFeature(ctl)
+        ctl.gui                 = GUIFeature(ctl)
 
     def create_rest(self):
         """
