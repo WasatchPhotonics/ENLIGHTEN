@@ -60,12 +60,12 @@ class ConfigurationCheck(EnlightenPluginBase):
 
         if ee.has_cooling:
             if is_xs:
-                bad.append(f"has_cooling {has_cooling} but is XS")
+                bad.append(f"has_cooling {ee.has_cooling} but is XS")
             else:
-                bad.append(f"has_cooling {has_cooling} (typical for non-XS)")
+                bad.append(f"has_cooling {ee.has_cooling} (typical for non-XS)")
         else:
             if not is_xs:
-                bad.append(f"has_cooling {has_cooling} is unusual for non-XS")
+                bad.append(f"has_cooling {ee.has_cooling} is unusual for non-XS")
 
         ########################################################################
         # Gain / Offset
