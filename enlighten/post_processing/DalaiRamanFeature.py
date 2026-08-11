@@ -59,22 +59,24 @@ class DalaiRamanFeature(EnlightenFeature):
 
         cfu = ctl.form.ui
 
-        self.frame          = cfu.frame_dalai_1
-        self.bt_toggle      = cfu.pushButton_dalai_toggle
-        self.cb_enable      = cfu.checkBox_dalai_enable
-        self.combo_model    = cfu.comboBox_dalai_model
-        self.lb_combo       = cfu.label_dalai_model_label
-        self.cb_left_trim   = cfu.checkBox_dalai_left_trim
-        self.sb_left_trim   = cfu.spinBox_dalai_left_trim_wavenumber
-        self.cb_right_trim  = cfu.checkBox_dalai_right_trim
-        self.sb_right_trim  = cfu.spinBox_dalai_right_trim_wavenumber
-        self.cb_deconvolute = cfu.checkBox_dalai_deconvolute
+        self.frame             = cfu.frame_dalai_1
+        self.bt_toggle         = cfu.pushButton_dalai_toggle
+        self.cb_enable         = cfu.checkBox_dalai_enable
+        self.combo_model       = cfu.comboBox_dalai_model
+        self.lb_combo          = cfu.label_dalai_model_label
+        self.cb_left_trim      = cfu.checkBox_dalai_left_trim
+        self.sb_left_trim      = cfu.spinBox_dalai_left_trim_wavenumber
+        self.cb_right_trim     = cfu.checkBox_dalai_right_trim
+        self.sb_right_trim     = cfu.spinBox_dalai_right_trim_wavenumber
+        self.cb_deconvolute    = cfu.checkBox_dalai_deconvolute
+        self.cb_external_laser = cfu.checkBox_dalai_external_laser
 
         self.expert_widgets = [ self.cb_left_trim,
                                 self.cb_right_trim,
                                 self.sb_left_trim,
                                 self.sb_right_trim,
                                 self.cb_deconvolute,
+                               #self.cb_external_laser,
                                 cfu.label_dalai_left_trim_bool_label,
                                 cfu.label_dalai_right_trim_bool_label ]
 
@@ -121,14 +123,15 @@ class DalaiRamanFeature(EnlightenFeature):
             self.current_model_label = self.combo_model.currentText()
             self.current_model_name = self.get_model_name_from_label(self.current_model_label)
 
-        self.cb_enable      .stateChanged           .connect(self.enable_callback)
-        self.cb_deconvolute .stateChanged           .connect(self.update_settings)
-        self.cb_left_trim   .stateChanged           .connect(self.update_settings)
-        self.cb_right_trim  .stateChanged           .connect(self.update_settings)
-        self.sb_left_trim   .valueChanged           .connect(self.update_settings)
-        self.sb_right_trim  .valueChanged           .connect(self.update_settings)
-        self.combo_model    .currentIndexChanged    .connect(self.select_model_callback)
-        self.bt_toggle      .clicked                .connect(self.toggle_callback)
+        self.cb_enable        .stateChanged           .connect(self.enable_callback)
+        self.cb_deconvolute   .stateChanged           .connect(self.update_settings)
+        self.cb_external_laser.stateChanged           .connect(self.update_settings)
+        self.cb_left_trim     .stateChanged           .connect(self.update_settings)
+        self.cb_right_trim    .stateChanged           .connect(self.update_settings)
+        self.sb_left_trim     .valueChanged           .connect(self.update_settings)
+        self.sb_right_trim    .valueChanged           .connect(self.update_settings)
+        self.combo_model      .currentIndexChanged    .connect(self.select_model_callback)
+        self.bt_toggle        .clicked                .connect(self.toggle_callback)
 
         self.ctl.page_nav.register_observer(self.page_nav_callback)
 
@@ -140,6 +143,9 @@ class DalaiRamanFeature(EnlightenFeature):
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.monitor_import)
         self.timer.setSingleShot(True)
+
+        # always hide this for now -- just always allow in Expert Mode
+        self.cb_external_laser.setVisible(False)
 
         self.page_nav_callback()
 
@@ -160,14 +166,14 @@ class DalaiRamanFeature(EnlightenFeature):
             self.current_model_label = best_model_config.label
 
     def update_settings(self):
-        self.enabled       = self.cb_enable.isChecked()
-        self.deconvolute   = self.cb_deconvolute.isChecked()
-
-        self.do_left_trim  = self.cb_left_trim.isChecked()
-        self.do_right_trim = self.cb_right_trim.isChecked()
-
-        self.left_trim_cm  = self.sb_left_trim.value()
-        self.right_trim_cm = self.sb_right_trim.value()
+        self.enabled        = self.cb_enable.isChecked()
+        self.deconvolute    = self.cb_deconvolute.isChecked()
+                            
+        self.do_left_trim   = self.cb_left_trim.isChecked()
+        self.do_right_trim  = self.cb_right_trim.isChecked()
+                            
+        self.left_trim_cm   = self.sb_left_trim.value()
+        self.right_trim_cm  = self.sb_right_trim.value()
 
         if self.enabled:
             self.lazy_load_model()
@@ -241,6 +247,8 @@ class DalaiRamanFeature(EnlightenFeature):
             spec_family = "XM"
         elif re.search(r"XS-|XSB-|SIG", spec_model):
             spec_family = "XS"
+        elif "XL" in spec_model:
+            spec_family = "XL"
         else:
             log.debug(f"{prefix}: cannot determine connected spectrometer family: {spec_model}")
             spec_family = None
@@ -271,14 +279,15 @@ class DalaiRamanFeature(EnlightenFeature):
         best_model_name = self.best_model_for_current_spectrometer()
 
         # determine visibility 
-        self.visible = doing_raman and best_model_name is not None
+        self.visible = doing_expert or (doing_raman and best_model_name is not None)
         if not self.visible:
             self.enabled = False
 
-        # display the WIDGET (if visible)
-        self.frame.setVisible(self.visible)
+        # display the WIDGET and TOGGLE (if VISIBLE)
+        for w in [ self.frame, self.bt_toggle ]:
+            w.setVisible(self.visible)
 
-        # display the COMBO (if enabled)
+        # display the COMBO (if ENABLED)
         for w in [ self.combo_model, self.lb_combo ]:
             w.setVisible(self.enabled)
 
@@ -311,7 +320,11 @@ class DalaiRamanFeature(EnlightenFeature):
         if not self.enabled:
             return
 
-        if not (pr.settings.state.laser_enabled or (pr.reading.take_one_request and pr.reading.take_one_request.auto_raman_request)):
+        doing_expert = self.ctl.page_nav.doing_expert()
+
+        if not (doing_expert or 
+                pr.settings.state.laser_enabled or 
+                (pr.reading.take_one_request and pr.reading.take_one_request.auto_raman_request) ):
             self.ctl.marquee.error("DALAI-RAMAN requires laser")
             self.curve.setData([])
             return
@@ -482,6 +495,8 @@ class DalaiRamanFeature(EnlightenFeature):
         wavenumbers = np.array(wavenumbers)
         spectrum = np.array(spectrum)
 
+        doing_expert = self.ctl.page_nav.doing_expert()
+
         if self.current_model_name is None:
             log.error("doing nothing because no model selected")
             return None, None
@@ -499,7 +514,7 @@ class DalaiRamanFeature(EnlightenFeature):
         trim_start = self.left_trim_cm  if self.do_left_trim  else wavenumbers[0]
         trim_end   = self.right_trim_cm if self.do_right_trim else wavenumbers[-1]
 
-        if eeprom.roi_horizontal_start < 1:
+        if eeprom.roi_horizontal_start < 1 and not doing_expert:
             self.ctl.marquee.error("ROI start is zero in EEPROM - DALAI does not work well across the filter edge")
 
         # MZ: ROI was already applied via "pr.get_processed()", "pr.get_wavenumbers()" etc
@@ -508,8 +523,9 @@ class DalaiRamanFeature(EnlightenFeature):
         # spectrum    = spectrum[roi_start : roi_end + 1] 
 
         if self.deconvolute and fwhm == 0:
-            self.ctl.marquee.error("FWHM is zero in EEPROM - no deconvolution possible")
             self.deconvolute = False
+            if not doing_expert:
+                self.ctl.marquee.error("FWHM is zero in EEPROM - no deconvolution possible")
 
         log.debug(f"selecting preprocessor based on model config {self.current_model_config}")
         rm = self.ctl.resource_monitor
