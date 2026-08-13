@@ -31,6 +31,7 @@ class DetectorTemperatureFeature(EnlightenFeature):
         self.spinbox        .installEventFilter(ScrollStealFilter(self.spinbox))
         self.spinbox        .valueChanged       .connect(self.spinbox_callback)
         self.slider         .valueChanged       .connect(self.spinbox.setValue)
+        self.slider         .installEventFilter(ScrollStealFilter(self.slider))
         self.button_up      .clicked            .connect(self.up_callback)
         self.button_dn      .clicked            .connect(self.dn_callback)
 
