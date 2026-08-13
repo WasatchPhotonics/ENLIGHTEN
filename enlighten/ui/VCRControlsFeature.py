@@ -70,7 +70,11 @@ class VCRControlsFeature(EnlightenFeature):
         self.bt_stop            .setToolTip(self.tooltips["stop"])
 
         self.bt_play            .setWhatsThis("VCR-style play button to un-pause display of on-screen spectra")
-        self.bt_save            .setWhatsThis("Saves a single measurement to disk and to the scrolling Clipboard along the left-hand side of the scope")
+        self.bt_save            .setWhatsThis(unwrap("""Saves a single measurement to disk and to the scrolling Clipboard 
+                                                        along the left-hand side of the scope. For clarity, this will save
+                                                        the <b>most-recently graphed</b> spectrum (or spectra if multiple
+                                                        spectrometers are connected), not the "next" measurement
+                                                        which is still integrating when you press the button."""))
         self.bt_start_collection.setWhatsThis("When Batch Collection is enabled, this button starts a new batch")
         self.bt_stop            .setWhatsThis("Halt the current activity (such as a long-running Batch Collection)")
         self.bt_pause           .setWhatsThis(unwrap("""VCR-style pause button to freeze on-screen spectra (spectrometer 
