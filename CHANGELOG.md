@@ -11,6 +11,7 @@
         - support bad_pixels in JSON file
     - XS
         - support bad_pixels over BLE
+    - add Etalon/InGaAs Corrected to metadata
 - 2026-08-06 4.2.8
     - Prod.ConfigurationCheck fixes
     - JSON export fixes
