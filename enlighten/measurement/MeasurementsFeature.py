@@ -1,5 +1,6 @@
 import threading
 import logging
+import copy
 import json
 import csv
 import os
@@ -17,6 +18,7 @@ from enlighten.EnlightenFeature import EnlightenFeature
 from enlighten.measurement.Measurement import Measurement
 
 from wasatch.WasatchJSONEncoder import WasatchJSONEncoder
+from wasatch.utils import generate_excitation, generate_wavenumbers, generate_wavelengths_from_wavenumbers
 
 if common.use_pyside2():
     from PySide2 import QtWidgets
@@ -57,6 +59,7 @@ class MeasurementsFeature(EnlightenFeature):
 
         self.is_collapsed = False
         self.insert_top = True
+        self.dalai_behavior = None
 
         # binding
         cfu.pushButton_erase_captures      .clicked    .connect(self.erase_all_callback)
@@ -341,6 +344,24 @@ class MeasurementsFeature(EnlightenFeature):
             return
 
         ########################################################################
+        # Handle DALAI
+        ########################################################################
+
+        if self.has_dalai():
+            log.debug("export_session: has DALAI measurements")
+            if self.ctl.save_options.save_csv():
+                log.debug("export_session: save options include CSV, so getting behavior")
+                if self.get_dalai_behavior():
+                    log.debug(f"export_session: user selected DALAI behavior {self.dalai_behavior}")
+                else:
+                    log.error("export_session: cancelling, user did not select valid DALAI export behavior")
+                    return
+            else:
+                log.debug(f"export_session: not saving to CSV, don't care")
+        else:
+            log.debug(f"export_session: no DALAI measurements found")
+
+        ########################################################################
         # Generate pathname
         ########################################################################
 
@@ -401,7 +422,7 @@ class MeasurementsFeature(EnlightenFeature):
             self.export_worker.start()
 
     def perform_export_from_worker(self):
-        """ Note this is called from ExportWorker's Python thread, not the Qt GUI thread...should be okay? """
+        """ this is called from ExportWorker's Python thread, not the Qt GUI thread """
 
         log.debug("perform_export_from_worker: start")
 
@@ -531,6 +552,15 @@ class MeasurementsFeature(EnlightenFeature):
             export_measurements = [ m for m in self.measurements if m.is_displayed() ]
         else:
             export_measurements = self.measurements
+
+        if self.dalai_behavior == "dalai_only":
+            old = len(export_measurements)
+            export_measurements = [ m for m in export_measurements if m.processed_reading.dalai ]
+            log.debug(f"dalai_only so reduced export_measurements from {old} to {len(export_measurements)}")
+        elif self.dalai_behavior == "interp_to_dalai":
+            export_measurements = self.interp_to_dalai(export_measurements)
+        elif self.dalai_behavior == "interp_to_spec":
+            export_measurements = self.interp_to_spec(export_measurements)
 
         log.info("exporting %d measurements in %s order to %s", len(export_measurements), order, pathname)
         self.ctl.marquee.info("exporting %d spectra to CSV" % len(export_measurements))
@@ -1056,3 +1086,122 @@ class MeasurementsFeature(EnlightenFeature):
 
         # restore the saved line number
         self.ctl.save_options.line_number = save_line_number
+
+    ############################################################################
+    # DALAI export funz
+    ############################################################################
+
+    def has_dalai(self):
+        for m in self.measurements:
+            if m.processed_reading.dalai:
+                return True
+
+    def get_dalai_behavior(self):
+        """ Returns True on success, False to cancel """
+        self.dalai_behavior = None
+
+        response = self.ctl.gui.msgbox_with_radio_buttons(
+            title="Select DALAI export behavior",
+            label_text="The clipboard contains one or more DALAI measurements.",
+            options=[ "Only export raw measurements",
+                      "Only export DALAI measurements",
+                      "Interpolate all to DALAI axis",
+                      "Interpolate DALAI to spectrometer axis" ])
+
+        if not response["ok"]:
+            log.info("user cancelled")
+            return False
+
+        i = response["checked_index"]
+        if i == 0: code = "raw_only"
+        elif i == 1: code = "dalai_only"
+        elif i == 2: code = "interp_to_dalai"
+        elif i == 3: code = "interp_to_spec"
+        else:
+            log.error("invalid radio button response")
+            return False
+
+        log.debug(f"get_dalai_behavior: user selected {code}")
+        self.dalai_behavior = code
+        return True
+
+    def interpolate_pr(self, pr, new_wavenumbers, excitation):
+        old_spectrum = pr.get_processed()
+        old_dark = pr.get_dark()
+        old_reference = pr.get_reference()
+        old_wavenumbers = pr.get_wavenumbers()
+        old_wavelengths = pr.get_wavelengths()
+
+        new_spectrum = np.interp(new_wavenumbers, old_wavenumbers, old_spectrum)
+        new_dark = np.interp(new_wavenumbers, old_wavenumbers, old_dark) if old_dark else None
+        new_reference = np.interp(new_wavenumbers, old_wavenumbers, old_reference) if old_reference else None
+        new_wavelengths = generate_wavelengths_from_wavenumbers(excitation, new_wavenumbers)
+
+        pr.processed = new_spectrum
+        pr.dark = new_dark
+        pr.reference = new_reference
+        pr.wavelengths = new_wavelengths
+
+    def interp_to_dalai(self, measurements):
+        """
+        This is going to interpolate ALL measurements (both original, and DALAI 
+        if found) to a SINGLE x-axis (which will be the FIRST DALAI x-axis found).
+
+        - set dalai_wavenumbers from the FIRST DALAI x-axis (wavenumbers)
+        - for every Measurement.ProcessedReading
+            - take a deep clone
+            - replace .processed with an interpolated version against dalai_wavenumbers
+            - replace .wavenumbers with dalai_wavenumbers
+            - recompute .wavelengths from excitation and new wavenumber
+
+        Not using InterpolationFeature because that is designed to interpolate 
+        against a user-defined x-axis entered into GUI fields.
+        """
+
+        # find first DALAI x-axis
+        new_wavenumbers = None
+        for m in measurements:
+            if m.processed_reading.dalai:
+                new_wavenumbers = list(m.processed_reading.dalai.get_wavenumbers())
+                break
+
+        if new_wavenumbers is None:
+            log.error("interp_to_dalai: failed to find DALAI wavenumber axis")
+            return
+
+        log.debug(f"interp_to_dalai: new wavenumber axis {new_wavenumbers}")
+
+        interpolated = []
+        for m in measurements:
+            clone = copy.copy(m)
+            clone.processed_reading = copy.deepcopy(m.processed_reading)
+
+            self.interpolate_pr(clone.processed_reading, new_wavenumbers, excitation=clone.settings.excitation())
+            if clone.processed_reading.dalai:
+                self.interpolate_pr(clone.processed_reading.dalai, new_wavenumbers, excitation=clone.settings.excitation())
+
+            interpolated.append(clone)
+        return interpolated
+
+    def interp_to_spec(self, measurements):
+        """
+        For each measurement, if it has a DALAI component, re-interpolate that 
+        DALAI component to match its parent reading.
+
+        This is not forcing every measurement to have the same x-axis (for instance,
+        if multiple spectrometers were connected). It simply ensures that the DALAI
+        component of every measurement matches "that spectrometer's" x-axis.
+        """
+        interpolated = []
+        for m in measurements:
+            pr = m.processed_reading
+            if pr.dalai:
+                new_wavenumbers = pr.get_wavenumbers()
+                old_wavenumbers = pr.dalai.get_wavenumbers()
+                old_spectrum = pr.dalai.get_processed()
+                new_spectrum = np.interp(new_wavenumbers, old_wavenumbers, old_spectrum)
+                pr.dalai.processed = new_spectrum
+                pr.dalai.wavenumbers = new_wavenumbers
+                # DALAI ProcessedReadings don't usually have wavelengths, darks or references anyway
+
+        return interpolated
