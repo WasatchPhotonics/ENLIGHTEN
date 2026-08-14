@@ -28,6 +28,9 @@ Questions:
 To Do:
 - Remove the commented code sections once confirmed it is liked that way.
 - Shortcut keys for the fine tuning directional controls?
+- Make it home to the first sample cell, will have to make a diagram of the cell names/locations
+- Add a field to move to a particular cell
+- Add a button to scan and auto-raman each cell
 """
 
 import logging
