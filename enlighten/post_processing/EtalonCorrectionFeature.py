@@ -55,6 +55,7 @@ class EtalonCorrectionFeature(EnlightenFeature):
             spectrum = pr.get_processed()
             corrected = pr.settings.etalon_correction.apply(spectrum)
             pr.set_processed(corrected)
+            pr.etalon_corrected = True
         except:
             log.error("error applying etalon correction", exc_info=1)
             pass

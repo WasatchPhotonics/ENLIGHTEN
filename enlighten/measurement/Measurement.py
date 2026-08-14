@@ -233,6 +233,8 @@ class Measurement:
                            'Wavenumber Correction',
                            'Raman Intensity Corrected',
                            'Deconvolved',
+                           'Etalon Corrected',
+                           'InGaAs Corrected',
                            'Region',
                            'High Gain Mode',
                            'Laser Power mW',
@@ -887,6 +889,8 @@ class Measurement:
         if field == "interpolated":              return self.ctl.interp.enabled if self.ctl else False
         if field == "raman intensity corrected": return self.processed_reading.raman_intensity_corrected
         if field == "deconvolved":               return self.processed_reading.deconvolved
+        if field == "etalon corrected":          return self.processed_reading.etalon_corrected
+        if field == "ingaas corrected":          return self.processed_reading.ingaas_corrected
         if field == "region":                    return self.settings.state.region
         if field == "slit width":                return self.settings.eeprom.slit_size_um
         if field == "wavenumber correction":     return self.settings.state.wavenumber_correction

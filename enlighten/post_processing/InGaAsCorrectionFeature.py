@@ -55,6 +55,7 @@ class InGaAsCorrectionFeature(EnlightenFeature):
             spectrum = pr.get_processed()
             corrected = pr.settings.ingaas_correction.apply(spectrum)
             pr.set_processed(corrected)
+            pr.ingaas_corrected = True
         except:
             log.error("error applying InGaAs correction", exc_info=1)
             pass
