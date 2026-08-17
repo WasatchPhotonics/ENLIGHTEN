@@ -34,17 +34,18 @@ To Do:
 - Make sure it updates the position properly after initial startup
 - Add a field to move to a particular cell
 - Add a button to scan and auto-raman each cell
-- Update the X-axis min/max to prevent it from hitting the frame
-- Update the Y-axis max to prevent the same
 - Figure out how to use AutoRamanFeature so we can take a sample
 """
 
 import logging
 import time
 
-from .MapperFiles import MapperArduino
+from enlighten.post_processing.AutoRamanFeature import *
+from EnlightenPlugin import EnlightenPluginBase
+from EnlightenPlugin import EnlightenPluginRequest
 
-from EnlightenPlugin import *
+
+from .MapperFiles import MapperArduino
 
 log = logging.getLogger(__name__)
 
@@ -60,7 +61,9 @@ class Mapper(EnlightenPluginBase):
         #Cell Locations....maybe a better way?
         self.cell_1_x = 85
         self.cell_1_y = 203
-        self.center_distance = 5.5
+        self.center_distance = 5
+        
+        self.process_requests = False
         
         self.name = f"Mapper {self.VERSION}"
 
@@ -82,13 +85,6 @@ class Mapper(EnlightenPluginBase):
             tooltip="Current Y Position of the Mapper",
         )
         
-        #self.field(
-            #name="Zero Position",
-            #datatype="button",
-            #callback=self.zero_position,
-            #tooltip="Set both X/Y Position Displays to 0.00"
-        #)
-        
         self.field(name = "Step Size (um)",
                    direction="input", 
                    datatype=float, 
@@ -98,11 +94,6 @@ class Mapper(EnlightenPluginBase):
                    maximum = 1000.0,
                    callback=self.update_variables,
                    tooltip="How far to move the mapper in x/y in a single step")
-       
-        #self.field(name = "Step Size (um)",
-                    #direction = "input",
-                    #datatype = "bool",
-                    #tooltip = "Use micrometers (um) instead of millimeters (mm)")
 
         self.field(
             name="Left",
@@ -173,11 +164,12 @@ class Mapper(EnlightenPluginBase):
         self.has_other_graph = False
         self.block_enlighten = True
 
-        #
+        # ###########################
         # Mapper Definitions
-        #        
+        # ###########################      
         
         self.mapper = MapperArduino.Mapper()   
+        self.arf = AutoRamanFeature(self.ctl)
         
         # Moves to home to set the initial location
         self.home_mapper()
@@ -194,6 +186,15 @@ class Mapper(EnlightenPluginBase):
     # Mapper Functions
     ############################################################################
         
+    def process_request(request: EnlightenPluginRequest):
+        pr = request.processed_reading
+        if pr.take_one_request:
+            log.debug("received a ProcessedReading in response to a TakeOneRequest")
+            tor = pr.take_one_request
+            if tor.auto_raman_request:
+                log.debug("received a ProcessedReading in response to an AutoRamanRequest")
+
+
 # This updates the current position values to 0,0.  Moving +30 on X will move 30 based on this new 0 position
     #def zero_position(self):
         # tell mapper
@@ -269,34 +270,34 @@ class Mapper(EnlightenPluginBase):
             log.debug(f"Current Y-axis position: {self.position_y}")
             
     def run_mapping(self):
-        # The mapper should have been centered on cell 1 before starting
-        self.four_samples() #1 
-        self.four_samples() #2
-        self.two_samples() #3
-        self.four_samples() #4
-        self.three_samples() #5
-        self.four_samples() #6
-        self.four_samples() #7
-        self.two_samples() #8
-        self.four_samples() #9
-        self.two_samples() #10
-        self.four_samples() #11
-        self.four_samples() #12
-        self.three_samples() #13
-        self.four_samples() #14
-        self.two_samples() #15
-        self.four_samples() #16
-        self.four_samples() #17
-        self.three_samples() #18
-        self.four_samples() #19
-        self.two_samples() #20
-        self.four_samples() #21
-        self.four_samples() #22
-        self.three_samples() #23
-        self.four_samples() #24
-        self.two_samples() #25
-        self.four_samples() #26
-        self.four_samples() #27   
+        # The mapper should have been centered on cell 1 before starting        
+        self.four_samples()     #1 
+        #self.four_samples()     #2
+        #self.two_samples()      #3
+        #self.four_samples()     #4
+        #self.three_samples()    #5
+        #self.four_samples()     #6
+        #self.four_samples()     #7
+        #self.two_samples()      #8
+        #self.four_samples()     #9
+        #self.two_samples()      #10
+        #self.four_samples()     #11
+        #self.four_samples()     #12
+        #self.three_samples()    #13
+        #self.four_samples()     #14
+        #self.two_samples()      #15
+        #self.four_samples()     #16
+        #self.four_samples()     #17
+        #self.three_samples()    #18
+        #self.four_samples()     #19
+        #self.two_samples()      #20
+        #self.four_samples()     #21
+        #self.four_samples()     #22
+        #self.three_samples()    #23
+        #self.four_samples()     #24
+        #self.two_samples()      #25
+        #self.four_samples()     #26
+        #self.four_samples()     #27   
     
     # ##################################
     # Mapping/Scanning Functions
@@ -311,6 +312,10 @@ class Mapper(EnlightenPluginBase):
         # Takes the next four samples
         for i in range(3):
             # Take an Auto-Raman Sample and save it
+            self.arf.measure_callback()
+            #time.sleep(60)
+            
+            # Moves to the next sample in the row
             self.target_x = self.position_x + self.center_distance
             self.move_to_target()
             
@@ -351,7 +356,6 @@ class Mapper(EnlightenPluginBase):
         self.target_y = self.position_y - self.center_distance
         self.move_to_target()
         
-
 
     ############################################################################
     # Plugin Activity
