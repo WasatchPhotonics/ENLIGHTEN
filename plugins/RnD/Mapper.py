@@ -62,8 +62,7 @@ class Mapper(EnlightenPluginBase):
         self.cell_1_x = 85
         self.cell_1_y = 203
         self.center_distance = 5
-        
-        self.process_requests = False
+        self.count = 0
         
         self.name = f"Mapper {self.VERSION}"
 
@@ -180,20 +179,44 @@ class Mapper(EnlightenPluginBase):
         
         # Moves to the target, in this case cell 1
         self.move_to_target()
+        self.position_x = self.target_x
+        self.position_y = self.target_y
         self.update_display()
         
     ############################################################################
     # Mapper Functions
     ############################################################################
         
-    def process_request(request: EnlightenPluginRequest):
+    #def process_request(self, request: EnlightenPluginRequest):
+    def process_request(self, request):
         pr = request.processed_reading
-        if pr.take_one_request:
+        log.debug("Hitting the if statements")
+        if pr.reading.take_one_request:
             log.debug("received a ProcessedReading in response to a TakeOneRequest")
-            tor = pr.take_one_request
+            self.count = self.count + 1
+            tor = pr.reading.take_one_request
             if tor.auto_raman_request:
+                # Need another if statement to clarify when the autoraman is actually done?               
                 log.debug("received a ProcessedReading in response to an AutoRamanRequest")
-
+                # Check the direction to move and move
+                if self.position_x < self.max_x:
+                    self.target_x = self.position_x + self.center_distance
+                    self.target_y = self.position_y
+                    log.debug(f"Moving to location: X = {self.target_x}; y = {self.target_y}")
+                    self.move_to_target()
+                    self.run_mapping()
+                    
+                elif self.position_x == self.max_x and self.position_y < self.max_y:
+                    # Moving down a row                    
+                    self.target_x = self.cell_1_x
+                    self.target_y = self.position_y + self.center_distance
+                    log.debug(f"Moving to location: X = {self.target_x}; y = {self.target_y}")
+                    self.move_to_target()
+                    self.run_mapping()
+                
+                else:
+                    log.debug("Sample Scanning Complete")
+                    self.ctl.marquee.info("Sample Scanning Complete")
 
 # This updates the current position values to 0,0.  Moving +30 on X will move 30 based on this new 0 position
     #def zero_position(self):
@@ -270,34 +293,23 @@ class Mapper(EnlightenPluginBase):
             log.debug(f"Current Y-axis position: {self.position_y}")
             
     def run_mapping(self):
-        # The mapper should have been centered on cell 1 before starting        
-        self.four_samples()     #1 
-        #self.four_samples()     #2
-        #self.two_samples()      #3
-        #self.four_samples()     #4
-        #self.three_samples()    #5
-        #self.four_samples()     #6
-        #self.four_samples()     #7
-        #self.two_samples()      #8
-        #self.four_samples()     #9
-        #self.two_samples()      #10
-        #self.four_samples()     #11
-        #self.four_samples()     #12
-        #self.three_samples()    #13
-        #self.four_samples()     #14
-        #self.two_samples()      #15
-        #self.four_samples()     #16
-        #self.four_samples()     #17
-        #self.three_samples()    #18
-        #self.four_samples()     #19
-        #self.two_samples()      #20
-        #self.four_samples()     #21
-        #self.four_samples()     #22
-        #self.three_samples()    #23
-        #self.four_samples()     #24
-        #self.two_samples()      #25
-        #self.four_samples()     #26
-        #self.four_samples()     #27   
+        # The mapper should have been centered on cell 1 before starting
+        #log.debug(f"self.running: {self.arf.running}")
+        if self.count < 1:
+            self.cell_1_x = self.position_x
+            self.cell_1_y = self.position_y
+            self.max_x = self.cell_1_x + (self.center_distance * 3)
+            self.max_y = self.cell_1_y + (self.center_distance * 27)
+            
+        self.current_cell_x = self.position_x
+        self.current_cell_y = self.position_y
+        log.debug(f"Current x: {self.current_cell_x}; Current y: {self.current_cell_y}")
+        
+        #if self.position_y <= self.max_y and self.position_x <= self.max_x:
+        if self.position_y == self.cell_1_y and self.position_x <= self.cell_1_x + (self.center_distance * 3):
+            log.debug(f"Current x: {self.current_cell_x}; Current y: {self.current_cell_y}")
+            log.debug("Taking Auto-Raman Sample")
+            self.arf.measure_callback()
     
     # ##################################
     # Mapping/Scanning Functions
@@ -308,12 +320,18 @@ class Mapper(EnlightenPluginBase):
         #self.target_y = self.position_y - self.center_distance
         #self.move_to_target()
     
+    def take_sample(self):
+        log.debug("Taking Auto-Raman Sample")
+        #time.sleep(1)
+        self.arf.measure_callback()
+    
     def four_samples(self):
         # Takes the next four samples
         for i in range(3):
+            log.debug("In four samples")
             # Take an Auto-Raman Sample and save it
+            time.sleep(1)
             self.arf.measure_callback()
-            #time.sleep(60)
             
             # Moves to the next sample in the row
             self.target_x = self.position_x + self.center_distance
@@ -375,7 +393,6 @@ class Mapper(EnlightenPluginBase):
         self.mapper.disconnect()
         super().disconnect()
         
-    
     
     
 """
