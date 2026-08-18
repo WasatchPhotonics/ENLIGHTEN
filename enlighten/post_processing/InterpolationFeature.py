@@ -37,7 +37,7 @@ class InterpolationFeature(EnlightenFeature):
         self.new_axis = None
         self.allowed = False
 
-        self.bt_toggle          .clicked            .connect(self._toggle_callback)
+        self.bt_toggle          .clicked            .connect(self.toggle_callback)
         self.cb_enabled         .clicked            .connect(self._update_widgets)
         self.dsb_end            .valueChanged       .connect(self._update_widgets)
         self.dsb_incr           .valueChanged       .connect(self._update_widgets)
@@ -86,7 +86,7 @@ class InterpolationFeature(EnlightenFeature):
     def update_visibility(self):
         pass
 
-    def _toggle_callback(self):
+    def toggle_callback(self):
         if self.check_allowed():
             self.enabled = not self.cb_enabled.isChecked()
 
@@ -102,7 +102,7 @@ class InterpolationFeature(EnlightenFeature):
             return
 
         if flag != self.enabled:
-            self._toggle_callback()
+            self.toggle_callback()
 
     def __repr__(self):
         s = "InterpolationFeature<enabled %s, use %s, start %s, end %s, incr %s, axis %s>" % (

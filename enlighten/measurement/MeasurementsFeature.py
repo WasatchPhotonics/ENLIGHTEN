@@ -18,7 +18,7 @@ from enlighten.EnlightenFeature import EnlightenFeature
 from enlighten.measurement.Measurement import Measurement
 
 from wasatch.WasatchJSONEncoder import WasatchJSONEncoder
-from wasatch.utils import generate_excitation, generate_wavenumbers, generate_wavelengths_from_wavenumbers
+from wasatch.utils import generate_wavelengths_from_wavenumbers
 
 if common.use_pyside2():
     from PySide2 import QtWidgets
@@ -434,27 +434,27 @@ class MeasurementsFeature(EnlightenFeature):
         exported object.
 
         This function is generating a second Measurement from the DALAI component
-        of a parent Measurement. CSV-based exports will include the child 
-        Measurement objects, but JSON exports will not.
+        of a parent Measurement. CSV-based exports may include the child DALAI
+        objects, but JSON exports will not.
 
-        Note that we are deliberately not applying any interpolating at this point
+        Note that we are deliberately not applying any interpolation at this point
         in the process, as there is no need to interpolate data which will go into
         a JSON export. 
         """
 
-        # TODO:
-        # - dalai_only CSV export has wrong (old, original) x-axes
-
         m_dalai = m.clone() # the newly forked child
+        m_dalai.is_dalai_fork = True
 
         # bump the DALAI sub-reading into the main slot
         m_dalai.processed_reading = m_dalai.processed_reading.dalai
+        m_dalai.processed_reading.dalai = None
 
+        # update axes based on new DALAI data
         m_dalai.settings.wavenumbers = m_dalai.processed_reading.get_wavenumbers()
         m_dalai.settings.wavelengths = generate_wavelengths_from_wavenumbers(m_dalai.settings.excitation(), m_dalai.settings.wavenumbers)
 
         # reset anything in SpectrometerSettings that no longer applies to DALAI
-        # readings (update pixel count, nix pixel-based horizontal ROI, etc)
+        # readings (update pixel count, pixel-based horizontal ROI, etc)
         m_dalai.settings.post_interpolation_reset(pixels=len(m_dalai.processed_reading.wavenumbers))
 
         return m_dalai
@@ -880,11 +880,11 @@ class MeasurementsFeature(EnlightenFeature):
                         row.extend(BLANK) # for the subspectrum name
                         # now re-write the value above every measurement for this subspectrum
                         for m in self.export_measurements_csv:
-                            value = m.get_metadata(field)
+                            value = m.get_metadata(field, target="csv_export")
                             row.append(value)
                 else:
                     for m in self.export_measurements_csv:
-                        value = m.get_metadata(field)
+                        value = m.get_metadata(field, target="csv_export")
                         row.append(value)
                         row.extend(BLANK * (len(pr_headers) - 1))
                 csv_writer.writerow(row)
