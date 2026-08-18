@@ -280,6 +280,33 @@ class Measurement:
         # cache of metadata only generated / rendered at save
         self.metadata                 = {}
 
+    def __repr__(self):
+        pr = self.processed_reading
+        tok = []
+
+        tok.append(f"ID {self.measurement_id}")
+
+        if pr is None:
+            tok.append("no ProcessedReading??")
+        elif pr.dalai:
+            tok.append("has DALAI sub-component")
+        else:
+            tok.append("no DALAI sub-component")
+
+        return f"Measurement < {', '.join(tok)} >"
+
+    def reset_settings(self, pixels):
+        """
+        Call this after re-interpolating ProcessedReading such that old hardware
+        values are no longer appropriate.
+
+        Keeping in enlighten.Measurement rather than wasatch.SpectrometerSettings
+        or wasatch.EEPROM for now.
+        """
+        self.settings.eeprom.active_pixels_horizontal = pixels
+        self.settings.eeprom.roi_horizontal_start = 0
+        self.settings.eeprom.roi_horizontal_end = 0
+
     ##
     # There are three valid instantiation patterns:
     #

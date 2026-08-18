@@ -300,7 +300,10 @@ class GUIFeature(EnlightenFeature):
 
         dialog.exec_()
 
-    def msgbox_with_radio_buttons(self, title, label_text, options):
+    def msgbox_with_radio_buttons(self, title, label_text, options, disabled_option_indices=None):
+        if disabled_option_indices is None:
+            disabled_option_indices = []
+
         dialog = QDialog(parent=self.ctl.form)
         dialog.setModal(True)
         dialog.setWindowTitle(title)
@@ -312,8 +315,10 @@ class GUIFeature(EnlightenFeature):
 
         # render the radio buttons
         radio_buttons = []
-        for option in options:
+        for i, option in enumerate(options):
             rb = QRadioButton(option, parent=dialog)
+            if i in disabled_option_indices:
+                rb.setEnabled(False)   
             vb.addWidget(rb)
             radio_buttons.append(rb)
 

@@ -56,6 +56,8 @@ class MeasurementsFeature(EnlightenFeature):
         cfu = ctl.form.ui
 
         self.measurements = []
+        self.export_measurements_csv = []
+        self.export_measurements_json = []
 
         self.is_collapsed = False
         self.insert_top = True
@@ -350,12 +352,15 @@ class MeasurementsFeature(EnlightenFeature):
         if self.has_dalai():
             log.debug("export_session: has DALAI measurements")
             if self.ctl.save_options.save_csv():
-                log.debug("export_session: save options include CSV, so getting behavior")
-                if self.get_dalai_behavior():
-                    log.debug(f"export_session: user selected DALAI behavior {self.dalai_behavior}")
+                if self.ctl.interp.enabled:
+                    log.debug("export_session: save options include CSV but interpolation enabled, don't care")
                 else:
-                    log.error("export_session: cancelling, user did not select valid DALAI export behavior")
-                    return
+                    log.debug("export_session: save options include CSV and interpolation disabled, so prompting for behavior")
+                    if self.get_dalai_behavior():
+                        log.debug(f"export_session: user selected DALAI behavior {self.dalai_behavior}")
+                    else:
+                        log.error("export_session: cancelling, user did not select valid DALAI export behavior")
+                        return
             else:
                 log.debug(f"export_session: not saving to CSV, don't care")
         else:
@@ -387,7 +392,7 @@ class MeasurementsFeature(EnlightenFeature):
                     checkbox_text = "Only export displayed traces")
                 log.debug(f"msgbox result: {result}")
                 self.export_filename = result["lineedit"]
-                visible_only = result["checked"]
+                self.export_visible_only = result["checked"]
                 if not result["ok"]:
                     log.info("cancelling export")
                     return
@@ -402,10 +407,8 @@ class MeasurementsFeature(EnlightenFeature):
                     return
 
         # warn user if they are about to overwrite an existing file
-        # it looks like only risk is for .csv and .json extensions
-        file_exists = (os.path.exists(os.path.join(self.export_directory, f'{self.export_filename}.csv'))
-                       or os.path.exists(os.path.join(self.export_directory, f'{self.export_filename}.json'))
-                       or os.path.exists(os.path.join(self.export_directory, f'{self.export_filename}.spc')))
+        file_exists = (os.path.exists(os.path.join(self.export_directory, f'{self.export_filename}.csv')) or
+                       os.path.exists(os.path.join(self.export_directory, f'{self.export_filename}.json')))
 
         log.info(f"checking for: {os.path.join(self.export_directory, self.export_filename)}, file exists={file_exists}")
 
@@ -421,51 +424,143 @@ class MeasurementsFeature(EnlightenFeature):
             self.export_worker.setDaemon(True)
             self.export_worker.start()
 
+    def fork_dalai_measurement(self, m):
+        """
+        CSV exports are greatly simplified by treating "original" and "DALAI" 
+        ProcessedReadings as two separate Measurement objects.
+
+        JSON exports, on the other hand, can handle complex data with varied axes 
+        and don't mind including all ProcessedReading subtypes into a single 
+        exported object.
+
+        This function is generating a second Measurement from the DALAI component
+        of a parent Measurement. CSV-based exports will include the child 
+        Measurement objects, but JSON exports will not.
+
+        Note that we are deliberately not applying any interpolating at this point
+        in the process, as there is no need to interpolate data which will go into
+        a JSON export. 
+        """
+
+        # TODO:
+        # - dalai_only CSV export has wrong (old, original) x-axes
+
+        m_dalai = m.clone() # the newly forked child
+
+        # bump the DALAI sub-reading into the main slot
+        m_dalai.processed_reading = m_dalai.processed_reading.dalai
+
+        m_dalai.settings.wavenumbers = m_dalai.processed_reading.get_wavenumbers()
+        m_dalai.settings.wavelengths = generate_wavelengths_from_wavenumbers(m_dalai.settings.excitation(), m_dalai.settings.wavenumbers)
+
+        # reset anything in SpectrometerSettings that no longer applies to DALAI
+        # readings (update pixel count, nix pixel-based horizontal ROI, etc)
+        m_dalai.settings.post_interpolation_reset(pixels=len(m_dalai.processed_reading.wavenumbers))
+
+        return m_dalai
+
     def perform_export_from_worker(self):
         """ this is called from ExportWorker's Python thread, not the Qt GUI thread """
 
         log.debug("perform_export_from_worker: start")
 
+        ########################################################################
+        # Identify which measurments to export
+        ########################################################################
+
+        # MZ: My challenge here is that this is currently structured to generate
+        # a SINGLE list of export_measurements which will be used for both CSV
+        # and JSON exports. Assuming dalai_behavior is "dalai_only," then for
+        # CSV that list should contain only the forked DALAI children; however,
+        # for JSON the list should probably contain all parents containing DALAI.
+
+        self.export_measurements_csv = []
+        self.export_measurements_json = []
+        for m in self.measurements:
+
+            if self.export_visible_only and not m.is_displayed():
+                log.debug(f"perform_export_from_worker: skipping because not visible: {m}")
+                continue
+
+            # does this Measurement have a DALAI component?
+            if m.processed_reading.dalai is None:
+                # no, this Measurement does not have a DALAI component
+                if self.dalai_behavior == "dalai_only":
+                    log.debug(f"perform_export_from_worker: skipping because not DALAI: {m}")
+                else:
+                    # for raw_only and enable_interpolation, we still want to 
+                    # export the normal version of this measurement
+                    log.debug(f"perform_export_from_worker: keeping non-DALAI measurement because {self.dalai_behavior}: {m}")
+                    self.export_measurements_csv.append(m)
+                    self.export_measurements_json.append(m)
+            else:
+                # yes, this Measurement does have a DALAI component
+
+                # ONLY keep the raw, if that was requested
+                if self.dalai_behavior == "raw_only":
+                    log.debug(f"perform_export_from_worker: only keeping raw component of DALAI measurement because {self.dalai_behavior}: {m}")
+                    self.export_measurements_csv.append(m)
+                    self.export_measurements_json.append(m)
+                    continue
+
+                if self.dalai_behavior != "dalai_only":
+                    # ALSO keep the raw, if that was requested
+                    log.debug(f"perform_export_from_worker: keeping raw component of DALAI measurement because {self.dalai_behavior}: {m}")
+                    self.export_measurements_csv.append(m)
+                    self.export_measurements_json.append(m)
+
+                if self.dalai_behavior == "dalai_only":
+                    # don't forget to keep the raw for JSON measurements
+                    self.export_measurements_json.append(m)
+
+                # by implication, dalai_behavior is dalai_only or
+                # enable_interpolation -- in either case, fork off a new
+                # measurement holding the DALAI spectrum
+                m_dalai = self.fork_dalai_measurement(m)
+                log.debug(f"perform_export_from_worker: forking DALAI component of DALAI measurement because {self.dalai_behavior}: {m_dalai}")
+                self.export_measurements_csv.append(m_dalai)
+
+        if len(self.export_measurements_csv) + len(self.export_measurements_json) < 1:
+            log.error("no qualified measurements to export")
+            self.ctl.progress_bar.hide()
+            return
+
+        log.debug(f"perform_export_from_worker: exporting {len(self.export_measurements_csv)} CSV, {len(self.export_measurements_json)} JSON")
+
+        ########################################################################
+        # perform export
+        ########################################################################
+
         if self.ctl.save_options.save_csv():
-            self.export_session_csv(self.export_directory, self.export_filename, visible_only=self.export_visible_only)
+            log.debug("perform_export_from_worker: calling export_session_csv")
+            self.export_session_csv(self.export_directory, self.export_filename)
 
         # cache export dictionary so we can re-use it between JSON and ExternalAPI
         if self.ctl.save_options.save_json() or "export" in self.observers:
-            export = self.generate_export_dict(visible_only=self.export_visible_only)
+            log.debug("perform_export_from_worker: generating dict")
+            list_of_dicts = self.generate_export_dict()
 
         if self.ctl.save_options.save_json():
-            self.export_session_json(self.export_directory, self.export_filename, export)
+            log.debug("perform_export_from_worker: calling export_session_json")
+            self.export_session_json(self.export_directory, self.export_filename, list_of_dicts)
 
         if self.ctl.save_options.save_spc():
-            self.export_session_spc(self.export_directory, self.export_filename, visible_only=self.export_visible_only)
+            self.export_session_spc(self.export_directory, self.export_filename)
 
         self.ctl.progress_bar.hide()
-
-        # MZ: this seems weird...why are we sending visible_only as the value, 
-        # instead of 'export' (the dict)? Who subscribes to this? A: NOBODY?
-        #
-        # self.notify_observers_with_value(self.export_visible_only, "export")
 
         log.debug("perform_export_from_worker: done")
 
     def read_measurements(self):
         return self.generate_export_dict()
 
-    def generate_export_dict(self, visible_only=False) -> list[dict]:
-        if visible_only:
-            exportable = [ m for m in self.measurements if m.is_displayed() ]
-        else:
-            exportable = list(self.measurements)
+    def generate_export_dict(self):
+        list_of_dicts = []
+        for m in self.export_measurements_json:
+            list_of_dicts.append(m.to_dict())
+        return list_of_dicts
 
-        export = []
-        for i, m in enumerate(exportable):
-            # do these one at a time to assist profiling
-            # log.debug(f"generate_export_dict: converting measurement {i} of {len(exportable)} to dict")
-            export.append(m.to_dict())
-
-        return export
-
-    def export_session_spc(self, directory, filename, visible_only=False):
+    def export_session_spc(self, directory, filename):
         if not filename.endswith(".spc"):
             filename += ".spc"
         pathname = os.path.join(directory, filename)
@@ -479,12 +574,7 @@ class MeasurementsFeature(EnlightenFeature):
         current_x = self.ctl.graph.current_x_axis
         file_type = SPCFileType.TMULTI | SPCFileType.TXVALS | SPCFileType.TXYXYS | SPCFileType.TCGRAM
 
-        if visible_only:
-            export_measurements = [ m for m in self.measurements if m.is_displayed() ]
-        else:
-            export_measurements = self.measurements
-
-        for m in export_measurements:
+        for m in self.export_measurements_csv:
             devices.append(m.spec.label)
             if current_x == common.Axes.WAVELENGTHS:
                 x_units = SPCXType.SPCXNMetr
@@ -522,48 +612,34 @@ class MeasurementsFeature(EnlightenFeature):
     # Should this generate a JSON dict of Measurements (keyed on MeasurementID)
     # or a JSON list of Measurements?  Could argue either way, but I'm defaulting
     # to list as it's slightly simpler for sender and receiver both.
-    def export_session_json(self, directory, filename, export):
+    def export_session_json(self, directory, filename, list_of_dicts):
         if not filename.endswith(".json"):
             filename += ".json"
         pathname = os.path.join(directory, filename)
 
-        self.ctl.marquee.info("exporting %d spectra to JSON..." % len(export))
+        self.ctl.marquee.info(f"exporting {len(list_of_dicts)} spectra to JSON...")
 
-        # log.debug("traversing 'export' to look for non-exportable blocks...")
-        # util.traverse_json(export)
+        # log.debug("traversing list_of_dicts to look for non-serializable blocks...")
+        # util.traverse_json(list_of_dictds)
 
-        s = json.dumps(export, cls=WasatchJSONEncoder, sort_keys=True, indent=2, set_progress_bar=self.ctl.progress_bar.set)
+        s = json.dumps(list_of_dicts, cls=WasatchJSONEncoder, sort_keys=True, indent=2, set_progress_bar=self.ctl.progress_bar.set)
         s = util.clean_json(s)
 
         log.debug(f"export_session_json: writing {pathname}")
         with open(pathname, "w") as f:
             f.write(s)
 
-        self.ctl.marquee.info("exported %d spectra to JSON" % len(export))
+        self.ctl.marquee.info("exported %d spectra to JSON" % len(list_of_dicts))
 
-    def export_session_csv(self, directory, filename, visible_only=False):
+    def export_session_csv(self, directory, filename):
         if not filename.endswith(".csv"):
             filename += ".csv"
         pathname = os.path.join(directory, filename)
 
         order = "row" if self.ctl.save_options.save_by_row() else "column"
 
-        if visible_only:
-            export_measurements = [ m for m in self.measurements if m.is_displayed() ]
-        else:
-            export_measurements = self.measurements
-
-        if self.dalai_behavior == "dalai_only":
-            old = len(export_measurements)
-            export_measurements = [ m for m in export_measurements if m.processed_reading.dalai ]
-            log.debug(f"dalai_only so reduced export_measurements from {old} to {len(export_measurements)}")
-        elif self.dalai_behavior == "interp_to_dalai":
-            export_measurements = self.interp_to_dalai(export_measurements)
-        elif self.dalai_behavior == "interp_to_spec":
-            export_measurements = self.interp_to_spec(export_measurements)
-
-        log.info("exporting %d measurements in %s order to %s", len(export_measurements), order, pathname)
-        self.ctl.marquee.info("exporting %d spectra to CSV" % len(export_measurements))
+        log.info(f"exporting {len(self.export_measurements_csv)} measurements in {order} order to {pathname}")
+        self.ctl.marquee.info(f"exporting {len(self.export_measurements_csv)} spectra to CSV")
 
         ########################################################################
         # Generate the export
@@ -573,18 +649,18 @@ class MeasurementsFeature(EnlightenFeature):
             with open(pathname, "w", newline="") as f:
                 csv_writer = csv.writer(f)
                 if order == "row":
-                    self.export_by_row(csv_writer, visible_only)
+                    self.export_by_row(csv_writer)
                 else:
-                    self.export_by_column(csv_writer, visible_only)
+                    self.export_by_column(csv_writer)
 
-            self.ctl.marquee.info("exported %d spectra to CSV" % len(export_measurements))
+            self.ctl.marquee.info("exported %d spectra to CSV" % len(self.export_measurements_csv))
             log.info("exported %d measurements in %s order to %s", self.count(), order, pathname)
 
         except Exception:
             log.critical("exception exporting session", exc_info=1)
             os.remove(pathname)
 
-    def _get_spectrometer_settings(self, visible_only=False):
+    def _get_spectrometer_settings(self):
         """
         Returns a list of all SpectrometerSettings (unique by serial_number)
         contributing to our current set of saved measurements, in order of initial
@@ -593,7 +669,7 @@ class MeasurementsFeature(EnlightenFeature):
         To be perfectly clear, this returns a dictionary of
         wasatch.SpectrometerSettings by serial number.  Be aware that different
         Measurement objects generated from the same spectrometer serial number
-        may have different ROI and interpolation settings.
+        may have different ROI, if the user was fiddling with that control.
 
         @note This method has a fundamental weakness if something, say a plugin,
               changes the SpectrometerSettings (say wavelengths/wavenumbers) for
@@ -605,9 +681,7 @@ class MeasurementsFeature(EnlightenFeature):
         """
         settingss = []
         seen_sn = set()
-        for m in self.measurements:
-            if visible_only and not m.is_displayed():
-                continue
+        for m in self.export_measurements_csv:
             if m.settings is not None and m.settings.eeprom.serial_number not in seen_sn:
                 settingss.append(m.settings)
                 seen_sn.add(m.settings.eeprom.serial_number)
@@ -710,7 +784,7 @@ class MeasurementsFeature(EnlightenFeature):
     # (2) individual Measurement's ProcessedReading get_wavelengths() etc 
     #     actually reflect the current SpectrometerSettings (and weren't trumped
     #     along the line by a plugin or whatever).
-    def export_by_column(self, csv_writer, visible_only=False):
+    def export_by_column(self, csv_writer):
 
         # could output some "Session" stuff up here
 
@@ -719,7 +793,7 @@ class MeasurementsFeature(EnlightenFeature):
         ########################################################################
 
         # count spectrometers (S1, S2)
-        settingss = self._get_spectrometer_settings(visible_only)
+        settingss = self._get_spectrometer_settings()
         if len(settingss) < 1:
             common.msgbox("No spectra to export!")
             return
@@ -752,7 +826,7 @@ class MeasurementsFeature(EnlightenFeature):
         # default to 5-digit precision for all spectral columns if a reference
         # component is being exported
         prec = 5 if 'Reference' in pr_headers else 2
-        max_pixels = max([settings.pixels() for settings in settingss])
+        max_pixels = max([m.settings.pixels() for m in self.export_measurements_csv])
 
         ########################################################################
         # metadata
@@ -771,12 +845,7 @@ class MeasurementsFeature(EnlightenFeature):
         fields = self.measurements[0].get_extra_header_fields()
         fields.extend(Measurement.CSV_HEADER_FIELDS)
 
-        if visible_only:
-            export_measurements = [ m for m in self.measurements if m.is_displayed() ]
-        else:
-            export_measurements = self.measurements
-
-        if not self.ctl.interp.enabled and self.incompatible_axes(export_measurements):
+        if not self.ctl.interp.enabled and self.incompatible_axes(self.export_measurements_csv):
             msg = "The selected measurements include differing ROI and/or " \
                 + "interpolation settings for the same spectrometer. Please " \
                 + "enable interpolation to export these measurements as a group."
@@ -784,7 +853,7 @@ class MeasurementsFeature(EnlightenFeature):
             raise ValueError(msg)
 
         # roll-in any plugin metadata appearing in any measurement
-        for m in export_measurements:
+        for m in self.export_measurements_csv:
             if m.processed_reading.plugin_metadata is not None:
                 for k in sorted(m.processed_reading.plugin_metadata.keys()):
                     if k not in fields:
@@ -810,11 +879,11 @@ class MeasurementsFeature(EnlightenFeature):
                     for header in pr_headers:
                         row.extend(BLANK) # for the subspectrum name
                         # now re-write the value above every measurement for this subspectrum
-                        for m in export_measurements:
+                        for m in self.export_measurements_csv:
                             value = m.get_metadata(field)
                             row.append(value)
                 else:
-                    for m in export_measurements:
+                    for m in self.export_measurements_csv:
                         value = m.get_metadata(field)
                         row.append(value)
                         row.extend(BLANK * (len(pr_headers) - 1))
@@ -848,9 +917,9 @@ class MeasurementsFeature(EnlightenFeature):
         if not self.ctl.save_options.save_collated():
             for header in pr_headers:
                 row.append(header)
-                row.extend(BLANK * len(export_measurements))
+                row.extend(BLANK * len(self.export_measurements_csv))
         else:
-            for m in export_measurements:
+            for m in self.export_measurements_csv:
                 row.append(m.label)
                 row.extend(BLANK * (len(pr_headers) - 1))
         csv_writer.writerow(row)
@@ -876,10 +945,10 @@ class MeasurementsFeature(EnlightenFeature):
         if not self.ctl.save_options.save_collated():
             for header in pr_headers:
                 row.extend(BLANK)
-                for m in export_measurements:
+                for m in self.export_measurements_csv:
                     row.append(m.label)
         else:
-            for m in export_measurements:
+            for m in self.export_measurements_csv:
                 for header in pr_headers:
                     row.append(header)
         csv_writer.writerow(row)
@@ -973,7 +1042,7 @@ class MeasurementsFeature(EnlightenFeature):
             # exporting the x-axis.
             first = None
             interpolated = {}
-            for m in export_measurements:
+            for m in self.export_measurements_csv:
                 interpolated[m] = self.ctl.interp.process(m.processed_reading, save=False)
                 if first is None:
                     first = interpolated[m]
@@ -986,10 +1055,10 @@ class MeasurementsFeature(EnlightenFeature):
                 if not self.ctl.save_options.save_collated():
                     for header in pr_headers:
                         row.extend(BLANK)
-                        for m in export_measurements:
+                        for m in self.export_measurements_csv:
                             row.append(get_pr_header_value(m, header, pixel, pr=interpolated[m]))
                 else:
-                    for m in export_measurements:
+                    for m in self.export_measurements_csv:
                         for header in pr_headers:
                             row.append(get_pr_header_value(m, header, pixel, pr=interpolated[m]))
                 csv_writer.writerow(row)
@@ -1024,13 +1093,13 @@ class MeasurementsFeature(EnlightenFeature):
                 if not self.ctl.save_options.save_collated():
                     for header in pr_headers:
                         row.extend(BLANK)
-                        for m in export_measurements:
-                            if pixel < m.settings.pixels():
+                        for m in self.export_measurements_csv:
+                            if pixel < m.settings.pixels(): 
                                 row.append(get_pr_header_value(m, header, pixel))
                             else:
                                 row.extend("NA")
                 else:
-                    for m in export_measurements:
+                    for m in self.export_measurements_csv:
                         if pixel < m.settings.pixels():
                             for header in pr_headers:
                                 row.append(get_pr_header_value(m, header, pixel))
@@ -1056,8 +1125,8 @@ class MeasurementsFeature(EnlightenFeature):
     # It is believed that this exported file will match what you would have
     # generated if you had initially saved the first Measurement as a row-ordered
     # CSV, then appended subsequent Measurements.
-    def export_by_row(self, csv_writer, visible_only=False):
-        settingss = self._get_spectrometer_settings(visible_only)
+    def export_by_row(self, csv_writer):
+        settingss = self._get_spectrometer_settings()
 
         file_header = Measurement.generate_dash_file_header(
             [settings.eeprom.serial_number for settings in settingss])
@@ -1072,14 +1141,7 @@ class MeasurementsFeature(EnlightenFeature):
         save_line_number = self.ctl.save_options.line_number
         self.ctl.save_options.line_number = 0
 
-        if visible_only:
-            export_measurements = [ m for m in self.measurements if m.is_displayed() ]
-        else:
-            export_measurements = self.measurements
-
-        for m in export_measurements:
-            if visible_only and not m.is_displayed():
-                continue
+        for m in self.export_measurements_csv:
             m.write_x_axis_lines(csv_writer)
             m.write_processed_reading_lines(csv_writer)
             self.ctl.save_options.line_number += 1
@@ -1100,108 +1162,39 @@ class MeasurementsFeature(EnlightenFeature):
         """ Returns True on success, False to cancel """
         self.dalai_behavior = None
 
+        label_text="The clipboard contains one or more DALAI measurements."
+
+        options = [ "Only export raw measurements",
+                    "Only export DALAI measurements",
+                    "Enable interpolation" ]
+
+        disabled_option_indices = []
+        if not self.ctl.interp.allowed:
+            label_text += "\nInterpolation is disabled until configured in Settings."
+            disabled_option_indices.append(2)
+
         response = self.ctl.gui.msgbox_with_radio_buttons(
-            title="Select DALAI export behavior",
-            label_text="The clipboard contains one or more DALAI measurements.",
-            options=[ "Only export raw measurements",
-                      "Only export DALAI measurements",
-                      "Interpolate all to DALAI axis",
-                      "Interpolate DALAI to spectrometer axis" ])
+            title="DALAI Export Behavior",
+            label_text=label_text,
+            options=options,
+            disabled_option_indices=disabled_option_indices)
 
         if not response["ok"]:
             log.info("user cancelled")
             return False
 
         i = response["checked_index"]
-        if i == 0: code = "raw_only"
+        if   i == 0: code = "raw_only"
         elif i == 1: code = "dalai_only"
-        elif i == 2: code = "interp_to_dalai"
-        elif i == 3: code = "interp_to_spec"
+        elif i == 2: code = "enable_interpolation"
         else:
             log.error("invalid radio button response")
             return False
 
         log.debug(f"get_dalai_behavior: user selected {code}")
+
+        if code == "enable_interpolation":
+            self.ctl.interp.set_enabled(True)
+
         self.dalai_behavior = code
         return True
-
-    def interpolate_pr(self, pr, new_wavenumbers, excitation):
-        old_spectrum = pr.get_processed()
-        old_dark = pr.get_dark()
-        old_reference = pr.get_reference()
-        old_wavenumbers = pr.get_wavenumbers()
-        old_wavelengths = pr.get_wavelengths()
-
-        new_spectrum = np.interp(new_wavenumbers, old_wavenumbers, old_spectrum)
-        new_dark = np.interp(new_wavenumbers, old_wavenumbers, old_dark) if old_dark else None
-        new_reference = np.interp(new_wavenumbers, old_wavenumbers, old_reference) if old_reference else None
-        new_wavelengths = generate_wavelengths_from_wavenumbers(excitation, new_wavenumbers)
-
-        pr.processed = new_spectrum
-        pr.dark = new_dark
-        pr.reference = new_reference
-        pr.wavelengths = new_wavelengths
-
-    def interp_to_dalai(self, measurements):
-        """
-        This is going to interpolate ALL measurements (both original, and DALAI 
-        if found) to a SINGLE x-axis (which will be the FIRST DALAI x-axis found).
-
-        - set dalai_wavenumbers from the FIRST DALAI x-axis (wavenumbers)
-        - for every Measurement.ProcessedReading
-            - take a deep clone
-            - replace .processed with an interpolated version against dalai_wavenumbers
-            - replace .wavenumbers with dalai_wavenumbers
-            - recompute .wavelengths from excitation and new wavenumber
-
-        Not using InterpolationFeature because that is designed to interpolate 
-        against a user-defined x-axis entered into GUI fields.
-        """
-
-        # find first DALAI x-axis
-        new_wavenumbers = None
-        for m in measurements:
-            if m.processed_reading.dalai:
-                new_wavenumbers = list(m.processed_reading.dalai.get_wavenumbers())
-                break
-
-        if new_wavenumbers is None:
-            log.error("interp_to_dalai: failed to find DALAI wavenumber axis")
-            return
-
-        log.debug(f"interp_to_dalai: new wavenumber axis {new_wavenumbers}")
-
-        interpolated = []
-        for m in measurements:
-            clone = copy.copy(m)
-            clone.processed_reading = copy.deepcopy(m.processed_reading)
-
-            self.interpolate_pr(clone.processed_reading, new_wavenumbers, excitation=clone.settings.excitation())
-            if clone.processed_reading.dalai:
-                self.interpolate_pr(clone.processed_reading.dalai, new_wavenumbers, excitation=clone.settings.excitation())
-
-            interpolated.append(clone)
-        return interpolated
-
-    def interp_to_spec(self, measurements):
-        """
-        For each measurement, if it has a DALAI component, re-interpolate that 
-        DALAI component to match its parent reading.
-
-        This is not forcing every measurement to have the same x-axis (for instance,
-        if multiple spectrometers were connected). It simply ensures that the DALAI
-        component of every measurement matches "that spectrometer's" x-axis.
-        """
-        interpolated = []
-        for m in measurements:
-            pr = m.processed_reading
-            if pr.dalai:
-                new_wavenumbers = pr.get_wavenumbers()
-                old_wavenumbers = pr.dalai.get_wavenumbers()
-                old_spectrum = pr.dalai.get_processed()
-                new_spectrum = np.interp(new_wavenumbers, old_wavenumbers, old_spectrum)
-                pr.dalai.processed = new_spectrum
-                pr.dalai.wavenumbers = new_wavenumbers
-                # DALAI ProcessedReadings don't usually have wavelengths, darks or references anyway
-
-        return interpolated

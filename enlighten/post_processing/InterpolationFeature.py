@@ -49,7 +49,7 @@ class InterpolationFeature(EnlightenFeature):
                         self.dsb_start, self.rb_wavelength, self.rb_wavenumber ]:
             widget.setWhatsThis(unwrap("""
                 The interpolation icon is chosen to look like a small ruler.
-                Like a rule, interpolation generates a fixed, evenly-spaced x-axis
+                Like a physical ruler, interpolation generates a fixed, evenly-spaced x-axis
                 which allows spectra from different units and different models to
                 be easily compared and graphed side-by-side with a single common
                 axis. 
@@ -63,6 +63,9 @@ class InterpolationFeature(EnlightenFeature):
                 ending coordinate, and increment. A real-world analog might be
                 a yardstick starting at 0", ending at 36", and incrementing
                 by 1/16" steps.
+
+                Steps are generated through multiplication, rather than addition,
+                to avoid additive drift.
 
                 Note that interpolation is performed AFTER the horizontal ROI is
                 cropped."""))
@@ -92,6 +95,14 @@ class InterpolationFeature(EnlightenFeature):
         self.cb_enabled.blockSignals(False)
 
         self._update_widgets()
+
+    def set_enabled(self, flag):
+        if flag and not self.check_allowed():
+            log.error("set_enabled: ignoring enable request, as configuration invalid")
+            return
+
+        if flag != self.enabled:
+            self._toggle_callback()
 
     def __repr__(self):
         s = "InterpolationFeature<enabled %s, use %s, start %s, end %s, incr %s, axis %s>" % (
@@ -168,15 +179,7 @@ class InterpolationFeature(EnlightenFeature):
 
         log.debug("generating interpolated axis from %.2f to %.2f", self.start, self.end)
 
-        value = self.start
-
-        values = [ value ]
-        value += self.incr
-        while value <= self.end:
-            values.append(value)
-            value += self.incr
-
-        return values
+        return np.arange(self.start, self.end, self.incr)
 
     def generate_excitation(self, wavelengths, wavenumbers, settings):
         if settings is not None:
