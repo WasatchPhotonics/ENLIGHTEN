@@ -1132,6 +1132,7 @@ class Controller:
         make_shortcut("Ctrl+F", self.graph.toggle_lock_axes)
         make_shortcut("Ctrl+G", self.gain_db_feature.set_focus)
         make_shortcut("Ctrl+H", self.page_nav.toggle_hardware_and_scope)
+        make_shortcut("Ctrl+I", self.interp.toggle_callback)
         make_shortcut("Ctrl+L", self.laser_control.toggle_laser)
         make_shortcut("Ctrl+M", self.library_matching.toggle_callback)
         make_shortcut("Ctrl+N", self.save_options.focus_note) # note this gives easy access to prefix/suffix as well via shift-tab

@@ -276,9 +276,37 @@ class Measurement:
         self.prefix                   = ""
         self.suffix                   = ""
         self.plugin_name              = ""
+        self.is_dalai_fork            = False
 
         # cache of metadata only generated / rendered at save
         self.metadata                 = {}
+
+    def __repr__(self):
+        pr = self.processed_reading
+        tok = []
+
+        tok.append(f"ID {self.measurement_id}")
+
+        if pr is None:
+            tok.append("no ProcessedReading??")
+        elif pr.dalai:
+            tok.append("has DALAI sub-component")
+        else:
+            tok.append("no DALAI sub-component")
+
+        return f"Measurement < {', '.join(tok)} >"
+
+    def reset_settings(self, pixels):
+        """
+        Call this after re-interpolating ProcessedReading such that old hardware
+        values are no longer appropriate.
+
+        Keeping in enlighten.Measurement rather than wasatch.SpectrometerSettings
+        or wasatch.EEPROM for now.
+        """
+        self.settings.eeprom.active_pixels_horizontal = pixels
+        self.settings.eeprom.roi_horizontal_start = 0
+        self.settings.eeprom.roi_horizontal_end = 0
 
     ##
     # There are three valid instantiation patterns:
@@ -819,7 +847,7 @@ class Measurement:
     #       so currently those output "NA"
     #
     # @todo replace if/elif with dict of lambdas
-    def get_metadata(self, field):
+    def get_metadata(self, field, target=None):
         orig = field
         field = field.lower()
 
@@ -879,8 +907,8 @@ class Measurement:
         if field == "library match":             return self.processed_reading.library_matching_compound
         if field == "library score":             return self.processed_reading.library_matching_score
         if field == "library engine":            return self.processed_reading.library_matching_engine
-        if field == "dalai model name":          return self.processed_reading.dalai.dalai_model_name if self.has_dalai() else ""
-        if field == "dalai model label":         return self.processed_reading.dalai.dalai_model_label if self.has_dalai() else ""
+        if field == "dalai model name":          return self.get_dalai_metadata("dalai_model_name", target=target)
+        if field == "dalai model label":         return self.get_dalai_metadata("dalai_model_label", target=target)
         if field == "roi pixel start":           return self.settings.eeprom.multi_wavelength_calibration.get("roi_horizontal_start")
         if field == "roi pixel end":             return self.settings.eeprom.multi_wavelength_calibration.get("roi_horizontal_end")
         if field == "roi start line":            return self.settings.eeprom.roi_vertical_region_1_start
@@ -916,18 +944,18 @@ class Measurement:
     def get_extra_header_fields(self):
         return copy.copy(Measurement.EXTRA_HEADER_FIELDS)
 
-    def get_all_metadata(self) -> dict:
+    def get_all_metadata(self, target=None) -> dict:
         md = {}
 
         for field in self.get_extra_header_fields():
-            md[field] = self.get_metadata(field)
+            md[field] = self.get_metadata(field, target=target)
 
         for field in Measurement.CSV_HEADER_FIELDS:
             if field not in Measurement.ROW_ONLY_FIELDS:
                 if field == "Timestamp":
                     md["Timestamp"] = self.timestamp.strftime("%Y-%m-%d %H:%M:%S.%f")
                 else:
-                    md[field] = self.get_metadata(field)
+                    md[field] = self.get_metadata(field, target=target)
 
         if self.processed_reading.plugin_metadata is not None:
             for k, v in self.processed_reading.plugin_metadata.items():
@@ -1051,7 +1079,7 @@ class Measurement:
         write_pair.row = 1
 
         write_pair("", "ENLIGHTEN Summary Report")
-        md = self.get_all_metadata()
+        md = self.get_all_metadata(target="csv_indiv")
 
         fields = self.get_extra_header_fields()
         fields.extend(Measurement.CSV_HEADER_FIELDS)
@@ -1096,9 +1124,9 @@ class Measurement:
     def to_dict(self):
         pr = self.processed_reading
 
-        m = { # Measurement
+        m = { 
             "spectrum": {},
-            "metadata": self.get_all_metadata(),
+            "metadata": self.get_all_metadata(target="json"),
             "spectrometerSettings": self.settings.to_dict(),
             "dalai": {}
         }
@@ -1266,7 +1294,7 @@ class Measurement:
         data['miny'] = np.amin(data['y'])
 
         # throw in all our metadata for funz
-        for k, v in self.get_all_metadata().items():
+        for k, v in self.get_all_metadata(target="csv_indiv").items():
             k_ = re.sub(r'[^A-Z0-9_]', '_', k.replace("%", "perc").upper())
             data[f"$enlighten.{k_}"] = v
 
@@ -1362,7 +1390,7 @@ class Measurement:
             out = csv.writer(f, delimiter=delim)
 
             if include_metadata:
-                md = self.get_all_metadata()
+                md = self.get_all_metadata(target="csv_indiv")
 
                 # output additional (name, value) metadata pairs at the top,
                 # not included in row-ordered CSV
@@ -1437,7 +1465,7 @@ class Measurement:
             out = csv.writer(f, delimiter=delim)
 
             if include_metadata:
-                md = self.get_all_metadata()
+                md = self.get_all_metadata(target="csv_indiv_dalai")
 
                 # output additional (name, value) metadata pairs at the top,
                 # not included in row-ordered CSV
@@ -1477,7 +1505,6 @@ class Measurement:
 
         log.info("saved columnar DALAI %s", pathname)
         self.add_pathname(pathname)
-
 
     # ##########################################################################
     # TXT
@@ -1708,12 +1735,12 @@ class Measurement:
         for header in self.CSV_HEADER_FIELDS:
             if header == "Note": # and field != "processed":
                 if field == 'processed':
-                    note = self.get_metadata(header).strip()
+                    note = self.get_metadata(header, target="csv_indiv").strip()
                     row.append(f"{field} ({note})" if note else field)
                 else:
                     row.append(field)
             elif prefix_metadata or header in [ "Line Number" ]:
-                row.append(self.get_metadata(header))
+                row.append(self.get_metadata(header, target="csv_indiv"))
             else:
                 # skip these fields on spectrum components
                 # (we don't actually track the integration time, laser status etc for
@@ -1747,6 +1774,47 @@ class Measurement:
 
     def has_dalai(self):
         return self.processed_reading.has_dalai()
+
+    def get_dalai_metadata(self, name, target=None):
+        if self.processed_reading is None:
+            log.debug("get_dalai_metadata: no ProcessedReading")
+            return
+        elif target is None:
+            log.debug("get_dalai_metadata: no target")
+            return
+
+        target = target.lower()
+        pr = None
+        log.debug(f"get_dalai_metadata: target {target}")
+
+        if target == "json_export":
+            if self.processed_reading.has_dalai():
+                log.debug("get_dalai_metadata: pr.has_dalai() so using pr.dalai")
+                pr = self.processed_reading.dalai
+            else:
+                log.debug("get_dalai_metadata: not pr.has_dalai()")
+        elif target == "csv_indiv":
+            pr = None
+        elif target == "csv_indiv_dalai":
+            pr = self.processed_reading.dalai
+        elif target == "csv_export":
+            if self.is_dalai_fork:
+                log.debug("get_dalai_metadata: self.is_dalai_fork so using self.pr")
+                pr = self.processed_reading
+            else:
+                log.debug("get_dalai_metadata: not self.is_dalai_fork")
+
+        if pr:
+            log.debug(f"get_dalai_metadata: now have pr")
+            if hasattr(pr, name):
+                log.debug(f"get_dalai_metadata: found attr {name}")
+                value = getattr(pr, name)
+                log.debug(f"get_dalai_metadata: returning {value}")
+                return value
+            else:
+                log.debug(f"get_dalai_metadata: no attr {name}")
+        else:
+            log.debug(f"get_dalai_metadata: still no pr")
 
     ##
     # Passed a SpectrometerSettings object (containing wavelengths, wavenumbers

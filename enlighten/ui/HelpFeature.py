@@ -55,6 +55,7 @@ class HelpFeature(EnlightenFeature):
             Ctrl-F Freeze axes
             Ctrl-G enter Gain
             Ctrl-H toggle between Hardware and scope
+            Ctrl-I toggle Interpolation
             Ctrl-L toggle Laser firing
             Ctrl-M toggle library Matching
             Ctrl-N enter new Note

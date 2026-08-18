@@ -6,10 +6,10 @@ from enlighten.EnlightenFeature import EnlightenFeature
 
 if common.use_pyside2():
     from PySide2 import QtGui
-    from PySide2.QtWidgets import QMessageBox, QCheckBox, QDialog, QLineEdit, QDialogButtonBox, QVBoxLayout, QLabel, QTextEdit, QScrollArea, QWidget
+    from PySide2.QtWidgets import QMessageBox, QCheckBox, QDialog, QLineEdit, QDialogButtonBox, QVBoxLayout, QLabel, QTextEdit, QScrollArea, QWidget, QRadioButton
 else:
     from PySide6 import QtGui
-    from PySide6.QtWidgets import QMessageBox, QCheckBox, QDialog, QLineEdit, QDialogButtonBox, QVBoxLayout, QLabel, QTextEdit, QScrollArea, QWidget
+    from PySide6.QtWidgets import QMessageBox, QCheckBox, QDialog, QLineEdit, QDialogButtonBox, QVBoxLayout, QLabel, QTextEdit, QScrollArea, QWidget, QRadioButton
 
 log = logging.getLogger(__name__)
 
@@ -299,3 +299,51 @@ class GUIFeature(EnlightenFeature):
         vb.addWidget(te)
 
         dialog.exec_()
+
+    def msgbox_with_radio_buttons(self, title, label_text, options, disabled_option_indices=None):
+        if disabled_option_indices is None:
+            disabled_option_indices = []
+
+        dialog = QDialog(parent=self.ctl.form)
+        dialog.setModal(True)
+        dialog.setWindowTitle(title)
+        dialog.setSizeGripEnabled(True)
+        vb = QVBoxLayout(dialog)
+
+        lb = QLabel(label_text, parent=dialog)
+        vb.addWidget(lb)
+
+        # render the radio buttons
+        radio_buttons = []
+        for i, option in enumerate(options):
+            rb = QRadioButton(option, parent=dialog)
+            if i in disabled_option_indices:
+                rb.setEnabled(False)   
+            vb.addWidget(rb)
+            radio_buttons.append(rb)
+
+        bb = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        bb.accepted.connect(dialog.accept)
+        bb.rejected.connect(dialog.reject)
+        vb.addWidget(bb)
+
+        result = dialog.exec_()
+        ok = result == QDialog.Accepted
+
+        # figure out which radio button was checked
+        checked_index = None
+        checked_label = None
+        for i, rb in enumerate(radio_buttons):
+            if rb.isChecked():
+                checked_index = i
+                checked_label = rb.text()
+                break
+
+        retval = {
+            "ok": ok,
+            "checked_index": checked_index if ok else None,
+            "checked_label": checked_label if ok else None,
+        }
+
+        return retval
+
