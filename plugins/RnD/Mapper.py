@@ -35,6 +35,10 @@ To Do:
 - Add a field to move to a particular cell
 - Add a button to scan and auto-raman each cell
 - Figure out how to use AutoRamanFeature so we can take a sample
+
+Issues:
+- Attempting to loop through until arf.running is false, indicating that the autoraman is complete
+    doesn't seem to work and a poison pill is sent from PluginWorker.
 """
 
 import logging
@@ -63,6 +67,7 @@ class Mapper(EnlightenPluginBase):
         self.cell_1_y = 203
         self.center_distance = 5
         self.count = 0
+        self.running = False
         
         self.name = f"Mapper {self.VERSION}"
 
@@ -187,11 +192,10 @@ class Mapper(EnlightenPluginBase):
     # Mapper Functions
     ############################################################################
         
-    #def process_request(self, request: EnlightenPluginRequest):
-    def process_request(self, request):
+    def process_request(self, request: EnlightenPluginRequest):
         pr = request.processed_reading
         log.debug("Hitting the if statements")
-        if pr.reading.take_one_request:
+        if pr.reading.take_one_request and self.running:
             log.debug("received a ProcessedReading in response to a TakeOneRequest")
             self.count = self.count + 1
             tor = pr.reading.take_one_request
@@ -201,20 +205,31 @@ class Mapper(EnlightenPluginBase):
                 # Check the direction to move and move
                 if self.position_x < self.max_x:
                     self.target_x = self.position_x + self.center_distance
-                    self.target_y = self.position_y
-                    log.debug(f"Moving to location: X = {self.target_x}; y = {self.target_y}")
-                    self.move_to_target()
-                    self.run_mapping()
+                    self.target_y = self.position_y   
+                    log.debug(f" target_x: {self.target_x}, target_y: {self.target_y}")
+                    self.running = False
+                    while self.arf.running:
+                        log.debug(f"arf.running: {self.arf.running}")
                     
-                elif self.position_x == self.max_x and self.position_y < self.max_y:
-                    # Moving down a row                    
-                    self.target_x = self.cell_1_x
-                    self.target_y = self.position_y + self.center_distance
                     log.debug(f"Moving to location: X = {self.target_x}; y = {self.target_y}")
                     self.move_to_target()
                     self.run_mapping()
                 
+                # Update this with the working code eventually
+                elif self.position_x == self.max_x and self.position_y < self.max_y:
+                    # Moving down a row                    
+                    self.target_x = self.cell_1_x
+                    self.target_y = self.position_y - self.center_distance
+                    log.debug(f"arf.running: {self.arf.running}")
+                    self.running = False
+                    while not self.arf.running:
+                        log.debug(f"Moving to location: X = {self.target_x}; y = {self.target_y}")
+                        log.debug(f"arf.running: {self.arf.running}")
+                        self.move_to_target()
+                        self.run_mapping()
+                
                 else:
+                    self.running = False
                     log.debug("Sample Scanning Complete")
                     self.ctl.marquee.info("Sample Scanning Complete")
 
@@ -294,12 +309,15 @@ class Mapper(EnlightenPluginBase):
             
     def run_mapping(self):
         # The mapper should have been centered on cell 1 before starting
+        # Add a message box to confirm this?
         #log.debug(f"self.running: {self.arf.running}")
         if self.count < 1:
             self.cell_1_x = self.position_x
             self.cell_1_y = self.position_y
             self.max_x = self.cell_1_x + (self.center_distance * 3)
-            self.max_y = self.cell_1_y + (self.center_distance * 27)
+            self.max_y = self.cell_1_y + (self.center_distance * 27)     
+        
+        self.running = True
             
         self.current_cell_x = self.position_x
         self.current_cell_y = self.position_y
