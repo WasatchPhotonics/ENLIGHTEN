@@ -164,7 +164,7 @@ class SaveOptionsFeature(EnlightenFeature):
             mean you would lose the ability to go back and compare dark or
             raw spectra if later desired.)
 
-            For completeness, all spectral copmonents of a measurement are 
+            For completeness, all spectral components of a measurement are 
             considered to share the same detector x-axis, even if some pixels
             are output as "NA" (indicating they are outside the spectrometer's
             calibrated horizontal region of interest). 
