@@ -139,10 +139,8 @@ class DalaiRamanFeature(EnlightenFeature):
         self.curve = self.ctl.alt_graph.add_curve("DALAI-RAMAN", pen=self.COLOR)
 
         self.bt_toggle.setWhatsThis(unwrap("""
-            DALAI-RAMAN (Dieter's Augmented Library Artificial Intelligence for 
-            Really Awesome Mega-fast Analysis Network) is a machine-learning
-            model that has been trained to reject noise and fluorescence, leaving
-            only pristine Raman peaks."""))
+            DALAI-RAMAN is a machine-learning model that has been trained to 
+            reject noise and fluorescence, leaving only pristine Raman peaks."""))
 
         # these are used to smooth the TFL import process
         self.import_time_sec = self.ctl.config.get_int(self.SECTION, "import_time_sec", default=None)
