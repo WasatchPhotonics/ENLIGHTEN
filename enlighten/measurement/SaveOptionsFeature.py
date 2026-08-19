@@ -6,6 +6,7 @@ import os
 from enlighten import common
 from enlighten import util
 from enlighten.EnlightenFeature import EnlightenFeature
+from enlighten.util import unwrap
 
 log = logging.getLogger(__name__)
 
@@ -141,6 +142,58 @@ class SaveOptionsFeature(EnlightenFeature):
         self.le_suffix          .editingFinished    .connect(self.update_widgets)
         self.rb_by_col          .toggled            .connect(self.update_widgets)
         self.rb_by_row          .toggled            .connect(self.update_widgets)
+
+        self.cb_collated.setToolTip("collate exported spectral components (proc,raw,dark,ref), (proc,raw,dark,ref) vs (proc,proc,proc), (raw,raw,raw)")
+        self.cb_collated.setWhatsThis(unwrap("""
+            Collation only applies when exporting a group of measurements, and 
+            then only when exporting to column-ordered CSV.
+
+            If collating is enabled, then all of the component spectra of an 
+            individual measurement will be grouped together (proc, raw, dark, ref),
+            followed by the next measurement (another group of proc, raw, dark, ref).
+
+            Conversely, if this box is unchecked and you disable collating, then
+            all of the spectral components of a particular type will be grouped 
+            together: (proc, proc, proc...) followed by (raw, raw, raw...) and
+            so on. 
+
+            If you are trying to chart the "processed" component of multiple
+            measurements together in Excel, it is probably easier to disable
+            collating so you can chart a single contiguous range. (Alternately
+            you could disable saving of the other components, but that would
+            mean you would lose the ability to go back and compare dark or
+            raw spectra if later desired.)
+
+            For completeness, all spectral copmonents of a measurement are 
+            considered to share the same detector x-axis, even if some pixels
+            are output as "NA" (indicating they are outside the spectrometer's
+            calibrated horizontal region of interest). 
+
+            In contrast, a processed DALAI spectrum is stored as a separate 
+            measurement, as it has a radically different (interpolated) x-axis, 
+            and is not considered in collation. (DALAI measurements can be 
+            "uncollated" by selecting the appropriate option in the export process.)"""))
+
+        self.cb_append.setToolTip("for row-ordered CSV, append all measurements to a single file")
+
+        row_ordered_msg = unwrap("""
+            Due to the way computer memory and filesystems work, a row-ordered
+            CSV file can store vastly more measurements than a column-ordered CSV
+            (this is why Excel can only support 16,384 columns but 1,048,576 rows).
+            Therefore, if you wish to collect a prodigous amount of spectra,
+            (thousands or millions of measurements), a row-ordered CSV is much more
+            efficient in space and time.
+
+            The "Append" option allows all measurements collected during a session 
+            to be appended to a single growing row-ordered CSV file.
+
+            Note that for historical reasons, the row-ordered file format used is
+            retained from Dash, ENLIGHTEN's predecessor. This format does not include
+            as much metadata as the column-ordered CSV (which in turn contains less 
+            data than JSON).""")
+        self.rb_by_row.setWhatsThis(row_ordered_msg)
+        self.rb_by_col.setWhatsThis(row_ordered_msg)
+        self.cb_append.setWhatsThis(row_ordered_msg)
 
         log.debug("instantiated SaveOptions")
 

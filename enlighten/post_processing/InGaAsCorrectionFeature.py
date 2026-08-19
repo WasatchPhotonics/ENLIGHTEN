@@ -1,6 +1,7 @@
 import logging
 
 from enlighten.EnlightenFeature import EnlightenFeature
+from enlighten.util import unwrap
 
 log = logging.getLogger(__name__)
 
@@ -22,6 +23,24 @@ class InGaAsCorrectionFeature(EnlightenFeature):
 
         self.cb_enable.stateChanged.connect(self.enable_callback)
         self.bt_toggle.clicked.connect(self.toggle_callback)
+
+        self.bt_toggle.setWhatsThis(unwrap("""
+            Many InGaAs sensors are constructed using an interleaved pair of 
+            interwoven diode arrays, where each linear array necessarily has
+            its own unique gain and offset characteristics. As one array is
+            used to collect even-numbered pixels (0, 2, 4 etc) and the other
+            for odd-numbered pixels (1, 3, 5 etc), the differing gain and
+            offset characteristics can introduce an undesirable "sawtooth"
+            in broadband spectra. 
+
+            As the gain and offset behavior are not completely linear across 
+            either wavelength or intensity, a simple "slope-offset" correction is 
+            not sufficient to fully correct for the discrepancy.
+
+            To address this, some NIR/1064 spectrometers support a per-pixel 
+            "InGaAs Correction". Although this calibration is too large to fit
+            on standard spectrometer EEPROMs, it can be provided as an external
+            JSON file for use with ENLIGHTEN."""))
 
     def update_visibility(self):
         spec = self.ctl.multispec.current_spectrometer()

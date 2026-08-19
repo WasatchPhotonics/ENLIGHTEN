@@ -1,6 +1,7 @@
 import logging
 
 from enlighten.EnlightenFeature import EnlightenFeature
+from enlighten.util import unwrap
 
 log = logging.getLogger(__name__)
 
@@ -23,6 +24,16 @@ class EtalonCorrectionFeature(EnlightenFeature):
         self.cb_enable.stateChanged.connect(self.enable_callback)
         self.bt_toggle.clicked.connect(self.toggle_callback)
 
+        self.bt_toggle.setWhatsThis(unwrap("""
+            Etalon correction is a per-pixel correction offered on certain spectrometer 
+            models that corrects for a faint "ripple" (standing wave) in intensity values, 
+            visible in broadband spectra. This etaloning effect comes from reflections 
+            that can occur in a detector between the sensor substrate and the underside
+            of the protective glass window.
+
+            This calibration is available on the EEPROM of XS spectrometers, and can be
+            provided in an external JSON file on X / XM / XL series spectrometers."""))
+            
     def update_visibility(self):
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:

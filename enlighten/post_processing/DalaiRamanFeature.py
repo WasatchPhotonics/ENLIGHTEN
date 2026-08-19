@@ -9,6 +9,7 @@ import numpy as np
 from datetime import datetime
 
 from enlighten import common
+from enlighten.util import unwrap
 from enlighten.EnlightenFeature import EnlightenFeature
 
 from .DalaiAdditionalFiles import prep_spectra_X
@@ -45,7 +46,7 @@ class DalaiRamanFeature(EnlightenFeature):
     """
     DALAI-RAMAN is an acronym for:
 
-        Dieters Augmented Library Artificial Intelligence 
+        Dieter's Augmented Library Artificial Intelligence 
                             for 
             Really Awesome Mega-fast Analysis Network
     """
@@ -136,6 +137,12 @@ class DalaiRamanFeature(EnlightenFeature):
         self.ctl.page_nav.register_observer(self.page_nav_callback)
 
         self.curve = self.ctl.alt_graph.add_curve("DALAI-RAMAN", pen=self.COLOR)
+
+        self.bt_toggle.setWhatsThis(unwrap("""
+            DALAI-RAMAN (Dieter's Augmented Library Artificial Intelligence for 
+            Really Awesome Mega-fast Analysis Network) is a machine-learning
+            model that has been trained to reject noise and fluorescence, leaving
+            only pristine Raman peaks."""))
 
         # these are used to smooth the TFL import process
         self.import_time_sec = self.ctl.config.get_int(self.SECTION, "import_time_sec", default=None)

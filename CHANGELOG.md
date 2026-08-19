@@ -2,7 +2,16 @@
 
 ## 4.2 XS V2 Commercial Release
 
-- 2026-??-?? 4.2.9
+- 2026-??-?? 4.2.10
+    - persist CorrectionStatus visibility
+    - added WhatsThis
+        - LibraryMatching
+        - EtalonCorrection
+        - ElectricalDarkCorrection
+        - InGaAsCorrection
+        - DalaiRaman
+        - SaveOptions
+- 2026-08-19 4.2.9
     - only show ENLIGHTEN version in window title in Expert mode (simplifies manual screenshots)
     - DALAI
         - always allow in Expert Mode

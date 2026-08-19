@@ -9,6 +9,7 @@ from scipy.interpolate import interp1d
 
 from enlighten import common
 from enlighten.EnlightenFeature import EnlightenFeature
+from enlighten.util import unwrap
 
 from wasatch.CSVLoader import CSVLoader
 
@@ -106,6 +107,38 @@ class LibraryMatchingFeature(EnlightenFeature):
         self.sb_max_results     .setToolTip("Only report this many matches")
         self.cb_use_dist        .setToolTip("Use standard ENLIGHTEN compound library in addition to user-collected spectra")
         self.cb_enable          .setToolTip("Perform Pearson Library Matching against measured spectra")
+
+        self.bt_select_library  .setWhatsThis(unwrap("""
+                                            Choose a folder on your computer where you would like YOUR newly 
+                                            added library spectra to be saved. This is different from ENLIGHTEN's
+                                            own default "distribution" matching library. 
+
+                                            You can use the checkbox to decide whether or not you want ENLIGHTEN's 
+                                            own matching library to be used when matching spectra. However, you
+                                            cannot add or alter spectra to ENLIGHTEN's "default" library. You can
+                                            only add new library spectra of your own, and decide whether to use
+                                            ENLIGHTEN's standard library.
+
+                                            When a new measurement matches to a library compound that YOU added,
+                                            the compound name will be suffixed with a "*". The asterisk will not
+                                            appear in matches to ENLIGHTEN's standard library."""))
+        self.bt_save            .setWhatsThis(unwrap("""
+                                            This will add the currently-display spectrum to your own personal
+                                            matching library (whose path is indicated by the toolTip on the
+                                            Select Library button).
+
+                                            By default, your personal library will be stored under 
+                                            Documents/EnlightenSpectra/matching_library. You can add spectra to 
+                                            that folder via this button, or you can copy files directly into the
+                                            folder via standard operating system methods.
+
+                                            Library spectra are expected to be standard individual ENLIGHTEN 
+                                            measurements stored in column-ordered CSV format (JSON is not currently
+                                            supported). You can edit the metadata of those spectra as you wish.
+
+                                            When a new measurement is matched to a library compound, the name of
+                                            the library compound is taken from the "Label" metadata field (if
+                                            populated), else the filename."""))
 
         self.add_next_to_library = False
         self.metadata_cache = {}
