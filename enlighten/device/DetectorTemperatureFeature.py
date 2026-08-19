@@ -4,6 +4,7 @@ from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from enlighten.EnlightenFeature import EnlightenFeature
 
 from enlighten import common
+from enlighten.util import unwrap
 
 if common.use_pyside2():
     from PySide2 import QtCore 
@@ -35,6 +36,7 @@ class DetectorTemperatureFeature(EnlightenFeature):
         self.button_up      .clicked            .connect(self.up_callback)
         self.button_dn      .clicked            .connect(self.dn_callback)
 
+        # these are only shown in Expert Mode
         self.detector_tec_control_widgets = [
             cfu.detectorControlWidget_label_detectorTemperature,
             self.cb_enabled,
@@ -43,6 +45,20 @@ class DetectorTemperatureFeature(EnlightenFeature):
             self.button_up,
             self.button_dn
         ]
+
+        self.cb_enabled.setWhatsThis(unwrap("""
+            This allows knowledgable users to disable the detector's 
+            Thermo-Electric Cooler (TEC). Doing this will increase thermal 
+            readout noise in your spectra, worsening signal-to-noise ratio
+            and is widely considered a Bad Idea."""))
+        msg = unwrap("""
+            This allows knowledgable users to change the detector's 
+            Thermo-Electric Cooler (TEC)'s configured setpoint from its
+            default / calibrated value. Doing this will typically increase
+            thermal readout noise in your spectra, worsening signal-to-noise
+            ratio and is widely considered a Bad Idea.""")
+        for w in [ self.slider, self.spinbox, self.button_up, self.button_dn ]:
+            w.setWhatsThis(msg)
 
         self.strip_chart = self.ctl.strip_charts.create_chart(
             name="Detector Temperature", 

@@ -13,6 +13,14 @@ else:
 log = logging.getLogger(__name__)
 
 class HelpFeature(EnlightenFeature):
+    """
+    @todo When enabling WhatsThis, could probably iterate through every widget in
+          the entire form, backup the current stylesheet, then apply a new one 
+          with a yellow sparkly glow or something to obviously indicate which 
+          widgets contained a WhatsThis message. Disabling the feature would then
+          re-iterate all widgets and restore the previous stylesheet (or 
+          dynamically edit the stylesheet and remove the sparkly bit).
+    """
     
     HELP_URL = "https://wasatchphotonics.com/software-support/enlighten/"
 
@@ -27,13 +35,14 @@ class HelpFeature(EnlightenFeature):
         self.bt_help.clicked.connect(self.help_callback)
         self.bt_what.clicked.connect(self.what_callback)
 
-        self.bt_help.setWhatsThis("Opens a web browser to ENLIGHTEN on-line help if clicked, or shows a handy cheat-sheet of keyboard shortcuts on mouse-over.")
-        self.bt_what.setWhatsThis(unwrap("""
-            An alternate help system which can provide richer information than we normally put into mouse-over tooltips.
-            
-            In particular, provides especially rich data on individual measurements in the Clipboard.
+        self.bt_help.setWhatsThis(unwrap("""
+            "Opens a web browser to ENLIGHTEN on-line help if clicked, or shows 
+            a handy cheat-sheet of keyboard shortcuts on mouse-over."""))
 
-            And frankly, it lets us experiment with this Qt feature to see if it adds any value ;-)"""))
+        self.bt_what.setWhatsThis(unwrap("""
+            An alternate help system which can provide richer information than we
+            normally put into mouse-over tooltips. In particular, provides 
+            especially rich data on individual measurements in the Clipboard."""))
 
         self.bt_help.setToolTip(undent("""
             Click or press F1 to view online manual. 
@@ -81,7 +90,6 @@ class HelpFeature(EnlightenFeature):
 
         """
         Unused:
-            ctrl-I
             ctrl-J
             ctrl-K
             ctrl-O
@@ -93,9 +101,7 @@ class HelpFeature(EnlightenFeature):
         """
 
     def help_callback(self):
-        url = self.HELP_URL
-        log.debug(f"opening {url}")
-        webbrowser.open(url)
+        webbrowser.open(self.HELP_URL)
 
     def what_callback(self):
         wt = QtWidgets.QWhatsThis

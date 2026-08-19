@@ -15,6 +15,35 @@ log = logging.getLogger(__name__)
 
 class StripChartsFeature(EnlightenFeature):
     """ 
+    This class automates creation and management of multiple StripChart objects
+    on the Factory View which graph spectrometer attributes (battery charge,
+    detector, laser or ambient temperature, etc) over time.
+
+    Each StripChart includes a graph with a configurable moving window, allows
+    data to be streamed to disk, includes a copy-to-clipboard button for pasting
+    to Excel, and a reset button to clear historical data.
+
+    Newly connected wasatch.Reading objects received from Wasatch.PY are 
+    automatically shared from the Controller to the StripChartFeature.
+    This Feature then automatically relays them on to every class who has 
+    created a StripChart.
+
+    That is to say, there is exactly one StripChartsFeature singleton in ENLIGHTEN.
+    Multiple other features (DetectorTemperatureFeature, AmbientTemperatureFeature,
+    LaserTemperatureFeature, BatteryFeature) all create their own StripChart objects
+    by calling StripChartsFeature.create_chart().
+
+    It is important to understand that each of those other business objects 
+    (BatteryFeature etc) are responsible for adding data to their graph. All this
+    class does is automatically create the graphs, line up the labels, and create
+    utility buttons like "Save", "Copy" and "Clear." It also automatically 
+    maintains the "moving window" of currently-graphed data, based on the 
+    configured history depth.
+
+    However, this class also helps by supporting the flow of new Readings out to
+    each chart owner (via a provided callback), which makes it easy for chart
+    owners to post-process Readings and then add appropriate new datapoints to
+    their chart.
     """
 
     def __init__(self, ctl):
@@ -25,6 +54,7 @@ class StripChartsFeature(EnlightenFeature):
         self.layout_charts = cfu.layout_strip_charts
         self.parent = cfu.stackedWidget_hardware_capture_details_spectrum
 
+        # the dictionary of StripChart objects which have been created (indexed on name)
         self.charts = {}
 
     def create_chart(self, name, window_sec=180, y_unit=None, warn_hi=None, warn_lo=None, format=None, process_reading_callback=None):
@@ -53,14 +83,11 @@ class StripChartsFeature(EnlightenFeature):
                 data = self.charts[name].spec_data[sn]
                 if "RDS" in data:
                     return data["RDS"]
-                else:
-                    log.error(f"get_rds: RDS not in self.charts[{name}].spec_data[{sn}]")
-            else:
-                log.error(f"get_rds: sn {sn} not in self.charts[{name}].spec_data")
-        else:
-            log.error(f"get_rds: name {name} not in self.charts")
 
 class StripChart:
+    """
+    A single StripChart, one of many created and tracked by StripChartsFeature.
+    """
     
     def __init__(self, ctl, name, window_sec=180, y_unit=None, warn_hi=None, warn_lo=None, format=None, parent=None, process_reading_callback=None):
         self.ctl = ctl
@@ -102,7 +129,7 @@ class StripChart:
         self.lb_title.setText(self.name)
         self.lb_title.setFont(font)
 
-        # flexible spacer (push rest to right)
+        # flexible spacer (right-aligns following widgets)
         horiz_spacer = QSpacerItem(2, 20, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Minimum)
 
         # current value
@@ -120,6 +147,7 @@ class StripChart:
         self.cb_save = QCheckBox(self.parent)
         self.cb_save.setText("Save")
         self.cb_save.stateChanged.connect(self.save_callback)
+        self.cb_save.setToolTip("log data to disk in EnlightenSpectra/today")
 
         # window size (seconds)
         self.sb_sec = QSpinBox(self.parent)
@@ -128,14 +156,17 @@ class StripChart:
         self.sb_sec.setValue(180)
         self.sb_sec.setSuffix(" sec")
         self.sb_sec.valueChanged.connect(self.sec_callback)
+        self.sb_sec.setToolTip("historical depth of graphed data (width in seconds of the graphed region)")
 
         # copy button
         self.pb_copy = self.make_icon_button("clipboard")
         self.pb_copy.clicked.connect(self.copy_callback)
+        self.pb_copy.setToolTip("copy data to clipboard in Excel-compatible table (x unit is 'seconds ago')")
 
         # clear button
         self.pb_clear = self.make_icon_button("eraser")
         self.pb_clear.clicked.connect(self.clear_callback)
+        self.pb_clear.setToolTip("erase historical data and start afresh")
 
         # now put all the above into a horizontal row
         hb = QHBoxLayout()
@@ -186,7 +217,9 @@ class StripChart:
 
     def add_value(self, spec, value):
         """
-        todo maintain multiple RDS and curves for multiple connected spectrometers
+        @todo actually change the color of the new datapoint based on whether it
+              crosses warn_hi or warn_lo
+        @todo maintain multiple RDS and curves for multiple connected spectrometers
         """
         sn = spec.settings.eeprom.serial_number
         if sn not in self.spec_data:
