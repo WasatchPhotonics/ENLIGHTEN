@@ -11,6 +11,9 @@
         - InGaAsCorrection
         - DalaiRaman
         - SaveOptions
+        - PluginController
+        - NetworkManager
+        - BLEManager
 - 2026-08-19 4.2.9
     - only show ENLIGHTEN version in window title in Expert mode (simplifies manual screenshots)
     - DALAI

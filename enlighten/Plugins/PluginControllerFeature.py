@@ -15,8 +15,7 @@ from .PluginValidator   import PluginValidator
 from .PluginWorker      import PluginWorker
 
 from enlighten import common
-#from enlighten.data.TableModel import TableModel
-#from enlighten.scope.GraphFeature import GraphFeature
+from enlighten.util import unwrap
 from enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from enlighten.EnlightenFeature import EnlightenFeature
 
@@ -84,13 +83,12 @@ log = logging.getLogger(__name__)
 #   - you will basically be back at [1]
 #
 # Notes:
-# - cb_connected determines
-#       - whether combo_module is enabled, and worker exists
+# - cb_connected determines whether combo_module is enabled, and worker exists
 # - combo_module determines how the GUI is currently configured
 #
 # @par Apologia
 #
-# For posterity, some of the changes I made to Evan's original version were
+# MZ: For posterity, some of the changes I made to Evan's original version were
 # because I was trying to avoid fully destroying / shutting down previously-used
 # plugins when changing to a new plugin; and playing with thoughts of having
 # multiple plug-ins running at one time.  I've come to accept this would be
@@ -182,6 +180,31 @@ class PluginControllerFeature(EnlightenFeature):
 
         # purely for backward compatibility
         self.combo_graph_pos = QtWidgets.QComboBox()
+
+        base_msg = """
+            Plugins are literally just external Python files (*.py) stored under
+            EnlightenSpectra/plugins. They are all expected to be in exactly one
+            level of "packaging", so the plugin Prod.EmissionLines is literally
+            the file EnlightenSpectra/plugins/Prod/EmissionLines.py. 
+
+            Every plugin is expected to define a class with the same name as the
+            Python file. That class should inherit from (extend) the Abstract 
+            Base Class (ABC) EnlightenPluginBase, stored in 
+            EnlightenSpectra/plugins/EnlightenPlugin.py. 
+
+            That is to say, the plugin Foo.Bar should be stored in 
+            EnlightenSpectra/plugins/Foo/Bar.py. Bar.py should define a class
+            Bar which extends EnlightenPluginBase."""
+        self.cb_connected.setWhatsThis(unwrap(base_msg + """
+            When you "connect" to a plugin via this checkbox, ENLIGHTEN will 
+            "import" the Python file, then call the plugin's get_configuration()
+            method. This method should define all the GUI elements (text fields,
+            checkboxes, buttons etc) required by the plugin. Thereafter, plugin
+            logic will be driven by widget callbacks, or by the processing of
+            spectra passed to the plugin's process_request() method."""))
+        self.combo_module.setWhatsThis(unwrap(base_msg + """
+            This comboBox lists all plugins found under the 
+            EnlightenSpectra/plugins folder."""))
 
     def graph_pos_callback(self):
         log.debug("graph_pos_callback called (backward compatibility)")

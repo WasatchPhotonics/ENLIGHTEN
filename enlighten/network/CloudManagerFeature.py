@@ -10,7 +10,7 @@ import boto3
 from botocore.config import Config
 
 from enlighten import common
-from enlighten import util
+from enlighten.util import unwrap, normalize_decimal
 from enlighten.EnlightenFeature import EnlightenFeature
 
 if common.use_pyside2():
@@ -75,6 +75,28 @@ class CloudManagerFeature(EnlightenFeature):
         self.bt_restore    .clicked      .connect(self.restore_callback)
         self.cb_enabled    .stateChanged .connect(self.enable_callback)
 
+        self.cb_enabled.setWhatsThis(unwrap("""
+            As a security feature, ENLIGHTEN does not connect to the internet by
+            default. You have to explicitly opt-in to permit internet access.
+            All cloud access is currently confined to Amazon Web Services (AWS).
+
+            If you enable internet access, then ENLIGHTEN can use your spectrometer's
+            serial number to automatically look-up calibration files for your device
+            and cache them locally. Since the files are saved locally, technically you
+            can disable network access after you have downloaded your device's 
+            calibrations.
+
+            Note that historically Wasatch spectrometers have stored their entire
+            calibrations entirely on their internal EEPROMs. However, some older
+            units (X, XM) don't have sufficient storage to hold some of the newer
+            per-pixel calibrations (Etalon Correction, InGaAs Correction), so those
+            must be provided through cloud download or other delivery of JSON files.
+
+            JSON configuration is especially important for XL spectrometers, as Andor
+            cameras do not provide usable EEPROM storage to hold Wasatch calibration 
+            data.
+        """))
+
     def init_from_config(self):
         self.cb_enabled.setChecked(self.ctl.config.get_bool(self.CONFIG_SECTION, "enabled"))
 
@@ -117,7 +139,7 @@ class CloudManagerFeature(EnlightenFeature):
             return {}
         eeprom_response = response["Item"]
         dict_response = dict(eeprom_response)
-        util.normalize_decimal(dict_response)
+        normalize_decimal(dict_response)
         return dict_response
 
     def download_andor_eeprom(self, device):

@@ -4,7 +4,8 @@ from queue import Queue
 
 from datetime import datetime
 
-from enlighten import common, util
+from enlighten import common
+from enlighten.util import get_bullet, unwrap
 from enlighten.EnlightenFeature import EnlightenFeature
 from wasatch.DeviceFinderBLE import DeviceFinderBLE
 from wasatch.BLEDevice       import BLEDevice # for get_run_loop
@@ -48,6 +49,19 @@ class BLEManagerFeature(EnlightenFeature):
 
         # grab an asyncio run_loop in which to call DeviceFinderBLE's async methods
         self.scan_loop = BLEDevice.get_run_loop()
+
+        self.bt_ble.setWhatsThis(unwrap("""
+            Wasatch Photonics XS spectrometers can communicate over Bluetooth® LE!
+            How cool is that?
+
+            Click this to "search" for any nearby Wasatch Photonics BLE devices
+            which are currently powered-on and advertising (blue LED flashing).
+            If your device does not appear on the list, try turning it off and on
+            again.
+
+            If you have connected to a given unit previously, the approximate 
+            duration since your last connection is displayed. This helps visually
+            ensure you are indeed connecting the the "correct" (intended) unit."""))
 
     def init_hotplug(self):
         self.refresh_connected()
@@ -337,5 +351,5 @@ class BLESelector(QDialog):
 
     def rssi_to_bars(self, rssi):
         cnt = 3 if rssi > -60 else 2 if rssi > -85 else 1
-        bullet = util.get_bullet()
+        bullet = get_bullet()
         return bullet * cnt # 🛜 📶

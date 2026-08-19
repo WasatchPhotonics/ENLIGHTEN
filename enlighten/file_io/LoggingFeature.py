@@ -7,6 +7,7 @@ from pygtail import Pygtail
 
 from wasatch import applog
 from enlighten import common
+from enlighten.util import unwrap
 from enlighten.EnlightenFeature import EnlightenFeature
 
 if common.use_pyside2():
@@ -61,6 +62,12 @@ class LoggingFeature(EnlightenFeature):
             log.info("error removing old Pygtail offset", exc_info=1)
 
         self.timer.start(LoggingFeature.TIMER_SLEEP_MS)
+
+        self.cb_firmware.setWhatsThis(unwrap("""
+            XS series spectrometers log a lot of interesting technical state 
+            within the device firmware. This option will periodically poll the 
+            latest firmware log data from the unit, and display within the log 
+            window."""))
 
     def update_visibility(self):
         spec = self.ctl.multispec.current_spectrometer()
