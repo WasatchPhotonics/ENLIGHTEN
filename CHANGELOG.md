@@ -30,7 +30,12 @@
         - support bad_pixels in JSON file
     - XS
         - support bad_pixels over BLE
+    - DALAI
+        - always allow in Expert Mode (regardless of laser)
+        - prompt to interpolate at export (CSV-only, DALAI-only or interpolated)
     - add Etalon/InGaAs Corrected to metadata
+    - added ctrl-I shortcut to toggle Interpolation
+    - only show ENLIGHTEN version in window title in Expert mode 
 - 2026-08-06 4.2.8
     - Prod.ConfigurationCheck fixes
     - JSON export fixes
