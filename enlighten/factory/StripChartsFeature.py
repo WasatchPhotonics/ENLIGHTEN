@@ -274,14 +274,19 @@ class StripChart:
     def copy_callback(self):
         cols = []
         longest = -1
+        headers = []
         for sn in self.spec_data:
             rds = self.spec_data[sn]["RDS"]
             x, y = rds.get_relative_to_now()
+
+            headers.append("sec_ago")
             cols.append(x)
+
+            headers.append(f"{sn} {self.name}")
             cols.append(y)
             longest = max(longest, len(x))
 
-        s = ""
+        s = "\t".join(headers) + "\n"
         for i in range(longest):
             row = []
             for col in cols:
