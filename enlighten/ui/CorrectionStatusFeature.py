@@ -21,6 +21,8 @@ class CorrectionStatusFeature(EnlightenFeature):
     ON = "ON"
     OFF = "off"
 
+    SECTION = "CorrectionStatus"
+
     def __init__(self, ctl):
         super().__init__(ctl)
 
@@ -28,8 +30,6 @@ class CorrectionStatusFeature(EnlightenFeature):
 
         self.bt_minimize = cfu.pushButton_correction_status_minimize
         self.frame = cfu.frame_correction_status_1
-
-        self.minimized = False
 
         self.bt_minimize.clicked.connect(self.minimize_callback)
 
@@ -60,6 +60,11 @@ class CorrectionStatusFeature(EnlightenFeature):
             }
             feature.register_observer(callback)
 
+        self.minimized = False
+        if self.ctl.config.has_option(self.SECTION, "minimized"):
+            self.minimized = self.ctl.config.get_bool(self.SECTION, "minimized")
+        self.update_visibility()
+
     def schedule_update(self):
         self.timer.start(10)
 
@@ -82,11 +87,15 @@ class CorrectionStatusFeature(EnlightenFeature):
 
     def minimize_callback(self):
         self.minimized = not self.minimized
-        self.frame.setVisible(not self.minimized)
+        self.update_visibility()
 
+    def update_visibility(self):
+        self.frame.setVisible(not self.minimized)
         tri = "up" if self.minimized else "down"
         icon = f":/greys/images/grey_icons/{tri}_triangle.svg"
         self.bt_minimize.setIcon(QtGui.QIcon(icon))
+        self.ctl.config.set(self.SECTION, "minimized", self.minimized)
+        self.schedule_update()
 
     def edc_notification(self):
         corr = self.corrections["edc"]

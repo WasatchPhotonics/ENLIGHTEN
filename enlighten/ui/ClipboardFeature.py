@@ -13,6 +13,10 @@ class ClipboardFeature(EnlightenFeature):
     edge of ENLIGHTEN's GUI, although we seem to be converging toward calling that
     "the ENLIGHTEN Clipboard."
 
+    This is not a GUI feature at all, and does not directly "own" any of the 
+    various 📋 icons appearing throughout the application (although it is often
+    used in those icons' callback functions).
+
     @todo rename this CopyPasteFeature?
     """
     def __init__(self, ctl):
