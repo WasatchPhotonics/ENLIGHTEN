@@ -32,11 +32,11 @@ class LibraryMatchingFeature(EnlightenFeature):
     # this is the path, under "enlighten.exe", where ENLIGHTEN looks to find the
     # "distribution" matching library that "comes with" ENLIGHTEN via source or 
     # binary distributions
-    DIST_LIBRARY_DIR = "enlighten/assets/example_data/matching_library"
+    DIST_LIBRARY_DIR = "enlighten/assets/example_data/default_matching_library"
 
     # this is the default directory where ENLIGHTEN will write (and check for) 
     # user-generated library spectra
-    DEFAULT_USER_LIBRARY_DIR = os.path.join(common.get_default_data_dir(), "matching_library")
+    DEFAULT_USER_LIBRARY_DIR = os.path.join(common.get_default_data_dir(), "user_library_spectra")
 
     TIMER_MS = 10 # tick graph update this long after match results
 
@@ -128,7 +128,7 @@ class LibraryMatchingFeature(EnlightenFeature):
                                             Select Library button).
 
                                             By default, your personal library will be stored under 
-                                            Documents/EnlightenSpectra/matching_library. You can add spectra to 
+                                            Documents/EnlightenSpectra/user_library_spectra. You can add spectra to 
                                             that folder via this button, or you can copy files directly into the
                                             folder via standard operating system methods.
 
@@ -287,7 +287,7 @@ class LibraryMatchingFeature(EnlightenFeature):
     def set_library_dir(self, path):
         """ 
         This sets the path to the USER library dir, which is normally 
-        EnlightenSpectra/matching_library but can be overridden by the user.
+        EnlightenSpectra/user_library_spectra but can be overridden by the user.
 
         Note that the "distribution" library remains under 
         enlighten/assets/example_data and cannot be moved.

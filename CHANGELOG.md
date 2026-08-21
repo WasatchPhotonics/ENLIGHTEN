@@ -4,6 +4,9 @@
 
 - 2026-??-?? 4.2.10
     - persist CorrectionStatus visibility
+    - LibraryMatching
+        - renamed assets/example_data/matching_library to default_matching_library
+        - renamed EnlightenSpectra/matching_library to user_library_spectra
     - added WhatsThis
         - LibraryMatching
         - EtalonCorrection
