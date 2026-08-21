@@ -42,6 +42,7 @@ class ScopeTableFeature(EnlightenFeature):
         if not self.visible:
             return
 
+        log.debug("hide: called")
         if self.table_view is not None:
             self.table_view.deleteLater()
             self.table_view = None

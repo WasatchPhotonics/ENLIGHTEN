@@ -72,6 +72,7 @@ class LibraryMatchingFeature(EnlightenFeature):
             cfu.label_library_matching_use_dist_label ]
 
         self.dataframe = None 
+        self.has_set_table = False
 
         # start with defaults
         self.enabled = False
@@ -187,6 +188,7 @@ class LibraryMatchingFeature(EnlightenFeature):
         self.max_results = self.sb_max_results.value()
 
         if was_enabled != self.enabled:
+            log.debug(f"update_settings: was_enabled {was_enabled}, now {self.enabled}")
             self.show_widgets(self.enabled)
 
         self.update_visibility()
@@ -203,7 +205,10 @@ class LibraryMatchingFeature(EnlightenFeature):
             self.form_layout.setVerticalSpacing(3)
             self.form_layout.setContentsMargins(6, 6, 6, 9)
         else:
-            self.ctl.scope_table.hide()
+            if self.has_set_table:
+                log.debug("show_widgets: hiding table")
+                self.ctl.scope_table.hide()
+                self.has_set_table = False
             self.curve_scope.setVisible(False)
             self.curve_scope_dalai.setVisible(False)
             self.form_layout.setVerticalSpacing(0)
@@ -216,7 +221,9 @@ class LibraryMatchingFeature(EnlightenFeature):
         self.lb_compound.setText(self.last_compound)
         self.lb_score.setText(f"{self.last_score:0.2f}" if self.last_score is not None else "")
         if self.dataframe is not None:
-            self.ctl.scope_table.set_dataframe(self.dataframe)
+            if not self.ctl.plugin_controller.using_table():
+                self.ctl.scope_table.set_dataframe(self.dataframe)
+                self.has_set_table = True
 
     def process(self, pr):
         if not self.enabled:
@@ -230,7 +237,7 @@ class LibraryMatchingFeature(EnlightenFeature):
             wavenumbers = pr.get_wavenumbers()
             spectrum = pr.get_processed()
 
-        if self.ctl.page_nav.doing_raman() and not reading.laser_enabled and not self.laser_warning_issued:
+        if self.ctl.page_nav.doing_raman() and not reading.laser_enabled and not self.laser_warning_issued and not self.ctl.page_nav.doing_expert():
             self.ctl.marquee.error("LibraryMatching in Raman mode requires the laser to be enabled")
             self.laser_warning_issued = True
 
@@ -259,6 +266,7 @@ class LibraryMatchingFeature(EnlightenFeature):
         # if library compound names are pipe-delimited, trim to first sub-field
         best_compound = compounds[0].split("|")[0].strip()
         best_score = scores[0]
+        log.debug(f"process: matched {best_compound} ({best_score})")
 
         # these need to be written to labels in GUI thread
         self.last_compound = self.wrapped(best_compound)

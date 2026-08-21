@@ -1,5 +1,5 @@
-import pandas as pd
 import scipy
+import pandas as pd
 import logging
 
 from EnlightenPlugin import EnlightenPluginBase
@@ -14,7 +14,7 @@ class PeakFinding(EnlightenPluginBase):
     def get_configuration(self):
         self.name = "Peakfinding"
         self.multi_devices = True
-        self.dataframe = None
+        self.table = None
 
         self.field(name="Width",      direction="input",  datatype=int, initial=  0, maximum=  200, minimum=0, step=  1, tooltip="scipy.signal.find_peaks.width: Required width of peaks in samples (datapoints, or pixels). (<1 to disable)") 
         self.field(name="Height",     direction="input",  datatype=int, initial=  0, maximum=50000, minimum=0, step=500, tooltip="scipy.signal.find_peaks.height: Required height of peaks. (<1 to disable)")
@@ -23,7 +23,6 @@ class PeakFinding(EnlightenPluginBase):
         self.field(name="Prominence", direction="input",  datatype=int, initial=200, maximum= 5000, minimum=0, step=100, tooltip="scipy.signal.find_peaks.prominence: Required prominence of peaks. (<1 to disable)")
 
         self.field(name="Peak Count", direction="output", datatype=int)
-        self.field(name="Peak Table", direction="output", datatype="pandas")
         self.field(name="Transpose",  direction="input",  datatype=bool, initial=True)
 
     def process_request(self, request):
@@ -51,16 +50,16 @@ class PeakFinding(EnlightenPluginBase):
         peak_px = [ pixels[x] for x in peak_x ] # handle horizontal ROI
 
         if wavenumbers is None:
-            self.dataframe = pd.DataFrame( [ peak_px,         peak_nm,    peak_y ],
-                                   index = [ "pixel", "wavelength (nm)", "intensity" ])
+            self.table = pd.DataFrame( [ peak_px,         peak_nm,    peak_y ],
+                               index = [ "pixel", "wavelength (nm)", "intensity" ])
         else:
             peak_cm = [ wavenumbers[x] for x in peak_x ] 
-            self.dataframe = pd.DataFrame( [ peak_px,         peak_nm,            peak_cm,      peak_y ],
-                                   index = [ "pixel", "wavelength (nm)", "Raman shift (cm⁻¹)", "intensity" ])
+            self.table = pd.DataFrame( [ peak_px,         peak_nm,            peak_cm,      peak_y ],
+                               index = [ "pixel", "wavelength (nm)", "Raman shift (cm⁻¹)", "intensity" ])
 
-        self.dataframe = self.dataframe.round(2)
+        self.table = self.table.round(2)
         if request.fields["Transpose"]:
-            self.dataframe = self.dataframe.T
+            self.table = self.table.T
 
         unit = self.ctl.graph.get_x_axis_unit()
         if unit == "nm": 
@@ -80,5 +79,4 @@ class PeakFinding(EnlightenPluginBase):
             self.plot(title=title, y=(lo, y), x=(x, x))
             log.debug(f"found peak at {x} {unit}")
 
-        self.outputs = { "Peak Table": self.dataframe, # for table
-                         "Peak Count": len(peak_x) }   # for widget
+        self.outputs = { "Peak Count": len(peak_x) } # for widget

@@ -110,6 +110,7 @@ class PluginControllerFeature(EnlightenFeature):
         self.connected        = False # whether we've successfully called connect() on the selected plugin
         self.enabled          = False # whether the user is choosing to send new ProcessedReadings to the connected plugin
         self.blocking_request = None  # if the connected module is_blocking (don't send a new request until last is processed), the last request we sent
+        self.has_set_table    = False
 
         self.worker           = None  # will hold a PluginWorker to run in the background when a PluginModuleInfo is connected
         self.request_queue  = Queue()
@@ -468,6 +469,7 @@ class PluginControllerFeature(EnlightenFeature):
                 self.button_process.setVisible(False)
                 self.enabled = False
 
+            self.connected = True
             log.debug("connected_callback: successfully connected")
         else:
             log.debug("we just disconnected")
@@ -481,7 +483,16 @@ class PluginControllerFeature(EnlightenFeature):
         self.combo_module.setEnabled(True)
         self.cancel_worker()
         self.clear_previous_layout()
+
+        if self.has_set_table:
+            self.ctl.scope_table.hide()
+            self.has_set_table = False
+
+        self.connected = False
         log.debug("do_post_disconnect: done")
+
+    def using_table(self):
+        return self.connected and self.has_set_table  
 
     ##
     # The user clicked the "process" button on the control panel indicating
@@ -1013,10 +1024,8 @@ class PluginControllerFeature(EnlightenFeature):
                     dataframe = response.outputs["Table"]
 
                 if dataframe is not None:
-                    # self.ctl.scope_table.set_visible(True)
                     self.ctl.scope_table.set_dataframe(dataframe)
-                else:
-                    self.ctl.scope_table.hide()
+                    self.has_set_table = True
 
             self.release_block(request)
 

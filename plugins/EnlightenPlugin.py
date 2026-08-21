@@ -271,8 +271,7 @@ class EnlightenPluginBase:
             signals = self.signals,
             metadata = self.metadata,
             overrides = self.overrides,
-            message = self.marquee_message
-        )
+            message = self.marquee_message)
 
     #### End backwards compatible object-returning wrappers #####
 
@@ -500,12 +499,21 @@ class EnlightenPluginConfiguration:
 # Regardless of type, all output fields will be rendered on the GUI as a string 
 # (QLabel), with the exception of "pandas".
 #
-# @par Pandas Output Fields
+# @par Pandas Table
 #
-# Any given plugin can only declare ONE "pandas" output field, which is expected
-# to contain all the tabular data output by that plugin.
+# There are three ways a plugin can output a Pandas dataframe for display in 
+# a QTableView underneath the main scope. All 3 methods do the exact same thing:
 #
-# Pandas fields will be rendered to a QTableView.
+# 1. output an EnlightenPluginField with datatype "pandas"
+# 2. add a dictionary key "Table" to self.outputs
+# 3. set self.table
+#
+# In all cases, the value should be a Pandas dataframe.
+#
+# The QTableView used to display the dataframe is the same one used by 
+# ENLIGHTEN's own LibraryMatchingFeature (literally, because LibraryMatching 
+# started out as a plugin). If there is contention (both a plugin and 
+# LibraryMatchingFeature are trying to use the table), the plugin will win.
 #
 class EnlightenPluginField:
 
