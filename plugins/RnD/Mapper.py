@@ -22,6 +22,9 @@ Change Log:
 - ?
     - Removed all that pesky commented code
     - Initial startup homes to 0,0 to set initial values then moves to the approximate location of cell 1
+    - Scan All Samples button added and takes Auto-Raman measurements of all cells on the sample plate
+    - Single Acquisition button added to take a single Auto-Raman measurement
+    - Set Cell 1 Button added
 
 Questions:
 - should the "Home Mapper" button be removed?  if we home at startup is there ever a reason to home after?
@@ -33,12 +36,11 @@ To Do:
 - Shortcut keys for the fine tuning directional controls?
 - Make sure it updates the position properly after initial startup
 - Add a field to move to a particular cell
-- Add a button to scan and auto-raman each cell
-- Figure out how to use AutoRamanFeature so we can take a sample
+    - Update the current X/Y target fields to use cell locations
+- Set the laser power to 5%
+    - Alternative is a msg box that informs that the laser power is about 10% and asks for confirmation
 
 Issues:
-- Attempting to loop through until arf.running is false, indicating that the autoraman is complete
-    doesn't seem to work and a poison pill is sent from PluginWorker.
 """
 
 import logging
@@ -47,7 +49,7 @@ import time
 from enlighten.post_processing.AutoRamanFeature import *
 from EnlightenPlugin import EnlightenPluginBase
 from EnlightenPlugin import EnlightenPluginRequest
-
+#from enlighten.measurement.MeasurementsFeature import *
 
 from .MapperFiles import MapperArduino
 
@@ -63,11 +65,14 @@ class Mapper(EnlightenPluginBase):
 
     def get_configuration(self):
         #Cell Locations....maybe a better way?
-        self.cell_1_x = 85
-        self.cell_1_y = 203
+        self.cell_1_x = 20
+        self.cell_1_y = 132
         self.center_distance = 5
         self.count = 0
-        self.running = False
+        self.scan_running = False
+        self.single_run = False
+        self.current_row_x = 1
+        self.current_row_y = 1
         
         self.name = f"Mapper {self.VERSION}"
 
@@ -90,14 +95,14 @@ class Mapper(EnlightenPluginBase):
         )
         
         self.field(name = "Step Size (um)",
-                   direction="input", 
-                   datatype=float, 
-                   precision=2,
-                   initial=1.0, 
-                   minimum=0.0,
-                   maximum = 1000.0,
-                   callback=self.update_variables,
-                   tooltip="How far to move the mapper in x/y in a single step")
+           direction="input", 
+           datatype=float, 
+           precision=2,
+           initial=1.0, 
+           minimum=0.0,
+           maximum = 1000.0,
+           callback=self.update_variables,
+           tooltip="How far to move the mapper in x/y in a single step")
 
         self.field(
             name="Left",
@@ -124,49 +129,54 @@ class Mapper(EnlightenPluginBase):
             tooltip="Move Back by a Single Step"
         )
 
-        self.field(name="X Target (mm)", 
-                   direction="input", 
-                   datatype=float,
-                   precision=2,
-                   initial=0.00, 
-                   minimum=0.0,
-                   maximum=200.0,
-                   callback=self.update_variables,
-                   tooltip="Where to move the mapper to in X direction")
+        self.field(name="Row Value:", 
+           direction="input", 
+           datatype=int,
+           initial=1, 
+           minimum=1,
+           maximum=27,
+           callback=self.update_variables,
+           tooltip="Which row to move the mapper to")
         
-        self.field(name="Y Target (mm)", 
-                   direction="input", 
-                   datatype=float, 
-                   precision=2,
-                   initial=0.00, 
-                   minimum=0.0,
-                   maximum=200.0,
-                   callback=self.update_variables,
-                   tooltip="Where to move the mapper to in Y direction")
+        self.field(name="Column Value:", 
+           direction="input", 
+           datatype=int, 
+           initial=1, 
+           minimum=1,
+           maximum=4,
+           callback=self.update_variables,
+           tooltip="Which column to move the mapper to")
 
         self.field(
-            name="Move to Target",
+            name = "Set Cell 1",
+            datatype = "button",
+            callback = self.set_cell_1,
+            tooltip = "Sets the current mapper location as cell 1"
+        )
+        
+        self.field(
+            name="Move to Sample Cell",
             datatype="button",
             callback=self.move_to_target,
-            tooltip="Move Forward by a Single Step"
-        )
-
-        self.field(
-            name="Home Mapper",
-            datatype="button",
-            callback=self.home_mapper,
-            tooltip="Finds the Home Position of the Mapper and Defines it as 0/0"
+            tooltip="Move to the indicated cell"
         )
         
         self.field(
-            name = "Map Samples",
+            name = "Single Acquisition",
+            datatype = "button",
+            callback = self.take_auto_raman,
+            tooltip = "Take a single auto-raman acquisition"
+        )
+        
+        self.field(
+            name = "Scan All Samples",
             datatype = "button",
             callback = self.run_mapping,
             tooltip = "Takes sample measurement using Auto-Raman on all samples"
         )
 
         self.has_other_graph = False
-        self.block_enlighten = True
+        self.block_enlighten = False
 
         # ###########################
         # Mapper Definitions
@@ -178,15 +188,13 @@ class Mapper(EnlightenPluginBase):
         # Moves to home to set the initial location
         self.home_mapper()
         
-        # Set the target values to the location of cell 1
-        self.target_x = self.cell_1_x
-        self.target_y = self.cell_1_y
+        # Set the target values to the approximate location of cell 1
+        self.target_x = self.current_row_x
+        self.target_y = self.current_row_y
         
         # Moves to the target, in this case cell 1
-        self.move_to_target()
-        self.position_x = self.target_x
-        self.position_y = self.target_y
-        self.update_display()
+        self.mapper.x.move_absolute_mm(self.cell_1_x)
+        self.mapper.y.move_absolute_mm(self.cell_1_y)
         
     ############################################################################
     # Mapper Functions
@@ -194,8 +202,9 @@ class Mapper(EnlightenPluginBase):
         
     def process_request(self, request: EnlightenPluginRequest):
         pr = request.processed_reading
-        log.debug("Hitting the if statements")
-        if pr.reading.take_one_request and self.running:
+        #log.debug("Hitting the if statements")
+        self.update_display()
+        if pr.reading.take_one_request and self.scan_running:
             log.debug("received a ProcessedReading in response to a TakeOneRequest")
             self.count = self.count + 1
             tor = pr.reading.take_one_request
@@ -203,35 +212,38 @@ class Mapper(EnlightenPluginBase):
                 # Need another if statement to clarify when the autoraman is actually done?               
                 log.debug("received a ProcessedReading in response to an AutoRamanRequest")
                 # Check the direction to move and move
+                log.debug(f"pr position_x: {self.position_x}, pr max_x: {self.max_x}")
+                log.debug(f"pr position_y: {self.position_y}, pr max_y: {self.max_y}")
                 if self.position_x < self.max_x:
                     self.target_x = self.position_x + self.center_distance
                     self.target_y = self.position_y   
-                    log.debug(f" target_x: {self.target_x}, target_y: {self.target_y}")
-                    self.running = False
-                    while self.arf.running:
-                        log.debug(f"arf.running: {self.arf.running}")
-                    
-                    log.debug(f"Moving to location: X = {self.target_x}; y = {self.target_y}")
+                    log.debug(f" X Movement target_x: {self.target_x}, target_y: {self.target_y}")
+                    self.scan_running = False
+                    log.debug(f" X Movement Moving to location: X = {self.target_x}; y = {self.target_y}")
                     self.move_to_target()
                     self.run_mapping()
                 
                 # Update this with the working code eventually
-                elif self.position_x == self.max_x and self.position_y < self.max_y:
+                elif self.position_x == self.max_x and self.position_y > self.max_y:
                     # Moving down a row                    
                     self.target_x = self.cell_1_x
                     self.target_y = self.position_y - self.center_distance
-                    log.debug(f"arf.running: {self.arf.running}")
-                    self.running = False
-                    while not self.arf.running:
-                        log.debug(f"Moving to location: X = {self.target_x}; y = {self.target_y}")
-                        log.debug(f"arf.running: {self.arf.running}")
-                        self.move_to_target()
-                        self.run_mapping()
+                    log.debug(f" X Movement target_x: {self.target_x}, target_y: {self.target_y}")
+                    self.scan_running = False
+                    #while not self.arf.running:
+                    log.debug(f"Y Movement Moving to location: X = {self.target_x}; y = {self.target_y}")
+                    self.move_to_target()
+                    self.run_mapping()
                 
                 else:
-                    self.running = False
+                    self.scan_running = False
                     log.debug("Sample Scanning Complete")
                     self.ctl.marquee.info("Sample Scanning Complete")
+        
+        #elif pr.reading.take_one_request and self.single_run:
+            #self.single_run = False
+            #self.take_auto_raman()
+            
 
 # This updates the current position values to 0,0.  Moving +30 on X will move 30 based on this new 0 position
     #def zero_position(self):
@@ -248,39 +260,53 @@ class Mapper(EnlightenPluginBase):
         self.mapper.y.move_relative_um(self.step_size)
         # update internal variables
         self.position_y += (self.step_size / 1000)
-        self.update_display()
+        #self.update_display()
         
 # Moving negative on the Y-axis based on the current value of step_size
     def step_back(self):            
         self.mapper.y.move_relative_um(-self.step_size)
         # update internal variables
         self.position_y -= (self.step_size / 1000)
-        self.update_display()
+        #self.update_display()
 
 # Moving positive on the X-axis based on the current value of step_size 
     def step_left(self):            
         self.mapper.x.move_relative_um(-self.step_size)
         # update internal variables
         self.position_x -= (self.step_size / 1000)
-        self.update_display()
+        #self.update_display()
 
 # Moving negative on the X-axis based on the current value of step_size   
     def step_right(self):            
         self.mapper.x.move_relative_um(self.step_size)
         # update internal variables
         self.position_x += (self.step_size / 1000)
-        self.update_display()
+        #self.update_display()
 
-# Moves to the specific position, based on 0,0 mapping position and user inputs
+# Moves to the specific position of the cell indicated
     def move_to_target(self):
-        log.debug(f"Moving X-axis to {self.target_x} millimeters (mm)")
+        self.update_variables()
+        self.row_value = self.target_y
+        self.column_value = self.target_x
+        
+        # Mathing our way to the mm value of the cell location
+        self.target_x = self.cell_1_x + ((self.target_x - 1) * self.center_distance)
+        self.target_y = self.cell_1_y - ((self.target_y - 1) * self.center_distance)
+        log.debug(f"Moving to Row {self.row_value}")
+        log.debug(f"Moving to Column {self.column_value}")
+        log.debug(f"Current move to mm x {self.target_x}")
+        log.debug(f"Current move to mm y {self.target_y}")
         self.mapper.x.move_absolute_mm(self.target_x)
-        log.debug(f"Moving Y-axis to {self.target_y} millimeters (mm)")
         self.mapper.y.move_absolute_mm(self.target_y)
             
         self.position_x = self.target_x
         self.position_y = self.target_y
-        self.update_display()
+        
+    def set_cell_1(self):
+        self.cell_1_x = self.position_x
+        self.cell_1_y = self.position_y
+
+
 
 # Moves the stage to the true home, 0,0, of the rails/stepper motors and updates the position
     def home_mapper(self):
@@ -294,7 +320,7 @@ class Mapper(EnlightenPluginBase):
         # update internal variables
         self.position_x = 0.0
         self.position_y = 0.0
-        self.update_display()
+        #self.update_display()
         
 
     def update_display(self):
@@ -307,90 +333,31 @@ class Mapper(EnlightenPluginBase):
             self.get_widget_from_name("Y Position (mm)").setText(f"{self.position_y}")
             log.debug(f"Current Y-axis position: {self.position_y}")
             
+    def take_auto_raman(self):
+        #if self.position_y == self.cell_1_y and self.position_x <= self.cell_1_x + (self.center_distance * 3):            
+        #self.update_display()
+        if self.position_y >= self.max_y and self.position_x <= self.max_x:
+            log.debug(f"Current x: {self.position_x}; Current y: {self.position_y}")
+            log.debug("Taking Auto-Raman Sample")
+            self.arf.measure_callback()
+            
     def run_mapping(self):
         # The mapper should have been centered on cell 1 before starting
-        # Add a message box to confirm this?
         #log.debug(f"self.running: {self.arf.running}")
         if self.count < 1:
             self.cell_1_x = self.position_x
             self.cell_1_y = self.position_y
             self.max_x = self.cell_1_x + (self.center_distance * 3)
-            self.max_y = self.cell_1_y + (self.center_distance * 27)     
+            #self.max_y = (self.cell_1_y - (self.center_distance * 27)) #This may need to be updated to allow for less rows
+            self.max_y = (self.cell_1_y - (self.center_distance * 5))
+            #self.update_display()
+            log.debug(f"max_x: {self.max_x}; max_y: {self.max_y}")
         
-        self.running = True
-            
-        self.current_cell_x = self.position_x
-        self.current_cell_y = self.position_y
-        log.debug(f"Current x: {self.current_cell_x}; Current y: {self.current_cell_y}")
+        self.scan_running = True       
         
-        #if self.position_y <= self.max_y and self.position_x <= self.max_x:
-        if self.position_y == self.cell_1_y and self.position_x <= self.cell_1_x + (self.center_distance * 3):
-            log.debug(f"Current x: {self.current_cell_x}; Current y: {self.current_cell_y}")
-            log.debug("Taking Auto-Raman Sample")
-            self.arf.measure_callback()
+        self.take_auto_raman()
     
-    # ##################################
-    # Mapping/Scanning Functions
-    # ##################################
-    #def move_down(self):
-        # This will move the mapper down 1 row, towards the motors
-        #self.target_x = self.cell_1_x
-        #self.target_y = self.position_y - self.center_distance
-        #self.move_to_target()
     
-    def take_sample(self):
-        log.debug("Taking Auto-Raman Sample")
-        #time.sleep(1)
-        self.arf.measure_callback()
-    
-    def four_samples(self):
-        # Takes the next four samples
-        for i in range(3):
-            log.debug("In four samples")
-            # Take an Auto-Raman Sample and save it
-            time.sleep(1)
-            self.arf.measure_callback()
-            
-            # Moves to the next sample in the row
-            self.target_x = self.position_x + self.center_distance
-            self.move_to_target()
-            
-        # This will move the mapper down 1 row, towards the motors
-        self.target_x = self.cell_1_x
-        self.target_y = self.position_y - self.center_distance
-        self.move_to_target()
-    
-    def three_samples(self):
-        # Move over one due to the missing cell at the beginning
-        self.target_x = self.position_x + self.center_distance
-        self.move_to_target()
-        
-        # Takes the next three samples
-        for i in range(2):
-            # Take an Auto-Raman sample and save it
-            self.target_x = self.position_x + self.center_distance
-            self.move_to_target()
-    
-        # This will move the mapper down 1 row, towards the motors
-        self.target_x = self.cell_1_x
-        self.target_y = self.position_y - self.center_distance
-        self.move_to_target()
-        
-    def two_samples(self):
-        # Move over one due to the missing cell at the beginning
-        self.target_x = self.position_x + self.center_distance
-        self.move_to_target()
-        
-        # Take the next two samples
-        for i in range(1):
-            # Take an Auto-Raman sample and save it
-            self.target_x = self.position_x + self.center_distance
-            self.move_to_target()
-        
-        # This will move the mapper down 1 row, towards the motors
-        self.target_x = self.cell_1_x
-        self.target_y = self.position_y - self.center_distance
-        self.move_to_target()
         
 
     ############################################################################
@@ -401,10 +368,12 @@ class Mapper(EnlightenPluginBase):
     def update_variables(self):
         # update all input variables
         self.step_size = self.get_widget_from_name("Step Size (um)").value()
-        self.target_x = self.get_widget_from_name("X Target (mm)").value()
-        self.target_y = self.get_widget_from_name("Y Target (mm)").value()
-        
-
+        #self.target_x = self.get_widget_from_name("X Target (mm)").value()
+        #self.target_y = self.get_widget_from_name("Y Target (mm)").value()
+        self.target_y = self.get_widget_from_name("Row Value:").value()
+        self.target_x = self.get_widget_from_name("Column Value:").value()
+        log.debug(f"Update Variables Current target_y: {self.target_y}")
+        log.debug(f"Update Variables Current target_x: {self.target_x}")
 
     def disconnect(self):
         self.home_mapper()
