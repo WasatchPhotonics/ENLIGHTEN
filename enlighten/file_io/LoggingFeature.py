@@ -120,6 +120,7 @@ class LoggingFeature(EnlightenFeature):
     def tick(self):
         # need to run all the time to populate Hardware Status Indicator :-(
         if not self.paused():
+            self.update_visibility()
             if self.logging_firmware:
                 self.update_firmware_log()
             else:
