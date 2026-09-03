@@ -36,6 +36,8 @@ Change Log:
         - Sets whatever your current position is as cell 1
     - Home Mapper button removed
     - Version updated to 1.2, so fancy
+- ?
+    - Updated the start cell 1 values to reflect being able to reach the first row
 
 Questions:
 - currently completes the X-axis movement then the Y-axis movement, can/should we do both simultaneously? 
@@ -72,8 +74,8 @@ class Mapper(EnlightenPluginBase):
 
     def get_configuration(self):
         #Cell Locations....maybe a better way?
-        self.cell_1_x = 20
-        self.cell_1_y = 132
+        self.cell_1_x = 18
+        self.cell_1_y = 146
         self.center_distance = 5
         self.count = 0
         self.scan_running = False
@@ -358,8 +360,8 @@ class Mapper(EnlightenPluginBase):
         #log.debug(f"self.running: {self.arf.running}")
         if self.count < 1:
             self.max_x = self.cell_1_x + (self.center_distance * 3)
-            #self.max_y = (self.cell_1_y - (self.center_distance * 26)) #This may need to be updated to allow for less rows
-            self.max_y = (self.cell_1_y - (self.center_distance * 23))
+            self.max_y = (self.cell_1_y - (self.center_distance * 26)) #This may need to be updated to allow for less rows
+            #self.max_y = (self.cell_1_y - (self.center_distance * 23))
             log.debug(f"max_x: {self.max_x}; max_y: {self.max_y}")
             self.mapper.x.move_absolute_mm(self.cell_1_x)
             self.mapper.y.move_absolute_mm(self.cell_1_y)
