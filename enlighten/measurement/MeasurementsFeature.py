@@ -423,6 +423,8 @@ class MeasurementsFeature(EnlightenFeature):
             self.export_worker = ExportWorker(self)
             self.export_worker.setDaemon(True)
             self.export_worker.start()
+            
+        
 
     def fork_dalai_measurement(self, m):
         """
@@ -550,6 +552,9 @@ class MeasurementsFeature(EnlightenFeature):
         self.ctl.progress_bar.hide()
 
         log.debug("perform_export_from_worker: done")
+        
+        if self.dalai_behavior == "enable_interpolation":
+            self.ctl.interp.set_enabled(False)
 
     def read_measurements(self):
         return self.generate_export_dict()
@@ -1198,3 +1203,4 @@ class MeasurementsFeature(EnlightenFeature):
 
         self.dalai_behavior = code
         return True
+        
