@@ -2,6 +2,9 @@
 
 ## 4.2 XS V2 Commercial Release
 
+- 2026-08-28 4.2.11
+	- Plugins
+		- Overhaul of the RnD.Mapper plugin
 - 2026-08-21 4.2.10
     - persist CorrectionStatus visibility
     - add headers when copying StripChart data to clipboard
