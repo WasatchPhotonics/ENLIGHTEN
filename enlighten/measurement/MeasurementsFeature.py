@@ -423,6 +423,8 @@ class MeasurementsFeature(EnlightenFeature):
             self.export_worker = ExportWorker(self)
             self.export_worker.setDaemon(True)
             self.export_worker.start()
+            
+        if self.dalai_behavior == "enable_interpolation"
 
     def fork_dalai_measurement(self, m):
         """
@@ -1194,7 +1196,11 @@ class MeasurementsFeature(EnlightenFeature):
         log.debug(f"get_dalai_behavior: user selected {code}")
 
         if code == "enable_interpolation":
-            self.ctl.interp.set_enabled(True)
+            if not self.ctl.interp.set_enabled:
+                self.ctl.interp.set_enabled(True)
+                self.default_interp_value = False   
+            else:
+                self.default_interp_value = True
 
         self.dalai_behavior = code
         return True
