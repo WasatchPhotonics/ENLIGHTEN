@@ -424,7 +424,7 @@ class MeasurementsFeature(EnlightenFeature):
             self.export_worker.setDaemon(True)
             self.export_worker.start()
             
-        if self.dalai_behavior == "enable_interpolation"
+        self.ctl.interp.set_enabled = self.default_interp_value
 
     def fork_dalai_measurement(self, m):
         """
