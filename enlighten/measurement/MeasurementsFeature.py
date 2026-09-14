@@ -62,6 +62,7 @@ class MeasurementsFeature(EnlightenFeature):
         self.is_collapsed = False
         self.insert_top = True
         self.dalai_behavior = None
+        self.default_interp_value = False
 
         # binding
         cfu.pushButton_erase_captures      .clicked    .connect(self.erase_all_callback)
@@ -1196,8 +1197,9 @@ class MeasurementsFeature(EnlightenFeature):
         log.debug(f"get_dalai_behavior: user selected {code}")
 
         if code == "enable_interpolation":
-            if not self.ctl.interp.set_enabled:
-                self.ctl.interp.set_enabled(True)
+            if not self.ctl.interp.enabled:
+                #self.ctl.interp.set_enabled(True)
+                self.ctl.interp.enabled = True
                 self.default_interp_value = False   
             else:
                 self.default_interp_value = True
