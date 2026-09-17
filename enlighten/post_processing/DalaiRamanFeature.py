@@ -78,7 +78,7 @@ class XDRamanFeature(EnlightenFeature):
         self.current_model_name = None
         self.current_model_config = None
 
-        # Visible in this case means the "DALAI-RAMAN" widget is visible on the 
+        # Visible in this case means the "XD-RAMAN" widget is visible on the 
         # sliding Tool Palette. It does not mean the alt-graph, combobox or other 
         # options are displayed displayed, which only appear when "enabled.
         self.visible = False
@@ -111,7 +111,7 @@ class XDRamanFeature(EnlightenFeature):
                     first_name = basename
 
             # SELECT the first model, but don't LOAD it -- we don't want to 
-            # trigger the TFL import until the user actually "enables" DALAI
+            # trigger the TFL import until the user actually "enables" XD
             self.combo_model.setCurrentIndex(0)
             self.current_model_label = self.combo_model.currentText()
             self.current_model_name = self.get_model_name_from_label(self.current_model_label)
@@ -222,7 +222,7 @@ class XDRamanFeature(EnlightenFeature):
         # ImportWorker is done
         ########################################################################
 
-        self.ctl.marquee.clear(token="dalai_load")
+        self.ctl.marquee.clear(token="XD_load")
         self.ctl.progress_bar.hide()
 
         # persist the "latest" loading time, to make the next progress bar more accurate
@@ -343,7 +343,7 @@ class XDRamanFeature(EnlightenFeature):
             self.curve.setData([])
             return
 
-        AI_wavenumbers, AI_spectrum = self.process_dalai(wavenumbers, spectrum, pr)
+        AI_wavenumbers, AI_spectrum = self.process_XD(wavenumbers, spectrum, pr)
 
         log.debug(f"AI_wavenumbers {AI_wavenumbers}")
         log.debug(f"AI_spectrum {AI_spectrum}")
@@ -353,10 +353,10 @@ class XDRamanFeature(EnlightenFeature):
         child_pr = ProcessedReading()
         child_pr.wavenumbers = AI_wavenumbers.tolist()
         child_pr.processed = AI_spectrum.tolist()
-        child_pr.dalai_model_name = self.current_model_name
-        child_pr.dalai_model_label = self.current_model_label
+        child_pr.XD_model_name = self.current_model_name
+        child_pr.XD_model_label = self.current_model_label
 
-        pr.dalai = child_pr
+        pr.XD = child_pr
 
         # interpolated arrays are for display only; we use non-interpolated data in matching
         # TODO: perhaps the graphing should actually be done at the same point as the main graph is updated?
@@ -464,7 +464,7 @@ class XDRamanFeature(EnlightenFeature):
                 return
         log.error(f"unknown model label {self.current_model_label}")
 
-    def process_dalai(self, wavenumbers, spectrum, pr):
+    def process_XD(self, wavenumbers, spectrum, pr):
         """
         Process spectrum according to XD settings
 
@@ -512,7 +512,7 @@ class XDRamanFeature(EnlightenFeature):
         trim_end   = self.right_trim_cm if self.do_right_trim else wavenumbers[-1]
 
         if eeprom.roi_horizontal_start < 1 and not doing_expert:
-            self.ctl.marquee.error("ROI start is zero in EEPROM - DALAI does not work well across the filter edge")
+            self.ctl.marquee.error("ROI start is zero in EEPROM - XD does not work well across the filter edge")
 
         # MZ: ROI was already applied via "pr.get_processed()", "pr.get_wavenumbers()" etc
         # we need to apply ROI here

@@ -248,8 +248,8 @@ class Measurement:
                            'Suffix',
                            'Preset',
                            'Auto-Raman',
-                           'DALAI Model Label',
-                           'DALAI Model Name',
+                           'XD Model Label',
+                           'XD Model Name',
                            'Image Format',
                            'Session Count',
                            'Plugin Name']
@@ -276,7 +276,7 @@ class Measurement:
         self.prefix                   = ""
         self.suffix                   = ""
         self.plugin_name              = ""
-        self.is_dalai_fork            = False
+        self.is_XD_fork               = False
 
         # cache of metadata only generated / rendered at save
         self.metadata                 = {}
@@ -289,10 +289,10 @@ class Measurement:
 
         if pr is None:
             tok.append("no ProcessedReading??")
-        elif pr.dalai:
-            tok.append("has DALAI sub-component")
+        elif pr.XD:
+            tok.append("has XD sub-component")
         else:
-            tok.append("no DALAI sub-component")
+            tok.append("no XD sub-component")
 
         return f"Measurement < {', '.join(tok)} >"
 
@@ -832,8 +832,8 @@ class Measurement:
                 self.save_csv_file_by_row(resave=resave)
             else:
                 self.save_csv_file_by_column(resave=resave)
-                if self.has_dalai():
-                    self.save_csv_file_by_column_dalai(resave=resave)
+                if self.has_XD():
+                    self.save_csv_file_by_column_XD(resave=resave)
 
     ##
     # This function is provided because legacy Dash and ENLIGHTEN saved row-
@@ -907,8 +907,8 @@ class Measurement:
         if field == "library match":             return self.processed_reading.library_matching_compound
         if field == "library score":             return self.processed_reading.library_matching_score
         if field == "library engine":            return self.processed_reading.library_matching_engine
-        if field == "dalai model name":          return self.get_dalai_metadata("dalai_model_name", target=target)
-        if field == "dalai model label":         return self.get_dalai_metadata("dalai_model_label", target=target)
+        if field == "XD model name":             return self.get_XD_metadata("XD_model_name", target=target)
+        if field == "XD model label":            return self.get_XD_metadata("XD_model_label", target=target)
         if field == "roi pixel start":           return self.settings.eeprom.multi_wavelength_calibration.get("roi_horizontal_start")
         if field == "roi pixel end":             return self.settings.eeprom.multi_wavelength_calibration.get("roi_horizontal_end")
         if field == "roi start line":            return self.settings.eeprom.roi_vertical_region_1_start
@@ -1128,7 +1128,7 @@ class Measurement:
             "spectrum": {},
             "metadata": self.get_all_metadata(target="json"),
             "spectrometerSettings": self.settings.to_dict(),
-            "dalai": {}
+            "XD": {}
         }
 
         # interpolation
@@ -1160,9 +1160,9 @@ class Measurement:
                 if a is not None:
                     m["spectrum"]["Reference"] = util.clean_list(a)
 
-        if self.has_dalai():
-            m["dalai"]["spectrum"] = pr.get_processed("dalai")
-            m["dalai"]["wavenumbers"] = pr.get_wavenumbers("dalai")
+        if self.has_XD():
+            m["XD"]["spectrum"] = pr.get_processed("XD")
+            m["XD"]["wavenumbers"] = pr.get_wavenumbers("XD")
 
         return m
 
@@ -1444,20 +1444,20 @@ class Measurement:
         log.info("saved columnar %s", pathname)
         self.add_pathname(pathname)
 
-    def save_csv_file_by_column_dalai(self, use_basename=False, ext="csv", delim=",", include_header=True, include_metadata=True, resave=False):
+    def save_csv_file_by_column_XD(self, use_basename=False, ext="csv", delim=",", include_header=True, include_metadata=True, resave=False):
         pr = self.processed_reading
 
         today_dir = self.generate_today_dir()
         if use_basename:
-            pathname = "%s-DALAI.%s" % (self.basename, ext)
+            pathname = "%s-XD.%s" % (self.basename, ext)
         else:
-            pathname = os.path.join(today_dir, "%s-DALAI.%s" % (self.generate_basename(), ext))
+            pathname = os.path.join(today_dir, "%s-XD.%s" % (self.generate_basename(), ext))
 
         if not self.verify_pathname(pathname, resave):
             return
 
-        wavenumbers = pr.get_wavenumbers("dalai")
-        spectrum = pr.get_processed("dalai")
+        wavenumbers = pr.get_wavenumbers("XD")
+        spectrum = pr.get_processed("XD")
         pixels = list(range(len(spectrum)))
 
         with open(pathname, "w", newline="", encoding='utf-8') as f:
@@ -1465,7 +1465,7 @@ class Measurement:
             out = csv.writer(f, delimiter=delim)
 
             if include_metadata:
-                md = self.get_all_metadata(target="csv_indiv_dalai")
+                md = self.get_all_metadata(target="csv_indiv_XD")
 
                 # output additional (name, value) metadata pairs at the top,
                 # not included in row-ordered CSV
@@ -1492,7 +1492,7 @@ class Measurement:
 
             headers = []
             headers.append("Wavenumber")
-            headers.append("DALAI")
+            headers.append("XD")
 
             if include_header:
                 out.writerow(headers)
@@ -1503,7 +1503,7 @@ class Measurement:
                 values.append(self.csv_formatted(None, 2, spectrum,    pixel))
                 out.writerow(values)
 
-        log.info("saved columnar DALAI %s", pathname)
+        log.info("saved columnar XD %s", pathname)
         self.add_pathname(pathname)
 
     # ##########################################################################
@@ -1772,49 +1772,49 @@ class Measurement:
 
         return a is not None and len(a) > 0
 
-    def has_dalai(self):
-        return self.processed_reading.has_dalai()
+    def has_XD(self):
+        return self.processed_reading.has_XD()
 
-    def get_dalai_metadata(self, name, target=None):
+    def get_XD_metadata(self, name, target=None):
         if self.processed_reading is None:
-            log.debug("get_dalai_metadata: no ProcessedReading")
+            log.debug("get_XD_metadata: no ProcessedReading")
             return
         elif target is None:
-            log.debug("get_dalai_metadata: no target")
+            log.debug("get_XD_metadata: no target")
             return
 
         target = target.lower()
         pr = None
-        log.debug(f"get_dalai_metadata: target {target}")
+        log.debug(f"get_XD_metadata: target {target}")
 
         if target == "json_export":
-            if self.processed_reading.has_dalai():
-                log.debug("get_dalai_metadata: pr.has_dalai() so using pr.dalai")
-                pr = self.processed_reading.dalai
+            if self.processed_reading.has_XD():
+                log.debug("get_XD_metadata: pr.has_XD() so using pr.XD")
+                pr = self.processed_reading.XD
             else:
-                log.debug("get_dalai_metadata: not pr.has_dalai()")
+                log.debug("get_XD_metadata: not pr.has_XD()")
         elif target == "csv_indiv":
             pr = None
-        elif target == "csv_indiv_dalai":
-            pr = self.processed_reading.dalai
+        elif target == "csv_indiv_XD":
+            pr = self.processed_reading.XD
         elif target == "csv_export":
-            if self.is_dalai_fork:
-                log.debug("get_dalai_metadata: self.is_dalai_fork so using self.pr")
+            if self.is_XD_fork:
+                log.debug("get_XD_metadata: self.is_XD_fork so using self.pr")
                 pr = self.processed_reading
             else:
-                log.debug("get_dalai_metadata: not self.is_dalai_fork")
+                log.debug("get_XD_metadata: not self.is_XD_fork")
 
         if pr:
-            log.debug(f"get_dalai_metadata: now have pr")
+            log.debug(f"get_XD_metadata: now have pr")
             if hasattr(pr, name):
-                log.debug(f"get_dalai_metadata: found attr {name}")
+                log.debug(f"get_XD_metadata: found attr {name}")
                 value = getattr(pr, name)
-                log.debug(f"get_dalai_metadata: returning {value}")
+                log.debug(f"get_XD_metadata: returning {value}")
                 return value
             else:
-                log.debug(f"get_dalai_metadata: no attr {name}")
+                log.debug(f"get_XD_metadata: no attr {name}")
         else:
-            log.debug(f"get_dalai_metadata: still no pr")
+            log.debug(f"get_XD_metadata: still no pr")
 
     ##
     # Passed a SpectrometerSettings object (containing wavelengths, wavenumbers

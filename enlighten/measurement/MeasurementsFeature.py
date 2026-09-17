@@ -61,7 +61,7 @@ class MeasurementsFeature(EnlightenFeature):
 
         self.is_collapsed = False
         self.insert_top = True
-        self.dalai_behavior = None
+        self.XD_behavior = None
 
         # binding
         cfu.pushButton_erase_captures      .clicked    .connect(self.erase_all_callback)
@@ -346,25 +346,25 @@ class MeasurementsFeature(EnlightenFeature):
             return
 
         ########################################################################
-        # Handle DALAI
+        # Handle XD
         ########################################################################
 
-        if self.has_dalai():
-            log.debug("export_session: has DALAI measurements")
+        if self.has_XD():
+            log.debug("export_session: has XD measurements")
             if self.ctl.save_options.save_csv():
                 if self.ctl.interp.enabled:
                     log.debug("export_session: save options include CSV but interpolation enabled, don't care")
                 else:
                     log.debug("export_session: save options include CSV and interpolation disabled, so prompting for behavior")
-                    if self.get_dalai_behavior():
-                        log.debug(f"export_session: user selected DALAI behavior {self.dalai_behavior}")
+                    if self.get_XD_behavior():
+                        log.debug(f"export_session: user selected XD behavior {self.XD_behavior}")
                     else:
-                        log.error("export_session: cancelling, user did not select valid DALAI export behavior")
+                        log.error("export_session: cancelling, user did not select valid XD export behavior")
                         return
             else:
                 log.debug(f"export_session: not saving to CSV, don't care")
         else:
-            log.debug(f"export_session: no DALAI measurements found")
+            log.debug(f"export_session: no XD measurements found")
 
         ########################################################################
         # Generate pathname
@@ -426,17 +426,17 @@ class MeasurementsFeature(EnlightenFeature):
             
         
 
-    def fork_dalai_measurement(self, m):
+    def fork_XD_measurement(self, m):
         """
-        CSV exports are greatly simplified by treating "original" and "DALAI" 
+        CSV exports are greatly simplified by treating "original" and "XD" 
         ProcessedReadings as two separate Measurement objects.
 
         JSON exports, on the other hand, can handle complex data with varied axes 
         and don't mind including all ProcessedReading subtypes into a single 
         exported object.
 
-        This function is generating a second Measurement from the DALAI component
-        of a parent Measurement. CSV-based exports may include the child DALAI
+        This function is generating a second Measurement from the XD component
+        of a parent Measurement. CSV-based exports may include the child XD
         objects, but JSON exports will not.
 
         Note that we are deliberately not applying any interpolation at this point
@@ -444,22 +444,22 @@ class MeasurementsFeature(EnlightenFeature):
         a JSON export. 
         """
 
-        m_dalai = m.clone() # the newly forked child
-        m_dalai.is_dalai_fork = True
+        m_XD = m.clone() # the newly forked child
+        m_XD.is_XD_fork = True
 
-        # bump the DALAI sub-reading into the main slot
-        m_dalai.processed_reading = m_dalai.processed_reading.dalai
-        m_dalai.processed_reading.dalai = None
+        # bump the XD sub-reading into the main slot
+        m_XD.processed_reading = m_XD.processed_reading.XD
+        m_XD.processed_reading.XD = None
 
-        # update axes based on new DALAI data
-        m_dalai.settings.wavenumbers = m_dalai.processed_reading.get_wavenumbers()
-        m_dalai.settings.wavelengths = generate_wavelengths_from_wavenumbers(m_dalai.settings.excitation(), m_dalai.settings.wavenumbers)
+        # update axes based on new XD data
+        m_XD.settings.wavenumbers = m_XD.processed_reading.get_wavenumbers()
+        m_XD.settings.wavelengths = generate_wavelengths_from_wavenumbers(m_XD.settings.excitation(), m_XD.settings.wavenumbers)
 
-        # reset anything in SpectrometerSettings that no longer applies to DALAI
+        # reset anything in SpectrometerSettings that no longer applies to XD
         # readings (update pixel count, pixel-based horizontal ROI, etc)
-        m_dalai.settings.post_interpolation_reset(pixels=len(m_dalai.processed_reading.wavenumbers))
+        m_XD.settings.post_interpolation_reset(pixels=len(m_XD.processed_reading.wavenumbers))
 
-        return m_dalai
+        return m_XD
 
     def perform_export_from_worker(self):
         """ this is called from ExportWorker's Python thread, not the Qt GUI thread """
@@ -472,9 +472,9 @@ class MeasurementsFeature(EnlightenFeature):
 
         # MZ: My challenge here is that this is currently structured to generate
         # a SINGLE list of export_measurements which will be used for both CSV
-        # and JSON exports. Assuming dalai_behavior is "dalai_only," then for
-        # CSV that list should contain only the forked DALAI children; however,
-        # for JSON the list should probably contain all parents containing DALAI.
+        # and JSON exports. Assuming XD_behavior is "XD_only," then for
+        # CSV that list should contain only the forked XD children; however,
+        # for JSON the list should probably contain all parents containing XD.
 
         self.export_measurements_csv = []
         self.export_measurements_json = []
@@ -484,43 +484,43 @@ class MeasurementsFeature(EnlightenFeature):
                 log.debug(f"perform_export_from_worker: skipping because not visible: {m}")
                 continue
 
-            # does this Measurement have a DALAI component?
-            if m.processed_reading.dalai is None:
-                # no, this Measurement does not have a DALAI component
-                if self.dalai_behavior == "dalai_only":
-                    log.debug(f"perform_export_from_worker: skipping because not DALAI: {m}")
+            # does this Measurement have a XD component?
+            if m.processed_reading.XD is None:
+                # no, this Measurement does not have a XD component
+                if self.XD_behavior == "XD_only":
+                    log.debug(f"perform_export_from_worker: skipping because not XD: {m}")
                 else:
                     # for raw_only and enable_interpolation, we still want to 
                     # export the normal version of this measurement
-                    log.debug(f"perform_export_from_worker: keeping non-DALAI measurement because {self.dalai_behavior}: {m}")
+                    log.debug(f"perform_export_from_worker: keeping non-XD measurement because {self.XD_behavior}: {m}")
                     self.export_measurements_csv.append(m)
                     self.export_measurements_json.append(m)
             else:
-                # yes, this Measurement does have a DALAI component
+                # yes, this Measurement does have a XD component
 
                 # ONLY keep the raw, if that was requested
-                if self.dalai_behavior == "raw_only":
-                    log.debug(f"perform_export_from_worker: only keeping raw component of DALAI measurement because {self.dalai_behavior}: {m}")
+                if self.XD_behavior == "raw_only":
+                    log.debug(f"perform_export_from_worker: only keeping raw component of XD measurement because {self.XD_behavior}: {m}")
                     self.export_measurements_csv.append(m)
                     self.export_measurements_json.append(m)
                     continue
 
-                if self.dalai_behavior != "dalai_only":
+                if self.XD_behavior != "XD_only":
                     # ALSO keep the raw, if that was requested
-                    log.debug(f"perform_export_from_worker: keeping raw component of DALAI measurement because {self.dalai_behavior}: {m}")
+                    log.debug(f"perform_export_from_worker: keeping raw component of XD measurement because {self.XD_behavior}: {m}")
                     self.export_measurements_csv.append(m)
                     self.export_measurements_json.append(m)
 
-                if self.dalai_behavior == "dalai_only":
+                if self.XD_behavior == "XD_only":
                     # don't forget to keep the raw for JSON measurements
                     self.export_measurements_json.append(m)
 
-                # by implication, dalai_behavior is dalai_only or
+                # by implication, XD_behavior is XD_only or
                 # enable_interpolation -- in either case, fork off a new
-                # measurement holding the DALAI spectrum
-                m_dalai = self.fork_dalai_measurement(m)
-                log.debug(f"perform_export_from_worker: forking DALAI component of DALAI measurement because {self.dalai_behavior}: {m_dalai}")
-                self.export_measurements_csv.append(m_dalai)
+                # measurement holding the XD spectrum
+                m_XD = self.fork_XD_measurement(m)
+                log.debug(f"perform_export_from_worker: forking XD component of XD measurement because {self.XD_behavior}: {m_XD}")
+                self.export_measurements_csv.append(m_XD)
 
         if len(self.export_measurements_csv) + len(self.export_measurements_json) < 1:
             log.error("no qualified measurements to export")
@@ -553,7 +553,7 @@ class MeasurementsFeature(EnlightenFeature):
 
         log.debug("perform_export_from_worker: done")
         
-        if self.dalai_behavior == "enable_interpolation":
+        if self.XD_behavior == "enable_interpolation":
             self.ctl.interp.set_enabled(False)
 
     def read_measurements(self):
@@ -1155,22 +1155,22 @@ class MeasurementsFeature(EnlightenFeature):
         self.ctl.save_options.line_number = save_line_number
 
     ############################################################################
-    # DALAI export funz
+    # XD export funz
     ############################################################################
 
-    def has_dalai(self):
+    def has_XD(self):
         for m in self.measurements:
-            if m.processed_reading.dalai:
+            if m.processed_reading.XD:
                 return True
 
-    def get_dalai_behavior(self):
+    def get_XD_behavior(self):
         """ Returns True on success, False to cancel """
-        self.dalai_behavior = None
+        self.XD_behavior = None
 
-        label_text="The clipboard contains one or more DALAI measurements."
+        label_text="The clipboard contains one or more XD measurements."
 
         options = [ "Only export raw measurements",
-                    "Only export DALAI measurements",
+                    "Only export XD measurements",
                     "Enable interpolation" ]
 
         disabled_option_indices = []
@@ -1179,7 +1179,7 @@ class MeasurementsFeature(EnlightenFeature):
             disabled_option_indices.append(2)
 
         response = self.ctl.gui.msgbox_with_radio_buttons(
-            title="DALAI Export Behavior",
+            title="XD Export Behavior",
             label_text=label_text,
             options=options,
             disabled_option_indices=disabled_option_indices)
@@ -1190,17 +1190,17 @@ class MeasurementsFeature(EnlightenFeature):
 
         i = response["checked_index"]
         if   i == 0: code = "raw_only"
-        elif i == 1: code = "dalai_only"
+        elif i == 1: code = "XD_only"
         elif i == 2: code = "enable_interpolation"
         else:
             log.error("invalid radio button response")
             return False
 
-        log.debug(f"get_dalai_behavior: user selected {code}")
+        log.debug(f"get_XD_behavior: user selected {code}")
 
         if code == "enable_interpolation":
             self.ctl.interp.set_enabled(True)
 
-        self.dalai_behavior = code
+        self.XD_behavior = code
         return True
         

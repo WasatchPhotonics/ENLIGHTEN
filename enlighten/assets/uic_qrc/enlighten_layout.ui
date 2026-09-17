@@ -10739,15 +10739,15 @@ QComboBox QListView
                               </widget>
                              </item>
                              <item row="5" column="0">
-                              <widget class="QLabel" name="label_correction_status_dalai_label">
+                              <widget class="QLabel" name="label_correction_status_XD_label">
                                <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Preferred"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
                                <property name="text"> 
-                                <string>DALAI-RAMAN</string> 
+                                <string>XD-RAMAN</string> 
                                </property>
                               </widget>
                              </item>
                              <item row="5" column="1">
-                              <widget class="QLabel" name="label_correction_status_dalai">
+                              <widget class="QLabel" name="label_correction_status_XD">
                                <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Preferred"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
                                <property name="text">
                                 <string>OFF</string>
@@ -11260,11 +11260,11 @@ QComboBox QListView
                             </widget>
                            </item>
                            <item>
-                            <widget class="QPushButton" name="pushButton_dalai_toggle">
+                            <widget class="QPushButton" name="pushButton_XD_toggle">
                              <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Fixed"> <horstretch>5</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
                              <property name="minimumSize"> <size> <width>16</width> <height>26</height> </size> </property>
                              <property name="maximumSize"> <size> <width>30</width> <height>26</height> </size> </property>
-                             <property name="toolTip"> <string>toggle DALAI-RAMAN processing</string> </property>
+                             <property name="toolTip"> <string>toggle XD-RAMAN processing</string> </property>
                              <property name="icon"> <iconset resource="grey_icons.qrc"> <normaloff>:/greys/images/grey_icons/dalai.svg</normaloff>:/greys/images/grey_icons/dalai.svg</iconset> </property>
                             </widget>
                            </item>
@@ -15923,14 +15923,14 @@ li.checked::marker { content: "\2612"; }
 
 
                <item>
-                <widget class="QFrame" name="frame_dalai_1">
+                <widget class="QFrame" name="frame_XD_1">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
-                 <layout class="QVBoxLayout" name="verticalLayout_dalai_1">
+                 <layout class="QVBoxLayout" name="verticalLayout_XD_1">
                   <property name="leftMargin">
                    <number>0</number>
                   </property>
@@ -15944,7 +15944,7 @@ li.checked::marker { content: "\2612"; }
                    <number>0</number>
                   </property>
                   <item>
-                   <widget class="QLabel" name="label_dalai_title">
+                   <widget class="QLabel" name="label_XD_title">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                       <horstretch>0</horstretch>
@@ -15957,12 +15957,12 @@ li.checked::marker { content: "\2612"; }
                      </font>
                     </property>
                     <property name="text">
-                     <string>DALAI-RAMAN</string>
+                     <string>XD-RAMAN</string>
                     </property>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QFrame" name="frame_dalai_2">
+                   <widget class="QFrame" name="frame_XD_2">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                       <horstretch>0</horstretch>
@@ -15975,7 +15975,7 @@ li.checked::marker { content: "\2612"; }
                     <property name="wpBox" stdset="0">
                      <bool>false</bool>
                     </property>
-                    <layout class="QGridLayout" name="grid_dalai_1" rowstretch="0" columnstretch="0">
+                    <layout class="QGridLayout" name="grid_XD_1" rowstretch="0" columnstretch="0">
                      <property name="sizeConstraint">
                       <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
                      </property>
@@ -15995,7 +15995,7 @@ li.checked::marker { content: "\2612"; }
                       <number>0</number>
                      </property>
                      <item row="0" column="0">
-                      <widget class="QFrame" name="frame_dalai_form">
+                      <widget class="QFrame" name="frame_XD_form">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                          <horstretch>0</horstretch>
@@ -16011,7 +16011,7 @@ li.checked::marker { content: "\2612"; }
                        <property name="frameShadow">
                         <enum>QFrame::Shadow::Raised</enum>
                        </property>
-                       <layout class="QGridLayout" name="grid_dalai_2" rowstretch="0" columnstretch="0">
+                       <layout class="QGridLayout" name="grid_XD_2" rowstretch="0" columnstretch="0">
                         <property name="horizontalSpacing">
                          <number>0</number>
                         </property>
@@ -16032,7 +16032,7 @@ li.checked::marker { content: "\2612"; }
                         </property>
 
                         <item row="0" column="0" colspan="3">
-                         <widget class="QCheckBox" name="checkBox_dalai_enable">
+                         <widget class="QCheckBox" name="checkBox_XD_enable">
                           <property name="text">
                            <string />
                           </property>
@@ -16046,14 +16046,14 @@ li.checked::marker { content: "\2612"; }
                         </item>
 
                         <item row="1" column="0">
-                         <widget class="QLabel" name="label_dalai_model_label">
+                         <widget class="QLabel" name="label_XD_model_label">
                           <property name="text">
                            <string>Model</string>
                           </property>
                          </widget>
                         </item>
                         <item row="1" column="1" colspan="2">
-                         <widget class="QComboBox" name="comboBox_dalai_model">
+                         <widget class="QComboBox" name="comboBox_XD_model">
                           <property name="minimumSize">
                            <size>
                             <width>80</width>
@@ -16073,21 +16073,21 @@ li.checked::marker { content: "\2612"; }
                         </item>
                        
                         <item row="2" column="0">
-                         <widget class="QLabel" name="label_dalai_left_trim_bool_label">
+                         <widget class="QLabel" name="label_XD_left_trim_bool_label">
                           <property name="text">
                            <string>Left Trim</string>
                           </property>
                          </widget>
                         </item>
                         <item row="2" column="1">
-                         <widget class="QCheckBox" name="checkBox_dalai_left_trim">
+                         <widget class="QCheckBox" name="checkBox_XD_left_trim">
                           <property name="checked">
                            <bool>false</bool>
                           </property>
                          </widget>
                         </item>
                         <item row="2" column="2">
-                         <widget class="QSpinBox" name="spinBox_dalai_left_trim_wavenumber">
+                         <widget class="QSpinBox" name="spinBox_XD_left_trim_wavenumber">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                             <horstretch>0</horstretch>
@@ -16128,14 +16128,14 @@ li.checked::marker { content: "\2612"; }
                         </item>
 
                         <item row="3" column="0">
-                         <widget class="QLabel" name="label_dalai_right_trim_bool_label">
+                         <widget class="QLabel" name="label_XD_right_trim_bool_label">
                           <property name="text">
                            <string>Right Trim</string>
                           </property>
                          </widget>
                         </item>
                         <item row="3" column="1">
-                         <widget class="QCheckBox" name="checkBox_dalai_right_trim">
+                         <widget class="QCheckBox" name="checkBox_XD_right_trim">
                           <property name="text">
                            <string />
                           </property>
@@ -16145,7 +16145,7 @@ li.checked::marker { content: "\2612"; }
                          </widget>
                         </item>
                         <item row="3" column="2">
-                         <widget class="QSpinBox" name="spinBox_dalai_right_trim_wavenumber">
+                         <widget class="QSpinBox" name="spinBox_XD_right_trim_wavenumber">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                             <horstretch>0</horstretch>
@@ -16186,7 +16186,7 @@ li.checked::marker { content: "\2612"; }
                         </item>
 
                         <item row="4" column="1" colspan="2">
-                         <widget class="QCheckBox" name="checkBox_dalai_deconvolute">
+                         <widget class="QCheckBox" name="checkBox_XD_deconvolute">
                           <property name="text">
                            <string />
                           </property>
@@ -16200,7 +16200,7 @@ li.checked::marker { content: "\2612"; }
                         </item>
 
                         <item row="5" column="1" colspan="2">
-                         <widget class="QCheckBox" name="checkBox_dalai_external_laser">
+                         <widget class="QCheckBox" name="checkBox_XD_external_laser">
                           <property name="text">
                            <string />
                           </property>
@@ -16211,7 +16211,7 @@ li.checked::marker { content: "\2612"; }
                            <string>External Laser</string>
                           </property>
                           <property name="toolTip">
-                           <string>Assume external laser is connected to Raman probe, and apply DALAI processing regardless of internal laser controls.</string>
+                           <string>Assume external laser is connected to Raman probe, and apply XD processing regardless of internal laser controls.</string>
                           </property>
                          </widget>
                         </item>

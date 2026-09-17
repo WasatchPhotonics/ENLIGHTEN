@@ -52,7 +52,7 @@ class GraphFeature(EnlightenFeature):
     - axis combobox on the x-axis widget
 
     The second instance of this widget is accessed via ctl.alt_graph. It is not
-    normally visible by default, and is primarily used by DalaiRamanFeature and
+    normally visible by default, and is primarily used by XDRamanFeature and
     potentially some plugins.
 
     Note that while I don't conceive of the alt_graph instance "owning" the 
@@ -386,7 +386,7 @@ class GraphFeature(EnlightenFeature):
     ## 
     # This was originally used used by ThumbnailWidget, when clicking the "show 
     # trace" thumbnail button. It's now also being used by 
-    # BaselineCorrectionFeature, RamanShiftCorrection, DalaiRamanFeature etc.
+    # BaselineCorrectionFeature, RamanShiftCorrection, XDRamanFeature etc.
     #
     # @todo we should probably create a Curve class to encapsulate data 
     #       associated with a particular on-screen trace, rather than hanging 
@@ -541,7 +541,7 @@ class GraphFeature(EnlightenFeature):
 
     def copy_to_clipboard_callback(self):
         if self.alt:
-            # TODO: instead of ignoring Alt-graph, maybe copy BOTH spectra to clipboard if doing_dalai?
+            # TODO: instead of ignoring Alt-graph, maybe copy BOTH spectra to clipboard if doing_XD?
             return
 
         if not self.ctl.multispec:
