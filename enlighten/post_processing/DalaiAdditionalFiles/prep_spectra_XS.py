@@ -82,7 +82,7 @@ def clean_spectrum(
     model_config=None
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
-    Clean spectrum using DALAI2 model
+    Clean spectrum using XD2 model
 
     Args:
         model (tf.lite.Interpreter): TensorFlow Lite model
@@ -95,7 +95,7 @@ def clean_spectrum(
         Tuple[np.ndarray, np.ndarray]: Processed wavenumbers and spectrum
 
     Note:
-        This method is specifically for DALAI 2.0 models trained post 2025-Feb,
+        This method is specifically for XD 2.0 models trained post 2025-Feb,
         which expect different inputs than previous models.
 
         The input spectrum is interpolated to match the model's expected
@@ -109,7 +109,7 @@ def clean_spectrum(
         the new standard (renamed old clean_spectrum to 
         clean_spectrum_dalai_normalized).
         
-    DB 25 Macrh 2026: I combined both 'normalized' 'dalai2' routines into one. 
+    DB 25 March 2026: I combined both 'normalized' 'dalai2' routines into one. 
         THe idea is to use the same 'extend with np.interp' default and not use the fancy extrapolation
         any more, which seems to cause problems at times. The np.interp default of just usint the last 
         values is much more robust. We will need to clip the retruned spectrum to the actual range
@@ -191,7 +191,7 @@ def clean_spectrum(
     spectrum_AI = spectrum_AI * spectrum_max
         
     # limit output to actual spectrum wavenumber range - do not include extrapolations or such
-    # the spectrum Dalai gets is the range with ROI applied
+    # the spectrum XD gets is the range with ROI applied
 
     range_indices = [i for i in range(output_pixels) if w0 <= wavenumbers_AI[i] <= we]
     start_index = range_indices[0]

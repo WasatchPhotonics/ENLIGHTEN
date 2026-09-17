@@ -115,7 +115,7 @@ def clean_spectrum(
     # output = 2004
     # trim = 140 on either side
 
-    # log.info(f"First Wavenumber entering dalai clean up: {wavenumbers[0]}")
+    # log.info(f"First Wavenumber entering XD clean up: {wavenumbers[0]}")
 
     if model_config.is_wide or 'wide' in model_config.basename.lower():
         num_interp = 2284
@@ -167,7 +167,7 @@ def clean_spectrum(
     we = wavenumbers[-1]
 
     # limit output to actual spectrum wavenumber range - do not include extrapolations or such
-    # the spectrum Dalai gets is the range with ROI applied
+    # the spectrum XD gets is the range with ROI applied
 
     range_indices = [i for i in range(output_pixels) if w0 <= wavenumbers_AI[i] <= we]
     start_index = range_indices[0]
