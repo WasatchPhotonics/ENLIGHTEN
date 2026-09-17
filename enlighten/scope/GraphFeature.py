@@ -52,7 +52,7 @@ class GraphFeature(EnlightenFeature):
     - axis combobox on the x-axis widget
 
     The second instance of this widget is accessed via ctl.alt_graph. It is not
-    normally visible by default, and is primarily used by XDRamanFeature and
+    normally visible by default, and is primarily used by XDFeature and
     potentially some plugins.
 
     Note that while I don't conceive of the alt_graph instance "owning" the 
@@ -386,7 +386,7 @@ class GraphFeature(EnlightenFeature):
     ## 
     # This was originally used used by ThumbnailWidget, when clicking the "show 
     # trace" thumbnail button. It's now also being used by 
-    # BaselineCorrectionFeature, RamanShiftCorrection, XDRamanFeature etc.
+    # BaselineCorrectionFeature, RamanShiftCorrection, XDFeature etc.
     #
     # @todo we should probably create a Curve class to encapsulate data 
     #       associated with a particular on-screen trace, rather than hanging 

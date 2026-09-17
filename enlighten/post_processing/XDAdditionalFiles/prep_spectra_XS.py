@@ -104,7 +104,7 @@ def clean_spectrum(
         If deconvolution is enabled, the spectrum is sharpened using the
         spectrometer's average resolution from EEPROM.
 
-    MZ: moved from XDRamanID.py to prep_spectra_XS.py because it seems(?)
+    MZ: moved from XDID.py to prep_spectra_XS.py because it seems(?)
         SIG-only. Renamed from clean_spectrum_XD, since it appears to be
         the new standard (renamed old clean_spectrum to 
         clean_spectrum_XD_normalized).
