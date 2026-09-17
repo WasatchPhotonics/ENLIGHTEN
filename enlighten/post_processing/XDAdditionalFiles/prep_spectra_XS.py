@@ -104,12 +104,12 @@ def clean_spectrum(
         If deconvolution is enabled, the spectrum is sharpened using the
         spectrometer's average resolution from EEPROM.
 
-    MZ: moved from DalaiRamanID.py to prep_spectra_XS.py because it seems(?)
-        SIG-only. Renamed from clean_spectrum_dalai2, since it appears to be
+    MZ: moved from XDRamanID.py to prep_spectra_XS.py because it seems(?)
+        SIG-only. Renamed from clean_spectrum_XD, since it appears to be
         the new standard (renamed old clean_spectrum to 
-        clean_spectrum_dalai_normalized).
+        clean_spectrum_XD_normalized).
         
-    DB 25 March 2026: I combined both 'normalized' 'dalai2' routines into one. 
+    DB 25 March 2026: I combined both 'normalized' 'XD2' routines into one. 
         THe idea is to use the same 'extend with np.interp' default and not use the fancy extrapolation
         any more, which seems to cause problems at times. The np.interp default of just usint the last 
         values is much more robust. We will need to clip the retruned spectrum to the actual range

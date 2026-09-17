@@ -35,7 +35,7 @@ from enlighten.post_processing.AbsorbanceFeature import AbsorbanceFeature
 from enlighten.post_processing.AutoRamanFeature import AutoRamanFeature
 from enlighten.post_processing.BaselineCorrectionFeature import BaselineCorrectionFeature
 from enlighten.post_processing.BoxcarFeature import BoxcarFeature
-from enlighten.post_processing.DalaiRamanFeature import XDRamanFeature
+from enlighten.post_processing.XDFeature import XDFeature
 from enlighten.post_processing.DarkFeature import DarkFeature
 from enlighten.post_processing.ElectricalDarkCorrectionFeature import ElectricalDarkCorrectionFeature
 from enlighten.post_processing.EtalonCorrectionFeature import EtalonCorrectionFeature
@@ -253,7 +253,7 @@ class BusinessObjects:
         ctl.ble_manager                 = BLEManagerFeature(ctl)
         ctl.scope_table                 = ScopeTableFeature(ctl)
         ctl.library_matching            = LibraryMatchingFeature(ctl)
-        ctl.XD                          = XDRamanFeature(ctl)
+        ctl.XD                          = XDFeature(ctl)
         ctl.correction_status           = CorrectionStatusFeature(ctl)
 
     def destroy(self):

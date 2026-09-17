@@ -11265,7 +11265,7 @@ QComboBox QListView
                              <property name="minimumSize"> <size> <width>16</width> <height>26</height> </size> </property>
                              <property name="maximumSize"> <size> <width>30</width> <height>26</height> </size> </property>
                              <property name="toolTip"> <string>toggle XD-RAMAN processing</string> </property>
-                             <property name="icon"> <iconset resource="grey_icons.qrc"> <normaloff>:/greys/images/grey_icons/dalai.svg</normaloff>:/greys/images/grey_icons/dalai.svg</iconset> </property>
+                             <property name="icon"> <iconset resource="grey_icons.qrc"> <normaloff>:/greys/images/grey_icons/XD.svg</normaloff>:/greys/images/grey_icons/XD.svg</iconset> </property>
                             </widget>
                            </item>
                            <item>

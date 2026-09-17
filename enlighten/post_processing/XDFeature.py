@@ -12,9 +12,9 @@ from enlighten import common
 from enlighten.util import unwrap
 from enlighten.EnlightenFeature import EnlightenFeature
 
-from .DalaiAdditionalFiles import prep_spectra_X  #This requires file name changes, save until last
-from .DalaiAdditionalFiles import prep_spectra_XM
-from .DalaiAdditionalFiles import prep_spectra_XS 
+from .XDAdditionalFiles import prep_spectra_X  #This requires file name changes, save until last
+from .XDAdditionalFiles import prep_spectra_XM
+from .XDAdditionalFiles import prep_spectra_XS 
 
 from wasatch.ProcessedReading import ProcessedReading
 
@@ -42,9 +42,9 @@ class ImportWorker(threading.Thread):
         rm.check_memory_usage(label="after importing TensorFlow")
         self.feature.imported = True
 
-class XDRamanFeature(EnlightenFeature):
-    SECTION = "XDRamanFeature"
-    MODEL_DIR = os.path.join("enlighten", "assets", "example_data", "dalai_models") #This I beleive is a file change
+class XDFeature(EnlightenFeature):
+    SECTION = "XDFeature"
+    MODEL_DIR = os.path.join("enlighten", "assets", "example_data", "XD_models") 
     COLOR = "#f7e842"
 
     def __init__(self, ctl):
@@ -578,8 +578,8 @@ class ModelConfig:
         self.is_wide = False
 
         # generate pathnames
-        self.model_pathname = os.path.join(XDRamanFeature.MODEL_DIR, f"{basename}.tflite")
-        self.config_pathname = os.path.join(XDRamanFeature.MODEL_DIR, f"{basename}.json")
+        self.model_pathname = os.path.join(XDFeature.MODEL_DIR, f"{basename}.tflite")
+        self.config_pathname = os.path.join(XDFeature.MODEL_DIR, f"{basename}.json")
 
         if os.path.exists(self.config_pathname):
             with open(self.config_pathname, "r", encoding="utf-8") as infile:
