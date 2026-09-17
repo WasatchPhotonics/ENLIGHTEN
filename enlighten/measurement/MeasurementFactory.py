@@ -100,7 +100,7 @@ class MeasurementFactory(EnlightenFeature):
         else:
             log.debug("measurement doesn't have a plugin so default graph")
             graphs = [ self.ctl.graph ]
-            if measurement.has_dalai():
+            if measurement.has_XD():
                 graphs.append(self.ctl.alt_graph)
 
         measurement.thumbnail_widget = ThumbnailWidget(
@@ -136,12 +136,12 @@ class MeasurementFactory(EnlightenFeature):
         # apply the spectrum to the curve
         self.ctl.thumbnail_render_curve.setData(y=spectrum, x=x_axis)
 
-        # add DALAI spectrum
-        if measurement.has_dalai():
-            log.debug("render_thumbnail_to_qpixmap: adding DALAI curve")
-            self.ctl.thumbnail_render_alt_curve.setData(y=pr.get_processed("dalai"), x=pr.get_wavenumbers("dalai"))
+        # add XD spectrum
+        if measurement.has_XD():
+            log.debug("render_thumbnail_to_qpixmap: adding XD curve")
+            self.ctl.thumbnail_render_alt_curve.setData(y=pr.get_processed("XD"), x=pr.get_wavenumbers("XD"))
         else:
-            log.debug("render_thumbnail_to_qpixmap: skipping DALAI curve")
+            log.debug("render_thumbnail_to_qpixmap: skipping XD curve")
             self.ctl.thumbnail_render_alt_curve.setData(y=[])
 
         # instantiate an exporter (could we re-use one for all thumbnails?)

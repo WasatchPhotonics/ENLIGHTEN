@@ -954,7 +954,7 @@ class Controller:
                              self.laser_temperature,
                              self.area_scan,
                              self.horiz_roi,
-                             self.dalai,
+                             self.XD,
                              self.raman_intensity_correction ]:
                 feature.init_hotplug()
 
@@ -1143,7 +1143,7 @@ class Controller:
         make_shortcut("Ctrl+T", self.integration_time_feature.set_focus)
         make_shortcut("Ctrl+X", self.page_nav.toggle_expert)
 
-        make_shortcut("Ctrl+Shift+D", self.dalai.toggle_callback)
+        make_shortcut("Ctrl+Shift+D", self.XD.toggle_callback)
         make_shortcut("Ctrl+Shift+S", self.measurements.export_session)
 
         make_shortcut("Ctrl+*", self.auto_raman.measure_callback)
@@ -1989,10 +1989,10 @@ class Controller:
         #     pr = self.despiking_feature.process(pr)
 
         ########################################################################
-        # DALAI-RAMAN
+        # XD-RAMAN
         ########################################################################
 
-        self.dalai.process(pr)
+        self.XD.process(pr)
 
         ########################################################################
         # Boxcar Smoothing

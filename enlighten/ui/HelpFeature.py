@@ -75,7 +75,7 @@ class HelpFeature(EnlightenFeature):
             Ctrl-T enter integration Time
             Ctrl-X toggle eXpert mode
 
-            Ctrl-Shift-D toggle DALAI-RAMAN
+            Ctrl-Shift-D toggle XD
             Ctrl-Shift-S export all Saved measurements
 
             Ctrl-* Auto-Raman

@@ -12,9 +12,9 @@ from enlighten import common
 from enlighten.util import unwrap
 from enlighten.EnlightenFeature import EnlightenFeature
 
-from .DalaiAdditionalFiles import prep_spectra_X
-from .DalaiAdditionalFiles import prep_spectra_XM
-from .DalaiAdditionalFiles import prep_spectra_XS 
+from .XDAdditionalFiles import prep_spectra_X  #This requires file name changes, save until last
+from .XDAdditionalFiles import prep_spectra_XM
+from .XDAdditionalFiles import prep_spectra_XS 
 
 from wasatch.ProcessedReading import ProcessedReading
 
@@ -42,17 +42,9 @@ class ImportWorker(threading.Thread):
         rm.check_memory_usage(label="after importing TensorFlow")
         self.feature.imported = True
 
-class DalaiRamanFeature(EnlightenFeature):
-    """
-    DALAI-RAMAN is an acronym for:
-
-        Dieter's Augmented Library Artificial Intelligence 
-                            for 
-            Really Awesome Mega-fast Analysis Network
-    """
-
-    SECTION = "DalaiRamanFeature"
-    MODEL_DIR = os.path.join("enlighten", "assets", "example_data", "dalai_models")
+class XDFeature(EnlightenFeature):
+    SECTION = "XDFeature"
+    MODEL_DIR = os.path.join("enlighten", "assets", "example_data", "XD_models") 
     COLOR = "#f7e842"
 
     def __init__(self, ctl):
@@ -60,17 +52,17 @@ class DalaiRamanFeature(EnlightenFeature):
 
         cfu = ctl.form.ui
 
-        self.frame             = cfu.frame_dalai_1
-        self.bt_toggle         = cfu.pushButton_dalai_toggle
-        self.cb_enable         = cfu.checkBox_dalai_enable
-        self.combo_model       = cfu.comboBox_dalai_model
-        self.lb_combo          = cfu.label_dalai_model_label
-        self.cb_left_trim      = cfu.checkBox_dalai_left_trim
-        self.sb_left_trim      = cfu.spinBox_dalai_left_trim_wavenumber
-        self.cb_right_trim     = cfu.checkBox_dalai_right_trim
-        self.sb_right_trim     = cfu.spinBox_dalai_right_trim_wavenumber
-        self.cb_deconvolute    = cfu.checkBox_dalai_deconvolute
-        self.cb_external_laser = cfu.checkBox_dalai_external_laser
+        self.frame             = cfu.frame_XD_1
+        self.bt_toggle         = cfu.pushButton_XD_toggle
+        self.cb_enable         = cfu.checkBox_XD_enable
+        self.combo_model       = cfu.comboBox_XD_model
+        self.lb_combo          = cfu.label_XD_model_label
+        self.cb_left_trim      = cfu.checkBox_XD_left_trim
+        self.sb_left_trim      = cfu.spinBox_XD_left_trim_wavenumber
+        self.cb_right_trim     = cfu.checkBox_XD_right_trim
+        self.sb_right_trim     = cfu.spinBox_XD_right_trim_wavenumber
+        self.cb_deconvolute    = cfu.checkBox_XD_deconvolute
+        self.cb_external_laser = cfu.checkBox_XD_external_laser
 
         self.expert_widgets = [ self.cb_left_trim,
                                 self.cb_right_trim,
@@ -78,15 +70,15 @@ class DalaiRamanFeature(EnlightenFeature):
                                 self.sb_right_trim,
                                 self.cb_deconvolute,
                                #self.cb_external_laser,
-                                cfu.label_dalai_left_trim_bool_label,
-                                cfu.label_dalai_right_trim_bool_label ]
+                                cfu.label_XD_left_trim_bool_label,
+                                cfu.label_XD_right_trim_bool_label ]
 
         self.model_configs = {}
         self.loaded_models = {}
         self.current_model_name = None
         self.current_model_config = None
 
-        # Visible in this case means the "DALAI-RAMAN" widget is visible on the 
+        # Visible in this case means the "XD-RAMAN" widget is visible on the 
         # sliding Tool Palette. It does not mean the alt-graph, combobox or other 
         # options are displayed displayed, which only appear when "enabled.
         self.visible = False
@@ -119,7 +111,7 @@ class DalaiRamanFeature(EnlightenFeature):
                     first_name = basename
 
             # SELECT the first model, but don't LOAD it -- we don't want to 
-            # trigger the TFL import until the user actually "enables" DALAI
+            # trigger the TFL import until the user actually "enables" XD
             self.combo_model.setCurrentIndex(0)
             self.current_model_label = self.combo_model.currentText()
             self.current_model_name = self.get_model_name_from_label(self.current_model_label)
@@ -136,10 +128,10 @@ class DalaiRamanFeature(EnlightenFeature):
 
         self.ctl.page_nav.register_observer(self.page_nav_callback)
 
-        self.curve = self.ctl.alt_graph.add_curve("DALAI-RAMAN", pen=self.COLOR)
+        self.curve = self.ctl.alt_graph.add_curve("XD", pen=self.COLOR)
 
         self.bt_toggle.setWhatsThis(unwrap("""
-            DALAI-RAMAN is a machine-learning model that has been trained to 
+            XD is a machine-learning model that has been trained to 
             reject noise and fluorescence, leaving only pristine Raman peaks."""))
 
         # these are used to smooth the TFL import process
@@ -198,7 +190,7 @@ class DalaiRamanFeature(EnlightenFeature):
         # No, we still need to do the import. Do that in a background thread
         # with progress bar.
 
-        self.ctl.marquee.info("Loading machine learning framework", persist=True, token="dalai_load")
+        self.ctl.marquee.info("Loading machine learning framework", persist=True, token="XD_load")
         self.ctl.progress_bar.set(-1 if self.import_time_sec is None else 0)
 
         # kick-off the thread to import TensorFlow
@@ -230,7 +222,7 @@ class DalaiRamanFeature(EnlightenFeature):
         # ImportWorker is done
         ########################################################################
 
-        self.ctl.marquee.clear(token="dalai_load")
+        self.ctl.marquee.clear(token="XD_load")
         self.ctl.progress_bar.hide()
 
         # persist the "latest" loading time, to make the next progress bar more accurate
@@ -280,7 +272,7 @@ class DalaiRamanFeature(EnlightenFeature):
         doing_raman = self.ctl.page_nav.doing_raman()
         doing_expert = self.ctl.page_nav.doing_expert()
 
-        # is there at least one compatible DALAI model for the current spectrometer?
+        # is there at least one compatible XD model for the current spectrometer?
         best_model_name = self.best_model_for_current_spectrometer()
 
         # determine visibility 
@@ -330,7 +322,7 @@ class DalaiRamanFeature(EnlightenFeature):
         if not (doing_expert or 
                 pr.settings.state.laser_enabled or 
                 (pr.reading.take_one_request and pr.reading.take_one_request.auto_raman_request) ):
-            self.ctl.marquee.error("DALAI-RAMAN requires laser")
+            self.ctl.marquee.error("XD requires laser")
             self.curve.setData([])
             return
 
@@ -339,7 +331,7 @@ class DalaiRamanFeature(EnlightenFeature):
         spectrum    = pr.get_processed()
 
         if wavenumbers is None:
-            self.ctl.marquee.error("DALAI-RAMAN requires measurements with wavenumber axis")
+            self.ctl.marquee.error("XD requires measurements with wavenumber axis")
             self.curve.setData([])
             return
 
@@ -347,24 +339,24 @@ class DalaiRamanFeature(EnlightenFeature):
 
         unit = self.ctl.graph.get_x_axis_unit()
         if unit != "cm":
-            self.ctl.marquee.error("DALAI-RAMAN requires wavenumber axis selected")
+            self.ctl.marquee.error("XD requires wavenumber axis selected")
             self.curve.setData([])
             return
 
-        AI_wavenumbers, AI_spectrum = self.process_dalai(wavenumbers, spectrum, pr)
+        AI_wavenumbers, AI_spectrum = self.process_XD(wavenumbers, spectrum, pr)
 
         log.debug(f"AI_wavenumbers {AI_wavenumbers}")
         log.debug(f"AI_spectrum {AI_spectrum}")
 
-        # Store the DALAI spectrum in a child of the ProcessedReading.
+        # Store the XD spectrum in a child of the ProcessedReading.
         # Convert Numpy classes to native types to simplify JSON exports etc.
         child_pr = ProcessedReading()
         child_pr.wavenumbers = AI_wavenumbers.tolist()
         child_pr.processed = AI_spectrum.tolist()
-        child_pr.dalai_model_name = self.current_model_name
-        child_pr.dalai_model_label = self.current_model_label
+        child_pr.XD_model_name = self.current_model_name
+        child_pr.XD_model_label = self.current_model_label
 
-        pr.dalai = child_pr
+        pr.XD = child_pr
 
         # interpolated arrays are for display only; we use non-interpolated data in matching
         # TODO: perhaps the graphing should actually be done at the same point as the main graph is updated?
@@ -421,14 +413,14 @@ class DalaiRamanFeature(EnlightenFeature):
     def load_model(self, model_name):
         config = self.model_configs[model_name]
 
-        self.ctl.marquee.info(f"loading DALAI model {config.model_pathname}")
+        self.ctl.marquee.info(f"loading XD model {config.model_pathname}")
         if 'tflite' == config.model_type:
             # We re-import the package here because we don't want to import
             # it at file scope. It can take easily 10sec to load this package,
             # and we don't want to take that hit until we have to. Note that
             # "re-importing" it takes no time at all, as Python caches it.
             # The package is actually imported as soon as the user "enables"
-            # the DALAI feature, using the ImportWorker background thread
+            # the XD feature, using the ImportWorker background thread
             # and progress bar.
             import tensorflow.lite
 
@@ -472,9 +464,9 @@ class DalaiRamanFeature(EnlightenFeature):
                 return
         log.error(f"unknown model label {self.current_model_label}")
 
-    def process_dalai(self, wavenumbers, spectrum, pr):
+    def process_XD(self, wavenumbers, spectrum, pr):
         """
-        Process spectrum according to DALAI settings
+        Process spectrum according to XD settings
 
         Args:
             wavenumbers: Array of wavenumber values.
@@ -486,11 +478,11 @@ class DalaiRamanFeature(EnlightenFeature):
         Note:
             Processing steps include:
             1. Etalon removal (if enabled)
-            2. DALAI model processing (DALAI 2.0 or classic).  Determined by presence of 'D2' in model name.
+            2. XD model processing.
             3. Spectrum trimming (if enabled)
             4. Deconvolution (if enabled)
 
-            The ROI start must be non-zero for proper processing, as DALAI
+            The ROI start must be non-zero for proper processing, as XD
             requires a good ROI start just after the filter.
 
             If deconvolution is requested but FWHM is zero in EEPROM,
@@ -520,7 +512,7 @@ class DalaiRamanFeature(EnlightenFeature):
         trim_end   = self.right_trim_cm if self.do_right_trim else wavenumbers[-1]
 
         if eeprom.roi_horizontal_start < 1 and not doing_expert:
-            self.ctl.marquee.error("ROI start is zero in EEPROM - DALAI does not work well across the filter edge")
+            self.ctl.marquee.error("ROI start is zero in EEPROM - XD does not work well across the filter edge")
 
         # MZ: ROI was already applied via "pr.get_processed()", "pr.get_wavenumbers()" etc
         # we need to apply ROI here
@@ -586,8 +578,8 @@ class ModelConfig:
         self.is_wide = False
 
         # generate pathnames
-        self.model_pathname = os.path.join(DalaiRamanFeature.MODEL_DIR, f"{basename}.tflite")
-        self.config_pathname = os.path.join(DalaiRamanFeature.MODEL_DIR, f"{basename}.json")
+        self.model_pathname = os.path.join(XDFeature.MODEL_DIR, f"{basename}.tflite")
+        self.config_pathname = os.path.join(XDFeature.MODEL_DIR, f"{basename}.json")
 
         if os.path.exists(self.config_pathname):
             with open(self.config_pathname, "r", encoding="utf-8") as infile:

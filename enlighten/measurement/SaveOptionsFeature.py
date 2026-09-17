@@ -169,9 +169,9 @@ class SaveOptionsFeature(EnlightenFeature):
             are output as "NA" (indicating they are outside the spectrometer's
             calibrated horizontal region of interest). 
 
-            In contrast, a processed DALAI spectrum is stored as a separate 
+            In contrast, a processed XD spectrum is stored as a separate 
             measurement, as it has a radically different (interpolated) x-axis, 
-            and is not considered in collation. (DALAI measurements can be 
+            and is not considered in collation. (XD measurements can be 
             "uncollated" by selecting the appropriate option in the export process.)"""))
 
         self.cb_append.setToolTip("for row-ordered CSV, append all measurements to a single file")
