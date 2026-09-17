@@ -52,5 +52,4 @@ Thumbs.db
 .env
 ids/
 
-enlighten/post_processing/XDAdditionalFiles
 enlighten/assets/example_data/XD_models
