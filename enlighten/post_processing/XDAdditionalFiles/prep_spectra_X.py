@@ -1,46 +1,33 @@
-"""
-Routines needed for preparing the measured spectra
-for the XM series model
+# Routines needed for preparing the measured spectra
+# for the X series model
+#
+# update May 2025
 
-update X May 2025
-XM model Feb 2026
-wide XM model Mar 2026
-
-MZ: commented-out old/unused code
-"""
-
-import os
 import math
 import numpy as np
 from typing import List, Optional, Tuple, Union
-
 from scipy.interpolate import interp1d
 
 import logging
 
 log = logging.getLogger(__name__)
 
-# use this routine to prepare spectrum for input
-# and turn model output back into spectrum with correct scale
-# and wavenumber axis
-#
-# This is a test of a new 'wide' model for XM, which requires different number of
-# input pixels and provides different number of output pixels
-# input = 2284
-# output = 2004
-# trim = 140 on either side
 
 def deconvolute_spectrum(wavenumbers_out, cleaned_spectrum, fwhm):
     pad_width = 3 # multiples of FWHM
     maxIter = 25
 
     cleaned_spectrum = np.array(cleaned_spectrum)
-    log.debug(f"max spectrum input: {max(cleaned_spectrum)}")
+    log.debug(f"Deconvolute: max spectrum input: {max(cleaned_spectrum)}")
 
     wavenumberPerPixel = np.diff(wavenumbers_out)
     wavenumberPerPixel = np.insert(wavenumberPerPixel, 0, wavenumberPerPixel[0])
     avgWavenumberPerPixel = np.mean(wavenumberPerPixel)
     avgPixelFWHM = fwhm / avgWavenumberPerPixel
+
+    # log.debug(f"deconvolute_spectrum: wavenumberPerPixel {wavenumberPerPixel}")
+    # log.debug(f"deconvolute_spectrum: avgWavenumberPerPixel {avgWavenumberPerPixel}")
+    # log.debug(f"deconvolute_spectrum: avgPixelFWHM {avgPixelFWHM}")
 
     # pad front and end with first/last pixel
     padPixels = math.ceil(pad_width * avgPixelFWHM)
@@ -50,11 +37,22 @@ def deconvolute_spectrum(wavenumbers_out, cleaned_spectrum, fwhm):
     pixelSigma = pixelFWHM / (2 * math.sqrt(2 * math.log(2)))
     pixelSigma2 = pixelSigma * pixelSigma
 
+    # log.debug(f"deconvolute_spectrum: padPixels {padPixels}")
+    # log.debug(f"deconvolute_spectrum: wavenumberPerPixelPadded {wavenumberPerPixelPadded}")
+    # log.debug(f"deconvolute_spectrum: pixelFWHM {pixelFWHM}")
+    # log.debug(f"deconvolute_spectrum: pixelSigma {pixelSigma}")
+    # log.debug(f"deconvolute_spectrum: pixelSigma2 {pixelSigma2}")
+
     numPixelPadded = len(wavenumberPerPixelPadded)
     resolutionH = np.zeros((numPixelPadded, numPixelPadded))
 
+    # log.debug(f"deconvolute_spectrum: numPixelPadded {numPixelPadded}")
+    # log.debug(f"deconvolute_spectrum: resolutionH {resolutionH}")
+
     spectrumPadded = np.append(np.repeat(cleaned_spectrum[0], padPixels),
                                np.append(cleaned_spectrum, np.repeat(cleaned_spectrum[-1], padPixels)))
+
+    # log.debug(f"deconvolute_spectrum: spectrumPadded {spectrumPadded}")
 
     pixels = np.arange(numPixelPadded)
     for row in pixels:
@@ -90,7 +88,6 @@ def deconvolute_spectrum(wavenumbers_out, cleaned_spectrum, fwhm):
 
     return (spectrumDeconv)
 
-
 def clean_spectrum(
     model: "tf.lite.Interpreter",
     wavenumbers: np.ndarray,
@@ -99,36 +96,24 @@ def clean_spectrum(
     deconvolute: bool,
     model_config=None
 ) -> Tuple[np.ndarray, np.ndarray]:
-    
+
     # wavenumbers = actual wavenumber spacing for spectrum directly as is from spectrometer
     # spectrum = corresponding intensities
-    # model = XM-series model (we will use the last one: XM_model_iter049.tflite)
+    # model = X-series model 
     
     # interpolate as needed for model
-    # this uses XM presets: num_interp=2376, spacing_interp=1.0, start_wavenumber_output=300
+    # this uses X presets: num_interp=2376, spacing_interp=1.6, start_wavenumber_output=300
     # the first two are fixed from model structure and model training
     # the last could be adjusted as needed
 
-    # This is a test of a new 'wide' model for XM, which requires different number of
-    # input pixels and provides different number of output pixels
-    # input = 2284
-    # output = 2004
-    # trim = 140 on either side
+    # log.info(f"clean_spectrum: First Wavenumber entering XD clean up: {wavenumbers[0]}")
 
-    # log.info(f"First Wavenumber entering dalai clean up: {wavenumbers[0]}")
-
-    if model_config.is_wide or 'wide' in model_config.basename.lower():
-        num_interp = 2284
-    else:
-        num_interp = 2376
-
-    wavenumber_interp, spectrum_interp = get_interp_spectrum(wavenumbers, spectrum, num_interp)
+    wavenumber_interp, spectrum_interp = get_interp_spectrum(wavenumbers, spectrum)
         
     # prep input
     spectrum_max = spectrum_interp.max()
 
     # scale down to 0 to 1
-    # all XM models assume scaling to 0 to 1
     scaled_spectrum = spectrum_interp / spectrum_max
     
     input_pixels = spectrum_interp.shape[0]
@@ -139,7 +124,6 @@ def clean_spectrum(
     output_details = model.get_output_details()
     input_pixels = input_details[0]['shape'][1]
     output_pixels = output_details[0]['shape'][1]
-    # this overhang is either 184 for the previous models or 140 for the new 'wide' model
     overhang = int((input_pixels - output_pixels) / 2)
     
     # apply model
@@ -159,6 +143,7 @@ def clean_spectrum(
     # scale back up
     spectrum_AI = output_spectrum.reshape(output_pixels) * spectrum_max
     
+    # this should start at 300 wavenumbers
     # overhang = int((input_pixels - output_pixels) / 2)
     wavenumbers_AI = wavenumber_interp[overhang:-overhang]
 
@@ -167,7 +152,7 @@ def clean_spectrum(
     we = wavenumbers[-1]
 
     # limit output to actual spectrum wavenumber range - do not include extrapolations or such
-    # the spectrum Dalai gets is the range with ROI applied
+    # the spectrum XD gets is the range with ROI applied
 
     range_indices = [i for i in range(output_pixels) if w0 <= wavenumbers_AI[i] <= we]
     start_index = range_indices[0]
@@ -176,12 +161,12 @@ def clean_spectrum(
     wavenumbers_out = wavenumbers_AI[start_index:end_index+1]
     spectrum_out = spectrum_AI[start_index:end_index+1]
 
-    log.debug(f"clean_spectrum: wavenumbers_out[0] {wavenumbers_out[0]:.2f}, wavenumbers_out[-1] {wavenumbers_out[-1]:.2f}")
+    log.debug(f"clean_spectrum: wavenumbers_out[0] {wavenumbers_out[0]}, wavenumbers_out[-1] {wavenumbers_out[-1]}")
     log.debug(f"clean_spectrum: wavenumbers_out len {len(wavenumbers_out)}")
 
     if deconvolute:
         spectrum_out = spectrum_out - spectrum_out.min()
-        log.debug("processing spectra with prep_spectra_XM.deconvolute_spectrum")
+        log.debug("processing spectra with prep_spectra_X.deconvolute_spectrum")
         spectrum_out = deconvolute_spectrum(wavenumbers_out, spectrum_out, eeprom.avg_resolution)
 
     # return wavenumbers and cleaned spectrum
@@ -189,7 +174,7 @@ def clean_spectrum(
 
 
 # prepare an experimental spectra for model input
-def get_interp_spectrum(wavenumbers, spectrum, num_interp=2376, spacing_interp=1, start_wavenumber_output=300):
+def get_interp_spectrum(wavenumbers, spectrum, num_interp=2376, spacing_interp=1.6, start_wavenumber_output=300):
     # extends the range through mirroring on the ends
     # interpolates to the provided number of pixels and wavenumber spacing and start wavenumber
     # returns interpolated spectrum
@@ -197,22 +182,13 @@ def get_interp_spectrum(wavenumbers, spectrum, num_interp=2376, spacing_interp=1
     # wavenumbers = actual pixel wavenumbers of real spectrum
     # spectrum = intensities as is
     # num_interp = number of pixels to interpolate to for input of model (this is fixed, a model property)
-    # spacing_interp = wavenumber spacing = 1.0 (used as such also for training)
+    # spacing_interp = wavenumber spacing = 1.6 (used as such also for training)
     # start_wavenumber = where on the wavenumber axis the output shoudl start
     # From this output start, we still need to subtract 184 (this is fix with the model structure) times the wavenumber spacing
     # 184 pixels on either side
-    #
-    # for the wide model
-    # num_interp = 2284, not 2376
-    # extend = 140, not 184
+
+    extend_pixels = 184
     
-    if num_interp == 2376:
-        # previous all-5 model
-        extend_pixels = 184
-    else:
-        # new 'wide' model
-        extend_pixels = 140
-        
     # these are the actual start and end wavenumbers AFTER ROI
     w0 = wavenumbers[0]
     we = wavenumbers[-1]
@@ -236,9 +212,8 @@ def get_interp_spectrum(wavenumbers, spectrum, num_interp=2376, spacing_interp=1
             # but we use ceil and floor to end up with nice wavenumber numbers
             start_wavenumber_output = math.ceil(we - num_interp * spacing_interp)
     
-    # this is the start wavenumber needed for the input
     start_wavenumber = start_wavenumber_output - extend_pixels * spacing_interp
-    
+
     # # interpolation axis in pixels - target wavenumber axis
     pixels_interp = np.arange(num_interp)
     end_wavenumber = start_wavenumber + spacing_interp * num_interp 
@@ -251,10 +226,10 @@ def get_interp_spectrum(wavenumbers, spectrum, num_interp=2376, spacing_interp=1
         num_interp,
         endpoint = False,
     )
-    
+
     # interpolate from provided spectrum to full input range
     # np interp will by default continue the last value if needed 
-    # past the range fo the actual data
+    # past the range of the actual data
     spectrum_interp = np.interp(wavenumber_interp, wavenumbers, spectrum)
-    
+       
     return wavenumber_interp, spectrum_interp

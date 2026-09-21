@@ -254,7 +254,7 @@ class ConfigurationCheck(EnlightenPluginBase):
                 bad.append(f"max_integ {max_integ} seems low for non-XS")
 
         ########################################################################
-        # Horiz ROI / SRM / DALAI
+        # Horiz ROI / SRM / XD
         ########################################################################
 
         has_srm = ss.raman_intensity_factors is not None
@@ -277,7 +277,7 @@ class ConfigurationCheck(EnlightenPluginBase):
         has_fwhm = ee.avg_resolution != 0.0
         if intended_for_raman:
             if not has_fwhm:
-                bad.append(f"intended for Raman but no average resolution (will prevent DALAI deconvolution)")
+                bad.append(f"intended for Raman but no average resolution (will prevent XD deconvolution)")
         
         ########################################################################
         # Battery

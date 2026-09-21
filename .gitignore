@@ -52,5 +52,4 @@ Thumbs.db
 .env
 ids/
 
-enlighten/post_processing/DalaiAdditionalFiles
-enlighten/assets/example_data/dalai_models
+enlighten/assets/example_data/XD_models

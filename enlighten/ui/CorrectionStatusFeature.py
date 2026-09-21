@@ -43,7 +43,7 @@ class CorrectionStatusFeature(EnlightenFeature):
                      "etalon":      ctl.etalon_correction,
                      "srm":         ctl.raman_intensity_correction,
                      "edc":         ctl.edc,
-                     "dalai":       ctl.dalai,
+                     "XD":          ctl.XD,
                      "baseline":    ctl.baseline_correction }
         
         # generate map of "short names" to everything we need to track
@@ -121,10 +121,10 @@ class CorrectionStatusFeature(EnlightenFeature):
         corr["visible"] = self.ctl.raman_intensity_correction.is_supported()
         self.schedule_update()
 
-    def dalai_notification(self):
-        corr = self.corrections["dalai"]
-        corr["value"] = self.ON if self.ctl.dalai.enabled else self.OFF
-        corr["visible"] = self.ctl.dalai.visible
+    def XD_notification(self):
+        corr = self.corrections["XD"]
+        corr["value"] = self.ON if self.ctl.XD.enabled else self.OFF
+        corr["visible"] = self.ctl.XD.visible
         self.schedule_update()
 
     def baseline_notification(self):

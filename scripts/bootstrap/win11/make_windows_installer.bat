@@ -55,10 +55,10 @@ if exist "enlighten\network\keys.py" (
     pause
 )
 
-if exist "enlighten\assets\example_data\dalai_models\*.tflite" (
-    echo one or more DALAI models found
+if exist "enlighten\assets\example_data\XD_models\*.tflite" (
+    echo one or more XD models found
 ) else (
-    echo No DALAI models found in enlighten/assets/example_data/dalai_models, so DALAI processing will not be available.
+    echo No XD models found in enlighten/assets/example_data/XD_models, so XD processing will not be available.
     pause
 )
 

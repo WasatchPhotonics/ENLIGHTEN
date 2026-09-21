@@ -380,7 +380,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
             return
 
         self.add_curve_to_main_graph(self.graphs[0])
-        if len(self.graphs) > 1 and self.measurement.has_dalai():
+        if len(self.graphs) > 1 and self.measurement.has_XD():
             self.add_curve_to_alt_graph(self.graphs[1])
 
         self.set_active(len(self.curves) > 0)
@@ -420,14 +420,14 @@ class ThumbnailWidget(QtWidgets.QFrame):
             log.error("couldn't add Thumbnail trace to alt graph", exc_info=1)
 
     def add_curve_to_alt_graph(self, graph):
-        if not self.measurement.has_dalai():
+        if not self.measurement.has_XD():
             return
 
         label = self.measurement.label
         pr = self.measurement.processed_reading
 
-        x_axis = pr.get_wavenumbers("dalai")
-        spectrum = pr.get_processed("dalai")
+        x_axis = pr.get_wavenumbers("XD")
+        spectrum = pr.get_processed("XD")
         if x_axis is None:
             log.debug("add_curve_to_alt_graph: somehow have no x-axis?")
             return

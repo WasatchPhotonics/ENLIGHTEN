@@ -777,7 +777,7 @@ spectrometers.
 - `CorrectionStatusFeature`: a recently requested feature to let the user easily
   visualize and confirm which calibrations and corrections are currently in effect
 
-- `DalaiRamanFeature`: recently integrated from an externally maintained plugin
+- `XDFeature`: recently integrated from an externally maintained plugin
 
 - `DarkFeature`: encapsulates dark-correction (aka ambient subtraction)
 

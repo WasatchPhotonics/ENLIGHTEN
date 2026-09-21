@@ -152,20 +152,20 @@ class LibraryMatchingFeature(EnlightenFeature):
         self.ctl.measurement_factory.register_observer(self.factory_callback_save_complete, "save")
 
         # At the moment, LibraryMatching "best library spectrum" curves may be 
-        # graphed on either the main graph (if DALAI is disabled), or the ALT 
-        # graph (if DALAI is running).
+        # graphed on either the main graph (if XD is disabled), or the ALT 
+        # graph (if XD is running).
 
         self.curve_scope = self.ctl.graph.add_curve("library_spectrum", 
                                                     rehide=False, 
                                                     in_legend=False, 
                                                     pen='#2994d3')
 
-        self.curve_scope_dalai = self.ctl.alt_graph.add_curve("library_spectrum", 
+        self.curve_scope_XD = self.ctl.alt_graph.add_curve("library_spectrum", 
                                                               rehide=False, 
                                                               in_legend=False, 
                                                               pen='#2994d3')
         self.curve_scope.setVisible(False)
-        self.curve_scope_dalai.setVisible(False)
+        self.curve_scope_XD.setVisible(False)
 
         self.show_widgets(False)
 
@@ -210,7 +210,7 @@ class LibraryMatchingFeature(EnlightenFeature):
                 self.ctl.scope_table.hide()
                 self.has_set_table = False
             self.curve_scope.setVisible(False)
-            self.curve_scope_dalai.setVisible(False)
+            self.curve_scope_XD.setVisible(False)
             self.form_layout.setVerticalSpacing(0)
             self.form_layout.setContentsMargins(0, 0, 0, 0)
 
@@ -230,9 +230,9 @@ class LibraryMatchingFeature(EnlightenFeature):
             return
 
         reading = pr.reading
-        if pr.has_dalai():
-            wavenumbers = pr.get_wavenumbers("dalai")
-            spectrum = pr.get_processed("dalai")
+        if pr.has_XD():
+            wavenumbers = pr.get_wavenumbers("XD")
+            spectrum = pr.get_processed("XD")
         else:
             wavenumbers = pr.get_wavenumbers()
             spectrum = pr.get_processed()
@@ -247,7 +247,7 @@ class LibraryMatchingFeature(EnlightenFeature):
             self.last_compound = None
             self.last_score = None
             self.curve_scope.setVisible(False)
-            self.curve_scope_dalai.setVisible(False)
+            self.curve_scope_XD.setVisible(False)
             self.dataframe = None
             self.timer.start(self.TIMER_MS)
             return
@@ -273,7 +273,7 @@ class LibraryMatchingFeature(EnlightenFeature):
         self.last_score = best_score
 
         # TODO: determine which curve to use
-        curve = self.curve_scope_dalai if self.ctl.dalai.is_enabled() else self.curve_scope
+        curve = self.curve_scope_XD if self.ctl.XD.is_enabled() else self.curve_scope
 
         # plot best-matching Pearson library spectrum
         if self.pearson.best_library_spectrum is not None and self.pearson.best_library_wavenumbers is not None:

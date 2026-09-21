@@ -54,9 +54,6 @@ Laser Enable,True
 Laser Power %,100.0
 Laser Temperature,0
 Pixel Count,1952
-DalaiRamanID.ID Engine,Pearson
-DalaiRamanID.DALAI Enabled,False
-DalaiRamanID.DALAI Model,
 
 Pixel,Wavenumber,Processed
 0,302.00,53.83
