@@ -2,7 +2,10 @@
 
 ## 4.2 XS V2 Commercial Release
 
-- 2026-08-28 4.2.11
+- 2026-09-21 4.2.12
+    - XD rename
+- 2026-08-31 4.2.11
+    - BLE fix
 	- Plugins
 		- Overhaul of the RnD.Mapper plugin
 - 2026-08-21 4.2.10

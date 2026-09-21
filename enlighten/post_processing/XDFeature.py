@@ -78,7 +78,7 @@ class XDFeature(EnlightenFeature):
         self.current_model_name = None
         self.current_model_config = None
 
-        # Visible in this case means the "XD-RAMAN" widget is visible on the 
+        # Visible in this case means the XD widget is visible on the 
         # sliding Tool Palette. It does not mean the alt-graph, combobox or other 
         # options are displayed displayed, which only appear when "enabled.
         self.visible = False

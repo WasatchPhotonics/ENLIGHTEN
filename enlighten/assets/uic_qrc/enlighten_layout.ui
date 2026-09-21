@@ -10742,7 +10742,7 @@ QComboBox QListView
                               <widget class="QLabel" name="label_correction_status_XD_label">
                                <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Preferred"> <horstretch>0</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
                                <property name="text"> 
-                                <string>XD-RAMAN</string> 
+                                <string>XD</string> 
                                </property>
                               </widget>
                              </item>
@@ -11264,7 +11264,7 @@ QComboBox QListView
                              <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Fixed"> <horstretch>5</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
                              <property name="minimumSize"> <size> <width>16</width> <height>26</height> </size> </property>
                              <property name="maximumSize"> <size> <width>30</width> <height>26</height> </size> </property>
-                             <property name="toolTip"> <string>toggle XD-RAMAN processing</string> </property>
+                             <property name="toolTip"> <string>toggle XD processing</string> </property>
                              <property name="icon"> <iconset resource="grey_icons.qrc"> <normaloff>:/greys/images/grey_icons/XD.svg</normaloff>:/greys/images/grey_icons/XD.svg</iconset> </property>
                             </widget>
                            </item>
@@ -15957,7 +15957,7 @@ li.checked::marker { content: "\2612"; }
                      </font>
                     </property>
                     <property name="text">
-                     <string>XD-RAMAN</string>
+                     <string>XD</string>
                     </property>
                    </widget>
                   </item>
