@@ -2,8 +2,9 @@
 
 ## 4.2 XS V2 Commercial Release
 
-- 2026-09-21 4.2.12
+- 2026-09-22 4.2.12
     - XD rename
+    - add EEPROM.disable_detector
 - 2026-08-31 4.2.11
     - BLE fix
 	- Plugins

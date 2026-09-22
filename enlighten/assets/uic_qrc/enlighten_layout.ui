@@ -6394,28 +6394,31 @@ QComboBox QListView
                           <item row="5" column="0"> <widget class="QCheckBox" name="checkBox_ee_leave_acc_5v_out_powered" /> </item>
                           <item row="5" column="1"> <widget class="QLabel"><property name="text"><string>Leave ACC_5V_OUT powered on disconnect</string></property></widget> </item>
 
-                          <item row="6" column="0">
+                          <item row="6" column="0"> <widget class="QCheckBox" name="checkBox_ee_disable_detector" /> </item>
+                          <item row="6" column="1"> <widget class="QLabel"><property name="text"><string>Disable Detector</string></property></widget> </item>
+
+                          <item row="7" column="0">
                            <widget class="QLineEdit" name="lineEdit_ee_acc_state">
                             <property name="inputMask"> <string>\0\xHHHH</string> </property>
                            </widget>
                           </item>
-                          <item row="6" column="1"><widget class="QLabel"><property name="text"><string>Accessory State</string></property></widget></item>
+                          <item row="7" column="1"><widget class="QLabel"><property name="text"><string>Accessory State</string></property></widget></item>
 
-                          <item row="7" column="0">
+                          <item row="8" column="0">
                            <widget class="QLineEdit" name="lineEdit_ee_acc_state_gpio1">
                             <property name="inputMask"> <string>\0\xHH</string> </property>
                            </widget>
                           </item>
-                          <item row="7" column="1"><widget class="QLabel"><property name="text"><string>Acc. GPIO1 State</string></property></widget></item>
+                          <item row="8" column="1"><widget class="QLabel"><property name="text"><string>Acc. GPIO1 State</string></property></widget></item>
 
-                          <item row="8" column="0">
+                          <item row="9" column="0">
                            <widget class="QLineEdit" name="lineEdit_ee_acc_state_gpio2">
                             <property name="inputMask"> <string>\0\xHH</string> </property>
                            </widget>
                           </item>
-                          <item row="8" column="1"><widget class="QLabel"><property name="text"><string>Acc. GPIO2 State</string></property></widget></item>
+                          <item row="9" column="1"><widget class="QLabel"><property name="text"><string>Acc. GPIO2 State</string></property></widget></item>
 
-                          <item row="9" column="0">
+                          <item row="10" column="0">
                            <widget class="QSpinBox" name="spinBox_ee_acc_cont_strobe_period_us">
                             <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
                             <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
@@ -6426,9 +6429,9 @@ QComboBox QListView
                             <property name="value">      <number>0</number> </property>
                            </widget>
                           </item>
-                          <item row="9" column="1"><widget class="QLabel"><property name="text"><string>Acc. Cont. Strobe Period (µs)</string></property></widget></item>
+                          <item row="10" column="1"><widget class="QLabel"><property name="text"><string>Acc. Cont. Strobe Period (µs)</string></property></widget></item>
 
-                          <item row="10" column="0">
+                          <item row="11" column="0">
                            <widget class="QSpinBox" name="spinBox_ee_acc_cont_strobe_width_us">
                             <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
                             <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
@@ -6439,9 +6442,9 @@ QComboBox QListView
                             <property name="value">      <number>0</number> </property>
                            </widget>
                           </item>
-                          <item row="10" column="1"><widget class="QLabel"><property name="text"><string>Acc. Cont. Strobe Width (µs)</string></property></widget></item>
+                          <item row="11" column="1"><widget class="QLabel"><property name="text"><string>Acc. Cont. Strobe Width (µs)</string></property></widget></item>
 
-                          <item row="11" column="0">
+                          <item row="12" column="0">
                            <widget class="QSpinBox" name="spinBox_ee_acc_cont_strobe_delay_us">
                             <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
                             <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
@@ -6452,9 +6455,9 @@ QComboBox QListView
                             <property name="value">      <number>0</number> </property>
                            </widget>
                           </item>
-                          <item row="11" column="1"><widget class="QLabel"><property name="text"><string>Acc. Cont. Strobe Delay (µs)</string></property></widget></item>
+                          <item row="12" column="1"><widget class="QLabel"><property name="text"><string>Acc. Cont. Strobe Delay (µs)</string></property></widget></item>
 
-                          <item row="12" column="0">
+                          <item row="13" column="0">
                            <widget class="QSpinBox" name="spinBox_ee_acc_cont_strobe_count">
                             <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
                             <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
@@ -6465,9 +6468,9 @@ QComboBox QListView
                             <property name="value">      <number>0</number> </property>
                            </widget>
                           </item>
-                          <item row="12" column="1"><widget class="QLabel"><property name="text"><string>Acc. Cont. Strobe Count</string></property></widget></item>
+                          <item row="13" column="1"><widget class="QLabel"><property name="text"><string>Acc. Cont. Strobe Count</string></property></widget></item>
 
-                          <item row="13" column="0">
+                          <item row="14" column="0">
                            <widget class="QSpinBox" name="spinBox_ee_max_battery_temp_deg_c">
                             <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
                             <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
@@ -6478,9 +6481,9 @@ QComboBox QListView
                             <property name="value">      <number>0</number> </property>
                            </widget>
                           </item>
-                          <item row="13" column="1"><widget class="QLabel"><property name="text"><string>Max Battery Temp (Celsius)</string></property></widget></item>
+                          <item row="14" column="1"><widget class="QLabel"><property name="text"><string>Max Battery Temp (Celsius)</string></property></widget></item>
 
-                          <item row="14" column="0">
+                          <item row="15" column="0">
                            <widget class="QSpinBox" name="spinBox_ee_pixel_correction_type">
                             <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
                             <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
@@ -6491,12 +6494,12 @@ QComboBox QListView
                             <property name="value">      <number>0</number> </property>
                            </widget>
                           </item>
-                          <item row="14" column="1"><widget class="QLabel"><property name="text"><string>Pixel Correction Type</string></property></widget></item>
+                          <item row="15" column="1"><widget class="QLabel"><property name="text"><string>Pixel Correction Type</string></property></widget></item>
 
-                          <item row="15" column="0"> <widget class="QLineEdit" name="lineEdit_ee_usb_manufacturer_name"> </widget> </item>
-                          <item row="15" column="1"><widget class="QLabel"><property name="text"><string>USB Manufacturer Name</string></property></widget></item>
+                          <item row="16" column="0"> <widget class="QLineEdit" name="lineEdit_ee_usb_manufacturer_name"> </widget> </item>
+                          <item row="16" column="1"><widget class="QLabel"><property name="text"><string>USB Manufacturer Name</string></property></widget></item>
 
-                          <item row="16" column="0">
+                          <item row="17" column="0">
                            <widget class="QSpinBox" name="spinBox_ee_aux_button_function">
                             <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
                             <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
@@ -6507,9 +6510,9 @@ QComboBox QListView
                             <property name="value">      <number>0</number> </property>
                            </widget>
                           </item>
-                          <item row="16" column="1"><widget class="QLabel"><property name="text"><string>Aux Button Function</string></property></widget></item>
+                          <item row="17" column="1"><widget class="QLabel"><property name="text"><string>Aux Button Function</string></property></widget></item>
 
-                          <item row="17" column="0">
+                          <item row="18" column="0">
                            <widget class="QSpinBox" name="spinBox_ee_aux_button_param">
                             <property name="minimumSize"> <size> <width>125</width> <height>0</height> </size> </property>
                             <property name="alignment"> <set>Qt::AlignmentFlag::AlignCenter</set> </property>
@@ -6520,14 +6523,14 @@ QComboBox QListView
                             <property name="value">      <number>0</number> </property>
                            </widget>
                           </item>
-                          <item row="17" column="1"><widget class="QLabel"><property name="text"><string>Aux Button Param</string></property></widget></item>
+                          <item row="18" column="1"><widget class="QLabel"><property name="text"><string>Aux Button Param</string></property></widget></item>
 
-                          <item row="18" column="0">
+                          <item row="19" column="0">
                            <widget class="QLineEdit" name="lineEdit_ee_latched_hardware_failures">
                             <property name="inputMask"> <string>\0\xHH</string> </property>
                            </widget>
                           </item>
-                          <item row="18" column="1"><widget class="QLabel"><property name="text"><string>Latched Hardware Failures</string></property></widget></item>
+                          <item row="19" column="1"><widget class="QLabel"><property name="text"><string>Latched Hardware Failures</string></property></widget></item>
 
                          </layout>
                         </item>

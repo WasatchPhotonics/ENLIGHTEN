@@ -326,7 +326,7 @@ class EEPROMEditorFeature(EnlightenFeature):
                       "gen15", "cutoff_filter_installed", "hardware_even_odd", "sig_laser_tec", 
                       "has_interlock_feedback", "has_shutter", "disable_ble_power", "disable_laser_armed_indicator",
                       "ble_door_sensor", "ext_laser_control", "aux_button_laser_enable", "disable_laser_sub_sys",
-                      "leave_acc_5v_out_powered" ]:
+                      "leave_acc_5v_out_powered", "disable_detector" ]:
             self.add_attribute("checkbox", name, widget=getattr(cfu, f"checkBox_ee_{name}"))
 
         # spinboxes (int) -- note these can't actually handle uint32, and throw 
