@@ -2,9 +2,13 @@
 
 ## 4.2 XS V2 Commercial Release
 
-- 2026-09-22 4.2.12
+- 2026-09-28 4.2.12
     - XD rename
-    - add EEPROM.disable_detector
+    - IDS
+        - add EEPROM.disable_detector
+        - fix saving measurement to JSON
+        - fix loading wavecal from JSON
+        - fix setting laser PWM
 - 2026-08-31 4.2.11
     - BLE fix
 	- Plugins
