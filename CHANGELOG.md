@@ -2,6 +2,8 @@
 
 ## 4.2 XS V2 Commercial Release
 
+- 2026-??-?? 4.2.13
+    - updated docs/BUILD_RPI (tested on Raspberry Pi Zero 2 W)
 - 2026-09-28 4.2.12
     - XD rename
     - IDS
