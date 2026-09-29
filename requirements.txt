@@ -1,5 +1,6 @@
 numpy
-tensorflow==2.13.1
+# tensorflow==2.13.1
+tensorflow
 PySide6
 # PyQt5
 pygtail 
@@ -10,7 +11,7 @@ pywavelets
 superman 
 pyqtgraph 
 libusb 
-seabreeze 
+# seabreeze 
 boto3 
 bleak 
 pyftdi 

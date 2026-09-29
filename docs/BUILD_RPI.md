@@ -6,6 +6,27 @@ Odroid and other ARM-based Linux variants following the Debian model.
 See [MAINTENANCE](MAINTENANCE.md) for temporary changes or workarounds to
 the build process.
 
+# Raspberry Pi Zero 
+
+The following notes were taken on an RPi Zero 2 W in Oct 2026:
+
+PRETTY_NAME="Debian GNU/Linux 13 (trixie)"
+NAME="Debian GNU/Linux"
+VERSION_ID="13"
+VERSION="13 (trixie)"
+VERSION_CODENAME=trixie
+DEBIAN_VERSION_FULL=13.2
+ID=debian
+
+Process:
+
+    $ python -m venv venv --system-site-packages
+    $ . venv/bin/activate
+    $ sudo apt update
+    $ sudo apt install -y pkg-config libusb-1.0-0-dev
+    $ pip download tensorflow --timeout 60
+    $ pip install -r requirements.txt
+
 # Packaged dependencies
 
 ## Raspberry Pi 4 / Debian Bookworm 64 bit
@@ -14,16 +35,16 @@ PySide6 is available as a wheel on 64 bit Bookworm, simplifying installation ins
 
 Clone ENLIGHTEN and Wasatch.PY into parallel directories.
 
-    git clone https://github.com/WasatchPhotonics/ENLIGHTEN.git
-    git clone https://github.com/WasatchPhotonics/Wasatch.PY.git
+    $ git clone https://github.com/WasatchPhotonics/ENLIGHTEN.git
+    $ git clone https://github.com/WasatchPhotonics/Wasatch.PY.git
 
 Create a virtual environment including system packages
 
-    python -m venv venv --system-site-packages
+    $ python -m venv venv --system-site-packages
 
 Activate the virtual environment
 
-    . venv/bin/activate
+    $ . venv/bin/activate
 
 Install the following dependencies listed in the requirements.txt (note: PyQt5 is included in system packages
 so isn't included):
@@ -63,21 +84,20 @@ in the `Installed PIP packages` appendix below.
 
 Build the GUI by calling: 
     
-    . scripts/rebuild_resources.sh
+    $ . scripts/rebuild_resources.sh
 
 Add the following to your path:
 
-    export PYTHONPATH=".:plugins:../Wasatch.PY:enlighten/assets/uic_qrc"
+    $ export PYTHONPATH=".:plugins:../Wasatch.PY:enlighten/assets/uic_qrc"
 
 Copy the `10-wasatch.rules` rules file to set appropriate permissions for usb access 
 (you will need to restart or reload after this):
 
-    sudo cp -vf Wasatch.PY/udev/10-wasatch.rules /etc/udev/rules.d
+    $ sudo cp -vf ../Wasatch.PY/udev/10-wasatch.rules /etc/udev/rules.d
 
 Launch ENLIGHTEN:
 
-    python -u scripts/Enlighten.py
-
+    $ python -u scripts/Enlighten.py
 
 ## PySide2 Instructions
 
@@ -229,7 +249,7 @@ or
 
 # Appendix: Installed PIP packages
 
-These are the PIP packages I had installed when testing 4.0.62:
+These are the PIP packages Mark had installed when testing ENLIGHTEN 4.0.62:
 
     Package                                  Version
     ---------------------------------------- -----------
