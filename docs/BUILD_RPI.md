@@ -8,83 +8,65 @@ the build process.
 
 # Raspberry Pi Zero 
 
-The following notes were taken on an RPi Zero 2 W in Oct 2026:
+To be completely upfront: the Raspberry Pi Zero 2 W is NOT a suitable runtime 
+platform for ENLIGHTEN, due to its limitation to no more than 512MB (0.5GB) RAM.
+ENLIGHTEN will only run "well" on Raspberry Pi models with 4-8GB RAM. That said,
+I was able to launch and run ENLIGHTEN on a Pi Zero and take some spectra before
+the kernel's Out-of-Memory (OOM) killer shut it down.
 
-PRETTY_NAME="Debian GNU/Linux 13 (trixie)"
-NAME="Debian GNU/Linux"
-VERSION_ID="13"
-VERSION="13 (trixie)"
-VERSION_CODENAME=trixie
-DEBIAN_VERSION_FULL=13.2
-ID=debian
+These setup notes were taken on an RPi Zero 2 W in Oct 2026 with the following
+configuration:
 
-Process:
+    PRETTY_NAME="Debian GNU/Linux 13 (trixie)"
+    NAME="Debian GNU/Linux"
+    VERSION_ID="13"
+    VERSION="13 (trixie)"
+    VERSION_CODENAME=trixie
+    DEBIAN_VERSION_FULL=13.2
+    ID=debian
+
+## System Preparation
+
+I had a lot of overheating? swap? disk space? issues on my RPi Zero 2 W, which 
+caused the unit to repeatedly freeze during package download / installation. To 
+address those, I attempted all of the following in various combinations. I'm not
+sure which were the most critical, but I'm pretty sure the $TMPDIR fix was part
+of it.
+
+- add heat sink to RPi
+- add fan pointing to heat sink
+- install rpi-swap
+- configure rpi-swap to 4GB (up from default 2GB)
+    - sudo apt install rpi-swap
+    - sudo vi /etc/rpi/swap.conf
+- kill GUI (sudo systemctl stop lightdm)
+- monitor temperature (vcgencmd measure_temp)
+- throttle bandwidth 
+    - tc qdisc show dev wlan0
+    - (qdisc fq_codel 0: root refcnt 2 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64)
+    - sudo tc qdisc add dev wlan0 root tbf rate 1mbit burst 10kb latency 70ms
+- change pip's temp dir (this was critical)
+    - mkdir ~/tmp
+    - export TMPDIR=$HOME/tmp
+
+## Installation Process
+
+    $ mkdir ~/tmp
+    $ export TMPDIR=$HOME/tmp       # or someplace with 1GB+ free
+    $ mkdir ~/work/code
+    $ cd ~/work/code
+    $ git clone https://github.com/WasatchPhotonics/ENLIGHTEN.git
+    $ git clone https://github.com/WasatchPhotonics/Wasatch.PY.git
+    $ cd ENLIGHTEN
 
     $ python -m venv venv --system-site-packages
     $ . venv/bin/activate
     $ sudo apt update
-    $ sudo apt install -y pkg-config libusb-1.0-0-dev
-    $ pip download tensorflow --timeout 60
+    $ sudo apt install -y pkg-config libusb-1.0-0-dev   # for seabreeze?
+    $ pip download tensorflow --timeout 60              # can possibly skip
     $ pip install -r requirements.txt
 
-# Packaged dependencies
-
-## Raspberry Pi 4 / Debian Bookworm 64 bit
-
-PySide6 is available as a wheel on 64 bit Bookworm, simplifying installation instructions.
-
-Clone ENLIGHTEN and Wasatch.PY into parallel directories.
-
-    $ git clone https://github.com/WasatchPhotonics/ENLIGHTEN.git
-    $ git clone https://github.com/WasatchPhotonics/Wasatch.PY.git
-
-Create a virtual environment including system packages
-
-    $ python -m venv venv --system-site-packages
-
-Activate the virtual environment
-
-    $ . venv/bin/activate
-
-Install the following dependencies listed in the requirements.txt (note: PyQt5 is included in system packages
-so isn't included):
-
-    numpy
-    tensorflow==2.13.1
-    PySide6
-    pygtail 
-    pyusb 
-    pefile 
-    pyinstaller==6.10.0
-    pywavelets 
-    superman 
-    pyqtgraph 
-    libusb 
-    seabreeze==2.7.0
-    boto3 
-    bleak 
-    pyftdi 
-    adafruit-blinka
-    SPyC_Writer
-    crcmod
-    pandas
-    pexpect
-    pip
-    psutil
-    scipy
-    xlwt
-    qimage2ndarray
-    2to3
-    matplotlib
-    pyserial
-    colour-science
-
-If you run into any issues while installing a dependency, use specify the version referenced in 
-in the `Installed PIP packages` appendix below.
-
-Build the GUI by calling: 
-    
-    $ . scripts/rebuild_resources.sh
+    $ scripts/rebuild_resources.sh
 
 Add the following to your path:
 
@@ -99,10 +81,22 @@ Launch ENLIGHTEN:
 
     $ python -u scripts/Enlighten.py
 
-## PySide2 Instructions
+## OOM-Killer
 
-PySide6 isn't available on all RPi distros, so you may need to use PySide2 
+The Linux kernel has a feature called the OOM-Killer designed to automatically 
+shutdown programs consuming dangerous levels of memory. If ENLIGHTEN abruptly 
+terminates on your Raspberry Pi, run the following command to confirm it was the 
+OMM-Killer responsible, and not a software bug:
+
+    $ sudo dmesg -T | egrep -i 'killed process|out of memory'
+
+# Appendix: PySide2 Instructions
+
+At one time, PySide6 wasn't available on all RPi distros, so users had to use PySide2 
 [instructions](https://www.raspberrypi.org/forums/viewtopic.php?p=1485265&sid=eb447c56004ea941be4aaefa2f837108#p1485265).
+
+At writing (Sep 2026), PySide6 seems available on a Pi Zero 2 W (pretty much the
+baby of the platform), so presumably this is no longer needed?
 
 These are all the packages I installed via apt:
 

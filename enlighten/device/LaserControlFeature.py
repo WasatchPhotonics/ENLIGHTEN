@@ -30,6 +30,8 @@ class LaserControlFeature(EnlightenFeature):
         cfu = self.ctl.form.ui
 
         self.scrollable = cfu.controlWidget_scrollArea
+        self.sb_attenuator = cfu.spinBox_laser_attenuator
+        self.lb_attenuator = cfu.label_laser_control_attenuator
 
         self.ctl.battery_feature.register_observer(self.battery_callback)
 
@@ -54,11 +56,13 @@ class LaserControlFeature(EnlightenFeature):
         cfu.doubleSpinBox_laser_power   .valueChanged       .connect(cfu.verticalSlider_laser_power.setValue)
         cfu.doubleSpinBox_laser_power   .valueChanged       .connect(self.set_laser_power_callback)
         cfu.comboBox_laser_power_unit   .currentIndexChanged.connect(self.update_visibility)
+        self.sb_attenuator              .valueChanged       .connect(self.attenuator_callback)
 
         cfu.pushButton_laser_toggle     .setWhatsThis("Primary means to turn the laser on or off. Also available through a 'convenience' button at the screen top-right.")
         cfu.pushButton_laser_convenience.setWhatsThis("This is a 'convenience' shortcut for the Fire Laser button on the main Control Palette, positioned to ensure it's always accessible and visible")
         cfu.doubleSpinBox_excitation_nm .setWhatsThis("If you know the exact wavelength of your laser in nanometers, enter it here to improve wavenumber axis accuracy")
         cfu.comboBox_laser_power_unit   .setWhatsThis("Switch laser power units between duty-cycle percentage and calibrated milliWatts")
+        self.sb_attenuator              .setWhatsThis("Further reduce laser output power (beyond that provided through PWM) by attenuating laser drive current")
 
         self.expert_widgets = [
             cfu.label_lightSourceWidget_excitation_nm,
@@ -87,6 +91,8 @@ class LaserControlFeature(EnlightenFeature):
         has_laser_power_calibration = spec is not None and spec.settings.eeprom.has_laser_power_calibration()
         cfu.comboBox_laser_power_unit.setVisible(has_laser_power_calibration and doing_expert)
 
+        self.update_visibility()
+
     def set_current_spectrometer_callback(self, callback):
         self.current_spectrometer_callback = callback
 
@@ -98,6 +104,22 @@ class LaserControlFeature(EnlightenFeature):
         if self.current_spectrometer_callback:
             return self.current_spectrometer_callback()
         return self.ctl.multispec.current_spectrometer()
+
+    def attenuator_callback(self):
+        perc = self.sb_attenuator.value()
+        log.debug(f"the attenuation value has changed to {perc}")
+
+        spec = self.current_spectrometer()
+        if spec is None:
+            return
+
+        settings = spec.settings
+        state = settings.state
+
+        if not settings.eeprom.has_laser:
+            return
+
+        spec.change_device_setting("laser_attenuation_perc", perc)
 
     # ##########################################################################
     # Public Methods
@@ -192,6 +214,10 @@ class LaserControlFeature(EnlightenFeature):
                    cfu.spinBox_laser_watchdog_sec,
                    cfu.verticalSlider_laser_power ]:
             w.setEnabled(not self.locked)
+
+        show_attenuation_controls = doing_expert and spec.settings.is_xs()
+        for w in [ self.sb_attenuator, self.lb_attenuator ]:
+            w.setVisible(show_attenuation_controls)
 
         self.refresh_laser_buttons()
 

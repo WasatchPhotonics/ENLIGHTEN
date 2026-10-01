@@ -4700,7 +4700,6 @@ QComboBox QListView
                             </property>
                            </widget>
                           </item>
-
                          </layout>
                         </item>
                        </layout>
@@ -13653,6 +13652,53 @@ li.checked::marker { content: "\2612"; }
                            </widget>
                           </item>
                           <item row="2" column="0">
+                           <widget class="QSpinBox" name="spinBox_laser_attenuator">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="minimumSize">
+                             <size>
+                              <width>100</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignmentFlag::AlignCenter</set>
+                            </property>
+                            <property name="minimum">
+                             <number>0</number>
+                            </property>
+                            <property name="maximum">
+                             <number>100</number>
+                            </property>
+                            <property name="value">
+                             <number>0</number>
+                            </property>
+                            <property name="suffix">
+                             <string> %</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="2" column="1">
+                           <widget class="QLabel" name="label_laser_control_attenuator">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="text">
+                             <string>Attenuation</string>
+                            </property>
+                            <property name="initiallyVisible" stdset="0">
+                             <bool>false</bool>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="3" column="0">
                            <widget class="QSpinBox" name="spinBox_laser_watchdog_sec">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -13680,7 +13726,7 @@ li.checked::marker { content: "\2612"; }
                             </property>
                            </widget>
                           </item>
-                          <item row="2" column="1">
+                          <item row="3" column="1">
                            <widget class="QLabel" name="label_laser_watchdog_sec">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -13693,7 +13739,7 @@ li.checked::marker { content: "\2612"; }
                             </property>
                            </widget>
                           </item>
-                          <item row="3" column="0">
+                          <item row="4" column="0">
                            <widget class="QComboBox" name="comboBox_laser_tec_mode">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -13729,7 +13775,7 @@ li.checked::marker { content: "\2612"; }
                             </item>
                            </widget>
                           </item>
-                          <item row="3" column="1">
+                          <item row="4" column="1">
                            <widget class="QLabel" name="label_laser_tec_mode">
                             <property name="maximumSize">
                              <size>
