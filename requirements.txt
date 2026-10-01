@@ -1,8 +1,6 @@
 numpy
-# tensorflow==2.13.1
-tensorflow
+ai_edge_litert
 PySide6
-# PyQt5
 pygtail 
 pyusb 
 pefile 
@@ -11,7 +9,6 @@ pywavelets
 superman 
 pyqtgraph 
 libusb 
-# seabreeze 
 boto3 
 bleak 
 pyftdi 
@@ -33,5 +30,6 @@ colour-science
 colour
 # spc_spectra
 
-pywin32  ; sys_platform == 'win32'
-ids_peak ; sys_platform == 'win32'
+pywin32   ; sys_platform == 'win32'
+ids_peak  ; sys_platform == 'win32'
+seabreeze ; sys_platform == 'win32'
