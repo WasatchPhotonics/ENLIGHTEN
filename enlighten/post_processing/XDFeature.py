@@ -7,6 +7,7 @@ import re
 import numpy as np
 
 from datetime import datetime
+from ai_edge_litert.interpreter import Interpreter
 
 from enlighten import common
 from enlighten.util import unwrap
@@ -18,30 +19,7 @@ from .XDAdditionalFiles import prep_spectra_XS
 
 from wasatch.ProcessedReading import ProcessedReading
 
-if common.USE_QT:
-    if common.use_pyside2():
-        from PySide2 import QtCore
-    else:
-        from PySide6 import QtCore
-
 log = logging.getLogger(__name__)
-
-class ImportWorker(threading.Thread):
-    """
-    This is in a Python thread, instead of a QTimer, because we don't want it to
-    be on the GUI thread. It also could have been done with a QThread or signals.
-    """
-    def __init__(self, feature):
-        threading.Thread.__init__(self)
-        self.feature = feature
-
-    def run(self):
-        rm = self.feature.ctl.resource_monitor
-
-        rm.check_memory_usage(label="before importing TensorFlow")
-        import tensorflow.lite 
-        rm.check_memory_usage(label="after importing TensorFlow")
-        self.feature.imported = True
 
 class XDFeature(EnlightenFeature):
     SECTION = "XDFeature"
@@ -117,7 +95,7 @@ class XDFeature(EnlightenFeature):
             self.current_model_label = self.combo_model.currentText()
             self.current_model_name = self.get_model_name_from_label(self.current_model_label)
 
-        self.cb_enable        .stateChanged           .connect(self.enable_callback)
+        self.cb_enable        .stateChanged           .connect(self.update_settings)
         self.cb_deconvolute   .stateChanged           .connect(self.update_settings)
         self.cb_external_laser.stateChanged           .connect(self.update_settings)
         self.cb_left_trim     .stateChanged           .connect(self.update_settings)
@@ -139,13 +117,10 @@ class XDFeature(EnlightenFeature):
         self.import_time_sec = self.ctl.config.get_int(self.SECTION, "import_time_sec", default=None)
         self.import_start_time = None
 
-        self.timer = None
-        if common.USE_QT:
-            self.timer = QtCore.QTimer()
-            self.timer.timeout.connect(self.monitor_import)
-            self.timer.setSingleShot(True)
+        self.lazy_load_model()
+        self.update_settings()
 
-        # always hide this for now -- just always allow in Expert Mode
+        # only show in Expert Mode
         self.cb_external_laser.setVisible(False)
 
         self.page_nav_callback()
@@ -183,58 +158,6 @@ class XDFeature(EnlightenFeature):
 
     def toggle_callback(self):
         self.cb_enable.setChecked(not self.enabled)
-
-    def enable_callback(self):
-        # have we already done the heavy import?
-        if "tensorflow.lite" in sys.modules:
-            # we've already imported TFL, so just update state and move on
-            self.update_settings()
-            return
-
-        # No, we still need to do the import. Do that in a background thread
-        # with progress bar.
-
-        self.ctl.marquee.info("Loading machine learning framework", persist=True, token="XD_load")
-        self.ctl.progress_bar.set(-1 if self.import_time_sec is None else 0)
-
-        # kick-off the thread to import TensorFlow
-        self.import_start_time = datetime.now()
-        self.import_worker = ImportWorker(self)
-        self.import_worker.setDaemon(True)
-        self.import_worker.start()
-
-        # kick-off the timer to monitor import progress and cleanup when done
-        if self.timer:
-            self.timer.start(100)
-
-    def monitor_import(self):        
-        """ This is ticked by a QTimer, so runs on GUI thread """
-        elapsed_sec = (datetime.now() - self.import_start_time).total_seconds()
-
-        # is the import done?
-        if not self.imported:
-            # no, it's not done
-
-            # do we know how long this "usually" takes? If so, update progress bar
-            if self.import_time_sec is not None:
-                self.ctl.progress_bar.set(100.0 * elapsed_sec / self.import_time_sec)
-
-            # re-check at 4Hz
-            self.timer.start(250)
-            return
-
-        ########################################################################
-        # ImportWorker is done
-        ########################################################################
-
-        self.ctl.marquee.clear(token="XD_load")
-        self.ctl.progress_bar.hide()
-
-        # persist the "latest" loading time, to make the next progress bar more accurate
-        self.ctl.config.set(self.SECTION, "import_time_sec", int(round(elapsed_sec, 0)))
-
-        self.lazy_load_model()
-        self.update_settings()
 
     def best_model_for_current_spectrometer(self):
         prefix = "best_model_for_current_spectrometer"
@@ -420,18 +343,9 @@ class XDFeature(EnlightenFeature):
 
         self.ctl.marquee.info(f"loading XD model {config.model_pathname}")
         if 'tflite' == config.model_type:
-            # We re-import the package here because we don't want to import
-            # it at file scope. It can take easily 10sec to load this package,
-            # and we don't want to take that hit until we have to. Note that
-            # "re-importing" it takes no time at all, as Python caches it.
-            # The package is actually imported as soon as the user "enables"
-            # the XD feature, using the ImportWorker background thread
-            # and progress bar.
-            import tensorflow.lite
-
             rm = self.ctl.resource_monitor
             rm.check_memory_usage(label=f"before loading {config.model_pathname}")
-            model = tensorflow.lite.Interpreter(config.model_pathname)
+            model = Interpreter(config.model_pathname)
             rm.check_memory_usage(label=f"after loading {config.model_pathname}")
             model.allocate_tensors()
             rm.check_memory_usage(label=f"after allocating tensors")
