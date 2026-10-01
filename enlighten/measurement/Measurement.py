@@ -8,7 +8,7 @@ import csv
 import re
 import os
 
-JCAMP_AVAILALBE = True
+JCAMP_AVAILABLE = True
 try:
     import jcamp
 except:
