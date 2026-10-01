@@ -2,12 +2,13 @@ from enlighten import common
 
 import logging
 
-if common.use_pyside2():
-    from PySide2.QtGui import QColor
-    from PySide2.QtCore import Qt
-else:
-    from PySide6.QtGui import QColor
-    from PySide6.QtCore import Qt
+if common.USE_QT:
+    if common.use_pyside2():
+        from PySide2.QtGui import QColor
+        from PySide2.QtCore import Qt
+    else:
+        from PySide6.QtGui import QColor
+        from PySide6.QtCore import Qt
 
 log = logging.getLogger(__name__)
 
@@ -131,5 +132,6 @@ class EnlightenFeature:
         log.debug("=" * len(msg))
         log.debug("")
 
-        self.ctl.splash.showMessage(f"version {common.VERSION}\n\n{msg}\n", alignment=Qt.AlignHCenter | Qt.AlignBottom, color=QColor("#ccc"))
-        self.ctl.app.processEvents()
+        if common.USE_QT:
+            self.ctl.splash.showMessage(f"version {common.VERSION}\n\n{msg}\n", alignment=Qt.AlignHCenter | Qt.AlignBottom, color=QColor("#ccc"))
+            self.ctl.app.processEvents()

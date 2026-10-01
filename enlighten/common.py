@@ -14,6 +14,7 @@ application.
 """
 
 VERSION = "4.2.13"
+USE_QT = True       # external scripts may choose to set this False before importing / using other classes
 
 ctl = None
 

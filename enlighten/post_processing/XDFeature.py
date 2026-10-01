@@ -18,10 +18,11 @@ from .XDAdditionalFiles import prep_spectra_XS
 
 from wasatch.ProcessedReading import ProcessedReading
 
-if common.use_pyside2():
-    from PySide2 import QtCore
-else:
-    from PySide6 import QtCore
+if common.USE_QT:
+    if common.use_pyside2():
+        from PySide2 import QtCore
+    else:
+        from PySide6 import QtCore
 
 log = logging.getLogger(__name__)
 
@@ -137,9 +138,12 @@ class XDFeature(EnlightenFeature):
         # these are used to smooth the TFL import process
         self.import_time_sec = self.ctl.config.get_int(self.SECTION, "import_time_sec", default=None)
         self.import_start_time = None
-        self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(self.monitor_import)
-        self.timer.setSingleShot(True)
+
+        self.timer = None
+        if common.USE_QT:
+            self.timer = QtCore.QTimer()
+            self.timer.timeout.connect(self.monitor_import)
+            self.timer.setSingleShot(True)
 
         # always hide this for now -- just always allow in Expert Mode
         self.cb_external_laser.setVisible(False)
@@ -200,7 +204,8 @@ class XDFeature(EnlightenFeature):
         self.import_worker.start()
 
         # kick-off the timer to monitor import progress and cleanup when done
-        self.timer.start(100)
+        if self.timer:
+            self.timer.start(100)
 
     def monitor_import(self):        
         """ This is ticked by a QTimer, so runs on GUI thread """
@@ -380,7 +385,7 @@ class XDFeature(EnlightenFeature):
             # only support tflite models
             if os.path.isfile(pathname) and filename.endswith(".tflite"):
                 basename = filename.removesuffix(".tflite")
-                found_models[basename] = ModelConfig(basename)
+                found_models[basename] = ModelConfig(basename, model_config_dir=self.MODEL_DIR)
 
         # manually build 'model_configs' with insertion order ascending by 'order' (then by name)
         log.debug("Known Models:")
@@ -564,7 +569,7 @@ class XDFeature(EnlightenFeature):
 
 class ModelConfig:
 
-    def __init__(self, basename):
+    def __init__(self, basename, model_config_dir=None):
         # common attributes
         self.basename = basename
         self.found = False
@@ -578,8 +583,8 @@ class ModelConfig:
         self.is_wide = False
 
         # generate pathnames
-        self.model_pathname = os.path.join(XDFeature.MODEL_DIR, f"{basename}.tflite")
-        self.config_pathname = os.path.join(XDFeature.MODEL_DIR, f"{basename}.json")
+        self.model_pathname = os.path.join(model_config_dir, f"{basename}.tflite")
+        self.config_pathname = os.path.join(model_config_dir, f"{basename}.json")
 
         if os.path.exists(self.config_pathname):
             with open(self.config_pathname, "r", encoding="utf-8") as infile:
