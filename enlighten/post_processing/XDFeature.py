@@ -161,7 +161,7 @@ class XDFeature(EnlightenFeature):
 
     def best_model_for_current_spectrometer(self):
         prefix = "best_model_for_current_spectrometer"
-        spec = self.ctl.multispec.current_spectrometer()
+        spec = self.ctl.multispec.current_spectrometer(with_detector=True)
         if spec is None:
             return None
 
@@ -182,6 +182,7 @@ class XDFeature(EnlightenFeature):
         # and find the first matching model
         best_generic = None
         for basename, config in self.model_configs.items():
+            # log.debug(f"{prefix}: considering basename {basename}, config {config}")
             if spec_family in config.target_spectrometer_families:
                 # we found an explicit match, use that
                 log.debug(f"{prefix}: returning {basename}")
@@ -191,6 +192,7 @@ class XDFeature(EnlightenFeature):
                 # But highly-ordered? Keep it as the new default unless a better
                 # model is found further down the list.
                 if best_generic is None:
+                    # log.debug(f"{prefix}: selected new best_generic {basename}")
                     best_generic = basename
         
         log.debug(f"{prefix}: returning best_generic {best_generic}")

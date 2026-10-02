@@ -432,14 +432,26 @@ class MultispecFeature(EnlightenFeature):
     def is_current_spectrometer(self, spec) -> bool:
         return self.device_id is not None and self.device_id == spec.device_id
 
-    def current_spectrometer(self) -> Spectrometer:
+    def current_spectrometer(self, with_detector=None) -> Spectrometer:
+        """
+        If optional with_detector bool is included, then return the first 
+        connected spectrometer which meets the configuration (even if not 
+        currently selected).
+        """
         if self.device_id is None:
             return
     
-        if self.device_id in self.spectrometers:
-            return self.spectrometers[self.device_id]
+        if with_detector is None:
+            if self.device_id in self.spectrometers:
+                return self.spectrometers[self.device_id]
+        else:
+            for device_id, spec in self.spectrometers.items():
+                has_detector = spec.settings.has_detector()
+                # log.debug(f"Multispec.current_spectrometer(with_detector {with_detector}): device_id {device_id}, has_detector {has_detector}")
+                if with_detector and spec.settings.has_detector():
+                    return spec
 
-        log.error(f"Multispec.current_spectrometer: can't find self.device_id {self.device_id} in spectrometers {self.spectrometers}")
+        log.error(f"Multispec.current_spectrometer: can't find self.device_id {self.device_id} in spectrometers {self.spectrometers}, with_detector {with_detector}")
 
     def update_widget(self):
         log.debug("update_widget start (%s)", self.device_id)
