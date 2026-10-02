@@ -78,8 +78,8 @@ else
         OS="RPi"
 
         # probably in /usr/bin per apt-get install pyside2-tools
-        RCC=`which pyside2-rcc`
-        UIC=`which pyside2-uic`
+        RCC=`which pyside6-rcc`
+        UIC=`which pyside6-uic`
         TWO_TO_THREE=`which 2to3`  # probably in ${CONDA_ENV_PATH}/bin/2to3
         PYTHON="python3"
 

@@ -179,7 +179,7 @@ def clean_spectrum(
     log.debug(f"clean_spectrum: wavenumbers_out[0] {wavenumbers_out[0]:.2f}, wavenumbers_out[-1] {wavenumbers_out[-1]:.2f}")
     log.debug(f"clean_spectrum: wavenumbers_out len {len(wavenumbers_out)}")
 
-    if deconvolute:
+    if deconvolute and eeprom:
         spectrum_out = spectrum_out - spectrum_out.min()
         log.debug("processing spectra with prep_spectra_XM.deconvolute_spectrum")
         spectrum_out = deconvolute_spectrum(wavenumbers_out, spectrum_out, eeprom.avg_resolution)

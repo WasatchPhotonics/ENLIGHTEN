@@ -6,83 +6,97 @@ Odroid and other ARM-based Linux variants following the Debian model.
 See [MAINTENANCE](MAINTENANCE.md) for temporary changes or workarounds to
 the build process.
 
-# Packaged dependencies
+# Raspberry Pi Zero 
 
-## Raspberry Pi 4 / Debian Bookworm 64 bit
+To be completely upfront: the Raspberry Pi Zero 2 W is NOT a suitable runtime 
+platform for ENLIGHTEN, due to its limitation to no more than 512MB (0.5GB) RAM.
+ENLIGHTEN will only run "well" on Raspberry Pi models with 4-8GB RAM. That said,
+I was able to launch and run ENLIGHTEN on a Pi Zero and take some spectra before
+the kernel's Out-of-Memory (OOM) killer shut it down.
 
-PySide6 is available as a wheel on 64 bit Bookworm, simplifying installation instructions.
+These setup notes were taken on an RPi Zero 2 W in Oct 2026 with the following
+configuration:
 
-Clone ENLIGHTEN and Wasatch.PY into parallel directories.
+    PRETTY_NAME="Debian GNU/Linux 13 (trixie)"
+    NAME="Debian GNU/Linux"
+    VERSION_ID="13"
+    VERSION="13 (trixie)"
+    VERSION_CODENAME=trixie
+    DEBIAN_VERSION_FULL=13.2
+    ID=debian
 
-    git clone https://github.com/WasatchPhotonics/ENLIGHTEN.git
-    git clone https://github.com/WasatchPhotonics/Wasatch.PY.git
+## System Preparation
 
-Create a virtual environment including system packages
+I had a lot of overheating? swap? disk space? issues on my RPi Zero 2 W, which 
+caused the unit to repeatedly freeze during package download / installation. To 
+address those, I attempted all of the following in various combinations. I'm not
+sure which were the most critical, but I'm pretty sure the $TMPDIR fix was part
+of it.
 
-    python -m venv venv --system-site-packages
+- add heat sink to RPi
+- add fan pointing to heat sink
+- install rpi-swap
+- configure rpi-swap to 4GB (up from default 2GB)
+    - sudo apt install rpi-swap
+    - sudo vi /etc/rpi/swap.conf
+- kill GUI (sudo systemctl stop lightdm)
+- monitor temperature (vcgencmd measure_temp)
+- throttle bandwidth 
+    - tc qdisc show dev wlan0
+    - (qdisc fq_codel 0: root refcnt 2 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64)
+    - sudo tc qdisc add dev wlan0 root tbf rate 1mbit burst 10kb latency 70ms
+- change pip's temp dir (this was critical)
+    - mkdir ~/tmp
+    - export TMPDIR=$HOME/tmp
 
-Activate the virtual environment
+## Installation Process
 
-    . venv/bin/activate
+    $ mkdir ~/tmp
+    $ export TMPDIR=$HOME/tmp       # or someplace with 1GB+ free
+    $ mkdir ~/work/code
+    $ cd ~/work/code
+    $ git clone https://github.com/WasatchPhotonics/ENLIGHTEN.git
+    $ git clone https://github.com/WasatchPhotonics/Wasatch.PY.git
+    $ cd ENLIGHTEN
 
-Install the following dependencies listed in the requirements.txt (note: PyQt5 is included in system packages
-so isn't included):
+    $ python -m venv venv --system-site-packages
+    $ . venv/bin/activate
+    $ sudo apt update
+    $ sudo apt install -y pkg-config libusb-1.0-0-dev   # for seabreeze?
+    $ pip download tensorflow --timeout 60              # can possibly skip
+    $ pip install -r requirements.txt
 
-    numpy
-    tensorflow==2.13.1
-    PySide6
-    pygtail 
-    pyusb 
-    pefile 
-    pyinstaller==6.10.0
-    pywavelets 
-    superman 
-    pyqtgraph 
-    libusb 
-    seabreeze==2.7.0
-    boto3 
-    bleak 
-    pyftdi 
-    adafruit-blinka
-    SPyC_Writer
-    crcmod
-    pandas
-    pexpect
-    pip
-    psutil
-    scipy
-    xlwt
-    qimage2ndarray
-    2to3
-    matplotlib
-    pyserial
-    colour-science
-
-If you run into any issues while installing a dependency, use specify the version referenced in 
-in the `Installed PIP packages` appendix below.
-
-Build the GUI by calling: 
-    
-    . scripts/rebuild_resources.sh
+    $ scripts/rebuild_resources.sh
 
 Add the following to your path:
 
-    export PYTHONPATH=".:plugins:../Wasatch.PY:enlighten/assets/uic_qrc"
+    $ export PYTHONPATH=".:plugins:../Wasatch.PY:enlighten/assets/uic_qrc"
 
 Copy the `10-wasatch.rules` rules file to set appropriate permissions for usb access 
 (you will need to restart or reload after this):
 
-    sudo cp -vf Wasatch.PY/udev/10-wasatch.rules /etc/udev/rules.d
+    $ sudo cp -vf ../Wasatch.PY/udev/10-wasatch.rules /etc/udev/rules.d
 
 Launch ENLIGHTEN:
 
-    python -u scripts/Enlighten.py
+    $ python -u scripts/Enlighten.py
 
+## OOM-Killer
 
-## PySide2 Instructions
+The Linux kernel has a feature called the OOM-Killer designed to automatically 
+shutdown programs consuming dangerous levels of memory. If ENLIGHTEN abruptly 
+terminates on your Raspberry Pi, run the following command to confirm it was the 
+OMM-Killer responsible, and not a software bug:
 
-PySide6 isn't available on all RPi distros, so you may need to use PySide2 
+    $ sudo dmesg -T | egrep -i 'killed process|out of memory'
+
+# Appendix: PySide2 Instructions
+
+At one time, PySide6 wasn't available on all RPi distros, so users had to use PySide2 
 [instructions](https://www.raspberrypi.org/forums/viewtopic.php?p=1485265&sid=eb447c56004ea941be4aaefa2f837108#p1485265).
+
+At writing (Sep 2026), PySide6 seems available on a Pi Zero 2 W (pretty much the
+baby of the platform), so presumably this is no longer needed?
 
 These are all the packages I installed via apt:
 
@@ -226,183 +240,3 @@ via USB.  This can be done with commands like:
 or
 
     $ sudo uhubctl --action 2 --location 2 --repeat 2 --delay 5 --wait 1000
-
-# Appendix: Installed PIP packages
-
-These are the PIP packages I had installed when testing 4.0.62:
-
-    Package                                  Version
-    ---------------------------------------- -----------
-    2to3                                     1.0
-    Adafruit-Blinka                          8.39.2
-    adafruit-circuitpython-busdevice         5.2.9
-    adafruit-circuitpython-connectionmanager 3.1.0
-    adafruit-circuitpython-requests          4.0.0
-    adafruit-circuitpython-typing            1.10.3
-    Adafruit-PlatformDetect                  3.63.0
-    Adafruit-PureIO                          1.1.11
-    altgraph                                 0.17.4
-    arandr                                   0.1.10
-    astroid                                  2.5.1
-    asttokens                                2.0.4
-    async-timeout                            4.0.3
-    automationhat                            0.2.0
-    beautifulsoup4                           4.9.3
-    bleak                                    0.22.1
-    blinker                                  1.4
-    blinkt                                   0.1.2
-    boto3                                    1.34.114
-    botocore                                 1.34.114
-    buttonshim                               0.0.2
-    Cap1xxx                                  0.1.3
-    certifi                                  2020.6.20
-    chardet                                  4.0.0
-    click                                    7.1.2
-    colorama                                 0.4.4
-    colorzero                                1.1
-    construct                                2.8.22
-    contourpy                                1.2.1
-    crcmod                                   1.7
-    cryptography                             3.3.2
-    cupshelpers                              1.0
-    cycler                                   0.12.1
-    Cython                                   3.0.10
-    DateTime                                 5.5
-    dbus-fast                                2.21.3
-    dbus-python                              1.2.16
-    distro                                   1.5.0
-    docutils                                 0.16
-    drumhat                                  0.1.0
-    envirophat                               1.0.0
-    exceptiongroup                           1.2.1
-    ExplorerHAT                              0.4.2
-    Flask                                    1.1.2
-    fonttools                                4.52.4
-    fourletterphat                           0.1.0
-    gpiozero                                 1.6.2
-    html5lib                                 1.1
-    idna                                     2.10
-    importlib_metadata                       7.1.0
-    importlib_resources                      6.4.0
-    iniconfig                                2.0.0
-    isort                                    5.6.4
-    itsdangerous                             1.1.0
-    jcamp                                    1.2.2
-    jedi                                     0.18.0
-    Jinja2                                   2.11.3
-    jmespath                                 1.0.1
-    joblib                                   1.4.2
-    kiwisolver                               1.4.5
-    lazy-object-proxy                        0.0.0
-    libusb                                   1.0.27
-    logilab-common                           1.8.1
-    lxml                                     4.6.3
-    MarkupSafe                               1.1.1
-    matplotlib                               3.7.0
-    mccabe                                   0.6.1
-    microdotphat                             0.2.1
-    mote                                     0.0.4
-    motephat                                 0.0.3
-    mypy                                     0.812
-    mypy-extensions                          0.4.3
-    numpy                                    1.26.4
-    oauthlib                                 3.1.0
-    packaging                                24.0
-    pandas                                   2.2.2
-    pantilthat                               0.0.7
-    parso                                    0.8.1
-    pefile                                   2023.2.7
-    pexpect                                  4.8.0
-    pgzero                                   1.2
-    phatbeat                                 0.1.1
-    pianohat                                 0.1.0
-    picamera                                 1.13
-    picamera2                                0.3.12
-    pidng                                    4.0.9
-    piexif                                   1.1.3
-    piglow                                   1.2.5
-    pigpio                                   1.78
-    Pillow                                   8.1.2
-    pip                                      24.0
-    pkg-about                                1.1.5
-    pluggy                                   1.5.0
-    psutil                                   5.8.0
-    pycairo                                  1.16.2
-    pycups                                   2.0.1
-    pyftdi                                   0.55.4
-    pygame                                   1.9.6
-    Pygments                                 2.7.1
-    PyGObject                                3.38.0
-    pygtail                                  0.14.0
-    pyinotify                                0.9.6
-    pyinstaller                              6.7.0
-    pyinstaller-hooks-contrib                2024.6
-    PyJWT                                    1.7.1
-    pylint                                   2.7.2
-    PyOpenGL                                 3.1.5
-    pyOpenSSL                                20.0.1
-    pyparsing                                3.1.2
-    PyQt5                                    5.15.2
-    PyQt5-sip                                12.8.1
-    pyqtgraph                                0.13.7
-    pyserial                                 3.5b0
-    pysmbc                                   1.0.23
-    pytest                                   8.2.1
-    python-apt                               2.2.1
-    python-dateutil                          2.9.0.post0
-    python-prctl                             1.7
-    pytz                                     2024.1
-    pyudev                                   0.24.3
-    pyusb                                    1.2.1
-    PyWavelets                               1.1.1
-    qimage2ndarray                           1.10.0
-    rainbowhat                               0.1.0
-    reportlab                                3.5.59
-    requests                                 2.25.1
-    requests-oauthlib                        1.0.0
-    responses                                0.12.1
-    roman                                    2.0.0
-    RPi.GPIO                                 0.7.0
-    rpi-ws281x                               5.0.0
-    RTIMULib                                 7.2.1
-    s3transfer                               0.10.1
-    scikit-learn                             1.4.2
-    scipy                                    1.13.1
-    scrollphat                               0.0.7
-    scrollphathd                             1.2.1
-    seabreeze                                2.7.0
-    Send2Trash                               1.6.0b1
-    sense-hat                                2.6.0
-    setuptools                               70.0.0
-    simplejpeg                               1.6.4
-    simplejson                               3.17.2
-    six                                      1.16.0
-    skywriter                                0.0.7
-    sn3218                                   1.2.7
-    soupsieve                                2.2.1
-    spc-spectra                              0.4.0
-    spidev                                   3.5
-    SPyC_Writer                              1.0.0
-    ssh-import-id                            5.10
-    superman                                 0.1.2
-    sysv-ipc                                 1.1.0
-    thonny                                   4.0.1
-    threadpoolctl                            3.5.0
-    toml                                     0.10.1
-    tomli                                    2.0.1
-    touchphat                                0.0.1
-    twython                                  3.8.2
-    typed-ast                                1.4.2
-    typing_extensions                        4.12.0
-    tzdata                                   2024.1
-    unicornhathd                             0.0.4
-    urllib3                                  1.26.5
-    usb                                      0.0.83.dev0
-    v4l2-python3                             0.3.2
-    webencodings                             0.5.1
-    Werkzeug                                 1.0.1
-    wheel                                    0.43.0
-    wrapt                                    1.12.1
-    xlwt                                     1.3.0
-    zipp                                     3.19.0
-    zope.interface                           6.4.post2

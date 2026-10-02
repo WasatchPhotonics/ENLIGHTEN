@@ -1,13 +1,18 @@
 import datetime
 import logging
 import numpy as np
-import jcamp
 import xlwt
 import json
 import copy
 import csv
 import re
 import os
+
+JCAMP_AVAILABLE = True
+try:
+    import jcamp
+except:
+    JCAMP_AVAILABLE = False
 
 from enlighten import util
 from enlighten import common
@@ -1251,6 +1256,10 @@ class Measurement:
         self.add_pathname(pathname)
 
     def save_dx_file(self, use_basename=False, resave=False):
+        if not JCAMP_AVAILABLE:
+            log.error("jcamp not available (cannot save .dx file)")
+            return
+
         if use_basename:
             pathname = self.basename + ".dx"
         else:
