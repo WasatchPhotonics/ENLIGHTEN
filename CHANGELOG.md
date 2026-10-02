@@ -8,6 +8,7 @@
     - replaced tensorflow.lite with ai_edge_litert
     - updated to NumPy 2.x
     - fixed XD bug with IDS
+    - updated hidden imports
 - 2026-09-28 4.2.12
     - XD rename
     - IDS

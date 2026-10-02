@@ -101,6 +101,8 @@ echo %date% %time% ======================================================
 echo.
 REM --hide-console hide-early worked on Win10 but not Win11
 REM --hide-console hide-late doesn't work on Win10
+REM --hidden-import="tensorflow" 
+REM --hidden-import="tensorflow.python.data.ops.shuffle_op" 
 REM 
 pyinstaller ^
     --distpath="scripts/built-dist" ^
@@ -111,13 +113,13 @@ pyinstaller ^
     --clean ^
     --paths="../enlighten/assets/uic_qrc" ^
     --hidden-import="numpy.core._multiarray_umath" ^
+    --hidden-import="numpy._core._exceptions" ^
     --hidden-import="scipy._lib.messagestream" ^
     --hidden-import="scipy._lib.array_api_compat.numpy.fft" ^
     --hidden-import="scipy.special._special_ufuncs" ^
     --hidden-import="scipy.special.cython_special" ^
+    --hidden-import="scipy._cyutility" ^
     --hidden-import="colour" ^
-    --hidden-import="tensorflow" ^
-    --hidden-import="tensorflow.python.data.ops.shuffle_op" ^
     --add-data="support_files/libusb_drivers/amd64/libusb0.dll:." ^
     --icon "../enlighten/assets/uic_qrc/images/EnlightenIcon.ico" ^
     --specpath="%cd%/scripts" ^
