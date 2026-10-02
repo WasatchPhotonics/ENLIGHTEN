@@ -6,6 +6,7 @@
     - updated docs/BUILD_RPI (tested on Raspberry Pi Zero 2 W)
     - updated some classes to make them easier to call from external Python scripts
     - replaced tensorflow.lite with ai_edge_litert
+    - add IDS temperature (untested)
 - 2026-09-28 4.2.12
     - XD rename
     - IDS
