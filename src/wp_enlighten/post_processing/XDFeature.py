@@ -1,0 +1,527 @@
+import threading
+import logging
+import json
+import sys
+import os
+import re
+import numpy as np
+
+from datetime import datetime
+from ai_edge_litert.interpreter import Interpreter
+
+from wp_enlighten import common
+from wp_enlighten.util import unwrap
+from wp_enlighten.EnlightenFeature import EnlightenFeature
+
+from .XDAdditionalFiles import prep_spectra_X  #This requires file name changes, save until last
+from .XDAdditionalFiles import prep_spectra_XM
+from .XDAdditionalFiles import prep_spectra_XS 
+
+from wasatch.ProcessedReading import ProcessedReading
+
+log = logging.getLogger(__name__)
+
+class XDFeature(EnlightenFeature):
+    SECTION = "XDFeature"
+    MODEL_DIR = os.path.join("enlighten", "assets", "example_data", "XD_models") 
+    COLOR = "#f7e842"
+
+    def __init__(self, ctl):
+        super().__init__(ctl)
+
+        cfu = ctl.form.ui
+
+        self.frame             = cfu.frame_XD_1
+        self.bt_toggle         = cfu.pushButton_XD_toggle
+        self.cb_enable         = cfu.checkBox_XD_enable
+        self.combo_model       = cfu.comboBox_XD_model
+        self.lb_combo          = cfu.label_XD_model_label
+        self.cb_left_trim      = cfu.checkBox_XD_left_trim
+        self.sb_left_trim      = cfu.spinBox_XD_left_trim_wavenumber
+        self.cb_right_trim     = cfu.checkBox_XD_right_trim
+        self.sb_right_trim     = cfu.spinBox_XD_right_trim_wavenumber
+        self.cb_deconvolute    = cfu.checkBox_XD_deconvolute
+        self.cb_external_laser = cfu.checkBox_XD_external_laser
+
+        self.expert_widgets = [ self.cb_left_trim,
+                                self.cb_right_trim,
+                                self.sb_left_trim,
+                                self.sb_right_trim,
+                                self.cb_deconvolute,
+                               #self.cb_external_laser,
+                                cfu.label_XD_left_trim_bool_label,
+                                cfu.label_XD_right_trim_bool_label ]
+
+        self.model_configs = {}
+        self.loaded_models = {}
+        self.current_model_name = None
+        self.current_model_config = None
+
+        # Visible in this case means the XD widget is visible on the 
+        # sliding Tool Palette. It does not mean the alt-graph, combobox or other 
+        # options are displayed displayed, which only appear when "enabled.
+        self.visible = False
+
+        self.import_worker = None
+        self.imported = False
+
+        self.enabled = False
+        self.deconvolute = False
+
+        self.do_left_trim = False
+        self.do_right_trim = False
+
+        self.left_trim_cm = 0
+        self.right_trim_cm = 0
+
+        np.set_printoptions(edgeitems=5, threshold=0)
+
+        self.combo_model.clear()
+        self.find_available_models()
+        if not self.model_configs:
+            self.combo_model.setCurrentIndex(-1)
+            self.current_model_label = None
+        else:
+            # populate the combobox with the sorted list of model labels
+            first_name = None
+            for basename, config in self.model_configs.items():
+                self.combo_model.addItem(config.label)
+                if first_name is None:
+                    first_name = basename
+
+            # SELECT the first model, but don't LOAD it -- we don't want to 
+            # trigger the TFL import until the user actually "enables" XD
+            self.combo_model.setCurrentIndex(0)
+            self.current_model_label = self.combo_model.currentText()
+            self.current_model_name = self.get_model_name_from_label(self.current_model_label)
+
+        self.cb_enable        .stateChanged           .connect(self.update_settings)
+        self.cb_deconvolute   .stateChanged           .connect(self.update_settings)
+        self.cb_external_laser.stateChanged           .connect(self.update_settings)
+        self.cb_left_trim     .stateChanged           .connect(self.update_settings)
+        self.cb_right_trim    .stateChanged           .connect(self.update_settings)
+        self.sb_left_trim     .valueChanged           .connect(self.update_settings)
+        self.sb_right_trim    .valueChanged           .connect(self.update_settings)
+        self.combo_model      .currentIndexChanged    .connect(self.select_model_callback)
+        self.bt_toggle        .clicked                .connect(self.toggle_callback)
+
+        self.ctl.page_nav.register_observer(self.page_nav_callback)
+
+        self.curve = self.ctl.alt_graph.add_curve("XD", pen=self.COLOR)
+
+        self.bt_toggle.setWhatsThis(unwrap("""
+            XD is a machine-learning model that has been trained to 
+            reject noise and fluorescence, leaving only pristine Raman peaks."""))
+
+        # these are used to smooth the TFL import process
+        self.import_time_sec = self.ctl.config.get_int(self.SECTION, "import_time_sec", default=None)
+        self.import_start_time = None
+
+        self.lazy_load_model()
+        self.update_settings()
+
+        # only show in Expert Mode
+        self.cb_external_laser.setVisible(False)
+
+        self.page_nav_callback()
+
+    def init_hotplug(self):
+        # the user plugged-in a new spectrometer, so select the "best" model for that device
+        best_model_name = self.best_model_for_current_spectrometer()
+        log.debug(f"best_model_name: {best_model_name}")
+        log.debug(f"current_model_name: {self.current_model_name}")
+        if best_model_name is None:
+            return
+
+        if self.current_model_name != best_model_name:
+            # switch to the best model for this device
+            best_model_config = self.model_configs[best_model_name]
+            self.current_model_name = best_model_config.basename
+            log.debug(f"best_model_config: {best_model_config}")
+            self.combo_model.setCurrentText(best_model_config.label)
+            self.current_model_label = best_model_config.label
+
+    def update_settings(self):
+        self.enabled        = self.cb_enable.isChecked()
+        self.deconvolute    = self.cb_deconvolute.isChecked()
+                            
+        self.do_left_trim   = self.cb_left_trim.isChecked()
+        self.do_right_trim  = self.cb_right_trim.isChecked()
+                            
+        self.left_trim_cm   = self.sb_left_trim.value()
+        self.right_trim_cm  = self.sb_right_trim.value()
+
+        if self.enabled:
+            self.lazy_load_model()
+
+        self.update_visibility()
+
+    def toggle_callback(self):
+        self.cb_enable.setChecked(not self.enabled)
+
+    def best_model_for_current_spectrometer(self):
+        prefix = "best_model_for_current_spectrometer"
+        spec = self.ctl.multispec.current_spectrometer(with_detector=True)
+        if spec is None:
+            return None
+
+        spec_model = spec.settings.eeprom.model
+        if "X-" in spec_model:
+            spec_family = "X"
+        elif "XM-" in spec_model:
+            spec_family = "XM"
+        elif re.search(r"XS-|XSB-|SIG", spec_model):
+            spec_family = "XS"
+        elif "XL" in spec_model:
+            spec_family = "XL"
+        else:
+            log.debug(f"{prefix}: cannot determine connected spectrometer family: {spec_model}")
+            spec_family = None
+
+        # go through model_configs (which is already ordered per JSON config)
+        # and find the first matching model
+        best_generic = None
+        for basename, config in self.model_configs.items():
+            # log.debug(f"{prefix}: considering basename {basename}, config {config}")
+            if spec_family in config.target_spectrometer_families:
+                # we found an explicit match, use that
+                log.debug(f"{prefix}: returning {basename}")
+                return basename
+            elif len(config.target_spectrometer_families) == 0:
+                # This model had no explicit families, meaning it's "generic"? 
+                # But highly-ordered? Keep it as the new default unless a better
+                # model is found further down the list.
+                if best_generic is None:
+                    # log.debug(f"{prefix}: selected new best_generic {basename}")
+                    best_generic = basename
+        
+        log.debug(f"{prefix}: returning best_generic {best_generic}")
+        return best_generic
+
+    def update_visibility(self):
+        doing_raman = self.ctl.page_nav.doing_raman()
+        doing_expert = self.ctl.page_nav.doing_expert()
+
+        # is there at least one compatible XD model for the current spectrometer?
+        best_model_name = self.best_model_for_current_spectrometer()
+
+        # determine visibility 
+        self.visible = doing_expert or (doing_raman and best_model_name is not None)
+        if not self.visible:
+            self.enabled = False
+
+        # display the WIDGET and TOGGLE (if VISIBLE)
+        for w in [ self.frame, self.bt_toggle ]:
+            w.setVisible(self.visible)
+
+        # display the COMBO (if ENABLED)
+        for w in [ self.combo_model, self.lb_combo ]:
+            w.setVisible(self.enabled)
+
+        # display expert WIDGETS (if Expert)
+        show_expert_widgets = self.visible and self.enabled and doing_expert
+        for w in self.expert_widgets:
+            w.setVisible(show_expert_widgets)
+
+        # display alt GRAPH (if enabled)
+        if self.visible and self.enabled:
+            log.debug("displaying alt graph")
+            self.ctl.alt_graph.set_visible(True)
+        elif not self.ctl.plugin_controller.using_other_graph():
+            self.ctl.alt_graph.set_visible(False)
+
+        self.ctl.gui.colorize_button(self.bt_toggle, self.enabled)
+
+        self.notify_observers()
+
+    def page_nav_callback(self, arg=None):
+        self.update_visibility()
+
+    def is_visible(self):
+        return self.visible
+
+    def is_enabled(self):
+        return self.enabled
+
+    def process(self, pr):
+        if not self.enabled:
+            return
+
+        doing_expert = self.ctl.page_nav.doing_expert()
+
+        if not (doing_expert or 
+                pr.settings.state.laser_enabled or 
+                (pr.reading.take_one_request and pr.reading.take_one_request.auto_raman_request) ):
+            self.ctl.marquee.error("XD requires laser")
+            self.curve.setData([])
+            return
+
+        # note that horizontal ROI has already been applied at this point in the processing pipeline
+        wavenumbers = pr.get_wavenumbers()
+        spectrum    = pr.get_processed()
+
+        if wavenumbers is None:
+            self.ctl.marquee.error("XD requires measurements with wavenumber axis")
+            self.curve.setData([])
+            return
+
+        log.debug(f"Wavenumbers = {len(wavenumbers)}, spectrum = {len(spectrum)}")
+
+        unit = self.ctl.graph.get_x_axis_unit()
+        if unit != "cm":
+            self.ctl.marquee.error("XD requires wavenumber axis selected")
+            self.curve.setData([])
+            return
+
+        AI_wavenumbers, AI_spectrum = self.process_XD(wavenumbers, spectrum, pr)
+
+        log.debug(f"AI_wavenumbers {AI_wavenumbers}")
+        log.debug(f"AI_spectrum {AI_spectrum}")
+
+        # Store the XD spectrum in a child of the ProcessedReading.
+        # Convert Numpy classes to native types to simplify JSON exports etc.
+        child_pr = ProcessedReading()
+        child_pr.wavenumbers = AI_wavenumbers.tolist()
+        child_pr.processed = AI_spectrum.tolist()
+        child_pr.XD_model_name = self.current_model_name
+        child_pr.XD_model_label = self.current_model_label
+
+        pr.XD = child_pr
+
+        # interpolated arrays are for display only; we use non-interpolated data in matching
+        # TODO: perhaps the graphing should actually be done at the same point as the main graph is updated?
+        interp = self.ctl.interp
+        if interp.enabled and interp.new_axis is not None:
+            AI_spectrum_display = np.interp(interp.new_axis, AI_wavenumbers, AI_spectrum)
+            AI_wavenumbers_display = interp.new_axis
+        else:
+            AI_spectrum_display = AI_spectrum
+            AI_wavenumbers_display = AI_wavenumbers
+
+        # MZ: YOU ARE HERE
+        # self.curve.setData(x=AI_wavenumbers_display, y=AI_spectrum_display, color=self.COLOR)
+        self.ctl.alt_graph.set_data(self.curve, x=AI_wavenumbers_display, y=AI_spectrum_display)
+
+    def find_available_models(self):
+        found_models = {}
+        for filename in sorted(os.listdir(self.MODEL_DIR)):
+            pathname = os.path.join(self.MODEL_DIR, filename)
+
+            # only support tflite models
+            if os.path.isfile(pathname) and filename.endswith(".tflite"):
+                basename = filename.removesuffix(".tflite")
+                found_models[basename] = ModelConfig(basename, model_config_dir=self.MODEL_DIR)
+
+        # manually build 'model_configs' with insertion order ascending by 'order' (then by name)
+        log.debug("Known Models:")
+        for basename, config in sorted(found_models.items(), key=lambda pair: (pair[1].order, pair[0])):
+            self.model_configs[basename] = config
+            log.debug(f"  {basename}: {config}")
+
+    def lazy_load_model(self, model_name=None):
+        log.debug(f"attempting to lazy_load model {model_name}")
+        if model_name is None:
+            model_name = self.current_model_name
+
+        if model_name not in self.model_configs:
+            log.debug(f"unknown model {model_name}")
+            return
+
+        if model_name in self.loaded_models:
+            log.debug(f"already loaded {model_name}")
+            self.current_model_name = model_name
+            self.current_model_config = self.model_configs[model_name]
+            return
+
+        # apparently we have not yet loaded this model, so load it now
+        # (<1sec)
+        if self.load_model(model_name):
+            log.info(f"selected model {model_name}")
+            self.current_model_name = model_name
+            self.current_model_config = self.model_configs[model_name]
+
+    def load_model(self, model_name):
+        config = self.model_configs[model_name]
+
+        self.ctl.marquee.info(f"loading XD model {config.model_pathname}")
+        if 'tflite' == config.model_type:
+            rm = self.ctl.resource_monitor
+            rm.check_memory_usage(label=f"before loading {config.model_pathname}")
+            model = Interpreter(config.model_pathname)
+            rm.check_memory_usage(label=f"after loading {config.model_pathname}")
+            model.allocate_tensors()
+            rm.check_memory_usage(label=f"after allocating tensors")
+
+            if True:
+                log.debug(f"counting parameters")
+                parameter_count = self.count_model_parameters(model)
+                log.debug(f"tflite model has {parameter_count} parameters")
+
+            log.info(f"loaded tflite model {model_name}")
+            self.loaded_models[model_name] = model
+            return True
+
+    def count_model_parameters(self, model):
+        tensor_details = model.get_tensor_details()
+        total_parameters = 0
+        for tensor in tensor_details:
+            # Parameters (weights/biases) are stored as variables or constants
+            # Check if the tensor has a valid shape and contains data
+            shape = tensor['shape']
+            if len(shape) > 0:
+                # Multiply all dimensions of the tensor shape to get element count
+                num_elements = np.prod(shape)
+                total_parameters += num_elements
+        return total_parameters
+
+    def select_model_callback(self):
+        log.debug("select_model_callback: start")
+        combo = self.combo_model
+        self.current_model_label = combo.currentText()
+        for basename, config in self.model_configs.items():
+            if self.current_model_label == config.label:
+                if self.enabled:
+                    self.lazy_load_model(basename)
+                return
+        log.error(f"unknown model label {self.current_model_label}")
+
+    def process_XD(self, wavenumbers, spectrum, pr):
+        """
+        Process spectrum according to XD settings
+
+        Args:
+            wavenumbers: Array of wavenumber values.
+            spectrum: Array of spectrum values.
+
+        Returns:
+            Tuple[np.ndarray, np.ndarray]: Processed wavenumbers and spectrum
+
+        Note:
+            Processing steps include:
+            1. Etalon removal (if enabled)
+            2. XD model processing.
+            3. Spectrum trimming (if enabled)
+            4. Deconvolution (if enabled)
+
+            The ROI start must be non-zero for proper processing, as XD
+            requires a good ROI start just after the filter.
+
+            If deconvolution is requested but FWHM is zero in EEPROM,
+            deconvolution will be disabled.
+        """
+
+        wavenumbers = np.array(wavenumbers)
+        spectrum = np.array(spectrum)
+
+        doing_expert = self.ctl.page_nav.doing_expert()
+
+        if self.current_model_name is None:
+            log.error("doing nothing because no model selected")
+            return None, None
+
+        if self.current_model_name not in self.loaded_models:
+            log.error(f"doing nothing because current_model_name {self.current_model_name} not in loaded_models: {self.loaded_models}")
+            return None, None
+
+        model     = self.loaded_models[self.current_model_name]
+        eeprom    = pr.settings.eeprom
+        # roi_start = eeprom.roi_horizontal_start  
+        # roi_end   = eeprom.roi_horizontal_end
+        fwhm      = eeprom.avg_resolution
+
+        trim_start = self.left_trim_cm  if self.do_left_trim  else wavenumbers[0]
+        trim_end   = self.right_trim_cm if self.do_right_trim else wavenumbers[-1]
+
+        if eeprom.roi_horizontal_start < 1 and not doing_expert:
+            self.ctl.marquee.error("ROI start is zero in EEPROM - XD does not work well across the filter edge")
+
+        # MZ: ROI was already applied via "pr.get_processed()", "pr.get_wavenumbers()" etc
+        # we need to apply ROI here
+        # wavenumbers = wavenumbers[roi_start : roi_end + 1] 
+        # spectrum    = spectrum[roi_start : roi_end + 1] 
+
+        if self.deconvolute and fwhm == 0:
+            self.deconvolute = False
+            if not doing_expert:
+                self.ctl.marquee.error("FWHM is zero in EEPROM - no deconvolution possible")
+
+        log.debug(f"selecting preprocessor based on model config {self.current_model_config}")
+        rm = self.ctl.resource_monitor
+        rm.check_memory_usage(label=f"before calling clean_spectrum")
+        try:
+            if "X" in self.current_model_config.target_spectrometer_families:
+                log.debug("processing spectra with prep_spectra_X.clean_spectrum")
+                wavenumbers, spectrum = prep_spectra_X.clean_spectrum(model, wavenumbers, spectrum, eeprom, self.deconvolute, model_config=self.current_model_config)
+
+            elif "XM" in self.current_model_config.target_spectrometer_families:
+                log.debug("processing spectra with prep_spectra_XM.clean_spectrum")
+                wavenumbers, spectrum = prep_spectra_XM.clean_spectrum(model, wavenumbers, spectrum, eeprom, self.deconvolute, model_config=self.current_model_config)
+
+            elif "XS" in self.current_model_config.target_spectrometer_families:
+                log.debug("processing spectra with prep_spectra_XS.clean_spectrum")
+                wavenumbers, spectrum = prep_spectra_XS.clean_spectrum(model, wavenumbers, spectrum, eeprom, self.deconvolute, model_config=self.current_model_config)
+
+            else:
+                self.ctl.marquee.error(f"selected model is not configured to target any known spectrometer family")
+        except:
+            msg = f"exception executing model targetting {self.current_model_config.target_spectrometer_families} spectrometers"
+            self.ctl.marquee.error(msg)
+            log.error(msg, exc_info=1)
+        rm.check_memory_usage(label=f"after calling clean_spectrum")
+
+        trimmed_indices = (trim_start <= wavenumbers) & (wavenumbers <= trim_end)
+        wavenumbers = wavenumbers[trimmed_indices]
+        spectrum = spectrum[trimmed_indices]
+
+        return wavenumbers, spectrum
+
+    def get_color(self):
+        return self.COLOR
+
+    def get_model_name_from_label(self, label):
+        for basename, config in self.model_configs.items():
+            if label == config.label:
+                return basename
+
+class ModelConfig:
+
+    def __init__(self, basename, model_config_dir=None):
+        # common attributes
+        self.basename = basename
+        self.found = False
+        self.label = None
+        self.order = 999
+        self.model_type = "tflite"
+        self.target_spectrometer_families = []
+
+        # custom attributes
+        self.input_must_be_normalized = False
+        self.is_wide = False
+
+        # generate pathnames
+        self.model_pathname = os.path.join(model_config_dir, f"{basename}.tflite")
+        self.config_pathname = os.path.join(model_config_dir, f"{basename}.json")
+
+        if os.path.exists(self.config_pathname):
+            with open(self.config_pathname, "r", encoding="utf-8") as infile:
+                log.debug(f"loading {basename} config from {self.config_pathname}")
+                config = json.load(infile)
+                self.found = True
+
+                if "label" in config:
+                    self.label = config["label"]
+
+                if "order" in config:
+                    self.order = config["order"]
+
+                if "is_wide" in config:
+                    self.is_wide = config["is_wide"]
+
+                if "input_must_be_normalized" in config:
+                    self.input_must_be_normalized = config["input_must_be_normalized"]
+
+                if "target_spectrometer_families" in config:
+                    self.target_spectrometer_families = [model.upper() for model in config["target_spectrometer_families"]]
+
+    def __repr__(self):
+        return f"ModelConfig<basename {self.basename}, label {self.label}, order {self.order}, type {self.model_type}, families {self.target_spectrometer_families}>"

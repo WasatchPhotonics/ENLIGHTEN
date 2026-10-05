@@ -15,7 +15,7 @@ enlighten.egg-info
 *.bak
 Enlighten*.zip
 
-enlighten/assets/uic_qrc/*.py
+# enlighten/assets/uic_qrc/*.py
 enlighten/assets/example_data/serial_lookup.ini
 environment.yml
 
