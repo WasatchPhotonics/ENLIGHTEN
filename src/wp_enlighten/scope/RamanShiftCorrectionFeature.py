@@ -1,9 +1,11 @@
 import logging
 import json
+import os
 
 import scipy.signal as signal
 import numpy as np
 
+from wp_enlighten import common
 from wp_enlighten.EnlightenFeature import EnlightenFeature
 from wp_enlighten.util import unwrap
 from wasatch import utils as wasatch_utils
@@ -86,7 +88,7 @@ class RamanShiftCorrectionFeature(EnlightenFeature):
 
     # This file is installed as part of the ENLIGHTEN distribution and contains
     # our supported compounds and their peaks
-    ASTM_PATHNAME = "enlighten/assets/example_data/ASTM-E1840-96.json"
+    ASTM_PATHNAME = os.path.join(common.get_enlighten_dir(), "assets", "example_data", "ASTM-E1840-96.json")
 
     # if calibration is off by more than this, display error message
     MAX_WAVENUMBER_SHIFT = 20 

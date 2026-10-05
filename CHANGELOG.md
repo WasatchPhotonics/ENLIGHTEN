@@ -2,6 +2,11 @@
 
 ## 4.2 XS V2 Commercial Release
 
+- 2026-10-05 4.2.15
+    - testing "pip install wp-enlighten"
+    - resolve crash at shutdown on MacOS
+- 2026-10-05 4.2.14
+    - internal testing
 - 2026-10-02 4.2.13
     - updated docs/BUILD_RPI (tested on Raspberry Pi Zero 2 W)
     - updated some classes to make them easier to call from external Python scripts

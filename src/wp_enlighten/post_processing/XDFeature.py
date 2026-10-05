@@ -24,7 +24,7 @@ log = logging.getLogger(__name__)
 
 class XDFeature(EnlightenFeature):
     SECTION = "XDFeature"
-    MODEL_DIR = os.path.join(Path(__file__).parents[1], "assets", "example_data", "XD_models")
+    MODEL_DIR = os.path.join(common.get_enlighten_dir(), "assets", "example_data", "XD_models")
     COLOR = "#f7e842"
 
     def __init__(self, ctl):

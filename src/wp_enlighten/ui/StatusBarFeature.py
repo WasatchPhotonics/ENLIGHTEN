@@ -164,8 +164,8 @@ class StatusBarFeature(EnlightenFeature):
                 elif unit == "cm": x_axis = pr.get_wavenumbers()
                 else:              x_axis = pr.get_pixel_axis()
 
-                # note that unit will vary depending on x-axis
-                area = np.trapezoid(spectrum, x_axis)
+                # we may need to check np.__version__ re: trapz vs trapezoid
+                area = np.trapz(spectrum, x_axis)
                 self.set("Area", f"{area:.3e}")
             except:
                 log.error("can't compute area under the curve", exc_info=1)

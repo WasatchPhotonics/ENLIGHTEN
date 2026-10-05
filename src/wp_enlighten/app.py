@@ -116,6 +116,7 @@ class EnlightenApplication:
         return parser
 
     def run(self):
+
         # instantiate form (a QMainWindow with name "MainWindow")
         self.form = BasicWindow(title="ENLIGHTEN™ %s" % common.VERSION)
 
@@ -219,6 +220,12 @@ class EnlightenApplication:
 
         # call applog.explicit_log_close() here?
         applog.explicit_log_close()
+
+        if "macOS" in platform.platform():
+            print("EnlightenApplication.closeEvent: calling pyqtgraph.exit()")
+            import pyqtgraph
+            pyqtgraph.exit()
+            return
 
         # quit the QApplication (only need one of these, not sure which is better)
         print("EnlightenApplication.closeEvent: quitting app")

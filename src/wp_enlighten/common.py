@@ -2,6 +2,7 @@ import logging
 import os
 
 from enum import IntEnum
+from pathlib import Path
 
 log = logging.getLogger(__name__)
 
@@ -13,7 +14,7 @@ application.
       can be modules (files) within it
 """
 
-VERSION = "4.2.13"
+VERSION = "4.2.15"
 USE_QT = True       # external scripts may choose to set this False before importing / using other classes
 
 ctl = None
@@ -162,6 +163,9 @@ class FakeOutputHandle:
 
     def reconfigure(self, *args, **kwargs):
         pass
+
+def get_enlighten_dir():
+    return str(Path(__file__).parent)
 
 def get_default_data_dir():
     """
