@@ -18,6 +18,7 @@ if "macOS" in platform.platform():
     matplotlib.use('TkAgg')
 
 os.environ["BLINKA_FT232H"]="1" # used to allow SPI with FT232H
+os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
 
 # add "sub-paths" to low-level folders we wish to treat as packages
 for sub_path in [ os.path.join(str(Path(__file__).parent), "assets", "uic_qrc"),
@@ -67,12 +68,12 @@ class EnlightenApplication:
         self.exit_code = 0
 
     ## Parse command-line arguments
-    def parse_args(self, argv):
+    def parse_args(self):
 
         # SB: this doesn't show up anywhere bc logging is not yet configured
-        log.debug("Process args: %s", argv)
+        log.debug(f"argv {sys.argv}")
 
-        self.args = self.parser.parse_args(argv)
+        self.args = self.parser.parse_args()
         if self.args is None:
             return
 
@@ -154,7 +155,7 @@ class EnlightenApplication:
         # takes a while to import. We're choosing to import it here, AFTER
         # displaying the splash screen, so you have something pretty to look at
         # while we load all those BusinessObjects.
-        from enlighten.Controller import Controller
+        from wp_enlighten.Controller import Controller
 
         log.debug("platform = %s", platform.platform())
 
@@ -253,12 +254,13 @@ class EnlightenApplication:
                     # ... and if it is, minimize it
                     ctypes.windll.user32.ShowWindow(console_window, 2)  # SW_SHOWMINIMIZED
 
-    def chdir(self, script_path):
+    def chdir(self):
         """
         ENLIGHTEN loads various settings from its own enlighten/assets/
         example_code distribution, which it accesses through relative
         paths, and it can't find those if run from another directory.
         """
+        script_path = sys.argv[0]
         print(f"chdir({script_path})")
         print(f"sys.path {sys.path}")
 
@@ -275,23 +277,21 @@ class EnlightenApplication:
         except:
             log.error(f"error changing to {root_dir}")
 
-def main(argv):
+def main():
     enlighten = EnlightenApplication()
-    enlighten.parse_args(argv[1:])
-    enlighten.chdir(script_path=argv[0])
+    enlighten.parse_args()
+    enlighten.chdir()
     enlighten.hide_console()
     try:
         ec = enlighten.run()
     except SystemExit as exc:
-        log.critical("Exception in Enlighten.main", exc_info=1)
-        print("Exception in Enlighten.main: %s" % str(exc))
+        log.critical("Exception in app.main", exc_info=1)
+        print(f"Exception in Enlighten.main: {exc}")
         ec = exc.code
     return ec
 
 if __name__ == "__main__":
-    os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
     multiprocessing.freeze_support() # needed on Win32
-
-    ec = main(sys.argv)
-    print("Exiting main exit_code %d" % ec)
+    ec = main()
+    print(f"Exiting main exit_code {ec}")
     sys.exit(ec)

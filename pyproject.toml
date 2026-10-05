@@ -63,7 +63,7 @@ keywords = ["wasatch", "wasatchphotonics", "spectrometer", "raman"]
 
 
 [project.gui-scripts]
-enlighten = "wp_enlighten:main"
+enlighten = "wp_enlighten.app:main"
 
 [project.urls]
 Documentation = "https://wasatchphotonics.com/enlighten"
