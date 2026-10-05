@@ -10,7 +10,7 @@ import os
 import re
 
 from os import path
-rom pathlib import Path
+from pathlib import Path
 
 if "macOS" in platform.platform():
     import matplotlib
@@ -19,14 +19,11 @@ if "macOS" in platform.platform():
 
 os.environ["BLINKA_FT232H"]="1" # used to allow SPI with FT232H
 
-for sub_path in [ os.join(str(Path(__file__).parent, "assets", "uic_qrc"),
-                  os.join(str(Path(__file__).parent, "Plugins", "dist") ]:
+# add "sub-paths" to low-level folders we wish to treat as packages
+for sub_path in [ os.path.join(str(Path(__file__).parent), "assets", "uic_qrc"),
+                  os.path.join(str(Path(__file__).parent), "Plugins", "dist") ]:
     if sub_path not in sys.path:
         sys.path.append(sub_path)
-
-# update PYTHONPATH to include Plugins/dist
-if plugin_path not in sys.path:
-    sys.path.append(uic_path)
 
 from wp_enlighten import common
 from wp_enlighten.ui.BasicWindow import BasicWindow
@@ -262,6 +259,9 @@ class EnlightenApplication:
         example_code distribution, which it accesses through relative
         paths, and it can't find those if run from another directory.
         """
+        print(f"chdir({script_path})")
+        print(f"sys.path {sys.path}")
+
         if script_path.endswith(".py"):
             # run as "python path/to/scripts/enlighten.py", so want "path/to"
             root_dir = os.path.join(os.path.dirname(script_path), "..")
