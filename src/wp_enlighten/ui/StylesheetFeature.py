@@ -1,6 +1,8 @@
 import os
 import logging
 
+from pathlib import Path
+
 from wp_enlighten.EnlightenFeature import EnlightenFeature
 
 log = logging.getLogger(__name__)
@@ -9,7 +11,7 @@ log = logging.getLogger(__name__)
 # Encapsulates application of CSS stylesheets to Qt widgets.
 class StylesheetFeature(EnlightenFeature):
 
-    DEFAULT_PATH = "enlighten/assets/stylesheets"
+    DEFAULT_PATH = os.path.join(Path(__file__).parents[1], "assets", "stylesheets")
 
     def get_theme_list(self):
         return os.listdir(self.DEFAULT_PATH)

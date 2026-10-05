@@ -7,6 +7,7 @@ import re
 import numpy as np
 
 from datetime import datetime
+from pathlib import Path
 from ai_edge_litert.interpreter import Interpreter
 
 from wp_enlighten import common
@@ -23,7 +24,7 @@ log = logging.getLogger(__name__)
 
 class XDFeature(EnlightenFeature):
     SECTION = "XDFeature"
-    MODEL_DIR = os.path.join("enlighten", "assets", "example_data", "XD_models") 
+    MODEL_DIR = os.path.join(Path(__file__).parents[1], "assets", "example_data", "XD_models")
     COLOR = "#f7e842"
 
     def __init__(self, ctl):
