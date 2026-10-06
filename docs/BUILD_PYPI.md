@@ -12,12 +12,15 @@ like this:
     (venv) $ pip install wp-enlighten
     (venv) $ enlighten
 
-TODO:
+## Referenced Documents
 
-- update scripts/deploy to validate version number between .toml and common.py, 
-  then perform build and twine upload
-- probably should add some kind of pre-build "hook" to the "python -m build" 
-  command which runs scripts/rebuild-resources.sh if required
+- [Packaging Tutorial](https://packaging.python.org/en/latest/tutorials/packaging-projects/)
+
+## TODO:
+
+- update scripts/deploy to perform build and twine upload
+- modify app.py to automatically run rebuild-resources.sh if needed (e.g. upon 
+  first execution)
 
 # PyPi Package Maintenance
 

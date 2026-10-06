@@ -103,12 +103,21 @@ fi
 # validate release requirements
 ################################################################################
 
-# verify version number in code
+# verify version number in enlighten.common
 if egrep -q "\"$VERSION\"" enlighten/common.py
 then
     echo "version found in common.py"
 else
     echo "version missing from common.py"
+    exit 1
+fi
+
+# verify version number in pyproject.toml
+if egrep -q "^version = \"$VERSION\"" pyproject.toml
+then
+    echo "version found in pyproject.toml"
+else
+    echo "version missing from pyproject.toml"
     exit 1
 fi
 
