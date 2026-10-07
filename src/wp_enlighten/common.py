@@ -14,13 +14,12 @@ application.
       can be modules (files) within it
 """
 
-VERSION = "4.2.15"
+VERSION = "4.3.0"
 USE_QT = True       # external scripts may choose to set this False before importing / using other classes
 
 ctl = None
 
 class Techniques(IntEnum):
-    """ ENLIGHTEN's application version number (checked by scripts/deploy and bootstrap.bat) """
     NONE                     = 0
     EMISSION                 = 1
     RAMAN                    = 2

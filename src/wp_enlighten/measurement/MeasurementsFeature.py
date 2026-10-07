@@ -339,7 +339,7 @@ class MeasurementsFeature(EnlightenFeature):
     # @param prompt: prompt for verification (False for unattended operation)
     def export_session(self, filename=None, prompt=True):
         self.export_filename = filename
-        self.export_directory = common.get_default_data_dir()
+        self.export_directory = self.ctl.save_options.generate_today_dir()
 
         if not self.count():
             log.warn("no measurements to export")
@@ -694,6 +694,10 @@ class MeasurementsFeature(EnlightenFeature):
         return settingss
 
     def incompatible_axes(self, export_measurements):
+        """
+        Given a list of Measurement objects to export (presumably to a CSV, if 
+        calling this method), confirm that they all have the same wavelength axes.
+        """
         specs = {}
 
         # group by serial
@@ -850,7 +854,7 @@ class MeasurementsFeature(EnlightenFeature):
         fields = self.measurements[0].get_extra_header_fields()
         fields.extend(Measurement.CSV_HEADER_FIELDS)
 
-        if not self.ctl.interp.enabled and self.incompatible_axes(self.export_measurements_csv):
+        if not self.ctl.interp.enabled and self.XD_behavior != "XD_only" and self.incompatible_axes(self.export_measurements_csv):
             msg = "The selected measurements include differing ROI and/or " \
                 + "interpolation settings for the same spectrometer. Please " \
                 + "enable interpolation to export these measurements as a group."
