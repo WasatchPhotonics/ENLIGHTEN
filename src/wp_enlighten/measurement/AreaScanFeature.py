@@ -1,0 +1,708 @@
+import os
+import logging
+import pyqtgraph
+import shutil
+import numpy as np
+import qimage2ndarray
+
+from PIL import Image, ImageStat
+from datetime import datetime
+
+from wp_enlighten import common
+from wp_enlighten.ui.ScrollStealFilter import ScrollStealFilter
+from wp_enlighten.EnlightenFeature import EnlightenFeature
+
+if common.use_pyside2():
+    from PySide2 import QtCore, QtWidgets, QtGui
+else:
+    from PySide6 import QtCore, QtWidgets, QtGui
+
+log = logging.getLogger(__name__)
+
+class AreaScanFeature(EnlightenFeature):
+    """
+    Implements a 2D "area scan," displaying the full detector rows and columns
+    rather than the usual 1D vertically-binned spectrum.
+
+    This feature is primarily for manufacturing use.  It is not currently 
+    very robust or efficient.
+
+    In ALL of the following historical implementations, one pixel is "stomped" 
+    by the firmware with the original line index to aid in visual reconstruction
+    of the 2D image. Unless otherwise specified, that is pixel 0.
+
+    @par Slow Mode (Legacy)
+
+    Early AreaScan implementations in firmware sent out a single line in response
+    to a single ACQUIRE opcode; 64 ACQUIRE requests had to be sent to read-out an
+    entire 64-row detector. Each line came from a separate integration (one line
+    per frame).
+
+    @par Continuous Area Scan (IMX385)
+
+    Once the firmware is set into Area Scan mode, the STM32 will stream an
+    endless sequence of ACQUIRE signals into the FPGA. Each time the FPGA 
+    receives one, it will read-out the next line to firmware and the host,
+    wrapping-around when one frame completes and automatically beginning the
+    next one. This continues until the spectrometer is taken out of Area Scan
+    mode.
+
+    @par Frame
+
+    With IDS cameras, the vender drivers will automatically collect full-frame
+    images from the camera, such that vertical binning is performed in software.
+    On such devices, when Area Scan is enabled, Wasatch.PY will automatically
+    include each full-frame image along with the vertically binned spectrum,
+    so the image can be directly displayed in ENLIGHTEN.
+
+    @par Batch Collection
+
+    I am not taking time to fully integrate Area Scan into our BatchCollection
+    at this time -- I think there are multiple reasons why that might prove 
+    tricky, and it's too much to take on right now for the limited target
+    audience. Instead I'm kludging in a very lightweight connection between
+    the two.
+
+    """
+
+    # ##########################################################################
+    # Lifecycle
+    # ##########################################################################
+
+    def __init__(self, ctl):
+        super().__init__(ctl)
+
+        cfu = ctl.form.ui
+
+        self.bt_save            = cfu.pushButton_area_scan_save
+        self.cb_enable          = cfu.checkBox_area_scan_enable
+        self.cb_normalize       = cfu.checkBox_area_scan_normalize
+        self.cb_normalize_csv   = cfu.checkBox_area_scan_normalize_csv
+        self.cb_fit             = cfu.checkBox_area_scan_fit
+        self.frame_image        = cfu.frame_area_scan_image
+        self.frame_live         = cfu.frame_area_scan_live
+        self.graphics_view      = cfu.graphicsView_area_scan
+        self.layout_live        = cfu.layout_area_scan_live
+        self.lb_elapsed         = cfu.label_area_scan_frame_elapsed
+        self.lb_current         = cfu.label_area_scan_current_line
+        self.lb_frame_count     = cfu.label_area_scan_frame_count
+        self.progress_bar       = cfu.progressBar_area_scan
+        self.sb_start           = cfu.spinBox_area_scan_start_line
+        self.sb_stop            = cfu.spinBox_area_scan_stop_line
+        self.sb_step            = cfu.spinBox_area_scan_line_step
+        self.sb_scale           = cfu.spinBox_area_scan_scale
+        self.sb_cursor          = cfu.spinBox_area_scan_cursor
+
+        self.data = None
+        self.data_raw = None
+        self.enabled = False
+        self.visible = False
+        self.normalize = True
+        self.normalize_csv = True
+        self.fit = True
+        self.start_line = 0
+        self.stop_line = 63
+        self.scale = 1
+        self.ratio = None
+        self.cursor_line = 0
+        self.ignored = 0
+        self.frame_count = 0
+        self.image = None
+        self.pathname_png = None
+        self.name = "Area_Scan"
+        self.last_received_time = None
+        self.last_line = 0
+        self.last_elapsed_sec = 0
+        self.curve_live = None
+        self.frame_start = datetime.now()
+        self.last_save_timestamp = self.frame_start
+
+        self.pen_start  = self.ctl.gui.make_pen(color="enlighten_name_g",  width=2)
+        self.pen_stop   = self.ctl.gui.make_pen(color="enlighten_name_n2", width=2)
+        self.pen_line   = self.ctl.gui.make_pen(color="enlighten_name_h")
+        self.pen_cursor = self.ctl.gui.make_pen(color="enlighten_name_i")
+
+        self.cb_fit.setEnabled(True)
+        self.sb_scale.setEnabled(True)
+
+        # create widgets we can't / don't pass in
+        self.create_widgets()
+
+        self.cb_fit.setChecked(True)
+        self.cb_normalize.setChecked(True)
+        self.cb_normalize_csv.setChecked(True)
+        self.progress_bar.setVisible(False)
+
+        self.bt_save     .clicked        .connect(self.save)
+        self.cb_normalize.stateChanged   .connect(self.normalize_callback)
+        self.cb_normalize_csv.stateChanged.connect(self.normalize_callback)
+        self.cb_fit      .stateChanged   .connect(self.fit_callback)
+        self.cb_enable   .stateChanged   .connect(self.enable_callback)
+        self.sb_start    .valueChanged   .connect(self.roi_callback)
+        self.sb_stop     .valueChanged   .connect(self.roi_callback)
+        self.sb_step     .valueChanged   .connect(self.step_callback)
+        self.sb_scale    .valueChanged   .connect(self.scale_callback)
+        self.sb_cursor   .valueChanged   .connect(self.cursor_callback)
+
+        self.progress_bar_timer = QtCore.QTimer()
+        self.progress_bar_timer.timeout.connect(self.tick_progress_bar)
+        self.progress_bar_timer.setSingleShot(True)
+
+        self.update_from_gui()
+
+        # disable scroll stealing
+        for key, item in self.__dict__.items():
+            if key.startswith("sb_"):
+                item.installEventFilter(ScrollStealFilter(item))
+
+    def create_widgets(self):
+        log.debug("creating widgets")
+
+        # QGraphicsScene used to hold the Area Scan image
+        self.scene = QtWidgets.QGraphicsScene(parent=self.frame_image) 
+        self.graphics_view.setScene(self.scene)
+
+        # PyQtChart to hold the "summed" graph beneath
+        # (why not just put graphicsscene atop scope chart...?)
+        self.chart_live = pyqtgraph.PlotWidget(name="Area Scan Live")
+        self.curve_live = self.chart_live.plot([], pen=self.ctl.gui.make_pen(widget="area_scan_live"))
+        self.layout_live.addWidget(self.chart_live)
+
+        self.chart_live.setMouseEnabled(x=False, y=False)
+
+    def disconnect(self):
+        log.debug("disconnecting")
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is not None:
+            if self.enabled and spec.settings.state.area_scan_enabled:
+                self.cb_enable.setChecked(False)
+        self.update_visibility()
+
+    def prepare_for_shutdown(self):
+        if self.chart_live:
+            log.debug("closing PlotWidget")
+            self.chart_live.close()
+            self.chart_live = None
+
+    # ##########################################################################
+    # public methods
+    # ##########################################################################
+
+    def init_hotplug(self):
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return self.disable()
+
+        start = spec.settings.eeprom.roi_vertical_region_1_start
+        stop  = spec.settings.eeprom.roi_vertical_region_1_end
+
+        log.debug(f"init_hotplug: setting spinboxes to ({start}, {stop})")
+
+        self.sb_start.setValue(start)
+        self.sb_stop.setValue(stop)
+
+        log.debug(f"init_hotplug: done")
+
+    ## @todo mess with is_supported etc if appropriate
+    def update_visibility(self):
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return self.disable()
+
+        # self.frame_live.setVisible(not (self.enabled and spec.settings.is_imx()))
+        self.frame_live.setVisible(True)
+
+        roi = spec.settings.get_vertical_roi()
+        if roi is not None:
+            log.debug("initializing ROI %s", roi)
+            self.sb_start.setValue(roi.start)
+            self.sb_stop .setValue(roi.end)
+        else:
+            log.debug("spectrometer has no vertical ROI")
+            self.sb_start.setValue(0)
+            self.sb_stop .setValue(spec.settings.eeprom.active_pixels_vertical - 1)
+
+        self.sb_start.setEnabled(True)
+        self.sb_stop.setEnabled(True)
+
+        self.frame_count = 0 # could move to app_settings
+
+    def process_reading(self, reading):
+        if reading is None:
+            return
+
+        if not self.enabled and reading.spectrum is not None:
+            # area scan isn't running, so just update the "live" spectrum from 
+            # the latest reading
+            self.ctl.set_curve_data(self.curve_live, y=reading.spectrum)
+            return
+
+        if reading.area_scan_image is not None:
+            self.process_reading_with_area_scan_image(reading)
+
+    # ##########################################################################
+    # callbacks
+    # ##########################################################################
+
+    def cursor_callback(self):
+        self.cursor_line = self.sb_cursor.value()
+
+    def scale_callback(self):
+        self.scale = self.sb_scale.value()
+        self.cb_fit.setChecked(False)
+        self.cb_fit.setEnabled(False)
+
+    def step_callback(self):
+        """ the user changed the step spinner """
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return self.disable()
+
+        spec.settings.state.area_scan_line_step = self.sb_step.value()
+        spec.change_device_setting("area_scan_line_step", spec.settings.state.area_scan_line_step)
+
+    def roi_callback(self):
+        """ the user changed the start/stop lines """
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return self.disable()
+
+        self.update_from_gui()
+
+    def normalize_callback(self):
+        """ The user clicked "[x] normalize" on the widget """
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return self.disable()
+        self.normalize = self.cb_normalize.isChecked()
+        self.normalize_csv = self.cb_normalize_csv.isChecked()
+
+    def fit_callback(self):
+        """ The user clicked "[x] fit" on the widget """
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return self.disable()
+        self.fit = self.cb_fit.isChecked()
+        self.resize()
+
+    def disable(self):
+        log.debug("disabling area scan")
+        self.enabled = False
+        self.data = None
+        self.data_raw = None
+        self.last_received_time = None
+        self.frame_image.setVisible(False)
+        self.cb_enable.setChecked(False)
+
+    def enable_callback(self):
+        """ The user clicked "[x] enable" on the widget """
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return self.disable()
+
+        self.enabled = self.cb_enable.isChecked()
+
+        # apply and reverse these in careful order
+        if self.enabled:
+            log.debug("enabling area scan")
+            self.frame_image.setVisible(True)
+            self.progress_bar.setVisible(True)
+            spec.change_device_setting("area_scan_enable", True)
+        else:
+            spec.change_device_setting("area_scan_enable", False)
+            spec.change_device_setting("detector_offset", spec.settings.eeprom.detector_offset)
+            spec.settings.state.ignore_timeouts_for(sec=5)
+            self.disable()
+
+        self.update_visibility()
+
+        # update sizing
+        if self.enabled:
+            self.update_from_gui()
+            self.ignored = 0
+
+    def save(self):
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return self.disable()
+
+        saved_something = False
+        today_dir = self.ctl.save_options.generate_today_dir()
+
+        # this doesn't use the full templating capability of Measurement (which 
+        # needs extracted into TemplateFeature), but meets the immediate need
+        now = datetime.now()
+        ts = now.strftime("%Y%m%d-%H%M%S")
+        sn = spec.settings.eeprom.serial_number
+        basename = f"area-scan-{ts}-{sn}"
+        if self.ctl.save_options.has_prefix():
+            basename = self.ctl.save_options.prefix() + "-" + basename
+        if self.ctl.save_options.has_suffix():
+            basename += "-" + self.ctl.save_options.suffix()
+
+        # copy or save image
+        if self.pathname_png is not None:
+            new_pathname_png = os.path.join(today_dir, basename + ".png")
+            log.debug("copying {self.pathname_png} -> {new_pathname_png}")
+            try:
+                shutil.copy2(self.pathname_png, new_pathname_png)
+            except:
+                log.error("failed to copy {self.pathname_png} -> {new_pathname_png}", exc_info=1)
+            saved_something = True
+        elif self.image is not None:
+            pathname_png = os.path.join(today_dir, basename + ".png")
+            log.debug("saving qimage %s", pathname_png)
+            self.image.save(pathname_png)
+            saved_something = True
+
+        data = self.data if self.normalize_csv else self.data_raw
+        if data is not None:
+            # save table
+            pathname_csv = os.path.join(today_dir, basename + ".csv")
+            log.debug("saving csv %s", pathname_csv)
+
+            lines = len(data)
+            pixels = len(data[0])
+            with open(pathname_csv, "w") as outfile:
+                for i in range(pixels):
+                    outfile.write(f", {i}")
+                outfile.write("\n")
+                for line in range(lines):
+                    outfile.write(f"{line}")
+                    for i in range(pixels):
+                        outfile.write(f", {data[line][i]}")
+                    outfile.write("\n")
+            saved_something = True
+
+        if saved_something:
+            self.ctl.marquee.info("saved %s" % basename)
+            self.last_save_timestamp = now
+        else:
+            self.ctl.marquee.error("no area scan data to save")
+
+    # ##########################################################################
+    # private methods
+    # ##########################################################################
+
+    def update_from_gui(self):
+        """ update the area scan parameters from the GUI widgets """
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return self.disable()
+
+        (old_start, old_stop) = (self.start_line, self.stop_line)
+        self.start_line = self.sb_start.value()
+        self.stop_line  = self.sb_stop.value()
+        if self.start_line > self.stop_line:
+            (self.start_line, self.stop_line) = (self.stop_line, self.start_line)
+
+        if old_start != self.start_line or old_stop != self.stop_line:
+            log.debug("applying new ROI (%d, %d)", self.start_line, self.stop_line)
+            spec.change_device_setting("vertical_binning", (self.start_line, self.stop_line))
+            self.resize()
+
+    def update_progress_bar(self):
+        """ we've updated the start/stop lines, so resize the image """
+        if self.last_received_time is None:
+            log.debug("update_progress_bar: initializing")
+            self.last_received_time = datetime.now()
+            return
+
+        elapsed_ms = round(1000 * (datetime.now() - self.last_received_time).total_seconds())
+        log.debug("update_progress_bar: elapsed = %d ms (estimate was %d)", elapsed_ms, self.progress_bar.maximum())
+        if elapsed_ms > 5000:
+            log.debug("update_progress_bar: ignoring overlong elapsed")
+            self.last_received_time = datetime.now()
+            return
+    
+        self.progress_bar.setVisible(True)
+        self.progress_bar.setMinimum(0)
+        self.progress_bar.setMaximum(elapsed_ms)
+        self.progress_bar.setValue(1)
+        self.progress_bar_timer.start(100)
+
+        self.last_received_time = datetime.now()
+
+    def tick_progress_bar(self):
+        if not self.enabled:
+            log.debug("tick_progress_bar: disabled so invisibling")
+            self.progress_bar.setVisible(False)
+            self.last_received_time = None
+            return
+        elif self.last_received_time is None:
+            return
+        elapsed_ms = round(1000 * (datetime.now() - self.last_received_time).total_seconds())
+        self.progress_bar.setValue(elapsed_ms)
+        self.progress_bar_timer.start(100)
+
+    def process_spectrum(self, spectrum, row):
+        self.lb_current.setText(str(row))
+
+        if row < self.start_line or row > self.stop_line:
+            log.debug("ignoring area scan row %d (ROI %d, %d)", row, self.start_line, self.stop_line)
+        else:
+            if self.data is None:
+                self.resize()
+
+            index = row - self.start_line # absolute (detector) vs ROI (image)
+            self.data[index] = spectrum
+
+    def process_reading_with_area_scan_image(self, reading):
+        asi = reading.area_scan_image
+        self.resize(area_scan_image=asi)
+
+        if asi.pathname_png is not None:
+            self.process_reading_with_area_scan_image_png(reading)
+        elif asi.data is not None:
+            self.process_reading_with_area_scan_image_data(reading)
+
+        if reading.spectrum is not None:
+            self.ctl.set_curve_data(self.curve_live, reading.spectrum)
+
+        self.frame_count += 1
+        self.lb_frame_count.setText(str(self.frame_count))
+
+    def max_perc(self, data, perc):
+        """ 
+        perc is a float percentage (i.e. 0.01 to 0.99)
+        """
+        if data is None:
+            return 0
+
+        # convert to sorted array # of unique values
+        values = np.sort(data.flatten()) # np.unique(data)
+
+        # take the perc% value
+        index = int(perc * len(values))
+        index = min(len(values) - 1, index)
+        index = max(0, index)
+        return values[index]
+
+    def process_reading_with_area_scan_image_data(self, reading):
+        """ 
+        We have received a Reading with an AreaScanImage with .data populated 
+        (implicitly a NumPy array), such as generated on XS spectrometers from
+        wasatch.FID.get_area_scan_xs.
+        """
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+
+        try:
+            asi = reading.area_scan_image
+            line_index = asi.line_index 
+            if line_index is None:
+                log.error("AreaScanImage missing line_index")
+                return
+
+            data = asi.data
+            h, w = data.shape
+
+            # optionally normalize
+            self.data_raw = data.astype(np.uint32)
+            if self.normalize:
+                lo = np.min(data)
+                hi = self.max_perc(data, 0.99)
+                log.debug(f"prwasid: raw: lo {lo}, hi {hi}")
+                if hi > lo:
+                    data = (data - lo) / (hi - lo)
+                    data *= 65535
+            data = np.clip(data, a_min=0, a_max=65535).astype(np.uint16)
+            lo = np.min(data)
+            hi = np.max(data)
+            log.debug(f"prwasid: norm: lo {lo}, hi {hi}")
+
+            # generate QImage from source data
+            self.image = QtGui.QImage(data, w, h, w*2, QtGui.QImage.Format_Grayscale16)
+            qpixmap = QtGui.QPixmap.fromImage(self.image)
+
+            # scale image if requested
+            # - QPixmap.setDevicePixelRatio()
+            # - QPixmap.scaled()
+            # - QImage.scaled()
+            if self.scale > 1:
+                # note that this doesn't change self.image, which is what gets saved as a PNG
+                size = QtCore.QSize(w * self.scale, h * self.scale)
+                qpixmap = qpixmap.scaled(size)
+
+            self.scene.clear()
+            self.scene.addPixmap(qpixmap)
+
+            start = spec.settings.eeprom.roi_vertical_region_1_start
+            stop  = spec.settings.eeprom.roi_vertical_region_1_end
+
+            # add three horizontal marker lines ATOP the image to show bounds and progress
+            # log.debug(f"adding green/red lines at (start {start}, stop {stop}) on image (width {w}, height {h}), line_index {line_index}")
+            margin = 15
+
+            scaled_w     = self.scale * w
+            scaled_h     = self.scale * h
+            scaled_start = self.scale * start
+            scaled_index = self.scale * line_index
+            scaled_stop  = self.scale * stop
+
+            self.scene.addLine(-margin, scaled_start, scaled_w + margin, scaled_start, self.pen_start)
+            self.scene.addLine(-margin, scaled_index, scaled_w + margin, scaled_index, self.pen_line) 
+            self.scene.addLine(-margin, scaled_stop,  scaled_w + margin, scaled_stop,  self.pen_stop)
+
+            self.display_vertical_cursor  (y0 = -margin, y1 = margin + scaled_h)
+            self.display_horizontal_cursor(x0 = -margin, x1 = margin + scaled_w)
+
+            # optionally scale entire QGraphicsView
+            t = QtGui.QTransform()
+            if self.fit:
+                w_ratio = self.frame_image.width()  / self.scene.width()
+                h_ratio = self.frame_image.height() / self.scene.height()
+                self.ratio = min(w_ratio, h_ratio)
+                if self.ratio < 1:
+                    t.scale(self.ratio, self.ratio)
+            self.graphics_view.setTransform(t)
+
+            # display current line
+            self.lb_current.setText(str(line_index))
+
+            # display timing
+            if line_index < self.last_line:
+                self.last_elapsed_sec = (datetime.now() - self.frame_start).total_seconds()
+                self.frame_start = datetime.now()
+            elapsed_sec = (datetime.now() - self.frame_start).total_seconds()
+            self.lb_elapsed.setText(f"{elapsed_sec:.2f} (last {self.last_elapsed_sec:.2f})")
+
+            self.last_line = line_index
+            self.data = data 
+
+        except:
+            log.error("failed to render AreaScanImage data", exc_info=1)
+
+        self.check_for_batch_collection()
+
+    def check_for_batch_collection(self):
+        """
+        Thisis as far as we've currently integrated Area Scan into Batch 
+        Collection. Basically, we use the timing periods and counts from the 
+        BatchCollection form when BatchCollection is enabled, but do not attempt
+        to ride over the whole "TakeOneRequest" / VCRControls pipeline. I'm sure
+        it's doable, but I'm not doing it now.
+        """
+        if not self.enabled:
+            # we only auto-save Area Scan if the feature is enabled
+            return
+
+        if not self.ctl.page_nav.doing_factory():
+            # we only auto-save Area Scan when we're looking at area scan
+            return
+
+        bc = self.ctl.batch_collection
+        if not bc.running:
+            # we only auto-save Area Scan if BatchCollection is ENABLED 
+            # (which is not the same as RUNNING)
+            return
+
+        period_ms = bc.measurement_period_ms
+        elapsed_ms = (datetime.now() - self.last_save_timestamp).total_seconds() * 1000.0
+        if period_ms > elapsed_ms:
+            # use BatchCollection "measurement period" to decide how often to save an Area Scan
+            return
+
+        self.save()
+
+    def process_reading_with_area_scan_image_png(self, reading):
+        """ we have received a Reading with an AreaScanImage with pathname_png populated """
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return
+
+        asi = reading.area_scan_image
+        self.pathname_png = asi.pathname_png # for saving
+
+        try:
+            if self.normalize:
+                self.normalize_png(asi.pathname_png)
+            qpixmap = QtGui.QPixmap(asi.pathname_png)
+            self.scene.clear()
+            self.scene.addPixmap(qpixmap)
+
+            scale = 1
+            if asi.height is not None and asi.height_orig is not None:
+                scale = 1.0 * asi.height / asi.height_orig
+                
+            margin = 10
+            start_line = spec.settings.eeprom.roi_vertical_region_1_start
+            stop_line = spec.settings.eeprom.roi_vertical_region_1_end
+
+            self.scene.addLine(-margin, scale*start_line, qpixmap.width() + margin, scale*start_line, self.pen_start)
+            self.scene.addLine(-margin, scale*stop_line,  qpixmap.width() + margin, scale*stop_line,  self.pen_stop)
+
+            self.display_vertical_cursor  (y0 = -margin, y1 = margin + qpixmap.height())
+            self.display_horizontal_cursor(x0 = -margin, x1 = margin + qpixmap.width())
+        except:
+            log.error("failed to display PNG", exc_info=1)
+
+    def display_vertical_cursor(self, y0, y1):
+        if self.ctl.cursor.is_enabled():
+            x = self.ctl.cursor.get_pixel()
+            self.scene.addLine(x, y0, x, y1, self.pen_cursor)
+
+    def display_horizontal_cursor(self, x0, x1):
+        y = self.cursor_line * self.scale
+        # log.debug(f"display_horizontal_cursor: y {y}, x0 {x0}, x1 {x1}")
+        if y > 0:
+            self.scene.addLine(x0, y, x1, y, self.pen_cursor)
+
+    def normalize_png(self, pathname_png):
+        try:
+            img = Image.open(pathname_png).convert('L')
+            stat = ImageStat.Stat(img)
+            mean_brightness = stat.mean[0]
+            img_array = np.array(img)
+            normalized_img_array = img_array / mean_brightness * 100 
+            normalized_img = Image.fromarray(np.uint8(normalized_img_array))
+            normalized_img.save(pathname_png)
+        except Exception as ex:
+            log.error(f"normalize_png: caught {ex}", exc_info=1)
+
+    def update_curve_color(self, spec):
+        """ Required callback for Multispec.strip_features? """
+        curve = self.ctl.multispec.get_hardware_feature_curve(self.name, spec.device_id)
+        if curve is None:
+            return
+        curve.opts["pen"] = spec.color
+
+    def resize(self, area_scan_image=None):
+        spec = self.ctl.multispec.current_spectrometer()
+        if spec is None:
+            return self.disable()
+
+        if area_scan_image is None:
+            # data_h = self.stop_line - self.start_line + 1
+            data_h = spec.settings.eeprom.active_pixels_vertical
+            data_w = spec.settings.pixels()
+        else:
+            data_h = area_scan_image.height
+            data_w = area_scan_image.width
+
+        log.debug("resize: data_w = %d, data_h = %d (start %d, stop %d)", data_w, data_h, self.start_line, self.stop_line)
+        self.data = np.zeros((data_h, data_w), dtype=np.float32)
+        self.data_raw = None
+
+        new_height = data_h
+        self.graphics_view.setMinimumHeight(new_height)
+
+    def finish_update(self):
+        """
+        @todo qimage2ndarray technically provides access to the existing QImage's 
+              underlying data, so we could probably simply update the existing 
+              QImage rather than make a whole new QPixmap.
+        """
+        if self.data is None:
+            return
+
+        # graph the rotated 2D array
+        self.image = qimage2ndarray.array2qimage(self.data, normalize=True)
+        pixmap = QtGui.QPixmap(self.image).scaledToWidth(self.frame_image.width())
+        self.scene.clear() # @todo - anything leak here? need to deleteLater old pixmap?
+        self.scene.addPixmap(pixmap)
+
+        # vertically bin the on-screen image for the "live" spectrum (optionally normalized)
+        total = np.sum(self.data, axis=0)
+        self.ctl.set_curve_data(self.curve_live, total)

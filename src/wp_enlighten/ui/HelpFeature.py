@@ -1,0 +1,113 @@
+import webbrowser
+import logging
+
+from wp_enlighten import common
+from wp_enlighten.util import unwrap, undent
+from wp_enlighten.EnlightenFeature import EnlightenFeature
+
+if common.use_pyside2():
+    from PySide2 import QtWidgets
+else:
+    from PySide6 import QtWidgets
+
+log = logging.getLogger(__name__)
+
+class HelpFeature(EnlightenFeature):
+    """
+    @todo When enabling WhatsThis, could probably iterate through every widget in
+          the entire form, backup the current stylesheet, then apply a new one 
+          with a yellow sparkly glow or something to obviously indicate which 
+          widgets contained a WhatsThis message. Disabling the feature would then
+          re-iterate all widgets and restore the previous stylesheet (or 
+          dynamically edit the stylesheet and remove the sparkly bit).
+    """
+    
+    HELP_URL = "https://wasatchphotonics.com/software-support/enlighten/"
+
+    def __init__(self, ctl):
+        super().__init__(ctl)
+
+        cfu = ctl.form.ui
+
+        self.bt_help = cfu.pushButton_help
+        self.bt_what = cfu.pushButton_whats_this
+
+        self.bt_help.clicked.connect(self.help_callback)
+        self.bt_what.clicked.connect(self.what_callback)
+
+        self.bt_help.setWhatsThis(unwrap("""
+            "Opens a web browser to ENLIGHTEN on-line help if clicked, or shows 
+            a handy cheat-sheet of keyboard shortcuts on mouse-over."""))
+
+        self.bt_what.setWhatsThis(unwrap("""
+            An alternate help system which can provide richer information than we
+            normally put into mouse-over tooltips. In particular, provides 
+            especially rich data on individual measurements in the Clipboard."""))
+
+        self.bt_help.setToolTip(undent("""
+            Click or press F1 to view online manual. 
+
+            Keyboard shortcuts:
+            
+            Ctrl-1 Scope View
+            Ctrl-2 Settings View
+            Ctrl-3 Hardware View
+            Ctrl-4 Log View
+            Ctrl-5 Factory View
+            Ctrl-` next view (backtick)
+            
+            Ctrl-A Authenticate
+            Ctrl-B toggle Bluetooth® LE
+            Ctrl-C Copy to system clipboard
+            Ctrl-D take/clear Dark
+            Ctrl-E Edit last saved measurement
+            Ctrl-F Freeze axes
+            Ctrl-G enter Gain
+            Ctrl-H toggle between Hardware and scope
+            Ctrl-I toggle Interpolation
+            Ctrl-L toggle Laser firing
+            Ctrl-M toggle library Matching
+            Ctrl-N enter new Note
+            Ctrl-P Pause/Play
+            Ctrl-Q Quit
+            Ctrl-R take/clear Reference
+            Ctrl-S Save measurement
+            Ctrl-T enter integration Time
+            Ctrl-X toggle eXpert mode
+
+            Ctrl-Shift-D toggle XD
+            Ctrl-Shift-S export all Saved measurements
+
+            Ctrl-* Auto-Raman
+            Ctrl-% enter laser power
+            Ctrl-& toggle trace of last measurement
+            Ctrl-^ connect currently-selected plugin
+            Ctrl-, Prev Spectrometer
+            Ctrl-. Next Spectrometer
+
+            Ctrl-Up/Down scroll palette/hardware
+            Ctrl-Left/Right move Scope cursor"""))
+
+        """
+        Unused:
+            ctrl-J
+            ctrl-K
+            ctrl-O
+            ctrl-U
+            ctrl-V
+            ctrl-W
+            ctrl-Y
+            ctrl-Z
+        """
+
+    def help_callback(self):
+        webbrowser.open(self.HELP_URL)
+
+    def what_callback(self):
+        wt = QtWidgets.QWhatsThis
+        if wt.inWhatsThisMode():
+            log.debug("leaving WhatsThis mode")
+            wt.leaveWhatsThisMode()
+        else:
+            log.debug("entering WhatsThis mode")
+            wt.enterWhatsThisMode()

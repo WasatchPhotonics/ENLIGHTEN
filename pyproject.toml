@@ -1,0 +1,73 @@
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "wp-enlighten"
+version = "4.3.0"
+
+dependencies = [
+    "2to3",
+    "adafruit-blinka",
+    "ai_edge_litert",
+    "bleak",
+    "boto3",
+    "colour-science",
+    "colour",
+    "crcmod",
+    "libusb",
+    "matplotlib",
+    "numpy<2.0",
+    "pandas",
+    "pefile",
+    "pexpect",
+    "pip",
+    "psutil",
+    "pyftdi",
+    "pygtail",
+    "pyqtgraph ",
+    "pyserial",
+    "PySide6",
+    "pytest",
+    "pyusb",
+    "pywavelets",
+    "qimage2ndarray",
+    "scipy",
+    "SPyC_Writer",
+    "superman",
+    "wasatch",
+    "xlwt",
+
+    "pywin32   ; sys_platform == 'win32'",
+    "ids_peak  ; sys_platform == 'win32'",
+    "seabreeze ; sys_platform == 'win32'",
+]
+
+authors = [
+  { name="Mark Zieg", email="mzieg@wasatchphotonics.com" },
+]
+
+description = "A GUI to control and collect data from Wasatch Photonics spectrometers"
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+
+]
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+
+keywords = ["wasatch", "wasatchphotonics", "spectrometer", "raman"]
+
+
+[project.gui-scripts]
+enlighten = "wp_enlighten.app:main"
+
+[project.urls]
+Documentation = "https://wasatchphotonics.com/enlighten"
+Homepage = "https://wasatchphotonics.com/enlighten"
+Repository = "https://github.com/WasatchPhotonics/ENLIGHTEN.git"
+Issues = "https://github.com/WasatchPhotonics/ENLIGHTEN/issues"
+Changelog = "https://github.com/WasatchPhotonics/ENLIGHTEN/blob/master/CHANGELOG.md"

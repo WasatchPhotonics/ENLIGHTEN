@@ -177,6 +177,12 @@ mac-platypus:
 run:
 	@python scripts/Enlighten.py --log-level debug 1>enlighten.out 2>enlighten.err
 
+publish-test:
+	python -m twine upload --repository testpypi dist/wp_enlighten*
+
+publish:
+	python -m twine upload dist/wp_enlighten*
+
 pylint:
 	@pylint enlighten plugins
 
