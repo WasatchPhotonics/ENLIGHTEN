@@ -95,6 +95,7 @@ class GraphFeature(EnlightenFeature):
         self.name           = None
         self.legend         = None
         self.plot           = None
+        self.live_plot      = None
         self.zoomed         = False
         self.y_axis_locked  = False
         self.x_axis_locked  = False  # EnlightenPluginConfiguration specified an x_axis_label
@@ -136,6 +137,15 @@ class GraphFeature(EnlightenFeature):
                 'right-dragging' along them."""))
 
         self.update_marker()
+
+    def prepare_for_shutdown(self):
+        if self.plot:
+            self.plot.close()
+            self.plot = None
+
+        if self.live_plot:
+            self.live_plot.close()
+            self.live_plot = None
 
     # ##########################################################################
     # Populate placeholders (if called by BusinessObjects for main GUI)

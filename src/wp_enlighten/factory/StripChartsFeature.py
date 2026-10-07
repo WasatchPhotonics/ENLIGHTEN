@@ -57,6 +57,10 @@ class StripChartsFeature(EnlightenFeature):
         # the dictionary of StripChart objects which have been created (indexed on name)
         self.charts = {}
 
+    def prepare_for_shutdown(self):
+        for name, chart in self.charts.items():
+            chart.prepare_for_shutdown()
+
     def create_chart(self, name, window_sec=180, y_unit=None, warn_hi=None, warn_lo=None, format=None, process_reading_callback=None):
         chart = StripChart(self.ctl, name=name, window_sec=window_sec, y_unit=y_unit, warn_hi=warn_hi, warn_lo=warn_lo, format=format, parent=self.parent, process_reading_callback=process_reading_callback)
         self.charts[name] = chart
@@ -199,6 +203,11 @@ class StripChart:
         self.stacked_widget.addWidget(self.plot)
 
         self.layout.addWidget(self.stacked_widget)
+
+    def prepare_for_shutdown(self):
+        if self.plot:
+            self.plot.close()
+            self.plot = None
 
     def make_icon_button(self, icon_name):
         pb = QPushButton(self.parent)

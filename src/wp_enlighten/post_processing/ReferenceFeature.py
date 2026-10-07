@@ -241,11 +241,16 @@ class ReferenceFeature(EnlightenFeature):
         policy.setVerticalPolicy(QtWidgets.QSizePolicy.Preferred)
         policy.setHorizontalPolicy(QtWidgets.QSizePolicy.Preferred)
 
-        chart = pyqtgraph.PlotWidget(name="Recorded reference spectrum")
-        chart.setSizePolicy(policy)
+        self.chart = pyqtgraph.PlotWidget(name="Recorded reference spectrum")
+        self.chart.setSizePolicy(policy)
 
-        self.curve = chart.plot([], pen=self.ctl.gui.make_pen(widget="reference"))
+        self.curve = self.chart.plot([], pen=self.ctl.gui.make_pen(widget="reference"))
 
         stacked_widget = self.ctl.form.ui.stackedWidget_scope_setup_reference_spectrum
-        stacked_widget.addWidget(chart)
+        stacked_widget.addWidget(self.chart)
         stacked_widget.setCurrentIndex(1)
+
+    def prepare_for_shutdown(self):
+        if self.chart:
+            self.chart.close()
+            self.chart = None

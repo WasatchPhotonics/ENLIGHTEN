@@ -287,11 +287,16 @@ class DarkFeature(EnlightenFeature):
         policy.setVerticalPolicy(QtWidgets.QSizePolicy.Preferred)
         policy.setHorizontalPolicy(QtWidgets.QSizePolicy.Preferred)
 
-        chart = pyqtgraph.PlotWidget(name="Recorded dark spectrum")
-        chart.setSizePolicy(policy)
+        self.chart = pyqtgraph.PlotWidget(name="Recorded dark spectrum")
+        self.chart.setSizePolicy(policy)
 
-        self.curve = chart.plot([], pen=self.ctl.gui.make_pen(widget="dark"))
+        self.curve = self.chart.plot([], pen=self.ctl.gui.make_pen(widget="dark"))
 
         sw = cfu.stackedWidget_scope_setup_dark_spectrum
-        sw.addWidget(chart)
+        sw.addWidget(self.chart)
         sw.setCurrentIndex(1)
+
+    def prepare_for_shutdown(self):
+        if self.chart:
+            self.chart.close()
+            self.chart = None

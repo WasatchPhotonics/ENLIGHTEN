@@ -381,6 +381,11 @@ class Controller:
                 log.error("close: had problems disconnecting device, terminating anyway")
                 break
 
+        # shutdown pyqtgraph stuffs
+        self.thumbnail_render_graph.close()
+        for feature in EnlightenFeature.get_all():
+            feature.prepare_for_shutdown()
+
         self.business_objects.destroy()
 
         self.exit_code = self.resource_monitor.exit_code

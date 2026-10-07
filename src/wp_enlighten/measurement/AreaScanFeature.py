@@ -178,6 +178,11 @@ class AreaScanFeature(EnlightenFeature):
                 self.cb_enable.setChecked(False)
         self.update_visibility()
 
+    def prepare_for_shutdown(self):
+        if self.chart_live:
+            self.chart_live.close()
+            self.chart_live = None
+
     # ##########################################################################
     # public methods
     # ##########################################################################
