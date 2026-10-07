@@ -140,10 +140,12 @@ class GraphFeature(EnlightenFeature):
 
     def prepare_for_shutdown(self):
         if self.plot:
+            log.debug("closing PlotWidget")
             self.plot.close()
             self.plot = None
 
         if self.live_plot:
+            log.debug("closing live PlotWidget")
             self.live_plot.close()
             self.live_plot = None
 

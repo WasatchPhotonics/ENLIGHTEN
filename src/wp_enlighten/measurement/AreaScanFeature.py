@@ -180,6 +180,7 @@ class AreaScanFeature(EnlightenFeature):
 
     def prepare_for_shutdown(self):
         if self.chart_live:
+            log.debug("closing PlotWidget")
             self.chart_live.close()
             self.chart_live = None
 

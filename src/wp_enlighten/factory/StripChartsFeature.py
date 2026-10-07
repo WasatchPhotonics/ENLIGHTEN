@@ -59,6 +59,7 @@ class StripChartsFeature(EnlightenFeature):
 
     def prepare_for_shutdown(self):
         for name, chart in self.charts.items():
+            log.debug(f"closing {name} PlotWidget")
             chart.prepare_for_shutdown()
 
     def create_chart(self, name, window_sec=180, y_unit=None, warn_hi=None, warn_lo=None, format=None, process_reading_callback=None):

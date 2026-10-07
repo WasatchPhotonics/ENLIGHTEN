@@ -298,5 +298,6 @@ class DarkFeature(EnlightenFeature):
 
     def prepare_for_shutdown(self):
         if self.chart:
+            log.debug("closing PlotWidget")
             self.chart.close()
             self.chart = None
