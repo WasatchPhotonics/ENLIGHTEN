@@ -53,4 +53,4 @@ Thumbs.db
 ids/
 venv/
 
-enlighten/assets/example_data/XD_models
+src/wp_enlighten/assets/example_data/XD_models
