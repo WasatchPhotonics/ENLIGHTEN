@@ -61,7 +61,6 @@ license-files = ["LICEN[CS]E*"]
 
 keywords = ["wasatch", "wasatchphotonics", "spectrometer", "raman"]
 
-
 [project.gui-scripts]
 enlighten = "wp_enlighten.app:main"
 

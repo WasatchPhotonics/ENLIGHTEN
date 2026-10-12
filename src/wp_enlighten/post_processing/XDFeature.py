@@ -305,13 +305,16 @@ class XDFeature(EnlightenFeature):
 
     def find_available_models(self):
         found_models = {}
-        for filename in sorted(os.listdir(self.MODEL_DIR)):
-            pathname = os.path.join(self.MODEL_DIR, filename)
+        if os.path.exists(self.MODEL_DIR):
+            for filename in sorted(os.listdir(self.MODEL_DIR)):
+                pathname = os.path.join(self.MODEL_DIR, filename)
 
-            # only support tflite models
-            if os.path.isfile(pathname) and filename.endswith(".tflite"):
-                basename = filename.removesuffix(".tflite")
-                found_models[basename] = ModelConfig(basename, model_config_dir=self.MODEL_DIR)
+                # only support tflite models
+                if os.path.isfile(pathname) and filename.endswith(".tflite"):
+                    basename = filename.removesuffix(".tflite")
+                    found_models[basename] = ModelConfig(basename, model_config_dir=self.MODEL_DIR)
+        else:
+            log.critical(f"path not found: {self.MODEL_DIR}")
 
         # manually build 'model_configs' with insertion order ascending by 'order' (then by name)
         log.debug("Known Models:")

@@ -42,7 +42,6 @@ wasatch_applog.txt
 settings.json
 
 node_modules
-keys.py
 
 .DS_Store
 .vscode/launch.json
@@ -53,4 +52,8 @@ Thumbs.db
 ids/
 venv/
 
-src/wp_enlighten/assets/example_data/XD_models
+# don't uncomment these -- it screws up "python -m build", and I haven't figured
+# out the correct [tool.hatch.build.targets.wheel] directive to resolve :-(
+#
+# src/wp_enlighten/assets/example_data/XD_models
+# keys.py

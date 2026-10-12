@@ -13,9 +13,13 @@ support required by some GUI dependencies.
 
     $ brew install python-tk@3.14
 
-(MZ: I tried 3.15 12-Ocxt-2026 on Golden Gate 27.0.1 and there was no matching 
-ai-edge-litert wheel)
+MZ: I tried python-tk@3.15 on 12-Ocxt-2026 from Golden Gate 27.0.1 and there was
+    no matching wheel for ai-edge-litert
 
 ## missing backend
 
     $ brew install libusb
+
+If that doesn't do it, make sure libusb-1.0.dylib is in your $DYLD_LIBRARY_PATH:
+
+    $ export DYLD_LIBRARY_PATH=/opt/homebrew/lib:/usr/local/lib
