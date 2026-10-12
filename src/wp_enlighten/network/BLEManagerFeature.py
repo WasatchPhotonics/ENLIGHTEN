@@ -41,14 +41,12 @@ class BLEManagerFeature(EnlightenFeature):
 
         self.discovered_device_queue = Queue() # holds wasatch.DeviceFinderBLE.DiscoveredBLEDevices
         self.connected = False
+        self.run_loop = None
 
         self.ble_selector = BLESelector(ble_manager=self, parent=self.bt_ble)
         self.bt_ble.clicked.connect(self.button_callback)
 
         self.ctl.progress_bar.hide()
-
-        # grab an asyncio run_loop in which to call DeviceFinderBLE's async methods
-        self.scan_loop = BLEDevice.get_run_loop()
 
         self.bt_ble.setWhatsThis(unwrap("""
             Wasatch Photonics XS spectrometers can communicate over Bluetooth® LE!
@@ -86,6 +84,22 @@ class BLEManagerFeature(EnlightenFeature):
             spec.device.disconnect()
         log.debug("stop: done")
 
+    def prepare_for_shutdown(self):
+        if self.run_loop is None:
+            return
+
+        log.debug("closing run loop")
+        pending = asyncio.all_tasks(loop=self.run_loop)
+        for task in pending:
+            task.cancel()
+        
+        try:
+            self.run_loop.run_until_complete(asyncio.gather(*pending, return_exceptions=True))
+        finally:
+            self.run_loop.close()
+        
+        self.run_loop = None
+
     def refresh_connected(self):
         spec = self.get_connected_ble_spectrometer()
         self.connected = spec is not None
@@ -103,6 +117,8 @@ class BLEManagerFeature(EnlightenFeature):
                 return spec
 
     def button_callback(self):
+        self.run_loop = BLEDevice.get_run_loop()
+
         spec = self.get_connected_ble_spectrometer()
         if spec:
             # un-pair
@@ -129,7 +145,7 @@ class BLEManagerFeature(EnlightenFeature):
         log.debug("starting scan")
         asyncio.run_coroutine_threadsafe(
             self.device_finder.search_for_devices(),
-            self.scan_loop)
+            self.run_loop)
 
     def poll_discovered_device_queue(self):
         """ 

@@ -49,6 +49,9 @@ class EnlightenFeature:
     def disconnect(self):
         pass
 
+    def prepare_for_shutdown(self):
+        pass
+
     def post_init(self):
         """
         May be called by Controller after ALL BusinessObjects / EnlightenFeatures

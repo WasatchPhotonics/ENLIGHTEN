@@ -54,15 +54,7 @@ class BasicWindow(QtWidgets.QMainWindow):
         log.debug("BasicWindow (QMainWindow) received close event")
 
         if self.prompt_on_exit:
-            quit_msg = "Are you sure you want to exit ENLIGHTEN?" 
-            reply = QtWidgets.QMessageBox.question(
-                self,                       # parent
-                "Confirm Exit",             # title
-                quit_msg,                   # text
-                QtWidgets.QMessageBox.Yes,  # button0
-                QtWidgets.QMessageBox.No)   # button1
-
-            if reply != QtWidgets.QMessageBox.Yes:
+            if not self.confirm_exit():
                 log.debug('"We are cancelling the apocalypse!"')
                 if event is not None:
                     event.ignore()
@@ -73,3 +65,13 @@ class BasicWindow(QtWidgets.QMainWindow):
             event.accept()
         log.debug("emitting BasicWindow.ViewClose.exit signal")
         self.exit_signal.exit.emit("close event")
+
+    def confirm_exit(self):
+        QMessageBox = QtWidgets.QMessageBox
+        msg_box = QMessageBox(parent=self)
+        msg_box.setWindowTitle("Confirm Exit")
+        msg_box.setText("Are you sure you want to exit ENLIGHTEN?")
+        msg_box.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        msg_box.setDefaultButton(QMessageBox.StandardButton.Yes)
+        response = msg_box.exec()
+        return response == QMessageBox.StandardButton.Yes

@@ -222,7 +222,7 @@ class EnlightenApplication:
         applog.explicit_log_close()
 
         if "macOS" in platform.platform():
-            print("EnlightenApplication.closeEvent: calling pyqtgraph.exit()")
+            print("EnlightenApplication.closeEvent: calling pyqtgraph.exit()", flush=True)
             import pyqtgraph
             pyqtgraph.exit()
             return
