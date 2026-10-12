@@ -42,29 +42,22 @@ PYTHON="python"
 
 if (uname -s | grep -q '^MINGW') || (uname -s | grep -q '^MSYS_NT')
 then
-    # this line was needed when we moved to Qt5, because uic is now a python script 
-    # rather than executable, and it therefore needs to be running in the appropriate
-    # Conda environment to find PySide2
-    # 
-    # source activate conda_enlighten3
-
     OS="Windows"
 
-    RCC="${VIRTUAL_ENV}/Scripts/pyside6-rcc.exe"
-    UIC="${VIRTUAL_ENV}/Scripts/pyside6-uic.exe"
+    RCC=`which pyside6-rcc`
+    UIC=`which pyside6-uic`
 
     # added because recent(?) versions of Git Cmd / Git Bash seem to 
     # automatically launch new shells (run .sh scripts like this one)
     # in $HOME rather than the "current working directory" (and this
     # truthfully shouldn't hurt anything)
-    SCRIPT_DIR=`dirname $0` 
-    cd $SCRIPT_DIR/.. 
+    # SCRIPT_DIR=`dirname $0` 
+    # cd $SCRIPT_DIR/.. 
 else
     if uname -a | grep -qi raspberrypi
     then
         OS="RPi"
 
-        # probably in /usr/bin per apt-get install pyside2-tools
         RCC=`which pyside6-rcc`
         UIC=`which pyside6-uic`
         PYTHON="python3"

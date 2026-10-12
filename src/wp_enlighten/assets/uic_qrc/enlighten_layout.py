@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'enlighten_layout.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.12.0
+## Created by: Qt User Interface Compiler version 6.8.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -2396,12 +2396,12 @@ class Ui_MainWindow(object):
         self.searchLabel = QLabel(self.frame_eeprom_contents_white)
         self.searchLabel.setObjectName(u"searchLabel")
 
-        self.searchFormLayout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.searchLabel)
+        self.searchFormLayout.setWidget(0, QFormLayout.LabelRole, self.searchLabel)
 
         self.searchLineEdit = QLineEdit(self.frame_eeprom_contents_white)
         self.searchLineEdit.setObjectName(u"searchLineEdit")
 
-        self.searchFormLayout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.searchLineEdit)
+        self.searchFormLayout.setWidget(0, QFormLayout.FieldRole, self.searchLineEdit)
 
 
         self.vboxLayout.addLayout(self.searchFormLayout)
@@ -2466,152 +2466,152 @@ class Ui_MainWindow(object):
         self.lineEdit_ee_serial_number = QLineEdit(self.frame_eeprom_page_0)
         self.lineEdit_ee_serial_number.setObjectName(u"lineEdit_ee_serial_number")
 
-        self.formLayout_ee_page_0.setWidget(0, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_serial_number)
+        self.formLayout_ee_page_0.setWidget(0, QFormLayout.LabelRole, self.lineEdit_ee_serial_number)
 
         self.label2 = QLabel(self.frame_eeprom_page_0)
         self.label2.setObjectName(u"label2")
 
-        self.formLayout_ee_page_0.setWidget(0, QFormLayout.ItemRole.FieldRole, self.label2)
+        self.formLayout_ee_page_0.setWidget(0, QFormLayout.FieldRole, self.label2)
 
         self.lineEdit_ee_model = QLineEdit(self.frame_eeprom_page_0)
         self.lineEdit_ee_model.setObjectName(u"lineEdit_ee_model")
 
-        self.formLayout_ee_page_0.setWidget(1, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_model)
+        self.formLayout_ee_page_0.setWidget(1, QFormLayout.LabelRole, self.lineEdit_ee_model)
 
         self.label3 = QLabel(self.frame_eeprom_page_0)
         self.label3.setObjectName(u"label3")
 
-        self.formLayout_ee_page_0.setWidget(1, QFormLayout.ItemRole.FieldRole, self.label3)
+        self.formLayout_ee_page_0.setWidget(1, QFormLayout.FieldRole, self.label3)
 
         self.checkBox_ee_has_cooling = QCheckBox(self.frame_eeprom_page_0)
         self.checkBox_ee_has_cooling.setObjectName(u"checkBox_ee_has_cooling")
 
-        self.formLayout_ee_page_0.setWidget(3, QFormLayout.ItemRole.LabelRole, self.checkBox_ee_has_cooling)
+        self.formLayout_ee_page_0.setWidget(3, QFormLayout.LabelRole, self.checkBox_ee_has_cooling)
 
         self.label4 = QLabel(self.frame_eeprom_page_0)
         self.label4.setObjectName(u"label4")
 
-        self.formLayout_ee_page_0.setWidget(3, QFormLayout.ItemRole.FieldRole, self.label4)
+        self.formLayout_ee_page_0.setWidget(3, QFormLayout.FieldRole, self.label4)
 
         self.checkBox_ee_has_battery = QCheckBox(self.frame_eeprom_page_0)
         self.checkBox_ee_has_battery.setObjectName(u"checkBox_ee_has_battery")
 
-        self.formLayout_ee_page_0.setWidget(4, QFormLayout.ItemRole.LabelRole, self.checkBox_ee_has_battery)
+        self.formLayout_ee_page_0.setWidget(4, QFormLayout.LabelRole, self.checkBox_ee_has_battery)
 
         self.label5 = QLabel(self.frame_eeprom_page_0)
         self.label5.setObjectName(u"label5")
 
-        self.formLayout_ee_page_0.setWidget(4, QFormLayout.ItemRole.FieldRole, self.label5)
+        self.formLayout_ee_page_0.setWidget(4, QFormLayout.FieldRole, self.label5)
 
         self.checkBox_ee_has_laser = QCheckBox(self.frame_eeprom_page_0)
         self.checkBox_ee_has_laser.setObjectName(u"checkBox_ee_has_laser")
 
-        self.formLayout_ee_page_0.setWidget(5, QFormLayout.ItemRole.LabelRole, self.checkBox_ee_has_laser)
+        self.formLayout_ee_page_0.setWidget(5, QFormLayout.LabelRole, self.checkBox_ee_has_laser)
 
         self.label6 = QLabel(self.frame_eeprom_page_0)
         self.label6.setObjectName(u"label6")
 
-        self.formLayout_ee_page_0.setWidget(5, QFormLayout.ItemRole.FieldRole, self.label6)
+        self.formLayout_ee_page_0.setWidget(5, QFormLayout.FieldRole, self.label6)
 
         self.checkBox_ee_invert_x_axis = QCheckBox(self.frame_eeprom_page_0)
         self.checkBox_ee_invert_x_axis.setObjectName(u"checkBox_ee_invert_x_axis")
 
-        self.formLayout_ee_page_0.setWidget(6, QFormLayout.ItemRole.LabelRole, self.checkBox_ee_invert_x_axis)
+        self.formLayout_ee_page_0.setWidget(6, QFormLayout.LabelRole, self.checkBox_ee_invert_x_axis)
 
         self.label7 = QLabel(self.frame_eeprom_page_0)
         self.label7.setObjectName(u"label7")
 
-        self.formLayout_ee_page_0.setWidget(6, QFormLayout.ItemRole.FieldRole, self.label7)
+        self.formLayout_ee_page_0.setWidget(6, QFormLayout.FieldRole, self.label7)
 
         self.checkBox_ee_horiz_binning_enabled = QCheckBox(self.frame_eeprom_page_0)
         self.checkBox_ee_horiz_binning_enabled.setObjectName(u"checkBox_ee_horiz_binning_enabled")
 
-        self.formLayout_ee_page_0.setWidget(7, QFormLayout.ItemRole.LabelRole, self.checkBox_ee_horiz_binning_enabled)
+        self.formLayout_ee_page_0.setWidget(7, QFormLayout.LabelRole, self.checkBox_ee_horiz_binning_enabled)
 
         self.label8 = QLabel(self.frame_eeprom_page_0)
         self.label8.setObjectName(u"label8")
 
-        self.formLayout_ee_page_0.setWidget(7, QFormLayout.ItemRole.FieldRole, self.label8)
+        self.formLayout_ee_page_0.setWidget(7, QFormLayout.FieldRole, self.label8)
 
         self.checkBox_ee_gen15 = QCheckBox(self.frame_eeprom_page_0)
         self.checkBox_ee_gen15.setObjectName(u"checkBox_ee_gen15")
 
-        self.formLayout_ee_page_0.setWidget(8, QFormLayout.ItemRole.LabelRole, self.checkBox_ee_gen15)
+        self.formLayout_ee_page_0.setWidget(8, QFormLayout.LabelRole, self.checkBox_ee_gen15)
 
         self.label9 = QLabel(self.frame_eeprom_page_0)
         self.label9.setObjectName(u"label9")
 
-        self.formLayout_ee_page_0.setWidget(8, QFormLayout.ItemRole.FieldRole, self.label9)
+        self.formLayout_ee_page_0.setWidget(8, QFormLayout.FieldRole, self.label9)
 
         self.checkBox_ee_cutoff_filter_installed = QCheckBox(self.frame_eeprom_page_0)
         self.checkBox_ee_cutoff_filter_installed.setObjectName(u"checkBox_ee_cutoff_filter_installed")
 
-        self.formLayout_ee_page_0.setWidget(9, QFormLayout.ItemRole.LabelRole, self.checkBox_ee_cutoff_filter_installed)
+        self.formLayout_ee_page_0.setWidget(9, QFormLayout.LabelRole, self.checkBox_ee_cutoff_filter_installed)
 
         self.label10 = QLabel(self.frame_eeprom_page_0)
         self.label10.setObjectName(u"label10")
 
-        self.formLayout_ee_page_0.setWidget(9, QFormLayout.ItemRole.FieldRole, self.label10)
+        self.formLayout_ee_page_0.setWidget(9, QFormLayout.FieldRole, self.label10)
 
         self.checkBox_ee_hardware_even_odd = QCheckBox(self.frame_eeprom_page_0)
         self.checkBox_ee_hardware_even_odd.setObjectName(u"checkBox_ee_hardware_even_odd")
 
-        self.formLayout_ee_page_0.setWidget(10, QFormLayout.ItemRole.LabelRole, self.checkBox_ee_hardware_even_odd)
+        self.formLayout_ee_page_0.setWidget(10, QFormLayout.LabelRole, self.checkBox_ee_hardware_even_odd)
 
         self.label11 = QLabel(self.frame_eeprom_page_0)
         self.label11.setObjectName(u"label11")
 
-        self.formLayout_ee_page_0.setWidget(10, QFormLayout.ItemRole.FieldRole, self.label11)
+        self.formLayout_ee_page_0.setWidget(10, QFormLayout.FieldRole, self.label11)
 
         self.checkBox_ee_sig_laser_tec = QCheckBox(self.frame_eeprom_page_0)
         self.checkBox_ee_sig_laser_tec.setObjectName(u"checkBox_ee_sig_laser_tec")
 
-        self.formLayout_ee_page_0.setWidget(11, QFormLayout.ItemRole.LabelRole, self.checkBox_ee_sig_laser_tec)
+        self.formLayout_ee_page_0.setWidget(11, QFormLayout.LabelRole, self.checkBox_ee_sig_laser_tec)
 
         self.label12 = QLabel(self.frame_eeprom_page_0)
         self.label12.setObjectName(u"label12")
 
-        self.formLayout_ee_page_0.setWidget(11, QFormLayout.ItemRole.FieldRole, self.label12)
+        self.formLayout_ee_page_0.setWidget(11, QFormLayout.FieldRole, self.label12)
 
         self.checkBox_ee_has_interlock_feedback = QCheckBox(self.frame_eeprom_page_0)
         self.checkBox_ee_has_interlock_feedback.setObjectName(u"checkBox_ee_has_interlock_feedback")
 
-        self.formLayout_ee_page_0.setWidget(12, QFormLayout.ItemRole.LabelRole, self.checkBox_ee_has_interlock_feedback)
+        self.formLayout_ee_page_0.setWidget(12, QFormLayout.LabelRole, self.checkBox_ee_has_interlock_feedback)
 
         self.label13 = QLabel(self.frame_eeprom_page_0)
         self.label13.setObjectName(u"label13")
 
-        self.formLayout_ee_page_0.setWidget(12, QFormLayout.ItemRole.FieldRole, self.label13)
+        self.formLayout_ee_page_0.setWidget(12, QFormLayout.FieldRole, self.label13)
 
         self.checkBox_ee_has_shutter = QCheckBox(self.frame_eeprom_page_0)
         self.checkBox_ee_has_shutter.setObjectName(u"checkBox_ee_has_shutter")
 
-        self.formLayout_ee_page_0.setWidget(13, QFormLayout.ItemRole.LabelRole, self.checkBox_ee_has_shutter)
+        self.formLayout_ee_page_0.setWidget(13, QFormLayout.LabelRole, self.checkBox_ee_has_shutter)
 
         self.label14 = QLabel(self.frame_eeprom_page_0)
         self.label14.setObjectName(u"label14")
 
-        self.formLayout_ee_page_0.setWidget(13, QFormLayout.ItemRole.FieldRole, self.label14)
+        self.formLayout_ee_page_0.setWidget(13, QFormLayout.FieldRole, self.label14)
 
         self.checkBox_ee_disable_ble_power = QCheckBox(self.frame_eeprom_page_0)
         self.checkBox_ee_disable_ble_power.setObjectName(u"checkBox_ee_disable_ble_power")
 
-        self.formLayout_ee_page_0.setWidget(14, QFormLayout.ItemRole.LabelRole, self.checkBox_ee_disable_ble_power)
+        self.formLayout_ee_page_0.setWidget(14, QFormLayout.LabelRole, self.checkBox_ee_disable_ble_power)
 
         self.label15 = QLabel(self.frame_eeprom_page_0)
         self.label15.setObjectName(u"label15")
 
-        self.formLayout_ee_page_0.setWidget(14, QFormLayout.ItemRole.FieldRole, self.label15)
+        self.formLayout_ee_page_0.setWidget(14, QFormLayout.FieldRole, self.label15)
 
         self.checkBox_ee_disable_laser_armed_indicator = QCheckBox(self.frame_eeprom_page_0)
         self.checkBox_ee_disable_laser_armed_indicator.setObjectName(u"checkBox_ee_disable_laser_armed_indicator")
 
-        self.formLayout_ee_page_0.setWidget(15, QFormLayout.ItemRole.LabelRole, self.checkBox_ee_disable_laser_armed_indicator)
+        self.formLayout_ee_page_0.setWidget(15, QFormLayout.LabelRole, self.checkBox_ee_disable_laser_armed_indicator)
 
         self.label16 = QLabel(self.frame_eeprom_page_0)
         self.label16.setObjectName(u"label16")
 
-        self.formLayout_ee_page_0.setWidget(15, QFormLayout.ItemRole.FieldRole, self.label16)
+        self.formLayout_ee_page_0.setWidget(15, QFormLayout.FieldRole, self.label16)
 
         self.doubleSpinBox_ee_excitation_nm_float = QDoubleSpinBox(self.frame_eeprom_page_0)
         self.doubleSpinBox_ee_excitation_nm_float.setObjectName(u"doubleSpinBox_ee_excitation_nm_float")
@@ -2624,12 +2624,12 @@ class Ui_MainWindow(object):
         self.doubleSpinBox_ee_excitation_nm_float.setSingleStep(0.010000000000000)
         self.doubleSpinBox_ee_excitation_nm_float.setValue(785.000000000000000)
 
-        self.formLayout_ee_page_0.setWidget(17, QFormLayout.ItemRole.LabelRole, self.doubleSpinBox_ee_excitation_nm_float)
+        self.formLayout_ee_page_0.setWidget(17, QFormLayout.LabelRole, self.doubleSpinBox_ee_excitation_nm_float)
 
         self.label17 = QLabel(self.frame_eeprom_page_0)
         self.label17.setObjectName(u"label17")
 
-        self.formLayout_ee_page_0.setWidget(17, QFormLayout.ItemRole.FieldRole, self.label17)
+        self.formLayout_ee_page_0.setWidget(17, QFormLayout.FieldRole, self.label17)
 
         self.spinBox_ee_slit_size_um = QSpinBox(self.frame_eeprom_page_0)
         self.spinBox_ee_slit_size_um.setObjectName(u"spinBox_ee_slit_size_um")
@@ -2641,12 +2641,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_slit_size_um.setSingleStep(5)
         self.spinBox_ee_slit_size_um.setValue(50)
 
-        self.formLayout_ee_page_0.setWidget(18, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_slit_size_um)
+        self.formLayout_ee_page_0.setWidget(18, QFormLayout.LabelRole, self.spinBox_ee_slit_size_um)
 
         self.label18 = QLabel(self.frame_eeprom_page_0)
         self.label18.setObjectName(u"label18")
 
-        self.formLayout_ee_page_0.setWidget(18, QFormLayout.ItemRole.FieldRole, self.label18)
+        self.formLayout_ee_page_0.setWidget(18, QFormLayout.FieldRole, self.label18)
 
         self.spinBox_ee_startup_integration_time_ms = QSpinBox(self.frame_eeprom_page_0)
         self.spinBox_ee_startup_integration_time_ms.setObjectName(u"spinBox_ee_startup_integration_time_ms")
@@ -2657,12 +2657,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_startup_integration_time_ms.setMaximum(60000)
         self.spinBox_ee_startup_integration_time_ms.setValue(10)
 
-        self.formLayout_ee_page_0.setWidget(19, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_startup_integration_time_ms)
+        self.formLayout_ee_page_0.setWidget(19, QFormLayout.LabelRole, self.spinBox_ee_startup_integration_time_ms)
 
         self.label19 = QLabel(self.frame_eeprom_page_0)
         self.label19.setObjectName(u"label19")
 
-        self.formLayout_ee_page_0.setWidget(19, QFormLayout.ItemRole.FieldRole, self.label19)
+        self.formLayout_ee_page_0.setWidget(19, QFormLayout.FieldRole, self.label19)
 
         self.spinBox_ee_startup_temp_degC = QSpinBox(self.frame_eeprom_page_0)
         self.spinBox_ee_startup_temp_degC.setObjectName(u"spinBox_ee_startup_temp_degC")
@@ -2673,12 +2673,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_startup_temp_degC.setMaximum(4095)
         self.spinBox_ee_startup_temp_degC.setValue(10)
 
-        self.formLayout_ee_page_0.setWidget(20, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_startup_temp_degC)
+        self.formLayout_ee_page_0.setWidget(20, QFormLayout.LabelRole, self.spinBox_ee_startup_temp_degC)
 
         self.label20 = QLabel(self.frame_eeprom_page_0)
         self.label20.setObjectName(u"label20")
 
-        self.formLayout_ee_page_0.setWidget(20, QFormLayout.ItemRole.FieldRole, self.label20)
+        self.formLayout_ee_page_0.setWidget(20, QFormLayout.FieldRole, self.label20)
 
         self.spinBox_ee_startup_triggering_scheme = QSpinBox(self.frame_eeprom_page_0)
         self.spinBox_ee_startup_triggering_scheme.setObjectName(u"spinBox_ee_startup_triggering_scheme")
@@ -2687,12 +2687,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_startup_triggering_scheme.setKeyboardTracking(False)
         self.spinBox_ee_startup_triggering_scheme.setMaximum(255)
 
-        self.formLayout_ee_page_0.setWidget(21, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_startup_triggering_scheme)
+        self.formLayout_ee_page_0.setWidget(21, QFormLayout.LabelRole, self.spinBox_ee_startup_triggering_scheme)
 
         self.label21 = QLabel(self.frame_eeprom_page_0)
         self.label21.setObjectName(u"label21")
 
-        self.formLayout_ee_page_0.setWidget(21, QFormLayout.ItemRole.FieldRole, self.label21)
+        self.formLayout_ee_page_0.setWidget(21, QFormLayout.FieldRole, self.label21)
 
         self.doubleSpinBox_ee_detector_gain = QDoubleSpinBox(self.frame_eeprom_page_0)
         self.doubleSpinBox_ee_detector_gain.setObjectName(u"doubleSpinBox_ee_detector_gain")
@@ -2704,12 +2704,12 @@ class Ui_MainWindow(object):
         self.doubleSpinBox_ee_detector_gain.setMaximum(255.000000000000000)
         self.doubleSpinBox_ee_detector_gain.setValue(1.900000000000000)
 
-        self.formLayout_ee_page_0.setWidget(22, QFormLayout.ItemRole.LabelRole, self.doubleSpinBox_ee_detector_gain)
+        self.formLayout_ee_page_0.setWidget(22, QFormLayout.LabelRole, self.doubleSpinBox_ee_detector_gain)
 
         self.label22 = QLabel(self.frame_eeprom_page_0)
         self.label22.setObjectName(u"label22")
 
-        self.formLayout_ee_page_0.setWidget(22, QFormLayout.ItemRole.FieldRole, self.label22)
+        self.formLayout_ee_page_0.setWidget(22, QFormLayout.FieldRole, self.label22)
 
         self.spinBox_ee_detector_offset = QSpinBox(self.frame_eeprom_page_0)
         self.spinBox_ee_detector_offset.setObjectName(u"spinBox_ee_detector_offset")
@@ -2719,12 +2719,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_detector_offset.setMinimum(-32000)
         self.spinBox_ee_detector_offset.setMaximum(32000)
 
-        self.formLayout_ee_page_0.setWidget(23, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_detector_offset)
+        self.formLayout_ee_page_0.setWidget(23, QFormLayout.LabelRole, self.spinBox_ee_detector_offset)
 
         self.label23 = QLabel(self.frame_eeprom_page_0)
         self.label23.setObjectName(u"label23")
 
-        self.formLayout_ee_page_0.setWidget(23, QFormLayout.ItemRole.FieldRole, self.label23)
+        self.formLayout_ee_page_0.setWidget(23, QFormLayout.FieldRole, self.label23)
 
         self.doubleSpinBox_ee_detector_gain_odd = QDoubleSpinBox(self.frame_eeprom_page_0)
         self.doubleSpinBox_ee_detector_gain_odd.setObjectName(u"doubleSpinBox_ee_detector_gain_odd")
@@ -2735,12 +2735,12 @@ class Ui_MainWindow(object):
         self.doubleSpinBox_ee_detector_gain_odd.setMinimum(0.000000000000000)
         self.doubleSpinBox_ee_detector_gain_odd.setMaximum(255.000000000000000)
 
-        self.formLayout_ee_page_0.setWidget(24, QFormLayout.ItemRole.LabelRole, self.doubleSpinBox_ee_detector_gain_odd)
+        self.formLayout_ee_page_0.setWidget(24, QFormLayout.LabelRole, self.doubleSpinBox_ee_detector_gain_odd)
 
         self.label24 = QLabel(self.frame_eeprom_page_0)
         self.label24.setObjectName(u"label24")
 
-        self.formLayout_ee_page_0.setWidget(24, QFormLayout.ItemRole.FieldRole, self.label24)
+        self.formLayout_ee_page_0.setWidget(24, QFormLayout.FieldRole, self.label24)
 
         self.spinBox_ee_detector_offset_odd = QSpinBox(self.frame_eeprom_page_0)
         self.spinBox_ee_detector_offset_odd.setObjectName(u"spinBox_ee_detector_offset_odd")
@@ -2750,12 +2750,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_detector_offset_odd.setMinimum(-32000)
         self.spinBox_ee_detector_offset_odd.setMaximum(32000)
 
-        self.formLayout_ee_page_0.setWidget(25, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_detector_offset_odd)
+        self.formLayout_ee_page_0.setWidget(25, QFormLayout.LabelRole, self.spinBox_ee_detector_offset_odd)
 
         self.label25 = QLabel(self.frame_eeprom_page_0)
         self.label25.setObjectName(u"label25")
 
-        self.formLayout_ee_page_0.setWidget(25, QFormLayout.ItemRole.FieldRole, self.label25)
+        self.formLayout_ee_page_0.setWidget(25, QFormLayout.FieldRole, self.label25)
 
         self.spinBox_ee_startup_laser_tec_setpoint = QSpinBox(self.frame_eeprom_page_0)
         self.spinBox_ee_startup_laser_tec_setpoint.setObjectName(u"spinBox_ee_startup_laser_tec_setpoint")
@@ -2765,22 +2765,22 @@ class Ui_MainWindow(object):
         self.spinBox_ee_startup_laser_tec_setpoint.setMinimum(0)
         self.spinBox_ee_startup_laser_tec_setpoint.setMaximum(4095)
 
-        self.formLayout_ee_page_0.setWidget(26, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_startup_laser_tec_setpoint)
+        self.formLayout_ee_page_0.setWidget(26, QFormLayout.LabelRole, self.spinBox_ee_startup_laser_tec_setpoint)
 
         self.label26 = QLabel(self.frame_eeprom_page_0)
         self.label26.setObjectName(u"label26")
 
-        self.formLayout_ee_page_0.setWidget(26, QFormLayout.ItemRole.FieldRole, self.label26)
+        self.formLayout_ee_page_0.setWidget(26, QFormLayout.FieldRole, self.label26)
 
         self.label_ee_format = QLabel(self.frame_eeprom_page_0)
         self.label_ee_format.setObjectName(u"label_ee_format")
 
-        self.formLayout_ee_page_0.setWidget(27, QFormLayout.ItemRole.LabelRole, self.label_ee_format)
+        self.formLayout_ee_page_0.setWidget(27, QFormLayout.LabelRole, self.label_ee_format)
 
         self.label27 = QLabel(self.frame_eeprom_page_0)
         self.label27.setObjectName(u"label27")
 
-        self.formLayout_ee_page_0.setWidget(27, QFormLayout.ItemRole.FieldRole, self.label27)
+        self.formLayout_ee_page_0.setWidget(27, QFormLayout.FieldRole, self.label27)
 
 
         self.vboxLayout3.addLayout(self.formLayout_ee_page_0)
@@ -2818,117 +2818,117 @@ class Ui_MainWindow(object):
         self.lineEdit_ee_wavelength_coeff_0 = QLineEdit(self.frame_eeprom_page_1)
         self.lineEdit_ee_wavelength_coeff_0.setObjectName(u"lineEdit_ee_wavelength_coeff_0")
 
-        self.formLayout_ee_page_1.setWidget(0, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_wavelength_coeff_0)
+        self.formLayout_ee_page_1.setWidget(0, QFormLayout.LabelRole, self.lineEdit_ee_wavelength_coeff_0)
 
         self.label29 = QLabel(self.frame_eeprom_page_1)
         self.label29.setObjectName(u"label29")
 
-        self.formLayout_ee_page_1.setWidget(0, QFormLayout.ItemRole.FieldRole, self.label29)
+        self.formLayout_ee_page_1.setWidget(0, QFormLayout.FieldRole, self.label29)
 
         self.label30 = QLabel(self.frame_eeprom_page_1)
         self.label30.setObjectName(u"label30")
 
-        self.formLayout_ee_page_1.setWidget(1, QFormLayout.ItemRole.FieldRole, self.label30)
+        self.formLayout_ee_page_1.setWidget(1, QFormLayout.FieldRole, self.label30)
 
         self.label31 = QLabel(self.frame_eeprom_page_1)
         self.label31.setObjectName(u"label31")
 
-        self.formLayout_ee_page_1.setWidget(2, QFormLayout.ItemRole.FieldRole, self.label31)
+        self.formLayout_ee_page_1.setWidget(2, QFormLayout.FieldRole, self.label31)
 
         self.label32 = QLabel(self.frame_eeprom_page_1)
         self.label32.setObjectName(u"label32")
 
-        self.formLayout_ee_page_1.setWidget(3, QFormLayout.ItemRole.FieldRole, self.label32)
+        self.formLayout_ee_page_1.setWidget(3, QFormLayout.FieldRole, self.label32)
 
         self.label33 = QLabel(self.frame_eeprom_page_1)
         self.label33.setObjectName(u"label33")
 
-        self.formLayout_ee_page_1.setWidget(5, QFormLayout.ItemRole.FieldRole, self.label33)
+        self.formLayout_ee_page_1.setWidget(5, QFormLayout.FieldRole, self.label33)
 
         self.label34 = QLabel(self.frame_eeprom_page_1)
         self.label34.setObjectName(u"label34")
 
-        self.formLayout_ee_page_1.setWidget(6, QFormLayout.ItemRole.FieldRole, self.label34)
+        self.formLayout_ee_page_1.setWidget(6, QFormLayout.FieldRole, self.label34)
 
         self.label35 = QLabel(self.frame_eeprom_page_1)
         self.label35.setObjectName(u"label35")
 
-        self.formLayout_ee_page_1.setWidget(7, QFormLayout.ItemRole.FieldRole, self.label35)
+        self.formLayout_ee_page_1.setWidget(7, QFormLayout.FieldRole, self.label35)
 
         self.label36 = QLabel(self.frame_eeprom_page_1)
         self.label36.setObjectName(u"label36")
 
-        self.formLayout_ee_page_1.setWidget(8, QFormLayout.ItemRole.FieldRole, self.label36)
+        self.formLayout_ee_page_1.setWidget(8, QFormLayout.FieldRole, self.label36)
 
         self.label37 = QLabel(self.frame_eeprom_page_1)
         self.label37.setObjectName(u"label37")
 
-        self.formLayout_ee_page_1.setWidget(9, QFormLayout.ItemRole.FieldRole, self.label37)
+        self.formLayout_ee_page_1.setWidget(9, QFormLayout.FieldRole, self.label37)
 
         self.label38 = QLabel(self.frame_eeprom_page_1)
         self.label38.setObjectName(u"label38")
 
-        self.formLayout_ee_page_1.setWidget(10, QFormLayout.ItemRole.FieldRole, self.label38)
+        self.formLayout_ee_page_1.setWidget(10, QFormLayout.FieldRole, self.label38)
 
         self.label39 = QLabel(self.frame_eeprom_page_1)
         self.label39.setObjectName(u"label39")
 
-        self.formLayout_ee_page_1.setWidget(11, QFormLayout.ItemRole.FieldRole, self.label39)
+        self.formLayout_ee_page_1.setWidget(11, QFormLayout.FieldRole, self.label39)
 
         self.label40 = QLabel(self.frame_eeprom_page_1)
         self.label40.setObjectName(u"label40")
 
-        self.formLayout_ee_page_1.setWidget(12, QFormLayout.ItemRole.FieldRole, self.label40)
+        self.formLayout_ee_page_1.setWidget(12, QFormLayout.FieldRole, self.label40)
 
         self.label41 = QLabel(self.frame_eeprom_page_1)
         self.label41.setObjectName(u"label41")
 
-        self.formLayout_ee_page_1.setWidget(13, QFormLayout.ItemRole.FieldRole, self.label41)
+        self.formLayout_ee_page_1.setWidget(13, QFormLayout.FieldRole, self.label41)
 
         self.label42 = QLabel(self.frame_eeprom_page_1)
         self.label42.setObjectName(u"label42")
 
-        self.formLayout_ee_page_1.setWidget(14, QFormLayout.ItemRole.FieldRole, self.label42)
+        self.formLayout_ee_page_1.setWidget(14, QFormLayout.FieldRole, self.label42)
 
         self.label43 = QLabel(self.frame_eeprom_page_1)
         self.label43.setObjectName(u"label43")
 
-        self.formLayout_ee_page_1.setWidget(15, QFormLayout.ItemRole.FieldRole, self.label43)
+        self.formLayout_ee_page_1.setWidget(15, QFormLayout.FieldRole, self.label43)
 
         self.label44 = QLabel(self.frame_eeprom_page_1)
         self.label44.setObjectName(u"label44")
 
-        self.formLayout_ee_page_1.setWidget(16, QFormLayout.ItemRole.FieldRole, self.label44)
+        self.formLayout_ee_page_1.setWidget(16, QFormLayout.FieldRole, self.label44)
 
         self.lineEdit_ee_wavelength_coeff_1 = QLineEdit(self.frame_eeprom_page_1)
         self.lineEdit_ee_wavelength_coeff_1.setObjectName(u"lineEdit_ee_wavelength_coeff_1")
 
-        self.formLayout_ee_page_1.setWidget(1, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_wavelength_coeff_1)
+        self.formLayout_ee_page_1.setWidget(1, QFormLayout.LabelRole, self.lineEdit_ee_wavelength_coeff_1)
 
         self.lineEdit_ee_wavelength_coeff_2 = QLineEdit(self.frame_eeprom_page_1)
         self.lineEdit_ee_wavelength_coeff_2.setObjectName(u"lineEdit_ee_wavelength_coeff_2")
 
-        self.formLayout_ee_page_1.setWidget(2, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_wavelength_coeff_2)
+        self.formLayout_ee_page_1.setWidget(2, QFormLayout.LabelRole, self.lineEdit_ee_wavelength_coeff_2)
 
         self.lineEdit_ee_wavelength_coeff_3 = QLineEdit(self.frame_eeprom_page_1)
         self.lineEdit_ee_wavelength_coeff_3.setObjectName(u"lineEdit_ee_wavelength_coeff_3")
 
-        self.formLayout_ee_page_1.setWidget(3, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_wavelength_coeff_3)
+        self.formLayout_ee_page_1.setWidget(3, QFormLayout.LabelRole, self.lineEdit_ee_wavelength_coeff_3)
 
         self.lineEdit_ee_degC_to_dac_coeff_0 = QLineEdit(self.frame_eeprom_page_1)
         self.lineEdit_ee_degC_to_dac_coeff_0.setObjectName(u"lineEdit_ee_degC_to_dac_coeff_0")
 
-        self.formLayout_ee_page_1.setWidget(5, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_degC_to_dac_coeff_0)
+        self.formLayout_ee_page_1.setWidget(5, QFormLayout.LabelRole, self.lineEdit_ee_degC_to_dac_coeff_0)
 
         self.lineEdit_ee_degC_to_dac_coeff_1 = QLineEdit(self.frame_eeprom_page_1)
         self.lineEdit_ee_degC_to_dac_coeff_1.setObjectName(u"lineEdit_ee_degC_to_dac_coeff_1")
 
-        self.formLayout_ee_page_1.setWidget(6, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_degC_to_dac_coeff_1)
+        self.formLayout_ee_page_1.setWidget(6, QFormLayout.LabelRole, self.lineEdit_ee_degC_to_dac_coeff_1)
 
         self.lineEdit_ee_degC_to_dac_coeff_2 = QLineEdit(self.frame_eeprom_page_1)
         self.lineEdit_ee_degC_to_dac_coeff_2.setObjectName(u"lineEdit_ee_degC_to_dac_coeff_2")
 
-        self.formLayout_ee_page_1.setWidget(7, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_degC_to_dac_coeff_2)
+        self.formLayout_ee_page_1.setWidget(7, QFormLayout.LabelRole, self.lineEdit_ee_degC_to_dac_coeff_2)
 
         self.spinBox_ee_max_temp_degC = QSpinBox(self.frame_eeprom_page_1)
         self.spinBox_ee_max_temp_degC.setObjectName(u"spinBox_ee_max_temp_degC")
@@ -2939,7 +2939,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_max_temp_degC.setMaximum(50)
         self.spinBox_ee_max_temp_degC.setValue(20)
 
-        self.formLayout_ee_page_1.setWidget(8, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_max_temp_degC)
+        self.formLayout_ee_page_1.setWidget(8, QFormLayout.LabelRole, self.spinBox_ee_max_temp_degC)
 
         self.spinBox_ee_min_temp_degC = QSpinBox(self.frame_eeprom_page_1)
         self.spinBox_ee_min_temp_degC.setObjectName(u"spinBox_ee_min_temp_degC")
@@ -2950,22 +2950,22 @@ class Ui_MainWindow(object):
         self.spinBox_ee_min_temp_degC.setMaximum(50)
         self.spinBox_ee_min_temp_degC.setValue(0)
 
-        self.formLayout_ee_page_1.setWidget(9, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_min_temp_degC)
+        self.formLayout_ee_page_1.setWidget(9, QFormLayout.LabelRole, self.spinBox_ee_min_temp_degC)
 
         self.lineEdit_ee_adc_to_degC_coeff_0 = QLineEdit(self.frame_eeprom_page_1)
         self.lineEdit_ee_adc_to_degC_coeff_0.setObjectName(u"lineEdit_ee_adc_to_degC_coeff_0")
 
-        self.formLayout_ee_page_1.setWidget(10, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_adc_to_degC_coeff_0)
+        self.formLayout_ee_page_1.setWidget(10, QFormLayout.LabelRole, self.lineEdit_ee_adc_to_degC_coeff_0)
 
         self.lineEdit_ee_adc_to_degC_coeff_1 = QLineEdit(self.frame_eeprom_page_1)
         self.lineEdit_ee_adc_to_degC_coeff_1.setObjectName(u"lineEdit_ee_adc_to_degC_coeff_1")
 
-        self.formLayout_ee_page_1.setWidget(11, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_adc_to_degC_coeff_1)
+        self.formLayout_ee_page_1.setWidget(11, QFormLayout.LabelRole, self.lineEdit_ee_adc_to_degC_coeff_1)
 
         self.lineEdit_ee_adc_to_degC_coeff_2 = QLineEdit(self.frame_eeprom_page_1)
         self.lineEdit_ee_adc_to_degC_coeff_2.setObjectName(u"lineEdit_ee_adc_to_degC_coeff_2")
 
-        self.formLayout_ee_page_1.setWidget(12, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_adc_to_degC_coeff_2)
+        self.formLayout_ee_page_1.setWidget(12, QFormLayout.LabelRole, self.lineEdit_ee_adc_to_degC_coeff_2)
 
         self.spinBox_ee_tec_r298 = QSpinBox(self.frame_eeprom_page_1)
         self.spinBox_ee_tec_r298.setObjectName(u"spinBox_ee_tec_r298")
@@ -2975,7 +2975,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_tec_r298.setMinimum(-32768)
         self.spinBox_ee_tec_r298.setMaximum(32767)
 
-        self.formLayout_ee_page_1.setWidget(13, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_tec_r298)
+        self.formLayout_ee_page_1.setWidget(13, QFormLayout.LabelRole, self.spinBox_ee_tec_r298)
 
         self.spinBox_ee_tec_beta = QSpinBox(self.frame_eeprom_page_1)
         self.spinBox_ee_tec_beta.setObjectName(u"spinBox_ee_tec_beta")
@@ -2985,27 +2985,27 @@ class Ui_MainWindow(object):
         self.spinBox_ee_tec_beta.setMinimum(-32768)
         self.spinBox_ee_tec_beta.setMaximum(32767)
 
-        self.formLayout_ee_page_1.setWidget(14, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_tec_beta)
+        self.formLayout_ee_page_1.setWidget(14, QFormLayout.LabelRole, self.spinBox_ee_tec_beta)
 
         self.lineEdit_ee_calibration_date = QLineEdit(self.frame_eeprom_page_1)
         self.lineEdit_ee_calibration_date.setObjectName(u"lineEdit_ee_calibration_date")
 
-        self.formLayout_ee_page_1.setWidget(15, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_calibration_date)
+        self.formLayout_ee_page_1.setWidget(15, QFormLayout.LabelRole, self.lineEdit_ee_calibration_date)
 
         self.lineEdit_ee_calibrated_by = QLineEdit(self.frame_eeprom_page_1)
         self.lineEdit_ee_calibrated_by.setObjectName(u"lineEdit_ee_calibrated_by")
 
-        self.formLayout_ee_page_1.setWidget(16, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_calibrated_by)
+        self.formLayout_ee_page_1.setWidget(16, QFormLayout.LabelRole, self.lineEdit_ee_calibrated_by)
 
         self.lineEdit_ee_wavelength_coeff_4 = QLineEdit(self.frame_eeprom_page_1)
         self.lineEdit_ee_wavelength_coeff_4.setObjectName(u"lineEdit_ee_wavelength_coeff_4")
 
-        self.formLayout_ee_page_1.setWidget(4, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_wavelength_coeff_4)
+        self.formLayout_ee_page_1.setWidget(4, QFormLayout.LabelRole, self.lineEdit_ee_wavelength_coeff_4)
 
         self.label45 = QLabel(self.frame_eeprom_page_1)
         self.label45.setObjectName(u"label45")
 
-        self.formLayout_ee_page_1.setWidget(4, QFormLayout.ItemRole.FieldRole, self.label45)
+        self.formLayout_ee_page_1.setWidget(4, QFormLayout.FieldRole, self.label45)
 
 
         self.vboxLayout5.addLayout(self.formLayout_ee_page_1)
@@ -3045,67 +3045,67 @@ class Ui_MainWindow(object):
         self.lineEdit_ee_detector = QLineEdit(self.frame_eeprom_page_2)
         self.lineEdit_ee_detector.setObjectName(u"lineEdit_ee_detector")
 
-        self.formLayout_ee_page_2.setWidget(0, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_detector)
+        self.formLayout_ee_page_2.setWidget(0, QFormLayout.LabelRole, self.lineEdit_ee_detector)
 
         self.label47 = QLabel(self.frame_eeprom_page_2)
         self.label47.setObjectName(u"label47")
 
-        self.formLayout_ee_page_2.setWidget(0, QFormLayout.ItemRole.FieldRole, self.label47)
+        self.formLayout_ee_page_2.setWidget(0, QFormLayout.FieldRole, self.label47)
 
         self.label48 = QLabel(self.frame_eeprom_page_2)
         self.label48.setObjectName(u"label48")
 
-        self.formLayout_ee_page_2.setWidget(1, QFormLayout.ItemRole.FieldRole, self.label48)
+        self.formLayout_ee_page_2.setWidget(1, QFormLayout.FieldRole, self.label48)
 
         self.label49 = QLabel(self.frame_eeprom_page_2)
         self.label49.setObjectName(u"label49")
 
-        self.formLayout_ee_page_2.setWidget(2, QFormLayout.ItemRole.FieldRole, self.label49)
+        self.formLayout_ee_page_2.setWidget(2, QFormLayout.FieldRole, self.label49)
 
         self.label50 = QLabel(self.frame_eeprom_page_2)
         self.label50.setObjectName(u"label50")
 
-        self.formLayout_ee_page_2.setWidget(5, QFormLayout.ItemRole.FieldRole, self.label50)
+        self.formLayout_ee_page_2.setWidget(5, QFormLayout.FieldRole, self.label50)
 
         self.label51 = QLabel(self.frame_eeprom_page_2)
         self.label51.setObjectName(u"label51")
 
-        self.formLayout_ee_page_2.setWidget(6, QFormLayout.ItemRole.FieldRole, self.label51)
+        self.formLayout_ee_page_2.setWidget(6, QFormLayout.FieldRole, self.label51)
 
         self.label52 = QLabel(self.frame_eeprom_page_2)
         self.label52.setObjectName(u"label52")
 
-        self.formLayout_ee_page_2.setWidget(7, QFormLayout.ItemRole.FieldRole, self.label52)
+        self.formLayout_ee_page_2.setWidget(7, QFormLayout.FieldRole, self.label52)
 
         self.label53 = QLabel(self.frame_eeprom_page_2)
         self.label53.setObjectName(u"label53")
 
-        self.formLayout_ee_page_2.setWidget(8, QFormLayout.ItemRole.FieldRole, self.label53)
+        self.formLayout_ee_page_2.setWidget(8, QFormLayout.FieldRole, self.label53)
 
         self.label54 = QLabel(self.frame_eeprom_page_2)
         self.label54.setObjectName(u"label54")
 
-        self.formLayout_ee_page_2.setWidget(9, QFormLayout.ItemRole.FieldRole, self.label54)
+        self.formLayout_ee_page_2.setWidget(9, QFormLayout.FieldRole, self.label54)
 
         self.label55 = QLabel(self.frame_eeprom_page_2)
         self.label55.setObjectName(u"label55")
 
-        self.formLayout_ee_page_2.setWidget(10, QFormLayout.ItemRole.FieldRole, self.label55)
+        self.formLayout_ee_page_2.setWidget(10, QFormLayout.FieldRole, self.label55)
 
         self.label56 = QLabel(self.frame_eeprom_page_2)
         self.label56.setObjectName(u"label56")
 
-        self.formLayout_ee_page_2.setWidget(11, QFormLayout.ItemRole.FieldRole, self.label56)
+        self.formLayout_ee_page_2.setWidget(11, QFormLayout.FieldRole, self.label56)
 
         self.label57 = QLabel(self.frame_eeprom_page_2)
         self.label57.setObjectName(u"label57")
 
-        self.formLayout_ee_page_2.setWidget(12, QFormLayout.ItemRole.FieldRole, self.label57)
+        self.formLayout_ee_page_2.setWidget(12, QFormLayout.FieldRole, self.label57)
 
         self.label58 = QLabel(self.frame_eeprom_page_2)
         self.label58.setObjectName(u"label58")
 
-        self.formLayout_ee_page_2.setWidget(13, QFormLayout.ItemRole.FieldRole, self.label58)
+        self.formLayout_ee_page_2.setWidget(13, QFormLayout.FieldRole, self.label58)
 
         self.spinBox_ee_active_pixels_horizontal = QSpinBox(self.frame_eeprom_page_2)
         self.spinBox_ee_active_pixels_horizontal.setObjectName(u"spinBox_ee_active_pixels_horizontal")
@@ -3116,7 +3116,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_active_pixels_horizontal.setMaximum(9999)
         self.spinBox_ee_active_pixels_horizontal.setValue(0)
 
-        self.formLayout_ee_page_2.setWidget(1, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_active_pixels_horizontal)
+        self.formLayout_ee_page_2.setWidget(1, QFormLayout.LabelRole, self.spinBox_ee_active_pixels_horizontal)
 
         self.spinBox_ee_active_pixels_vertical = QSpinBox(self.frame_eeprom_page_2)
         self.spinBox_ee_active_pixels_vertical.setObjectName(u"spinBox_ee_active_pixels_vertical")
@@ -3127,7 +3127,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_active_pixels_vertical.setMaximum(4096)
         self.spinBox_ee_active_pixels_vertical.setValue(0)
 
-        self.formLayout_ee_page_2.setWidget(2, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_active_pixels_vertical)
+        self.formLayout_ee_page_2.setWidget(2, QFormLayout.LabelRole, self.spinBox_ee_active_pixels_vertical)
 
         self.spinBox_ee_actual_pixels_horizontal = QSpinBox(self.frame_eeprom_page_2)
         self.spinBox_ee_actual_pixels_horizontal.setObjectName(u"spinBox_ee_actual_pixels_horizontal")
@@ -3138,7 +3138,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_actual_pixels_horizontal.setMaximum(9999)
         self.spinBox_ee_actual_pixels_horizontal.setValue(0)
 
-        self.formLayout_ee_page_2.setWidget(5, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_actual_pixels_horizontal)
+        self.formLayout_ee_page_2.setWidget(5, QFormLayout.LabelRole, self.spinBox_ee_actual_pixels_horizontal)
 
         self.spinBox_ee_roi_horizontal_start = QSpinBox(self.frame_eeprom_page_2)
         self.spinBox_ee_roi_horizontal_start.setObjectName(u"spinBox_ee_roi_horizontal_start")
@@ -3149,7 +3149,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_roi_horizontal_start.setMaximum(9999)
         self.spinBox_ee_roi_horizontal_start.setValue(0)
 
-        self.formLayout_ee_page_2.setWidget(6, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_roi_horizontal_start)
+        self.formLayout_ee_page_2.setWidget(6, QFormLayout.LabelRole, self.spinBox_ee_roi_horizontal_start)
 
         self.spinBox_ee_roi_horizontal_end = QSpinBox(self.frame_eeprom_page_2)
         self.spinBox_ee_roi_horizontal_end.setObjectName(u"spinBox_ee_roi_horizontal_end")
@@ -3160,7 +3160,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_roi_horizontal_end.setMaximum(9999)
         self.spinBox_ee_roi_horizontal_end.setValue(0)
 
-        self.formLayout_ee_page_2.setWidget(7, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_roi_horizontal_end)
+        self.formLayout_ee_page_2.setWidget(7, QFormLayout.LabelRole, self.spinBox_ee_roi_horizontal_end)
 
         self.spinBox_ee_roi_vertical_region_1_start = QSpinBox(self.frame_eeprom_page_2)
         self.spinBox_ee_roi_vertical_region_1_start.setObjectName(u"spinBox_ee_roi_vertical_region_1_start")
@@ -3171,7 +3171,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_roi_vertical_region_1_start.setMaximum(2048)
         self.spinBox_ee_roi_vertical_region_1_start.setValue(0)
 
-        self.formLayout_ee_page_2.setWidget(8, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_roi_vertical_region_1_start)
+        self.formLayout_ee_page_2.setWidget(8, QFormLayout.LabelRole, self.spinBox_ee_roi_vertical_region_1_start)
 
         self.spinBox_ee_roi_vertical_region_1_end = QSpinBox(self.frame_eeprom_page_2)
         self.spinBox_ee_roi_vertical_region_1_end.setObjectName(u"spinBox_ee_roi_vertical_region_1_end")
@@ -3182,7 +3182,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_roi_vertical_region_1_end.setMaximum(2048)
         self.spinBox_ee_roi_vertical_region_1_end.setValue(0)
 
-        self.formLayout_ee_page_2.setWidget(9, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_roi_vertical_region_1_end)
+        self.formLayout_ee_page_2.setWidget(9, QFormLayout.LabelRole, self.spinBox_ee_roi_vertical_region_1_end)
 
         self.spinBox_ee_roi_vertical_region_2_start = QSpinBox(self.frame_eeprom_page_2)
         self.spinBox_ee_roi_vertical_region_2_start.setObjectName(u"spinBox_ee_roi_vertical_region_2_start")
@@ -3193,7 +3193,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_roi_vertical_region_2_start.setMaximum(2048)
         self.spinBox_ee_roi_vertical_region_2_start.setValue(0)
 
-        self.formLayout_ee_page_2.setWidget(10, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_roi_vertical_region_2_start)
+        self.formLayout_ee_page_2.setWidget(10, QFormLayout.LabelRole, self.spinBox_ee_roi_vertical_region_2_start)
 
         self.spinBox_ee_roi_vertical_region_2_end = QSpinBox(self.frame_eeprom_page_2)
         self.spinBox_ee_roi_vertical_region_2_end.setObjectName(u"spinBox_ee_roi_vertical_region_2_end")
@@ -3204,7 +3204,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_roi_vertical_region_2_end.setMaximum(2048)
         self.spinBox_ee_roi_vertical_region_2_end.setValue(0)
 
-        self.formLayout_ee_page_2.setWidget(11, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_roi_vertical_region_2_end)
+        self.formLayout_ee_page_2.setWidget(11, QFormLayout.LabelRole, self.spinBox_ee_roi_vertical_region_2_end)
 
         self.spinBox_ee_roi_vertical_region_3_start = QSpinBox(self.frame_eeprom_page_2)
         self.spinBox_ee_roi_vertical_region_3_start.setObjectName(u"spinBox_ee_roi_vertical_region_3_start")
@@ -3215,7 +3215,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_roi_vertical_region_3_start.setMaximum(2048)
         self.spinBox_ee_roi_vertical_region_3_start.setValue(0)
 
-        self.formLayout_ee_page_2.setWidget(12, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_roi_vertical_region_3_start)
+        self.formLayout_ee_page_2.setWidget(12, QFormLayout.LabelRole, self.spinBox_ee_roi_vertical_region_3_start)
 
         self.spinBox_ee_roi_vertical_region_3_end = QSpinBox(self.frame_eeprom_page_2)
         self.spinBox_ee_roi_vertical_region_3_end.setObjectName(u"spinBox_ee_roi_vertical_region_3_end")
@@ -3226,7 +3226,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_roi_vertical_region_3_end.setMaximum(2048)
         self.spinBox_ee_roi_vertical_region_3_end.setValue(0)
 
-        self.formLayout_ee_page_2.setWidget(13, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_roi_vertical_region_3_end)
+        self.formLayout_ee_page_2.setWidget(13, QFormLayout.LabelRole, self.spinBox_ee_roi_vertical_region_3_end)
 
         self.spinBox_ee_laser_warmup_sec = QSpinBox(self.frame_eeprom_page_2)
         self.spinBox_ee_laser_warmup_sec.setObjectName(u"spinBox_ee_laser_warmup_sec")
@@ -3234,12 +3234,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_laser_warmup_sec.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.spinBox_ee_laser_warmup_sec.setMaximum(255)
 
-        self.formLayout_ee_page_2.setWidget(3, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_laser_warmup_sec)
+        self.formLayout_ee_page_2.setWidget(3, QFormLayout.LabelRole, self.spinBox_ee_laser_warmup_sec)
 
         self.label59 = QLabel(self.frame_eeprom_page_2)
         self.label59.setObjectName(u"label59")
 
-        self.formLayout_ee_page_2.setWidget(3, QFormLayout.ItemRole.FieldRole, self.label59)
+        self.formLayout_ee_page_2.setWidget(3, QFormLayout.FieldRole, self.label59)
 
 
         self.vboxLayout7.addLayout(self.formLayout_ee_page_2)
@@ -3267,7 +3267,7 @@ class Ui_MainWindow(object):
         self.label60.setObjectName(u"label60")
         self.label60.setFont(font)
 
-        self.formLayout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.label60)
+        self.formLayout.setWidget(0, QFormLayout.LabelRole, self.label60)
 
         self.formLayout_ee_page_3 = QFormLayout()
         self.formLayout_ee_page_3.setObjectName(u"formLayout_ee_page_3")
@@ -3284,52 +3284,52 @@ class Ui_MainWindow(object):
         self.spinBox_ee_max_laser_temp_deg_c.setMaximum(127)
         self.spinBox_ee_max_laser_temp_deg_c.setValue(40)
 
-        self.formLayout_ee_page_3.setWidget(2, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_max_laser_temp_deg_c)
+        self.formLayout_ee_page_3.setWidget(2, QFormLayout.LabelRole, self.spinBox_ee_max_laser_temp_deg_c)
 
         self.label61 = QLabel(self.frame_eeprom_page_3)
         self.label61.setObjectName(u"label61")
 
-        self.formLayout_ee_page_3.setWidget(2, QFormLayout.ItemRole.FieldRole, self.label61)
+        self.formLayout_ee_page_3.setWidget(2, QFormLayout.FieldRole, self.label61)
 
         self.lineEdit_ee_laser_power_coeff_0 = QLineEdit(self.frame_eeprom_page_3)
         self.lineEdit_ee_laser_power_coeff_0.setObjectName(u"lineEdit_ee_laser_power_coeff_0")
 
-        self.formLayout_ee_page_3.setWidget(4, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_laser_power_coeff_0)
+        self.formLayout_ee_page_3.setWidget(4, QFormLayout.LabelRole, self.lineEdit_ee_laser_power_coeff_0)
 
         self.label62 = QLabel(self.frame_eeprom_page_3)
         self.label62.setObjectName(u"label62")
 
-        self.formLayout_ee_page_3.setWidget(4, QFormLayout.ItemRole.FieldRole, self.label62)
+        self.formLayout_ee_page_3.setWidget(4, QFormLayout.FieldRole, self.label62)
 
         self.lineEdit_ee_laser_power_coeff_1 = QLineEdit(self.frame_eeprom_page_3)
         self.lineEdit_ee_laser_power_coeff_1.setObjectName(u"lineEdit_ee_laser_power_coeff_1")
 
-        self.formLayout_ee_page_3.setWidget(5, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_laser_power_coeff_1)
+        self.formLayout_ee_page_3.setWidget(5, QFormLayout.LabelRole, self.lineEdit_ee_laser_power_coeff_1)
 
         self.label63 = QLabel(self.frame_eeprom_page_3)
         self.label63.setObjectName(u"label63")
 
-        self.formLayout_ee_page_3.setWidget(5, QFormLayout.ItemRole.FieldRole, self.label63)
+        self.formLayout_ee_page_3.setWidget(5, QFormLayout.FieldRole, self.label63)
 
         self.lineEdit_ee_laser_power_coeff_2 = QLineEdit(self.frame_eeprom_page_3)
         self.lineEdit_ee_laser_power_coeff_2.setObjectName(u"lineEdit_ee_laser_power_coeff_2")
 
-        self.formLayout_ee_page_3.setWidget(6, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_laser_power_coeff_2)
+        self.formLayout_ee_page_3.setWidget(6, QFormLayout.LabelRole, self.lineEdit_ee_laser_power_coeff_2)
 
         self.label64 = QLabel(self.frame_eeprom_page_3)
         self.label64.setObjectName(u"label64")
 
-        self.formLayout_ee_page_3.setWidget(6, QFormLayout.ItemRole.FieldRole, self.label64)
+        self.formLayout_ee_page_3.setWidget(6, QFormLayout.FieldRole, self.label64)
 
         self.lineEdit_ee_laser_power_coeff_3 = QLineEdit(self.frame_eeprom_page_3)
         self.lineEdit_ee_laser_power_coeff_3.setObjectName(u"lineEdit_ee_laser_power_coeff_3")
 
-        self.formLayout_ee_page_3.setWidget(7, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_laser_power_coeff_3)
+        self.formLayout_ee_page_3.setWidget(7, QFormLayout.LabelRole, self.lineEdit_ee_laser_power_coeff_3)
 
         self.label65 = QLabel(self.frame_eeprom_page_3)
         self.label65.setObjectName(u"label65")
 
-        self.formLayout_ee_page_3.setWidget(7, QFormLayout.ItemRole.FieldRole, self.label65)
+        self.formLayout_ee_page_3.setWidget(7, QFormLayout.FieldRole, self.label65)
 
         self.doubleSpinBox_ee_max_laser_power_mW = QDoubleSpinBox(self.frame_eeprom_page_3)
         self.doubleSpinBox_ee_max_laser_power_mW.setObjectName(u"doubleSpinBox_ee_max_laser_power_mW")
@@ -3340,12 +3340,12 @@ class Ui_MainWindow(object):
         self.doubleSpinBox_ee_max_laser_power_mW.setMaximum(30000.000000000000000)
         self.doubleSpinBox_ee_max_laser_power_mW.setValue(100.000000000000000)
 
-        self.formLayout_ee_page_3.setWidget(8, QFormLayout.ItemRole.LabelRole, self.doubleSpinBox_ee_max_laser_power_mW)
+        self.formLayout_ee_page_3.setWidget(8, QFormLayout.LabelRole, self.doubleSpinBox_ee_max_laser_power_mW)
 
         self.label66 = QLabel(self.frame_eeprom_page_3)
         self.label66.setObjectName(u"label66")
 
-        self.formLayout_ee_page_3.setWidget(8, QFormLayout.ItemRole.FieldRole, self.label66)
+        self.formLayout_ee_page_3.setWidget(8, QFormLayout.FieldRole, self.label66)
 
         self.doubleSpinBox_ee_min_laser_power_mW = QDoubleSpinBox(self.frame_eeprom_page_3)
         self.doubleSpinBox_ee_min_laser_power_mW.setObjectName(u"doubleSpinBox_ee_min_laser_power_mW")
@@ -3356,12 +3356,12 @@ class Ui_MainWindow(object):
         self.doubleSpinBox_ee_min_laser_power_mW.setMaximum(500.000000000000000)
         self.doubleSpinBox_ee_min_laser_power_mW.setValue(0.000000000000000)
 
-        self.formLayout_ee_page_3.setWidget(9, QFormLayout.ItemRole.LabelRole, self.doubleSpinBox_ee_min_laser_power_mW)
+        self.formLayout_ee_page_3.setWidget(9, QFormLayout.LabelRole, self.doubleSpinBox_ee_min_laser_power_mW)
 
         self.label67 = QLabel(self.frame_eeprom_page_3)
         self.label67.setObjectName(u"label67")
 
-        self.formLayout_ee_page_3.setWidget(9, QFormLayout.ItemRole.FieldRole, self.label67)
+        self.formLayout_ee_page_3.setWidget(9, QFormLayout.FieldRole, self.label67)
 
         self.spinBox_ee_max_integration_time_ms = QSpinBox(self.frame_eeprom_page_3)
         self.spinBox_ee_max_integration_time_ms.setObjectName(u"spinBox_ee_max_integration_time_ms")
@@ -3372,12 +3372,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_max_integration_time_ms.setMaximum(65535)
         self.spinBox_ee_max_integration_time_ms.setValue(0)
 
-        self.formLayout_ee_page_3.setWidget(10, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_max_integration_time_ms)
+        self.formLayout_ee_page_3.setWidget(10, QFormLayout.LabelRole, self.spinBox_ee_max_integration_time_ms)
 
         self.label68 = QLabel(self.frame_eeprom_page_3)
         self.label68.setObjectName(u"label68")
 
-        self.formLayout_ee_page_3.setWidget(10, QFormLayout.ItemRole.FieldRole, self.label68)
+        self.formLayout_ee_page_3.setWidget(10, QFormLayout.FieldRole, self.label68)
 
         self.spinBox_ee_min_integration_time_ms = QSpinBox(self.frame_eeprom_page_3)
         self.spinBox_ee_min_integration_time_ms.setObjectName(u"spinBox_ee_min_integration_time_ms")
@@ -3388,24 +3388,24 @@ class Ui_MainWindow(object):
         self.spinBox_ee_min_integration_time_ms.setMaximum(65535)
         self.spinBox_ee_min_integration_time_ms.setValue(0)
 
-        self.formLayout_ee_page_3.setWidget(11, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_min_integration_time_ms)
+        self.formLayout_ee_page_3.setWidget(11, QFormLayout.LabelRole, self.spinBox_ee_min_integration_time_ms)
 
         self.label69 = QLabel(self.frame_eeprom_page_3)
         self.label69.setObjectName(u"label69")
 
-        self.formLayout_ee_page_3.setWidget(11, QFormLayout.ItemRole.FieldRole, self.label69)
+        self.formLayout_ee_page_3.setWidget(11, QFormLayout.FieldRole, self.label69)
 
         self.doubleSpinBox_ee_avg_resolution = QDoubleSpinBox(self.frame_eeprom_page_3)
         self.doubleSpinBox_ee_avg_resolution.setObjectName(u"doubleSpinBox_ee_avg_resolution")
         self.doubleSpinBox_ee_avg_resolution.setMinimumSize(QSize(125, 0))
         self.doubleSpinBox_ee_avg_resolution.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.formLayout_ee_page_3.setWidget(12, QFormLayout.ItemRole.LabelRole, self.doubleSpinBox_ee_avg_resolution)
+        self.formLayout_ee_page_3.setWidget(12, QFormLayout.LabelRole, self.doubleSpinBox_ee_avg_resolution)
 
         self.label70 = QLabel(self.frame_eeprom_page_3)
         self.label70.setObjectName(u"label70")
 
-        self.formLayout_ee_page_3.setWidget(12, QFormLayout.ItemRole.FieldRole, self.label70)
+        self.formLayout_ee_page_3.setWidget(12, QFormLayout.FieldRole, self.label70)
 
         self.spinBox_ee_laser_watchdog_sec = QSpinBox(self.frame_eeprom_page_3)
         self.spinBox_ee_laser_watchdog_sec.setObjectName(u"spinBox_ee_laser_watchdog_sec")
@@ -3415,12 +3415,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_laser_watchdog_sec.setMaximum(1200)
         self.spinBox_ee_laser_watchdog_sec.setValue(10)
 
-        self.formLayout_ee_page_3.setWidget(13, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_laser_watchdog_sec)
+        self.formLayout_ee_page_3.setWidget(13, QFormLayout.LabelRole, self.spinBox_ee_laser_watchdog_sec)
 
         self.label71 = QLabel(self.frame_eeprom_page_3)
         self.label71.setObjectName(u"label71")
 
-        self.formLayout_ee_page_3.setWidget(13, QFormLayout.ItemRole.FieldRole, self.label71)
+        self.formLayout_ee_page_3.setWidget(13, QFormLayout.FieldRole, self.label71)
 
         self.spinBox_ee_light_source_type = QSpinBox(self.frame_eeprom_page_3)
         self.spinBox_ee_light_source_type.setObjectName(u"spinBox_ee_light_source_type")
@@ -3429,12 +3429,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_light_source_type.setKeyboardTracking(False)
         self.spinBox_ee_light_source_type.setMaximum(255)
 
-        self.formLayout_ee_page_3.setWidget(14, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_light_source_type)
+        self.formLayout_ee_page_3.setWidget(14, QFormLayout.LabelRole, self.spinBox_ee_light_source_type)
 
         self.label72 = QLabel(self.frame_eeprom_page_3)
         self.label72.setObjectName(u"label72")
 
-        self.formLayout_ee_page_3.setWidget(14, QFormLayout.ItemRole.FieldRole, self.label72)
+        self.formLayout_ee_page_3.setWidget(14, QFormLayout.FieldRole, self.label72)
 
         self.spinBox_ee_power_timeout_sec = QSpinBox(self.frame_eeprom_page_3)
         self.spinBox_ee_power_timeout_sec.setObjectName(u"spinBox_ee_power_timeout_sec")
@@ -3443,12 +3443,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_power_timeout_sec.setKeyboardTracking(False)
         self.spinBox_ee_power_timeout_sec.setMaximum(65535)
 
-        self.formLayout_ee_page_3.setWidget(15, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_power_timeout_sec)
+        self.formLayout_ee_page_3.setWidget(15, QFormLayout.LabelRole, self.spinBox_ee_power_timeout_sec)
 
         self.label73 = QLabel(self.frame_eeprom_page_3)
         self.label73.setObjectName(u"label73")
 
-        self.formLayout_ee_page_3.setWidget(15, QFormLayout.ItemRole.FieldRole, self.label73)
+        self.formLayout_ee_page_3.setWidget(15, QFormLayout.FieldRole, self.label73)
 
         self.spinBox_ee_detector_timeout_sec = QSpinBox(self.frame_eeprom_page_3)
         self.spinBox_ee_detector_timeout_sec.setObjectName(u"spinBox_ee_detector_timeout_sec")
@@ -3457,12 +3457,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_detector_timeout_sec.setKeyboardTracking(False)
         self.spinBox_ee_detector_timeout_sec.setMaximum(255)
 
-        self.formLayout_ee_page_3.setWidget(16, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_detector_timeout_sec)
+        self.formLayout_ee_page_3.setWidget(16, QFormLayout.LabelRole, self.spinBox_ee_detector_timeout_sec)
 
         self.label74 = QLabel(self.frame_eeprom_page_3)
         self.label74.setObjectName(u"label74")
 
-        self.formLayout_ee_page_3.setWidget(16, QFormLayout.ItemRole.FieldRole, self.label74)
+        self.formLayout_ee_page_3.setWidget(16, QFormLayout.FieldRole, self.label74)
 
         self.spinBox_ee_horiz_binning_mode = QSpinBox(self.frame_eeprom_page_3)
         self.spinBox_ee_horiz_binning_mode.setObjectName(u"spinBox_ee_horiz_binning_mode")
@@ -3471,12 +3471,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_horiz_binning_mode.setKeyboardTracking(False)
         self.spinBox_ee_horiz_binning_mode.setMaximum(255)
 
-        self.formLayout_ee_page_3.setWidget(17, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_horiz_binning_mode)
+        self.formLayout_ee_page_3.setWidget(17, QFormLayout.LabelRole, self.spinBox_ee_horiz_binning_mode)
 
         self.label75 = QLabel(self.frame_eeprom_page_3)
         self.label75.setObjectName(u"label75")
 
-        self.formLayout_ee_page_3.setWidget(17, QFormLayout.ItemRole.FieldRole, self.label75)
+        self.formLayout_ee_page_3.setWidget(17, QFormLayout.FieldRole, self.label75)
 
         self.spinBox_ee_startup_scans_to_average = QSpinBox(self.frame_eeprom_page_3)
         self.spinBox_ee_startup_scans_to_average.setObjectName(u"spinBox_ee_startup_scans_to_average")
@@ -3486,12 +3486,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_startup_scans_to_average.setMaximum(100)
         self.spinBox_ee_startup_scans_to_average.setMinimum(1)
 
-        self.formLayout_ee_page_3.setWidget(18, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_startup_scans_to_average)
+        self.formLayout_ee_page_3.setWidget(18, QFormLayout.LabelRole, self.spinBox_ee_startup_scans_to_average)
 
         self.label76 = QLabel(self.frame_eeprom_page_3)
         self.label76.setObjectName(u"label76")
 
-        self.formLayout_ee_page_3.setWidget(18, QFormLayout.ItemRole.FieldRole, self.label76)
+        self.formLayout_ee_page_3.setWidget(18, QFormLayout.FieldRole, self.label76)
 
         self.spinBox_ee_laser_attenuator = QSpinBox(self.frame_eeprom_page_3)
         self.spinBox_ee_laser_attenuator.setObjectName(u"spinBox_ee_laser_attenuator")
@@ -3501,15 +3501,15 @@ class Ui_MainWindow(object):
         self.spinBox_ee_laser_attenuator.setMaximum(255)
         self.spinBox_ee_laser_attenuator.setMinimum(0)
 
-        self.formLayout_ee_page_3.setWidget(19, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_laser_attenuator)
+        self.formLayout_ee_page_3.setWidget(19, QFormLayout.LabelRole, self.spinBox_ee_laser_attenuator)
 
         self.label77 = QLabel(self.frame_eeprom_page_3)
         self.label77.setObjectName(u"label77")
 
-        self.formLayout_ee_page_3.setWidget(19, QFormLayout.ItemRole.FieldRole, self.label77)
+        self.formLayout_ee_page_3.setWidget(19, QFormLayout.FieldRole, self.label77)
 
 
-        self.formLayout.setLayout(1, QFormLayout.ItemRole.LabelRole, self.formLayout_ee_page_3)
+        self.formLayout.setLayout(1, QFormLayout.LabelRole, self.formLayout_ee_page_3)
 
 
         self.vboxLayout8.addWidget(self.frame_eeprom_page_3)
@@ -3544,12 +3544,12 @@ class Ui_MainWindow(object):
         self.label79 = QLabel(self.frame_eeprom_page_4)
         self.label79.setObjectName(u"label79")
 
-        self.formLayout_ee_page_4.setWidget(0, QFormLayout.ItemRole.LabelRole, self.label79)
+        self.formLayout_ee_page_4.setWidget(0, QFormLayout.LabelRole, self.label79)
 
         self.lineEdit_ee_user_text = QLineEdit(self.frame_eeprom_page_4)
         self.lineEdit_ee_user_text.setObjectName(u"lineEdit_ee_user_text")
 
-        self.formLayout_ee_page_4.setWidget(0, QFormLayout.ItemRole.FieldRole, self.lineEdit_ee_user_text)
+        self.formLayout_ee_page_4.setWidget(0, QFormLayout.FieldRole, self.lineEdit_ee_user_text)
 
 
         self.vboxLayout10.addLayout(self.formLayout_ee_page_4)
@@ -3594,12 +3594,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_0.setMaximum(9999)
         self.spinBox_ee_bad_pixel_0.setValue(-1)
 
-        self.formLayout_ee_page_5.setWidget(0, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_0)
+        self.formLayout_ee_page_5.setWidget(0, QFormLayout.LabelRole, self.spinBox_ee_bad_pixel_0)
 
         self.label81 = QLabel(self.frame_eeprom_page_5)
         self.label81.setObjectName(u"label81")
 
-        self.formLayout_ee_page_5.setWidget(0, QFormLayout.ItemRole.FieldRole, self.label81)
+        self.formLayout_ee_page_5.setWidget(0, QFormLayout.FieldRole, self.label81)
 
         self.spinBox_ee_bad_pixel_1 = QSpinBox(self.frame_eeprom_page_5)
         self.spinBox_ee_bad_pixel_1.setObjectName(u"spinBox_ee_bad_pixel_1")
@@ -3610,12 +3610,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_1.setMaximum(9999)
         self.spinBox_ee_bad_pixel_1.setValue(-1)
 
-        self.formLayout_ee_page_5.setWidget(1, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_1)
+        self.formLayout_ee_page_5.setWidget(1, QFormLayout.LabelRole, self.spinBox_ee_bad_pixel_1)
 
         self.label82 = QLabel(self.frame_eeprom_page_5)
         self.label82.setObjectName(u"label82")
 
-        self.formLayout_ee_page_5.setWidget(1, QFormLayout.ItemRole.FieldRole, self.label82)
+        self.formLayout_ee_page_5.setWidget(1, QFormLayout.FieldRole, self.label82)
 
         self.spinBox_ee_bad_pixel_2 = QSpinBox(self.frame_eeprom_page_5)
         self.spinBox_ee_bad_pixel_2.setObjectName(u"spinBox_ee_bad_pixel_2")
@@ -3626,12 +3626,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_2.setMaximum(9999)
         self.spinBox_ee_bad_pixel_2.setValue(-1)
 
-        self.formLayout_ee_page_5.setWidget(2, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_2)
+        self.formLayout_ee_page_5.setWidget(2, QFormLayout.LabelRole, self.spinBox_ee_bad_pixel_2)
 
         self.label83 = QLabel(self.frame_eeprom_page_5)
         self.label83.setObjectName(u"label83")
 
-        self.formLayout_ee_page_5.setWidget(2, QFormLayout.ItemRole.FieldRole, self.label83)
+        self.formLayout_ee_page_5.setWidget(2, QFormLayout.FieldRole, self.label83)
 
         self.spinBox_ee_bad_pixel_3 = QSpinBox(self.frame_eeprom_page_5)
         self.spinBox_ee_bad_pixel_3.setObjectName(u"spinBox_ee_bad_pixel_3")
@@ -3642,12 +3642,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_3.setMaximum(9999)
         self.spinBox_ee_bad_pixel_3.setValue(-1)
 
-        self.formLayout_ee_page_5.setWidget(3, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_3)
+        self.formLayout_ee_page_5.setWidget(3, QFormLayout.LabelRole, self.spinBox_ee_bad_pixel_3)
 
         self.label84 = QLabel(self.frame_eeprom_page_5)
         self.label84.setObjectName(u"label84")
 
-        self.formLayout_ee_page_5.setWidget(3, QFormLayout.ItemRole.FieldRole, self.label84)
+        self.formLayout_ee_page_5.setWidget(3, QFormLayout.FieldRole, self.label84)
 
         self.spinBox_ee_bad_pixel_4 = QSpinBox(self.frame_eeprom_page_5)
         self.spinBox_ee_bad_pixel_4.setObjectName(u"spinBox_ee_bad_pixel_4")
@@ -3658,12 +3658,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_4.setMaximum(9999)
         self.spinBox_ee_bad_pixel_4.setValue(-1)
 
-        self.formLayout_ee_page_5.setWidget(4, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_4)
+        self.formLayout_ee_page_5.setWidget(4, QFormLayout.LabelRole, self.spinBox_ee_bad_pixel_4)
 
         self.label85 = QLabel(self.frame_eeprom_page_5)
         self.label85.setObjectName(u"label85")
 
-        self.formLayout_ee_page_5.setWidget(4, QFormLayout.ItemRole.FieldRole, self.label85)
+        self.formLayout_ee_page_5.setWidget(4, QFormLayout.FieldRole, self.label85)
 
         self.spinBox_ee_bad_pixel_5 = QSpinBox(self.frame_eeprom_page_5)
         self.spinBox_ee_bad_pixel_5.setObjectName(u"spinBox_ee_bad_pixel_5")
@@ -3674,12 +3674,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_5.setMaximum(9999)
         self.spinBox_ee_bad_pixel_5.setValue(-1)
 
-        self.formLayout_ee_page_5.setWidget(5, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_5)
+        self.formLayout_ee_page_5.setWidget(5, QFormLayout.LabelRole, self.spinBox_ee_bad_pixel_5)
 
         self.label86 = QLabel(self.frame_eeprom_page_5)
         self.label86.setObjectName(u"label86")
 
-        self.formLayout_ee_page_5.setWidget(5, QFormLayout.ItemRole.FieldRole, self.label86)
+        self.formLayout_ee_page_5.setWidget(5, QFormLayout.FieldRole, self.label86)
 
         self.spinBox_ee_bad_pixel_6 = QSpinBox(self.frame_eeprom_page_5)
         self.spinBox_ee_bad_pixel_6.setObjectName(u"spinBox_ee_bad_pixel_6")
@@ -3690,12 +3690,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_6.setMaximum(9999)
         self.spinBox_ee_bad_pixel_6.setValue(-1)
 
-        self.formLayout_ee_page_5.setWidget(6, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_6)
+        self.formLayout_ee_page_5.setWidget(6, QFormLayout.LabelRole, self.spinBox_ee_bad_pixel_6)
 
         self.label87 = QLabel(self.frame_eeprom_page_5)
         self.label87.setObjectName(u"label87")
 
-        self.formLayout_ee_page_5.setWidget(6, QFormLayout.ItemRole.FieldRole, self.label87)
+        self.formLayout_ee_page_5.setWidget(6, QFormLayout.FieldRole, self.label87)
 
         self.spinBox_ee_bad_pixel_7 = QSpinBox(self.frame_eeprom_page_5)
         self.spinBox_ee_bad_pixel_7.setObjectName(u"spinBox_ee_bad_pixel_7")
@@ -3706,12 +3706,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_7.setMaximum(9999)
         self.spinBox_ee_bad_pixel_7.setValue(-1)
 
-        self.formLayout_ee_page_5.setWidget(7, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_7)
+        self.formLayout_ee_page_5.setWidget(7, QFormLayout.LabelRole, self.spinBox_ee_bad_pixel_7)
 
         self.label88 = QLabel(self.frame_eeprom_page_5)
         self.label88.setObjectName(u"label88")
 
-        self.formLayout_ee_page_5.setWidget(7, QFormLayout.ItemRole.FieldRole, self.label88)
+        self.formLayout_ee_page_5.setWidget(7, QFormLayout.FieldRole, self.label88)
 
         self.spinBox_ee_bad_pixel_8 = QSpinBox(self.frame_eeprom_page_5)
         self.spinBox_ee_bad_pixel_8.setObjectName(u"spinBox_ee_bad_pixel_8")
@@ -3722,12 +3722,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_8.setMaximum(9999)
         self.spinBox_ee_bad_pixel_8.setValue(-1)
 
-        self.formLayout_ee_page_5.setWidget(8, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_8)
+        self.formLayout_ee_page_5.setWidget(8, QFormLayout.LabelRole, self.spinBox_ee_bad_pixel_8)
 
         self.label89 = QLabel(self.frame_eeprom_page_5)
         self.label89.setObjectName(u"label89")
 
-        self.formLayout_ee_page_5.setWidget(8, QFormLayout.ItemRole.FieldRole, self.label89)
+        self.formLayout_ee_page_5.setWidget(8, QFormLayout.FieldRole, self.label89)
 
         self.spinBox_ee_bad_pixel_9 = QSpinBox(self.frame_eeprom_page_5)
         self.spinBox_ee_bad_pixel_9.setObjectName(u"spinBox_ee_bad_pixel_9")
@@ -3738,12 +3738,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_9.setMaximum(9999)
         self.spinBox_ee_bad_pixel_9.setValue(-1)
 
-        self.formLayout_ee_page_5.setWidget(9, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_9)
+        self.formLayout_ee_page_5.setWidget(9, QFormLayout.LabelRole, self.spinBox_ee_bad_pixel_9)
 
         self.label90 = QLabel(self.frame_eeprom_page_5)
         self.label90.setObjectName(u"label90")
 
-        self.formLayout_ee_page_5.setWidget(9, QFormLayout.ItemRole.FieldRole, self.label90)
+        self.formLayout_ee_page_5.setWidget(9, QFormLayout.FieldRole, self.label90)
 
         self.spinBox_ee_bad_pixel_10 = QSpinBox(self.frame_eeprom_page_5)
         self.spinBox_ee_bad_pixel_10.setObjectName(u"spinBox_ee_bad_pixel_10")
@@ -3754,12 +3754,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_10.setMaximum(9999)
         self.spinBox_ee_bad_pixel_10.setValue(-1)
 
-        self.formLayout_ee_page_5.setWidget(10, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_10)
+        self.formLayout_ee_page_5.setWidget(10, QFormLayout.LabelRole, self.spinBox_ee_bad_pixel_10)
 
         self.label91 = QLabel(self.frame_eeprom_page_5)
         self.label91.setObjectName(u"label91")
 
-        self.formLayout_ee_page_5.setWidget(10, QFormLayout.ItemRole.FieldRole, self.label91)
+        self.formLayout_ee_page_5.setWidget(10, QFormLayout.FieldRole, self.label91)
 
         self.spinBox_ee_bad_pixel_11 = QSpinBox(self.frame_eeprom_page_5)
         self.spinBox_ee_bad_pixel_11.setObjectName(u"spinBox_ee_bad_pixel_11")
@@ -3770,12 +3770,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_11.setMaximum(9999)
         self.spinBox_ee_bad_pixel_11.setValue(-1)
 
-        self.formLayout_ee_page_5.setWidget(11, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_11)
+        self.formLayout_ee_page_5.setWidget(11, QFormLayout.LabelRole, self.spinBox_ee_bad_pixel_11)
 
         self.label92 = QLabel(self.frame_eeprom_page_5)
         self.label92.setObjectName(u"label92")
 
-        self.formLayout_ee_page_5.setWidget(11, QFormLayout.ItemRole.FieldRole, self.label92)
+        self.formLayout_ee_page_5.setWidget(11, QFormLayout.FieldRole, self.label92)
 
         self.spinBox_ee_bad_pixel_12 = QSpinBox(self.frame_eeprom_page_5)
         self.spinBox_ee_bad_pixel_12.setObjectName(u"spinBox_ee_bad_pixel_12")
@@ -3786,12 +3786,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_12.setMaximum(9999)
         self.spinBox_ee_bad_pixel_12.setValue(-1)
 
-        self.formLayout_ee_page_5.setWidget(12, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_12)
+        self.formLayout_ee_page_5.setWidget(12, QFormLayout.LabelRole, self.spinBox_ee_bad_pixel_12)
 
         self.label93 = QLabel(self.frame_eeprom_page_5)
         self.label93.setObjectName(u"label93")
 
-        self.formLayout_ee_page_5.setWidget(12, QFormLayout.ItemRole.FieldRole, self.label93)
+        self.formLayout_ee_page_5.setWidget(12, QFormLayout.FieldRole, self.label93)
 
         self.spinBox_ee_bad_pixel_13 = QSpinBox(self.frame_eeprom_page_5)
         self.spinBox_ee_bad_pixel_13.setObjectName(u"spinBox_ee_bad_pixel_13")
@@ -3802,12 +3802,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_13.setMaximum(9999)
         self.spinBox_ee_bad_pixel_13.setValue(-1)
 
-        self.formLayout_ee_page_5.setWidget(13, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_13)
+        self.formLayout_ee_page_5.setWidget(13, QFormLayout.LabelRole, self.spinBox_ee_bad_pixel_13)
 
         self.label94 = QLabel(self.frame_eeprom_page_5)
         self.label94.setObjectName(u"label94")
 
-        self.formLayout_ee_page_5.setWidget(13, QFormLayout.ItemRole.FieldRole, self.label94)
+        self.formLayout_ee_page_5.setWidget(13, QFormLayout.FieldRole, self.label94)
 
         self.spinBox_ee_bad_pixel_14 = QSpinBox(self.frame_eeprom_page_5)
         self.spinBox_ee_bad_pixel_14.setObjectName(u"spinBox_ee_bad_pixel_14")
@@ -3818,34 +3818,34 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_14.setMaximum(9999)
         self.spinBox_ee_bad_pixel_14.setValue(-1)
 
-        self.formLayout_ee_page_5.setWidget(14, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_14)
+        self.formLayout_ee_page_5.setWidget(14, QFormLayout.LabelRole, self.spinBox_ee_bad_pixel_14)
 
         self.label95 = QLabel(self.frame_eeprom_page_5)
         self.label95.setObjectName(u"label95")
 
-        self.formLayout_ee_page_5.setWidget(14, QFormLayout.ItemRole.FieldRole, self.label95)
+        self.formLayout_ee_page_5.setWidget(14, QFormLayout.FieldRole, self.label95)
 
         self.lineEdit_ee_assembly_revision_packed = QLineEdit(self.frame_eeprom_page_5)
         self.lineEdit_ee_assembly_revision_packed.setObjectName(u"lineEdit_ee_assembly_revision_packed")
         self.lineEdit_ee_assembly_revision_packed.setMinimumSize(QSize(125, 0))
 
-        self.formLayout_ee_page_5.setWidget(16, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_assembly_revision_packed)
+        self.formLayout_ee_page_5.setWidget(16, QFormLayout.LabelRole, self.lineEdit_ee_assembly_revision_packed)
 
         self.label96 = QLabel(self.frame_eeprom_page_5)
         self.label96.setObjectName(u"label96")
 
-        self.formLayout_ee_page_5.setWidget(16, QFormLayout.ItemRole.FieldRole, self.label96)
+        self.formLayout_ee_page_5.setWidget(16, QFormLayout.FieldRole, self.label96)
 
         self.spinBox_ee_subformat = QSpinBox(self.frame_eeprom_page_5)
         self.spinBox_ee_subformat.setObjectName(u"spinBox_ee_subformat")
         self.spinBox_ee_subformat.setMinimumSize(QSize(125, 0))
 
-        self.formLayout_ee_page_5.setWidget(17, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_subformat)
+        self.formLayout_ee_page_5.setWidget(17, QFormLayout.LabelRole, self.spinBox_ee_subformat)
 
         self.label97 = QLabel(self.frame_eeprom_page_5)
         self.label97.setObjectName(u"label97")
 
-        self.formLayout_ee_page_5.setWidget(17, QFormLayout.ItemRole.FieldRole, self.label97)
+        self.formLayout_ee_page_5.setWidget(17, QFormLayout.FieldRole, self.label97)
 
 
         self.vboxLayout12.addLayout(self.formLayout_ee_page_5)
@@ -3891,78 +3891,78 @@ class Ui_MainWindow(object):
         self.lineEdit_ee_raman_intensity_coeff_0.setObjectName(u"lineEdit_ee_raman_intensity_coeff_0")
         self.lineEdit_ee_raman_intensity_coeff_0.setMaxLength(30)
 
-        self.formLayout_ee_sub1_page_6.setWidget(1, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_raman_intensity_coeff_0)
+        self.formLayout_ee_sub1_page_6.setWidget(1, QFormLayout.LabelRole, self.lineEdit_ee_raman_intensity_coeff_0)
 
         self.lineEdit_ee_raman_intensity_coeff_1 = QLineEdit(self.frame_eeprom_sub_1_page_6_black)
         self.lineEdit_ee_raman_intensity_coeff_1.setObjectName(u"lineEdit_ee_raman_intensity_coeff_1")
         self.lineEdit_ee_raman_intensity_coeff_1.setMaxLength(30)
 
-        self.formLayout_ee_sub1_page_6.setWidget(2, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_raman_intensity_coeff_1)
+        self.formLayout_ee_sub1_page_6.setWidget(2, QFormLayout.LabelRole, self.lineEdit_ee_raman_intensity_coeff_1)
 
         self.lineEdit_ee_raman_intensity_coeff_2 = QLineEdit(self.frame_eeprom_sub_1_page_6_black)
         self.lineEdit_ee_raman_intensity_coeff_2.setObjectName(u"lineEdit_ee_raman_intensity_coeff_2")
         self.lineEdit_ee_raman_intensity_coeff_2.setMaxLength(30)
 
-        self.formLayout_ee_sub1_page_6.setWidget(3, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_raman_intensity_coeff_2)
+        self.formLayout_ee_sub1_page_6.setWidget(3, QFormLayout.LabelRole, self.lineEdit_ee_raman_intensity_coeff_2)
 
         self.lineEdit_ee_raman_intensity_coeff_3 = QLineEdit(self.frame_eeprom_sub_1_page_6_black)
         self.lineEdit_ee_raman_intensity_coeff_3.setObjectName(u"lineEdit_ee_raman_intensity_coeff_3")
         self.lineEdit_ee_raman_intensity_coeff_3.setMaxLength(30)
 
-        self.formLayout_ee_sub1_page_6.setWidget(4, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_raman_intensity_coeff_3)
+        self.formLayout_ee_sub1_page_6.setWidget(4, QFormLayout.LabelRole, self.lineEdit_ee_raman_intensity_coeff_3)
 
         self.lineEdit_ee_raman_intensity_coeff_4 = QLineEdit(self.frame_eeprom_sub_1_page_6_black)
         self.lineEdit_ee_raman_intensity_coeff_4.setObjectName(u"lineEdit_ee_raman_intensity_coeff_4")
         self.lineEdit_ee_raman_intensity_coeff_4.setMaxLength(30)
 
-        self.formLayout_ee_sub1_page_6.setWidget(5, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_raman_intensity_coeff_4)
+        self.formLayout_ee_sub1_page_6.setWidget(5, QFormLayout.LabelRole, self.lineEdit_ee_raman_intensity_coeff_4)
 
         self.lineEdit_ee_raman_intensity_coeff_5 = QLineEdit(self.frame_eeprom_sub_1_page_6_black)
         self.lineEdit_ee_raman_intensity_coeff_5.setObjectName(u"lineEdit_ee_raman_intensity_coeff_5")
         self.lineEdit_ee_raman_intensity_coeff_5.setMaxLength(30)
 
-        self.formLayout_ee_sub1_page_6.setWidget(6, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_raman_intensity_coeff_5)
+        self.formLayout_ee_sub1_page_6.setWidget(6, QFormLayout.LabelRole, self.lineEdit_ee_raman_intensity_coeff_5)
 
         self.lineEdit_ee_raman_intensity_coeff_6 = QLineEdit(self.frame_eeprom_sub_1_page_6_black)
         self.lineEdit_ee_raman_intensity_coeff_6.setObjectName(u"lineEdit_ee_raman_intensity_coeff_6")
         self.lineEdit_ee_raman_intensity_coeff_6.setMaxLength(30)
 
-        self.formLayout_ee_sub1_page_6.setWidget(7, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_raman_intensity_coeff_6)
+        self.formLayout_ee_sub1_page_6.setWidget(7, QFormLayout.LabelRole, self.lineEdit_ee_raman_intensity_coeff_6)
 
         self.label99 = QLabel(self.frame_eeprom_sub_1_page_6_black)
         self.label99.setObjectName(u"label99")
 
-        self.formLayout_ee_sub1_page_6.setWidget(1, QFormLayout.ItemRole.FieldRole, self.label99)
+        self.formLayout_ee_sub1_page_6.setWidget(1, QFormLayout.FieldRole, self.label99)
 
         self.label100 = QLabel(self.frame_eeprom_sub_1_page_6_black)
         self.label100.setObjectName(u"label100")
 
-        self.formLayout_ee_sub1_page_6.setWidget(2, QFormLayout.ItemRole.FieldRole, self.label100)
+        self.formLayout_ee_sub1_page_6.setWidget(2, QFormLayout.FieldRole, self.label100)
 
         self.label101 = QLabel(self.frame_eeprom_sub_1_page_6_black)
         self.label101.setObjectName(u"label101")
 
-        self.formLayout_ee_sub1_page_6.setWidget(3, QFormLayout.ItemRole.FieldRole, self.label101)
+        self.formLayout_ee_sub1_page_6.setWidget(3, QFormLayout.FieldRole, self.label101)
 
         self.label102 = QLabel(self.frame_eeprom_sub_1_page_6_black)
         self.label102.setObjectName(u"label102")
 
-        self.formLayout_ee_sub1_page_6.setWidget(4, QFormLayout.ItemRole.FieldRole, self.label102)
+        self.formLayout_ee_sub1_page_6.setWidget(4, QFormLayout.FieldRole, self.label102)
 
         self.label103 = QLabel(self.frame_eeprom_sub_1_page_6_black)
         self.label103.setObjectName(u"label103")
 
-        self.formLayout_ee_sub1_page_6.setWidget(5, QFormLayout.ItemRole.FieldRole, self.label103)
+        self.formLayout_ee_sub1_page_6.setWidget(5, QFormLayout.FieldRole, self.label103)
 
         self.label104 = QLabel(self.frame_eeprom_sub_1_page_6_black)
         self.label104.setObjectName(u"label104")
 
-        self.formLayout_ee_sub1_page_6.setWidget(6, QFormLayout.ItemRole.FieldRole, self.label104)
+        self.formLayout_ee_sub1_page_6.setWidget(6, QFormLayout.FieldRole, self.label104)
 
         self.label105 = QLabel(self.frame_eeprom_sub_1_page_6_black)
         self.label105.setObjectName(u"label105")
 
-        self.formLayout_ee_sub1_page_6.setWidget(7, QFormLayout.ItemRole.FieldRole, self.label105)
+        self.formLayout_ee_sub1_page_6.setWidget(7, QFormLayout.FieldRole, self.label105)
 
 
         self.vboxLayout15.addLayout(self.formLayout_ee_sub1_page_6)
@@ -4003,21 +4003,21 @@ class Ui_MainWindow(object):
         self.label107 = QLabel(self.frame_eeprom_sub_3_black)
         self.label107.setObjectName(u"label107")
 
-        self.formLayout_ee_sub3_page_7.setWidget(1, QFormLayout.ItemRole.FieldRole, self.label107)
+        self.formLayout_ee_sub3_page_7.setWidget(1, QFormLayout.FieldRole, self.label107)
 
         self.spinBox_ee_untethered_library_type = QSpinBox(self.frame_eeprom_sub_3_black)
         self.spinBox_ee_untethered_library_type.setObjectName(u"spinBox_ee_untethered_library_type")
         self.spinBox_ee_untethered_library_type.setMinimumSize(QSize(125, 0))
         self.spinBox_ee_untethered_library_type.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.formLayout_ee_sub3_page_7.setWidget(1, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_untethered_library_type)
+        self.formLayout_ee_sub3_page_7.setWidget(1, QFormLayout.LabelRole, self.spinBox_ee_untethered_library_type)
 
         self.spinBox_ee_untethered_library_id = QSpinBox(self.frame_eeprom_sub_3_black)
         self.spinBox_ee_untethered_library_id.setObjectName(u"spinBox_ee_untethered_library_id")
         self.spinBox_ee_untethered_library_id.setMinimumSize(QSize(125, 0))
         self.spinBox_ee_untethered_library_id.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.formLayout_ee_sub3_page_7.setWidget(2, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_untethered_library_id)
+        self.formLayout_ee_sub3_page_7.setWidget(2, QFormLayout.LabelRole, self.spinBox_ee_untethered_library_id)
 
         self.spinBox_ee_untethered_scans_to_average = QSpinBox(self.frame_eeprom_sub_3_black)
         self.spinBox_ee_untethered_scans_to_average.setObjectName(u"spinBox_ee_untethered_scans_to_average")
@@ -4026,7 +4026,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_untethered_scans_to_average.setMinimum(1)
         self.spinBox_ee_untethered_scans_to_average.setValue(5)
 
-        self.formLayout_ee_sub3_page_7.setWidget(3, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_untethered_scans_to_average)
+        self.formLayout_ee_sub3_page_7.setWidget(3, QFormLayout.LabelRole, self.spinBox_ee_untethered_scans_to_average)
 
         self.spinBox_ee_untethered_min_ramp_pixels = QSpinBox(self.frame_eeprom_sub_3_black)
         self.spinBox_ee_untethered_min_ramp_pixels.setObjectName(u"spinBox_ee_untethered_min_ramp_pixels")
@@ -4034,7 +4034,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_untethered_min_ramp_pixels.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.spinBox_ee_untethered_min_ramp_pixels.setValue(4)
 
-        self.formLayout_ee_sub3_page_7.setWidget(4, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_untethered_min_ramp_pixels)
+        self.formLayout_ee_sub3_page_7.setWidget(4, QFormLayout.LabelRole, self.spinBox_ee_untethered_min_ramp_pixels)
 
         self.spinBox_ee_untethered_min_peak_height = QSpinBox(self.frame_eeprom_sub_3_black)
         self.spinBox_ee_untethered_min_peak_height.setObjectName(u"spinBox_ee_untethered_min_peak_height")
@@ -4043,7 +4043,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_untethered_min_peak_height.setMaximum(30000)
         self.spinBox_ee_untethered_min_peak_height.setValue(200)
 
-        self.formLayout_ee_sub3_page_7.setWidget(5, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_untethered_min_peak_height)
+        self.formLayout_ee_sub3_page_7.setWidget(5, QFormLayout.LabelRole, self.spinBox_ee_untethered_min_peak_height)
 
         self.spinBox_ee_untethered_match_threshold = QSpinBox(self.frame_eeprom_sub_3_black)
         self.spinBox_ee_untethered_match_threshold.setObjectName(u"spinBox_ee_untethered_match_threshold")
@@ -4051,32 +4051,32 @@ class Ui_MainWindow(object):
         self.spinBox_ee_untethered_match_threshold.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.spinBox_ee_untethered_match_threshold.setMaximum(100)
 
-        self.formLayout_ee_sub3_page_7.setWidget(6, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_untethered_match_threshold)
+        self.formLayout_ee_sub3_page_7.setWidget(6, QFormLayout.LabelRole, self.spinBox_ee_untethered_match_threshold)
 
         self.label108 = QLabel(self.frame_eeprom_sub_3_black)
         self.label108.setObjectName(u"label108")
 
-        self.formLayout_ee_sub3_page_7.setWidget(2, QFormLayout.ItemRole.FieldRole, self.label108)
+        self.formLayout_ee_sub3_page_7.setWidget(2, QFormLayout.FieldRole, self.label108)
 
         self.label109 = QLabel(self.frame_eeprom_sub_3_black)
         self.label109.setObjectName(u"label109")
 
-        self.formLayout_ee_sub3_page_7.setWidget(3, QFormLayout.ItemRole.FieldRole, self.label109)
+        self.formLayout_ee_sub3_page_7.setWidget(3, QFormLayout.FieldRole, self.label109)
 
         self.label110 = QLabel(self.frame_eeprom_sub_3_black)
         self.label110.setObjectName(u"label110")
 
-        self.formLayout_ee_sub3_page_7.setWidget(4, QFormLayout.ItemRole.FieldRole, self.label110)
+        self.formLayout_ee_sub3_page_7.setWidget(4, QFormLayout.FieldRole, self.label110)
 
         self.label111 = QLabel(self.frame_eeprom_sub_3_black)
         self.label111.setObjectName(u"label111")
 
-        self.formLayout_ee_sub3_page_7.setWidget(5, QFormLayout.ItemRole.FieldRole, self.label111)
+        self.formLayout_ee_sub3_page_7.setWidget(5, QFormLayout.FieldRole, self.label111)
 
         self.label112 = QLabel(self.frame_eeprom_sub_3_black)
         self.label112.setObjectName(u"label112")
 
-        self.formLayout_ee_sub3_page_7.setWidget(6, QFormLayout.ItemRole.FieldRole, self.label112)
+        self.formLayout_ee_sub3_page_7.setWidget(6, QFormLayout.FieldRole, self.label112)
 
         self.spinBox_ee_untethered_library_count = QSpinBox(self.frame_eeprom_sub_3_black)
         self.spinBox_ee_untethered_library_count.setObjectName(u"spinBox_ee_untethered_library_count")
@@ -4084,12 +4084,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_untethered_library_count.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.spinBox_ee_untethered_library_count.setMaximum(8)
 
-        self.formLayout_ee_sub3_page_7.setWidget(7, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_untethered_library_count)
+        self.formLayout_ee_sub3_page_7.setWidget(7, QFormLayout.LabelRole, self.spinBox_ee_untethered_library_count)
 
         self.label113 = QLabel(self.frame_eeprom_sub_3_black)
         self.label113.setObjectName(u"label113")
 
-        self.formLayout_ee_sub3_page_7.setWidget(7, QFormLayout.ItemRole.FieldRole, self.label113)
+        self.formLayout_ee_sub3_page_7.setWidget(7, QFormLayout.FieldRole, self.label113)
 
 
         self.vboxLayout17.addLayout(self.formLayout_ee_sub3_page_7)
@@ -4137,34 +4137,34 @@ class Ui_MainWindow(object):
         self.spinBox_ee_spline_points.setMinimumSize(QSize(125, 0))
         self.spinBox_ee_spline_points.setMaximum(14)
 
-        self.formLayout_ee_sub2_page_6.setWidget(0, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_spline_points)
+        self.formLayout_ee_sub2_page_6.setWidget(0, QFormLayout.LabelRole, self.spinBox_ee_spline_points)
 
         self.label115 = QLabel(self.frame_eeprom_sub_2_page_6_black)
         self.label115.setObjectName(u"label115")
 
-        self.formLayout_ee_sub2_page_6.setWidget(0, QFormLayout.ItemRole.FieldRole, self.label115)
+        self.formLayout_ee_sub2_page_6.setWidget(0, QFormLayout.FieldRole, self.label115)
 
         self.doubleSpinBox_ee_spline_min = QDoubleSpinBox(self.frame_eeprom_sub_2_page_6_black)
         self.doubleSpinBox_ee_spline_min.setObjectName(u"doubleSpinBox_ee_spline_min")
         self.doubleSpinBox_ee_spline_min.setMinimumSize(QSize(125, 0))
 
-        self.formLayout_ee_sub2_page_6.setWidget(1, QFormLayout.ItemRole.LabelRole, self.doubleSpinBox_ee_spline_min)
+        self.formLayout_ee_sub2_page_6.setWidget(1, QFormLayout.LabelRole, self.doubleSpinBox_ee_spline_min)
 
         self.label116 = QLabel(self.frame_eeprom_sub_2_page_6_black)
         self.label116.setObjectName(u"label116")
 
-        self.formLayout_ee_sub2_page_6.setWidget(1, QFormLayout.ItemRole.FieldRole, self.label116)
+        self.formLayout_ee_sub2_page_6.setWidget(1, QFormLayout.FieldRole, self.label116)
 
         self.doubleSpinBox_ee_spline_max = QDoubleSpinBox(self.frame_eeprom_sub_2_page_6_black)
         self.doubleSpinBox_ee_spline_max.setObjectName(u"doubleSpinBox_ee_spline_max")
         self.doubleSpinBox_ee_spline_max.setMinimumSize(QSize(125, 0))
 
-        self.formLayout_ee_sub2_page_6.setWidget(2, QFormLayout.ItemRole.LabelRole, self.doubleSpinBox_ee_spline_max)
+        self.formLayout_ee_sub2_page_6.setWidget(2, QFormLayout.LabelRole, self.doubleSpinBox_ee_spline_max)
 
         self.label117 = QLabel(self.frame_eeprom_sub_2_page_6_black)
         self.label117.setObjectName(u"label117")
 
-        self.formLayout_ee_sub2_page_6.setWidget(2, QFormLayout.ItemRole.FieldRole, self.label117)
+        self.formLayout_ee_sub2_page_6.setWidget(2, QFormLayout.FieldRole, self.label117)
 
 
         self.vboxLayout20.addLayout(self.formLayout_ee_sub2_page_6)
@@ -4455,7 +4455,7 @@ class Ui_MainWindow(object):
         self.label122 = QLabel(self.frame_eeprom_sub_multi_wavelengths_black)
         self.label122.setObjectName(u"label122")
 
-        self.formLayout_ee_sub5_page_7.setWidget(0, QFormLayout.ItemRole.FieldRole, self.label122)
+        self.formLayout_ee_sub5_page_7.setWidget(0, QFormLayout.FieldRole, self.label122)
 
         self.doubleSpinBox_ee_sub5_excitation_nm_float = QDoubleSpinBox(self.frame_eeprom_sub_multi_wavelengths_black)
         self.doubleSpinBox_ee_sub5_excitation_nm_float.setObjectName(u"doubleSpinBox_ee_sub5_excitation_nm_float")
@@ -4471,62 +4471,62 @@ class Ui_MainWindow(object):
         self.doubleSpinBox_ee_sub5_excitation_nm_float.setMaximum(2500.000000000000000)
         self.doubleSpinBox_ee_sub5_excitation_nm_float.setValue(784.000000000000000)
 
-        self.formLayout_ee_sub5_page_7.setWidget(0, QFormLayout.ItemRole.LabelRole, self.doubleSpinBox_ee_sub5_excitation_nm_float)
+        self.formLayout_ee_sub5_page_7.setWidget(0, QFormLayout.LabelRole, self.doubleSpinBox_ee_sub5_excitation_nm_float)
 
         self.label123 = QLabel(self.frame_eeprom_sub_multi_wavelengths_black)
         self.label123.setObjectName(u"label123")
 
-        self.formLayout_ee_sub5_page_7.setWidget(1, QFormLayout.ItemRole.FieldRole, self.label123)
+        self.formLayout_ee_sub5_page_7.setWidget(1, QFormLayout.FieldRole, self.label123)
 
         self.lineEdit_ee_sub5_wavelength_coeff_0 = QLineEdit(self.frame_eeprom_sub_multi_wavelengths_black)
         self.lineEdit_ee_sub5_wavelength_coeff_0.setObjectName(u"lineEdit_ee_sub5_wavelength_coeff_0")
 
-        self.formLayout_ee_sub5_page_7.setWidget(1, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_sub5_wavelength_coeff_0)
+        self.formLayout_ee_sub5_page_7.setWidget(1, QFormLayout.LabelRole, self.lineEdit_ee_sub5_wavelength_coeff_0)
 
         self.label124 = QLabel(self.frame_eeprom_sub_multi_wavelengths_black)
         self.label124.setObjectName(u"label124")
 
-        self.formLayout_ee_sub5_page_7.setWidget(2, QFormLayout.ItemRole.FieldRole, self.label124)
+        self.formLayout_ee_sub5_page_7.setWidget(2, QFormLayout.FieldRole, self.label124)
 
         self.lineEdit_ee_sub5_wavelength_coeff_1 = QLineEdit(self.frame_eeprom_sub_multi_wavelengths_black)
         self.lineEdit_ee_sub5_wavelength_coeff_1.setObjectName(u"lineEdit_ee_sub5_wavelength_coeff_1")
 
-        self.formLayout_ee_sub5_page_7.setWidget(2, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_sub5_wavelength_coeff_1)
+        self.formLayout_ee_sub5_page_7.setWidget(2, QFormLayout.LabelRole, self.lineEdit_ee_sub5_wavelength_coeff_1)
 
         self.label125 = QLabel(self.frame_eeprom_sub_multi_wavelengths_black)
         self.label125.setObjectName(u"label125")
 
-        self.formLayout_ee_sub5_page_7.setWidget(3, QFormLayout.ItemRole.FieldRole, self.label125)
+        self.formLayout_ee_sub5_page_7.setWidget(3, QFormLayout.FieldRole, self.label125)
 
         self.lineEdit_ee_sub5_wavelength_coeff_2 = QLineEdit(self.frame_eeprom_sub_multi_wavelengths_black)
         self.lineEdit_ee_sub5_wavelength_coeff_2.setObjectName(u"lineEdit_ee_sub5_wavelength_coeff_2")
 
-        self.formLayout_ee_sub5_page_7.setWidget(3, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_sub5_wavelength_coeff_2)
+        self.formLayout_ee_sub5_page_7.setWidget(3, QFormLayout.LabelRole, self.lineEdit_ee_sub5_wavelength_coeff_2)
 
         self.label126 = QLabel(self.frame_eeprom_sub_multi_wavelengths_black)
         self.label126.setObjectName(u"label126")
 
-        self.formLayout_ee_sub5_page_7.setWidget(4, QFormLayout.ItemRole.FieldRole, self.label126)
+        self.formLayout_ee_sub5_page_7.setWidget(4, QFormLayout.FieldRole, self.label126)
 
         self.lineEdit_ee_sub5_wavelength_coeff_3 = QLineEdit(self.frame_eeprom_sub_multi_wavelengths_black)
         self.lineEdit_ee_sub5_wavelength_coeff_3.setObjectName(u"lineEdit_ee_sub5_wavelength_coeff_3")
 
-        self.formLayout_ee_sub5_page_7.setWidget(4, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_sub5_wavelength_coeff_3)
+        self.formLayout_ee_sub5_page_7.setWidget(4, QFormLayout.LabelRole, self.lineEdit_ee_sub5_wavelength_coeff_3)
 
         self.label127 = QLabel(self.frame_eeprom_sub_multi_wavelengths_black)
         self.label127.setObjectName(u"label127")
 
-        self.formLayout_ee_sub5_page_7.setWidget(5, QFormLayout.ItemRole.FieldRole, self.label127)
+        self.formLayout_ee_sub5_page_7.setWidget(5, QFormLayout.FieldRole, self.label127)
 
         self.lineEdit_ee_sub5_wavelength_coeff_4 = QLineEdit(self.frame_eeprom_sub_multi_wavelengths_black)
         self.lineEdit_ee_sub5_wavelength_coeff_4.setObjectName(u"lineEdit_ee_sub5_wavelength_coeff_4")
 
-        self.formLayout_ee_sub5_page_7.setWidget(5, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_sub5_wavelength_coeff_4)
+        self.formLayout_ee_sub5_page_7.setWidget(5, QFormLayout.LabelRole, self.lineEdit_ee_sub5_wavelength_coeff_4)
 
         self.label128 = QLabel(self.frame_eeprom_sub_multi_wavelengths_black)
         self.label128.setObjectName(u"label128")
 
-        self.formLayout_ee_sub5_page_7.setWidget(6, QFormLayout.ItemRole.FieldRole, self.label128)
+        self.formLayout_ee_sub5_page_7.setWidget(6, QFormLayout.FieldRole, self.label128)
 
         self.spinBox_ee_sub5_roi_horizontal_start = QSpinBox(self.frame_eeprom_sub_multi_wavelengths_black)
         self.spinBox_ee_sub5_roi_horizontal_start.setObjectName(u"spinBox_ee_sub5_roi_horizontal_start")
@@ -4539,12 +4539,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_sub5_roi_horizontal_start.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.spinBox_ee_sub5_roi_horizontal_start.setValue(-1)
 
-        self.formLayout_ee_sub5_page_7.setWidget(6, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_sub5_roi_horizontal_start)
+        self.formLayout_ee_sub5_page_7.setWidget(6, QFormLayout.LabelRole, self.spinBox_ee_sub5_roi_horizontal_start)
 
         self.label129 = QLabel(self.frame_eeprom_sub_multi_wavelengths_black)
         self.label129.setObjectName(u"label129")
 
-        self.formLayout_ee_sub5_page_7.setWidget(7, QFormLayout.ItemRole.FieldRole, self.label129)
+        self.formLayout_ee_sub5_page_7.setWidget(7, QFormLayout.FieldRole, self.label129)
 
         self.spinBox_ee_sub5_roi_horizontal_end = QSpinBox(self.frame_eeprom_sub_multi_wavelengths_black)
         self.spinBox_ee_sub5_roi_horizontal_end.setObjectName(u"spinBox_ee_sub5_roi_horizontal_end")
@@ -4554,12 +4554,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_sub5_roi_horizontal_end.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.spinBox_ee_sub5_roi_horizontal_end.setValue(-1)
 
-        self.formLayout_ee_sub5_page_7.setWidget(7, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_sub5_roi_horizontal_end)
+        self.formLayout_ee_sub5_page_7.setWidget(7, QFormLayout.LabelRole, self.spinBox_ee_sub5_roi_horizontal_end)
 
         self.label130 = QLabel(self.frame_eeprom_sub_multi_wavelengths_black)
         self.label130.setObjectName(u"label130")
 
-        self.formLayout_ee_sub5_page_7.setWidget(8, QFormLayout.ItemRole.FieldRole, self.label130)
+        self.formLayout_ee_sub5_page_7.setWidget(8, QFormLayout.FieldRole, self.label130)
 
         self.doubleSpinBox_ee_sub5_avg_resolution = QDoubleSpinBox(self.frame_eeprom_sub_multi_wavelengths_black)
         self.doubleSpinBox_ee_sub5_avg_resolution.setObjectName(u"doubleSpinBox_ee_sub5_avg_resolution")
@@ -4569,82 +4569,82 @@ class Ui_MainWindow(object):
         self.doubleSpinBox_ee_sub5_avg_resolution.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.doubleSpinBox_ee_sub5_avg_resolution.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.formLayout_ee_sub5_page_7.setWidget(8, QFormLayout.ItemRole.LabelRole, self.doubleSpinBox_ee_sub5_avg_resolution)
+        self.formLayout_ee_sub5_page_7.setWidget(8, QFormLayout.LabelRole, self.doubleSpinBox_ee_sub5_avg_resolution)
 
         self.label131 = QLabel(self.frame_eeprom_sub_multi_wavelengths_black)
         self.label131.setObjectName(u"label131")
 
-        self.formLayout_ee_sub5_page_7.setWidget(9, QFormLayout.ItemRole.FieldRole, self.label131)
+        self.formLayout_ee_sub5_page_7.setWidget(9, QFormLayout.FieldRole, self.label131)
 
         self.lineEdit_ee_sub5_raman_intensity_coeff_0 = QLineEdit(self.frame_eeprom_sub_multi_wavelengths_black)
         self.lineEdit_ee_sub5_raman_intensity_coeff_0.setObjectName(u"lineEdit_ee_sub5_raman_intensity_coeff_0")
 
-        self.formLayout_ee_sub5_page_7.setWidget(9, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_sub5_raman_intensity_coeff_0)
+        self.formLayout_ee_sub5_page_7.setWidget(9, QFormLayout.LabelRole, self.lineEdit_ee_sub5_raman_intensity_coeff_0)
 
         self.label132 = QLabel(self.frame_eeprom_sub_multi_wavelengths_black)
         self.label132.setObjectName(u"label132")
 
-        self.formLayout_ee_sub5_page_7.setWidget(10, QFormLayout.ItemRole.FieldRole, self.label132)
+        self.formLayout_ee_sub5_page_7.setWidget(10, QFormLayout.FieldRole, self.label132)
 
         self.lineEdit_ee_sub5_raman_intensity_coeff_1 = QLineEdit(self.frame_eeprom_sub_multi_wavelengths_black)
         self.lineEdit_ee_sub5_raman_intensity_coeff_1.setObjectName(u"lineEdit_ee_sub5_raman_intensity_coeff_1")
 
-        self.formLayout_ee_sub5_page_7.setWidget(10, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_sub5_raman_intensity_coeff_1)
+        self.formLayout_ee_sub5_page_7.setWidget(10, QFormLayout.LabelRole, self.lineEdit_ee_sub5_raman_intensity_coeff_1)
 
         self.label133 = QLabel(self.frame_eeprom_sub_multi_wavelengths_black)
         self.label133.setObjectName(u"label133")
 
-        self.formLayout_ee_sub5_page_7.setWidget(11, QFormLayout.ItemRole.FieldRole, self.label133)
+        self.formLayout_ee_sub5_page_7.setWidget(11, QFormLayout.FieldRole, self.label133)
 
         self.lineEdit_ee_sub5_raman_intensity_coeff_2 = QLineEdit(self.frame_eeprom_sub_multi_wavelengths_black)
         self.lineEdit_ee_sub5_raman_intensity_coeff_2.setObjectName(u"lineEdit_ee_sub5_raman_intensity_coeff_2")
 
-        self.formLayout_ee_sub5_page_7.setWidget(11, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_sub5_raman_intensity_coeff_2)
+        self.formLayout_ee_sub5_page_7.setWidget(11, QFormLayout.LabelRole, self.lineEdit_ee_sub5_raman_intensity_coeff_2)
 
         self.label134 = QLabel(self.frame_eeprom_sub_multi_wavelengths_black)
         self.label134.setObjectName(u"label134")
 
-        self.formLayout_ee_sub5_page_7.setWidget(12, QFormLayout.ItemRole.FieldRole, self.label134)
+        self.formLayout_ee_sub5_page_7.setWidget(12, QFormLayout.FieldRole, self.label134)
 
         self.lineEdit_ee_sub5_raman_intensity_coeff_3 = QLineEdit(self.frame_eeprom_sub_multi_wavelengths_black)
         self.lineEdit_ee_sub5_raman_intensity_coeff_3.setObjectName(u"lineEdit_ee_sub5_raman_intensity_coeff_3")
 
-        self.formLayout_ee_sub5_page_7.setWidget(12, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_sub5_raman_intensity_coeff_3)
+        self.formLayout_ee_sub5_page_7.setWidget(12, QFormLayout.LabelRole, self.lineEdit_ee_sub5_raman_intensity_coeff_3)
 
         self.label135 = QLabel(self.frame_eeprom_sub_multi_wavelengths_black)
         self.label135.setObjectName(u"label135")
 
-        self.formLayout_ee_sub5_page_7.setWidget(13, QFormLayout.ItemRole.FieldRole, self.label135)
+        self.formLayout_ee_sub5_page_7.setWidget(13, QFormLayout.FieldRole, self.label135)
 
         self.lineEdit_ee_sub5_raman_intensity_coeff_4 = QLineEdit(self.frame_eeprom_sub_multi_wavelengths_black)
         self.lineEdit_ee_sub5_raman_intensity_coeff_4.setObjectName(u"lineEdit_ee_sub5_raman_intensity_coeff_4")
 
-        self.formLayout_ee_sub5_page_7.setWidget(13, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_sub5_raman_intensity_coeff_4)
+        self.formLayout_ee_sub5_page_7.setWidget(13, QFormLayout.LabelRole, self.lineEdit_ee_sub5_raman_intensity_coeff_4)
 
         self.label136 = QLabel(self.frame_eeprom_sub_multi_wavelengths_black)
         self.label136.setObjectName(u"label136")
 
-        self.formLayout_ee_sub5_page_7.setWidget(14, QFormLayout.ItemRole.FieldRole, self.label136)
+        self.formLayout_ee_sub5_page_7.setWidget(14, QFormLayout.FieldRole, self.label136)
 
         self.lineEdit_ee_sub5_raman_intensity_coeff_5 = QLineEdit(self.frame_eeprom_sub_multi_wavelengths_black)
         self.lineEdit_ee_sub5_raman_intensity_coeff_5.setObjectName(u"lineEdit_ee_sub5_raman_intensity_coeff_5")
 
-        self.formLayout_ee_sub5_page_7.setWidget(14, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_sub5_raman_intensity_coeff_5)
+        self.formLayout_ee_sub5_page_7.setWidget(14, QFormLayout.LabelRole, self.lineEdit_ee_sub5_raman_intensity_coeff_5)
 
         self.label137 = QLabel(self.frame_eeprom_sub_multi_wavelengths_black)
         self.label137.setObjectName(u"label137")
 
-        self.formLayout_ee_sub5_page_7.setWidget(15, QFormLayout.ItemRole.FieldRole, self.label137)
+        self.formLayout_ee_sub5_page_7.setWidget(15, QFormLayout.FieldRole, self.label137)
 
         self.lineEdit_ee_sub5_raman_intensity_coeff_6 = QLineEdit(self.frame_eeprom_sub_multi_wavelengths_black)
         self.lineEdit_ee_sub5_raman_intensity_coeff_6.setObjectName(u"lineEdit_ee_sub5_raman_intensity_coeff_6")
 
-        self.formLayout_ee_sub5_page_7.setWidget(15, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_sub5_raman_intensity_coeff_6)
+        self.formLayout_ee_sub5_page_7.setWidget(15, QFormLayout.LabelRole, self.lineEdit_ee_sub5_raman_intensity_coeff_6)
 
         self.label138 = QLabel(self.frame_eeprom_sub_multi_wavelengths_black)
         self.label138.setObjectName(u"label138")
 
-        self.formLayout_ee_sub5_page_7.setWidget(16, QFormLayout.ItemRole.FieldRole, self.label138)
+        self.formLayout_ee_sub5_page_7.setWidget(16, QFormLayout.FieldRole, self.label138)
 
         self.spinBox_ee_sub5_horiz_binning_mode = QSpinBox(self.frame_eeprom_sub_multi_wavelengths_black)
         self.spinBox_ee_sub5_horiz_binning_mode.setObjectName(u"spinBox_ee_sub5_horiz_binning_mode")
@@ -4653,7 +4653,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_sub5_horiz_binning_mode.setMinimumSize(QSize(100, 0))
         self.spinBox_ee_sub5_horiz_binning_mode.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.formLayout_ee_sub5_page_7.setWidget(16, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_sub5_horiz_binning_mode)
+        self.formLayout_ee_sub5_page_7.setWidget(16, QFormLayout.LabelRole, self.spinBox_ee_sub5_horiz_binning_mode)
 
 
         self.vboxLayout24.addLayout(self.formLayout_ee_sub5_page_7)
@@ -4698,102 +4698,102 @@ class Ui_MainWindow(object):
         self.lineEdit_ee_laser_password.setObjectName(u"lineEdit_ee_laser_password")
         self.lineEdit_ee_laser_password.setEchoMode(QLineEdit.PasswordEchoOnEdit)
 
-        self.formLayout_ee_page_8.setWidget(0, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_laser_password)
+        self.formLayout_ee_page_8.setWidget(0, QFormLayout.LabelRole, self.lineEdit_ee_laser_password)
 
         self.label140 = QLabel(self.frame_eeprom_page_8)
         self.label140.setObjectName(u"label140")
 
-        self.formLayout_ee_page_8.setWidget(0, QFormLayout.ItemRole.FieldRole, self.label140)
+        self.formLayout_ee_page_8.setWidget(0, QFormLayout.FieldRole, self.label140)
 
         self.checkBox_ee_ble_door_sensor = QCheckBox(self.frame_eeprom_page_8)
         self.checkBox_ee_ble_door_sensor.setObjectName(u"checkBox_ee_ble_door_sensor")
 
-        self.formLayout_ee_page_8.setWidget(1, QFormLayout.ItemRole.LabelRole, self.checkBox_ee_ble_door_sensor)
+        self.formLayout_ee_page_8.setWidget(1, QFormLayout.LabelRole, self.checkBox_ee_ble_door_sensor)
 
         self.label141 = QLabel(self.frame_eeprom_page_8)
         self.label141.setObjectName(u"label141")
 
-        self.formLayout_ee_page_8.setWidget(1, QFormLayout.ItemRole.FieldRole, self.label141)
+        self.formLayout_ee_page_8.setWidget(1, QFormLayout.FieldRole, self.label141)
 
         self.checkBox_ee_ext_laser_control = QCheckBox(self.frame_eeprom_page_8)
         self.checkBox_ee_ext_laser_control.setObjectName(u"checkBox_ee_ext_laser_control")
 
-        self.formLayout_ee_page_8.setWidget(2, QFormLayout.ItemRole.LabelRole, self.checkBox_ee_ext_laser_control)
+        self.formLayout_ee_page_8.setWidget(2, QFormLayout.LabelRole, self.checkBox_ee_ext_laser_control)
 
         self.label142 = QLabel(self.frame_eeprom_page_8)
         self.label142.setObjectName(u"label142")
 
-        self.formLayout_ee_page_8.setWidget(2, QFormLayout.ItemRole.FieldRole, self.label142)
+        self.formLayout_ee_page_8.setWidget(2, QFormLayout.FieldRole, self.label142)
 
         self.checkBox_ee_aux_button_laser_enable = QCheckBox(self.frame_eeprom_page_8)
         self.checkBox_ee_aux_button_laser_enable.setObjectName(u"checkBox_ee_aux_button_laser_enable")
 
-        self.formLayout_ee_page_8.setWidget(3, QFormLayout.ItemRole.LabelRole, self.checkBox_ee_aux_button_laser_enable)
+        self.formLayout_ee_page_8.setWidget(3, QFormLayout.LabelRole, self.checkBox_ee_aux_button_laser_enable)
 
         self.label143 = QLabel(self.frame_eeprom_page_8)
         self.label143.setObjectName(u"label143")
 
-        self.formLayout_ee_page_8.setWidget(3, QFormLayout.ItemRole.FieldRole, self.label143)
+        self.formLayout_ee_page_8.setWidget(3, QFormLayout.FieldRole, self.label143)
 
         self.checkBox_ee_disable_laser_sub_sys = QCheckBox(self.frame_eeprom_page_8)
         self.checkBox_ee_disable_laser_sub_sys.setObjectName(u"checkBox_ee_disable_laser_sub_sys")
 
-        self.formLayout_ee_page_8.setWidget(4, QFormLayout.ItemRole.LabelRole, self.checkBox_ee_disable_laser_sub_sys)
+        self.formLayout_ee_page_8.setWidget(4, QFormLayout.LabelRole, self.checkBox_ee_disable_laser_sub_sys)
 
         self.label144 = QLabel(self.frame_eeprom_page_8)
         self.label144.setObjectName(u"label144")
 
-        self.formLayout_ee_page_8.setWidget(4, QFormLayout.ItemRole.FieldRole, self.label144)
+        self.formLayout_ee_page_8.setWidget(4, QFormLayout.FieldRole, self.label144)
 
         self.checkBox_ee_leave_acc_5v_out_powered = QCheckBox(self.frame_eeprom_page_8)
         self.checkBox_ee_leave_acc_5v_out_powered.setObjectName(u"checkBox_ee_leave_acc_5v_out_powered")
 
-        self.formLayout_ee_page_8.setWidget(5, QFormLayout.ItemRole.LabelRole, self.checkBox_ee_leave_acc_5v_out_powered)
+        self.formLayout_ee_page_8.setWidget(5, QFormLayout.LabelRole, self.checkBox_ee_leave_acc_5v_out_powered)
 
         self.label145 = QLabel(self.frame_eeprom_page_8)
         self.label145.setObjectName(u"label145")
 
-        self.formLayout_ee_page_8.setWidget(5, QFormLayout.ItemRole.FieldRole, self.label145)
+        self.formLayout_ee_page_8.setWidget(5, QFormLayout.FieldRole, self.label145)
 
         self.checkBox_ee_disable_detector = QCheckBox(self.frame_eeprom_page_8)
         self.checkBox_ee_disable_detector.setObjectName(u"checkBox_ee_disable_detector")
 
-        self.formLayout_ee_page_8.setWidget(6, QFormLayout.ItemRole.LabelRole, self.checkBox_ee_disable_detector)
+        self.formLayout_ee_page_8.setWidget(6, QFormLayout.LabelRole, self.checkBox_ee_disable_detector)
 
         self.label146 = QLabel(self.frame_eeprom_page_8)
         self.label146.setObjectName(u"label146")
 
-        self.formLayout_ee_page_8.setWidget(6, QFormLayout.ItemRole.FieldRole, self.label146)
+        self.formLayout_ee_page_8.setWidget(6, QFormLayout.FieldRole, self.label146)
 
         self.lineEdit_ee_acc_state = QLineEdit(self.frame_eeprom_page_8)
         self.lineEdit_ee_acc_state.setObjectName(u"lineEdit_ee_acc_state")
 
-        self.formLayout_ee_page_8.setWidget(7, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_acc_state)
+        self.formLayout_ee_page_8.setWidget(7, QFormLayout.LabelRole, self.lineEdit_ee_acc_state)
 
         self.label147 = QLabel(self.frame_eeprom_page_8)
         self.label147.setObjectName(u"label147")
 
-        self.formLayout_ee_page_8.setWidget(7, QFormLayout.ItemRole.FieldRole, self.label147)
+        self.formLayout_ee_page_8.setWidget(7, QFormLayout.FieldRole, self.label147)
 
         self.lineEdit_ee_acc_state_gpio1 = QLineEdit(self.frame_eeprom_page_8)
         self.lineEdit_ee_acc_state_gpio1.setObjectName(u"lineEdit_ee_acc_state_gpio1")
 
-        self.formLayout_ee_page_8.setWidget(8, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_acc_state_gpio1)
+        self.formLayout_ee_page_8.setWidget(8, QFormLayout.LabelRole, self.lineEdit_ee_acc_state_gpio1)
 
         self.label148 = QLabel(self.frame_eeprom_page_8)
         self.label148.setObjectName(u"label148")
 
-        self.formLayout_ee_page_8.setWidget(8, QFormLayout.ItemRole.FieldRole, self.label148)
+        self.formLayout_ee_page_8.setWidget(8, QFormLayout.FieldRole, self.label148)
 
         self.lineEdit_ee_acc_state_gpio2 = QLineEdit(self.frame_eeprom_page_8)
         self.lineEdit_ee_acc_state_gpio2.setObjectName(u"lineEdit_ee_acc_state_gpio2")
 
-        self.formLayout_ee_page_8.setWidget(9, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_acc_state_gpio2)
+        self.formLayout_ee_page_8.setWidget(9, QFormLayout.LabelRole, self.lineEdit_ee_acc_state_gpio2)
 
         self.label149 = QLabel(self.frame_eeprom_page_8)
         self.label149.setObjectName(u"label149")
 
-        self.formLayout_ee_page_8.setWidget(9, QFormLayout.ItemRole.FieldRole, self.label149)
+        self.formLayout_ee_page_8.setWidget(9, QFormLayout.FieldRole, self.label149)
 
         self.spinBox_ee_acc_cont_strobe_period_us = QSpinBox(self.frame_eeprom_page_8)
         self.spinBox_ee_acc_cont_strobe_period_us.setObjectName(u"spinBox_ee_acc_cont_strobe_period_us")
@@ -4805,12 +4805,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_acc_cont_strobe_period_us.setSingleStep(1)
         self.spinBox_ee_acc_cont_strobe_period_us.setValue(0)
 
-        self.formLayout_ee_page_8.setWidget(10, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_acc_cont_strobe_period_us)
+        self.formLayout_ee_page_8.setWidget(10, QFormLayout.LabelRole, self.spinBox_ee_acc_cont_strobe_period_us)
 
         self.label150 = QLabel(self.frame_eeprom_page_8)
         self.label150.setObjectName(u"label150")
 
-        self.formLayout_ee_page_8.setWidget(10, QFormLayout.ItemRole.FieldRole, self.label150)
+        self.formLayout_ee_page_8.setWidget(10, QFormLayout.FieldRole, self.label150)
 
         self.spinBox_ee_acc_cont_strobe_width_us = QSpinBox(self.frame_eeprom_page_8)
         self.spinBox_ee_acc_cont_strobe_width_us.setObjectName(u"spinBox_ee_acc_cont_strobe_width_us")
@@ -4822,12 +4822,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_acc_cont_strobe_width_us.setSingleStep(1)
         self.spinBox_ee_acc_cont_strobe_width_us.setValue(0)
 
-        self.formLayout_ee_page_8.setWidget(11, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_acc_cont_strobe_width_us)
+        self.formLayout_ee_page_8.setWidget(11, QFormLayout.LabelRole, self.spinBox_ee_acc_cont_strobe_width_us)
 
         self.label151 = QLabel(self.frame_eeprom_page_8)
         self.label151.setObjectName(u"label151")
 
-        self.formLayout_ee_page_8.setWidget(11, QFormLayout.ItemRole.FieldRole, self.label151)
+        self.formLayout_ee_page_8.setWidget(11, QFormLayout.FieldRole, self.label151)
 
         self.spinBox_ee_acc_cont_strobe_delay_us = QSpinBox(self.frame_eeprom_page_8)
         self.spinBox_ee_acc_cont_strobe_delay_us.setObjectName(u"spinBox_ee_acc_cont_strobe_delay_us")
@@ -4839,12 +4839,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_acc_cont_strobe_delay_us.setSingleStep(1)
         self.spinBox_ee_acc_cont_strobe_delay_us.setValue(0)
 
-        self.formLayout_ee_page_8.setWidget(12, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_acc_cont_strobe_delay_us)
+        self.formLayout_ee_page_8.setWidget(12, QFormLayout.LabelRole, self.spinBox_ee_acc_cont_strobe_delay_us)
 
         self.label152 = QLabel(self.frame_eeprom_page_8)
         self.label152.setObjectName(u"label152")
 
-        self.formLayout_ee_page_8.setWidget(12, QFormLayout.ItemRole.FieldRole, self.label152)
+        self.formLayout_ee_page_8.setWidget(12, QFormLayout.FieldRole, self.label152)
 
         self.spinBox_ee_acc_cont_strobe_count = QSpinBox(self.frame_eeprom_page_8)
         self.spinBox_ee_acc_cont_strobe_count.setObjectName(u"spinBox_ee_acc_cont_strobe_count")
@@ -4856,12 +4856,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_acc_cont_strobe_count.setSingleStep(1)
         self.spinBox_ee_acc_cont_strobe_count.setValue(0)
 
-        self.formLayout_ee_page_8.setWidget(13, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_acc_cont_strobe_count)
+        self.formLayout_ee_page_8.setWidget(13, QFormLayout.LabelRole, self.spinBox_ee_acc_cont_strobe_count)
 
         self.label153 = QLabel(self.frame_eeprom_page_8)
         self.label153.setObjectName(u"label153")
 
-        self.formLayout_ee_page_8.setWidget(13, QFormLayout.ItemRole.FieldRole, self.label153)
+        self.formLayout_ee_page_8.setWidget(13, QFormLayout.FieldRole, self.label153)
 
         self.spinBox_ee_max_battery_temp_deg_c = QSpinBox(self.frame_eeprom_page_8)
         self.spinBox_ee_max_battery_temp_deg_c.setObjectName(u"spinBox_ee_max_battery_temp_deg_c")
@@ -4873,12 +4873,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_max_battery_temp_deg_c.setSingleStep(1)
         self.spinBox_ee_max_battery_temp_deg_c.setValue(0)
 
-        self.formLayout_ee_page_8.setWidget(14, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_max_battery_temp_deg_c)
+        self.formLayout_ee_page_8.setWidget(14, QFormLayout.LabelRole, self.spinBox_ee_max_battery_temp_deg_c)
 
         self.label154 = QLabel(self.frame_eeprom_page_8)
         self.label154.setObjectName(u"label154")
 
-        self.formLayout_ee_page_8.setWidget(14, QFormLayout.ItemRole.FieldRole, self.label154)
+        self.formLayout_ee_page_8.setWidget(14, QFormLayout.FieldRole, self.label154)
 
         self.spinBox_ee_pixel_correction_type = QSpinBox(self.frame_eeprom_page_8)
         self.spinBox_ee_pixel_correction_type.setObjectName(u"spinBox_ee_pixel_correction_type")
@@ -4890,22 +4890,22 @@ class Ui_MainWindow(object):
         self.spinBox_ee_pixel_correction_type.setSingleStep(1)
         self.spinBox_ee_pixel_correction_type.setValue(0)
 
-        self.formLayout_ee_page_8.setWidget(15, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_pixel_correction_type)
+        self.formLayout_ee_page_8.setWidget(15, QFormLayout.LabelRole, self.spinBox_ee_pixel_correction_type)
 
         self.label155 = QLabel(self.frame_eeprom_page_8)
         self.label155.setObjectName(u"label155")
 
-        self.formLayout_ee_page_8.setWidget(15, QFormLayout.ItemRole.FieldRole, self.label155)
+        self.formLayout_ee_page_8.setWidget(15, QFormLayout.FieldRole, self.label155)
 
         self.lineEdit_ee_usb_manufacturer_name = QLineEdit(self.frame_eeprom_page_8)
         self.lineEdit_ee_usb_manufacturer_name.setObjectName(u"lineEdit_ee_usb_manufacturer_name")
 
-        self.formLayout_ee_page_8.setWidget(16, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_usb_manufacturer_name)
+        self.formLayout_ee_page_8.setWidget(16, QFormLayout.LabelRole, self.lineEdit_ee_usb_manufacturer_name)
 
         self.label156 = QLabel(self.frame_eeprom_page_8)
         self.label156.setObjectName(u"label156")
 
-        self.formLayout_ee_page_8.setWidget(16, QFormLayout.ItemRole.FieldRole, self.label156)
+        self.formLayout_ee_page_8.setWidget(16, QFormLayout.FieldRole, self.label156)
 
         self.spinBox_ee_aux_button_function = QSpinBox(self.frame_eeprom_page_8)
         self.spinBox_ee_aux_button_function.setObjectName(u"spinBox_ee_aux_button_function")
@@ -4917,12 +4917,12 @@ class Ui_MainWindow(object):
         self.spinBox_ee_aux_button_function.setSingleStep(1)
         self.spinBox_ee_aux_button_function.setValue(0)
 
-        self.formLayout_ee_page_8.setWidget(17, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_aux_button_function)
+        self.formLayout_ee_page_8.setWidget(17, QFormLayout.LabelRole, self.spinBox_ee_aux_button_function)
 
         self.label157 = QLabel(self.frame_eeprom_page_8)
         self.label157.setObjectName(u"label157")
 
-        self.formLayout_ee_page_8.setWidget(17, QFormLayout.ItemRole.FieldRole, self.label157)
+        self.formLayout_ee_page_8.setWidget(17, QFormLayout.FieldRole, self.label157)
 
         self.spinBox_ee_aux_button_param = QSpinBox(self.frame_eeprom_page_8)
         self.spinBox_ee_aux_button_param.setObjectName(u"spinBox_ee_aux_button_param")
@@ -4934,22 +4934,22 @@ class Ui_MainWindow(object):
         self.spinBox_ee_aux_button_param.setSingleStep(1)
         self.spinBox_ee_aux_button_param.setValue(0)
 
-        self.formLayout_ee_page_8.setWidget(18, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_aux_button_param)
+        self.formLayout_ee_page_8.setWidget(18, QFormLayout.LabelRole, self.spinBox_ee_aux_button_param)
 
         self.label158 = QLabel(self.frame_eeprom_page_8)
         self.label158.setObjectName(u"label158")
 
-        self.formLayout_ee_page_8.setWidget(18, QFormLayout.ItemRole.FieldRole, self.label158)
+        self.formLayout_ee_page_8.setWidget(18, QFormLayout.FieldRole, self.label158)
 
         self.lineEdit_ee_latched_hardware_failures = QLineEdit(self.frame_eeprom_page_8)
         self.lineEdit_ee_latched_hardware_failures.setObjectName(u"lineEdit_ee_latched_hardware_failures")
 
-        self.formLayout_ee_page_8.setWidget(19, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_latched_hardware_failures)
+        self.formLayout_ee_page_8.setWidget(19, QFormLayout.LabelRole, self.lineEdit_ee_latched_hardware_failures)
 
         self.label159 = QLabel(self.frame_eeprom_page_8)
         self.label159.setObjectName(u"label159")
 
-        self.formLayout_ee_page_8.setWidget(19, QFormLayout.ItemRole.FieldRole, self.label159)
+        self.formLayout_ee_page_8.setWidget(19, QFormLayout.FieldRole, self.label159)
 
 
         self.vboxLayout26.addLayout(self.formLayout_ee_page_8)
@@ -4982,82 +4982,82 @@ class Ui_MainWindow(object):
         self.label_fpga_integration_time_resolution = QLabel(self.frame_fpga_compilation_options)
         self.label_fpga_integration_time_resolution.setObjectName(u"label_fpga_integration_time_resolution")
 
-        self.formLayout1.setWidget(0, QFormLayout.ItemRole.LabelRole, self.label_fpga_integration_time_resolution)
+        self.formLayout1.setWidget(0, QFormLayout.LabelRole, self.label_fpga_integration_time_resolution)
 
         self.label161 = QLabel(self.frame_fpga_compilation_options)
         self.label161.setObjectName(u"label161")
 
-        self.formLayout1.setWidget(0, QFormLayout.ItemRole.FieldRole, self.label161)
+        self.formLayout1.setWidget(0, QFormLayout.FieldRole, self.label161)
 
         self.label_fpga_data_header = QLabel(self.frame_fpga_compilation_options)
         self.label_fpga_data_header.setObjectName(u"label_fpga_data_header")
 
-        self.formLayout1.setWidget(1, QFormLayout.ItemRole.LabelRole, self.label_fpga_data_header)
+        self.formLayout1.setWidget(1, QFormLayout.LabelRole, self.label_fpga_data_header)
 
         self.label162 = QLabel(self.frame_fpga_compilation_options)
         self.label162.setObjectName(u"label162")
 
-        self.formLayout1.setWidget(1, QFormLayout.ItemRole.FieldRole, self.label162)
+        self.formLayout1.setWidget(1, QFormLayout.FieldRole, self.label162)
 
         self.label_fpga_has_cf_select = QLabel(self.frame_fpga_compilation_options)
         self.label_fpga_has_cf_select.setObjectName(u"label_fpga_has_cf_select")
 
-        self.formLayout1.setWidget(2, QFormLayout.ItemRole.LabelRole, self.label_fpga_has_cf_select)
+        self.formLayout1.setWidget(2, QFormLayout.LabelRole, self.label_fpga_has_cf_select)
 
         self.label163 = QLabel(self.frame_fpga_compilation_options)
         self.label163.setObjectName(u"label163")
 
-        self.formLayout1.setWidget(2, QFormLayout.ItemRole.FieldRole, self.label163)
+        self.formLayout1.setWidget(2, QFormLayout.FieldRole, self.label163)
 
         self.label_fpga_laser_type = QLabel(self.frame_fpga_compilation_options)
         self.label_fpga_laser_type.setObjectName(u"label_fpga_laser_type")
 
-        self.formLayout1.setWidget(3, QFormLayout.ItemRole.LabelRole, self.label_fpga_laser_type)
+        self.formLayout1.setWidget(3, QFormLayout.LabelRole, self.label_fpga_laser_type)
 
         self.label164 = QLabel(self.frame_fpga_compilation_options)
         self.label164.setObjectName(u"label164")
 
-        self.formLayout1.setWidget(3, QFormLayout.ItemRole.FieldRole, self.label164)
+        self.formLayout1.setWidget(3, QFormLayout.FieldRole, self.label164)
 
         self.label_fpga_laser_control = QLabel(self.frame_fpga_compilation_options)
         self.label_fpga_laser_control.setObjectName(u"label_fpga_laser_control")
 
-        self.formLayout1.setWidget(4, QFormLayout.ItemRole.LabelRole, self.label_fpga_laser_control)
+        self.formLayout1.setWidget(4, QFormLayout.LabelRole, self.label_fpga_laser_control)
 
         self.label165 = QLabel(self.frame_fpga_compilation_options)
         self.label165.setObjectName(u"label165")
 
-        self.formLayout1.setWidget(4, QFormLayout.ItemRole.FieldRole, self.label165)
+        self.formLayout1.setWidget(4, QFormLayout.FieldRole, self.label165)
 
         self.label_has_area_scan = QLabel(self.frame_fpga_compilation_options)
         self.label_has_area_scan.setObjectName(u"label_has_area_scan")
 
-        self.formLayout1.setWidget(5, QFormLayout.ItemRole.LabelRole, self.label_has_area_scan)
+        self.formLayout1.setWidget(5, QFormLayout.LabelRole, self.label_has_area_scan)
 
         self.label166 = QLabel(self.frame_fpga_compilation_options)
         self.label166.setObjectName(u"label166")
 
-        self.formLayout1.setWidget(5, QFormLayout.ItemRole.FieldRole, self.label166)
+        self.formLayout1.setWidget(5, QFormLayout.FieldRole, self.label166)
 
         self.label_has_actual_integration_time = QLabel(self.frame_fpga_compilation_options)
         self.label_has_actual_integration_time.setObjectName(u"label_has_actual_integration_time")
 
-        self.formLayout1.setWidget(6, QFormLayout.ItemRole.LabelRole, self.label_has_actual_integration_time)
+        self.formLayout1.setWidget(6, QFormLayout.LabelRole, self.label_has_actual_integration_time)
 
         self.label167 = QLabel(self.frame_fpga_compilation_options)
         self.label167.setObjectName(u"label167")
 
-        self.formLayout1.setWidget(6, QFormLayout.ItemRole.FieldRole, self.label167)
+        self.formLayout1.setWidget(6, QFormLayout.FieldRole, self.label167)
 
         self.label_has_horizontal_binning = QLabel(self.frame_fpga_compilation_options)
         self.label_has_horizontal_binning.setObjectName(u"label_has_horizontal_binning")
 
-        self.formLayout1.setWidget(7, QFormLayout.ItemRole.LabelRole, self.label_has_horizontal_binning)
+        self.formLayout1.setWidget(7, QFormLayout.LabelRole, self.label_has_horizontal_binning)
 
         self.label168 = QLabel(self.frame_fpga_compilation_options)
         self.label168.setObjectName(u"label168")
 
-        self.formLayout1.setWidget(7, QFormLayout.ItemRole.FieldRole, self.label168)
+        self.formLayout1.setWidget(7, QFormLayout.FieldRole, self.label168)
 
 
         self.vboxLayout27.addLayout(self.formLayout1)
@@ -5082,84 +5082,84 @@ class Ui_MainWindow(object):
         self.label_microcontroller_firmware_version = QLabel(self.frame_miscellaneous_settings)
         self.label_microcontroller_firmware_version.setObjectName(u"label_microcontroller_firmware_version")
 
-        self.formLayout2.setWidget(0, QFormLayout.ItemRole.FieldRole, self.label_microcontroller_firmware_version)
+        self.formLayout2.setWidget(0, QFormLayout.FieldRole, self.label_microcontroller_firmware_version)
 
         self.label170 = QLabel(self.frame_miscellaneous_settings)
         self.label170.setObjectName(u"label170")
 
-        self.formLayout2.setWidget(0, QFormLayout.ItemRole.LabelRole, self.label170)
+        self.formLayout2.setWidget(0, QFormLayout.LabelRole, self.label170)
 
         self.label_fpga_firmware_version = QLabel(self.frame_miscellaneous_settings)
         self.label_fpga_firmware_version.setObjectName(u"label_fpga_firmware_version")
 
-        self.formLayout2.setWidget(1, QFormLayout.ItemRole.FieldRole, self.label_fpga_firmware_version)
+        self.formLayout2.setWidget(1, QFormLayout.FieldRole, self.label_fpga_firmware_version)
 
         self.label171 = QLabel(self.frame_miscellaneous_settings)
         self.label171.setObjectName(u"label171")
 
-        self.formLayout2.setWidget(1, QFormLayout.ItemRole.LabelRole, self.label171)
+        self.formLayout2.setWidget(1, QFormLayout.LabelRole, self.label171)
 
         self.label_ble_firmware_version = QLabel(self.frame_miscellaneous_settings)
         self.label_ble_firmware_version.setObjectName(u"label_ble_firmware_version")
 
-        self.formLayout2.setWidget(2, QFormLayout.ItemRole.FieldRole, self.label_ble_firmware_version)
+        self.formLayout2.setWidget(2, QFormLayout.FieldRole, self.label_ble_firmware_version)
 
         self.label172 = QLabel(self.frame_miscellaneous_settings)
         self.label172.setObjectName(u"label172")
 
-        self.formLayout2.setWidget(2, QFormLayout.ItemRole.LabelRole, self.label172)
+        self.formLayout2.setWidget(2, QFormLayout.LabelRole, self.label172)
 
         self.label_microcontroller_serial_number = QLabel(self.frame_miscellaneous_settings)
         self.label_microcontroller_serial_number.setObjectName(u"label_microcontroller_serial_number")
 
-        self.formLayout2.setWidget(3, QFormLayout.ItemRole.FieldRole, self.label_microcontroller_serial_number)
+        self.formLayout2.setWidget(3, QFormLayout.FieldRole, self.label_microcontroller_serial_number)
 
         self.label173 = QLabel(self.frame_miscellaneous_settings)
         self.label173.setObjectName(u"label173")
 
-        self.formLayout2.setWidget(3, QFormLayout.ItemRole.LabelRole, self.label173)
+        self.formLayout2.setWidget(3, QFormLayout.LabelRole, self.label173)
 
         self.label_detector_serial_number = QLabel(self.frame_miscellaneous_settings)
         self.label_detector_serial_number.setObjectName(u"label_detector_serial_number")
 
-        self.formLayout2.setWidget(4, QFormLayout.ItemRole.FieldRole, self.label_detector_serial_number)
+        self.formLayout2.setWidget(4, QFormLayout.FieldRole, self.label_detector_serial_number)
 
         self.label174 = QLabel(self.frame_miscellaneous_settings)
         self.label174.setObjectName(u"label174")
 
-        self.formLayout2.setWidget(4, QFormLayout.ItemRole.LabelRole, self.label174)
+        self.formLayout2.setWidget(4, QFormLayout.LabelRole, self.label174)
 
         self.label_hw_view_battery_parsed = QLabel(self.frame_miscellaneous_settings)
         self.label_hw_view_battery_parsed.setObjectName(u"label_hw_view_battery_parsed")
 
-        self.formLayout2.setWidget(7, QFormLayout.ItemRole.FieldRole, self.label_hw_view_battery_parsed)
+        self.formLayout2.setWidget(7, QFormLayout.FieldRole, self.label_hw_view_battery_parsed)
 
         self.label_battery_static = QLabel(self.frame_miscellaneous_settings)
         self.label_battery_static.setObjectName(u"label_battery_static")
 
-        self.formLayout2.setWidget(7, QFormLayout.ItemRole.LabelRole, self.label_battery_static)
+        self.formLayout2.setWidget(7, QFormLayout.LabelRole, self.label_battery_static)
 
         self.label_hw_view_power_connection_state = QLabel(self.frame_miscellaneous_settings)
         self.label_hw_view_power_connection_state.setObjectName(u"label_hw_view_power_connection_state")
         self.label_hw_view_power_connection_state.setWordWrap(False)
 
-        self.formLayout2.setWidget(9, QFormLayout.ItemRole.FieldRole, self.label_hw_view_power_connection_state)
+        self.formLayout2.setWidget(9, QFormLayout.FieldRole, self.label_hw_view_power_connection_state)
 
         self.label175 = QLabel(self.frame_miscellaneous_settings)
         self.label175.setObjectName(u"label175")
 
-        self.formLayout2.setWidget(9, QFormLayout.ItemRole.LabelRole, self.label175)
+        self.formLayout2.setWidget(9, QFormLayout.LabelRole, self.label175)
 
         self.label_assembly_revision = QLabel(self.frame_miscellaneous_settings)
         self.label_assembly_revision.setObjectName(u"label_assembly_revision")
         self.label_assembly_revision.setWordWrap(False)
 
-        self.formLayout2.setWidget(10, QFormLayout.ItemRole.FieldRole, self.label_assembly_revision)
+        self.formLayout2.setWidget(10, QFormLayout.FieldRole, self.label_assembly_revision)
 
         self.label176 = QLabel(self.frame_miscellaneous_settings)
         self.label176.setObjectName(u"label176")
 
-        self.formLayout2.setWidget(10, QFormLayout.ItemRole.LabelRole, self.label176)
+        self.formLayout2.setWidget(10, QFormLayout.LabelRole, self.label176)
 
 
         self.vboxLayout28.addLayout(self.formLayout2)
@@ -5183,32 +5183,32 @@ class Ui_MainWindow(object):
         self.label_python_version = QLabel(self.frame_python_settings)
         self.label_python_version.setObjectName(u"label_python_version")
 
-        self.formLayout3.setWidget(0, QFormLayout.ItemRole.LabelRole, self.label_python_version)
+        self.formLayout3.setWidget(0, QFormLayout.LabelRole, self.label_python_version)
 
         self.label178 = QLabel(self.frame_python_settings)
         self.label178.setObjectName(u"label178")
 
-        self.formLayout3.setWidget(0, QFormLayout.ItemRole.FieldRole, self.label178)
+        self.formLayout3.setWidget(0, QFormLayout.FieldRole, self.label178)
 
         self.label_process_size_mb = QLabel(self.frame_python_settings)
         self.label_process_size_mb.setObjectName(u"label_process_size_mb")
 
-        self.formLayout3.setWidget(1, QFormLayout.ItemRole.LabelRole, self.label_process_size_mb)
+        self.formLayout3.setWidget(1, QFormLayout.LabelRole, self.label_process_size_mb)
 
         self.label179 = QLabel(self.frame_python_settings)
         self.label179.setObjectName(u"label179")
 
-        self.formLayout3.setWidget(1, QFormLayout.ItemRole.FieldRole, self.label179)
+        self.formLayout3.setWidget(1, QFormLayout.FieldRole, self.label179)
 
         self.label_process_growth_mb = QLabel(self.frame_python_settings)
         self.label_process_growth_mb.setObjectName(u"label_process_growth_mb")
 
-        self.formLayout3.setWidget(2, QFormLayout.ItemRole.LabelRole, self.label_process_growth_mb)
+        self.formLayout3.setWidget(2, QFormLayout.LabelRole, self.label_process_growth_mb)
 
         self.label180 = QLabel(self.frame_python_settings)
         self.label180.setObjectName(u"label180")
 
-        self.formLayout3.setWidget(2, QFormLayout.ItemRole.FieldRole, self.label180)
+        self.formLayout3.setWidget(2, QFormLayout.FieldRole, self.label180)
 
 
         self.vboxLayout29.addLayout(self.formLayout3)
@@ -5227,12 +5227,12 @@ class Ui_MainWindow(object):
         self.pushButton_save_ini.setObjectName(u"pushButton_save_ini")
         self.pushButton_save_ini.setMinimumSize(QSize(130, 30))
 
-        self.formLayout4.setWidget(0, QFormLayout.ItemRole.LabelRole, self.pushButton_save_ini)
+        self.formLayout4.setWidget(0, QFormLayout.LabelRole, self.pushButton_save_ini)
 
         self.label_save_ini_result = QLabel(self.frame_hardware_setup_buttons)
         self.label_save_ini_result.setObjectName(u"label_save_ini_result")
 
-        self.formLayout4.setWidget(0, QFormLayout.ItemRole.FieldRole, self.label_save_ini_result)
+        self.formLayout4.setWidget(0, QFormLayout.FieldRole, self.label_save_ini_result)
 
         self.pushButton_admin_login = QPushButton(self.frame_hardware_setup_buttons)
         self.pushButton_admin_login.setObjectName(u"pushButton_admin_login")
@@ -5242,14 +5242,14 @@ class Ui_MainWindow(object):
         icon7.addFile(u":/greys/images/grey_icons/lock-active.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pushButton_admin_login.setIcon(icon7)
 
-        self.formLayout4.setWidget(2, QFormLayout.ItemRole.LabelRole, self.pushButton_admin_login)
+        self.formLayout4.setWidget(2, QFormLayout.LabelRole, self.pushButton_admin_login)
 
         self.pushButton_write_eeprom = QPushButton(self.frame_hardware_setup_buttons)
         self.pushButton_write_eeprom.setObjectName(u"pushButton_write_eeprom")
         self.pushButton_write_eeprom.setMinimumSize(QSize(130, 30))
         self.pushButton_write_eeprom.setProperty(u"initiallyVisible", False)
 
-        self.formLayout4.setWidget(5, QFormLayout.ItemRole.LabelRole, self.pushButton_write_eeprom)
+        self.formLayout4.setWidget(5, QFormLayout.LabelRole, self.pushButton_write_eeprom)
 
         self.pushButton_importEEPROM = QPushButton(self.frame_hardware_setup_buttons)
         self.pushButton_importEEPROM.setObjectName(u"pushButton_importEEPROM")
@@ -5258,28 +5258,28 @@ class Ui_MainWindow(object):
         self.pushButton_importEEPROM.setMinimumSize(QSize(130, 30))
         self.pushButton_importEEPROM.setProperty(u"initiallyVisible", False)
 
-        self.formLayout4.setWidget(6, QFormLayout.ItemRole.LabelRole, self.pushButton_importEEPROM)
+        self.formLayout4.setWidget(6, QFormLayout.LabelRole, self.pushButton_importEEPROM)
 
         self.pushButton_exportEEPROM = QPushButton(self.frame_hardware_setup_buttons)
         self.pushButton_exportEEPROM.setObjectName(u"pushButton_exportEEPROM")
         self.pushButton_exportEEPROM.setMinimumSize(QSize(130, 30))
         self.pushButton_exportEEPROM.setProperty(u"initiallyVisible", False)
 
-        self.formLayout4.setWidget(8, QFormLayout.ItemRole.LabelRole, self.pushButton_exportEEPROM)
+        self.formLayout4.setWidget(8, QFormLayout.LabelRole, self.pushButton_exportEEPROM)
 
         self.pushButton_restore_eeprom = QPushButton(self.frame_hardware_setup_buttons)
         self.pushButton_restore_eeprom.setObjectName(u"pushButton_restore_eeprom")
         self.pushButton_restore_eeprom.setMinimumSize(QSize(130, 30))
         self.pushButton_restore_eeprom.setProperty(u"initiallyVisible", False)
 
-        self.formLayout4.setWidget(4, QFormLayout.ItemRole.LabelRole, self.pushButton_restore_eeprom)
+        self.formLayout4.setWidget(4, QFormLayout.LabelRole, self.pushButton_restore_eeprom)
 
         self.pushButton_reset_fpga = QPushButton(self.frame_hardware_setup_buttons)
         self.pushButton_reset_fpga.setObjectName(u"pushButton_reset_fpga")
         self.pushButton_reset_fpga.setMinimumSize(QSize(130, 30))
         self.pushButton_reset_fpga.setProperty(u"initiallyVisible", False)
 
-        self.formLayout4.setWidget(9, QFormLayout.ItemRole.LabelRole, self.pushButton_reset_fpga)
+        self.formLayout4.setWidget(9, QFormLayout.LabelRole, self.pushButton_reset_fpga)
 
 
         self.vboxLayout30.addLayout(self.formLayout4)
@@ -5631,7 +5631,7 @@ class Ui_MainWindow(object):
         self.label183 = QLabel(self.frame_saveOptions_location_black)
         self.label183.setObjectName(u"label183")
 
-        self.formLayout5.setWidget(0, QFormLayout.ItemRole.LabelRole, self.label183)
+        self.formLayout5.setWidget(0, QFormLayout.LabelRole, self.label183)
 
         self.hboxLayout12 = QHBoxLayout()
         self.hboxLayout12.setObjectName(u"hboxLayout12")
@@ -5655,29 +5655,29 @@ class Ui_MainWindow(object):
         self.hboxLayout12.addWidget(self.pushButton_scope_setup_change_save_location)
 
 
-        self.formLayout5.setLayout(0, QFormLayout.ItemRole.FieldRole, self.hboxLayout12)
+        self.formLayout5.setLayout(0, QFormLayout.FieldRole, self.hboxLayout12)
 
         self.lineEdit_save_filename_template = QLineEdit(self.frame_saveOptions_location_black)
         self.lineEdit_save_filename_template.setObjectName(u"lineEdit_save_filename_template")
         self.lineEdit_save_filename_template.setMaximumSize(QSize(300, 16777215))
 
-        self.formLayout5.setWidget(1, QFormLayout.ItemRole.FieldRole, self.lineEdit_save_filename_template)
+        self.formLayout5.setWidget(1, QFormLayout.FieldRole, self.lineEdit_save_filename_template)
 
         self.lineEdit_save_label_template = QLineEdit(self.frame_saveOptions_location_black)
         self.lineEdit_save_label_template.setObjectName(u"lineEdit_save_label_template")
         self.lineEdit_save_label_template.setMaximumSize(QSize(300, 16777215))
 
-        self.formLayout5.setWidget(2, QFormLayout.ItemRole.FieldRole, self.lineEdit_save_label_template)
+        self.formLayout5.setWidget(2, QFormLayout.FieldRole, self.lineEdit_save_label_template)
 
         self.label_foo_baz = QLabel(self.frame_saveOptions_location_black)
         self.label_foo_baz.setObjectName(u"label_foo_baz")
 
-        self.formLayout5.setWidget(1, QFormLayout.ItemRole.LabelRole, self.label_foo_baz)
+        self.formLayout5.setWidget(1, QFormLayout.LabelRole, self.label_foo_baz)
 
         self.label_foo_baz2 = QLabel(self.frame_saveOptions_location_black)
         self.label_foo_baz2.setObjectName(u"label_foo_baz2")
 
-        self.formLayout5.setWidget(2, QFormLayout.ItemRole.LabelRole, self.label_foo_baz2)
+        self.formLayout5.setWidget(2, QFormLayout.LabelRole, self.label_foo_baz2)
 
 
         self.vboxLayout43.addLayout(self.formLayout5)
@@ -6147,7 +6147,7 @@ class Ui_MainWindow(object):
         self.label191 = QLabel(self.frame_BatchCollection_black)
         self.label191.setObjectName(u"label191")
 
-        self.formLayout6.setWidget(0, QFormLayout.ItemRole.LabelRole, self.label191)
+        self.formLayout6.setWidget(0, QFormLayout.LabelRole, self.label191)
 
         self.spinBox_BatchCollection_measurement_count = QSpinBox(self.frame_BatchCollection_black)
         self.spinBox_BatchCollection_measurement_count.setObjectName(u"spinBox_BatchCollection_measurement_count")
@@ -6160,12 +6160,12 @@ class Ui_MainWindow(object):
         self.spinBox_BatchCollection_measurement_count.setMaximum(99999)
         self.spinBox_BatchCollection_measurement_count.setValue(5)
 
-        self.formLayout6.setWidget(0, QFormLayout.ItemRole.FieldRole, self.spinBox_BatchCollection_measurement_count)
+        self.formLayout6.setWidget(0, QFormLayout.FieldRole, self.spinBox_BatchCollection_measurement_count)
 
         self.label192 = QLabel(self.frame_BatchCollection_black)
         self.label192.setObjectName(u"label192")
 
-        self.formLayout6.setWidget(1, QFormLayout.ItemRole.LabelRole, self.label192)
+        self.formLayout6.setWidget(1, QFormLayout.LabelRole, self.label192)
 
         self.spinBox_BatchCollection_measurement_period_ms = QSpinBox(self.frame_BatchCollection_black)
         self.spinBox_BatchCollection_measurement_period_ms.setObjectName(u"spinBox_BatchCollection_measurement_period_ms")
@@ -6179,16 +6179,16 @@ class Ui_MainWindow(object):
         self.spinBox_BatchCollection_measurement_period_ms.setSingleStep(100)
         self.spinBox_BatchCollection_measurement_period_ms.setValue(1000)
 
-        self.formLayout6.setWidget(1, QFormLayout.ItemRole.FieldRole, self.spinBox_BatchCollection_measurement_period_ms)
+        self.formLayout6.setWidget(1, QFormLayout.FieldRole, self.spinBox_BatchCollection_measurement_period_ms)
 
         self.spacerItem16 = QSpacerItem(20, 10, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
 
-        self.formLayout6.setItem(2, QFormLayout.ItemRole.LabelRole, self.spacerItem16)
+        self.formLayout6.setItem(2, QFormLayout.LabelRole, self.spacerItem16)
 
         self.label193 = QLabel(self.frame_BatchCollection_black)
         self.label193.setObjectName(u"label193")
 
-        self.formLayout6.setWidget(3, QFormLayout.ItemRole.LabelRole, self.label193)
+        self.formLayout6.setWidget(3, QFormLayout.LabelRole, self.label193)
 
         self.spinBox_BatchCollection_batch_count = QSpinBox(self.frame_BatchCollection_black)
         self.spinBox_BatchCollection_batch_count.setObjectName(u"spinBox_BatchCollection_batch_count")
@@ -6198,12 +6198,12 @@ class Ui_MainWindow(object):
         self.spinBox_BatchCollection_batch_count.setMaximum(9999)
         self.spinBox_BatchCollection_batch_count.setValue(1)
 
-        self.formLayout6.setWidget(3, QFormLayout.ItemRole.FieldRole, self.spinBox_BatchCollection_batch_count)
+        self.formLayout6.setWidget(3, QFormLayout.FieldRole, self.spinBox_BatchCollection_batch_count)
 
         self.label194 = QLabel(self.frame_BatchCollection_black)
         self.label194.setObjectName(u"label194")
 
-        self.formLayout6.setWidget(4, QFormLayout.ItemRole.LabelRole, self.label194)
+        self.formLayout6.setWidget(4, QFormLayout.LabelRole, self.label194)
 
         self.spinBox_BatchCollection_batch_period_sec = QSpinBox(self.frame_BatchCollection_black)
         self.spinBox_BatchCollection_batch_period_sec.setObjectName(u"spinBox_BatchCollection_batch_period_sec")
@@ -6216,16 +6216,16 @@ class Ui_MainWindow(object):
         self.spinBox_BatchCollection_batch_period_sec.setSingleStep(1)
         self.spinBox_BatchCollection_batch_period_sec.setValue(0)
 
-        self.formLayout6.setWidget(4, QFormLayout.ItemRole.FieldRole, self.spinBox_BatchCollection_batch_period_sec)
+        self.formLayout6.setWidget(4, QFormLayout.FieldRole, self.spinBox_BatchCollection_batch_period_sec)
 
         self.spacerItem17 = QSpacerItem(20, 10, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
 
-        self.formLayout6.setItem(5, QFormLayout.ItemRole.LabelRole, self.spacerItem17)
+        self.formLayout6.setItem(5, QFormLayout.LabelRole, self.spacerItem17)
 
         self.label195 = QLabel(self.frame_BatchCollection_black)
         self.label195.setObjectName(u"label195")
 
-        self.formLayout6.setWidget(6, QFormLayout.ItemRole.LabelRole, self.label195)
+        self.formLayout6.setWidget(6, QFormLayout.LabelRole, self.label195)
 
         self.spinBox_BatchCollection_collection_timeout = QSpinBox(self.frame_BatchCollection_black)
         self.spinBox_BatchCollection_collection_timeout.setObjectName(u"spinBox_BatchCollection_collection_timeout")
@@ -6238,7 +6238,7 @@ class Ui_MainWindow(object):
         self.spinBox_BatchCollection_collection_timeout.setSingleStep(1)
         self.spinBox_BatchCollection_collection_timeout.setValue(0)
 
-        self.formLayout6.setWidget(6, QFormLayout.ItemRole.FieldRole, self.spinBox_BatchCollection_collection_timeout)
+        self.formLayout6.setWidget(6, QFormLayout.FieldRole, self.spinBox_BatchCollection_collection_timeout)
 
 
         self.vboxLayout51.addLayout(self.formLayout6)
@@ -6317,7 +6317,7 @@ class Ui_MainWindow(object):
         self.label196 = QLabel(self.frame_BatchCollection_black)
         self.label196.setObjectName(u"label196")
 
-        self.formLayout7.setWidget(0, QFormLayout.ItemRole.LabelRole, self.label196)
+        self.formLayout7.setWidget(0, QFormLayout.LabelRole, self.label196)
 
         self.spinBox_BatchCollection_laser_warmup_ms = QSpinBox(self.frame_BatchCollection_black)
         self.spinBox_BatchCollection_laser_warmup_ms.setObjectName(u"spinBox_BatchCollection_laser_warmup_ms")
@@ -6328,7 +6328,7 @@ class Ui_MainWindow(object):
         self.spinBox_BatchCollection_laser_warmup_ms.setSingleStep(100)
         self.spinBox_BatchCollection_laser_warmup_ms.setValue(5000)
 
-        self.formLayout7.setWidget(0, QFormLayout.ItemRole.FieldRole, self.spinBox_BatchCollection_laser_warmup_ms)
+        self.formLayout7.setWidget(0, QFormLayout.FieldRole, self.spinBox_BatchCollection_laser_warmup_ms)
 
 
         self.vboxLayout52.addLayout(self.formLayout7)
@@ -6988,98 +6988,98 @@ class Ui_MainWindow(object):
         sizePolicy16.setHeightForWidth(self.label_correction_status_raman_shift_label.sizePolicy().hasHeightForWidth())
         self.label_correction_status_raman_shift_label.setSizePolicy(sizePolicy16)
 
-        self.form_correction_status_1.setWidget(0, QFormLayout.ItemRole.LabelRole, self.label_correction_status_raman_shift_label)
+        self.form_correction_status_1.setWidget(0, QFormLayout.LabelRole, self.label_correction_status_raman_shift_label)
 
         self.label_correction_status_raman_shift = QLabel(self.frame_correction_status_1)
         self.label_correction_status_raman_shift.setObjectName(u"label_correction_status_raman_shift")
         sizePolicy16.setHeightForWidth(self.label_correction_status_raman_shift.sizePolicy().hasHeightForWidth())
         self.label_correction_status_raman_shift.setSizePolicy(sizePolicy16)
 
-        self.form_correction_status_1.setWidget(0, QFormLayout.ItemRole.FieldRole, self.label_correction_status_raman_shift)
+        self.form_correction_status_1.setWidget(0, QFormLayout.FieldRole, self.label_correction_status_raman_shift)
 
         self.label_correction_status_edc_label = QLabel(self.frame_correction_status_1)
         self.label_correction_status_edc_label.setObjectName(u"label_correction_status_edc_label")
         sizePolicy16.setHeightForWidth(self.label_correction_status_edc_label.sizePolicy().hasHeightForWidth())
         self.label_correction_status_edc_label.setSizePolicy(sizePolicy16)
 
-        self.form_correction_status_1.setWidget(1, QFormLayout.ItemRole.LabelRole, self.label_correction_status_edc_label)
+        self.form_correction_status_1.setWidget(1, QFormLayout.LabelRole, self.label_correction_status_edc_label)
 
         self.label_correction_status_edc = QLabel(self.frame_correction_status_1)
         self.label_correction_status_edc.setObjectName(u"label_correction_status_edc")
         sizePolicy16.setHeightForWidth(self.label_correction_status_edc.sizePolicy().hasHeightForWidth())
         self.label_correction_status_edc.setSizePolicy(sizePolicy16)
 
-        self.form_correction_status_1.setWidget(1, QFormLayout.ItemRole.FieldRole, self.label_correction_status_edc)
+        self.form_correction_status_1.setWidget(1, QFormLayout.FieldRole, self.label_correction_status_edc)
 
         self.label_correction_status_ingaas_label = QLabel(self.frame_correction_status_1)
         self.label_correction_status_ingaas_label.setObjectName(u"label_correction_status_ingaas_label")
         sizePolicy16.setHeightForWidth(self.label_correction_status_ingaas_label.sizePolicy().hasHeightForWidth())
         self.label_correction_status_ingaas_label.setSizePolicy(sizePolicy16)
 
-        self.form_correction_status_1.setWidget(2, QFormLayout.ItemRole.LabelRole, self.label_correction_status_ingaas_label)
+        self.form_correction_status_1.setWidget(2, QFormLayout.LabelRole, self.label_correction_status_ingaas_label)
 
         self.label_correction_status_ingaas = QLabel(self.frame_correction_status_1)
         self.label_correction_status_ingaas.setObjectName(u"label_correction_status_ingaas")
         sizePolicy16.setHeightForWidth(self.label_correction_status_ingaas.sizePolicy().hasHeightForWidth())
         self.label_correction_status_ingaas.setSizePolicy(sizePolicy16)
 
-        self.form_correction_status_1.setWidget(2, QFormLayout.ItemRole.FieldRole, self.label_correction_status_ingaas)
+        self.form_correction_status_1.setWidget(2, QFormLayout.FieldRole, self.label_correction_status_ingaas)
 
         self.label_correction_status_etalon_label = QLabel(self.frame_correction_status_1)
         self.label_correction_status_etalon_label.setObjectName(u"label_correction_status_etalon_label")
         sizePolicy16.setHeightForWidth(self.label_correction_status_etalon_label.sizePolicy().hasHeightForWidth())
         self.label_correction_status_etalon_label.setSizePolicy(sizePolicy16)
 
-        self.form_correction_status_1.setWidget(3, QFormLayout.ItemRole.LabelRole, self.label_correction_status_etalon_label)
+        self.form_correction_status_1.setWidget(3, QFormLayout.LabelRole, self.label_correction_status_etalon_label)
 
         self.label_correction_status_etalon = QLabel(self.frame_correction_status_1)
         self.label_correction_status_etalon.setObjectName(u"label_correction_status_etalon")
         sizePolicy16.setHeightForWidth(self.label_correction_status_etalon.sizePolicy().hasHeightForWidth())
         self.label_correction_status_etalon.setSizePolicy(sizePolicy16)
 
-        self.form_correction_status_1.setWidget(3, QFormLayout.ItemRole.FieldRole, self.label_correction_status_etalon)
+        self.form_correction_status_1.setWidget(3, QFormLayout.FieldRole, self.label_correction_status_etalon)
 
         self.label_correction_status_srm_label = QLabel(self.frame_correction_status_1)
         self.label_correction_status_srm_label.setObjectName(u"label_correction_status_srm_label")
         sizePolicy16.setHeightForWidth(self.label_correction_status_srm_label.sizePolicy().hasHeightForWidth())
         self.label_correction_status_srm_label.setSizePolicy(sizePolicy16)
 
-        self.form_correction_status_1.setWidget(4, QFormLayout.ItemRole.LabelRole, self.label_correction_status_srm_label)
+        self.form_correction_status_1.setWidget(4, QFormLayout.LabelRole, self.label_correction_status_srm_label)
 
         self.label_correction_status_srm = QLabel(self.frame_correction_status_1)
         self.label_correction_status_srm.setObjectName(u"label_correction_status_srm")
         sizePolicy16.setHeightForWidth(self.label_correction_status_srm.sizePolicy().hasHeightForWidth())
         self.label_correction_status_srm.setSizePolicy(sizePolicy16)
 
-        self.form_correction_status_1.setWidget(4, QFormLayout.ItemRole.FieldRole, self.label_correction_status_srm)
+        self.form_correction_status_1.setWidget(4, QFormLayout.FieldRole, self.label_correction_status_srm)
 
         self.label_correction_status_XD_label = QLabel(self.frame_correction_status_1)
         self.label_correction_status_XD_label.setObjectName(u"label_correction_status_XD_label")
         sizePolicy16.setHeightForWidth(self.label_correction_status_XD_label.sizePolicy().hasHeightForWidth())
         self.label_correction_status_XD_label.setSizePolicy(sizePolicy16)
 
-        self.form_correction_status_1.setWidget(5, QFormLayout.ItemRole.LabelRole, self.label_correction_status_XD_label)
+        self.form_correction_status_1.setWidget(5, QFormLayout.LabelRole, self.label_correction_status_XD_label)
 
         self.label_correction_status_XD = QLabel(self.frame_correction_status_1)
         self.label_correction_status_XD.setObjectName(u"label_correction_status_XD")
         sizePolicy16.setHeightForWidth(self.label_correction_status_XD.sizePolicy().hasHeightForWidth())
         self.label_correction_status_XD.setSizePolicy(sizePolicy16)
 
-        self.form_correction_status_1.setWidget(5, QFormLayout.ItemRole.FieldRole, self.label_correction_status_XD)
+        self.form_correction_status_1.setWidget(5, QFormLayout.FieldRole, self.label_correction_status_XD)
 
         self.label_correction_status_baseline_label = QLabel(self.frame_correction_status_1)
         self.label_correction_status_baseline_label.setObjectName(u"label_correction_status_baseline_label")
         sizePolicy16.setHeightForWidth(self.label_correction_status_baseline_label.sizePolicy().hasHeightForWidth())
         self.label_correction_status_baseline_label.setSizePolicy(sizePolicy16)
 
-        self.form_correction_status_1.setWidget(6, QFormLayout.ItemRole.LabelRole, self.label_correction_status_baseline_label)
+        self.form_correction_status_1.setWidget(6, QFormLayout.LabelRole, self.label_correction_status_baseline_label)
 
         self.label_correction_status_baseline = QLabel(self.frame_correction_status_1)
         self.label_correction_status_baseline.setObjectName(u"label_correction_status_baseline")
         sizePolicy16.setHeightForWidth(self.label_correction_status_baseline.sizePolicy().hasHeightForWidth())
         self.label_correction_status_baseline.setSizePolicy(sizePolicy16)
 
-        self.form_correction_status_1.setWidget(6, QFormLayout.ItemRole.FieldRole, self.label_correction_status_baseline)
+        self.form_correction_status_1.setWidget(6, QFormLayout.FieldRole, self.label_correction_status_baseline)
 
 
         self.vboxLayout65.addWidget(self.frame_correction_status_1)
@@ -7091,36 +7091,36 @@ class Ui_MainWindow(object):
         sizePolicy16.setHeightForWidth(self.label198.sizePolicy().hasHeightForWidth())
         self.label198.setSizePolicy(sizePolicy16)
 
-        self.formLayout8.setWidget(0, QFormLayout.ItemRole.LabelRole, self.label198)
+        self.formLayout8.setWidget(0, QFormLayout.LabelRole, self.label198)
 
         self.lineEdit_scope_capture_save_prefix = QLineEdit(self.frame_scope_capture_bottom)
         self.lineEdit_scope_capture_save_prefix.setObjectName(u"lineEdit_scope_capture_save_prefix")
 
-        self.formLayout8.setWidget(0, QFormLayout.ItemRole.FieldRole, self.lineEdit_scope_capture_save_prefix)
+        self.formLayout8.setWidget(0, QFormLayout.FieldRole, self.lineEdit_scope_capture_save_prefix)
 
         self.label199 = QLabel(self.frame_scope_capture_bottom)
         self.label199.setObjectName(u"label199")
         sizePolicy16.setHeightForWidth(self.label199.sizePolicy().hasHeightForWidth())
         self.label199.setSizePolicy(sizePolicy16)
 
-        self.formLayout8.setWidget(2, QFormLayout.ItemRole.LabelRole, self.label199)
+        self.formLayout8.setWidget(2, QFormLayout.LabelRole, self.label199)
 
         self.lineEdit_scope_capture_save_note = QLineEdit(self.frame_scope_capture_bottom)
         self.lineEdit_scope_capture_save_note.setObjectName(u"lineEdit_scope_capture_save_note")
 
-        self.formLayout8.setWidget(2, QFormLayout.ItemRole.FieldRole, self.lineEdit_scope_capture_save_note)
+        self.formLayout8.setWidget(2, QFormLayout.FieldRole, self.lineEdit_scope_capture_save_note)
 
         self.label200 = QLabel(self.frame_scope_capture_bottom)
         self.label200.setObjectName(u"label200")
         sizePolicy16.setHeightForWidth(self.label200.sizePolicy().hasHeightForWidth())
         self.label200.setSizePolicy(sizePolicy16)
 
-        self.formLayout8.setWidget(1, QFormLayout.ItemRole.LabelRole, self.label200)
+        self.formLayout8.setWidget(1, QFormLayout.LabelRole, self.label200)
 
         self.lineEdit_scope_capture_save_suffix = QLineEdit(self.frame_scope_capture_bottom)
         self.lineEdit_scope_capture_save_suffix.setObjectName(u"lineEdit_scope_capture_save_suffix")
 
-        self.formLayout8.setWidget(1, QFormLayout.ItemRole.FieldRole, self.lineEdit_scope_capture_save_suffix)
+        self.formLayout8.setWidget(1, QFormLayout.FieldRole, self.lineEdit_scope_capture_save_suffix)
 
 
         self.vboxLayout65.addLayout(self.formLayout8)
@@ -8293,7 +8293,7 @@ class Ui_MainWindow(object):
         self.doubleSpinBox_excitation_nm.setValue(785.000000000000000)
         self.doubleSpinBox_excitation_nm.setProperty(u"initiallyVisible", False)
 
-        self.formLayout_laser_control.setWidget(1, QFormLayout.ItemRole.LabelRole, self.doubleSpinBox_excitation_nm)
+        self.formLayout_laser_control.setWidget(1, QFormLayout.LabelRole, self.doubleSpinBox_excitation_nm)
 
         self.label_lightSourceWidget_excitation_nm = QLabel(self.lightSourceWidget_shaded)
         self.label_lightSourceWidget_excitation_nm.setObjectName(u"label_lightSourceWidget_excitation_nm")
@@ -8301,7 +8301,7 @@ class Ui_MainWindow(object):
         self.label_lightSourceWidget_excitation_nm.setSizePolicy(sizePolicy16)
         self.label_lightSourceWidget_excitation_nm.setProperty(u"initiallyVisible", False)
 
-        self.formLayout_laser_control.setWidget(1, QFormLayout.ItemRole.FieldRole, self.label_lightSourceWidget_excitation_nm)
+        self.formLayout_laser_control.setWidget(1, QFormLayout.FieldRole, self.label_lightSourceWidget_excitation_nm)
 
         self.spinBox_laser_attenuator = QSpinBox(self.lightSourceWidget_shaded)
         self.spinBox_laser_attenuator.setObjectName(u"spinBox_laser_attenuator")
@@ -8313,7 +8313,7 @@ class Ui_MainWindow(object):
         self.spinBox_laser_attenuator.setMaximum(100)
         self.spinBox_laser_attenuator.setValue(0)
 
-        self.formLayout_laser_control.setWidget(2, QFormLayout.ItemRole.LabelRole, self.spinBox_laser_attenuator)
+        self.formLayout_laser_control.setWidget(2, QFormLayout.LabelRole, self.spinBox_laser_attenuator)
 
         self.label_laser_control_attenuator = QLabel(self.lightSourceWidget_shaded)
         self.label_laser_control_attenuator.setObjectName(u"label_laser_control_attenuator")
@@ -8321,7 +8321,7 @@ class Ui_MainWindow(object):
         self.label_laser_control_attenuator.setSizePolicy(sizePolicy16)
         self.label_laser_control_attenuator.setProperty(u"initiallyVisible", False)
 
-        self.formLayout_laser_control.setWidget(2, QFormLayout.ItemRole.FieldRole, self.label_laser_control_attenuator)
+        self.formLayout_laser_control.setWidget(2, QFormLayout.FieldRole, self.label_laser_control_attenuator)
 
         self.spinBox_laser_watchdog_sec = QSpinBox(self.lightSourceWidget_shaded)
         self.spinBox_laser_watchdog_sec.setObjectName(u"spinBox_laser_watchdog_sec")
@@ -8333,14 +8333,14 @@ class Ui_MainWindow(object):
         self.spinBox_laser_watchdog_sec.setMaximum(1200)
         self.spinBox_laser_watchdog_sec.setValue(10)
 
-        self.formLayout_laser_control.setWidget(3, QFormLayout.ItemRole.LabelRole, self.spinBox_laser_watchdog_sec)
+        self.formLayout_laser_control.setWidget(3, QFormLayout.LabelRole, self.spinBox_laser_watchdog_sec)
 
         self.label_laser_watchdog_sec = QLabel(self.lightSourceWidget_shaded)
         self.label_laser_watchdog_sec.setObjectName(u"label_laser_watchdog_sec")
         sizePolicy16.setHeightForWidth(self.label_laser_watchdog_sec.sizePolicy().hasHeightForWidth())
         self.label_laser_watchdog_sec.setSizePolicy(sizePolicy16)
 
-        self.formLayout_laser_control.setWidget(3, QFormLayout.ItemRole.FieldRole, self.label_laser_watchdog_sec)
+        self.formLayout_laser_control.setWidget(3, QFormLayout.FieldRole, self.label_laser_watchdog_sec)
 
         self.comboBox_laser_tec_mode = QComboBox(self.lightSourceWidget_shaded)
         self.comboBox_laser_tec_mode.addItem("")
@@ -8352,7 +8352,7 @@ class Ui_MainWindow(object):
         self.comboBox_laser_tec_mode.setSizePolicy(sizePolicy1)
         self.comboBox_laser_tec_mode.setFont(font)
 
-        self.formLayout_laser_control.setWidget(4, QFormLayout.ItemRole.LabelRole, self.comboBox_laser_tec_mode)
+        self.formLayout_laser_control.setWidget(4, QFormLayout.LabelRole, self.comboBox_laser_tec_mode)
 
         self.label_laser_tec_mode = QLabel(self.lightSourceWidget_shaded)
         self.label_laser_tec_mode.setObjectName(u"label_laser_tec_mode")
@@ -8360,7 +8360,7 @@ class Ui_MainWindow(object):
         self.label_laser_tec_mode.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_laser_tec_mode.setWordWrap(True)
 
-        self.formLayout_laser_control.setWidget(4, QFormLayout.ItemRole.FieldRole, self.label_laser_tec_mode)
+        self.formLayout_laser_control.setWidget(4, QFormLayout.FieldRole, self.label_laser_tec_mode)
 
 
         self.vboxLayout79.addLayout(self.formLayout_laser_control)
@@ -8424,7 +8424,7 @@ class Ui_MainWindow(object):
         self.spinBox_auto_raman_max_ms.setSingleStep(1000)
         self.spinBox_auto_raman_max_ms.setValue(10000)
 
-        self.formLayout9.setWidget(0, QFormLayout.ItemRole.LabelRole, self.spinBox_auto_raman_max_ms)
+        self.formLayout9.setWidget(0, QFormLayout.LabelRole, self.spinBox_auto_raman_max_ms)
 
         self.label_auto_raman_max_ms = QLabel(self.frame_auto_raman_config)
         self.label_auto_raman_max_ms.setObjectName(u"label_auto_raman_max_ms")
@@ -8432,7 +8432,7 @@ class Ui_MainWindow(object):
         self.label_auto_raman_max_ms.setSizePolicy(sizePolicy16)
         self.label_auto_raman_max_ms.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
 
-        self.formLayout9.setWidget(0, QFormLayout.ItemRole.FieldRole, self.label_auto_raman_max_ms)
+        self.formLayout9.setWidget(0, QFormLayout.FieldRole, self.label_auto_raman_max_ms)
 
         self.spinBox_auto_raman_start_integ_ms = QSpinBox(self.frame_auto_raman_config)
         self.spinBox_auto_raman_start_integ_ms.setObjectName(u"spinBox_auto_raman_start_integ_ms")
@@ -8447,7 +8447,7 @@ class Ui_MainWindow(object):
         self.spinBox_auto_raman_start_integ_ms.setSingleStep(100)
         self.spinBox_auto_raman_start_integ_ms.setValue(100)
 
-        self.formLayout9.setWidget(1, QFormLayout.ItemRole.LabelRole, self.spinBox_auto_raman_start_integ_ms)
+        self.formLayout9.setWidget(1, QFormLayout.LabelRole, self.spinBox_auto_raman_start_integ_ms)
 
         self.label_auto_raman_start_integ_ms = QLabel(self.frame_auto_raman_config)
         self.label_auto_raman_start_integ_ms.setObjectName(u"label_auto_raman_start_integ_ms")
@@ -8455,7 +8455,7 @@ class Ui_MainWindow(object):
         self.label_auto_raman_start_integ_ms.setSizePolicy(sizePolicy16)
         self.label_auto_raman_start_integ_ms.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
 
-        self.formLayout9.setWidget(1, QFormLayout.ItemRole.FieldRole, self.label_auto_raman_start_integ_ms)
+        self.formLayout9.setWidget(1, QFormLayout.FieldRole, self.label_auto_raman_start_integ_ms)
 
         self.spinBox_auto_raman_start_gain_db = QSpinBox(self.frame_auto_raman_config)
         self.spinBox_auto_raman_start_gain_db.setObjectName(u"spinBox_auto_raman_start_gain_db")
@@ -8470,7 +8470,7 @@ class Ui_MainWindow(object):
         self.spinBox_auto_raman_start_gain_db.setSingleStep(1)
         self.spinBox_auto_raman_start_gain_db.setValue(0)
 
-        self.formLayout9.setWidget(2, QFormLayout.ItemRole.LabelRole, self.spinBox_auto_raman_start_gain_db)
+        self.formLayout9.setWidget(2, QFormLayout.LabelRole, self.spinBox_auto_raman_start_gain_db)
 
         self.label_auto_raman_start_gain_db = QLabel(self.frame_auto_raman_config)
         self.label_auto_raman_start_gain_db.setObjectName(u"label_auto_raman_start_gain_db")
@@ -8478,7 +8478,7 @@ class Ui_MainWindow(object):
         self.label_auto_raman_start_gain_db.setSizePolicy(sizePolicy16)
         self.label_auto_raman_start_gain_db.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
 
-        self.formLayout9.setWidget(2, QFormLayout.ItemRole.FieldRole, self.label_auto_raman_start_gain_db)
+        self.formLayout9.setWidget(2, QFormLayout.FieldRole, self.label_auto_raman_start_gain_db)
 
         self.spinBox_auto_raman_max_integ_ms = QSpinBox(self.frame_auto_raman_config)
         self.spinBox_auto_raman_max_integ_ms.setObjectName(u"spinBox_auto_raman_max_integ_ms")
@@ -8493,7 +8493,7 @@ class Ui_MainWindow(object):
         self.spinBox_auto_raman_max_integ_ms.setSingleStep(1000)
         self.spinBox_auto_raman_max_integ_ms.setValue(2000)
 
-        self.formLayout9.setWidget(3, QFormLayout.ItemRole.LabelRole, self.spinBox_auto_raman_max_integ_ms)
+        self.formLayout9.setWidget(3, QFormLayout.LabelRole, self.spinBox_auto_raman_max_integ_ms)
 
         self.label_auto_raman_max_integ_ms = QLabel(self.frame_auto_raman_config)
         self.label_auto_raman_max_integ_ms.setObjectName(u"label_auto_raman_max_integ_ms")
@@ -8501,7 +8501,7 @@ class Ui_MainWindow(object):
         self.label_auto_raman_max_integ_ms.setSizePolicy(sizePolicy16)
         self.label_auto_raman_max_integ_ms.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
 
-        self.formLayout9.setWidget(3, QFormLayout.ItemRole.FieldRole, self.label_auto_raman_max_integ_ms)
+        self.formLayout9.setWidget(3, QFormLayout.FieldRole, self.label_auto_raman_max_integ_ms)
 
         self.spinBox_auto_raman_min_integ_ms = QSpinBox(self.frame_auto_raman_config)
         self.spinBox_auto_raman_min_integ_ms.setObjectName(u"spinBox_auto_raman_min_integ_ms")
@@ -8516,7 +8516,7 @@ class Ui_MainWindow(object):
         self.spinBox_auto_raman_min_integ_ms.setSingleStep(1)
         self.spinBox_auto_raman_min_integ_ms.setValue(10)
 
-        self.formLayout9.setWidget(4, QFormLayout.ItemRole.LabelRole, self.spinBox_auto_raman_min_integ_ms)
+        self.formLayout9.setWidget(4, QFormLayout.LabelRole, self.spinBox_auto_raman_min_integ_ms)
 
         self.label_auto_raman_min_integ_ms = QLabel(self.frame_auto_raman_config)
         self.label_auto_raman_min_integ_ms.setObjectName(u"label_auto_raman_min_integ_ms")
@@ -8524,7 +8524,7 @@ class Ui_MainWindow(object):
         self.label_auto_raman_min_integ_ms.setSizePolicy(sizePolicy16)
         self.label_auto_raman_min_integ_ms.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
 
-        self.formLayout9.setWidget(4, QFormLayout.ItemRole.FieldRole, self.label_auto_raman_min_integ_ms)
+        self.formLayout9.setWidget(4, QFormLayout.FieldRole, self.label_auto_raman_min_integ_ms)
 
         self.spinBox_auto_raman_max_gain_db = QSpinBox(self.frame_auto_raman_config)
         self.spinBox_auto_raman_max_gain_db.setObjectName(u"spinBox_auto_raman_max_gain_db")
@@ -8539,7 +8539,7 @@ class Ui_MainWindow(object):
         self.spinBox_auto_raman_max_gain_db.setSingleStep(1)
         self.spinBox_auto_raman_max_gain_db.setValue(30)
 
-        self.formLayout9.setWidget(5, QFormLayout.ItemRole.LabelRole, self.spinBox_auto_raman_max_gain_db)
+        self.formLayout9.setWidget(5, QFormLayout.LabelRole, self.spinBox_auto_raman_max_gain_db)
 
         self.label_auto_raman_max_gain_db = QLabel(self.frame_auto_raman_config)
         self.label_auto_raman_max_gain_db.setObjectName(u"label_auto_raman_max_gain_db")
@@ -8547,7 +8547,7 @@ class Ui_MainWindow(object):
         self.label_auto_raman_max_gain_db.setSizePolicy(sizePolicy16)
         self.label_auto_raman_max_gain_db.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
 
-        self.formLayout9.setWidget(5, QFormLayout.ItemRole.FieldRole, self.label_auto_raman_max_gain_db)
+        self.formLayout9.setWidget(5, QFormLayout.FieldRole, self.label_auto_raman_max_gain_db)
 
         self.spinBox_auto_raman_min_gain_db = QSpinBox(self.frame_auto_raman_config)
         self.spinBox_auto_raman_min_gain_db.setObjectName(u"spinBox_auto_raman_min_gain_db")
@@ -8562,7 +8562,7 @@ class Ui_MainWindow(object):
         self.spinBox_auto_raman_min_gain_db.setSingleStep(1)
         self.spinBox_auto_raman_min_gain_db.setValue(0)
 
-        self.formLayout9.setWidget(6, QFormLayout.ItemRole.LabelRole, self.spinBox_auto_raman_min_gain_db)
+        self.formLayout9.setWidget(6, QFormLayout.LabelRole, self.spinBox_auto_raman_min_gain_db)
 
         self.label_auto_raman_min_gain_db = QLabel(self.frame_auto_raman_config)
         self.label_auto_raman_min_gain_db.setObjectName(u"label_auto_raman_min_gain_db")
@@ -8570,7 +8570,7 @@ class Ui_MainWindow(object):
         self.label_auto_raman_min_gain_db.setSizePolicy(sizePolicy16)
         self.label_auto_raman_min_gain_db.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
 
-        self.formLayout9.setWidget(6, QFormLayout.ItemRole.FieldRole, self.label_auto_raman_min_gain_db)
+        self.formLayout9.setWidget(6, QFormLayout.FieldRole, self.label_auto_raman_min_gain_db)
 
         self.spinBox_auto_raman_target_counts = QSpinBox(self.frame_auto_raman_config)
         self.spinBox_auto_raman_target_counts.setObjectName(u"spinBox_auto_raman_target_counts")
@@ -8585,7 +8585,7 @@ class Ui_MainWindow(object):
         self.spinBox_auto_raman_target_counts.setSingleStep(1000)
         self.spinBox_auto_raman_target_counts.setValue(45000)
 
-        self.formLayout9.setWidget(7, QFormLayout.ItemRole.LabelRole, self.spinBox_auto_raman_target_counts)
+        self.formLayout9.setWidget(7, QFormLayout.LabelRole, self.spinBox_auto_raman_target_counts)
 
         self.label_auto_raman_target_counts = QLabel(self.frame_auto_raman_config)
         self.label_auto_raman_target_counts.setObjectName(u"label_auto_raman_target_counts")
@@ -8593,7 +8593,7 @@ class Ui_MainWindow(object):
         self.label_auto_raman_target_counts.setSizePolicy(sizePolicy16)
         self.label_auto_raman_target_counts.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
 
-        self.formLayout9.setWidget(7, QFormLayout.ItemRole.FieldRole, self.label_auto_raman_target_counts)
+        self.formLayout9.setWidget(7, QFormLayout.FieldRole, self.label_auto_raman_target_counts)
 
         self.spinBox_auto_raman_max_counts = QSpinBox(self.frame_auto_raman_config)
         self.spinBox_auto_raman_max_counts.setObjectName(u"spinBox_auto_raman_max_counts")
@@ -8608,7 +8608,7 @@ class Ui_MainWindow(object):
         self.spinBox_auto_raman_max_counts.setSingleStep(1000)
         self.spinBox_auto_raman_max_counts.setValue(50000)
 
-        self.formLayout9.setWidget(8, QFormLayout.ItemRole.LabelRole, self.spinBox_auto_raman_max_counts)
+        self.formLayout9.setWidget(8, QFormLayout.LabelRole, self.spinBox_auto_raman_max_counts)
 
         self.label_auto_raman_max_counts = QLabel(self.frame_auto_raman_config)
         self.label_auto_raman_max_counts.setObjectName(u"label_auto_raman_max_counts")
@@ -8616,7 +8616,7 @@ class Ui_MainWindow(object):
         self.label_auto_raman_max_counts.setSizePolicy(sizePolicy16)
         self.label_auto_raman_max_counts.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
 
-        self.formLayout9.setWidget(8, QFormLayout.ItemRole.FieldRole, self.label_auto_raman_max_counts)
+        self.formLayout9.setWidget(8, QFormLayout.FieldRole, self.label_auto_raman_max_counts)
 
         self.spinBox_auto_raman_min_counts = QSpinBox(self.frame_auto_raman_config)
         self.spinBox_auto_raman_min_counts.setObjectName(u"spinBox_auto_raman_min_counts")
@@ -8631,7 +8631,7 @@ class Ui_MainWindow(object):
         self.spinBox_auto_raman_min_counts.setSingleStep(1000)
         self.spinBox_auto_raman_min_counts.setValue(40000)
 
-        self.formLayout9.setWidget(9, QFormLayout.ItemRole.LabelRole, self.spinBox_auto_raman_min_counts)
+        self.formLayout9.setWidget(9, QFormLayout.LabelRole, self.spinBox_auto_raman_min_counts)
 
         self.label_auto_raman_min_counts = QLabel(self.frame_auto_raman_config)
         self.label_auto_raman_min_counts.setObjectName(u"label_auto_raman_min_counts")
@@ -8639,7 +8639,7 @@ class Ui_MainWindow(object):
         self.label_auto_raman_min_counts.setSizePolicy(sizePolicy16)
         self.label_auto_raman_min_counts.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
 
-        self.formLayout9.setWidget(9, QFormLayout.ItemRole.FieldRole, self.label_auto_raman_min_counts)
+        self.formLayout9.setWidget(9, QFormLayout.FieldRole, self.label_auto_raman_min_counts)
 
         self.spinBox_auto_raman_max_factor = QSpinBox(self.frame_auto_raman_config)
         self.spinBox_auto_raman_max_factor.setObjectName(u"spinBox_auto_raman_max_factor")
@@ -8654,7 +8654,7 @@ class Ui_MainWindow(object):
         self.spinBox_auto_raman_max_factor.setSingleStep(1)
         self.spinBox_auto_raman_max_factor.setValue(5)
 
-        self.formLayout9.setWidget(10, QFormLayout.ItemRole.LabelRole, self.spinBox_auto_raman_max_factor)
+        self.formLayout9.setWidget(10, QFormLayout.LabelRole, self.spinBox_auto_raman_max_factor)
 
         self.label_auto_raman_max_factor = QLabel(self.frame_auto_raman_config)
         self.label_auto_raman_max_factor.setObjectName(u"label_auto_raman_max_factor")
@@ -8662,7 +8662,7 @@ class Ui_MainWindow(object):
         self.label_auto_raman_max_factor.setSizePolicy(sizePolicy16)
         self.label_auto_raman_max_factor.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
 
-        self.formLayout9.setWidget(10, QFormLayout.ItemRole.FieldRole, self.label_auto_raman_max_factor)
+        self.formLayout9.setWidget(10, QFormLayout.FieldRole, self.label_auto_raman_max_factor)
 
         self.doubleSpinBox_auto_raman_drop_factor = QDoubleSpinBox(self.frame_auto_raman_config)
         self.doubleSpinBox_auto_raman_drop_factor.setObjectName(u"doubleSpinBox_auto_raman_drop_factor")
@@ -8676,7 +8676,7 @@ class Ui_MainWindow(object):
         self.doubleSpinBox_auto_raman_drop_factor.setSingleStep(0.100000000000000)
         self.doubleSpinBox_auto_raman_drop_factor.setValue(0.500000000000000)
 
-        self.formLayout9.setWidget(11, QFormLayout.ItemRole.LabelRole, self.doubleSpinBox_auto_raman_drop_factor)
+        self.formLayout9.setWidget(11, QFormLayout.LabelRole, self.doubleSpinBox_auto_raman_drop_factor)
 
         self.label_auto_raman_drop_factor = QLabel(self.frame_auto_raman_config)
         self.label_auto_raman_drop_factor.setObjectName(u"label_auto_raman_drop_factor")
@@ -8684,7 +8684,7 @@ class Ui_MainWindow(object):
         self.label_auto_raman_drop_factor.setSizePolicy(sizePolicy16)
         self.label_auto_raman_drop_factor.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
 
-        self.formLayout9.setWidget(11, QFormLayout.ItemRole.FieldRole, self.label_auto_raman_drop_factor)
+        self.formLayout9.setWidget(11, QFormLayout.FieldRole, self.label_auto_raman_drop_factor)
 
         self.spinBox_auto_raman_saturation = QSpinBox(self.frame_auto_raman_config)
         self.spinBox_auto_raman_saturation.setObjectName(u"spinBox_auto_raman_saturation")
@@ -8699,7 +8699,7 @@ class Ui_MainWindow(object):
         self.spinBox_auto_raman_saturation.setSingleStep(1000)
         self.spinBox_auto_raman_saturation.setValue(65000)
 
-        self.formLayout9.setWidget(12, QFormLayout.ItemRole.LabelRole, self.spinBox_auto_raman_saturation)
+        self.formLayout9.setWidget(12, QFormLayout.LabelRole, self.spinBox_auto_raman_saturation)
 
         self.label_auto_raman_saturation = QLabel(self.frame_auto_raman_config)
         self.label_auto_raman_saturation.setObjectName(u"label_auto_raman_saturation")
@@ -8707,7 +8707,7 @@ class Ui_MainWindow(object):
         self.label_auto_raman_saturation.setSizePolicy(sizePolicy16)
         self.label_auto_raman_saturation.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
 
-        self.formLayout9.setWidget(12, QFormLayout.ItemRole.FieldRole, self.label_auto_raman_saturation)
+        self.formLayout9.setWidget(12, QFormLayout.FieldRole, self.label_auto_raman_saturation)
 
         self.spinBox_auto_raman_laser_warning_delay_sec = QSpinBox(self.frame_auto_raman_config)
         self.spinBox_auto_raman_laser_warning_delay_sec.setObjectName(u"spinBox_auto_raman_laser_warning_delay_sec")
@@ -8722,7 +8722,7 @@ class Ui_MainWindow(object):
         self.spinBox_auto_raman_laser_warning_delay_sec.setSingleStep(1)
         self.spinBox_auto_raman_laser_warning_delay_sec.setValue(3)
 
-        self.formLayout9.setWidget(13, QFormLayout.ItemRole.LabelRole, self.spinBox_auto_raman_laser_warning_delay_sec)
+        self.formLayout9.setWidget(13, QFormLayout.LabelRole, self.spinBox_auto_raman_laser_warning_delay_sec)
 
         self.label_auto_raman_laser_warning_delay_sec = QLabel(self.frame_auto_raman_config)
         self.label_auto_raman_laser_warning_delay_sec.setObjectName(u"label_auto_raman_laser_warning_delay_sec")
@@ -8730,7 +8730,7 @@ class Ui_MainWindow(object):
         self.label_auto_raman_laser_warning_delay_sec.setSizePolicy(sizePolicy16)
         self.label_auto_raman_laser_warning_delay_sec.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
 
-        self.formLayout9.setWidget(13, QFormLayout.ItemRole.FieldRole, self.label_auto_raman_laser_warning_delay_sec)
+        self.formLayout9.setWidget(13, QFormLayout.FieldRole, self.label_auto_raman_laser_warning_delay_sec)
 
         self.spinBox_auto_raman_max_avg = QSpinBox(self.frame_auto_raman_config)
         self.spinBox_auto_raman_max_avg.setObjectName(u"spinBox_auto_raman_max_avg")
@@ -8745,7 +8745,7 @@ class Ui_MainWindow(object):
         self.spinBox_auto_raman_max_avg.setSingleStep(1)
         self.spinBox_auto_raman_max_avg.setValue(100)
 
-        self.formLayout9.setWidget(14, QFormLayout.ItemRole.LabelRole, self.spinBox_auto_raman_max_avg)
+        self.formLayout9.setWidget(14, QFormLayout.LabelRole, self.spinBox_auto_raman_max_avg)
 
         self.label_auto_raman_max_avg = QLabel(self.frame_auto_raman_config)
         self.label_auto_raman_max_avg.setObjectName(u"label_auto_raman_max_avg")
@@ -8753,7 +8753,7 @@ class Ui_MainWindow(object):
         self.label_auto_raman_max_avg.setSizePolicy(sizePolicy16)
         self.label_auto_raman_max_avg.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
 
-        self.formLayout9.setWidget(14, QFormLayout.ItemRole.FieldRole, self.label_auto_raman_max_avg)
+        self.formLayout9.setWidget(14, QFormLayout.FieldRole, self.label_auto_raman_max_avg)
 
         self.label_auto_raman_elapsed = QLabel(self.frame_auto_raman_config)
         self.label_auto_raman_elapsed.setObjectName(u"label_auto_raman_elapsed")
@@ -8761,7 +8761,7 @@ class Ui_MainWindow(object):
         self.label_auto_raman_elapsed.setSizePolicy(sizePolicy16)
         self.label_auto_raman_elapsed.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
 
-        self.formLayout9.setWidget(15, QFormLayout.ItemRole.LabelRole, self.label_auto_raman_elapsed)
+        self.formLayout9.setWidget(15, QFormLayout.LabelRole, self.label_auto_raman_elapsed)
 
         self.label_auto_raman_elapsed_name = QLabel(self.frame_auto_raman_config)
         self.label_auto_raman_elapsed_name.setObjectName(u"label_auto_raman_elapsed_name")
@@ -8769,28 +8769,28 @@ class Ui_MainWindow(object):
         self.label_auto_raman_elapsed_name.setSizePolicy(sizePolicy16)
         self.label_auto_raman_elapsed_name.setLayoutDirection(Qt.LayoutDirection.RightToLeft)
 
-        self.formLayout9.setWidget(15, QFormLayout.ItemRole.FieldRole, self.label_auto_raman_elapsed_name)
+        self.formLayout9.setWidget(15, QFormLayout.FieldRole, self.label_auto_raman_elapsed_name)
 
         self.checkBox_auto_raman_retain_settings = QCheckBox(self.frame_auto_raman_config)
         self.checkBox_auto_raman_retain_settings.setObjectName(u"checkBox_auto_raman_retain_settings")
         sizePolicy1.setHeightForWidth(self.checkBox_auto_raman_retain_settings.sizePolicy().hasHeightForWidth())
         self.checkBox_auto_raman_retain_settings.setSizePolicy(sizePolicy1)
 
-        self.formLayout9.setWidget(16, QFormLayout.ItemRole.SpanningRole, self.checkBox_auto_raman_retain_settings)
+        self.formLayout9.setWidget(16, QFormLayout.SpanningRole, self.checkBox_auto_raman_retain_settings)
 
         self.checkBox_auto_raman_auto_save = QCheckBox(self.frame_auto_raman_config)
         self.checkBox_auto_raman_auto_save.setObjectName(u"checkBox_auto_raman_auto_save")
         sizePolicy1.setHeightForWidth(self.checkBox_auto_raman_auto_save.sizePolicy().hasHeightForWidth())
         self.checkBox_auto_raman_auto_save.setSizePolicy(sizePolicy1)
 
-        self.formLayout9.setWidget(17, QFormLayout.ItemRole.SpanningRole, self.checkBox_auto_raman_auto_save)
+        self.formLayout9.setWidget(17, QFormLayout.SpanningRole, self.checkBox_auto_raman_auto_save)
 
         self.checkBox_auto_raman_onboard = QCheckBox(self.frame_auto_raman_config)
         self.checkBox_auto_raman_onboard.setObjectName(u"checkBox_auto_raman_onboard")
         sizePolicy1.setHeightForWidth(self.checkBox_auto_raman_onboard.sizePolicy().hasHeightForWidth())
         self.checkBox_auto_raman_onboard.setSizePolicy(sizePolicy1)
 
-        self.formLayout9.setWidget(18, QFormLayout.ItemRole.SpanningRole, self.checkBox_auto_raman_onboard)
+        self.formLayout9.setWidget(18, QFormLayout.SpanningRole, self.checkBox_auto_raman_onboard)
 
 
         self.vboxLayout79.addWidget(self.frame_auto_raman_config)
@@ -9492,31 +9492,31 @@ class Ui_MainWindow(object):
         font3.setPointSize(10)
         self.label_library_matching_matched_compound_name_label.setFont(font3)
 
-        self.formLayout_library_matching_options.setWidget(0, QFormLayout.ItemRole.LabelRole, self.label_library_matching_matched_compound_name_label)
+        self.formLayout_library_matching_options.setWidget(0, QFormLayout.LabelRole, self.label_library_matching_matched_compound_name_label)
 
         self.label_library_matching_matched_compound_name = QLabel(self.frame_library_matching_3)
         self.label_library_matching_matched_compound_name.setObjectName(u"label_library_matching_matched_compound_name")
         self.label_library_matching_matched_compound_name.setFont(font3)
 
-        self.formLayout_library_matching_options.setWidget(0, QFormLayout.ItemRole.FieldRole, self.label_library_matching_matched_compound_name)
+        self.formLayout_library_matching_options.setWidget(0, QFormLayout.FieldRole, self.label_library_matching_matched_compound_name)
 
         self.label_library_matching_matched_compound_score_label = QLabel(self.frame_library_matching_3)
         self.label_library_matching_matched_compound_score_label.setObjectName(u"label_library_matching_matched_compound_score_label")
         self.label_library_matching_matched_compound_score_label.setFont(font3)
 
-        self.formLayout_library_matching_options.setWidget(1, QFormLayout.ItemRole.LabelRole, self.label_library_matching_matched_compound_score_label)
+        self.formLayout_library_matching_options.setWidget(1, QFormLayout.LabelRole, self.label_library_matching_matched_compound_score_label)
 
         self.label_library_matching_matched_compound_score = QLabel(self.frame_library_matching_3)
         self.label_library_matching_matched_compound_score.setObjectName(u"label_library_matching_matched_compound_score")
         self.label_library_matching_matched_compound_score.setFont(font3)
 
-        self.formLayout_library_matching_options.setWidget(1, QFormLayout.ItemRole.FieldRole, self.label_library_matching_matched_compound_score)
+        self.formLayout_library_matching_options.setWidget(1, QFormLayout.FieldRole, self.label_library_matching_matched_compound_score)
 
         self.label_library_matching_min_score_label = QLabel(self.frame_library_matching_3)
         self.label_library_matching_min_score_label.setObjectName(u"label_library_matching_min_score_label")
         self.label_library_matching_min_score_label.setFont(font3)
 
-        self.formLayout_library_matching_options.setWidget(2, QFormLayout.ItemRole.LabelRole, self.label_library_matching_min_score_label)
+        self.formLayout_library_matching_options.setWidget(2, QFormLayout.LabelRole, self.label_library_matching_min_score_label)
 
         self.doubleSpinBox_library_matching_min_score = QDoubleSpinBox(self.frame_library_matching_3)
         self.doubleSpinBox_library_matching_min_score.setObjectName(u"doubleSpinBox_library_matching_min_score")
@@ -9529,13 +9529,13 @@ class Ui_MainWindow(object):
         self.doubleSpinBox_library_matching_min_score.setSingleStep(0.010000000000000)
         self.doubleSpinBox_library_matching_min_score.setValue(0.650000000000000)
 
-        self.formLayout_library_matching_options.setWidget(2, QFormLayout.ItemRole.FieldRole, self.doubleSpinBox_library_matching_min_score)
+        self.formLayout_library_matching_options.setWidget(2, QFormLayout.FieldRole, self.doubleSpinBox_library_matching_min_score)
 
         self.label_library_matching_max_results_label = QLabel(self.frame_library_matching_3)
         self.label_library_matching_max_results_label.setObjectName(u"label_library_matching_max_results_label")
         self.label_library_matching_max_results_label.setFont(font3)
 
-        self.formLayout_library_matching_options.setWidget(3, QFormLayout.ItemRole.LabelRole, self.label_library_matching_max_results_label)
+        self.formLayout_library_matching_options.setWidget(3, QFormLayout.LabelRole, self.label_library_matching_max_results_label)
 
         self.spinBox_library_matching_max_results = QSpinBox(self.frame_library_matching_3)
         self.spinBox_library_matching_max_results.setObjectName(u"spinBox_library_matching_max_results")
@@ -9551,18 +9551,18 @@ class Ui_MainWindow(object):
         self.spinBox_library_matching_max_results.setSingleStep(1)
         self.spinBox_library_matching_max_results.setValue(2)
 
-        self.formLayout_library_matching_options.setWidget(3, QFormLayout.ItemRole.FieldRole, self.spinBox_library_matching_max_results)
+        self.formLayout_library_matching_options.setWidget(3, QFormLayout.FieldRole, self.spinBox_library_matching_max_results)
 
         self.checkBox_library_matching_use_dist = QCheckBox(self.frame_library_matching_3)
         self.checkBox_library_matching_use_dist.setObjectName(u"checkBox_library_matching_use_dist")
         self.checkBox_library_matching_use_dist.setChecked(True)
 
-        self.formLayout_library_matching_options.setWidget(4, QFormLayout.ItemRole.LabelRole, self.checkBox_library_matching_use_dist)
+        self.formLayout_library_matching_options.setWidget(4, QFormLayout.LabelRole, self.checkBox_library_matching_use_dist)
 
         self.label_library_matching_use_dist_label = QLabel(self.frame_library_matching_3)
         self.label_library_matching_use_dist_label.setObjectName(u"label_library_matching_use_dist_label")
 
-        self.formLayout_library_matching_options.setWidget(4, QFormLayout.ItemRole.FieldRole, self.label_library_matching_use_dist_label)
+        self.formLayout_library_matching_options.setWidget(4, QFormLayout.FieldRole, self.label_library_matching_use_dist_label)
 
 
         self.vboxLayout92.addLayout(self.formLayout_library_matching_options)
@@ -10098,14 +10098,14 @@ class Ui_MainWindow(object):
         sizePolicy1.setHeightForWidth(self.checkBox_area_scan_enable.sizePolicy().hasHeightForWidth())
         self.checkBox_area_scan_enable.setSizePolicy(sizePolicy1)
 
-        self.formLayout10.setWidget(0, QFormLayout.ItemRole.LabelRole, self.checkBox_area_scan_enable)
+        self.formLayout10.setWidget(0, QFormLayout.LabelRole, self.checkBox_area_scan_enable)
 
         self.label202 = QLabel(self.frame_area_scan_widget_black)
         self.label202.setObjectName(u"label202")
         sizePolicy16.setHeightForWidth(self.label202.sizePolicy().hasHeightForWidth())
         self.label202.setSizePolicy(sizePolicy16)
 
-        self.formLayout10.setWidget(0, QFormLayout.ItemRole.FieldRole, self.label202)
+        self.formLayout10.setWidget(0, QFormLayout.FieldRole, self.label202)
 
         self.checkBox_area_scan_normalize = QCheckBox(self.frame_area_scan_widget_black)
         self.checkBox_area_scan_normalize.setObjectName(u"checkBox_area_scan_normalize")
@@ -10113,14 +10113,14 @@ class Ui_MainWindow(object):
         self.checkBox_area_scan_normalize.setSizePolicy(sizePolicy1)
         self.checkBox_area_scan_normalize.setChecked(True)
 
-        self.formLayout10.setWidget(1, QFormLayout.ItemRole.LabelRole, self.checkBox_area_scan_normalize)
+        self.formLayout10.setWidget(1, QFormLayout.LabelRole, self.checkBox_area_scan_normalize)
 
         self.label203 = QLabel(self.frame_area_scan_widget_black)
         self.label203.setObjectName(u"label203")
         sizePolicy16.setHeightForWidth(self.label203.sizePolicy().hasHeightForWidth())
         self.label203.setSizePolicy(sizePolicy16)
 
-        self.formLayout10.setWidget(1, QFormLayout.ItemRole.FieldRole, self.label203)
+        self.formLayout10.setWidget(1, QFormLayout.FieldRole, self.label203)
 
         self.checkBox_area_scan_normalize_csv = QCheckBox(self.frame_area_scan_widget_black)
         self.checkBox_area_scan_normalize_csv.setObjectName(u"checkBox_area_scan_normalize_csv")
@@ -10128,42 +10128,42 @@ class Ui_MainWindow(object):
         self.checkBox_area_scan_normalize_csv.setSizePolicy(sizePolicy1)
         self.checkBox_area_scan_normalize_csv.setChecked(True)
 
-        self.formLayout10.setWidget(2, QFormLayout.ItemRole.LabelRole, self.checkBox_area_scan_normalize_csv)
+        self.formLayout10.setWidget(2, QFormLayout.LabelRole, self.checkBox_area_scan_normalize_csv)
 
         self.label204 = QLabel(self.frame_area_scan_widget_black)
         self.label204.setObjectName(u"label204")
         sizePolicy16.setHeightForWidth(self.label204.sizePolicy().hasHeightForWidth())
         self.label204.setSizePolicy(sizePolicy16)
 
-        self.formLayout10.setWidget(2, QFormLayout.ItemRole.FieldRole, self.label204)
+        self.formLayout10.setWidget(2, QFormLayout.FieldRole, self.label204)
 
         self.label_area_scan_current_line = QLabel(self.frame_area_scan_widget_black)
         self.label_area_scan_current_line.setObjectName(u"label_area_scan_current_line")
         sizePolicy16.setHeightForWidth(self.label_area_scan_current_line.sizePolicy().hasHeightForWidth())
         self.label_area_scan_current_line.setSizePolicy(sizePolicy16)
 
-        self.formLayout10.setWidget(3, QFormLayout.ItemRole.LabelRole, self.label_area_scan_current_line)
+        self.formLayout10.setWidget(3, QFormLayout.LabelRole, self.label_area_scan_current_line)
 
         self.label205 = QLabel(self.frame_area_scan_widget_black)
         self.label205.setObjectName(u"label205")
         sizePolicy16.setHeightForWidth(self.label205.sizePolicy().hasHeightForWidth())
         self.label205.setSizePolicy(sizePolicy16)
 
-        self.formLayout10.setWidget(3, QFormLayout.ItemRole.FieldRole, self.label205)
+        self.formLayout10.setWidget(3, QFormLayout.FieldRole, self.label205)
 
         self.label_area_scan_frame_count = QLabel(self.frame_area_scan_widget_black)
         self.label_area_scan_frame_count.setObjectName(u"label_area_scan_frame_count")
         sizePolicy16.setHeightForWidth(self.label_area_scan_frame_count.sizePolicy().hasHeightForWidth())
         self.label_area_scan_frame_count.setSizePolicy(sizePolicy16)
 
-        self.formLayout10.setWidget(4, QFormLayout.ItemRole.LabelRole, self.label_area_scan_frame_count)
+        self.formLayout10.setWidget(4, QFormLayout.LabelRole, self.label_area_scan_frame_count)
 
         self.label206 = QLabel(self.frame_area_scan_widget_black)
         self.label206.setObjectName(u"label206")
         sizePolicy16.setHeightForWidth(self.label206.sizePolicy().hasHeightForWidth())
         self.label206.setSizePolicy(sizePolicy16)
 
-        self.formLayout10.setWidget(4, QFormLayout.ItemRole.FieldRole, self.label206)
+        self.formLayout10.setWidget(4, QFormLayout.FieldRole, self.label206)
 
         self.spinBox_area_scan_start_line = QSpinBox(self.frame_area_scan_widget_black)
         self.spinBox_area_scan_start_line.setObjectName(u"spinBox_area_scan_start_line")
@@ -10176,14 +10176,14 @@ class Ui_MainWindow(object):
         self.spinBox_area_scan_start_line.setMaximum(2000)
         self.spinBox_area_scan_start_line.setValue(1)
 
-        self.formLayout10.setWidget(5, QFormLayout.ItemRole.LabelRole, self.spinBox_area_scan_start_line)
+        self.formLayout10.setWidget(5, QFormLayout.LabelRole, self.spinBox_area_scan_start_line)
 
         self.label207 = QLabel(self.frame_area_scan_widget_black)
         self.label207.setObjectName(u"label207")
         sizePolicy16.setHeightForWidth(self.label207.sizePolicy().hasHeightForWidth())
         self.label207.setSizePolicy(sizePolicy16)
 
-        self.formLayout10.setWidget(5, QFormLayout.ItemRole.FieldRole, self.label207)
+        self.formLayout10.setWidget(5, QFormLayout.FieldRole, self.label207)
 
         self.spinBox_area_scan_stop_line = QSpinBox(self.frame_area_scan_widget_black)
         self.spinBox_area_scan_stop_line.setObjectName(u"spinBox_area_scan_stop_line")
@@ -10195,14 +10195,14 @@ class Ui_MainWindow(object):
         self.spinBox_area_scan_stop_line.setMaximum(2000)
         self.spinBox_area_scan_stop_line.setValue(70)
 
-        self.formLayout10.setWidget(6, QFormLayout.ItemRole.LabelRole, self.spinBox_area_scan_stop_line)
+        self.formLayout10.setWidget(6, QFormLayout.LabelRole, self.spinBox_area_scan_stop_line)
 
         self.label208 = QLabel(self.frame_area_scan_widget_black)
         self.label208.setObjectName(u"label208")
         sizePolicy16.setHeightForWidth(self.label208.sizePolicy().hasHeightForWidth())
         self.label208.setSizePolicy(sizePolicy16)
 
-        self.formLayout10.setWidget(6, QFormLayout.ItemRole.FieldRole, self.label208)
+        self.formLayout10.setWidget(6, QFormLayout.FieldRole, self.label208)
 
         self.spinBox_area_scan_line_step = QSpinBox(self.frame_area_scan_widget_black)
         self.spinBox_area_scan_line_step.setObjectName(u"spinBox_area_scan_line_step")
@@ -10215,14 +10215,14 @@ class Ui_MainWindow(object):
         self.spinBox_area_scan_line_step.setMaximum(255)
         self.spinBox_area_scan_line_step.setValue(1)
 
-        self.formLayout10.setWidget(7, QFormLayout.ItemRole.LabelRole, self.spinBox_area_scan_line_step)
+        self.formLayout10.setWidget(7, QFormLayout.LabelRole, self.spinBox_area_scan_line_step)
 
         self.label209 = QLabel(self.frame_area_scan_widget_black)
         self.label209.setObjectName(u"label209")
         sizePolicy16.setHeightForWidth(self.label209.sizePolicy().hasHeightForWidth())
         self.label209.setSizePolicy(sizePolicy16)
 
-        self.formLayout10.setWidget(7, QFormLayout.ItemRole.FieldRole, self.label209)
+        self.formLayout10.setWidget(7, QFormLayout.FieldRole, self.label209)
 
         self.spinBox_area_scan_cursor = QSpinBox(self.frame_area_scan_widget_black)
         self.spinBox_area_scan_cursor.setObjectName(u"spinBox_area_scan_cursor")
@@ -10235,14 +10235,14 @@ class Ui_MainWindow(object):
         self.spinBox_area_scan_cursor.setMaximum(1080)
         self.spinBox_area_scan_cursor.setValue(0)
 
-        self.formLayout10.setWidget(8, QFormLayout.ItemRole.LabelRole, self.spinBox_area_scan_cursor)
+        self.formLayout10.setWidget(8, QFormLayout.LabelRole, self.spinBox_area_scan_cursor)
 
         self.label210 = QLabel(self.frame_area_scan_widget_black)
         self.label210.setObjectName(u"label210")
         sizePolicy16.setHeightForWidth(self.label210.sizePolicy().hasHeightForWidth())
         self.label210.setSizePolicy(sizePolicy16)
 
-        self.formLayout10.setWidget(8, QFormLayout.ItemRole.FieldRole, self.label210)
+        self.formLayout10.setWidget(8, QFormLayout.FieldRole, self.label210)
 
         self.spinBox_area_scan_scale = QSpinBox(self.frame_area_scan_widget_black)
         self.spinBox_area_scan_scale.setObjectName(u"spinBox_area_scan_scale")
@@ -10255,14 +10255,14 @@ class Ui_MainWindow(object):
         self.spinBox_area_scan_scale.setMaximum(10)
         self.spinBox_area_scan_scale.setValue(1)
 
-        self.formLayout10.setWidget(9, QFormLayout.ItemRole.LabelRole, self.spinBox_area_scan_scale)
+        self.formLayout10.setWidget(9, QFormLayout.LabelRole, self.spinBox_area_scan_scale)
 
         self.label211 = QLabel(self.frame_area_scan_widget_black)
         self.label211.setObjectName(u"label211")
         sizePolicy16.setHeightForWidth(self.label211.sizePolicy().hasHeightForWidth())
         self.label211.setSizePolicy(sizePolicy16)
 
-        self.formLayout10.setWidget(9, QFormLayout.ItemRole.FieldRole, self.label211)
+        self.formLayout10.setWidget(9, QFormLayout.FieldRole, self.label211)
 
         self.checkBox_area_scan_fit = QCheckBox(self.frame_area_scan_widget_black)
         self.checkBox_area_scan_fit.setObjectName(u"checkBox_area_scan_fit")
@@ -10270,28 +10270,28 @@ class Ui_MainWindow(object):
         self.checkBox_area_scan_fit.setSizePolicy(sizePolicy1)
         self.checkBox_area_scan_fit.setChecked(True)
 
-        self.formLayout10.setWidget(10, QFormLayout.ItemRole.LabelRole, self.checkBox_area_scan_fit)
+        self.formLayout10.setWidget(10, QFormLayout.LabelRole, self.checkBox_area_scan_fit)
 
         self.label212 = QLabel(self.frame_area_scan_widget_black)
         self.label212.setObjectName(u"label212")
         sizePolicy16.setHeightForWidth(self.label212.sizePolicy().hasHeightForWidth())
         self.label212.setSizePolicy(sizePolicy16)
 
-        self.formLayout10.setWidget(10, QFormLayout.ItemRole.FieldRole, self.label212)
+        self.formLayout10.setWidget(10, QFormLayout.FieldRole, self.label212)
 
         self.label_area_scan_frame_elapsed = QLabel(self.frame_area_scan_widget_black)
         self.label_area_scan_frame_elapsed.setObjectName(u"label_area_scan_frame_elapsed")
         sizePolicy16.setHeightForWidth(self.label_area_scan_frame_elapsed.sizePolicy().hasHeightForWidth())
         self.label_area_scan_frame_elapsed.setSizePolicy(sizePolicy16)
 
-        self.formLayout10.setWidget(11, QFormLayout.ItemRole.LabelRole, self.label_area_scan_frame_elapsed)
+        self.formLayout10.setWidget(11, QFormLayout.LabelRole, self.label_area_scan_frame_elapsed)
 
         self.label213 = QLabel(self.frame_area_scan_widget_black)
         self.label213.setObjectName(u"label213")
         sizePolicy16.setHeightForWidth(self.label213.sizePolicy().hasHeightForWidth())
         self.label213.setSizePolicy(sizePolicy16)
 
-        self.formLayout10.setWidget(11, QFormLayout.ItemRole.FieldRole, self.label213)
+        self.formLayout10.setWidget(11, QFormLayout.FieldRole, self.label213)
 
 
         self.vboxLayout107.addLayout(self.formLayout10)
@@ -10454,7 +10454,7 @@ class Ui_MainWindow(object):
         self.label215 = QLabel(self.frame_xs_acc_gpio1)
         self.label215.setObjectName(u"label215")
 
-        self.formLayout11.setWidget(0, QFormLayout.ItemRole.LabelRole, self.label215)
+        self.formLayout11.setWidget(0, QFormLayout.LabelRole, self.label215)
 
         self.comboBox_xs_acc_gpio1_mode = QComboBox(self.frame_xs_acc_gpio1)
         self.comboBox_xs_acc_gpio1_mode.addItem("")
@@ -10465,12 +10465,12 @@ class Ui_MainWindow(object):
         self.comboBox_xs_acc_gpio1_mode.setMinimumSize(QSize(80, 22))
         self.comboBox_xs_acc_gpio1_mode.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
-        self.formLayout11.setWidget(0, QFormLayout.ItemRole.FieldRole, self.comboBox_xs_acc_gpio1_mode)
+        self.formLayout11.setWidget(0, QFormLayout.FieldRole, self.comboBox_xs_acc_gpio1_mode)
 
         self.label216 = QLabel(self.frame_xs_acc_gpio1)
         self.label216.setObjectName(u"label216")
 
-        self.formLayout11.setWidget(1, QFormLayout.ItemRole.LabelRole, self.label216)
+        self.formLayout11.setWidget(1, QFormLayout.LabelRole, self.label216)
 
         self.comboBox_xs_acc_gpio1_dir = QComboBox(self.frame_xs_acc_gpio1)
         self.comboBox_xs_acc_gpio1_dir.addItem("")
@@ -10481,12 +10481,12 @@ class Ui_MainWindow(object):
         self.comboBox_xs_acc_gpio1_dir.setMinimumSize(QSize(80, 22))
         self.comboBox_xs_acc_gpio1_dir.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
-        self.formLayout11.setWidget(1, QFormLayout.ItemRole.FieldRole, self.comboBox_xs_acc_gpio1_dir)
+        self.formLayout11.setWidget(1, QFormLayout.FieldRole, self.comboBox_xs_acc_gpio1_dir)
 
         self.label217 = QLabel(self.frame_xs_acc_gpio1)
         self.label217.setObjectName(u"label217")
 
-        self.formLayout11.setWidget(2, QFormLayout.ItemRole.LabelRole, self.label217)
+        self.formLayout11.setWidget(2, QFormLayout.LabelRole, self.label217)
 
         self.comboBox_xs_acc_gpio1_function = QComboBox(self.frame_xs_acc_gpio1)
         self.comboBox_xs_acc_gpio1_function.addItem("")
@@ -10498,12 +10498,12 @@ class Ui_MainWindow(object):
         self.comboBox_xs_acc_gpio1_function.setMinimumSize(QSize(80, 22))
         self.comboBox_xs_acc_gpio1_function.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
-        self.formLayout11.setWidget(2, QFormLayout.ItemRole.FieldRole, self.comboBox_xs_acc_gpio1_function)
+        self.formLayout11.setWidget(2, QFormLayout.FieldRole, self.comboBox_xs_acc_gpio1_function)
 
         self.label218 = QLabel(self.frame_xs_acc_gpio1)
         self.label218.setObjectName(u"label218")
 
-        self.formLayout11.setWidget(3, QFormLayout.ItemRole.LabelRole, self.label218)
+        self.formLayout11.setWidget(3, QFormLayout.LabelRole, self.label218)
 
         self.comboBox_xs_acc_gpio1_value = QComboBox(self.frame_xs_acc_gpio1)
         self.comboBox_xs_acc_gpio1_value.addItem("")
@@ -10514,7 +10514,7 @@ class Ui_MainWindow(object):
         self.comboBox_xs_acc_gpio1_value.setMinimumSize(QSize(80, 22))
         self.comboBox_xs_acc_gpio1_value.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
-        self.formLayout11.setWidget(3, QFormLayout.ItemRole.FieldRole, self.comboBox_xs_acc_gpio1_value)
+        self.formLayout11.setWidget(3, QFormLayout.FieldRole, self.comboBox_xs_acc_gpio1_value)
 
 
         self.layout_xs_acc.addWidget(self.frame_xs_acc_gpio1)
@@ -10540,7 +10540,7 @@ class Ui_MainWindow(object):
         self.label219 = QLabel(self.frame_xs_acc_gpio2)
         self.label219.setObjectName(u"label219")
 
-        self.formLayout12.setWidget(0, QFormLayout.ItemRole.LabelRole, self.label219)
+        self.formLayout12.setWidget(0, QFormLayout.LabelRole, self.label219)
 
         self.comboBox_xs_acc_gpio2_mode = QComboBox(self.frame_xs_acc_gpio2)
         self.comboBox_xs_acc_gpio2_mode.addItem("")
@@ -10551,12 +10551,12 @@ class Ui_MainWindow(object):
         self.comboBox_xs_acc_gpio2_mode.setMinimumSize(QSize(80, 22))
         self.comboBox_xs_acc_gpio2_mode.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
-        self.formLayout12.setWidget(0, QFormLayout.ItemRole.FieldRole, self.comboBox_xs_acc_gpio2_mode)
+        self.formLayout12.setWidget(0, QFormLayout.FieldRole, self.comboBox_xs_acc_gpio2_mode)
 
         self.label220 = QLabel(self.frame_xs_acc_gpio2)
         self.label220.setObjectName(u"label220")
 
-        self.formLayout12.setWidget(1, QFormLayout.ItemRole.LabelRole, self.label220)
+        self.formLayout12.setWidget(1, QFormLayout.LabelRole, self.label220)
 
         self.comboBox_xs_acc_gpio2_dir = QComboBox(self.frame_xs_acc_gpio2)
         self.comboBox_xs_acc_gpio2_dir.addItem("")
@@ -10567,12 +10567,12 @@ class Ui_MainWindow(object):
         self.comboBox_xs_acc_gpio2_dir.setMinimumSize(QSize(80, 22))
         self.comboBox_xs_acc_gpio2_dir.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
-        self.formLayout12.setWidget(1, QFormLayout.ItemRole.FieldRole, self.comboBox_xs_acc_gpio2_dir)
+        self.formLayout12.setWidget(1, QFormLayout.FieldRole, self.comboBox_xs_acc_gpio2_dir)
 
         self.label221 = QLabel(self.frame_xs_acc_gpio2)
         self.label221.setObjectName(u"label221")
 
-        self.formLayout12.setWidget(2, QFormLayout.ItemRole.LabelRole, self.label221)
+        self.formLayout12.setWidget(2, QFormLayout.LabelRole, self.label221)
 
         self.comboBox_xs_acc_gpio2_function = QComboBox(self.frame_xs_acc_gpio2)
         self.comboBox_xs_acc_gpio2_function.addItem("")
@@ -10585,12 +10585,12 @@ class Ui_MainWindow(object):
         self.comboBox_xs_acc_gpio2_function.setMinimumSize(QSize(80, 22))
         self.comboBox_xs_acc_gpio2_function.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
-        self.formLayout12.setWidget(2, QFormLayout.ItemRole.FieldRole, self.comboBox_xs_acc_gpio2_function)
+        self.formLayout12.setWidget(2, QFormLayout.FieldRole, self.comboBox_xs_acc_gpio2_function)
 
         self.label222 = QLabel(self.frame_xs_acc_gpio2)
         self.label222.setObjectName(u"label222")
 
-        self.formLayout12.setWidget(3, QFormLayout.ItemRole.LabelRole, self.label222)
+        self.formLayout12.setWidget(3, QFormLayout.LabelRole, self.label222)
 
         self.comboBox_xs_acc_gpio2_value = QComboBox(self.frame_xs_acc_gpio2)
         self.comboBox_xs_acc_gpio2_value.addItem("")
@@ -10601,7 +10601,7 @@ class Ui_MainWindow(object):
         self.comboBox_xs_acc_gpio2_value.setMinimumSize(QSize(80, 22))
         self.comboBox_xs_acc_gpio2_value.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
-        self.formLayout12.setWidget(3, QFormLayout.ItemRole.FieldRole, self.comboBox_xs_acc_gpio2_value)
+        self.formLayout12.setWidget(3, QFormLayout.FieldRole, self.comboBox_xs_acc_gpio2_value)
 
 
         self.layout_xs_acc.addWidget(self.frame_xs_acc_gpio2)
@@ -10627,7 +10627,7 @@ class Ui_MainWindow(object):
         self.label223 = QLabel(self.frame_xs_acc_cont_strobe)
         self.label223.setObjectName(u"label223")
 
-        self.formLayout13.setWidget(0, QFormLayout.ItemRole.LabelRole, self.label223)
+        self.formLayout13.setWidget(0, QFormLayout.LabelRole, self.label223)
 
         self.spinBox_xs_acc_cont_strobe_period_us = QSpinBox(self.frame_xs_acc_cont_strobe)
         self.spinBox_xs_acc_cont_strobe_period_us.setObjectName(u"spinBox_xs_acc_cont_strobe_period_us")
@@ -10639,12 +10639,12 @@ class Ui_MainWindow(object):
         self.spinBox_xs_acc_cont_strobe_period_us.setSingleStep(1000)
         self.spinBox_xs_acc_cont_strobe_period_us.setValue(1000000)
 
-        self.formLayout13.setWidget(0, QFormLayout.ItemRole.FieldRole, self.spinBox_xs_acc_cont_strobe_period_us)
+        self.formLayout13.setWidget(0, QFormLayout.FieldRole, self.spinBox_xs_acc_cont_strobe_period_us)
 
         self.label224 = QLabel(self.frame_xs_acc_cont_strobe)
         self.label224.setObjectName(u"label224")
 
-        self.formLayout13.setWidget(1, QFormLayout.ItemRole.LabelRole, self.label224)
+        self.formLayout13.setWidget(1, QFormLayout.LabelRole, self.label224)
 
         self.spinBox_xs_acc_cont_strobe_width_us = QSpinBox(self.frame_xs_acc_cont_strobe)
         self.spinBox_xs_acc_cont_strobe_width_us.setObjectName(u"spinBox_xs_acc_cont_strobe_width_us")
@@ -10656,12 +10656,12 @@ class Ui_MainWindow(object):
         self.spinBox_xs_acc_cont_strobe_width_us.setSingleStep(1000)
         self.spinBox_xs_acc_cont_strobe_width_us.setValue(100000)
 
-        self.formLayout13.setWidget(1, QFormLayout.ItemRole.FieldRole, self.spinBox_xs_acc_cont_strobe_width_us)
+        self.formLayout13.setWidget(1, QFormLayout.FieldRole, self.spinBox_xs_acc_cont_strobe_width_us)
 
         self.label225 = QLabel(self.frame_xs_acc_cont_strobe)
         self.label225.setObjectName(u"label225")
 
-        self.formLayout13.setWidget(2, QFormLayout.ItemRole.LabelRole, self.label225)
+        self.formLayout13.setWidget(2, QFormLayout.LabelRole, self.label225)
 
         self.spinBox_xs_acc_cont_strobe_delay_us = QSpinBox(self.frame_xs_acc_cont_strobe)
         self.spinBox_xs_acc_cont_strobe_delay_us.setObjectName(u"spinBox_xs_acc_cont_strobe_delay_us")
@@ -10673,12 +10673,12 @@ class Ui_MainWindow(object):
         self.spinBox_xs_acc_cont_strobe_delay_us.setSingleStep(1000)
         self.spinBox_xs_acc_cont_strobe_delay_us.setValue(0)
 
-        self.formLayout13.setWidget(2, QFormLayout.ItemRole.FieldRole, self.spinBox_xs_acc_cont_strobe_delay_us)
+        self.formLayout13.setWidget(2, QFormLayout.FieldRole, self.spinBox_xs_acc_cont_strobe_delay_us)
 
         self.label226 = QLabel(self.frame_xs_acc_cont_strobe)
         self.label226.setObjectName(u"label226")
 
-        self.formLayout13.setWidget(3, QFormLayout.ItemRole.LabelRole, self.label226)
+        self.formLayout13.setWidget(3, QFormLayout.LabelRole, self.label226)
 
         self.spinBox_xs_acc_cont_strobe_count = QSpinBox(self.frame_xs_acc_cont_strobe)
         self.spinBox_xs_acc_cont_strobe_count.setObjectName(u"spinBox_xs_acc_cont_strobe_count")
@@ -10690,7 +10690,7 @@ class Ui_MainWindow(object):
         self.spinBox_xs_acc_cont_strobe_count.setSingleStep(10)
         self.spinBox_xs_acc_cont_strobe_count.setValue(0)
 
-        self.formLayout13.setWidget(3, QFormLayout.ItemRole.FieldRole, self.spinBox_xs_acc_cont_strobe_count)
+        self.formLayout13.setWidget(3, QFormLayout.FieldRole, self.spinBox_xs_acc_cont_strobe_count)
 
 
         self.layout_xs_acc.addWidget(self.frame_xs_acc_cont_strobe)
