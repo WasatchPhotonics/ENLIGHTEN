@@ -8,10 +8,13 @@ For legacy versions of this document, see ENLIGHTEN sources <4.2.14.
 
 ## How to Install Python
 
-On MacOS, Python should probably be installed like this, to provide the compiled-
-in Tcl/Tk support required by some GUI dependencies.
+On MacOS, Python should be installed like this, to provide the compiled-in Tcl/Tk
+support required by some GUI dependencies.
 
-    $ brew install python-tk
+    $ brew install python-tk@3.14
+
+(MZ: I tried 3.15 12-Ocxt-2026 on Golden Gate 27.0.1 and there was no matching 
+ai-edge-litert wheel)
 
 ## missing backend
 
