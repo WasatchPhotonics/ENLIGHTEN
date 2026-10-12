@@ -80,7 +80,7 @@ else
         # probably in /usr/bin per apt-get install pyside2-tools
         RCC=`which pyside6-rcc`
         UIC=`which pyside6-uic`
-        TWO_TO_THREE=`which 2to3`  # probably in ${CONDA_ENV_PATH}/bin/2to3
+        TWO_TO_THREE=`which 2to3`
         PYTHON="python3"
 
         UIC_PRE=$PYTHON
@@ -88,24 +88,9 @@ else
         if uname -a | grep -qi darwin
         then
             OS="MacOS"
-            if [ "$USE_PYSIDE_2" ]
-            then
-                # PATH should include /usr/local/lib/python3.10/site-packages/PySide2 or equivalent
-                RCC=`which pyside2-rcc`
-                UIC=`which pyside2-uic`
-
-                # may be found here on some distributions:
-                # 
-                # RCC=/usr/local/lib/python3.10/site-packages/PySide2/rcc
-                # UIC=/usr/local/lib/python3.10/site-packages/PySide2/uic
-            else
-                RCC=`which pyside6-rcc`
-                UIC=`which pyside6-uic`
-            fi
-
-            # Note that we're now using 3.11 on Windows...
-            PYTHON="python3.11"
-            TWO_TO_THREE=`which 2to3-3.11`
+            RCC="${VIRTUAL_ENV}/bin/pyside6-rcc"
+            UIC="${VIRTUAL_ENV}/bin/pyside6-uic"
+            TWO_TO_THREE="${VIRTUAL_ENV}/bin/2to3"
 
             UIC_OPTS="--generator python"
             RCC_OPTS="--generator python"
@@ -118,6 +103,22 @@ else
     fi
 fi
 
+# are we running against source (against src/wp_enlighten/assets/uic_qrc) or against 
+# an installed wheel (venv/lib/python3.14/site-packages/wp_enlighten/assets/uic_qrc)?
+if [ -d src/wp_enlighten/assets ]
+then
+    ASSET_DIR=src/wp_enlighten/assets
+else
+    if [ -d venv/lib/python*/site-packages/wp_enlighten/assets ]
+    then
+        ASSET_DIR=venv/lib/python*/site-packages/wp_enlighten/assets
+    else
+        echo "ERROR: can't find assets/uic_qrc"
+        exit 1
+    fi
+fi
+
+echo "ASSET_DIR   = $ASSET_DIR"
 echo "VIRTUAL_ENV = $VIRTUAL_ENV"
 echo "QUICK       = $QUICK"
 echo "PAUSE       = $PAUSE"
@@ -163,7 +164,7 @@ then
 
     if [ $OS = "Linux" ]
     then
-        unix2dos enlighten/assets/uic_qrc/enlighten_layout.ui
+        unix2dos $ASSET_DIR/uic_qrc/enlighten_layout.ui
     fi
 fi
 
@@ -174,7 +175,7 @@ fi
 # Process all of the QT Resource Files
 if ! $QUICK
 then
-    for FILE in */assets/uic_qrc/*.qrc
+    for FILE in $ASSET_DIR/uic_qrc/*.qrc
     do 
         ROOT=$(echo $FILE | cut -d '.' -f 1)
         DEST=${ROOT}_rc.py
@@ -187,7 +188,7 @@ then
 fi
 
 # Process all of the QT .ui (User Interface) forms
-for FILE in */assets/uic_qrc/*.ui
+for FILE in $ASSET_DIR/uic_qrc/*.ui
 do 
     BASENAME=$(echo $FILE | awk -F/ '{print $NF}')
     ROOT=$(echo $FILE | cut -d '.' -f 1)
@@ -205,7 +206,7 @@ do
 done
 
 # make uic_qrc a valid Python module
-touch enlighten/assets/uic_qrc/__init__.py
+touch $ASSET_DIR/uic_qrc/__init__.py
 
 if $PAUSE
 then
