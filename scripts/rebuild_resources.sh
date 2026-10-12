@@ -20,17 +20,6 @@ do
     shift
 done
 
-function convertToPy3()
-{
-    local DEST="$1"
-
-    if [ "$USE_PYSIDE_2" ]
-    then
-        echo -n "...to Python3"
-        $TWO_TO_THREE -w $DEST > /dev/null 2>&1
-    fi
-}
-
 ################################################################################
 # Check invocation
 ################################################################################
@@ -61,8 +50,6 @@ then
 
     OS="Windows"
 
-    TWO_TO_THREE="${VIRTUAL_ENV}/Scripts/2to3.exe"
-
     RCC="${VIRTUAL_ENV}/Scripts/pyside6-rcc.exe"
     UIC="${VIRTUAL_ENV}/Scripts/pyside6-uic.exe"
 
@@ -80,7 +67,6 @@ else
         # probably in /usr/bin per apt-get install pyside2-tools
         RCC=`which pyside6-rcc`
         UIC=`which pyside6-uic`
-        TWO_TO_THREE=`which 2to3`
         PYTHON="python3"
 
         UIC_PRE=$PYTHON
@@ -90,7 +76,6 @@ else
             OS="MacOS"
             RCC="${VIRTUAL_ENV}/bin/pyside6-rcc"
             UIC="${VIRTUAL_ENV}/bin/pyside6-uic"
-            TWO_TO_THREE="${VIRTUAL_ENV}/bin/2to3"
 
             UIC_OPTS="--generator python"
             RCC_OPTS="--generator python"
@@ -98,7 +83,6 @@ else
             OS="Linux"
             RCC="${VIRTUAL_ENV}/bin/pyside6-rcc"
             UIC="${VIRTUAL_ENV}/bin/pyside6-uic"
-            TWO_TO_THREE="${VIRTUAL_ENV}/bin/2to3"
         fi
     fi
 fi
@@ -126,7 +110,6 @@ echo "PYTHON      = $PYTHON"
 echo "OS          = $OS"
 echo "RCC         = $RCC (opts '$RCC_OPTS')"
 echo "UIC         = $UIC (pre '$UIC_PRE', opts '$UIC_OPTS')"
-echo "2to3        = $TWO_TO_THREE"
 echo
 
 FAILED=false
@@ -138,11 +121,6 @@ fi
 if ! [ -f "$UIC" ]
 then
     echo "Error: can't locate UIC: $UIC"
-    FAILED=true
-fi
-if ! [ -f $TWO_TO_THREE ]
-then
-    echo "Error: can't locate 2to3: $TWO_TO_THREE"
     FAILED=true
 fi
 
@@ -201,7 +179,7 @@ do
     fi
 
     echo -n "converting $FILE"
-    $UIC_PRE "$UIC" $FILE -o $DEST $UIC_OPTS && convertToPy3 $DEST
+    $UIC_PRE "$UIC" $FILE -o $DEST $UIC_OPTS 
     echo "...done"
 done
 

@@ -767,10 +767,8 @@ QAbstractSpinBox {
     border: none;
     background-color: hsl(0, 0%, 30%);
     color: #eee;
-    /*min-width: 50px;*/
 }
 
-/* MZ: we aren't actually using these */
 QAbstractSpinBox:up-button {
   background-color: transparent;
   subcontrol-origin: border;
@@ -784,6 +782,7 @@ QAbstractSpinBox:down-button {
 }
 
 /* MZ: we use these */
+
 QAbstractSpinBox::up-arrow, 
 QAbstractSpinBox::up-arrow:disabled, 
 QAbstractSpinBox::up-arrow:off {
@@ -13526,7 +13525,7 @@ li.checked::marker { content: "\2612"; }
                                <set>Qt::AlignmentFlag::AlignCenter</set>
                               </property>
                               <property name="buttonSymbols">
-                               <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
+                               <enum>QAbstractSpinBox::ButtonSymbols::PlusMinus</enum>
                               </property>
                               <property name="keyboardTracking">
                                <bool>false</bool>
@@ -15170,7 +15169,7 @@ li.checked::marker { content: "\2612"; }
                                <set>Qt::AlignmentFlag::AlignCenter</set>
                               </property>
                               <property name="buttonSymbols">
-                               <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
+                               <enum>QAbstractSpinBox::ButtonSymbols::PlusMinus</enum>
                               </property>
                               <property name="accelerated">
                                <bool>true</bool>
@@ -15357,7 +15356,7 @@ li.checked::marker { content: "\2612"; }
                                <set>Qt::AlignmentFlag::AlignCenter</set>
                               </property>
                               <property name="buttonSymbols">
-                               <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
+                               <enum>QAbstractSpinBox::ButtonSymbols::PlusMinus</enum>
                               </property>
                               <property name="suffix">
                                <string>°C</string>
@@ -15595,7 +15594,7 @@ li.checked::marker { content: "\2612"; }
                                <set>Qt::AlignmentFlag::AlignCenter</set>
                               </property>
                               <property name="buttonSymbols">
-                               <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
+                               <enum>QAbstractSpinBox::ButtonSymbols::PlusMinus</enum>
                               </property>
                               <property name="accelerated">
                                <bool>true</bool>
@@ -15808,7 +15807,7 @@ li.checked::marker { content: "\2612"; }
                              <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="buttonSymbols">
-                             <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
+                             <enum>QAbstractSpinBox::ButtonSymbols::PlusMinus</enum>
                             </property>
                             <property name="accelerated">
                              <bool>false</bool>
@@ -17089,7 +17088,7 @@ li.checked::marker { content: "\2612"; }
                              <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="buttonSymbols">
-                             <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
+                             <enum>QAbstractSpinBox::ButtonSymbols::PlusMinus</enum>
                             </property>
                             <property name="accelerated">
                              <bool>true</bool>
@@ -17362,7 +17361,7 @@ li.checked::marker { content: "\2612"; }
                              <set>Qt::AlignmentFlag::AlignCenter</set>
                             </property>
                             <property name="buttonSymbols">
-                             <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
+                             <enum>QAbstractSpinBox::ButtonSymbols::PlusMinus</enum>
                             </property>
                             <property name="accelerated">
                              <bool>true</bool>

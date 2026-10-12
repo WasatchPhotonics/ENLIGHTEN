@@ -738,10 +738,8 @@ QAbstractSpinBox {
     border: none;
     background-color: hsl(0, 0%, 30%);
     color: #eee;
-    /*min-width: 50px;*/
 }
 
-/* MZ: we aren't actually using these */
 QAbstractSpinBox:up-button {
   background-color: transparent;
   subcontrol-origin: border;
@@ -755,6 +753,7 @@ QAbstractSpinBox:down-button {
 }
 
 /* MZ: we use these */
+
 QAbstractSpinBox::up-arrow, 
 QAbstractSpinBox::up-arrow:disabled, 
 QAbstractSpinBox::up-arrow:off {

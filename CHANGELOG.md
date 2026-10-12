@@ -9,8 +9,13 @@
     - PyPi
         - testing "pip install wp-enlighten"
     - MacOS
+        - docs
         - resolve segfault at shutdown 
         - pyqtgraph cleanup at shutdown
+    - Qt / GUI
+        - deprecated PySide2 support
+        - temporarily changed all QAbstractSpinBox::ButtonSymbols::NoButtons to 
+          PlusMinus in enlighten_layout.ui, to resolve apparent issue with MacOS.
 
 ## 4.2 XS V2 EVT / DVT
 
