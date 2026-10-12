@@ -2,10 +2,7 @@ import logging
 
 from wp_enlighten import common
 
-if common.use_pyside2():
-    from PySide2 import QtGui, QtCore, QtWidgets
-else:
-    from PySide6 import QtGui, QtCore, QtWidgets
+from PySide6 import QtGui, QtCore, QtWidgets
 
 # This line imports the "enlighten_layout.py" module which is generated from 
 # enlighten_layout.ui when you run scripts/rebuild_resources.sh.  

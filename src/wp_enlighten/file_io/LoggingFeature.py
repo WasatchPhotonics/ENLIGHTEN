@@ -10,10 +10,7 @@ from wp_enlighten import common
 from wp_enlighten.util import unwrap
 from wp_enlighten.EnlightenFeature import EnlightenFeature
 
-if common.use_pyside2():
-    from PySide2 import QtCore, QtGui
-else:
-    from PySide6 import QtCore, QtGui
+from PySide6 import QtCore, QtGui
 
 log = logging.getLogger(__name__)
 

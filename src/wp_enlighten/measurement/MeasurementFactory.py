@@ -19,10 +19,7 @@ from wp_enlighten import util, common
 
 from wasatch import utils as wasatch_utils
 
-if common.use_pyside2():
-    from PySide2 import QtGui
-else:
-    from PySide6 import QtGui
+from PySide6 import QtGui
 
 log = logging.getLogger(__name__)
 

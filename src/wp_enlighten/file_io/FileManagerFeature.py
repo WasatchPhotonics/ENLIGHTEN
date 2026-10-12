@@ -4,10 +4,7 @@ import os
 from wp_enlighten import common
 from wp_enlighten.EnlightenFeature import EnlightenFeature
 
-if common.use_pyside2():
-    from PySide2 import QtCore, QtWidgets
-else:
-    from PySide6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 log = logging.getLogger(__name__)
 

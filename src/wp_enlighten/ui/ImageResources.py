@@ -5,10 +5,7 @@ from wp_enlighten import common
 import did_you_know_rc
 assert did_you_know_rc
 
-if common.use_pyside2():
-    from PySide2 import QtCore
-else:    
-    from PySide6 import QtCore
+from PySide6 import QtCore
 
 log = logging.getLogger(__name__)
 

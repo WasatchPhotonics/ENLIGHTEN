@@ -22,12 +22,8 @@ from wp_enlighten.EnlightenFeature import EnlightenFeature
 # this is in wp_enlighten/Plugins/dist
 from EnlightenPlugin import EnlightenPluginRequest
 
-if common.use_pyside2():
-    from PySide2 import QtWidgets, QtCore
-    from PySide2.QtCore import Qt
-else:
-    from PySide6 import QtWidgets, QtCore
-    from PySide6.QtCore import Qt
+from PySide6 import QtWidgets, QtCore
+from PySide6.QtCore import Qt
 
 log = logging.getLogger(__name__)
 

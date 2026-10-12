@@ -11,12 +11,8 @@ from wasatch.EEPROM           import EEPROM
 from wp_enlighten import common
 from wp_enlighten.EnlightenFeature import EnlightenFeature
 
-if common.use_pyside2():
-    from PySide2 import QtGui, QtWidgets, QtCore
-    from PySide2.QtWidgets import QLineEdit
-else:
-    from PySide6 import QtGui, QtWidgets, QtCore
-    from PySide6.QtWidgets import QLineEdit
+from PySide6 import QtGui, QtWidgets, QtCore
+from PySide6.QtWidgets import QLineEdit
 
 log = logging.getLogger(__name__)
 

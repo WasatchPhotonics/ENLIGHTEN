@@ -5,10 +5,7 @@ import logging
 from wp_enlighten import common
 from wp_enlighten import util
 
-if common.use_pyside2():
-    from PySide2 import QtGui, QtCore, QtWidgets
-else:
-    from PySide6 import QtGui, QtCore, QtWidgets
+from PySide6 import QtGui, QtCore, QtWidgets
 
 log = logging.getLogger(__name__)
 

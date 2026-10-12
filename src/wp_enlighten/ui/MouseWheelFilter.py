@@ -2,10 +2,7 @@ import logging
 
 from wp_enlighten import common
 
-if common.use_pyside2():
-    from PySide2.QtCore import QObject, QEvent
-else:
-    from PySide6.QtCore import QObject, QEvent
+from PySide6.QtCore import QObject, QEvent
 
 log = logging.getLogger(__name__)
 

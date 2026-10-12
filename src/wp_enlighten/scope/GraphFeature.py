@@ -7,10 +7,7 @@ from wp_enlighten.util import unwrap
 from wp_enlighten.ui.ScrollStealFilter import ScrollStealFilter
 from wp_enlighten.EnlightenFeature import EnlightenFeature
 
-if common.use_pyside2():
-    from PySide2 import QtWidgets
-else:
-    from PySide6 import QtWidgets
+from PySide6 import QtWidgets
 
 log = logging.getLogger(__name__)
 

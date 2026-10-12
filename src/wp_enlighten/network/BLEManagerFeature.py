@@ -10,10 +10,7 @@ from wp_enlighten.EnlightenFeature import EnlightenFeature
 from wasatch.DeviceFinderBLE import DeviceFinderBLE
 from wasatch.BLEDevice       import BLEDevice # for get_run_loop
 
-if common.use_pyside2():
-    from PySide2.QtWidgets import QDialog, QPushButton, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QAbstractItemView
-else:
-    from PySide6.QtWidgets import QDialog, QPushButton, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QAbstractItemView
+from PySide6.QtWidgets import QDialog, QPushButton, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, QAbstractItemView
 
 log = logging.getLogger(__name__)
 

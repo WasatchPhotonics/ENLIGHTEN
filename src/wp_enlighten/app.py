@@ -33,16 +33,10 @@ import splashscreens_rc
 from wasatch.DeviceID import DeviceID
 from wasatch   import applog
 
-if common.use_pyside2():
-    from PySide2 import QtGui, QtCore, QtWidgets, QtSvg, QtXml
-    from PySide2.QtWidgets import QSplashScreen
-    from PySide2.QtGui import QPixmap, QImageReader, QColor
-    from PySide2.QtCore import Qt
-else:
-    from PySide6 import QtGui, QtCore, QtWidgets, QtSvg, QtXml
-    from PySide6.QtWidgets import QSplashScreen
-    from PySide6.QtGui import QPixmap, QImageReader, QColor
-    from PySide6.QtCore import Qt
+from PySide6 import QtGui, QtCore, QtWidgets, QtSvg, QtXml
+from PySide6.QtWidgets import QSplashScreen
+from PySide6.QtGui import QPixmap, QImageReader, QColor
+from PySide6.QtCore import Qt
 
 log = logging.getLogger(__name__)
 
@@ -196,10 +190,7 @@ class EnlightenApplication:
         # pass off control to Qt to manage its objects until application shutdown
         self.splash.finish(self.controller.form)
         if not self.testing:
-            if common.use_pyside2():
-                self.app.exec_()
-            else:
-                self.app.exec()
+            self.app.exec()
 
         if not self.testing:
             print("back from app.exec")

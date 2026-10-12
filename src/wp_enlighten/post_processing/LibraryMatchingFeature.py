@@ -13,10 +13,7 @@ from wp_enlighten.util import unwrap
 
 from wasatch.CSVLoader import CSVLoader
 
-if common.use_pyside2():
-    from PySide2 import QtCore, QtWidgets
-else:
-    from PySide6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 log = logging.getLogger(__name__)
 

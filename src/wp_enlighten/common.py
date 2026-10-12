@@ -201,10 +201,7 @@ def msgbox(prompt, title="Alert", buttons="", detail=None, informative_text=None
 
     # doing this import within this method to avoid breaking all dependents of common.py
     # not sure that this would break anything, just to be safe -- move up when confident
-    if use_pyside2():
-        from PySide2.QtWidgets import QMessageBox
-    else:
-        from PySide6.QtWidgets import QMessageBox
+    from PySide6.QtWidgets import QMessageBox
 
     # TODO: see enlighten/ui/BasicWindow.py for an example how to implement this using
     # Enlighten's style. This should always be callable as a single function call without
@@ -253,9 +250,3 @@ def is_rpi():
     except:
         pass
     return result
-
-def use_pyside2():
-    # result = is_rpi() or "USE_PYSIDE_2" in os.environ
-    result = "USE_PYSIDE_2" in os.environ
-    return result
-

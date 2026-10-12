@@ -8,10 +8,7 @@ from wp_enlighten.EnlightenFeature import EnlightenFeature
 
 from wasatch.TakeOneRequest import TakeOneRequest
 
-if common.use_pyside2():
-    from PySide2 import QtCore
-else:
-    from PySide6 import QtCore
+from PySide6 import QtCore
 
 log = logging.getLogger(__name__)
 

@@ -39,14 +39,9 @@ from wp_enlighten.ui.TimeoutDialog import TimeoutDialog
 from wp_enlighten.EnlightenFeature import EnlightenFeature
 from wp_enlighten.BusinessObjects import BusinessObjects
 
-if common.use_pyside2():
-    import PySide2
-    from PySide2 import QtCore, QtWidgets, QtGui
-    from PySide2.QtWidgets import QMessageBox
-else:
-    import PySide6
-    from PySide6 import QtCore, QtWidgets, QtGui
-    from PySide6.QtWidgets import QMessageBox
+import PySide6
+from PySide6 import QtCore, QtWidgets, QtGui
+from PySide6.QtWidgets import QMessageBox
 
 log = logging.getLogger(__name__)
 
@@ -166,10 +161,7 @@ class Controller:
         log.info("Stylesheet path %s",       self.stylesheet_path)
         log.info("Python version %s",        util.python_version())
         log.info(f"Operating system {sys.platform} {struct.calcsize('P')*8 } bit")
-        if common.use_pyside2():
-            log.info("PySide version %s",    PySide2.__version__)
-        else:
-            log.info("PySide version %s",    PySide6.__version__)
+        log.info("PySide version %s",       PySide6.__version__)
         log.info("PySide QtCore version %s", QtCore.__version__)
         log.info("QtCore version %s",        QtCore.qVersion())
 
@@ -1113,10 +1105,7 @@ class Controller:
 
         def make_shortcut(kseq, callback):
             log.debug(f"setting shortcut from {kseq} to {callback}")
-            if common.use_pyside2():
-                shortcut = QtWidgets.QShortcut(QtGui.QKeySequence(kseq), self.form)
-            else:
-                shortcut = QtGui.QShortcut(QtGui.QKeySequence(kseq), self.form)
+            shortcut = QtGui.QShortcut(QtGui.QKeySequence(kseq), self.form)
             shortcut.activated.connect(callback)
             self.shortcuts[kseq] = shortcut
 
