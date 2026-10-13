@@ -3,15 +3,15 @@ requires = ["hatchling >= 1.26"]
 build-backend = "hatchling.build"
 
 [project]
-name = "wp-enlighten"
+name = "wp-enlighten" # enlighten was taken :-(
 version = "4.3.0"
-
 dependencies = [
     "2to3",
     "adafruit-blinka",
     "ai_edge_litert",
     "bleak",
     "boto3",
+    "build", # for developers, not users
     "colour-science",
     "colour",
     "crcmod",
@@ -25,6 +25,7 @@ dependencies = [
     "psutil",
     "pyftdi",
     "pygtail",
+    "pyinstaller ; sys_platform == 'win32'", # for buildling Windows installers
     "pyqtgraph ",
     "pyserial",
     "PySide6",
@@ -39,17 +40,18 @@ dependencies = [
     "xlwt",
 
     "pywin32   ; sys_platform == 'win32'",
-    "ids_peak  ; sys_platform == 'win32'",
-    "seabreeze ; sys_platform == 'win32'",
+    "ids_peak  ; sys_platform == 'win32'", # TODO: check for other platforms
+    "seabreeze ; sys_platform == 'win32'", # TODO: check for other platforms
 ]
 
 authors = [
   { name="Mark Zieg", email="mzieg@wasatchphotonics.com" },
+  { name="Chris Grainger", email="cgrainger@wasatchphotonics.com" },
 ]
 
-description = "A GUI to control and collect data from Wasatch Photonics spectrometers"
 readme = "README.md"
-requires-python = ">=3.11,<3.15"
+description = "A GUI to control and collect data from Wasatch Photonics spectrometers"
+requires-python = ">=3.11,<3.15"    # MZ: problems finding ai_edge_litert wheel on MacOS with Python 3.15
 classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3",
@@ -57,16 +59,16 @@ classifiers = [
 
 ]
 license = "MIT"
-license-files = ["LICEN[CS]E*"]
+license-files = [ "LICEN[CS]E*" ]
 
-keywords = ["wasatch", "wasatchphotonics", "spectrometer", "raman"]
+keywords = [ "wasatch", "wasatchphotonics", "spectrometer", "raman" ]
 
 [project.gui-scripts]
-enlighten = "wp_enlighten.app:main"
+enlighten = "wp_enlighten.app:main" # tells hatchling to generate venv/bin/enlighten running wp_enlighten.app.main()
 
 [project.urls]
-Documentation = "https://wasatchphotonics.com/enlighten"
-Homepage = "https://wasatchphotonics.com/enlighten"
-Repository = "https://github.com/WasatchPhotonics/ENLIGHTEN.git"
 Issues = "https://github.com/WasatchPhotonics/ENLIGHTEN/issues"
+Homepage = "https://wasatchphotonics.com/enlighten"
 Changelog = "https://github.com/WasatchPhotonics/ENLIGHTEN/blob/master/CHANGELOG.md"
+Repository = "https://github.com/WasatchPhotonics/ENLIGHTEN.git"
+Documentation = "https://wasatchphotonics.com/enlighten"

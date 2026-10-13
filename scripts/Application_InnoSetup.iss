@@ -4,7 +4,7 @@
 ; Redefine these for the application to be built
 #define MyAppName "ENLIGHTEN"
 #define module_name "enlighten"
-#define MyAppExeName "ENLIGHTEN.exe"
+#define MyAppExeName "enlighten.exe"
 #define MyAppPublisher "Wasatch Photonics"
 #define MyAppURL "https://wasatchphotonics.com"
 
@@ -14,7 +14,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{4B74A30D-C158-4D4F-8244-DC4579A4E414}
 
-; ENLIGHTEN_VERSION is passed to iscc.exe via /D command-line argument
+; ENLIGHTEN_VERSION and COMPRESSION are passed to iscc.exe via /D command-line argument
 AppVersion={#ENLIGHTEN_VERSION}
 OutputBaseFilename={#MyAppName}-Setup64-{#ENLIGHTEN_VERSION}
 AppName={#MyAppName}
@@ -33,12 +33,8 @@ SetupIconFile=..\{#module_name}\assets\uic_qrc\images\EnlightenIcon.ico
 UninstallDisplayIcon="{app}\{#MyAppName}\{#MyAppExeName}"
 PrivilegesRequired=poweruser
 WizardStyle=modern
-WizardImageFile=..\enlighten\assets\uic_qrc\images\logos\wp-314.bmp,..\enlighten\assets\uic_qrc\images\logos\wp-386.bmp
 
-; use standard compression defaults (lzma2/max)
-; @see https://jrsoftware.org/ishelp/index.php?topic=setup_compression
-
-; will write installation logfile to %TEMP% (based on when the installer is run, not built)
+; write installation logfile to %TEMP% (when the installer is run, not built)
 SetupLogging=yes
 
 ; disable warning about "PrivilegesRequired is set to poweruser but per-user areas (userdocs) are used" 
@@ -52,22 +48,21 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 ; "Regular" files
-Source: "built-dist\*"; DestDir: "{app}"; Flags: recursesubdirs ignoreversion
+Source: "pyinstaller-build\dist\*"; DestDir: "{app}"; Flags: recursesubdirs ignoreversion
 
 ; possibly for https://pyinstaller.org/en/v6.0.0/usage.html#windows
 Source: "support_files\msvcr100.dll"; DestDir: "{app}\enlighten\"; Flags: recursesubdirs ignoreversion
 
-; Include libusb dll's. Note this is only required for appveyor builds. Building on a Windows 10
-; Home Premium system with the libusb drivers installed seems to copy them over for back end
-; usage during the executable build. That's right, x86 for all platforms. This may be correct
-; because it's 32bit python on 64bit windows.
+; Include libusb dll's. Note this is only required for appveyor builds. Building
+; on Windows with the libusb drivers installed seems to copy them over for 
+; backend usage during the executable build. That's right, x86 for all platforms. 
+; This may be correct because it's 32bit python on 64bit windows?
 Source: "support_files\libusb_drivers\amd64\libusb0.dll"; DestDir: "{app}\enlighten\"; Flags: recursesubdirs ignoreversion
 
 ; Files and directories to be copied as-is into the destination directory tree
-; MZ: could add ..\..\emauihelpers here...?
-Source: "..\enlighten\assets\stylesheets\*"; DestDir: "{app}\enlighten\enlighten\assets\stylesheets\"; Flags: recursesubdirs ignoreversion
-Source: "..\enlighten\assets\example_data\*"; DestDir: "{app}\enlighten\enlighten\assets\example_data\"; Flags: recursesubdirs ignoreversion
-Source: "..\enlighten\assets\uic_qrc\images\EnlightenIcon.ico"; DestDir: "{app}\enlighten"; DestName: "default_icon.ico"
+Source: "..\src\wp_enlighten\assets\stylesheets\*"; DestDir: "{app}\enlighten\enlighten\assets\stylesheets\"; Flags: recursesubdirs ignoreversion
+Source: "..\src\wp_enlighten\assets\example_data\*"; DestDir: "{app}\enlighten\enlighten\assets\example_data\"; Flags: recursesubdirs ignoreversion
+Source: "..\src\wp_enlighten\assets\uic_qrc\images\EnlightenIcon.ico"; DestDir: "{app}\enlighten"; DestName: "default_icon.ico"
 Source: "..\dist\CyUSB3-Win10.zip"; DestDir: "{app}\enlighten"
 Source: "..\dist\DFU_Drivers.zip"; DestDir: "{app}\enlighten"
 
@@ -77,39 +72,13 @@ Source: "support_files\libusb_drivers\*"; Flags: recursesubdirs; DestDir: "{app}
 ; Andor drivers
 Source: "..\dist\Andor\*"; DestDir: "{app}\enlighten\"; Flags: recursesubdirs ignoreversion
 
-; Manifest file for HiDPI mitigation - see above
-; Source: "support_files\Enlighten.exe.manifest"; DestDir: "{app}\Enlighten\"; Flags: recursesubdirs ignoreversion
-
-; ------------------------------------------------------------------------------
-; Visual C++ redistributable, apparently needed by KnowItAll
-; ------------------------------------------------------------------------------
-
-; standard 2015/17/19 runtime. Extracted by VCRedistNeedsInstall(), if needed. (used by KnowItAll)
-Source: "..\dist\VC_redist.x86.exe"; DestDir: {tmp}; Flags: dontcopy
-
-; 64-bit -> System32 ({sysnative} on 64-bit...)
-Source: "..\dist\Windows\System32\*"; DestDir: "{sysnative}"
-
-; 32-bit -> SysWOW64 ({sys} or {syswow64})
-Source: "..\dist\Windows\SysWOW64\*"; DestDir: "{sys}"
-
-; installer Wizard logos
-Source: "..\enlighten\assets\uic_qrc\images\logos\*"; DestDir: "{app}\enlighten\enlighten\assets\uic\images\logos\"
-
-; ENLIGHTEN Plug-In examples
-; Note that under Mac Parallels, this lands into the Mac Documents folder, not on C:
-Source: "..\plugins\*"; DestDir: "{app}\enlighten\plugins"; Flags: recursesubdirs 
-
 [Icons]
 Name: "{group}\{#MyAppName} {#ENLIGHTEN_VERSION}"; Filename: "{app}\{#MyAppName}\{#MyAppExeName}"; IconFilename: "{app}\{#MyAppName}\{#MyAppExeName}"
 Name: "{commondesktop}\{#MyAppName} {#ENLIGHTEN_VERSION}"; Filename: "{app}\{#MyAppName}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
 ; Install LibUsb signed drivers
-Filename: "{code:GetPnpUtilDir}\pnputil.exe"; Parameters: "-i -a ""{app}\enlighten\libusb_drivers\WPLibUsb.inf"" "; StatusMsg: "Installing WP LIBUSB drivers (this may take a few seconds) ..."; Flags: runhidden
-
-; install Visual C++ redistributable, if necessary (used by KnowItAll)
-Filename: "{tmp}\VC_redist.x86.exe"; StatusMsg: "Installing VC++ redistributable"; Parameters: "/quiet"; Check: VCRedistNeedsInstall ; Flags: waituntilterminated
+Filename: "{code:GetPnpUtilDir}\pnputil.exe"; Parameters: "-i -a ""{app}\enlighten\libusb_drivers\WPLibUsb.inf"" "; StatusMsg: "Installing .inf file (this may take a few seconds) ..."; Flags: runhidden
 
 [Code]
 
@@ -120,28 +89,6 @@ begin
         Result := 'C:\Windows\sysnative'
     else
         Result := 'C:\Windows\System32';
-end;
-
-{ ///////////////////////////////////////////////////////////////////// }
-function VCRedistNeedsInstall: Boolean;
-var
-  Version: String;
-begin
-  if (RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x86', 'Version', Version)) then
-      begin
-          // Is the installed version at least 14.14 ?
-          Log('VC Redist Version check : found ' + Version);
-          Result := (CompareStr(Version, 'v14.14.26429.03')<0);
-      end
-  else
-      begin
-          // Not even an old version installed
-          Result := True;
-      end;
-  if (Result) then
-    begin
-        ExtractTemporaryFile('VC_redist.x86.exe');
-    end;
 end;
 
 { ///////////////////////////////////////////////////////////////////// }
