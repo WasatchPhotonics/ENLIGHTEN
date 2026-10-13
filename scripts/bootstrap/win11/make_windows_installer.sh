@@ -69,8 +69,8 @@ pyinstaller \
     --hidden-import="scipy.special.cython_special" \
     --hidden-import="scipy._cyutility" \
     --hidden-import="colour" \
-    --add-data="scripts/support_files/libusb_drivers/amd64/libusb0.dll:." \
-    --icon "src/wp_enlighten/assets/uic_qrc/images/EnlightenIcon.ico" \
+    --add-data="support_files/libusb_drivers/amd64/libusb0.dll:." \
+    --icon "../src/wp_enlighten/assets/uic_qrc/images/EnlightenIcon.ico" \
     --specpath="$PWD/scripts" \
     --exclude-module _bootlocale \
     src/wp_enlighten/app.py 2>&1 | tee pyinstaller.out
