@@ -16,6 +16,8 @@
         - deprecated PySide2 support
         - temporarily changed all QAbstractSpinBox::ButtonSymbols::NoButtons to 
           PlusMinus in enlighten_layout.ui, to resolve apparent issue with MacOS.
+        - explicitly close QSpashscreen, then show DidYouKnow, after Controller 
+          constructor completes
 
 ## 4.2 XS V2 EVT / DVT
 

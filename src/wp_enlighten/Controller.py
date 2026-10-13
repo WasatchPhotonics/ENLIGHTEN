@@ -194,6 +194,7 @@ class Controller:
         self.shutting_down = False
         self.exit_code = 0
         self.has_connected = False # track first spectrometer connection
+        self.ctor_done = False
 
         # add Qt signal handlers to this Controller object
         self.create_signals()
@@ -245,8 +246,6 @@ class Controller:
 
         self.other_device_ids = set()
 
-        self.header("Controller ctor done")
-
         # init is done so display the GUI and destory the splash screen
         if self.window_state == "minimized":
             # self.hide() messes with gui tests since the components are also hidden
@@ -262,8 +261,10 @@ class Controller:
         # support styling of common.msgbox
         common.set_controller_instance(self)
 
-        self.did_you_know.show()
         self.configure_control_palette()
+
+        self.header("Controller ctor done")
+        self.ctor_done = True
 
     def disconnect_device(self, spec=None, closing=False):
         if spec is None:
@@ -473,6 +474,16 @@ class Controller:
         If a device is listed on the bus, and it is not currently connected,
         attempt to make a connection.
         """
+        if self.splash and self.ctor_done:
+
+            # on first execution AFTER constructor is done, hide the 
+            # QSplashscreen, and THEN open DidYouKnow
+            log.debug("tick_bus_listener: hiding splash")
+            self.splash.finish(self.form)
+            self.splash = None
+
+            self.did_you_know.show()
+
         if self.shutting_down:
             return self.bus_timer.stop()
 

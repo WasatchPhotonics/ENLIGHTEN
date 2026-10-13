@@ -116,9 +116,9 @@ class EnlightenApplication:
 
         pixmap = QPixmap(":/splashscreens/Enlighten-loading-90p.png")
         pixmap = pixmap.scaled(pixmap.width()/2, pixmap.height()/2)
-        self.splash = QSplashScreen()
-        self.splash.setPixmap(pixmap)
+        self.splash = QSplashScreen(pixmap, Qt.WindowType.WindowStaysOnTopHint)
         self.splash.show()
+        # self.splash.raise_()   # doesn't help
         msg = "Please wait...loading photonic goodness"
         self.splash.showMessage(f"version {common.VERSION}\n\n{msg}\n", alignment=Qt.AlignHCenter | Qt.AlignBottom, color=QColor("#ccc"))
 
@@ -188,7 +188,6 @@ class EnlightenApplication:
         # self.controller.connect_new(sim_spec)
 
         # pass off control to Qt to manage its objects until application shutdown
-        self.splash.finish(self.controller.form)
         if not self.testing:
             self.app.exec()
 
