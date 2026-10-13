@@ -1,17 +1,9 @@
-; See the file py2exe_application.py for details on how to create a
-; windows installer
-
-; Redefine these for the application to be built
 #define MyAppName "ENLIGHTEN"
-#define module_name "enlighten"
 #define MyAppExeName "enlighten.exe"
 #define MyAppPublisher "Wasatch Photonics"
 #define MyAppURL "https://wasatchphotonics.com"
 
 [Setup]
-; NOTE: The value of AppId uniquely identifies this application.
-; Do not use the same AppId value in installers for other applications.
-; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{4B74A30D-C158-4D4F-8244-DC4579A4E414}
 
 ; ENLIGHTEN_VERSION and COMPRESSION are passed to iscc.exe via /D command-line argument
@@ -29,7 +21,7 @@ DefaultGroupName=Wasatch Photonics
 OutputDir=windows_installer
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
-SetupIconFile=..\{#module_name}\assets\uic_qrc\images\EnlightenIcon.ico
+SetupIconFile=..\src\wp_enlighten\assets\uic_qrc\images\EnlightenIcon.ico
 UninstallDisplayIcon="{app}\{#MyAppName}\{#MyAppExeName}"
 PrivilegesRequired=poweruser
 WizardStyle=modern
@@ -48,7 +40,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 ; "Regular" files
-Source: "pyinstaller-build\dist\*"; DestDir: "{app}"; Flags: recursesubdirs ignoreversion
+Source: "..\pyinstaller-build\dist\*"; DestDir: "{app}"; Flags: recursesubdirs ignoreversion
 
 ; possibly for https://pyinstaller.org/en/v6.0.0/usage.html#windows
 Source: "support_files\msvcr100.dll"; DestDir: "{app}\enlighten\"; Flags: recursesubdirs ignoreversion

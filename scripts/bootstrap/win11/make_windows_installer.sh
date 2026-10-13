@@ -6,6 +6,20 @@ function log()
     echo "$(date) ${MSG}"
 }
 
+function header()
+{
+    MSG="$@"
+    log " "
+    log "=================================================="
+    log "$MSG"
+    log "=================================================="
+    log " "
+}
+
+################################################################################
+header "checking pre-requisites"
+################################################################################
+
 log "checking pyinstaller"
 if which pyinstaller > /dev/null
 then
@@ -18,7 +32,7 @@ else
     exit 1
 fi
 
-log "checking Inno Setup"
+"checking Inno Setup"
 if which iscc > /dev/null
 then
     log "iscc found"
@@ -48,12 +62,15 @@ fi
 VERSION=`grep '^VERSION' src/wp_enlighten/common.py | grep -E -o '([0-9]\.?)+'`
 log "version $VERSION"
 
+################################################################################
+header "running pyinstaller"
+################################################################################
+
 rm -rf pyinstaller-build
 mkdir -p pyinstaller-build/dist
 mkdir -p pyinstaller-build/work
 
 # @see https://stackoverflow.com/a/69521558 re: _bootlocale
-log "running pyinstaller"
 pyinstaller \
     --distpath="pyinstaller-build/dist" \
     --workpath="pyinstaller-build/work" \
@@ -75,18 +92,26 @@ pyinstaller \
     --exclude-module _bootlocale \
     src/wp_enlighten/app.py 2>&1 | tee pyinstaller.out
 
-if $? != 0
+if (( $? != 0 ))
 then
     echo "pyinstaller failed (see pyinstaller.out)"
     exit 1
 fi
 
-log "running Inno Setup"
-rm -rf windows_installer
-mkdir windows_installer
+log "result in pyinstaller-build/dist"
+
+################################################################################
+header "running Inno Setup"
+################################################################################
+
+rm -rf innosetup-build
+mkdir -p innosetup-build
+
+# see https://jrsoftware.org/ishelp/index.php?topic=compilercmdline
 # see https://jrsoftware.org/ishelp/index.php?topic=setup_compression
-iscc /DENLIGHTEN_VERSION=$VERSION /DCOMPRESSION=lzma/max scripts/Application_InnoSetup.iss
-if $? != 0
+
+cmd //c "iscc /DENLIGHTEN_VERSION=4.3.0 /DCOMPRESSION=lzma/max scripts/Application_InnoSetup.iss"
+if (( $? != 0 ))
 then
     echo "innosetup failure"
     exit 1
