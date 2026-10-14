@@ -164,6 +164,12 @@ class FakeOutputHandle:
         pass
 
 def get_enlighten_dir():
+    p1 = str(Path(__file__).parent)
+    p1a = str(Path(__file__).parent.resolve())
+    p2 = os.getcwd()
+    print(f"get_enlighten_dir: p1 {p1}")
+    print(f"get_enlighten_dir: p1a {p1a}")
+    print(f"get_enlighten_dir: p2 {p2}")
     return str(Path(__file__).parent)
 
 def get_default_data_dir():

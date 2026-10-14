@@ -74,34 +74,53 @@ log "installing wheel locally"
 pip install .
 
 ################################################################################
+header "building resources"
+################################################################################
+
+scripts/rebuild_resources.sh
+
+################################################################################
 header "running pyinstaller"
 ################################################################################
 
-rm -rf pyinstaller-build
-mkdir -p pyinstaller-build/dist
-mkdir -p pyinstaller-build/work
-
 # @see https://stackoverflow.com/a/69521558 re: _bootlocale
-pyinstaller \
-    --distpath="pyinstaller-build/dist" \
-    --workpath="pyinstaller-build/work" \
-    --noconfirm \
-    --python-option "X utf8" \
-    --noconsole \
-    --clean \
-    --hidden-import="numpy.core._multiarray_umath" \
-    --hidden-import="numpy._core._exceptions" \
-    --hidden-import="scipy._lib.messagestream" \
-    --hidden-import="scipy._lib.array_api_compat.numpy.fft" \
-    --hidden-import="scipy.special._special_ufuncs" \
-    --hidden-import="scipy.special.cython_special" \
-    --hidden-import="scipy._cyutility" \
-    --hidden-import="colour" \
-    --add-data="support_files/libusb_drivers/amd64/libusb0.dll:." \
-    --icon "../src/wp_enlighten/assets/uic_qrc/images/EnlightenIcon.ico" \
-    --specpath="$PWD/scripts" \
-    --exclude-module _bootlocale \
-    src/wp_enlighten/app.py 2>&1 | tee pyinstaller.out
+if true
+then
+    pyinstaller \
+        --onefile \
+        --windowed \
+        --name enlighten \
+        --clean \
+        --path src/wp_enlighten/Plugins/dist \
+        --path src/wp_enlighten/assets/uic_qrc \
+        --icon src/wp_enlighten/assets/uic_qrc/images/EnlightenIcon.ico \
+        src/wp_enlighten/app.py
+else
+    rm -rf pyinstaller-build
+    mkdir -p pyinstaller-build/dist
+    mkdir -p pyinstaller-build/work
+
+    pyinstaller \
+        --distpath="pyinstaller-build/dist" \
+        --workpath="pyinstaller-build/work" \
+        --noconfirm \
+        --python-option "X utf8" \
+        --noconsole \
+        --clean \
+        --hidden-import="numpy.core._multiarray_umath" \
+        --hidden-import="numpy._core._exceptions" \
+        --hidden-import="scipy._lib.messagestream" \
+        --hidden-import="scipy._lib.array_api_compat.numpy.fft" \
+        --hidden-import="scipy.special._special_ufuncs" \
+        --hidden-import="scipy.special.cython_special" \
+        --hidden-import="scipy._cyutility" \
+        --hidden-import="colour" \
+        --add-data="support_files/libusb_drivers/amd64/libusb0.dll:." \
+        --icon "../src/wp_enlighten/assets/uic_qrc/images/EnlightenIcon.ico" \
+        --specpath="$PWD/scripts" \
+        --exclude-module _bootlocale \
+        src/wp_enlighten/app.py 2>&1 | tee pyinstaller.out
+fi
 
 if (( $? != 0 ))
 then

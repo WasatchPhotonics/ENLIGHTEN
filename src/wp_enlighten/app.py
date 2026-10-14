@@ -134,7 +134,7 @@ class EnlightenApplication:
         # (so we can use Tensorflow without a console window)
         sys.stdout = common.FakeOutputHandle("FakeStdout")
 
-        if "windows" in platform.platform().lower():
+        if False and "windows" in platform.platform().lower():
             enlightens = []
             for process in psutil.process_iter(['pid', 'name']):
                 proc_pid = process.info['pid']
