@@ -33,6 +33,10 @@ class StatusBarFeature(EnlightenFeature):
         self.widgets = {}
         self.menu_order = []
 
+        np_ver = str(np.__version__)
+        log.debug(f"np_ver [{np_ver}]")
+        self.area_func = np.trapezoid if np_ver.startswith("2") else np.trapz
+
         # @todo: it would be a lot easier to maintain this feature if we 
         #        dynamically create these labels programmatically rather than 
         #        define them in enlighten_layout.ui
@@ -161,8 +165,7 @@ class StatusBarFeature(EnlightenFeature):
                 elif unit == "cm": x_axis = pr.get_wavenumbers()
                 else:              x_axis = pr.get_pixel_axis()
 
-                # we may need to check np.__version__ re: trapz vs trapezoid
-                area = np.trapz(spectrum, x_axis)
+                area = self.area_func(spectrum, x_axis)
                 self.set("Area", f"{area:.3e}")
             except:
                 log.error("can't compute area under the curve", exc_info=1)

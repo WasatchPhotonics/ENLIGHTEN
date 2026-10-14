@@ -7,7 +7,7 @@
 #               Generates a venv if not found, and populates all pip           #
 #               dependencies.                                                  #
 #                                                                              #
-#  INVOCATION:  $ scripts/make_windows_installer.sh                            #
+#  INVOCATION:  $ time scripts/make_windows_installer.sh 2>&1 | tee build.out  #
 #                                                                              #
 #               This script is expected to be run from the root directory of   #
 #               an ENLIGHTEN GitHub clone (parent of ./src, ./scripts, root    #
@@ -85,6 +85,7 @@ EXE_NAME="ENLIGHTEN-Setup64-${VERSION}.exe"
 if [ -f ${EXE_NAME} ]
 then
     log "removing old ${EXE_NAME}"
+fi
 
 if $INNO_ONLY
 then
@@ -185,6 +186,9 @@ mkdir -p innosetup-build
 
 time cmd //c "iscc /DENLIGHTEN_VERSION=${VERSION} /DCOMPRESSION=lzma/max InnoSetup.iss"
 
+# NB: the generated ENLIGHTEN-x.y.z-Setup64.exe can be run with "/?" for command-
+#     line options, including /LOG=installer.log
+
 if (( $? != 0 ))
 then
     log "Inno Setup failure"
@@ -192,4 +196,6 @@ then
 fi
 
 header "done"
+
+echo
 ls -la *.exe
