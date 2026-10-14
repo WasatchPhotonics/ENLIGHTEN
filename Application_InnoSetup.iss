@@ -22,7 +22,7 @@ OutputDir=.
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 SetupIconFile=src\wp_enlighten\assets\uic_qrc\images\EnlightenIcon.ico
-UninstallDisplayIcon="{app}\{#MyAppName}\{#MyAppExeName}"
+UninstallDisplayIcon="{app}\{#MyAppExeName}"
 PrivilegesRequired=poweruser
 WizardStyle=modern
 
@@ -49,28 +49,28 @@ Source: "pyinstaller-build\dist\enlighten\*"; DestDir: "{app}"; Flags: recursesu
 ; on Windows with the libusb drivers installed seems to copy them over for 
 ; backend usage during the executable build. That's right, x86 for all platforms. 
 ; This may be correct because it's 32bit python on 64bit windows?
-Source: "dist\support_files\libusb_drivers\amd64\libusb0.dll"; DestDir: "{app}\enlighten\"; Flags: recursesubdirs ignoreversion
+Source: "dist\support_files\libusb_drivers\amd64\libusb0.dll"; DestDir: "{app}"; Flags: recursesubdirs ignoreversion
 
 ; Files and directories to be copied as-is into the destination directory tree
 ; MZ: Source: "src\wp_enlighten\assets\stylesheets\*"; DestDir: "{app}\enlighten\enlighten\assets\stylesheets\"; Flags: recursesubdirs ignoreversion
 ; MZ: Source: "src\wp_enlighten\assets\example_data\*"; DestDir: "{app}\enlighten\enlighten\assets\example_data\"; Flags: recursesubdirs ignoreversion
-Source: "src\wp_enlighten\assets\uic_qrc\images\EnlightenIcon.ico"; DestDir: "{app}\enlighten"; DestName: "default_icon.ico"
-Source: "dist\CyUSB3-Win10.zip"; DestDir: "{app}\enlighten"
-Source: "dist\DFU_Drivers.zip"; DestDir: "{app}\enlighten"
+Source: "src\wp_enlighten\assets\uic_qrc\images\EnlightenIcon.ico"; DestDir: "{app}"; DestName: "default_icon.ico"
+Source: "dist\CyUSB3-Win10.zip"; DestDir: "{app}"
+Source: "dist\DFU_Drivers.zip"; DestDir: "{app}"
 
 ; Signed LIBUSB drivers
-Source: "dist\support_files\libusb_drivers\*"; Flags: recursesubdirs; DestDir: "{app}\enlighten\libusb_drivers"
+Source: "dist\support_files\libusb_drivers\*"; Flags: recursesubdirs; DestDir: "{app}\libusb_drivers"
 
 ; Andor drivers
-Source: "dist\Andor\*"; DestDir: "{app}\enlighten\"; Flags: recursesubdirs ignoreversion
+Source: "dist\Andor\*"; DestDir: "{app}"; Flags: recursesubdirs ignoreversion
 
 [Icons]
-Name: "{group}\{#MyAppName} {#ENLIGHTEN_VERSION}"; Filename: "{app}\{#MyAppName}\{#MyAppExeName}"; IconFilename: "{app}\{#MyAppName}\{#MyAppExeName}"
-Name: "{commondesktop}\{#MyAppName} {#ENLIGHTEN_VERSION}"; Filename: "{app}\{#MyAppName}\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{group}\{#MyAppName} {#ENLIGHTEN_VERSION}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\{#MyAppExeName}"
+Name: "{commondesktop}\{#MyAppName} {#ENLIGHTEN_VERSION}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
 ; Install LibUsb signed drivers
-Filename: "{code:GetPnpUtilDir}\pnputil.exe"; Parameters: "-i -a ""{app}\enlighten\libusb_drivers\WPLibUsb.inf"" "; StatusMsg: "Installing .inf file (this may take a few seconds) ..."; Flags: runhidden
+Filename: "{code:GetPnpUtilDir}\pnputil.exe"; Parameters: "-i -a ""{app}\libusb_drivers\WPLibUsb.inf"" "; StatusMsg: "Installing .inf file (this may take a few seconds) ..."; Flags: runhidden
 
 [Code]
 

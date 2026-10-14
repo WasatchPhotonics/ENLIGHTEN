@@ -47,7 +47,6 @@ do
     fi
 done
 
-
 ################################################################################
 header "checking pre-requisites"
 ################################################################################
@@ -80,7 +79,12 @@ else
 fi
 
 VERSION=`grep '^VERSION' src/wp_enlighten/common.py | grep -E -o '([0-9]\.?)+'`
-log "version $VERSION"
+log "version ${VERSION}"
+
+EXE_NAME="ENLIGHTEN-Setup64-${VERSION}.exe"
+if [ -f ${EXE_NAME} ]
+then
+    log "removing old ${EXE_NAME}"
 
 if $INNO_ONLY
 then
@@ -99,9 +103,9 @@ else
         python -m venv venv
     fi
 
-    if [ "$VIRTUAL_ENV" ]
+    if [ "${VIRTUAL_ENV}" ]
     then
-        log "already running in venv: $VIRTUAL_ENV"
+        log "already running in venv: ${VIRTUAL_ENV}"
     else
         log "activating venv"
         . venv/Scripts/activate
@@ -179,11 +183,11 @@ mkdir -p innosetup-build
 # see https://jrsoftware.org/ishelp/index.php?topic=compilercmdline
 # see https://jrsoftware.org/ishelp/index.php?topic=setup_compression
 
-time cmd //c "iscc /DENLIGHTEN_VERSION=4.3.0 /DCOMPRESSION=lzma/max Application_InnoSetup.iss"
+time cmd //c "iscc /DENLIGHTEN_VERSION=${VERSION} /DCOMPRESSION=lzma/max InnoSetup.iss"
 
 if (( $? != 0 ))
 then
-    log "innosetup failure"
+    log "Inno Setup failure"
     exit 1
 fi
 
