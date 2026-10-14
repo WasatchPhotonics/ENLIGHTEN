@@ -268,11 +268,11 @@ class EnlightenApplication:
             # presumably some kind of compiled executable
             root_dir = os.path.dirname(script_path)
 
-        log.debug(f"chdir to {root_dir}")
+        print(f"chdir to {root_dir}")
         try:
             os.chdir(root_dir)
         except:
-            log.error(f"error changing to {root_dir}")
+            print(f"error changing to {root_dir}")
 
 def main():
     enlighten = EnlightenApplication()

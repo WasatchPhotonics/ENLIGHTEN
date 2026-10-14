@@ -164,13 +164,19 @@ class FakeOutputHandle:
         pass
 
 def get_enlighten_dir():
-    p1 = str(Path(__file__).parent)
-    p1a = str(Path(__file__).parent.resolve())
-    p2 = os.getcwd()
-    print(f"get_enlighten_dir: p1 {p1}")
-    print(f"get_enlighten_dir: p1a {p1a}")
-    print(f"get_enlighten_dir: p2 {p2}")
     return str(Path(__file__).parent)
+
+def dump_enlighten_dir():
+    root_dir = get_enlighten_dir()
+
+    log.debug(f"dump_enlighten_dir: {root_dir}")
+    for dirpath, dirnames, filenames in os.walk(root_dir):
+        log.debug(f"{dirpath}")
+        for dirname in dirnames:
+            log.debug(f"  subdirectory: {dirname}")
+        for filename in filenames:
+            pathname = os.path.join(dirpath, filename)
+            log.debug(f"  file: {filename}")
 
 def get_default_data_dir():
     """

@@ -84,7 +84,7 @@ header "running pyinstaller"
 ################################################################################
 
 # @see https://stackoverflow.com/a/69521558 re: _bootlocale
-if true
+if false
 then
     pyinstaller \
         --onefile \
@@ -94,6 +94,7 @@ then
         --path src/wp_enlighten/Plugins/dist \
         --path src/wp_enlighten/assets/uic_qrc \
         --icon src/wp_enlighten/assets/uic_qrc/images/EnlightenIcon.ico \
+        --add-data="src/wp_enlighten/assets:src/wp_enlighten/assets" \
         src/wp_enlighten/app.py
 else
     rm -rf pyinstaller-build
@@ -101,12 +102,17 @@ else
     mkdir -p pyinstaller-build/work
 
     pyinstaller \
+        --clean \
+        --name enlighten \
+        --path src/wp_enlighten/Plugins/dist \
+        --path src/wp_enlighten/assets/uic_qrc \
+        --icon "src/wp_enlighten/assets/uic_qrc/images/EnlightenIcon.ico" \
         --distpath="pyinstaller-build/dist" \
         --workpath="pyinstaller-build/work" \
+        --specpath="pyinstaller-build" \
         --noconfirm \
-        --python-option "X utf8" \
         --noconsole \
-        --clean \
+        --python-option "X utf8" \
         --hidden-import="numpy.core._multiarray_umath" \
         --hidden-import="numpy._core._exceptions" \
         --hidden-import="scipy._lib.messagestream" \
@@ -115,11 +121,10 @@ else
         --hidden-import="scipy.special.cython_special" \
         --hidden-import="scipy._cyutility" \
         --hidden-import="colour" \
-        --add-data="support_files/libusb_drivers/amd64/libusb0.dll:." \
-        --icon "../src/wp_enlighten/assets/uic_qrc/images/EnlightenIcon.ico" \
-        --specpath="$PWD/scripts" \
-        --exclude-module _bootlocale \
         src/wp_enlighten/app.py 2>&1 | tee pyinstaller.out
+
+    # --add-data="support_files/libusb_drivers/amd64/libusb0.dll:." \
+    # --exclude-module _bootlocale \
 fi
 
 if (( $? != 0 ))
