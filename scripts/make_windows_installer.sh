@@ -84,7 +84,9 @@ log "version $VERSION"
 
 if $INNO_ONLY
 then
-    echo "skipping everything up to Inno Setup"
+    log "..."
+    log "skipping everything up to Inno Setup"
+    log "..."
 else
 
     ################################################################################
@@ -130,26 +132,26 @@ else
     mkdir -pv pyinstaller-build/dist
     mkdir -pv pyinstaller-build/work
 
-    pyinstaller --clean \
-                --name=enlighten \
-                --path=src/wp_enlighten/Plugins/dist \
-                --path=src/wp_enlighten/assets/uic_qrc \
-                --icon=../src/wp_enlighten/assets/uic_qrc/images/EnlightenIcon.ico \
-                --add-data=../src/wp_enlighten/assets:assets \
-                --distpath=pyinstaller-build/dist \
-                --workpath=pyinstaller-build/work \
-                --specpath=pyinstaller-build \
-                --noconfirm \
-                --noconsole \
-                --hidden-import=numpy.core._multiarray_umath \
-                --hidden-import=numpy._core._exceptions \
-                --hidden-import=scipy._lib.messagestream \
-                --hidden-import=scipy._lib.array_api_compat.numpy.fft \
-                --hidden-import=scipy.special._special_ufuncs \
-                --hidden-import=scipy.special.cython_special \
-                --hidden-import=scipy._cyutility \
-                --hidden-import=colour \
-                src/wp_enlighten/app.py
+    time pyinstaller --clean \
+                     --name=enlighten \
+                     --path=src/wp_enlighten/Plugins/dist \
+                     --path=src/wp_enlighten/assets/uic_qrc \
+                     --icon=../src/wp_enlighten/assets/uic_qrc/images/EnlightenIcon.ico \
+                     --add-data=../src/wp_enlighten/assets:assets \
+                     --distpath=pyinstaller-build/dist \
+                     --workpath=pyinstaller-build/work \
+                     --specpath=pyinstaller-build \
+                     --noconfirm \
+                     --noconsole \
+                     --hidden-import=numpy.core._multiarray_umath \
+                     --hidden-import=numpy._core._exceptions \
+                     --hidden-import=scipy._lib.messagestream \
+                     --hidden-import=scipy._lib.array_api_compat.numpy.fft \
+                     --hidden-import=scipy.special._special_ufuncs \
+                     --hidden-import=scipy.special.cython_special \
+                     --hidden-import=scipy._cyutility \
+                     --hidden-import=colour \
+                     src/wp_enlighten/app.py
 
     # MZ: I removed these basically to see if anything would break. I have no
     #     idea if they are still needed.
@@ -164,7 +166,7 @@ else
         exit 1
     fi
 
-    log "result in pyinstaller-build/dist"
+    log "pyinstaller result in pyinstaller-build/dist/enlighten"
 fi
 
 ################################################################################
@@ -177,7 +179,8 @@ mkdir -p innosetup-build
 # see https://jrsoftware.org/ishelp/index.php?topic=compilercmdline
 # see https://jrsoftware.org/ishelp/index.php?topic=setup_compression
 
-cmd //c "iscc /DENLIGHTEN_VERSION=4.3.0 /DCOMPRESSION=lzma/max scripts/Application_InnoSetup.iss"
+time cmd //c "iscc /DENLIGHTEN_VERSION=4.3.0 /DCOMPRESSION=lzma/max Application_InnoSetup.iss"
+
 if (( $? != 0 ))
 then
     log "innosetup failure"
