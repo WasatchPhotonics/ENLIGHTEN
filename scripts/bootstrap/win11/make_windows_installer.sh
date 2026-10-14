@@ -67,7 +67,7 @@ then
     log "already running in venv: $VIRTUAL_ENV"
 else
     log "activating venv"
-    . venv/Scripts/activatet.
+    . venv/Scripts/activate
 fi
 
 log "installing wheel locally"
