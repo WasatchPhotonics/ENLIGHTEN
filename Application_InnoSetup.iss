@@ -18,7 +18,7 @@ Compression={#COMPRESSION}
 DefaultDirName={commonpf}\Wasatch Photonics\{#MyAppName}
 DisableDirPage=yes
 DefaultGroupName=Wasatch Photonics
-OutputDir=windows_installer
+OutputDir=.
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 SetupIconFile=..\src\wp_enlighten\assets\uic_qrc\images\EnlightenIcon.ico
@@ -40,29 +40,29 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 ; "Regular" files
-Source: "..\pyinstaller-build\dist\*"; DestDir: "{app}"; Flags: recursesubdirs ignoreversion
+Source: "pyinstaller-build\dist\enlighten\*"; DestDir: "{app}"; Flags: recursesubdirs ignoreversion
 
 ; possibly for https://pyinstaller.org/en/v6.0.0/usage.html#windows
-Source: "support_files\msvcr100.dll"; DestDir: "{app}\enlighten\"; Flags: recursesubdirs ignoreversion
+; MZ: Source: "support_files\msvcr100.dll"; DestDir: "{app}\enlighten\"; Flags: recursesubdirs ignoreversion
 
 ; Include libusb dll's. Note this is only required for appveyor builds. Building
 ; on Windows with the libusb drivers installed seems to copy them over for 
 ; backend usage during the executable build. That's right, x86 for all platforms. 
 ; This may be correct because it's 32bit python on 64bit windows?
-Source: "support_files\libusb_drivers\amd64\libusb0.dll"; DestDir: "{app}\enlighten\"; Flags: recursesubdirs ignoreversion
+Source: "dist\support_files\libusb_drivers\amd64\libusb0.dll"; DestDir: "{app}\enlighten\"; Flags: recursesubdirs ignoreversion
 
 ; Files and directories to be copied as-is into the destination directory tree
-Source: "..\src\wp_enlighten\assets\stylesheets\*"; DestDir: "{app}\enlighten\enlighten\assets\stylesheets\"; Flags: recursesubdirs ignoreversion
-Source: "..\src\wp_enlighten\assets\example_data\*"; DestDir: "{app}\enlighten\enlighten\assets\example_data\"; Flags: recursesubdirs ignoreversion
-Source: "..\src\wp_enlighten\assets\uic_qrc\images\EnlightenIcon.ico"; DestDir: "{app}\enlighten"; DestName: "default_icon.ico"
-Source: "..\dist\CyUSB3-Win10.zip"; DestDir: "{app}\enlighten"
-Source: "..\dist\DFU_Drivers.zip"; DestDir: "{app}\enlighten"
+; MZ: Source: "src\wp_enlighten\assets\stylesheets\*"; DestDir: "{app}\enlighten\enlighten\assets\stylesheets\"; Flags: recursesubdirs ignoreversion
+; MZ: Source: "src\wp_enlighten\assets\example_data\*"; DestDir: "{app}\enlighten\enlighten\assets\example_data\"; Flags: recursesubdirs ignoreversion
+Source: "src\wp_enlighten\assets\uic_qrc\images\EnlightenIcon.ico"; DestDir: "{app}\enlighten"; DestName: "default_icon.ico"
+Source: "dist\CyUSB3-Win10.zip"; DestDir: "{app}\enlighten"
+Source: "dist\DFU_Drivers.zip"; DestDir: "{app}\enlighten"
 
 ; Signed LIBUSB drivers
-Source: "support_files\libusb_drivers\*"; Flags: recursesubdirs; DestDir: "{app}\enlighten\libusb_drivers"
+Source: "dist\support_files\libusb_drivers\*"; Flags: recursesubdirs; DestDir: "{app}\enlighten\libusb_drivers"
 
 ; Andor drivers
-Source: "..\dist\Andor\*"; DestDir: "{app}\enlighten\"; Flags: recursesubdirs ignoreversion
+Source: "dist\Andor\*"; DestDir: "{app}\enlighten\"; Flags: recursesubdirs ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppName} {#ENLIGHTEN_VERSION}"; Filename: "{app}\{#MyAppName}\{#MyAppExeName}"; IconFilename: "{app}\{#MyAppName}\{#MyAppExeName}"
