@@ -165,7 +165,7 @@ class Controller:
         log.info("PySide QtCore version %s", QtCore.__version__)
         log.info("QtCore version %s",        QtCore.qVersion())
 
-        common.dump_enlighten_dir()
+        common.dump_asset_dir()
 
         ########################################################################
         # GUI Configuration

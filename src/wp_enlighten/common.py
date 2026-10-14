@@ -164,19 +164,19 @@ class FakeOutputHandle:
     def reconfigure(self, *args, **kwargs):
         pass
 
-def get_enlighten_dir():
-    d1 = str(Path(__file__).parent)
-    d2 = os.getcwd()
-    e1 = sys.executable
-    log.debug(f"get_enlighten_dir: d1 {d1}")
-    log.debug(f"get_enlighten_dir: d2 {d2}")
-    log.debug(f"get_enlighten_dir: e1 {e1}")
-    return d2
+def get_asset_dir():
+    if "enlighten.exe" in sys.executable:
+        # if run from pyinstaller-build/dist/enlighten/enlighten.exe
+        path = os.path.join(os.getcwd(), "_internal", "assets")
+    else:
+        # if run from source...still need to handle running from package?
+        path = os.path.join(os.getcwd(), "src", "wp_enlighten", "assets")
+    return path
 
-def dump_enlighten_dir():
-    root_dir = get_enlighten_dir()
+def dump_asset_dir():
+    root_dir = get_asset_dir()
 
-    log.debug(f"dump_enlighten_dir: {root_dir}")
+    log.debug(f"dump_asset_dir: {root_dir}")
     for dirpath, dirnames, filenames in os.walk(root_dir):
         log.debug(f"{dirpath}")
         for dirname in dirnames:

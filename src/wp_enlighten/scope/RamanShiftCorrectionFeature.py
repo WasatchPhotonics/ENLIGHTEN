@@ -88,7 +88,7 @@ class RamanShiftCorrectionFeature(EnlightenFeature):
 
     # This file is installed as part of the ENLIGHTEN distribution and contains
     # our supported compounds and their peaks
-    ASTM_PATHNAME = os.path.join(common.get_enlighten_dir(), "assets", "example_data", "ASTM-E1840-96.json")
+    ASTM_PATHNAME = os.path.join(common.get_asset_dir(), "example_data", "ASTM-E1840-96.json")
 
     # if calibration is off by more than this, display error message
     MAX_WAVENUMBER_SHIFT = 20 

@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 # Encapsulates application of CSS stylesheets to Qt widgets.
 class StylesheetFeature(EnlightenFeature):
 
-    DEFAULT_PATH = os.path.join(common.get_enlighten_dir(), "assets", "stylesheets")
+    DEFAULT_PATH = os.path.join(common.get_asset_dir(), "stylesheets")
 
     def get_theme_list(self):
         return os.listdir(self.DEFAULT_PATH)
