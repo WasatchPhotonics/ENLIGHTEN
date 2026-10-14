@@ -2,12 +2,14 @@
 
 function log()
 {
+    local MSG
     MSG="$@"
     echo "$(date) ${MSG}"
 }
 
 function header()
 {
+    local MSG
     MSG="$@"
     log " "
     log "=================================================="
@@ -20,24 +22,12 @@ function header()
 header "checking pre-requisites"
 ################################################################################
 
-log "checking pyinstaller"
-if which pyinstaller > /dev/null
-then
-    log "pyinstaller found"
-else
-    echo "pyinstaller not installed -- please run:"
-    echo "  $ python -m venv venv"
-    echo "  $ . venv/Scripts/activate"
-    echo "  $ pip install ."
-    exit 1
-fi
-
-"checking Inno Setup"
+log "checking Inno Setup"
 if which iscc > /dev/null
 then
     log "iscc found"
 else
-    echo "iscc not found -- install Inno Setup and add to PATH"
+    log "iscc not found -- install Inno Setup and add to PATH"
     exit 1
 fi
 
@@ -46,7 +36,7 @@ if [ -f src/wp_enlighten/network/keys.py ]
 then
     log "keys.py found"
 else
-    echo "WARNING: keys.py not found -- so AWS cloud access will not be available"
+    log "WARNING: keys.py not found -- so AWS cloud access will not be available"
     read -p "Press return to continue..."
 fi
 
@@ -55,12 +45,33 @@ if ls src/wp_enlighten/assets/example_data/XD_models | grep -qi tflite
 then
     log "one or more XD models found"
 else
-    echo "WARNING: no XD models found, so XD processing will not be available"
+    log "WARNING: no XD models found, so XD processing will not be available"
     read -p "Press return to continue..."
 fi
 
 VERSION=`grep '^VERSION' src/wp_enlighten/common.py | grep -E -o '([0-9]\.?)+'`
 log "version $VERSION"
+
+################################################################################
+header "checking environment"
+################################################################################
+
+if ! [ -d venv ]
+then
+    log "creating venv"
+    python -m venv venv
+fi
+
+if [ "$VIRTUAL_ENV" ]
+then
+    log "already running in venv: $VIRTUAL_ENV"
+else
+    log "activating venv"
+    . venv/Scripts/activate
+fi
+
+log "installing wheel locally"
+pip install .
 
 ################################################################################
 header "running pyinstaller"
@@ -94,7 +105,7 @@ pyinstaller \
 
 if (( $? != 0 ))
 then
-    echo "pyinstaller failed (see pyinstaller.out)"
+    log "pyinstaller failed (see pyinstaller.out)"
     exit 1
 fi
 
@@ -113,9 +124,9 @@ mkdir -p innosetup-build
 cmd //c "iscc /DENLIGHTEN_VERSION=4.3.0 /DCOMPRESSION=lzma/max scripts/Application_InnoSetup.iss"
 if (( $? != 0 ))
 then
-    echo "innosetup failure"
+    log "innosetup failure"
     exit 1
 fi
 
-log "done"
+header "done"
 ls -la windows_installer
