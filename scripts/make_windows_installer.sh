@@ -188,4 +188,4 @@ then
 fi
 
 header "done"
-ls -la windows_installer
+ls -la *.exe
