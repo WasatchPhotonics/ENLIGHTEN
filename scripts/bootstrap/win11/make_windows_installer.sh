@@ -67,7 +67,7 @@ then
     log "already running in venv: $VIRTUAL_ENV"
 else
     log "activating venv"
-    . venv/Scripts/activate
+    . venv/Scripts/activatet.
 fi
 
 log "installing wheel locally"
@@ -83,49 +83,42 @@ scripts/rebuild_resources.sh
 header "running pyinstaller"
 ################################################################################
 
-# @see https://stackoverflow.com/a/69521558 re: _bootlocale
-if false
-then
-    pyinstaller \
-        --onefile \
-        --windowed \
-        --name enlighten \
-        --clean \
-        --path src/wp_enlighten/Plugins/dist \
-        --path src/wp_enlighten/assets/uic_qrc \
-        --icon src/wp_enlighten/assets/uic_qrc/images/EnlightenIcon.ico \
-        --add-data="src/wp_enlighten/assets:src/wp_enlighten/assets" \
-        src/wp_enlighten/app.py
-else
-    rm -rf pyinstaller-build
-    mkdir -p pyinstaller-build/dist
-    mkdir -p pyinstaller-build/work
+# NB: --onefile doesn't seem to work well because it was hard to tell where
+#     --add-data was placing assets (needed for stylesheets etc). The fact that
+#     os.walk() would not work in AppData/Local/Temp was just scary.
+#
+# --icon paths etc start with ../ because pyinstaller will run within specpath,
+#     in this case pyinstaller-build. I don't know if --path calls are doing 
+#     anything at this point.
 
-    pyinstaller \
-        --clean \
-        --name enlighten \
-        --path src/wp_enlighten/Plugins/dist \
-        --path src/wp_enlighten/assets/uic_qrc \
-        --icon "src/wp_enlighten/assets/uic_qrc/images/EnlightenIcon.ico" \
-        --distpath="pyinstaller-build/dist" \
-        --workpath="pyinstaller-build/work" \
-        --specpath="pyinstaller-build" \
-        --noconfirm \
-        --noconsole \
-        --python-option "X utf8" \
-        --hidden-import="numpy.core._multiarray_umath" \
-        --hidden-import="numpy._core._exceptions" \
-        --hidden-import="scipy._lib.messagestream" \
-        --hidden-import="scipy._lib.array_api_compat.numpy.fft" \
-        --hidden-import="scipy.special._special_ufuncs" \
-        --hidden-import="scipy.special.cython_special" \
-        --hidden-import="scipy._cyutility" \
-        --hidden-import="colour" \
-        src/wp_enlighten/app.py 2>&1 | tee pyinstaller.out
+rm -rf pyinstaller-build
+mkdir -pv pyinstaller-build/dist
+mkdir -pv pyinstaller-build/work
 
-    # --add-data="support_files/libusb_drivers/amd64/libusb0.dll:." \
-    # --exclude-module _bootlocale \
-fi
+pyinstaller --clean \
+            --name=enlighten \
+            --path=src/wp_enlighten/Plugins/dist \
+            --path=src/wp_enlighten/assets/uic_qrc \
+            --icon=../src/wp_enlighten/assets/uic_qrc/images/EnlightenIcon.ico \
+            --add-data=../src/wp_enlighten/assets:assets \
+            --distpath=pyinstaller-build/dist \
+            --workpath=pyinstaller-build/work \
+            --specpath=pyinstaller-build \
+            --noconfirm \
+            --noconsole \
+            --hidden-import=numpy.core._multiarray_umath \
+            --hidden-import=numpy._core._exceptions \
+            --hidden-import=scipy._lib.messagestream \
+            --hidden-import=scipy._lib.array_api_compat.numpy.fft \
+            --hidden-import=scipy.special._special_ufuncs \
+            --hidden-import=scipy.special.cython_special \
+            --hidden-import=scipy._cyutility \
+            --hidden-import=colour \
+            src/wp_enlighten/app.py
+
+# --python-option "X utf8" \
+# --add-data="support_files/libusb_drivers/amd64/libusb0.dll:." \
+# --exclude-module _bootlocale \
 
 if (( $? != 0 ))
 then
@@ -134,6 +127,7 @@ then
 fi
 
 log "result in pyinstaller-build/dist"
+exit 0
 
 ################################################################################
 header "running Inno Setup"

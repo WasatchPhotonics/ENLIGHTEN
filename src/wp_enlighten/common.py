@@ -164,7 +164,13 @@ class FakeOutputHandle:
         pass
 
 def get_enlighten_dir():
-    return str(Path(__file__).parent)
+    d1 = str(Path(__file__).parent)
+    d2 = os.getcwd()
+    e1 = sys.executable
+    log.debug(f"get_enlighten_dir: d1 {d1}")
+    log.debug(f"get_enlighten_dir: d2 {d2}")
+    log.debug(f"get_enlighten_dir: e1 {e1}")
+    return d2
 
 def dump_enlighten_dir():
     root_dir = get_enlighten_dir()
