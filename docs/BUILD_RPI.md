@@ -1,7 +1,11 @@
 # Raspberry Pi
 
-This addendum to our [Linux Docs](BUILD_LINUX.md) applies to Raspberry Pi, 
-Odroid and other ARM-based Linux variants following the Debian model.
+By and large, Raspberry Pi is just an ARM-based Linux variant, and so can
+follow the process described in BUILD_LINUX.md (itself now pointing to 
+BUILD_PYPI.md).
+
+That said, this addendum to our [Linux Docs](BUILD_LINUX.md) applies to Raspberry
+Pi, Odroid and other ARM-based Linux variants following the Debian model.
 
 See [MAINTENANCE](MAINTENANCE.md) for temporary changes or workarounds to
 the build process.
@@ -28,58 +32,103 @@ configuration:
 ## System Preparation
 
 I had a lot of overheating? swap? disk space? issues on my RPi Zero 2 W, which 
-caused the unit to repeatedly freeze during package download / installation. To 
-address those, I attempted all of the following in various combinations. I'm not
-sure which were the most critical, but I'm pretty sure the $TMPDIR fix was part
-of it.
+caused the unit to repeatedly freeze during package download / installation. 
 
-- change pip's temp dir (this was critical)
-    - mkdir ~/tmp
-    - export TMPDIR=$HOME/tmp
+The biggest package I struggled with was `tensorflow`, and now that it has been
+removed as a dependency (replaced by `ai_edge_litert`), hopefully most of these
+problems will go away.
+
+Anyway, when struggling with package installation, I attempted all of the 
+following in various combinations. I'm not sure which were the most critical, but
+I'm pretty sure the $TMPDIR fix was key.
+
+- change pip's temp dir                 <-- this was critical
+    - `mkdir ~/tmp`
+    - `export TMPDIR=$HOME/tmp`
 - add heat sink to RPi
 - add fan pointing to heat sink
-- install rpi-swap
 - configure rpi-swap to 4GB (up from default 2GB)
-    - sudo apt install rpi-swap
-    - sudo vi /etc/rpi/swap.conf
-- kill GUI (sudo systemctl stop lightdm)
-- monitor temperature (vcgencmd measure_temp)
+    - `sudo apt install rpi-swap`
+    - `sudo vi /etc/rpi/swap.conf`
+- kill GUI (`sudo systemctl stop lightdm`)
+- monitor temperature (`vcgencmd measure_temp`)
 - throttle bandwidth 
-    - tc qdisc show dev wlan0
-    - (qdisc fq_codel 0: root refcnt 2 limit 10240p flows 1024 quantum 1514 target 5ms interval 100ms memory_limit 32Mb ecn drop_batch 64)
-    - sudo tc qdisc add dev wlan0 root tbf rate 1mbit burst 10kb latency 70ms
+    - `tc qdisc show dev wlan0`
+    - `sudo tc qdisc add dev wlan0 root tbf rate 1mbit burst 10kb latency 70ms`
+    - `tc qdisc show dev wlan0`
 
 ## Installation Process
 
     $ mkdir ~/tmp
-    $ export TMPDIR=$HOME/tmp       # or someplace with 1GB+ free
+    $ export TMPDIR=$HOME/tmp           # or someplace with 1GB+ free
     $ mkdir ~/work/code
     $ cd ~/work/code
-    $ git clone https://github.com/WasatchPhotonics/ENLIGHTEN.git
+
     $ git clone https://github.com/WasatchPhotonics/Wasatch.PY.git
+    $ sudo cp -vf Wasatch.PY/udev/10-wasatch.rules /etc/udev/rules.d 
+    (bounce udev or reboot)
+
+    $ cd ~/work/code
+    $ git clone https://github.com/WasatchPhotonics/ENLIGHTEN.git
     $ cd ENLIGHTEN
 
     $ python -m venv venv --system-site-packages
     $ . venv/bin/activate
     $ sudo apt update
     $ sudo apt install -y pkg-config libusb-1.0-0-dev   # for seabreeze?
-    $ pip download tensorflow --timeout 60              # can possibly skip
-    $ pip install -r requirements.txt
+    $ pip install .                     # installs DEPENDENCIES, including `pyside6-uic` and other things needed by 
+                                        # rebuild_resources.sh, plus "dist" wp_enlighten
 
     $ scripts/rebuild_resources.sh
+    $ pip install .                     # re-installs wp_enlighten itself, including newly-built resources
 
-Add the following to your path:
+Now you can run ENLIGHTEN itself. There are two different commands you should be
+able to use at this point. Both should ideally yield the same result (ENLIGHTEN 
+GUI appearing on your screen), but under the hood they get there very different
+ways, and technically are running two different copies of the code.
 
-    $ export PYTHONPATH=".:plugins:../Wasatch.PY:enlighten/assets/uic_qrc"
+    $ enlighten
 
-Copy the `10-wasatch.rules` rules file to set appropriate permissions for usb access 
-(you will need to restart or reload after this):
+This command is technically running `venv/bin/enlighten`, a script automatically 
+created by the "hatchling" build engine referenced by pyproject.toml, and 
+installed when you run `pip install .`. This script is actually going to run the
+ENLIGHTEN PyPi (pip) package under `venv/lib/site-packages/wp_enlighten`, and NOT
+the source code under src/wp_enlighten. (It already used that source to create 
+the pip package, so the source was an important part of the process.)
 
-    $ sudo cp -vf ../Wasatch.PY/udev/10-wasatch.rules /etc/udev/rules.d
+...or...
 
-Launch ENLIGHTEN:
+    $ python src/wp_enlighten/app.py
 
-    $ python -u scripts/Enlighten.py
+This is ALMOST the same as the previous method. You might THINK this is running
+all of ENLIGHTEN from source, including all the many files under src/wp_enlighten,
+but...I don't think so. I think app.py's "import" statements are going to pull
+their dependencies from `venv/lib/site-packages/wp_enlighten` (populated by 
+`pip install .`), and you still won't really be running from source.
+
+## Development Process
+
+You can run from source, if you want, by setting your PYTHONPATH explicitly:
+
+    $ export PYTHONPATH=$HOME/work/code/enlighten/src
+
+Now it will prefer your "source" distribution to the installed packages. Note
+that if you make local changes under src/wp_enlighten, you'd need to re-install
+them (`pip install .`). 
+
+If you're making a lot of iterative changes in the source, you can save time by
+installing the wp_enlighten package in EDITABLE mode:
+
+    $ pip install . -e
+
+This way, changes made to the source are reflected immediately, each time you
+run `app.py`.
+
+If you also want to experiment with local changes to Wasatch.PY, you can do
+the same tricks there:
+
+    $ export PYTHONPATH=$HOME/work/code/enlighten/src:$HOME/work/code/Wasatch.PY
+    $ ( cd ../Wasatch.PY && pip install . -e )
 
 ## OOM-Killer
 
