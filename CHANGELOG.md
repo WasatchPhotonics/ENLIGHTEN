@@ -28,9 +28,7 @@
         - explicitly close QSpashscreen, then show DidYouKnow, after Controller 
           constructor completes
     - TESTING
-        - works: laser, dark, save, XS, XD, export, library matching, plugins
-        - bugs / untested:
-            - BLE?
+        - works: laser, dark, save, XS, XD, export, library matching, plugins, BLE
 
 ## 4.2 XS V2 EVT / DVT
 
