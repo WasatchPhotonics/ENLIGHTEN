@@ -73,18 +73,20 @@ class LibraryMatchingFeature(EnlightenFeature):
 
         # start with defaults
         self.enabled = False
-        self.dist_library_dir = self.DIST_LIBRARY_DIR
-        self.user_library_dir = self.DEFAULT_USER_LIBRARY_DIR
+        self.use_dist = True
         self.min_score = 0.65
         self.max_results = 2
-        self.use_dist = True
+        self.user_library_dir = self.DEFAULT_USER_LIBRARY_DIR
 
-        log.debug(f"defaulting to dist_library_dir {self.dist_library_dir}")
         log.debug(f"defaulting to user_library_dir {self.user_library_dir}")
 
         self.init_from_ini()
 
-        self.pearson = Pearson(self)
+        self.pearson = Pearson(library_dir_getter = lambda: self.user_library_dir,
+                               min_score_getter   = lambda: self.min_score,
+                               use_dist_getter    = lambda: self.use_dist,
+                               dist_library_dir   = self.DIST_LIBRARY_DIR,
+                               display_error      = self.ctl.marquee.error)
 
         self.set_library_dir(self.user_library_dir)
 
@@ -451,9 +453,23 @@ class LibraryMatchingFeature(EnlightenFeature):
         return "\n".join(lines)
 
 class Pearson:
-    def __init__(self, feature):
-        self.feature = feature
-        self.ctl = self.feature.ctl
+    """
+    This class constructor takes a number of callback functions to make it more 
+    easily re-usable outside the ENLIGHTEN GUI.
+    """
+    def __init__(self, 
+                 library_dir_getter, 
+                 use_dist_getter=None,
+                 dist_library_dir=None,
+                 min_score_getter=None,
+                 display_error=None):
+
+        self.library_dir_getter = library_dir_getter
+        self.dist_library_dir = dist_library_dir
+        self.min_score_getter = min_score_getter
+        self.use_dist_getter = use_dist_getter
+        self.display_error = display_error
+
         self.reset()
 
     def reset(self):
@@ -470,9 +486,9 @@ class Pearson:
         self.library_spectra = []
 
         library_dirs = []
-        if self.feature.use_dist:
-            library_dirs.append(self.feature.dist_library_dir)
-        library_dirs.append(self.feature.user_library_dir)
+        if self.use_dist_getter and self.use_dist_getter() and self.dist_library_dir:
+            library_dirs.append(self.dist_library_dir)
+        library_dirs.append(self.library_dir_getter())
 
         # recursively iterate down through each folder tree, looking for .csv files
         for library_dir in library_dirs:
@@ -489,7 +505,7 @@ class Pearson:
                     pathname = os.path.join(dirpath, filename)
 
                     # append asterisk when matching to user-generated spectra
-                    if library_dir == self.feature.user_library_dir:
+                    if library_dir == self.library_dir_getter():
                         basename += "*"
 
                     self.compound_names.append(basename)
@@ -500,8 +516,9 @@ class Pearson:
                         csv_loader = CSVLoader(pathname)
                         pr, metadata = csv_loader.load_data(scalar_metadata=True)
                     except:
-                        self.ctl.marquee.error(f"LibraryMatching: error loading {pathname}")
                         log.error(f"Failed to load library spectrum {pathname}", exc_info=1)
+                        if self.display_error:
+                            self.display_error(f"LibraryMatching: error loading {pathname}")
                         continue
 
                     df = pd.DataFrame({
@@ -588,7 +605,7 @@ class Pearson:
             correlation, _ = pearsonr(library_spectrum, spectrum_interp)
 
             # track all matches that meet the minimum score
-            if correlation >= self.feature.min_score:
+            if self.min_score_getter is None or correlation >= self.min_score_getter():
                 matches.append({"Score": correlation, "Name": self.compound_names[libraryID]})
 
                 # track best correlation so we can graph top-matching library spectrum
