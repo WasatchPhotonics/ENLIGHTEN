@@ -429,7 +429,7 @@ class DidYouKnowFeature(EnlightenFeature):
 
         if self.tips:
             self.update_dialog()
-            self.dialog.exec()
+            self.dialog.open()
 
     def prev_callback(self):
         self.index -= 1

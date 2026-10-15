@@ -29,7 +29,7 @@ class LibraryMatchingFeature(EnlightenFeature):
     # this is the path, under "enlighten.exe", where ENLIGHTEN looks to find the
     # "distribution" matching library that "comes with" ENLIGHTEN via source or 
     # binary distributions
-    DIST_LIBRARY_DIR = "enlighten/assets/example_data/default_matching_library"
+    DIST_LIBRARY_DIR = os.path.join(common.get_asset_dir(), "example_data", "default_matching_library")
 
     # this is the default directory where ENLIGHTEN will write (and check for) 
     # user-generated library spectra
@@ -470,6 +470,12 @@ class Pearson:
         self.use_dist_getter = use_dist_getter
         self.display_error = display_error
 
+        log.debug(f"Pearson.ctor: library_dir_getter {self.library_dir_getter}")
+        log.debug(f"Pearson.ctor: dist_library_dir {self.dist_library_dir}")
+        log.debug(f"Pearson.ctor: min_score_getter {self.min_score_getter}")
+        log.debug(f"Pearson.ctor: use_dist_getter {self.use_dist_getter}")
+        log.debug(f"Pearson.ctor: display_error {self.display_error}")
+
         self.reset()
 
     def reset(self):
@@ -493,8 +499,10 @@ class Pearson:
         # recursively iterate down through each folder tree, looking for .csv files
         for library_dir in library_dirs:
             if not os.path.isdir(library_dir):
+                log.debug("Pearson.lazy_load_library: library_dir {library_dir} not found")
                 continue
 
+            log.debug(f"Pearson.lazy_load_library: walking library_dir {library_dir}")
             for (dirpath, _dirnames, filenames) in os.walk(library_dir):
                 for filename in sorted(filenames):
                     if filename.startswith(".") or not filename.endswith(".csv"):

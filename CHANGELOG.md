@@ -15,6 +15,8 @@
             - pip install -e . && python src/wp_enlighten/app.py
             - make_windows_installer.sh && pyinstaller-build/dist/enlighten/enlighten.exe
             - ENLIGHTEN-4.3.0-Setup64.exe && C:\Program Files\Wasatch Photonics\ENLIGHTEN\enlighten.exe
+    - Windows
+        - DidYouKnow was suddenly blocking Controller QTimers? Changed dyk.dialog.exec() to .open()
     - MacOS
         - docs
         - resolve segfault at shutdown 
@@ -26,9 +28,11 @@
         - explicitly close QSpashscreen, then show DidYouKnow, after Controller 
           constructor completes
     - TESTING
-        - works: laser, dark, save, XS, XD
-        - bugs:
-            - export
+        - works: laser, dark, save, XS, XD, export, library matching
+        - bugs / untested:
+            - plugins?
+            - BLE?
+            - looks like QTimers may be blocked while DYK running?
 
 ## 4.2 XS V2 EVT / DVT
 
