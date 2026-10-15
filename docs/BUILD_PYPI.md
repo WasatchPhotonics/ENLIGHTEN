@@ -1,14 +1,13 @@
 # wp-enlighten PyPi (pip) Package Installation
 
-ENLIGHTEN is experimentally being moved into a PyPi (pip) package, with the goal
-of an expedited installation and execution process on compliant POSIX platforms
-(including MacOS Intel/ARM, Raspberry Pi, Linux x86/x64, and potentially Windows)
-like this:
+ENLIGHTEN has moved into a PyPi (pip) package, with the intent of expedited 
+installation and execution process on compliant POSIX platforms including MacOS 
+Intel/ARM, Raspberry Pi, Linux x86/x64, and potentially Windows:
 
     $ mkdir ~/some/new/dir
     $ cd ~/some/new/dir
     $ python -m venv venv
-    $ . venv/bin/activate
+    $ . venv/*/activate
     (venv) $ pip install wp-enlighten
     (venv) $ enlighten
 
@@ -21,6 +20,11 @@ like this:
 - update scripts/deploy to perform build and twine upload
 - modify app.py to automatically run rebuild-resources.sh if needed (e.g. upon 
   first execution)
+    - Note this probably cannot be done post-installation on Windows due to admin
+      privs. However, since it's automatically done as part of 
+      scripts/make_windows_installer.sh, that doesn't need to be an obstacle --
+      the process can check to see if we're running in /Program Files/Wasatch 
+      Photonics/.
 
 # PyPi Package Maintenance
 
@@ -76,11 +80,13 @@ Then I do this every time I want to test and "run" a new ENLIGHTEN:
 
 When you're ready to push a new production release to the world:
 
-    $ python3 -m twine upload --repository testpypi dist/wp-enlighten*
+    $ python -m twine upload --repository testpypi dist/wp-enlighten*
+    (or make publish-test)
 
 If that works:
 
-    $ python3 -m twine upload dist/wp-enlighten*
+    $ python -m twine upload dist/wp-enlighten*
+    (or make publish)
 
 Note that you can NEVER re-push a new wheel with an old version number; you MUST
 move to new version numbers.

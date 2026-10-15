@@ -48,32 +48,6 @@ function upload()
 }
 
 ################################################################################
-# process cmd-line args
-################################################################################
-
-POST_MAC=false
-POST_WIN=false
-POST_LINUX=false
-DOCS_ONLY=false
-FORCE=false
-
-while [ "$1" != "" ]; do
-    case $1 in
-          --mac) POST_MAC=true   ;;
-          --win) POST_WIN=true   ;;
-        --linux) POST_LINUX=true ;;
-        --force) FORCE=true      ;;
-    esac
-    shift
-done
-
-if ! ( $POST_WIN || $POST_MAC || $POST_LINUX )
-then
-    echo "Updating documentation only."
-    DOCS_ONLY=true
-fi
-
-################################################################################
 # read parameters
 ################################################################################
 
@@ -165,13 +139,8 @@ then
     make doc
     rsync --archive --delete docs/doxygen/html/ $USERNAME@wasatchphotonics.com:www/api/ENLIGHTEN/
     scp docs/ENLIGHTEN_CHANGELOG.html $USERNAME@wasatchphotonics.com:www/binaries/apps/enlighten/README.html
+    echo
 fi
-
-if $DOCS_ONLY
-then
-    exit 0
-fi
-echo
 
 ################################################################################
 # upload binaries
@@ -179,29 +148,7 @@ echo
 
 mkdir -p releases
 
-if $POST_WIN
-then
-    upload "Enlighten-Setup64-${VERSION}.exe"
-else
-    echo "skipping Windows"
-fi
-
-if $POST_MAC
-then
-    upload "ENLIGHTEN-MacOS-${VERSION}.zip"
-else
-    echo "skipping Mac"
-fi
-
-if $POST_LINUX
-then
-    TARBALL=`ls -t *.tgz | head -1`
-    upload $TARBALL
-else
-    echo "skipping Linux"
-fi
-
-scp scripts/bootstrap/ubuntu/enlighten_ubuntu_launcher.sh $USERNAME@wasatchphotonics.com:www/binaries/apps/enlighten
+upload "Enlighten-Setup64-${VERSION}.exe"
 
 ################################################################################
 # capture build artifacts
