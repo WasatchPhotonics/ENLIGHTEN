@@ -165,7 +165,7 @@ class Controller:
         log.info("PySide QtCore version %s", QtCore.__version__)
         log.info("QtCore version %s",        QtCore.qVersion())
 
-        common.dump_asset_dir()
+        # common.dump_asset_dir()
 
         ########################################################################
         # GUI Configuration
@@ -1112,6 +1112,10 @@ class Controller:
         ensure uniqueness.
 
         Note the "Help" for this feature is currently in ui.HelpFeature.
+
+        MZ: On my Dell, sometimes ctrl-shift-S does not work using a remapped 
+            CapsLock key, although other times it did, possibly based on how I 
+            ran ENLIGHTEN. CapsLock-S does work however, as does a true ctrl-shift-S.
         """
 
         self.shortcuts = {}

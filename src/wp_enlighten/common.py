@@ -1,6 +1,7 @@
 import logging
 import sys
 import os
+import re
 
 from enum import IntEnum
 from pathlib import Path
@@ -165,13 +166,57 @@ class FakeOutputHandle:
         pass
 
 def get_asset_dir():
-    if "enlighten.exe" in sys.executable:
-        # if run from pyinstaller-build/dist/enlighten/enlighten.exe
-        path = os.path.join(os.getcwd(), "_internal", "assets")
+    """
+    Intent is to support the following:
+
+    - pip install wp-enlighten && enlighten
+    - pip install . && venv/Scripts/enlighten
+    - pip install . && python src/wp_enlighten/app.py
+    - pip install -e . && venv/Scripts/enlighten
+    - pip install -e . && python src/wp_enlighten/app.py
+    - make_windows_installer.sh && pyinstaller-build/dist/enlighten/enlighten.exe
+    - ENLIGHTEN-4.3.0-Setup64.exe && C:/Program Files/Wasatch Photonics/ENLIGHTEN/enlighten.exe
+
+    @TODO: support /opt/homebrew/bin, etc
+    """
+    cwd = os.getcwd()
+    exe = sys.executable
+
+    is_enlighten_exe = re.search(r"enlighten[/\\]+enlighten.exe$", exe.lower()) # pyinstaller-build/dist/enlighten/enlighten.exe or /c/Program Files/Wasatch Photonics/ENLIGHTEN/enlighten.exe
+    is_venv_python = re.search(r"\\scripts\\pythonw?.exe$", exe.lower())
+    in_venv = re.search(r"(venv|\.?env)\\(scripts|bin)", cwd.lower()) # hard-coded to venv, .env, env
+
+    grandchild_path = os.path.join(cwd, "src", "wp_enlighten", "assets")
+    grandchild_exists = os.path.exists(grandchild_path)
+
+    internal_path = os.path.join(cwd, "_internal", "assets")
+    internal_exists = os.path.exists(internal_path)
+
+    cousin_path = os.path.join(cwd, "..", "..", "src", "wp_enlighten", "assets")
+    cousin_exists = os.path.exists(cousin_path)
+
+    if False:
+        log.debug(f"get_asset_dir: cwd {cwd}")
+        log.debug(f"get_asset_dir: exe {exe}")
+        log.debug(f"get_asset_dir: is_enlighten_exe {is_enlighten_exe}")
+        log.debug(f"get_asset_dir: is_venv_python {is_venv_python}")
+        log.debug(f"get_asset_dir: in_venv {in_venv}")
+        log.debug(f"get_asset_dir: grandchild_exists {grandchild_exists}, path {grandchild_path}")
+        log.debug(f"get_asset_dir: internal_exists {internal_exists}, path {internal_path}")
+        log.debug(f"get_asset_dir: cousin_exists {cousin_exists}, path {cousin_path}")
+
+    if internal_exists:
+        log.debug("get_asset_dir: returning internal_path")
+        return internal_path
+    elif grandchild_exists:
+        log.debug("get_asset_dir: returning grandchild_path")
+        return grandchild_path
+    elif cousin_exists:
+        log.debug("get_asset_dir: returning cousin_path")
+        return cousin_path
     else:
-        # if run from source...still need to handle running from package?
-        path = os.path.join(os.getcwd(), "src", "wp_enlighten", "assets")
-    return path
+        log.critical("get_asset_dir: neither _internal, grandchild nor cousin found, returning .")
+        return "."
 
 def dump_asset_dir():
     root_dir = get_asset_dir()

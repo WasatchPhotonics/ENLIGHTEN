@@ -7,7 +7,14 @@
         - move default to "today" dir
         - fix exporting XD-only
     - PyPi
-        - testing "pip install wp-enlighten"
+        - goal to support:
+            - pip install wp-enlighten && enlighten
+            - pip install . && venv/Scripts/enlighten
+            - pip install . && python src/wp_enlighten/app.py
+            - pip install -e . && venv/Scripts/enlighten
+            - pip install -e . && python src/wp_enlighten/app.py
+            - make_windows_installer.sh && pyinstaller-build/dist/enlighten/enlighten.exe
+            - ENLIGHTEN-4.3.0-Setup64.exe && C:\Program Files\Wasatch Photonics\ENLIGHTEN\enlighten.exe
     - MacOS
         - docs
         - resolve segfault at shutdown 
@@ -18,6 +25,10 @@
           PlusMinus in enlighten_layout.ui, to resolve apparent issue with MacOS.
         - explicitly close QSpashscreen, then show DidYouKnow, after Controller 
           constructor completes
+    - TESTING
+        - works: laser, dark, save, XS, XD
+        - bugs:
+            - export
 
 ## 4.2 XS V2 EVT / DVT
 
