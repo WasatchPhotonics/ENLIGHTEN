@@ -234,8 +234,8 @@ class PluginControllerFeature(EnlightenFeature):
             log.debug(f"not re-stubbing plugins tree because found {copied_key}")
             return
 
-        cwd = os.getcwd()
-        plugin_src = os.path.join(cwd, "plugins")
+        asset_dir = common.get_asset_dir()
+        plugin_src = os.path.join(asset_dir, "..", "Plugins", "dist")
         if not os.path.exists(plugin_src):
             log.error(f"couldn't find plugin src {plugin_src} so not creating stub")
             return

@@ -28,11 +28,9 @@
         - explicitly close QSpashscreen, then show DidYouKnow, after Controller 
           constructor completes
     - TESTING
-        - works: laser, dark, save, XS, XD, export, library matching
+        - works: laser, dark, save, XS, XD, export, library matching, plugins
         - bugs / untested:
-            - plugins?
             - BLE?
-            - looks like QTimers may be blocked while DYK running?
 
 ## 4.2 XS V2 EVT / DVT
 
