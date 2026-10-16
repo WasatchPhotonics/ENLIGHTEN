@@ -8,7 +8,7 @@ ENLIGHTEN's internal developer documentation is rendered here:
 
 You can render the Doxygen to HTML (or RTF -> Word) using "make docs".
 
-Note that image generation requires that you have dot/graphviz installed.
+Note that image generation requires that you have graphviz installed.
 
 # Doxygen Syntax
 
