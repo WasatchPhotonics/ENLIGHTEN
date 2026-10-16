@@ -2,11 +2,12 @@
 
 ## 4.3 PyPi
 
-- 2026-10-05 4.3.0
+- 2026-??-?? 4.3.0
     - Export
         - move default to "today" dir
-        - fix exporting XD-only
-        - fix XD metadata
+        - fix XD exports and metadata
+    - GUI
+        - added ctrl-_ shortcut to rotate x-axis 
     - PyPi
         - goal to support:
             - pip install wp-enlighten && enlighten
@@ -16,24 +17,23 @@
             - pip install -e . && python src/wp_enlighten/app.py
             - make_windows_installer.sh && pyinstaller-build/dist/enlighten/enlighten.exe
             - ENLIGHTEN-4.3.0-Setup64.exe && C:\Program Files\Wasatch Photonics\ENLIGHTEN\enlighten.exe
-    - Windows
-        - DidYouKnow was suddenly blocking Controller QTimers? Changed dyk.dialog.exec() to .open()
     - MacOS
         - docs
         - resolve segfault at shutdown 
         - pyqtgraph cleanup at shutdown
-    - Qt / GUI
+    - Qt
         - deprecated PySide2 support
         - temporarily changed all QAbstractSpinBox::ButtonSymbols::NoButtons to 
           PlusMinus in enlighten_layout.ui, to resolve apparent issue with MacOS.
         - explicitly close QSpashscreen, then show DidYouKnow, after Controller 
           constructor completes
+        - changed dyk.dialog.exec() to .open()
     - TESTING
         - works: laser, dark, save, XS, XD, export, library matching, plugins, BLE
-        - bugs
-            - ToolTips don't work? (MacOS)
-            - WhatsThis doesn't work (MacOS)
-            - resizing DYK crashes (MacOS)
+        - MacOS bugs
+            - ToolTips don't work
+            - WhatsThis doesn't work
+            - resizing DYK crashes
 
 ## 4.2 XS V2 EVT / DVT
 

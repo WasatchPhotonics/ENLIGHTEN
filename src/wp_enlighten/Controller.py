@@ -1164,6 +1164,7 @@ class Controller:
         make_shortcut("Ctrl+%", self.laser_control.set_focus_power)
         make_shortcut("Ctrl+&", self.measurements.add_trace_from_last_measurement)
         make_shortcut("Ctrl+^", self.plugin_controller.connect_currently_selected_plugin)
+        make_shortcut("Ctrl+_", self.graph.select_next_x_axis)
         make_shortcut("Ctrl+,", self.multispec.select_prev_spectrometer)
         make_shortcut("Ctrl+.", self.multispec.select_next_spectrometer)
         make_shortcut("Ctrl+up", self.page_nav.scroll_up)

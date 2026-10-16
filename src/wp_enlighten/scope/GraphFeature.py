@@ -233,6 +233,11 @@ class GraphFeature(EnlightenFeature):
     def in_wavelengths(self): return self.current_x_axis == common.Axes.WAVELENGTHS
     def in_wavenumbers(self): return self.current_x_axis == common.Axes.WAVENUMBERS
 
+    def select_next_x_axis(self):
+        # limit to PIXELS, WAVELENGTHS, WAVENUMBERS
+        next_axis = (self.current_x_axis + 1) % self.combo_axis.count()
+        self.combo_axis.setCurrentIndex(next_axis)
+
     def update_axis_callback(self):
         if self.x_axis_locked:
             return

@@ -5,6 +5,12 @@ Miscellaneous notes, advice and history on how to maintain and extend ENLIGHTEN.
 If you haven't already, see [Architecture](ARCHITECTURE.md) for an 
 introduction to key classes.
 
+## Editing Wasatch.PY 
+
+If you want to play with a "local" clone of Wasatch.PY, just do this:
+
+    $ export PYTHONPATH=../Wasatch.PY
+
 ## Release Process
 
 - update version number 

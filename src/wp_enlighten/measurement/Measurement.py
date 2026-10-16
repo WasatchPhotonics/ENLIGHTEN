@@ -1798,7 +1798,7 @@ class Measurement:
         target = target.lower()
         pr = None
 
-        if target == "json_export":
+        if target == "json":
             if self.processed_reading.has_XD():
                 pr = self.processed_reading.XD
         elif target == "csv_indiv":
