@@ -29,8 +29,8 @@ class hello_graph(EnlightenPluginBase):
 
     def process_request(self, request):
         x_values = self.get_axis()
-        y_values = request.processed_reading.get_processed()
-        self.plot(x=x_values, y=y_values, title="Copy of Graph !", color="yellow")
+        spectrum = request.processed_reading.get_processed()
+        self.plot(x=x_values, y=spectrum, title="My New Spectrum", color="yellow")
 ```
 
 ## Advanced use
@@ -81,7 +81,7 @@ distribution, and installed to EnlightenSpectra/plugins on Windows.
 
 ## Internal
 
-The internal plug-in architecture is implemented in the enlighten.Plugins 
+The internal plug-in architecture is implemented in the wp_enlighten.Plugins 
 namespace, especially:
 
 - enlighten.Plugins.PluginController.PluginController
@@ -137,7 +137,5 @@ Some of the external symbols are now handled internally.
 ### R
 
 It would be nice to use rpy2 to be able to run R functions directly, rather than
-"shelling-out".  We should be able to generate a sample rpy2 plugin NOW, since:
-
-- we're now 64-bit native (yay)
-- rpy2 now [supports Python 3.9 and 3.10](https://github.com/rpy2/rpy2/pull/853)
+"shelling-out".  We should be able to generate a sample rpy2 plugin NOW, since
+rpy2 now [supports Python 3.9 and 3.10](https://github.com/rpy2/rpy2/pull/853).
