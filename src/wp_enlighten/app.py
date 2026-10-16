@@ -134,18 +134,6 @@ class EnlightenApplication:
         # (so we can use Tensorflow without a console window)
         sys.stdout = common.FakeOutputHandle("FakeStdout")
 
-        if False and "windows" in platform.platform().lower():
-            enlightens = []
-            for process in psutil.process_iter(['pid', 'name']):
-                proc_pid = process.info['pid']
-                proc_name = process.info['name']
-                if "enlighten.exe" in proc_name.lower():
-                    enlightens.append(f"pid {proc_pid} {proc_name}")
-            if len(enlightens) > 1:
-                log.critical(f"too many ENLIGHTENs, exiting: {enlightens}")
-                common.msgbox("Too many ENLIGHTEN™s detected, exiting", title="ENLIGHTEN™ Tribble Detector", detail="\n".join(enlightens))
-                return 1
-
         # This violates convention but Controller has so many imports that it 
         # takes a while to import. We're choosing to import it here, AFTER
         # displaying the splash screen, so you have something pretty to look at
@@ -202,7 +190,7 @@ class EnlightenApplication:
         print("EnlightenApplication.closeEvent: received control_exit_signal")
 
         self.exit_code = self.controller.exit_code
-        print("EnlightenApplication.closeEvent: exit_code %d" % self.exit_code)
+        print(f"EnlightenApplication.closeEvent: exit_code {self.exit_code}")
 
         # shutdown the logger
         self.main_logger.close()
@@ -211,17 +199,17 @@ class EnlightenApplication:
         # call applog.explicit_log_close() here?
         applog.explicit_log_close()
 
-        if "macOS" in platform.platform():
-            print("EnlightenApplication.closeEvent: calling pyqtgraph.exit()", flush=True)
-            import pyqtgraph
-            pyqtgraph.exit()
-            return
+        # MZ: removing this to resolve MacOS exception:
+        #
+        #   File "/Users/mzieg/work/code/ENLIGHTEN/venv/lib/python3.14/site-packages/pyqtgraph/widgets/ColorButton.py", line 73, in colorRejected
+        #       self.setColor(self.origColor, finished=False)
+        #                     ^^^^^^^^^^^^^^
+        #   AttributeError: 'ColorButton' object has no attribute 'origColor'
+        #
+        # print("EnlightenApplication.closeEvent: quitting app", flush=True)
+        # self.app.quit()
 
-        # quit the QApplication (only need one of these, not sure which is better)
-        print("EnlightenApplication.closeEvent: quitting app")
-        self.app.quit()
-
-        print("EnlightenApplication.closeEvent: exiting with exit_code %d" % self.exit_code)
+        print(f"EnlightenApplication.closeEvent: exiting with exit_code {self.exit_code}", flush=True)
         sys.exit(self.exit_code)
 
     def hide_console(self):
@@ -253,26 +241,28 @@ class EnlightenApplication:
 
     def chdir(self):
         """
-        ENLIGHTEN loads various settings from its own enlighten/assets/
-        example_code distribution, which it accesses through relative
-        paths, and it can't find those if run from another directory.
+        ENLIGHTEN loads various settings from its own wp_enlighten/assets/
+        example_code distribution, which it accesses through relative paths, and
+        it can't find those if run from another directory.
+
+        Not sure if this is still needed, now that we have common.get_asset_dir.
         """
         script_path = sys.argv[0]
-        print(f"chdir({script_path})")
-        print(f"sys.path {sys.path}")
+        print(f"chdir: script_path {script_path}")
+        print(f"chdir: sys.path {sys.path}")
 
         if script_path.endswith(".py"):
-            # run as "python path/to/scripts/enlighten.py", so want "path/to"
-            root_dir = os.path.join(os.path.dirname(script_path), "..")
+            # run as "python path/to/wp_enlighten/app.py", so want "path/to/wp_enlighten"
+            root_dir = os.path.join(os.path.dirname(script_path), "/..")
         else:
             # presumably some kind of compiled executable
             root_dir = os.path.dirname(script_path)
 
-        print(f"chdir to {root_dir}")
+        print(f"chdir: cd {root_dir}")
         try:
             os.chdir(root_dir)
         except:
-            print(f"error changing to {root_dir}")
+            print(f"chdir: error changing to {root_dir}")
 
 def main():
     enlighten = EnlightenApplication()

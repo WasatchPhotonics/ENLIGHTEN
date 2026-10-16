@@ -346,7 +346,9 @@ class Controller:
             feature.disconnect()
 
     def close(self, event_arg_str):
-        log.critical(f"closing ({event_arg_str})")
+        log.info("===================================================")
+        log.info(f"Controller.close: closing ({event_arg_str})")
+        log.info("===================================================")
 
         self.shutting_down = True
 
@@ -384,9 +386,9 @@ class Controller:
         self.business_objects.destroy()
 
         self.exit_code = self.resource_monitor.exit_code
-        log.critical("emitting control level close (exit_code %d)", self.exit_code)
+        log.info(f"emitting control level close (exit_code {self.exit_code})")
         self.control_exit_signal.exit.emit("Control level close")
-        log.critical("emitted control level close (exit_code %d)", self.exit_code)
+        log.info(f"emitted control level close (exit_code {self.exit_code})")
 
     def create_signals(self):
         """ Add Qt signal handlers to the Controller instance. """

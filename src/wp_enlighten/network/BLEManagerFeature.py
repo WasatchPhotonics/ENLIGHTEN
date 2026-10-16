@@ -75,11 +75,11 @@ class BLEManagerFeature(EnlightenFeature):
 
     def stop(self):
         """ ENLIGHTEN is shutting down, so disconnect everything ASAP """
-        log.debug("stop: start")
         spec = self.get_connected_ble_spectrometer(include_disconnecting=True)
         if spec:
+            log.debug("stopping...")
             spec.device.disconnect()
-        log.debug("stop: done")
+            log.debug("stopped")
 
     def prepare_for_shutdown(self):
         if self.run_loop is None:
