@@ -6,6 +6,7 @@
     - Export
         - move default to "today" dir
         - fix exporting XD-only
+        - fix XD metadata
     - PyPi
         - goal to support:
             - pip install wp-enlighten && enlighten
