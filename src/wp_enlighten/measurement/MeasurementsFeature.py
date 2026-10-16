@@ -434,7 +434,10 @@ class MeasurementsFeature(EnlightenFeature):
 
         This function is generating a second Measurement from the XD component
         of a parent Measurement. CSV-based exports may include the child XD
-        objects, but JSON exports will not.
+        object (the "fork"), but JSON exports will not.
+
+        The fork will end up with the original Measurement's ProcessedReading.XD 
+        as fork's "only" ProcessedReading.
 
         Note that we are deliberately not applying any interpolation at this point
         in the process, as there is no need to interpolate data which will go into

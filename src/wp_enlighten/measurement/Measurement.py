@@ -843,7 +843,12 @@ class Measurement:
     ##
     # This function is provided because legacy Dash and ENLIGHTEN saved row-
     # ordered CSV files with very specific column headers and sequence which we
-    # don't want to casually break.
+    # didn't want to casually break.
+    #
+    # @param target (Input) any of 'csv_indiv', 'csv_indiv_xd', 'csv_export' or 'json'.
+    #        At the momement, this is only used to decide which fields / values are 
+    #        appropriate for whether the "raw" or "XD" versions of a measurement are 
+    #        being saved.
     #
     # @todo Note that temperature fields come from the underlying Reading object,
     #       and in the case that we loaded previously-saved spectra from disk,
@@ -912,8 +917,8 @@ class Measurement:
         if field == "library match":             return self.processed_reading.library_matching_compound
         if field == "library score":             return self.processed_reading.library_matching_score
         if field == "library engine":            return self.processed_reading.library_matching_engine
-        if field == "XD model name":             return self.get_XD_metadata("XD_model_name", target=target)
-        if field == "XD model label":            return self.get_XD_metadata("XD_model_label", target=target)
+        if field == "xd model name":             return self.get_XD_metadata("XD_model_name", target=target)
+        if field == "xd model label":            return self.get_XD_metadata("XD_model_label", target=target)
         if field == "roi pixel start":           return self.settings.eeprom.multi_wavelength_calibration.get("roi_horizontal_start")
         if field == "roi pixel end":             return self.settings.eeprom.multi_wavelength_calibration.get("roi_horizontal_end")
         if field == "roi start line":            return self.settings.eeprom.roi_vertical_region_1_start
@@ -1453,14 +1458,21 @@ class Measurement:
         log.info("saved columnar %s", pathname)
         self.add_pathname(pathname)
 
-    def save_csv_file_by_column_XD(self, use_basename=False, ext="csv", delim=",", include_header=True, include_metadata=True, resave=False):
+    def save_csv_file_by_column_XD(self, resave=False):
+        """
+        This function has obvious similarities to save_csv_file_by_column, but it
+        was decided to copy-pasta rather than parameterize because it would just
+        make the generalized version too complicated.
+
+        Basically this is ONLY outputting "Wavenumber, XD" (no pixel, wavelength, 
+        reference, dark, raw etc).
+        """
         pr = self.processed_reading
 
         today_dir = self.generate_today_dir()
-        if use_basename:
-            pathname = "%s-XD.%s" % (self.basename, ext)
-        else:
-            pathname = os.path.join(today_dir, "%s-XD.%s" % (self.generate_basename(), ext))
+        filename = f"{self.generate_basename()}-XD.csv"
+        pathname = os.path.join(today_dir, filename)
+        log.debug(f"save_csv_file_by_column_XD: writing {filename}")
 
         if not self.verify_pathname(pathname, resave):
             return
@@ -1471,40 +1483,33 @@ class Measurement:
 
         with open(pathname, "w", newline="", encoding='utf-8') as f:
 
-            out = csv.writer(f, delimiter=delim)
+            out = csv.writer(f, delimiter=',')
 
-            if include_metadata:
-                md = self.get_all_metadata(target="csv_indiv_XD")
+            md = self.get_all_metadata(target="csv_indiv_xd")
 
-                # output additional (name, value) metadata pairs at the top,
-                # not included in row-ordered CSV
-                outputted = set()
-                for field in self.get_extra_header_fields():
-                    if field in md:
+            # output additional (name, value) metadata pairs at the top,
+            # not included in row-ordered CSV
+            outputted = set()
+            for field in self.get_extra_header_fields():
+                if field in md:
+                    out.writerow([field, md[field]])
+                    outputted.add(field)
+
+            # output (name, value) metadata pairs at the top,
+            # using the same names and order as our row-ordered CSV
+            for field in Measurement.CSV_HEADER_FIELDS:
+                if field not in Measurement.ROW_ONLY_FIELDS and field in md:
+                    out.writerow([field, md[field]])
+                    outputted.add(field)
+
+            if self.processed_reading.plugin_metadata is not None:
+                for field in self.processed_reading.plugin_metadata.keys():
+                    if field not in outputted:
                         out.writerow([field, md[field]])
                         outputted.add(field)
 
-                # output (name, value) metadata pairs at the top,
-                # using the same names and order as our row-ordered CSV
-                for field in Measurement.CSV_HEADER_FIELDS:
-                    if field not in Measurement.ROW_ONLY_FIELDS and field in md:
-                        out.writerow([field, md[field]])
-                        outputted.add(field)
-
-                if self.processed_reading.plugin_metadata is not None:
-                    for field in self.processed_reading.plugin_metadata.keys():
-                        if field not in outputted:
-                            out.writerow([field, md[field]])
-                            outputted.add(field)
-
-                out.writerow([])
-
-            headers = []
-            headers.append("Wavenumber")
-            headers.append("XD")
-
-            if include_header:
-                out.writerow(headers)
+            out.writerow([])
+            out.writerow([ "Wavenumber", "XD" ])
 
             for pixel in range(len(pixels)):
                 values = []
@@ -1786,40 +1791,29 @@ class Measurement:
 
     def get_XD_metadata(self, name, target=None):
         if self.processed_reading is None:
-            log.debug("get_XD_metadata: no ProcessedReading")
             return
         elif target is None:
-            log.debug("get_XD_metadata: no target")
             return
 
         target = target.lower()
         pr = None
-        log.debug(f"get_XD_metadata: target {target}")
 
         if target == "json_export":
             if self.processed_reading.has_XD():
-                log.debug("get_XD_metadata: pr.has_XD() so using pr.XD")
                 pr = self.processed_reading.XD
-            else:
-                log.debug("get_XD_metadata: not pr.has_XD()")
         elif target == "csv_indiv":
             pr = None
-        elif target == "csv_indiv_XD":
+        elif target == "csv_indiv_xd":
             pr = self.processed_reading.XD
         elif target == "csv_export":
             if self.is_XD_fork:
-                log.debug("get_XD_metadata: self.is_XD_fork so using self.pr")
+                # forks already have the original Measurement's ProcessedReading.XD 
+                # moved into the fork's ProcessedReading slot
                 pr = self.processed_reading
-            else:
-                log.debug("get_XD_metadata: not self.is_XD_fork")
 
         if pr:
-            log.debug(f"get_XD_metadata: now have pr")
             if hasattr(pr, name):
-                log.debug(f"get_XD_metadata: found attr {name}")
-                value = getattr(pr, name)
-                log.debug(f"get_XD_metadata: returning {value}")
-                return value
+                return getattr(pr, name)
             else:
                 log.debug(f"get_XD_metadata: no attr {name}")
         else:

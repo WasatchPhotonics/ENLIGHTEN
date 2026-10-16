@@ -251,7 +251,7 @@ class ConfigurationFeature(EnlightenFeature):
         elif section in self.defaults and key in self.defaults[section]:
             value = str(self.defaults[section][key])
         else:
-            log.error("Configuration.get: unknown option (%s, %s)", section, key)
+            log.debug("Configuration.get: unknown option (%s, %s)", section, key)
             value = default # safer than None
 
         if not raw and value is not None:

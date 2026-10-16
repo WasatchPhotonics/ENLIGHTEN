@@ -29,6 +29,10 @@
           constructor completes
     - TESTING
         - works: laser, dark, save, XS, XD, export, library matching, plugins, BLE
+        - bugs
+            - ToolTips don't work? (MacOS)
+            - WhatsThis doesn't work (MacOS)
+            - resizing DYK crashes (MacOS)
 
 ## 4.2 XS V2 EVT / DVT
 

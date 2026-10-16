@@ -152,7 +152,8 @@ class Controller:
         # initialization (enumeration, etc) is always captured in customer logfiles,
         # making support tickets much easier.  (We will apply the commanded log
         # level after the first spectrometer has successfully connected.)
-        logging.getLogger().setLevel(logging.DEBUG)
+        if "Windows" in platform.platform():
+            logging.getLogger().setLevel(logging.DEBUG)
 
         log.info("ENLIGHTEN version %s",     common.VERSION)
         log.info("Wasatch.PY version %s",    wasatch.version)

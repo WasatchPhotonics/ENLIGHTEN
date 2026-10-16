@@ -349,12 +349,8 @@ class XDFeature(EnlightenFeature):
 
         self.ctl.marquee.info(f"loading XD model {config.model_pathname}")
         if 'tflite' == config.model_type:
-            rm = self.ctl.resource_monitor
-            rm.check_memory_usage(label=f"before loading {config.model_pathname}")
             model = Interpreter(config.model_pathname)
-            rm.check_memory_usage(label=f"after loading {config.model_pathname}")
             model.allocate_tensors()
-            rm.check_memory_usage(label=f"after allocating tensors")
 
             if True:
                 log.debug(f"counting parameters")
@@ -450,8 +446,6 @@ class XDFeature(EnlightenFeature):
                 self.ctl.marquee.error("FWHM is zero in EEPROM - no deconvolution possible")
 
         log.debug(f"selecting preprocessor based on model config {self.current_model_config}")
-        rm = self.ctl.resource_monitor
-        rm.check_memory_usage(label=f"before calling clean_spectrum")
         try:
             if "X" in self.current_model_config.target_spectrometer_families:
                 log.debug("processing spectra with prep_spectra_X.clean_spectrum")
@@ -471,7 +465,6 @@ class XDFeature(EnlightenFeature):
             msg = f"exception executing model targetting {self.current_model_config.target_spectrometer_families} spectrometers"
             self.ctl.marquee.error(msg)
             log.error(msg, exc_info=1)
-        rm.check_memory_usage(label=f"after calling clean_spectrum")
 
         trimmed_indices = (trim_start <= wavenumbers) & (wavenumbers <= trim_end)
         wavenumbers = wavenumbers[trimmed_indices]

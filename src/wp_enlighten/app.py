@@ -71,9 +71,6 @@ class EnlightenApplication:
         if self.args is None:
             return
 
-        # As far as I can tell, we've always passed uppercase strings to
-        # logging.setLevel(), though this seems to imply that shouldn't work:
-        # https://stackoverflow.com/a/15368084
         self.args.log_level = self.args.log_level.upper()
 
         # logfile directory
@@ -122,8 +119,12 @@ class EnlightenApplication:
         msg = "Please wait...loading photonic goodness"
         self.splash.showMessage(f"version {common.VERSION}\n\n{msg}\n", alignment=Qt.AlignHCenter | Qt.AlignBottom, color=QColor("#ccc"))
 
+        # default to DEBUG for Windows installers to ease customer support, but 
+        # leave off for other cmd-line POSIX environments
+        default_log_level = "DEBUG" if "Windows" in platform.platform() else "INFO"
+
         self.main_logger = applog.MainLogger(
-            "DEBUG",    # we always start in debug logging to catch startup issues
+            default_log_level,
             logfile=self.args.logfile,
             timeout_sec=5,
             enable_stdout=not self.testing,
@@ -248,8 +249,8 @@ class EnlightenApplication:
         Not sure if this is still needed, now that we have common.get_asset_dir.
         """
         script_path = sys.argv[0]
-        print(f"chdir: script_path {script_path}")
-        print(f"chdir: sys.path {sys.path}")
+        # print(f"chdir: script_path {script_path}")
+        # print(f"chdir: sys.path {sys.path}")
 
         if script_path.endswith(".py"):
             # run as "python path/to/wp_enlighten/app.py", so want "path/to/wp_enlighten"
@@ -258,7 +259,7 @@ class EnlightenApplication:
             # presumably some kind of compiled executable
             root_dir = os.path.dirname(script_path)
 
-        print(f"chdir: cd {root_dir}")
+        # print(f"chdir: cd {root_dir}")
         try:
             os.chdir(root_dir)
         except:
