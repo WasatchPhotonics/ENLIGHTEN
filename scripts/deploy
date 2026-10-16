@@ -134,13 +134,10 @@ fi
 ################################################################################
 
 # commented-out until we fix the symlink issue on Windows
-if false
-then
-    make doc
-    rsync --archive --delete docs/doxygen/html/ $USERNAME@wasatchphotonics.com:www/api/ENLIGHTEN/
-    scp docs/ENLIGHTEN_CHANGELOG.html $USERNAME@wasatchphotonics.com:www/binaries/apps/enlighten/README.html
-    echo
-fi
+make doc
+rsync --archive --delete docs/doxygen/html/ $USERNAME@wasatchphotonics.com:www/api/ENLIGHTEN/
+scp docs/ENLIGHTEN_CHANGELOG.html $USERNAME@wasatchphotonics.com:www/binaries/apps/enlighten/README.html
+echo
 
 ################################################################################
 # upload binaries
