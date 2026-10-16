@@ -6,7 +6,7 @@
 
 VERSION := $(shell grep 'VERSION =' src/wp_enlighten/common.py | awk '{print $$3}' | tr -d '"')
 
-.PHONY: docs
+.PHONY: docs doc
 
 help:
 	@echo "To build and run Enlighten:"
@@ -27,7 +27,7 @@ help:
 	@echo 
 	@echo "VERSION = $(VERSION)"
 
-docs:
+doc docs:
 	@echo "rendering doxygen"
 	@rm -rf docs/doxygen
 	@doxygen 1>doxygen.out 2>doxygen.err

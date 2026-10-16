@@ -78,7 +78,7 @@ fi
 ################################################################################
 
 # verify version number in enlighten.common
-if egrep -q "\"$VERSION\"" enlighten/common.py
+if egrep -q "\"$VERSION\"" src/wp_enlighten/common.py
 then
     echo "version found in common.py"
 else
@@ -134,8 +134,9 @@ fi
 ################################################################################
 
 # commented-out until we fix the symlink issue on Windows
-make doc
-rsync --archive --delete docs/doxygen/html/ $USERNAME@wasatchphotonics.com:www/api/ENLIGHTEN/
+make docs
+# rsync --archive --delete docs/doxygen/html/ $USERNAME@wasatchphotonics.com:www/api/ENLIGHTEN/
+rsync --archive --delete --src docs/doxygen/html/ --dst $USERNAME@wasatchphotonics.com:www/api/ENLIGHTEN/
 scp docs/ENLIGHTEN_CHANGELOG.html $USERNAME@wasatchphotonics.com:www/binaries/apps/enlighten/README.html
 echo
 
