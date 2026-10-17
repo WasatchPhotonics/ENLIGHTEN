@@ -53,6 +53,7 @@ extend ENLIGHTEN in countless ways we never imagined.
 
 - [Contents](docs/CONTENTS.md) - overview of the distribution structure
 - Development Environment Setup
+    - [PyPi package](docs/BUILD_PYPI.md)
     - [Windows](docs/BUILD_WINDOWS.md)
     - [Mac OS](docs/BUILD_MACOS.md)
     - [Ubuntu Linux](docs/BUILD_LINUX.md)

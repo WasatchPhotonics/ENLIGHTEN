@@ -1220,7 +1220,7 @@ The goal of version 1.4 was to support multiple spectrometers.
     }
 \enddot
 
-# 2.0
+# 2.0+
 
 See [Architecture](ARCHITECTURE.md) for current version.
 

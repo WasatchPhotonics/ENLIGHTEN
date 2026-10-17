@@ -1,7 +1,44 @@
 # Version History
 
-## 4.2 XS V2 Commercial Release
+## 4.3 PyPi
 
+- 2026-??-?? 4.3.0
+    - Export
+        - move default to "today" dir
+        - fix XD exports and metadata
+    - GUI
+        - added ctrl-_ shortcut to rotate x-axis 
+    - PyPi
+        - goal to support:
+            - pip install wp-enlighten && enlighten
+            - pip install . && venv/Scripts/enlighten
+            - pip install . && python src/wp_enlighten/app.py
+            - pip install -e . && venv/Scripts/enlighten
+            - pip install -e . && python src/wp_enlighten/app.py
+            - make_windows_installer.sh && pyinstaller-build/dist/enlighten/enlighten.exe
+            - ENLIGHTEN-4.3.0-Setup64.exe && C:\Program Files\Wasatch Photonics\ENLIGHTEN\enlighten.exe
+    - MacOS
+        - docs
+        - resolve segfault at shutdown 
+        - pyqtgraph cleanup at shutdown
+    - Qt
+        - deprecated PySide2 support
+        - temporarily changed all QAbstractSpinBox::ButtonSymbols::NoButtons to 
+          PlusMinus in enlighten_layout.ui, to resolve apparent issue with MacOS.
+        - explicitly close QSpashscreen, then show DidYouKnow, after Controller 
+          constructor completes
+        - changed dyk.dialog.exec() to .open()
+    - TESTING
+        - works: laser, dark, save, XS, XD, export, library matching, plugins, BLE
+        - MacOS bugs
+            - ToolTips don't work [gave up]
+            - WhatsThis doesn't work [assuming related to ToolTips]
+            - resizing DYK crashes [could not reproduce on Neo]
+
+## 4.2 XS V2 EVT / DVT
+
+- 2026-10-05 4.2.14
+    - internal testing
 - 2026-10-02 4.2.13
     - updated docs/BUILD_RPI (tested on Raspberry Pi Zero 2 W)
     - updated some classes to make them easier to call from external Python scripts

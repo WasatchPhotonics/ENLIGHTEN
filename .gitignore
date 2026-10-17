@@ -1,56 +1,29 @@
-enlighten_applog.txt
-enlighten_applog.txt.offset
-enlighten_regular_log.txt
-enlighten_errlog
-enlighten.egg-info
-.cache
-
 *.swp
 *.swo
-
 *.pyc
 *.exe
 *.out
 *.err
 *.bak
-Enlighten*.zip
 
-enlighten/assets/uic_qrc/*.py
-enlighten/assets/example_data/serial_lookup.ini
-environment.yml
+# enlighten/assets/uic_qrc/*.py
 
 docs/doxygen/
 docs/ENLIGHTEN_CHANGELOG.html
+
+pyinstaller-build/
+innosetup-build/
 releases/
-
-scripts/built-dist/Enlighten/
-scripts/work-path/Enlighten/
-scripts/Enlighten*.spec
-Enlighten*.spec
-build
-build-work
-build-mac
-build-mac-work
-build-linux
-build-linux-work
-mac.bundled
-version.txt
-out.txt
-err.txt
-wasatch_applog.txt
-.vs/
-settings.json
-
-node_modules
-keys.py
+scripts/*.spec
 
 .DS_Store
-.vscode/launch.json
-.idea/
 Thumbs.db
 
-.env
-ids/
+.env/
 venv/
 
-enlighten/assets/example_data/XD_models
+# don't uncomment these -- it screws up "python -m build", and I haven't figured
+# out the correct [tool.hatch.build.targets.wheel] directive to resolve :-(
+#
+# src/wp_enlighten/assets/example_data/XD_models
+# keys.py
