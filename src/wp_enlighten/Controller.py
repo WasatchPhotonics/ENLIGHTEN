@@ -41,7 +41,7 @@ from wp_enlighten.BusinessObjects import BusinessObjects
 
 import PySide6
 from PySide6 import QtCore, QtWidgets, QtGui
-from PySide6.QtWidgets import QMessageBox
+from PySide6.QtWidgets import QWidget, QMessageBox
 
 log = logging.getLogger(__name__)
 
@@ -157,7 +157,7 @@ class Controller:
 
         log.info(f"ENLIGHTEN version {common.VERSION}")
         log.info(f"Wasatch.PY version {wasatch.version}")
-        log.info(f"Platform {sys.platform} {struct.calcsize('P')*8 }-bit")
+        log.info(f"Platform {sys.platform} {struct.calcsize('P')*8 }-bit ({platform.platform()})")
         log.info(f"logfile at {applog.get_location()}")
         log.info(f"log_level {self.log_level}")
         log.info(f"Python version {util.python_version()}")
@@ -264,8 +264,27 @@ class Controller:
 
         self.configure_control_palette()
 
+        if "macOS" in platform.platform():
+            self.macos_fix_tooltips()
+
         self.header("Controller ctor done")
         self.ctor_done = True
+
+    def macos_fix_tooltips(self):
+        cfu = self.form.ui
+        log.debug("fixing tooltips")
+        if False:
+            # this doesn't work either
+            # cfu.centralwidget.setAttribute(QtCore.Qt.WidgetAttribute.WA_AlwaysShowToolTips, True)
+            self.form.setAttribute(QtCore.Qt.WidgetAttribute.WA_AlwaysShowToolTips, True)
+        else:
+            # this doesn't work
+            # widgets = cfu.centralwidget.findChildren(QWidget)
+            widgets = self.form.findChildren(QWidget)
+            for w in widgets:
+                if w.toolTip().strip():
+                    log.debug(f"  {w.metaObject().className()} {w.objectName()}")
+                    w.setMouseTracking(True)
 
     def disconnect_device(self, spec=None, closing=False):
         if spec is None:

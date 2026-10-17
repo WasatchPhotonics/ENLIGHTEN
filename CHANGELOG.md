@@ -31,9 +31,9 @@
     - TESTING
         - works: laser, dark, save, XS, XD, export, library matching, plugins, BLE
         - MacOS bugs
-            - ToolTips don't work
-            - WhatsThis doesn't work
-            - resizing DYK crashes
+            - ToolTips don't work [gave up]
+            - WhatsThis doesn't work [assuming related to ToolTips]
+            - resizing DYK crashes [could not reproduce on Neo]
 
 ## 4.2 XS V2 EVT / DVT
 
