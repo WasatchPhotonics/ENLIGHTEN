@@ -155,16 +155,14 @@ class Controller:
         if "Windows" in platform.platform():
             logging.getLogger().setLevel(logging.DEBUG)
 
-        log.info("ENLIGHTEN version %s",     common.VERSION)
-        log.info("Wasatch.PY version %s",    wasatch.version)
-        log.info("applog at %s",             applog.get_location())
-        log.info("log_level %s",             self.log_level)
-        log.info("Stylesheet path %s",       self.stylesheet_path)
-        log.info("Python version %s",        util.python_version())
-        log.info(f"Operating system {sys.platform} {struct.calcsize('P')*8 } bit")
-        log.info("PySide version %s",       PySide6.__version__)
-        log.info("PySide QtCore version %s", QtCore.__version__)
-        log.info("QtCore version %s",        QtCore.qVersion())
+        log.info(f"ENLIGHTEN version {common.VERSION}")
+        log.info(f"Wasatch.PY version {wasatch.version}")
+        log.info(f"Platform {sys.platform} {struct.calcsize('P')*8 }-bit")
+        log.info(f"logfile at {applog.get_location()}")
+        log.info(f"log_level {self.log_level}")
+        log.info(f"Python version {util.python_version()}")
+        log.info(f"PySide version {PySide6.__version__}")
+        log.info(f"Assets {common.get_asset_dir()}")
 
         # common.dump_asset_dir()
 
@@ -387,9 +385,9 @@ class Controller:
         self.business_objects.destroy()
 
         self.exit_code = self.resource_monitor.exit_code
-        log.info(f"emitting control level close (exit_code {self.exit_code})")
+        log.debug(f"emitting control level close (exit_code {self.exit_code})")
         self.control_exit_signal.exit.emit("Control level close")
-        log.info(f"emitted control level close (exit_code {self.exit_code})")
+        log.debug(f"emitted control level close (exit_code {self.exit_code})")
 
     def create_signals(self):
         """ Add Qt signal handlers to the Controller instance. """
@@ -2394,7 +2392,7 @@ class Controller:
                 settings = spec.settings
 
         if settings is None:
-            log.error("settings was None even after getting current spec, not generating x-axis")
+            log.debug("settings was None even after getting current spec, not generating x-axis")
             return
 
         log.debug(f"generate_x_axis: spec {spec}, settings {settings}, unit {unit}, cropped {cropped}")

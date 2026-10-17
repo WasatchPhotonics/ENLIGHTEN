@@ -257,7 +257,7 @@ class BusinessObjects:
         ctl.correction_status           = CorrectionStatusFeature(ctl)
 
     def destroy(self):
-        log.info("destroying business objects")
+        log.debug("destroying business objects")
 
         # anything with external processes
         for feature in [ self.ctl.plugin_controller ]:
@@ -269,4 +269,4 @@ class BusinessObjects:
                          self.ctl.library_matching ]:
             feature.stop()
 
-        log.info("done destroying business objects")
+        log.debug("done destroying business objects")
