@@ -2,6 +2,8 @@
 
 ## 4.3 PyPi
 
+- 2026-10-20 4.3.3
+    - re-releasing, hopefully with the new Wasatch.PY 2.5.2
 - 2026-10-20 4.3.2
     - re-releasing, hopefully with the actual Wasatch.PY 2.5.1
 - 2026-10-20 4.3.1
