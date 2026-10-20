@@ -28,17 +28,17 @@ That's it. On successive executions, it's even shorter:
     $ python3 -m venv venv
 
 This runs Python (version 3+), and tells it to import _and run_ the module "venv"
-(virtualenv), passing the directory name "venv" as an argument. Some people 
-prefer to put their virtual environments in a folder called .env, so they would
-run "python3 -m venv .env". You can name your environment anything you want.
+(virtualenv), passing the directory name `venv` as an argument. Some people 
+prefer to put their virtual environments in a folder called `.env/`, so they would
+run `python3 -m venv .env`. You can name your environment anything you want.
 
-After running this command, you will have a new folder named venv/ (or .env/) in
-your directory. Under that folder you will have a folder named venv/bin/ (or 
-venv/Scripts/ on Windows), which contains commands and scripts including 
-"activate". You will also have a folder called venv/lib/ which will end up 
-holding all the package dependencies you later install with "pip."
+After running this command, you will have a new folder named `venv/` (or `.env/`) in
+your directory. Under that folder you will have a folder named `venv/bin/` (or 
+`venv/Scripts/` on Windows), which contains commands and scripts including 
+`activate`. You will also have a folder called `venv/lib/` which will end up 
+holding all the package dependencies you later install with `pip`.
 
-To emphasize: when you run "pip" in a few minutes, you will NOT be installing
+**To emphasize:** when you run `pip` in a few minutes, you will NOT be installing
 packages to your "system" Python environment; you will only be installing them
 within your local "venv" virtual environment. This is incredibly important and
 useful, because it means that different applications (like, ENLIGHTEN vs some
@@ -50,27 +50,27 @@ common packages like Numpy, or even different versions of Python altogether.
 Now that you've "created" your empty "venv" virtual environment, you need to
 SOURCE this script to "activate" it.
 
-NOTE THAT YOU ARE NOT "running" venv/bin/activate, at least not as a "command."
+NOTE THAT YOU ARE NOT "running" `venv/bin/activate`, at least not as a "command."
 If you did that, it would spawn a sub-shell to run the command, and when the
 command completed it would then close the sub-shell and return you to your 
 original parent shell. As a result, IT IS IMPOSSIBLE for a script to modify
 your ACTIVE environment, at least when "running the script as a command."
 
-Instead, by "sourcing" the activate script using that leading ". " (period 
+Instead, by "sourcing" the activate script using that leading `. ` (period 
 followed by a space), you are running each line of that script inside your 
-CURRENT shell, as though you had typed it yourself. This allows the "activate" 
-script to modify your CURRENT environment, including creating and exporting the
-VIRTUAL_ENV environment variable and changing your command prompt to include 
-"(venv)."
+_current_ shell, as though you had typed it yourself. This allows the `activate`
+script to modify your _current_ environment, including creating and exporting the
+`$VIRTUAL_ENV` environment variable and changing your command prompt to include 
+`(venv)`.
 
     (venv) $ pip install wp-enlighten
 
-First of all, note that we now have an extra "(venv)" prefix in our command
+First of all, note that we now have an extra `(venv)` prefix in our command
 prompt -- this reminds us that we have "activated" a Python virtual environment,
-so any Python commands (including "pip") will only run within, and modify, that
+so any Python commands (including `pip`) will only run within, and modify, that
 local environment.
 
-In this case, the command we are running, "pip install wp-enlighten", tells 
+In this case, the command we are running, `pip install wp-enlighten`, tells 
 pip to download and install the wp-enlighten package, _along with all of its
 dependencies._
 
@@ -78,13 +78,13 @@ The package it is downloading can be found here:
 
     https://pypi.org/project/wp-enlighten/
 
-The dependencies it will install are listed in the pyproject.toml file in
+The dependencies it will install are listed in the `pyproject.toml` file in
 the GitHub project you are currently reading.
 
 As stated above, all dependencies will be installed to your 
-venv/lib/python3.14/site-packages folder.
+`venv/lib/python3.14/site-packages` folder.
 
-There is one more thing the "pip install" command does: it can install new
+There is one more thing the `pip install` command does: it can install new
 executable scripts in your venv/bin/ folder. In this case, it installs a new
 script called venv/bin/enlighten. You can verify the script like this:
 
@@ -97,8 +97,8 @@ In so many words, this short script essentially runs this:
 
     $ python3 venv/lib/python3.14/site-packages/wp_enlighten/app.py
 
-This venv/bin/enlighten "command" is automatically created as part of the PyPi
-packaging system by the [project.gui-scripts] target in pyproject.toml.
+This `venv/bin/enlighten` "command" is automatically created as part of the PyPi
+packaging system by the `[project.gui-scripts]` target in pyproject.toml.
 
 # Instructions to _MAINTAIN_ ENLIGHTEN
 
@@ -134,13 +134,13 @@ files, you can do so:
 
 ## What does "pip install -e ." do?
 
-Well, if we typed "pip install ." it would have installed all ENLIGHTEN's 
+Well, if we typed `pip install .` it would have installed all ENLIGHTEN's 
 dependencies into venv/lib/python*/site-packages, and then it would have 
 installed wp-enlighten itself into the same location. Then when you ran 
-"enlighten", it would have been running the files under venv/lib/python*/site-packages,
-not the src/wp_enlighten/* files you wanted.
+`enlighten`, it would have been running the files under `venv/lib/python*/site-packages`,
+not the `src/wp_enlighten/*` files you wanted.
 
-So instead we run "pip install -e ." which puts _something_ into site-packages,
+So instead we run `pip install -e .` which puts _something_ into site-packages,
 but a little different. Let's have a look:
 
     (venv) $ ls -la venv/lib/python3.14/site-packages | grep enlighten
@@ -160,7 +160,7 @@ the cloned source code workspace.
 
 ## What if I want to test local changes to Wasatch.PY?
 
-Standard PYTHONPATH manipulation is all that's needed if you want to test 
+Standard `PYTHONPATH` manipulation is all that's needed if you want to test 
 ENLIGHTEN with a locally modified Wasatch.PY.
 
 Let's start the same as above, but adding a local clone of Wasatch.PY:
@@ -173,8 +173,8 @@ Let's start the same as above, but adding a local clone of Wasatch.PY:
     (venv) $ pip install -e .
 
 As before, this will download the PyPi project "wasatch" as a dependency
-declared in ENLIGHTEN's pyproject.toml, and install the downloaded package
-in venv/lib/python/site-packages/wasatch. We want to ignore that "downloaded"
+declared in ENLIGHTEN's `pyproject.toml`, and install the downloaded package
+in `venv/lib/python/site-packages/wasatch`. We want to ignore that "downloaded"
 package, and instead use our locally cloned repo:
 
     # insert local Wasatch.PY workspace at the front of Python's search path
