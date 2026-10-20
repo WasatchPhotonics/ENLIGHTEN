@@ -76,7 +76,7 @@ dependencies._
 
 The package it is downloading can be found here:
 
-    https://pypi.org/project/wp-enlighten/
+- https://pypi.org/project/wp-enlighten/
 
 The dependencies it will install are listed in the `pyproject.toml` file in
 the GitHub project you are currently reading.
