@@ -217,6 +217,51 @@ If that works, proceed to the actual production repository:
 Note that you can NEVER re-push a new wheel with an old version number; you MUST
 move to new version numbers each time.
 
+## Common Problems
+
+### Wasatch.PY version
+
+It is important that new ENLIGHTEN installers be built with the intended 
+(presumably most-recent) Wasatch.PY version. When testing a new ENLIGHTEN
+installer, you can always see the Wasatch.PY version in the very beginning
+of ~/Documhents/EnlightenSpectra/enlighten.log. If that version is older
+than you expect (e.g. 2.5.1 when you expected 2.5.2), make sure you have
+done ALL the following:
+
+    $ deactivate
+    $ unset PYTHONPATH
+
+    $ cd ~/work/code/Wasatch.PY
+    $ rm -rf venv
+    $ python -m venv
+    $ . venv/*/activate
+    (venv) $ rm dist/wasatch-*
+
+    (venv) $ pip install .
+    (venv) $ python -m build
+    (venv) $ make publish-test
+    (venv) $ make publish
+
+    (venv) $ deactivate
+    $ cd ~/work/code/enlighten
+    $ rm -rf venv
+    $ python -m venv
+    $ . venv/*/activate
+    (venv) $ rm dist/wp_enlighten-*
+
+    (venv) $ pip install .
+    (venv) $ diff -r venv/Lib/site-packages/wasatch ../Wasatch.PY/wasatch | grep -v __pycache__
+
+    (venv) $ python -m build
+    (venv) $ scripts/make_windows_installer.sh
+    (venv) $ ./ENLIGHTEN*exe
+
+    (test new installer)
+
+    (venv) $ scripts/deploy
+    (venv) $ make publish-test
+    (venv) $ make publish
+
 # Referenced Documents
 
 - [Packaging Tutorial](https://packaging.python.org/en/latest/tutorials/packaging-projects/)
