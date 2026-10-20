@@ -56,6 +56,7 @@ read -p "Version:    " VERSION
 read -p "Beta:       " BETA
 
 export VERSION
+export RUST_BACKTRACE=1
 
 if echo $BETA | grep -q y
 then
@@ -133,10 +134,15 @@ fi
 # render documentation 
 ################################################################################
 
-# commented-out until we fix the symlink issue on Windows
+echo "make docs..."
 make docs
-# rsync --archive --delete docs/doxygen/html/ $USERNAME@wasatchphotonics.com:www/api/ENLIGHTEN/
+echo
+
+echo "rsync..."
 rsync --archive --delete --src docs/doxygen/html/ --dest $USERNAME@wasatchphotonics.com:www/api/ENLIGHTEN/
+echo
+
+echo "scp..."
 scp docs/ENLIGHTEN_CHANGELOG.html $USERNAME@wasatchphotonics.com:www/binaries/apps/enlighten/README.html
 echo
 
@@ -145,7 +151,6 @@ echo
 ################################################################################
 
 mkdir -p releases
-
 upload "Enlighten-Setup64-${VERSION}.exe"
 
 ################################################################################

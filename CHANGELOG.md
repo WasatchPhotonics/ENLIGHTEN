@@ -2,6 +2,8 @@
 
 ## 4.3 PyPi
 
+- 2026-10-20 4.3.2
+    - re-releasing, hopefully with the actual Wasatch.PY 2.5.1
 - 2026-10-20 4.3.1
     - deprecated Multispec.current_spectrometer's with_detector parameter
 - 2026-10-16 4.3.0
