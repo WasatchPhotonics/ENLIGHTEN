@@ -162,22 +162,23 @@ class XDFeature(EnlightenFeature):
 
     def best_model_for_current_spectrometer(self):
         prefix = "best_model_for_current_spectrometer"
-        spec = self.ctl.multispec.current_spectrometer(with_detector=True)
+        spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
             return None
 
+        spec_family = None
         spec_model = spec.settings.eeprom.model
-        if "X-" in spec_model:
-            spec_family = "X"
-        elif "XM-" in spec_model:
-            spec_family = "XM"
-        elif re.search(r"XS-|XSB-|SIG", spec_model):
-            spec_family = "XS"
-        elif "XL" in spec_model:
-            spec_family = "XL"
-        else:
-            log.debug(f"{prefix}: cannot determine connected spectrometer family: {spec_model}")
-            spec_family = None
+        if spec_model is not None:
+            if "X-" in spec_model:
+                spec_family = "X"
+            elif "XM-" in spec_model:
+                spec_family = "XM"
+            elif re.search(r"XS-|XSB-|SIG", spec_model):
+                spec_family = "XS"
+            elif "XL" in spec_model:
+                spec_family = "XL"
+            else:
+                log.debug(f"{prefix}: cannot determine connected spectrometer family: {spec_model}")
 
         # go through model_configs (which is already ordered per JSON config)
         # and find the first matching model

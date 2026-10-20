@@ -2,7 +2,9 @@
 
 ## 4.3 PyPi
 
-- 2026-??-?? 4.3.0
+- 2026-10-20 4.3.1
+    - deprecated Multispec.current_spectrometer's with_detector parameter
+- 2026-10-16 4.3.0
     - Export
         - move default to "today" dir
         - fix XD exports and metadata
