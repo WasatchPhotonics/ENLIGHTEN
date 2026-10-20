@@ -68,7 +68,7 @@ fi
 # check for keys
 ################################################################################
 
-if ! [ -f enlighten/network/keys.py ]
+if ! [ -f src/wp_enlighten/network/keys.py ]
 then
     echo "WARNING: keys.py not found"
 fi
@@ -136,7 +136,7 @@ fi
 # commented-out until we fix the symlink issue on Windows
 make docs
 # rsync --archive --delete docs/doxygen/html/ $USERNAME@wasatchphotonics.com:www/api/ENLIGHTEN/
-rsync --archive --delete --src docs/doxygen/html/ --dst $USERNAME@wasatchphotonics.com:www/api/ENLIGHTEN/
+rsync --archive --delete --src docs/doxygen/html/ --dest $USERNAME@wasatchphotonics.com:www/api/ENLIGHTEN/
 scp docs/ENLIGHTEN_CHANGELOG.html $USERNAME@wasatchphotonics.com:www/binaries/apps/enlighten/README.html
 echo
 
