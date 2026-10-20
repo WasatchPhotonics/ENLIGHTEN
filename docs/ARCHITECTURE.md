@@ -3,7 +3,8 @@
 This file represents an "ENLIGHTEN 101" for new developers planning to work in 
 the codebase.
 
-_Note that all classes which start with a capital "Q" are part of Qt._
+Note that all classes which start with a capital "Q" are part of Qt and come from
+PySide6.
 
 ## Infrastructure
 
@@ -14,37 +15,37 @@ Basically these are all the things which are involved in bringing the program up
 and showing the initial (blank) graph.
 
 Although this section is important for understanding how ENLIGHTEN is launched,
-these files are almost never touched. Most actual day-to-day ENLIGHTEN development
-occurs completely within EnlightenFeatures and EnlightenPlugins, so you can skip
-ahead to there if you like.
+these files are rarely touched. Most actual day-to-day ENLIGHTEN development
+occurs completely within EnlightenFeatures and EnlightenPlugins.
 
-### enlighten.py
+### app.py
 
 At its heart, ENLIGHTEN is a Python script. When you "run ENLIGHTEN," you are 
-literally running the script `scripts/enlighten.py`.
+literally running the script `app.py`.
 
 If you installed ENLIGHTEN from a binary Windows installer, you may be running an
 executable called "enlighten.exe", but that's still just the same script after it 
-got run through pyinstaller.
+got run through PyInstaller.
 
 This script basically does this:
 
 - parses command-line arguments
 - instantiates an [EnlightenApplication](#EnlightenApplication)
 - calls EnlightenApplication.run()
+- which in turn instantiates a wp_enlighten.Controller
 
 ### EnlightenApplication
 
-This class encapsulates state within `Enlighten.py`. Only one instance is ever 
-created during an application session, and it was made a class for consistency 
-and to simplify sharing state and arguments between methods.
+This class encapsulates state within `app.py`. Only one instance is ever created
+during an application session, and it was made a class for consistency and to 
+simplify sharing state and arguments between methods.
 
 It does these things:
 
 - instantiates a `QApplication`, which will hold the "run loop"
 - instantiates a [BasicWindow](#BasicWindow), which is the GUI you see on-screen
 - instantiates a `wasatch.applog`, which handles all application logging
-- displays a pretty `QSplashScreen` for you to look at while everything else loads
+- displays a pretty `QSplashScreen` for you to look at while everything loads
 - instantiates a [Controller](#Controller), passing in handles to all the above
 - calls `QApplication.exec()`, which basically means "display the form and keep 
   ticking all threads until the form is closed"
@@ -56,7 +57,7 @@ spectrometers, and otherwise wait for you to click things on the GUI.
 
 ### BasicWindow
 
-`enlighten.ui.BasicWindow` is an important class in constructing the GUI. It 
+`wp_enlighten.ui.BasicWindow` is an important class in constructing the GUI. It 
 extends `QMainWindow`, meaning it is "the main window" of the running
 `QApplication`.
 
@@ -66,29 +67,26 @@ which you will see referenced throughout the code-base as `ctl.form.ui`
 
 ### enlighten_layout
 
-`enlighten.assets.uic_qrc.enlighten_layout` is the all-important Python object 
+`wp_enlighten.assets.uic_qrc.enlighten_layout` is the all-important Python object 
 which defines "the ENLIGHTEN GUI" -- all the `QFrames`, `QPushButtons` and pretty
 much everything you see on-screen.
 
 The "source code" for this file is:
 
-    enlighten/assets/uic_qrc/enlighten_layout.ui
+    src/wp_enlighten/assets/uic_qrc/enlighten_layout.ui
 
 It is literally an ordinary XML file, and increasingly I just update it and add 
 new GUI components directly within the XML.
 
 .ui files can also be created and edited using 
 [Qt Designer](https://doc.qt.io/qt-6/qtdesigner-manual.html).
-The path at which that utility is installed on your system varies with OS and Qt
-version and seems to change over time. Currently if using PySide6 and `venv` it 
-lands in `VENV_ROOT/Scripts/pyside6-designer`. If not using `venv`, it could be in
-`/usr/local/bin` (at writing on MacOS).
+If using PySide6 and `venv` it should be found in `venv/Scripts/pyside6-designer`. 
 
 (My one bit of advice regarding Designer is to watch some YouTube videos on
 "Qt designer layouts", including breaking layouts. There's a reason I often cheat
 to the XML.)
 
-This file is converted into `enlighten_layout.py` by 
+This .ui file is converted into `enlighten_layout.py` by 
 [rebuild_resources.sh](#rebuild_resources.sh). It is that "Python" version of
 the file which gets imported by [BasicWindow](#BasicWindow)
 and referenced as `Controller.form.ui`.
@@ -99,9 +97,9 @@ Note that `enlighten_layout.ui` contains a large CSS stylesheet at the top
 of the XML. **DO NOT EDIT THE STYLESHEET IN THE .UI**
 
 Instead, if you want to change the overall look-and-feel, edit the "master"
-stylesheet `enlighten/assets/stylesheets/dark/enlighten.css`. This file gets
-automatically prepended to `enlighten_layout.ui` during the build process, by
-`rebuild_resources.sh` (via the script `embed_stylesheet.sh`).
+stylesheet `src/wp_enlighten/assets/stylesheets/dark/enlighten.css`. This file 
+gets automatically prepended to `enlighten_layout.ui` during the build process, 
+by `scripts/rebuild_resources.sh` (specifically, via `scripts/embed_stylesheet.sh`).
 
 Therefore, any edits you make to the CSS in `enlighten_layout.ui` will be 
 automatically reset the next time you rebuild the GUI. To make permanent edits,
@@ -119,42 +117,33 @@ by Python code.
 
 The conversion is performed by two programs which come as part of the PySide
 distribution, `rcc` and `uic` (current names are `pyside6-rcc` and `pyside6-uic`).
-
-The actual names and location of these programs varies from release to release,
-and finding / obtaining them can sometimes be challenging.
+As with pyside6-designer, these programs should be found in venv/Scripts after
+you run "pip install .".
 
 This script needs to be run when:
 
 - first cloning an ENLIGHTEN distribution
 - changing branches or going back to an earlier tag
-- adding or editting any icons (.qrc)
+- adding or editing any icons (.qrc)
 - editing [enlighten_layout](#enlighten_layout)
 - editing `enlighten.css`
 
 It is a Bash shell script, which means you may have to run it different ways on 
-different operating systems (in a Git Cmd shell on Windows, I use 
-`sh scripts\rebuild_resources.sh`).
-
-Note that PySide2 generated Python 2 source, which needed to be converted through
-`2to3`.
-
-Happily, `rebuild_resources.sh` is now run _automagically_ (when necessary), by 
-Samie's wonderful `scripts/bootstrap/win11/bootstrap.sh`, which is far and away 
-the best way to run ENLIGHTEN at the moment.
+different operating systems.
 
 ### Controller
 
 Okay, so we've talked about some XML and Bash...when do we get back to Python?
 
-enlighten/Controller.py is the closest thing ENLIGHTEN has to a "main()". It was
-named in the vein of "Model-View-Controller," and it's the big class which pretty
-much kicks-off and runs everything else in the application.
+wp_enlighten/Controller.py is the closest thing ENLIGHTEN has to a "main()". It 
+was probably named in the vein of "Model-View-Controller," and it's the big class
+which pretty much kicks-off and runs everything else in the application.
 
-(Continuing that MVC thought, if enlighten.Controller is the Controller, then
+(Continuing that MVC thought, if wp_enlighten.Controller is the Controller, then
 enlighten_layout.ui is the View, and Wasatch.PY (the spectrometer) is basically
 the Model.)
 
-Fundamentally, the `enlighten.Controller` is responsible for four things:
+Fundamentally, the `wp_enlighten.Controller` is responsible for four things:
 
 1. Calls [BusinessObjects](#BusinessObjects) to instantiate the lengthy (and
    growing!) list of EnlightenFeature objects which individually implement 
@@ -174,20 +163,21 @@ This "refactor" is not yet done, and there remain more things we might extract
 out of the `Controller`, to improve encapsulation, readability and maintainability:
 
 - Move `bus_timer`, `connect_new`, `initialize_new_device`, `set_from_ini_file` 
-  etc into a hypothetical `enlighten.DeviceConnection` class which is solely 
+  etc into a hypothetical `wp_enlighten.DeviceConnection` class which is solely 
   responsible for finding and connecting to new `Spectrometers`.
 - Move `attempt_reading`, `acquire_reading`, `update_scope_graphs`, 
-  `process_reading` etc to a hypothetical `enlighten.DataAcquisition`.
+  `process_reading` etc to a hypothetical `wp_enlighten.DataAcquisition`.
 
 ### BusinessObjects
 
-`enlighten.BusinessObjects` exists to make the `Controller`'s constructor 
+`wp_enlighten.BusinessObjects` exists to make the `Controller`'s constructor 
 shorter.  Basically it's just encapsulating construction of all the various 
 "feature objects" which individually encapsulate specific application and 
 spectrometer functions.
 
 This has become less important as we simplified business objects by giving
-them all a handle to the Controller, and by having them all extend EnlightenFeature.
+them all a handle to the Controller, and by having them all extend 
+EnlightenFeature.
 
 ## Timing Loops
 
@@ -222,27 +212,28 @@ GUI thread (`get_configuration`), while others aren't (`process_request`).
 Other BusinessObjects encapsulate internal `QTimers` for their own purposes,
 including:
 
-- `enlighten.ui.MarqueeFeature` encapsulates its own `QTimer` to decide when to 
-  hide messages and `Toasts`
+- `wp_enlighten.ui.MarqueeFeature` encapsulates its own `QTimer` to decide when 
+  to hide messages and `Toasts`
 
-- `enlighten.ui.GuideFeature` has a `QTimer` which probably isn't used ATM
+- `wp_enlighten.ui.GuideFeature` has a `QTimer` which probably isn't used ATM
 
-- `enlighten.measurement.AreaScanFeature` has a `QTimer` to show its own
+- `wp_enlighten.measurement.AreaScanFeature` has a `QTimer` to show its own
   `QProgressBar` (and should probably be moved to `ui` or `factory`)
 
-- `enlighten.Plugins.PluginControllerFeature` has a `QTimer` used in auto-loading
-  a plugin at startup
+- `wp_enlighten.Plugins.PluginControllerFeature` has a `QTimer` used in 
+  auto-loading a plugin at startup
 
-- `enlighten.file_io.LoggingFeature` uses a `QTimer` to update the scrolling 
+- `wp_enlighten.file_io.LoggingFeature` uses a `QTimer` to update the scrolling 
   colorized view on the logfile
 
-- `enlighten.file_io.FileManagerFeature` uses a `QTimer` to spread-out large load 
-  operations (when a hundred measurements are being loaded at once) over time
+- `wp_enlighten.file_io.FileManagerFeature` uses a `QTimer` to spread-out large 
+  load operations (when a hundred measurements are being loaded at once) over 
+  time
 
-- `enlighten.timing.BatchCollectionFeature` uses one `QTimer` for batches, and a 
-  separate one for measurements within a batch
+- `wp_enlighten.timing.BatchCollectionFeature` uses one `QTimer` for batches, and
+  a separate one for measurements within a batch
 
-- `enlighten.ui.CorrectionStatusFeature` uses one to dispatch GUI events
+- `wp_enlighten.ui.CorrectionStatusFeature` uses one to dispatch GUI events
 
 Note that most `QTimers` are configured as "SingleShot" deliberately, meaning
 they complete a tick, _then_ schedule their next tick after a fixed "sleep"
@@ -330,7 +321,7 @@ There a number of things worth observing about that diagram:
   "everything else" in Wasatch.PY is instantiated in the per-spectrometer child 
   thread.
 
-- `enlighten.Spectrometer` receives a "convenience handle" to 
+- `wp_enlighten.Spectrometer` receives a "convenience handle" to 
   `wasatch.SpectrometerSettings`, which was instantiated and populated down in 
   Wasatch.PY, and passed back up through the `WrapperWorker`.
 
@@ -423,7 +414,7 @@ raised (and can then clear it after responding).
 
 As shown in the diagram, alerts bypass WrapperWorker, and are sent passed
 instantly from WasatchDeviceWrapper (say, via an EnlightenFeature call to
-enlighten.Spectrometer) to the associated alert_queue.
+wp_enlighten.Spectrometer) to the associated alert_queue.
 
 Long-running Wasatch.PY code, such as wasatch.AutoRaman or a get_spectrum()
 call looping over timeouts while waiting for an external trigger, can read
@@ -534,8 +525,8 @@ ENLIGHTEN has a pull-down menu offering five operational Views. Fundamentally
 none change behavior, just which "screen" or "page" is being shown. 
 
 Note that in `enlighten_layout.ui`, all five screens are "stacked" in the Z-axis
-in one big `QStackedWidget`, and all `enlighten.ui.PageNavigationFeature` does is move the 
-selected page to top.
+in one big `QStackedWidget`, and all `wp_enlighten.ui.PageNavigationFeature` does
+is move the selected page to top.
 
 - **Scope:** main real-time live spectral graph
 - **Settings:** ENLIGHTEN application settings
@@ -627,11 +618,13 @@ Some random thoughts about why ENLIGHTEN was designed the way it was.
 In the following, important classes are in **bold** (fundamental to operation or
 heavily-used).
 
-### enlighten.ui
+### wp_enlighten.ui
 
-The enlighten.ui package contains classes controlling major aspects of the user interface.
+The wp_enlighten.ui package contains classes controlling major aspects of the 
+user interface.
 
-- **`AuthenticationFeature`**: handles when user "authenticates" with a password (ctrl-A)
+- **`AuthenticationFeature`**: handles when user "authenticates" with a password
+  (ctrl-A)
 
 - `BasicDialog`: is this even used?
 
@@ -691,7 +684,7 @@ The enlighten.ui package contains classes controlling major aspects of the user 
 - **`VCRControlsFeature`**: responsible for the "VCR control" buttons atop the control 
   palette (Play/Pause, Stop, Save, Step, Step-and-Save)
 
-### enlighten.device
+### wp_enlighten.device
 
 This package contains classes which control specific attributes and groups of 
 related attributes of individual spectrometers, including stateful features 
@@ -753,7 +746,7 @@ corresponding to hardware features implemented in the firmware of the spectromet
   to this this class, or to manage (encapsulate) them internally via multi-
   spectrometer dictionaries...we currently do a bit of both.
 
-### enlighten.post_processing
+### wp_enlighten.post_processing
 
 This package contains classes used to post-process raw spectra received from 
 spectrometers.
@@ -833,7 +826,7 @@ spectrometers.
 - `TransmissionFeature`: provides the basic processing used for both transmission 
   and reflectance measurements, and also a key input to computing absorbance.
 
-### enlighten.scope
+### wp_enlighten.scope
 
 This package contains classes relating to the primary on-screen graph in Scope 
 view (more-or-less).
@@ -867,15 +860,15 @@ view (more-or-less).
   x-axis offset correction which is deliberately not persisted to either EEPROM
   or enlighten.ini (and only affects the wavenumber axis, not wavelength).
 
-### enlighten.measurement
+### wp_enlighten.measurement
 
 This package contains classes involved in saving and graphing individual spectra.
 
 - `AreaScanFeature`: supports 2D full-detector area scan on both Sony IMX CMOS 
   and Hamamatsu CCD detectors (visualized in the Factory view). At the moment,
-  this probably belongs more in `enlighten.factory`, but hopefully "fast 2D" will
-  eventually become a standard feature, at which time it will just be another 
-  type of measurement.
+  this probably belongs more in `wp_enlighten.factory`, but hopefully "fast 2D" 
+  will eventually become a standard feature, at which time it will just be 
+  another type of measurement.
 
 - **`Measurement`**: encapsulate a single measurement which has been saved to disk
   (optionally to multiple file extensions) with a `ThumbnailWidget` on the 
@@ -893,10 +886,10 @@ This package contains classes involved in saving and graphing individual spectra
   be saved in a new `Measurement`, along with the different output formats (CSV,
   JSON, SPC etc) desired
 
-### enlighten.file_io
+### wp_enlighten.file_io
 
 This package contains classes relating to file storage other than spectral 
-measurements (handled in [Measurement](#enlighten.measurement).
+measurements (handled in [Measurement](#wp_enlighten.measurement).
 
 - **`ConfigurationFeature`**: wraps `enlighten.ini`, the file responsible for persisting 
   various application settings across executions
@@ -906,7 +899,7 @@ measurements (handled in [Measurement](#enlighten.measurement).
 - `LoggingFeature`: although the logfile is primarily generated by `wasatch.applog`, 
   this class controls viewing and display of that logfile through ENLIGHTEN
 
-### enlighten.data
+### wp_enlighten.data
 
 These are classes that provide structured hard-coded data for use by the 
 application. Any or all of them could have been represented by JSON files to load
@@ -922,7 +915,7 @@ opinion on which is better.
   readily inferred from the EEPROM. Also provides logic for selecting product 
   image on Hardware View.
 
-### enlighten.network
+### wp_enlighten.network
 
 Classes and files used for network (non-USB) communication. 
 
@@ -938,7 +931,7 @@ Classes and files used for network (non-USB) communication.
 - `keys`: this file is not checked into the distribution, but must be present when
   building installers for AWS to work
 
-### enlighten.parser
+### wp_enlighten.parser
 
 These are classes used in loading spectra files.
 
@@ -961,7 +954,7 @@ TODO:
 - We need to add a DXFileParser
 - We should probably add the ability to save in Pandas format
 
-### enlighten.timing
+### wp_enlighten.timing
 
 These are classes used to control (or monitor) measurement timing.
 
@@ -972,9 +965,9 @@ These are classes used to control (or monitor) measurement timing.
 - `RollingDataSet`: a data collection which automatically maintains a "moving 
   window" and "current moving average," used for smoothing noisy readings like 
   detector, laser, and ambient temperature, battery charge, etc. Could arguably 
-  go in enlighten.measurement but that's current for "spectral" measurements.
+  go in wp_enlighten.measurement but that's current for "spectral" measurements.
 
-### enlighten.factory
+### wp_enlighten.factory
 
 These are features only available on the password-protected "Factory" view, not 
 normally visible on the GUI.
@@ -986,7 +979,7 @@ normally visible on the GUI.
   against time as the x-axis) for detector temperature, laser temperature, 
   battery etc (basically anything using a `RollingDataSet`)
 
-### enlighten.Plugins
+### wp_enlighten.Plugins
 
 Classes related to LOADING and RUNNING plug-ins, from ENLIGHTEN's side. Note that
 [plugins](#plugins) is a different namespace (below), for "writing" and "being" a
@@ -1019,14 +1012,14 @@ plugin.
 - `TableModel`: for plugins which generate a Pandas `DataFrame`, used to display 
   scrollable table in Qt
 
-### plugins
+### src/wp_enlighten/Plugins/dist/plugins
 
 Some points about this directory:
 
 - `plugins/` is a directory, but _not_ a Python package. What's the difference?
     - If you look in the `PYTHONPATH` set in `scripts/bootstrap.bat` and various 
       build instructions, it includes both "." (the repo root, parent of 
-      `enlighten/Controller.py`) and `plugins`. PYTHONPATH is a list of folders
+      `src/wp_enlighten/Controller.py`) and `plugins`. PYTHONPATH is a list of folders
       which may hold packages, not a list of packages themselves.
     - That was arguably a mistake; we could remove "plugins" from our `PYTHONPATH`,
       which would make "plugins" a package under the repo root, just like 
@@ -1055,9 +1048,9 @@ Some points about this directory:
   Raman.RamanLines). That file is further expected to contain a class
   with the same name as the module, and which extends `EnlightenPluginBase`.
   For example, to create a Raman plugin which does Foo, you would normally
-  start with this::
+  start with this:
 
-    $ head enlighten/plugins/Raman/Foo.py
+    $ head src/wp_enlighten/Plugins/dist/plugins/Raman/Foo.py
     from EnlightenPlugin import *
 
     class Foo(EnlightenPluginBase):
@@ -1085,7 +1078,7 @@ Some points about this directory:
       generate. 
     - Now that ENLIGHTEN itself is open-source, this makes less sense, and it 
       would be valid to consider moving the plugins.* classes under 
-      enlighten.Plugins (physically and lexically).
+      wp_enlighten.Plugins (physically and lexically).
 
 That said, these are the classes currently defined within the EnlightenPlugin 
 module:
