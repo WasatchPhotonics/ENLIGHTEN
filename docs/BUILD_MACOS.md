@@ -36,7 +36,8 @@ ENLIGHTEN makes heavy use of mouse-over tooltips to provide status or help about
 on-screen features, and unfortunately not all tooltips are working on MacOS at
 the moment. This seems to be due to issues between Apple's "Liquid Glass" motif
 and Qt, and is widely documented online. It's weird because many tooltips work,
-but not all of them (like the middle cluster above the scope graph).
+but not all of them (like the middle cluster above the scope graph, and the mini-
+laser convenience button).
 
 ## missing backend
 

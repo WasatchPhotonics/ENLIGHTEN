@@ -10389,214 +10389,77 @@ QComboBox QListView
                          </property>
                          <item>
                           <layout class="QHBoxLayout" name="horizontalLayout_graph_controls">
-                           <property name="spacing">
-                            <number>2</number>
-                           </property>
-                           <property name="sizeConstraint">
-                            <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
-                           </property>
+                           <property name="spacing"> <number>2</number> </property>
+                           <property name="sizeConstraint"> <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum> </property>
                            <item>
                             <widget class="QPushButton" name="pushButton_lock_axes">
-                             <property name="sizePolicy">
-                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                               <horstretch>5</horstretch>
-                               <verstretch>0</verstretch>
-                              </sizepolicy>
-                             </property>
-                             <property name="minimumSize">
-                              <size>
-                               <width>14</width>
-                               <height>26</height>
-                              </size>
-                             </property>
-                             <property name="maximumSize">
-                              <size>
-                               <width>30</width>
-                               <height>26</height>
-                              </size>
-                             </property>
-                             <property name="toolTip">
-                              <string>Freeze Axes</string>
-                             </property>
-                             <property name="text">
-                              <string />
-                             </property>
-                             <property name="icon">
-                              <iconset resource="grey_icons.qrc">
-                               <normaloff>:/greys/images/grey_icons/lock-spectra.svg</normaloff>:/greys/images/grey_icons/lock-spectra.svg</iconset>
-                             </property>
+                             <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Fixed"> <horstretch>5</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                             <property name="minimumSize"> <size> <width>14</width> <height>26</height> </size> </property>
+                             <property name="maximumSize"> <size> <width>30</width> <height>26</height> </size> </property>
+                             <property name="toolTip"> <string>Freeze Axes</string> </property>
+                             <property name="text"> <string /> </property>
+                             <property name="icon"> <iconset resource="grey_icons.qrc"> <normaloff>:/greys/images/grey_icons/lock-spectra.svg</normaloff>:/greys/images/grey_icons/lock-spectra.svg</iconset> </property>
+                             <property name="iconSize"> <size> <width>16</width> <height>16</height> </size> </property>
                             </widget>
                            </item>
                            <item>
                             <widget class="QPushButton" name="pushButton_zoom_graph">
-                             <property name="sizePolicy">
-                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                               <horstretch>5</horstretch>
-                               <verstretch>0</verstretch>
-                              </sizepolicy>
-                             </property>
-                             <property name="minimumSize">
-                              <size>
-                               <width>14</width>
-                               <height>26</height>
-                              </size>
-                             </property>
-                             <property name="maximumSize">
-                              <size>
-                               <width>30</width>
-                               <height>26</height>
-                              </size>
-                             </property>
-                             <property name="toolTip">
-                              <string>Zoom graph</string>
-                             </property>
-                             <property name="text">
-                              <string />
-                             </property>
-                             <property name="icon">
-                              <iconset resource="grey_icons.qrc">
-                               <normaloff>:/greys/images/grey_icons/zoom.svg</normaloff>:/greys/images/grey_icons/zoom.svg</iconset>
-                             </property>
+                             <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Fixed"> <horstretch>5</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                             <property name="minimumSize"> <size> <width>14</width> <height>26</height> </size> </property>
+                             <property name="maximumSize"> <size> <width>30</width> <height>26</height> </size> </property>
+                             <property name="toolTip"> <string>Zoom graph</string> </property>
+                             <property name="text"> <string /> </property>
+                             <property name="icon"> <iconset resource="grey_icons.qrc"> <normaloff>:/greys/images/grey_icons/zoom.svg</normaloff>:/greys/images/grey_icons/zoom.svg</iconset> </property>
+                             <property name="iconSize"> <size> <width>16</width> <height>16</height> </size> </property>
                             </widget>
                            </item>
                            <item>
                             <widget class="QPushButton" name="pushButton_graphGrid">
-                             <property name="sizePolicy">
-                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                               <horstretch>5</horstretch>
-                               <verstretch>0</verstretch>
-                              </sizepolicy>
-                             </property>
-                             <property name="minimumSize">
-                              <size>
-                               <width>14</width>
-                               <height>26</height>
-                              </size>
-                             </property>
-                             <property name="maximumSize">
-                              <size>
-                               <width>30</width>
-                               <height>26</height>
-                              </size>
-                             </property>
-                             <property name="toolTip">
-                              <string>Toggle grid display</string>
-                             </property>
-                             <property name="text">
-                              <string />
-                             </property>
-                             <property name="icon">
-                              <iconset resource="grey_icons.qrc">
-                               <normaloff>:/greys/images/grey_icons/GridIcon.svg</normaloff>:/greys/images/grey_icons/GridIcon.svg</iconset>
-                             </property>
+                             <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Fixed"> <horstretch>5</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                             <property name="minimumSize"> <size> <width>14</width> <height>26</height> </size> </property>
+                             <property name="maximumSize"> <size> <width>30</width> <height>26</height> </size> </property>
+                             <property name="toolTip"> <string>Toggle grid display</string> </property>
+                             <property name="text"> <string /> </property>
+                             <property name="icon"> <iconset resource="grey_icons.qrc"> <normaloff>:/greys/images/grey_icons/GridIcon.svg</normaloff>:/greys/images/grey_icons/GridIcon.svg</iconset> </property>
+                             <property name="iconSize"> <size> <width>16</width> <height>16</height> </size> </property>
                             </widget>
                            </item>
                            <item>
                             <widget class="QPushButton" name="pushButton_invert_x_axis">
-                             <property name="sizePolicy">
-                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                               <horstretch>5</horstretch>
-                               <verstretch>0</verstretch>
-                              </sizepolicy>
-                             </property>
-                             <property name="minimumSize">
-                              <size>
-                               <width>14</width>
-                               <height>26</height>
-                              </size>
-                             </property>
-                             <property name="maximumSize">
-                              <size>
-                               <width>30</width>
-                               <height>26</height>
-                              </size>
-                             </property>
-                             <property name="toolTip">
-                              <string>Invert x-axis</string>
-                             </property>
-                             <property name="text">
-                              <string />
-                             </property>
-                             <property name="icon">
-                              <iconset resource="grey_icons.qrc">
-                               <normaloff>:/greys/images/grey_icons/flip-horiz.svg</normaloff>:/greys/images/grey_icons/flip-horiz.svg</iconset>
-                             </property>
+                             <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Fixed"> <horstretch>5</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                             <property name="minimumSize"> <size> <width>14</width> <height>26</height> </size> </property>
+                             <property name="maximumSize"> <size> <width>30</width> <height>26</height> </size> </property>
+                             <property name="toolTip"> <string>Invert x-axis</string> </property>
+                             <property name="text"> <string /> </property>
+                             <property name="icon"> <iconset resource="grey_icons.qrc"> <normaloff>:/greys/images/grey_icons/flip-horiz.svg</normaloff>:/greys/images/grey_icons/flip-horiz.svg</iconset> </property>
+                             <property name="iconSize"> <size> <width>16</width> <height>16</height> </size> </property>
                             </widget>
                            </item>
                            <item>
                             <widget class="QPushButton" name="pushButton_roi_toggle">
-                             <property name="sizePolicy">
-                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                               <horstretch>5</horstretch>
-                               <verstretch>0</verstretch>
-                              </sizepolicy>
-                             </property>
-                             <property name="minimumSize">
-                              <size>
-                               <width>14</width>
-                               <height>26</height>
-                              </size>
-                             </property>
-                             <property name="maximumSize">
-                              <size>
-                               <width>30</width>
-                               <height>26</height>
-                              </size>
-                             </property>
-                             <property name="toolTip">
-                              <string>toggle horizontal Region of Interest</string>
-                             </property>
-                             <property name="text">
-                              <string>ROI</string>
-                             </property>
+                             <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Fixed"> <horstretch>5</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                             <property name="minimumSize"> <size> <width>14</width> <height>26</height> </size> </property>
+                             <property name="maximumSize"> <size> <width>30</width> <height>26</height> </size> </property>
+                             <property name="toolTip"> <string>toggle horizontal Region of Interest</string> </property>
+                             <property name="text"> <string>ROI</string> </property>
                             </widget>
                            </item>
                            <item>
                             <widget class="QPushButton" name="pushButton_interp_toggle">
-                             <property name="sizePolicy">
-                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                               <horstretch>5</horstretch>
-                               <verstretch>0</verstretch>
-                              </sizepolicy>
-                             </property>
-                             <property name="minimumSize">
-                              <size>
-                               <width>14</width>
-                               <height>26</height>
-                              </size>
-                             </property>
-                             <property name="maximumSize">
-                              <size>
-                               <width>30</width>
-                               <height>26</height>
-                              </size>
-                             </property>
-                             <property name="toolTip">
-                              <string>Toggle interpolation of x-axis</string>
-                             </property>
-                             <property name="text">
-                              <string />
-                             </property>
-                             <property name="icon">
-                              <iconset resource="grey_icons.qrc">
-                               <normaloff>:/greys/images/grey_icons/ruler.svg</normaloff>:/greys/images/grey_icons/ruler.svg</iconset>
-                             </property>
+                             <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Fixed"> <horstretch>5</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                             <property name="minimumSize"> <size> <width>14</width> <height>26</height> </size> </property>
+                             <property name="maximumSize"> <size> <width>30</width> <height>26</height> </size> </property>
+                             <property name="toolTip"> <string>Toggle interpolation of x-axis</string> </property>
+                             <property name="text"> <string /> </property>
+                             <property name="icon"> <iconset resource="grey_icons.qrc"> <normaloff>:/greys/images/grey_icons/ruler.svg</normaloff>:/greys/images/grey_icons/ruler.svg</iconset> </property>
+                             <property name="iconSize"> <size> <width>16</width> <height>16</height> </size> </property>
                             </widget>
                            </item>
                            <item>
                             <spacer name="horizontalSpacer_gap_left">
-                             <property name="orientation">
-                              <enum>Qt::Orientation::Horizontal</enum>
-                             </property>
-                             <property name="sizeType">
-                              <enum>QSizePolicy::Policy::MinimumExpanding</enum>
-                             </property>
-                             <property name="sizeHint" stdset="0">
-                              <size>
-                               <width>0</width>
-                               <height>6</height>
-                              </size>
-                             </property>
+                             <property name="orientation"> <enum>Qt::Orientation::Horizontal</enum> </property>
+                             <property name="sizeType"> <enum>QSizePolicy::Policy::MinimumExpanding</enum> </property>
+                             <property name="sizeHint" stdset="0"> <size> <width>0</width> <height>16</height> </size> </property>
                             </spacer>
                            </item>
                            <item>
@@ -10683,18 +10546,9 @@ QComboBox QListView
                            </item>
                            <item>
                             <spacer name="horizontalSpacer_gap_right">
-                             <property name="orientation">
-                              <enum>Qt::Orientation::Horizontal</enum>
-                             </property>
-                             <property name="sizeType">
-                              <enum>QSizePolicy::Policy::MinimumExpanding</enum>
-                             </property>
-                             <property name="sizeHint" stdset="0">
-                              <size>
-                               <width>0</width>
-                               <height>5</height>
-                              </size>
-                             </property>
+                             <property name="orientation"> <enum>Qt::Orientation::Horizontal</enum> </property>
+                             <property name="sizeType"> <enum>QSizePolicy::Policy::MinimumExpanding</enum> </property>
+                             <property name="sizeHint" stdset="0"> <size> <width>0</width> <height>16</height> </size> </property>
                             </spacer>
                            </item>
                            <item>

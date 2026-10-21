@@ -7270,6 +7270,7 @@ class Ui_MainWindow(object):
         icon15 = QIcon()
         icon15.addFile(u":/greys/images/grey_icons/lock-spectra.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pushButton_lock_axes.setIcon(icon15)
+        self.pushButton_lock_axes.setIconSize(QSize(16, 16))
 
         self.horizontalLayout_graph_controls.addWidget(self.pushButton_lock_axes)
 
@@ -7282,6 +7283,7 @@ class Ui_MainWindow(object):
         icon16 = QIcon()
         icon16.addFile(u":/greys/images/grey_icons/zoom.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pushButton_zoom_graph.setIcon(icon16)
+        self.pushButton_zoom_graph.setIconSize(QSize(16, 16))
 
         self.horizontalLayout_graph_controls.addWidget(self.pushButton_zoom_graph)
 
@@ -7294,6 +7296,7 @@ class Ui_MainWindow(object):
         icon17 = QIcon()
         icon17.addFile(u":/greys/images/grey_icons/GridIcon.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pushButton_graphGrid.setIcon(icon17)
+        self.pushButton_graphGrid.setIconSize(QSize(16, 16))
 
         self.horizontalLayout_graph_controls.addWidget(self.pushButton_graphGrid)
 
@@ -7306,6 +7309,7 @@ class Ui_MainWindow(object):
         icon18 = QIcon()
         icon18.addFile(u":/greys/images/grey_icons/flip-horiz.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pushButton_invert_x_axis.setIcon(icon18)
+        self.pushButton_invert_x_axis.setIconSize(QSize(16, 16))
 
         self.horizontalLayout_graph_controls.addWidget(self.pushButton_invert_x_axis)
 
@@ -7327,10 +7331,11 @@ class Ui_MainWindow(object):
         icon19 = QIcon()
         icon19.addFile(u":/greys/images/grey_icons/ruler.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pushButton_interp_toggle.setIcon(icon19)
+        self.pushButton_interp_toggle.setIconSize(QSize(16, 16))
 
         self.horizontalLayout_graph_controls.addWidget(self.pushButton_interp_toggle)
 
-        self.horizontalSpacer_gap_left = QSpacerItem(0, 6, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_gap_left = QSpacerItem(0, 16, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_graph_controls.addItem(self.horizontalSpacer_gap_left)
 
@@ -7434,7 +7439,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_graph_controls.addWidget(self.pushButton_library_matching_toggle)
 
-        self.horizontalSpacer_gap_right = QSpacerItem(0, 5, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_gap_right = QSpacerItem(0, 16, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_graph_controls.addItem(self.horizontalSpacer_gap_right)
 
