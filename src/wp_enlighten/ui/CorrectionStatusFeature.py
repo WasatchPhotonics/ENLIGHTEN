@@ -76,7 +76,7 @@ class CorrectionStatusFeature(EnlightenFeature):
             lb_value.setText(value)
             lb_value.setVisible(visible)
             lb_name.setVisible(visible)
-            lb_value.setToolTip(tt)
+            self.ctl.gui.set_tooltip(lb_value, tt)
 
     ############################################################################
     # Callbacks

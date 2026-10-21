@@ -166,7 +166,7 @@ QToolTip {
   border: 1px solid #828200;
   color: #828200;
   padding: 5px;
-  opacity: 1;
+  /* opacity: 1; */
 }
 
 /* QStatusBar -------------------------------------------------------------
@@ -13245,7 +13245,7 @@ li.checked::marker { content: "\2612"; }
                            </font>
                           </property>
                           <property name="toolTip">
-                           <string>Presets allow you to save and re-apply key acquisition parameters including integration time, gain dB, scan averaging, boxcar, baseline subtraction and Raman intensity correction.</string>
+                           <string>Save, restore or delete acquisition parameter presets</string>
                           </property>
                           <item>
                            <property name="text">

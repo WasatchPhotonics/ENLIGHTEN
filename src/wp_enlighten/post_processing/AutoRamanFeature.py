@@ -108,7 +108,7 @@ class AutoRamanFeature(EnlightenFeature):
         self.init_from_config()
 
         for b in self.buttons:
-            b.setToolTip("Collect one dark-corrected, averaged Raman measurement (ctrl-*)")
+            self.ctl.gui.set_tooltip(b, "Collect one dark-corrected, averaged Raman measurement (ctrl-*)")
             b.setWhatsThis(unwrap("""
                 Auto-Raman provides one-click collection of an averaged, 
                 dark-corrected Raman measurement with automatically optimized 

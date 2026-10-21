@@ -261,7 +261,7 @@ class DarkFeature(EnlightenFeature):
             tt = "Clear dark" if spec.app_state.has_dark() else "Store dark"
 
         self.button_toggle.setEnabled(flag)
-        self.button_toggle.setToolTip(tt)
+        self.ctl.gui.set_tooltip(self.button_toggle, tt)
 
     # Note that we never actually disable the Store/Clear buttons on the 
     # Settings page...

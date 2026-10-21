@@ -638,10 +638,6 @@ class PluginControllerFeature(EnlightenFeature):
             log.debug("configure_gui_for_module: setting title")
             self.lb_title.setText(config.name)
 
-            # set tooltip (really doesn't look that good)
-            # if config.tooltip is not None:
-            #     self.frame_control.setToolTip(config.tooltip)
-
             # delete any previously-displayed plugin widgets
             log.debug("configure_gui_for_module: clearing layout")
             self.clear_plugin_layout(self.plugin_fields_layout)

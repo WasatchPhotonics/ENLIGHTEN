@@ -429,7 +429,7 @@ class LaserControlFeature(EnlightenFeature):
 
         for b in [ cfu.pushButton_laser_toggle, cfu.pushButton_laser_convenience ]:
             b.setEnabled(allowed)
-            b.setToolTip("Toggle laser (ctrl-L)" if allowed else f"Disabled ({why_not})")
+            self.ctl.gui.set_tooltip(b, "Toggle laser (ctrl-L)" if allowed else f"Disabled ({why_not})")
             self.ctl.gui.colorize_button(b, enabled)
             log.debug(f"refresh_laser_buttons: updated button {b} with enabled {enabled}, allowed {allowed}, why_not {why_not}")
 

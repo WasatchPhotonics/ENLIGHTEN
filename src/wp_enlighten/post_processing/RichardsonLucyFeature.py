@@ -35,7 +35,7 @@ class RichardsonLucyFeature(EnlightenFeature):
         self.update_from_gui()
 
         self.cb_enable.toggled.connect(self.update_from_gui)
-        self.cb_enable.setToolTip("apply Richardson-Lucy focal deconvolution")
+        self.ctl.gui.set_tooltip(self.cb_enable, "apply Richardson-Lucy focal deconvolution")
         self.cb_enable.setWhatsThis(unwrap("""
             Peak Sharpening uses the Richardson-Lucy algorithm to apply
             a physics-based sharpening deconvolution to spectral peaks,

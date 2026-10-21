@@ -214,7 +214,7 @@ class RamanShiftCorrectionFeature(EnlightenFeature):
         tt = "Raman Shift Correction"
         if self.compound_name is not None:
             tt += f" using {self.compound_name}"
-        self.button.setToolTip(tt)
+        self.ctl.gui.set_tooltip(self.button, tt)
 
     ## the selected compound in the comboBox was changed, so do something
     def combo_callback(self):

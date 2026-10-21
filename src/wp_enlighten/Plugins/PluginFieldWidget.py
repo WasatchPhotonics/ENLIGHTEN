@@ -127,8 +127,8 @@ class PluginFieldWidget(QtWidgets.QWidget):
             else:
                 self.field_widget = PluginFieldWidget.datatype_to_widgets[self.field_config.datatype]()
 
-        if self.field_config.tooltip is not None:
-            self.field_widget.setToolTip(self.field_config.tooltip)
+        if self.field_config.tooltip is not None and self.ctl:
+            self.ctl.gui.set_tooltip(self.field_widget, self.field_config.tooltip)
 
         w = self.field_config.width
         if w is not None:

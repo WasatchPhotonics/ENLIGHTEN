@@ -61,13 +61,13 @@ class VCRControlsFeature(EnlightenFeature):
         for name in self.tooltips:
             self.observers[name] = set()
 
-        self.bt_pause           .setToolTip(self.tooltips["pause"])
-        self.bt_play            .setToolTip(self.tooltips["play"])
-        self.bt_save            .setToolTip(self.tooltips["save"])
-        self.bt_start_collection.setToolTip(self.tooltips["start_collection"])
-        self.bt_step            .setToolTip(self.tooltips["step"])
-        self.bt_step_save       .setToolTip(self.tooltips["step_save"])
-        self.bt_stop            .setToolTip(self.tooltips["stop"])
+        self.ctl.gui.set_tooltip(self.bt_pause           , self.tooltips["pause"])
+        self.ctl.gui.set_tooltip(self.bt_play            , self.tooltips["play"])
+        self.ctl.gui.set_tooltip(self.bt_save            , self.tooltips["save"])
+        self.ctl.gui.set_tooltip(self.bt_start_collection, self.tooltips["start_collection"])
+        self.ctl.gui.set_tooltip(self.bt_step            , self.tooltips["step"])
+        self.ctl.gui.set_tooltip(self.bt_step_save       , self.tooltips["step_save"])
+        self.ctl.gui.set_tooltip(self.bt_stop            , self.tooltips["stop"])
 
         self.bt_play            .setWhatsThis("VCR-style play button to un-pause display of on-screen spectra")
         self.bt_save            .setWhatsThis(unwrap("""Saves a single measurement to disk and to the scrolling Clipboard 
@@ -255,20 +255,20 @@ class VCRControlsFeature(EnlightenFeature):
             self.bt_pause.setVisible(not paused)
 
         # pos 2
-        util.set_enabled(self.bt_save, not (bc_running or to_running), tooltip=self.tooltips["save"])
+        self.ctl.gui.set_enabled(self.bt_save, not (bc_running or to_running), tooltip=self.tooltips["save"])
 
         # pos 3
         if bc_enabled:
             self.bt_step.setVisible(False)
             self.bt_start_collection.setVisible(True)
-            util.set_enabled(self.bt_start_collection, not (bc_running or to_running), tooltip=self.tooltips["start_collection"])
+            self.ctl.gui.set_enabled(self.bt_start_collection, not (bc_running or to_running), tooltip=self.tooltips["start_collection"])
         else:
             self.bt_start_collection.setVisible(False)
             self.bt_step.setVisible(True)
-            util.set_enabled(self.bt_step, paused and not (bc_running or to_running), tooltip=self.tooltips["step"])
+            self.ctl.gui.set_enabled(self.bt_step, paused and not (bc_running or to_running), tooltip=self.tooltips["step"])
 
         # pos 4
-        util.set_enabled(self.bt_step_save, paused and not (bc_enabled or to_running), tooltip=self.tooltips["step_save"])
+        self.ctl.gui.set_enabled(self.bt_step_save, paused and not (bc_enabled or to_running), tooltip=self.tooltips["step_save"])
 
     ##
     # Called by ScanAveragingFeature etc.

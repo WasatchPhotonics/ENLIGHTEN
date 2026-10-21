@@ -152,10 +152,10 @@ class HorizROIFeature(EnlightenFeature):
 
             if self.enabled:
                 self.ctl.stylesheets.apply(self.button, "gray_gradient_button") 
-                self.button.setToolTip("spectra cropped per horizontal ROI")
+                self.ctl.gui.set_tooltip(self.button, "spectra cropped per horizontal ROI")
             else:
                 self.ctl.stylesheets.apply(self.button, "red_gradient_button")
-                self.button.setToolTip("uncropped spectra shown (curtains indicate ROI limits)")
+                self.ctl.gui.set_tooltip(self.button, "uncropped spectra shown (curtains indicate ROI limits)")
 
         else:
             log.debug(f"update_visibility: hiding because no spec or no ROI")

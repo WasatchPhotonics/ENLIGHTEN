@@ -259,7 +259,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
             button.clicked.connect(callback)
 
         if tooltip is not None:
-            button.setToolTip(tooltip)
+            self.ctl.gui.set_tooltip(button, tooltip)
 
         self.ctl.gui.colorize_button(button, False)
 
@@ -449,7 +449,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
         self.rename_disabled = True
         self.button_edit.setEnabled(False)
         if reason:
-            self.button_edit.setToolTip(reason)
+            self.ctl.gui.set_tooltip(self.button_edit, reason)
 
     ## Called by Measurement.save_csv_file_by_row to prevent attempts to delete
     # spectra appended as lines to an existing file. (All they can do is click
@@ -458,7 +458,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
     def disable_trash(self, reason):
         self.button_trash.setEnabled(False)
         if reason:
-            self.button_trash.setToolTip(reason)
+            self.ctl.gui.set_tooltip(self.button_trash, reason)
 
     def generate_tooltip(self):
         # quick stats in first line
@@ -480,7 +480,7 @@ class ThumbnailWidget(QtWidgets.QFrame):
             if pr.raman_intensity_corrected:
                 tt += f"\nRaman intensity corrected"
 
-        self.body.setToolTip(tt)
+        self.ctl.gui.set_tooltip(self.body, tt)
         self.ctl.stylesheets.apply(self.body, "tooltip")
 
         # append Measurement metadata to WhatsThis

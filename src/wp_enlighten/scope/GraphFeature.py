@@ -363,7 +363,7 @@ class GraphFeature(EnlightenFeature):
 
         spec = self.ctl.multispec.current_spectrometer()
         if spec is None:
-            self.combo_axis.setToolTip("")
+            self.ctl.gui.set_tooltip(self.combo_axis, "")
             return
 
         a = None
@@ -381,7 +381,7 @@ class GraphFeature(EnlightenFeature):
 
         if a is None:
             log.error("update_combo_tooltip: no x-axis")
-            self.combo_axis.setToolTip("")
+            self.ctl.gui.set_tooltip(self.combo_axis, "")
             return
 
         tt = f"({a[0]:.2f}, {a[-1]:.2f}{unit})" if prec else f"({a[0]}, {a[-1]}{unit})" 
@@ -395,7 +395,7 @@ class GraphFeature(EnlightenFeature):
             except:
                 log.error(f"update_combo_tooltip: invalid horizontal roi {roi}, unit {unit}, prec {prec}, array len {len(a)}")
 
-        self.combo_axis.setToolTip(tt)
+        self.ctl.gui.set_tooltip(self.combo_axis, tt)
 
     ## 
     # This was originally used used by ThumbnailWidget, when clicking the "show 

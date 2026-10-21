@@ -99,14 +99,13 @@ class LibraryMatchingFeature(EnlightenFeature):
         self.cb_use_dist        .stateChanged   .connect(self.update_settings)
         self.cb_enable          .stateChanged   .connect(self.update_settings)
 
-       #self.bt_select_library  .setToolTip("Select a directory containing a library of Raman spectra")
-        self.bt_save            .setToolTip("Add the current spectrum to the matching library")
-        self.lb_compound        .setToolTip("Declared matching compound (highest matching score)")
-        self.lb_score           .setToolTip("The RamanID algorithm's computed score for the top-matching compound")
-        self.ds_min_score       .setToolTip("Only report matches with this score or above")
-        self.sb_max_results     .setToolTip("Only report this many matches")
-        self.cb_use_dist        .setToolTip("Use standard ENLIGHTEN compound library in addition to user-collected spectra")
-        self.cb_enable          .setToolTip("Perform Pearson Library Matching against measured spectra")
+        self.ctl.gui.set_tooltip(self.bt_save        , "Add the current spectrum to the matching library")
+        self.ctl.gui.set_tooltip(self.lb_compound    , "Declared matching compound (highest matching score)")
+        self.ctl.gui.set_tooltip(self.lb_score       , "The RamanID algorithm's computed score for the top-matching compound")
+        self.ctl.gui.set_tooltip(self.ds_min_score   , "Only report matches with this score or above")
+        self.ctl.gui.set_tooltip(self.sb_max_results , "Only report this many matches")
+        self.ctl.gui.set_tooltip(self.cb_use_dist    , "Use standard ENLIGHTEN compound library in addition to user-collected spectra")
+        self.ctl.gui.set_tooltip(self.cb_enable      , "Perform Pearson Library Matching against measured spectra")
 
         self.bt_select_library  .setWhatsThis(unwrap("""
                                             Choose a folder on your computer where you would like YOUR newly 
@@ -312,7 +311,7 @@ class LibraryMatchingFeature(EnlightenFeature):
         self.ctl.gui.colorize_button(self.bt_select_library, is_custom)
 
         # always show tooltip
-        self.bt_select_library.setToolTip(path)
+        self.ctl.gui.set_tooltip(self.bt_select_library, path)
 
         if self.pearson:
             self.pearson.reset()
