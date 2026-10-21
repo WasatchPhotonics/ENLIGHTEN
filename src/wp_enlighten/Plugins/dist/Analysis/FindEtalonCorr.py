@@ -23,6 +23,8 @@ class FindEtalonCorr(EnlightenPluginBase):
     Simple plug-in to determine etalon correction from the current (broadband) 
     spectrum. Also adds the corrected spectrum as a second trace to the main 
     graph.
+
+    @todo update save() to use json module, and to update rather than overwrite existing config file if found
     """
 
     def get_configuration(self):
