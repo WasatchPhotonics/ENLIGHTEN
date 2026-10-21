@@ -48,10 +48,31 @@ function upload()
 }
 
 ################################################################################
-# read parameters
+# setup
 ################################################################################
 
 WIN_USER=$USERNAME
+IS_GIT_BASH=false
+IS_WSL=false
+
+if [[ "$OSTYPE" == "msys" ]]
+then
+    echo "Running under Git for Windows Bash shell"
+    IS_GIT_BASH=true
+else
+    if uname -a | egrep -qi "(Microsoft|WSL)"
+    then
+        echo "Running under WSL"
+        IS_WSL=true
+    else
+        echo "Not running under Git Bash or WSL -- behavior undefined"
+    fi
+
+fi
+
+################################################################################
+# read parameters
+################################################################################
 
 read -p "Username:   " REMOTE_USERNAME
 read -p "Version:    " VERSION 
@@ -140,9 +161,14 @@ echo "make docs..."
 make docs
 echo
 
-# OMG THIS WAS RIDICULOUSLY DIFFICULT TO DERIVE...saving for now
-echo "rsync... (via WSL)"
-MSYS_NO_PATHCONV=1 wsl -d Ubuntu -u ${WIN_USER} script -q -c "rsync --archive --verbose --progress /mnt${PWD}/docs/doxygen/html/ ${REMOTE_USERNAME}@wasatchphotonics.com:www/api/ENLIGHTEN/" /dev/null
+if $IS_GIT_BASH
+then
+    echo "rsync... (from Git Bash via WSL Ubuntu)"
+    # this can probably be simplified, but works IFF host has WSL Ubuntu installed
+    MSYS_NO_PATHCONV=1 wsl -d Ubuntu -u ${WIN_USER} script -q -c "rsync --archive --verbose --progress /mnt${PWD}/docs/doxygen/html/ ${REMOTE_USERNAME}@wasatchphotonics.com:www/api/ENLIGHTEN/" /dev/null
+else
+    echo "rsync..."
+    rsync --archive --verbose --progress docs/doxygen/html/ ${REMOTE_USERNAME}@wasatchphotonics.com:www/api/ENLIGHTEN/
 echo
 
 echo "scp..."
@@ -165,7 +191,7 @@ then
     BUILD_LOG=releases/build-${VERSION}.log
     echo "stdout:"   > $BUILD_LOG
     cat   build.out >> $BUILD_LOG
-
+    echo            >> $BUILD_LOG
     echo "stderr:"  >> $BUILD_LOG
     cat   build.err >> $BUILD_LOG
 

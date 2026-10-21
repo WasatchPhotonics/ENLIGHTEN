@@ -3,15 +3,17 @@ requires = ["hatchling >= 1.26"]
 build-backend = "hatchling.build"
 
 [project]
-name = "wp-enlighten" # enlighten was taken :-(
+name = "wp-enlighten"   # enlighten was taken :-(
 version = "4.3.3"
 dependencies = [
+    "wasatch=2.5.2",    # if a specific version is required, list it!
+
     "2to3",
     "adafruit-blinka",
     "ai_edge_litert",
     "bleak",
     "boto3",
-    "build", # for developers, not users
+    "build",            # for developers, not users
     "colour-science",
     "colour",
     "crcmod",
@@ -37,7 +39,6 @@ dependencies = [
     "scipy",
     "SPyC_Writer",
     "superman",
-    "wasatch",
     "xlwt",
 
     "pywin32   ; sys_platform == 'win32'",
