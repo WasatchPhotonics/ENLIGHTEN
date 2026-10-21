@@ -27,7 +27,7 @@ function upload()
     fi
     FULL_REMOTE_PATH="www/$REMOTE_PATH"
 
-    if ssh $USERNAME@wasatchphotonics.com ls $FULL_REMOTE_PATH 1>/dev/null 2>&1
+    if ssh ${REMOTE_USERNAME}@wasatchphotonics.com ls $FULL_REMOTE_PATH 1>/dev/null 2>&1
     then
         echo "ERROR: $FULL_REMOTE_PATH already found on remote host (manually remove/rename then retry)"
         if $FORCE
@@ -40,7 +40,7 @@ function upload()
         echo "$FULL_REMOTE_PATH does not currently exist on remote host"
     fi
 
-    scp $LOCAL_NAME $USERNAME@wasatchphotonics.com:$FULL_REMOTE_PATH
+    scp $LOCAL_NAME ${REMOTE_USERNAME}@wasatchphotonics.com:$FULL_REMOTE_PATH
 
     mv -f $LOCAL_NAME releases
 
@@ -51,12 +51,14 @@ function upload()
 # read parameters
 ################################################################################
 
-read -p "Username:   " USERNAME
+WIN_USER=$USERNAME
+
+read -p "Username:   " REMOTE_USERNAME
 read -p "Version:    " VERSION 
 read -p "Beta:       " BETA
 
 export VERSION
-export RUST_BACKTRACE=1
+export RUST_BACKTRACE=full
 
 if echo $BETA | grep -q y
 then
@@ -138,12 +140,13 @@ echo "make docs..."
 make docs
 echo
 
-echo "rsync..."
-rsync --archive --delete --src docs/doxygen/html/ --dest $USERNAME@wasatchphotonics.com:www/api/ENLIGHTEN/
+# OMG THIS WAS RIDICULOUSLY DIFFICULT TO DERIVE...saving for now
+echo "rsync... (via WSL)"
+MSYS_NO_PATHCONV=1 wsl -d Ubuntu -u ${WIN_USER} script -q -c "rsync --archive --verbose --progress /mnt${PWD}/docs/doxygen/html/ ${REMOTE_USERNAME}@wasatchphotonics.com:www/api/ENLIGHTEN/" /dev/null
 echo
 
 echo "scp..."
-scp docs/ENLIGHTEN_CHANGELOG.html $USERNAME@wasatchphotonics.com:www/binaries/apps/enlighten/README.html
+scp docs/ENLIGHTEN_CHANGELOG.html ${REMOTE_USERNAME}@wasatchphotonics.com:www/binaries/apps/enlighten/README.html
 echo
 
 ################################################################################
