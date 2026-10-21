@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "wp-enlighten"   # enlighten was taken :-(
 version = "4.3.4"
 dependencies = [
-    "wasatch=2.5.2",    # if a specific version is required, list it!
+    "wasatch==2.5.2",    # if a specific version is required, list it!
 
     "2to3",
     "adafruit-blinka",
