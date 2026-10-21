@@ -2,6 +2,8 @@
 
 ## 4.3 PyPi
 
+- 2026-??-?? 4.3.4
+    - initial version of Analysis.FindEtalonCorr plugin
 - 2026-10-20 4.3.3
     - re-releasing, hopefully with the new Wasatch.PY 2.5.2
 - 2026-10-20 4.3.2
