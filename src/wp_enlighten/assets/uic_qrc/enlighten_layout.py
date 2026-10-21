@@ -7341,6 +7341,7 @@ class Ui_MainWindow(object):
         self.pushButton_scope_toggle_dark.setMinimumSize(QSize(16, 26))
         self.pushButton_scope_toggle_dark.setMaximumSize(QSize(30, 26))
         self.pushButton_scope_toggle_dark.setIcon(icon8)
+        self.pushButton_scope_toggle_dark.setIconSize(QSize(16, 16))
 
         self.horizontalLayout_graph_controls.addWidget(self.pushButton_scope_toggle_dark)
 
@@ -7351,6 +7352,7 @@ class Ui_MainWindow(object):
         self.pushButton_scope_toggle_reference.setMinimumSize(QSize(16, 26))
         self.pushButton_scope_toggle_reference.setMaximumSize(QSize(30, 26))
         self.pushButton_scope_toggle_reference.setIcon(icon9)
+        self.pushButton_scope_toggle_reference.setIconSize(QSize(16, 16))
 
         self.horizontalLayout_graph_controls.addWidget(self.pushButton_scope_toggle_reference)
 
@@ -7376,6 +7378,7 @@ class Ui_MainWindow(object):
         icon21 = QIcon()
         icon21.addFile(u":/greys/images/grey_icons/ingaas.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pushButton_ingaas_correction.setIcon(icon21)
+        self.pushButton_ingaas_correction.setIconSize(QSize(20, 20))
 
         self.horizontalLayout_graph_controls.addWidget(self.pushButton_ingaas_correction)
 
@@ -7388,6 +7391,7 @@ class Ui_MainWindow(object):
         icon22 = QIcon()
         icon22.addFile(u":/greys/images/grey_icons/etalon.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pushButton_etalon_correction.setIcon(icon22)
+        self.pushButton_etalon_correction.setIconSize(QSize(20, 20))
 
         self.horizontalLayout_graph_controls.addWidget(self.pushButton_etalon_correction)
 
@@ -7400,6 +7404,7 @@ class Ui_MainWindow(object):
         icon23 = QIcon()
         icon23.addFile(u":/greys/images/grey_icons/srm.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pushButton_raman_intensity_correction_tristate.setIcon(icon23)
+        self.pushButton_raman_intensity_correction_tristate.setIconSize(QSize(20, 20))
 
         self.horizontalLayout_graph_controls.addWidget(self.pushButton_raman_intensity_correction_tristate)
 
@@ -7412,6 +7417,7 @@ class Ui_MainWindow(object):
         icon24 = QIcon()
         icon24.addFile(u":/greys/images/grey_icons/XD.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pushButton_XD_toggle.setIcon(icon24)
+        self.pushButton_XD_toggle.setIconSize(QSize(20, 20))
 
         self.horizontalLayout_graph_controls.addWidget(self.pushButton_XD_toggle)
 
@@ -7424,6 +7430,7 @@ class Ui_MainWindow(object):
         icon25 = QIcon()
         icon25.addFile(u":/greys/images/grey_icons/fingerprint.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pushButton_library_matching_toggle.setIcon(icon25)
+        self.pushButton_library_matching_toggle.setIconSize(QSize(20, 20))
 
         self.horizontalLayout_graph_controls.addWidget(self.pushButton_library_matching_toggle)
 
@@ -11519,30 +11526,30 @@ class Ui_MainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.pushButton_interp_toggle.setText("")
 #if QT_CONFIG(tooltip)
-        self.pushButton_scope_toggle_dark.setToolTip(QCoreApplication.translate("MainWindow", u"Take Dark (ctrl-D)", None))
+        self.pushButton_scope_toggle_dark.setToolTip(QCoreApplication.translate("MainWindow", u"Take dark", None))
+#endif // QT_CONFIG(tooltip)
+        self.pushButton_scope_toggle_dark.setText("")
+#if QT_CONFIG(tooltip)
+        self.pushButton_scope_toggle_reference.setToolTip(QCoreApplication.translate("MainWindow", u"Take reference", None))
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
-        self.pushButton_scope_toggle_reference.setToolTip(QCoreApplication.translate("MainWindow", u"Take Reference", None))
+        self.pushButton_ramanCorrection.setToolTip(QCoreApplication.translate("MainWindow", u"Take reference", None))
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
-        self.pushButton_ramanCorrection.setToolTip(QCoreApplication.translate("MainWindow", u"X-Axis Calibration", None))
+        self.pushButton_ingaas_correction.setToolTip(QCoreApplication.translate("MainWindow", u"Correct InGaAs sawtooth", None))
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
-        self.pushButton_ingaas_correction.setToolTip(QCoreApplication.translate("MainWindow", u"toggle InGaAs linear correction", None))
-#endif // QT_CONFIG(tooltip)
-        self.pushButton_ingaas_correction.setText("")
-#if QT_CONFIG(tooltip)
-        self.pushButton_etalon_correction.setToolTip(QCoreApplication.translate("MainWindow", u"toggle etalon correction", None))
+        self.pushButton_etalon_correction.setToolTip(QCoreApplication.translate("MainWindow", u"Correct etalon sawtooth", None))
 #endif // QT_CONFIG(tooltip)
         self.pushButton_etalon_correction.setText("")
 #if QT_CONFIG(tooltip)
-        self.pushButton_raman_intensity_correction_tristate.setToolTip(QCoreApplication.translate("MainWindow", u"toggle Raman Intensity Correction", None))
+        self.pushButton_raman_intensity_correction_tristate.setToolTip(QCoreApplication.translate("MainWindow", u"Apply NIST SRM Raman Intensity Correction", None))
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
-        self.pushButton_XD_toggle.setToolTip(QCoreApplication.translate("MainWindow", u"toggle XD processing", None))
+        self.pushButton_XD_toggle.setToolTip(QCoreApplication.translate("MainWindow", u"Apply XD fluorescence correction", None))
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
-        self.pushButton_library_matching_toggle.setToolTip(QCoreApplication.translate("MainWindow", u"toggle library matching", None))
+        self.pushButton_library_matching_toggle.setToolTip(QCoreApplication.translate("MainWindow", u"Enable Raman library matching", None))
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
         self.pushButton_show_ble_selector.setToolTip(QCoreApplication.translate("MainWindow", u"Scan for Bluetooth\u00ae LE spectrometers", None))

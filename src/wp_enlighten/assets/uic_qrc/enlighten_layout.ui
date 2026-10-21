@@ -10604,16 +10604,20 @@ QComboBox QListView
                              <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Fixed"> <horstretch>5</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
                              <property name="minimumSize"> <size> <width>16</width> <height>26</height> </size> </property>
                              <property name="maximumSize"> <size> <width>30</width> <height>26</height> </size> </property>
-                             <property name="toolTip"> <string>Take Dark (ctrl-D)</string> </property>
-                             <property name="icon"> <iconset resource="grey_icons.qrc"> <normaloff>:/greys/images/grey_icons/bulb-dark.svg</normaloff>:/greys/images/grey_icons/bulb-dark.svg</iconset> </property> </widget>
+                             <property name="toolTip"> <string>Take dark</string> </property>
+                             <property name="text"> <string /> </property>
+                             <property name="icon"> <iconset resource="grey_icons.qrc"> <normaloff>:/greys/images/grey_icons/bulb-dark.svg</normaloff>:/greys/images/grey_icons/bulb-dark.svg</iconset> </property> 
+                             <property name="iconSize"> <size> <width>16</width> <height>16</height> </size> </property>
+                            </widget>
                            </item>
                            <item>
                             <widget class="QPushButton" name="pushButton_scope_toggle_reference">
                              <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Fixed"> <horstretch>5</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
                              <property name="minimumSize"> <size> <width>16</width> <height>26</height> </size> </property>
                              <property name="maximumSize"> <size> <width>30</width> <height>26</height> </size> </property>
-                             <property name="toolTip"> <string>Take Reference</string> </property>
+                             <property name="toolTip"> <string>Take reference</string> </property>
                              <property name="icon"> <iconset resource="grey_icons.qrc"> <normaloff>:/greys/images/grey_icons/bulb-light.svg</normaloff>:/greys/images/grey_icons/bulb-light.svg</iconset> </property>
+                             <property name="iconSize"> <size> <width>16</width> <height>16</height> </size> </property>
                             </widget>
                            </item>
                            <item>
@@ -10621,7 +10625,7 @@ QComboBox QListView
                              <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Fixed"> <horstretch>5</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
                              <property name="minimumSize"> <size> <width>16</width> <height>26</height> </size> </property>
                              <property name="maximumSize"> <size> <width>30</width> <height>26</height> </size> </property>
-                             <property name="toolTip"> <string>X-Axis Calibration</string> </property>
+                             <property name="toolTip"> <string>Take reference</string> </property>
                              <property name="icon"> <iconset resource="grey_icons.qrc"> <normaloff>:/greys/images/grey_icons/raman_correction.svg</normaloff>:/greys/images/grey_icons/raman_correction.svg</iconset> </property>
                              <property name="iconSize"> <size> <width>20</width> <height>20</height> </size> </property>
                             </widget>
@@ -10631,16 +10635,20 @@ QComboBox QListView
                              <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Fixed"> <horstretch>5</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
                              <property name="minimumSize"> <size> <width>16</width> <height>26</height> </size> </property>
                              <property name="maximumSize"> <size> <width>30</width> <height>26</height> </size> </property>
-                             <property name="toolTip"> <string>toggle InGaAs linear correction</string> </property> <property name="text"> <string /> </property>
-                             <property name="icon"> <iconset resource="grey_icons.qrc"> <normaloff>:/greys/images/grey_icons/ingaas.svg</normaloff>:/greys/images/grey_icons/ingaas.svg</iconset> </property> </widget>
+                             <property name="toolTip"> <string>Correct InGaAs sawtooth</string> </property>
+                             <property name="icon"> <iconset resource="grey_icons.qrc"> <normaloff>:/greys/images/grey_icons/ingaas.svg</normaloff>:/greys/images/grey_icons/ingaas.svg</iconset> </property> 
+                             <property name="iconSize"> <size> <width>20</width> <height>20</height> </size> </property>
+                            </widget>
                            </item>
                            <item>
                             <widget class="QPushButton" name="pushButton_etalon_correction">
                              <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Fixed"> <horstretch>5</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
                              <property name="minimumSize"> <size> <width>16</width> <height>26</height> </size> </property>
                              <property name="maximumSize"> <size> <width>30</width> <height>26</height> </size> </property>
-                             <property name="toolTip"> <string>toggle etalon correction</string> </property> <property name="text"> <string /> </property>
+                             <property name="toolTip"> <string>Correct etalon sawtooth</string> </property>
+                             <property name="text"> <string /> </property>
                              <property name="icon"> <iconset resource="grey_icons.qrc"> <normaloff>:/greys/images/grey_icons/etalon.svg</normaloff>:/greys/images/grey_icons/etalon.svg</iconset> </property>
+                             <property name="iconSize"> <size> <width>20</width> <height>20</height> </size> </property>
                             </widget>
                            </item>
                            <item>
@@ -10648,8 +10656,9 @@ QComboBox QListView
                              <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Fixed"> <horstretch>5</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
                              <property name="minimumSize"> <size> <width>14</width> <height>26</height> </size> </property>
                              <property name="maximumSize"> <size> <width>30</width> <height>26</height> </size> </property>
-                             <property name="toolTip"> <string>toggle Raman Intensity Correction</string> </property>
+                             <property name="toolTip"> <string>Apply NIST SRM Raman Intensity Correction</string> </property>
                              <property name="icon"> <iconset resource="grey_icons.qrc"> <normaloff>:/greys/images/grey_icons/srm.svg</normaloff>:/greys/images/grey_icons/srm.svg</iconset> </property>
+                             <property name="iconSize"> <size> <width>20</width> <height>20</height> </size> </property>
                             </widget>
                            </item>
                            <item>
@@ -10657,8 +10666,9 @@ QComboBox QListView
                              <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Fixed"> <horstretch>5</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
                              <property name="minimumSize"> <size> <width>16</width> <height>26</height> </size> </property>
                              <property name="maximumSize"> <size> <width>30</width> <height>26</height> </size> </property>
-                             <property name="toolTip"> <string>toggle XD processing</string> </property>
+                             <property name="toolTip"> <string>Apply XD fluorescence correction</string> </property>
                              <property name="icon"> <iconset resource="grey_icons.qrc"> <normaloff>:/greys/images/grey_icons/XD.svg</normaloff>:/greys/images/grey_icons/XD.svg</iconset> </property>
+                             <property name="iconSize"> <size> <width>20</width> <height>20</height> </size> </property>
                             </widget>
                            </item>
                            <item>
@@ -10666,8 +10676,9 @@ QComboBox QListView
                              <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Fixed"> <horstretch>5</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
                              <property name="minimumSize"> <size> <width>16</width> <height>26</height> </size> </property>
                              <property name="maximumSize"> <size> <width>30</width> <height>26</height> </size> </property>
-                             <property name="toolTip"> <string>toggle library matching</string> </property>
+                             <property name="toolTip"> <string>Enable Raman library matching</string> </property>
                              <property name="icon"> <iconset resource="grey_icons.qrc"> <normaloff>:/greys/images/grey_icons/fingerprint.svg</normaloff>:/greys/images/grey_icons/fingerprint.svg</iconset> </property>
+                             <property name="iconSize"> <size> <width>20</width> <height>20</height> </size> </property>
                             </widget>
                            </item>
                            <item>
@@ -10688,119 +10699,36 @@ QComboBox QListView
                            </item>
                            <item>
                             <widget class="QPushButton" name="pushButton_show_ble_selector">
-                             <property name="sizePolicy">
-                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                               <horstretch>5</horstretch>
-                               <verstretch>0</verstretch>
-                              </sizepolicy>
-                             </property>
-                             <property name="minimumSize">
-                              <size>
-                               <width>16</width>
-                               <height>26</height>
-                              </size>
-                             </property>
-                             <property name="maximumSize">
-                              <size>
-                               <width>30</width>
-                               <height>26</height>
-                              </size>
-                             </property>
-                             <property name="toolTip">
-                              <string>Scan for Bluetooth® LE spectrometers</string>
-                             </property>
-                             <property name="text">
-                              <string />
-                             </property>
-                             <property name="icon">
-                              <iconset resource="grey_icons.qrc">
-                               <normaloff>:/greys/images/grey_icons/bluetooth.svg</normaloff>:/greys/images/grey_icons/bluetooth.svg</iconset>
-                             </property>
-                             <property name="iconSize">
-                              <size>
-                               <width>16</width>
-                               <height>16</height>
-                              </size>
-                             </property>
+                             <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Fixed"> <horstretch>5</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                             <property name="minimumSize"> <size> <width>16</width> <height>26</height> </size> </property>
+                             <property name="maximumSize"> <size> <width>30</width> <height>26</height> </size> </property>
+                             <property name="toolTip"> <string>Scan for Bluetooth® LE spectrometers</string> </property>
+                             <property name="text"> <string /> </property>
+                             <property name="icon"> <iconset resource="grey_icons.qrc"> <normaloff>:/greys/images/grey_icons/bluetooth.svg</normaloff>:/greys/images/grey_icons/bluetooth.svg</iconset> </property>
+                             <property name="iconSize"> <size> <width>16</width> <height>16</height> </size> </property>
                             </widget>
                            </item>
                            <item>
                             <widget class="QPushButton" name="pushButton_guide">
-                             <property name="sizePolicy">
-                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                               <horstretch>5</horstretch>
-                               <verstretch>0</verstretch>
-                              </sizepolicy>
-                             </property>
-                             <property name="minimumSize">
-                              <size>
-                               <width>16</width>
-                               <height>26</height>
-                              </size>
-                             </property>
-                             <property name="maximumSize">
-                              <size>
-                               <width>30</width>
-                               <height>26</height>
-                              </size>
-                             </property>
-                             <property name="toolTip">
-                              <string>Provide spectroscopy usage tips</string>
-                             </property>
-                             <property name="layoutDirection">
-                              <enum>Qt::LayoutDirection::LeftToRight</enum>
-                             </property>
-                             <property name="text">
-                              <string />
-                             </property>
-                             <property name="icon">
-                              <iconset resource="grey_icons.qrc">
-                               <normaloff>:/greys/images/grey_icons/wizard.svg</normaloff>:/greys/images/grey_icons/wizard.svg</iconset>
-                             </property>
-                             <property name="iconSize">
-                              <size>
-                               <width>16</width>
-                               <height>16</height>
-                              </size>
-                             </property>
+                             <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Fixed"> <horstretch>5</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                             <property name="minimumSize"> <size> <width>16</width> <height>26</height> </size> </property>
+                             <property name="maximumSize"> <size> <width>30</width> <height>26</height> </size> </property>
+                             <property name="toolTip"> <string>Provide spectroscopy usage tips</string> </property>
+                             <property name="layoutDirection"> <enum>Qt::LayoutDirection::LeftToRight</enum> </property>
+                             <property name="text"> <string /> </property>
+                             <property name="icon"> <iconset resource="grey_icons.qrc"> <normaloff>:/greys/images/grey_icons/wizard.svg</normaloff>:/greys/images/grey_icons/wizard.svg</iconset> </property>
+                             <property name="iconSize"> <size> <width>16</width> <height>16</height> </size> </property>
                             </widget>
                            </item>
                            <item>
                             <widget class="QPushButton" name="pushButton_copy_to_clipboard">
-                             <property name="sizePolicy">
-                              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                               <horstretch>5</horstretch>
-                               <verstretch>0</verstretch>
-                              </sizepolicy>
-                             </property>
-                             <property name="minimumSize">
-                              <size>
-                               <width>16</width>
-                               <height>26</height>
-                              </size>
-                             </property>
-                             <property name="maximumSize">
-                              <size>
-                               <width>30</width>
-                               <height>26</height>
-                              </size>
-                             </property>
-                             <property name="toolTip">
-                              <string>copy to clipboard (ctrl-C)</string>
-                             </property>
-                             <property name="text">
-                              <string />
-                             </property>
-                             <property name="icon">
-                              <iconset resource="grey_icons.qrc">
-                               <normaloff>:/greys/images/grey_icons/clipboard.svg</normaloff>:/greys/images/grey_icons/clipboard.svg</iconset>
-                             </property>
-                             <property name="iconSize">
-                              <size>
-                               <width>24</width>
-                               <height>24</height>
-                              </size>
-                             </property>
+                             <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Fixed"> <horstretch>5</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+                             <property name="minimumSize"> <size> <width>16</width> <height>26</height> </size> </property>
+                             <property name="maximumSize"> <size> <width>30</width> <height>26</height> </size> </property>
+                             <property name="toolTip"> <string>copy to clipboard (ctrl-C)</string> </property>
+                             <property name="text"> <string /> </property>
+                             <property name="icon"> <iconset resource="grey_icons.qrc"> <normaloff>:/greys/images/grey_icons/clipboard.svg</normaloff>:/greys/images/grey_icons/clipboard.svg</iconset> </property>
+                             <property name="iconSize"> <size> <width>24</width> <height>24</height> </size> </property>
                             </widget>
                            </item>
                           </layout>
@@ -11626,40 +11554,13 @@ QComboBox QListView
            </item>
            <item>
             <widget class="QPushButton" name="pushButton_copy_log_to_clipboard">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-               <horstretch>5</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>16</width>
-               <height>26</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>30</width>
-               <height>26</height>
-              </size>
-             </property>
-             <property name="toolTip">
-              <string>copy to clipboard (ctrl-C)</string>
-             </property>
-             <property name="text">
-              <string />
-             </property>
-             <property name="icon">
-              <iconset resource="grey_icons.qrc">
-               <normaloff>:/greys/images/grey_icons/clipboard.svg</normaloff>:/greys/images/grey_icons/clipboard.svg</iconset>
-             </property>
-             <property name="iconSize">
-              <size>
-               <width>24</width>
-               <height>24</height>
-              </size>
-             </property>
+             <property name="sizePolicy"> <sizepolicy hsizetype="Expanding" vsizetype="Fixed"> <horstretch>5</horstretch> <verstretch>0</verstretch> </sizepolicy> </property>
+             <property name="minimumSize"> <size> <width>16</width> <height>26</height> </size> </property>
+             <property name="maximumSize"> <size> <width>30</width> <height>26</height> </size> </property>
+             <property name="toolTip"> <string>copy to clipboard (ctrl-C)</string> </property>
+             <property name="text"> <string /> </property>
+             <property name="icon"> <iconset resource="grey_icons.qrc"> <normaloff>:/greys/images/grey_icons/clipboard.svg</normaloff>:/greys/images/grey_icons/clipboard.svg</iconset> </property>
+             <property name="iconSize"> <size> <width>24</width> <height>24</height> </size> </property>
             </widget>
            </item>
           </layout>
