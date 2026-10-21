@@ -86,7 +86,7 @@ As stated above, all dependencies will be installed to your
 
 There is one more thing the `pip install` command does: it can install new
 executable scripts in your venv/bin/ folder. In this case, it installs a new
-script called venv/bin/enlighten. You can verify the script like this:
+script called `venv/bin/enlighten`. You can verify the script like this:
 
     (venv) $ which enlighten
     venv/bin/enlighten
@@ -136,9 +136,10 @@ files, you can do so:
 
 Well, if we typed `pip install .` it would have installed all ENLIGHTEN's 
 dependencies into venv/lib/python*/site-packages, and then it would have 
-installed wp-enlighten itself into the same location. Then when you ran 
-`enlighten`, it would have been running the files under `venv/lib/python*/site-packages`,
-not the `src/wp_enlighten/*` files you wanted.
+installed wp_enlighten itself into the same location. Then when you ran 
+`enlighten`, it would have been running the "published" package under 
+`venv/lib/python*/site-packages/wp_enlighten`, not the locally-modified 
+`src/wp_enlighten/*` files you wanted.
 
 So instead we run `pip install -e .` which puts _something_ into site-packages,
 but a little different. Let's have a look:
