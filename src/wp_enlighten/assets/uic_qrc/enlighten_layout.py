@@ -2475,6 +2475,8 @@ class Ui_MainWindow(object):
 
         self.lineEdit_ee_model = QLineEdit(self.frame_eeprom_page_0)
         self.lineEdit_ee_model.setObjectName(u"lineEdit_ee_model")
+        self.lineEdit_ee_model.setMinimumWidth(200)
+        self.lineEdit_ee_model.setMaxLength(32)
 
         self.formLayout_ee_page_0.setWidget(1, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_model)
 
@@ -2817,6 +2819,8 @@ class Ui_MainWindow(object):
         self.formLayout_ee_page_1.setVerticalSpacing(4)
         self.lineEdit_ee_wavelength_coeff_0 = QLineEdit(self.frame_eeprom_page_1)
         self.lineEdit_ee_wavelength_coeff_0.setObjectName(u"lineEdit_ee_wavelength_coeff_0")
+        self.lineEdit_ee_wavelength_coeff_0.setMinimumWidth(200)
+        self.lineEdit_ee_wavelength_coeff_0.setMaxLength(32)
 
         self.formLayout_ee_page_1.setWidget(0, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_wavelength_coeff_0)
 
@@ -2902,31 +2906,43 @@ class Ui_MainWindow(object):
 
         self.lineEdit_ee_wavelength_coeff_1 = QLineEdit(self.frame_eeprom_page_1)
         self.lineEdit_ee_wavelength_coeff_1.setObjectName(u"lineEdit_ee_wavelength_coeff_1")
+        self.lineEdit_ee_wavelength_coeff_1.setMaxLength(32)
+        self.lineEdit_ee_wavelength_coeff_1.setMinimumWidth(200)
 
         self.formLayout_ee_page_1.setWidget(1, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_wavelength_coeff_1)
 
         self.lineEdit_ee_wavelength_coeff_2 = QLineEdit(self.frame_eeprom_page_1)
         self.lineEdit_ee_wavelength_coeff_2.setObjectName(u"lineEdit_ee_wavelength_coeff_2")
+        self.lineEdit_ee_wavelength_coeff_2.setMaxLength(32)
+        self.lineEdit_ee_wavelength_coeff_2.setMinimumWidth(200)
 
         self.formLayout_ee_page_1.setWidget(2, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_wavelength_coeff_2)
 
         self.lineEdit_ee_wavelength_coeff_3 = QLineEdit(self.frame_eeprom_page_1)
         self.lineEdit_ee_wavelength_coeff_3.setObjectName(u"lineEdit_ee_wavelength_coeff_3")
+        self.lineEdit_ee_wavelength_coeff_3.setMaxLength(32)
+        self.lineEdit_ee_wavelength_coeff_3.setMinimumWidth(200)
 
         self.formLayout_ee_page_1.setWidget(3, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_wavelength_coeff_3)
 
         self.lineEdit_ee_degC_to_dac_coeff_0 = QLineEdit(self.frame_eeprom_page_1)
         self.lineEdit_ee_degC_to_dac_coeff_0.setObjectName(u"lineEdit_ee_degC_to_dac_coeff_0")
+        self.lineEdit_ee_degC_to_dac_coeff_0.setMaxLength(32)
+        self.lineEdit_ee_degC_to_dac_coeff_0.setMinimumWidth(200)
 
         self.formLayout_ee_page_1.setWidget(5, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_degC_to_dac_coeff_0)
 
         self.lineEdit_ee_degC_to_dac_coeff_1 = QLineEdit(self.frame_eeprom_page_1)
         self.lineEdit_ee_degC_to_dac_coeff_1.setObjectName(u"lineEdit_ee_degC_to_dac_coeff_1")
+        self.lineEdit_ee_degC_to_dac_coeff_1.setMaxLength(32)
+        self.lineEdit_ee_degC_to_dac_coeff_1.setMinimumWidth(200)
 
         self.formLayout_ee_page_1.setWidget(6, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_degC_to_dac_coeff_1)
 
         self.lineEdit_ee_degC_to_dac_coeff_2 = QLineEdit(self.frame_eeprom_page_1)
         self.lineEdit_ee_degC_to_dac_coeff_2.setObjectName(u"lineEdit_ee_degC_to_dac_coeff_2")
+        self.lineEdit_ee_degC_to_dac_coeff_2.setMaxLength(32)
+        self.lineEdit_ee_degC_to_dac_coeff_2.setMinimumWidth(200)
 
         self.formLayout_ee_page_1.setWidget(7, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_degC_to_dac_coeff_2)
 
@@ -2954,16 +2970,22 @@ class Ui_MainWindow(object):
 
         self.lineEdit_ee_adc_to_degC_coeff_0 = QLineEdit(self.frame_eeprom_page_1)
         self.lineEdit_ee_adc_to_degC_coeff_0.setObjectName(u"lineEdit_ee_adc_to_degC_coeff_0")
+        self.lineEdit_ee_adc_to_degC_coeff_0.setMaxLength(32)
+        self.lineEdit_ee_adc_to_degC_coeff_0.setMinimumWidth(200)
 
         self.formLayout_ee_page_1.setWidget(10, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_adc_to_degC_coeff_0)
 
         self.lineEdit_ee_adc_to_degC_coeff_1 = QLineEdit(self.frame_eeprom_page_1)
         self.lineEdit_ee_adc_to_degC_coeff_1.setObjectName(u"lineEdit_ee_adc_to_degC_coeff_1")
+        self.lineEdit_ee_adc_to_degC_coeff_1.setMaxLength(32)
+        self.lineEdit_ee_adc_to_degC_coeff_1.setMinimumWidth(200)
 
         self.formLayout_ee_page_1.setWidget(11, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_adc_to_degC_coeff_1)
 
         self.lineEdit_ee_adc_to_degC_coeff_2 = QLineEdit(self.frame_eeprom_page_1)
         self.lineEdit_ee_adc_to_degC_coeff_2.setObjectName(u"lineEdit_ee_adc_to_degC_coeff_2")
+        self.lineEdit_ee_adc_to_degC_coeff_2.setMaxLength(32)
+        self.lineEdit_ee_adc_to_degC_coeff_2.setMinimumWidth(200)
 
         self.formLayout_ee_page_1.setWidget(12, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_adc_to_degC_coeff_2)
 
@@ -2999,6 +3021,8 @@ class Ui_MainWindow(object):
 
         self.lineEdit_ee_wavelength_coeff_4 = QLineEdit(self.frame_eeprom_page_1)
         self.lineEdit_ee_wavelength_coeff_4.setObjectName(u"lineEdit_ee_wavelength_coeff_4")
+        self.lineEdit_ee_wavelength_coeff_4.setMaxLength(32)
+        self.lineEdit_ee_wavelength_coeff_4.setMinimumWidth(200)
 
         self.formLayout_ee_page_1.setWidget(4, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_wavelength_coeff_4)
 
@@ -3041,9 +3065,11 @@ class Ui_MainWindow(object):
         self.formLayout_ee_page_2.setObjectName(u"formLayout_ee_page_2")
         self.formLayout_ee_page_2.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.AllNonFixedFieldsGrow)
         self.formLayout_ee_page_2.setLabelAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.formLayout_ee_page_2.setFormAlignment(Qt.AlignmentFlag.AlignHCenter|Qt.AlignmentFlag.AlignTop)
         self.formLayout_ee_page_2.setVerticalSpacing(4)
         self.lineEdit_ee_detector = QLineEdit(self.frame_eeprom_page_2)
         self.lineEdit_ee_detector.setObjectName(u"lineEdit_ee_detector")
+        self.lineEdit_ee_detector.setMinimumWidth(200)
 
         self.formLayout_ee_page_2.setWidget(0, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_detector)
 
@@ -3283,6 +3309,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_max_laser_temp_deg_c.setMinimum(-128)
         self.spinBox_ee_max_laser_temp_deg_c.setMaximum(127)
         self.spinBox_ee_max_laser_temp_deg_c.setValue(40)
+        self.spinBox_ee_max_laser_temp_deg_c.setMinimumWidth(200)
 
         self.formLayout_ee_page_3.setWidget(2, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_max_laser_temp_deg_c)
 
@@ -3293,6 +3320,8 @@ class Ui_MainWindow(object):
 
         self.lineEdit_ee_laser_power_coeff_0 = QLineEdit(self.frame_eeprom_page_3)
         self.lineEdit_ee_laser_power_coeff_0.setObjectName(u"lineEdit_ee_laser_power_coeff_0")
+        self.lineEdit_ee_laser_power_coeff_0.setMaxLength(32)
+        self.lineEdit_ee_laser_power_coeff_0.setMinimumWidth(200)
 
         self.formLayout_ee_page_3.setWidget(4, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_laser_power_coeff_0)
 
@@ -3303,6 +3332,8 @@ class Ui_MainWindow(object):
 
         self.lineEdit_ee_laser_power_coeff_1 = QLineEdit(self.frame_eeprom_page_3)
         self.lineEdit_ee_laser_power_coeff_1.setObjectName(u"lineEdit_ee_laser_power_coeff_1")
+        self.lineEdit_ee_laser_power_coeff_1.setMaxLength(32)
+        self.lineEdit_ee_laser_power_coeff_1.setMinimumWidth(200)
 
         self.formLayout_ee_page_3.setWidget(5, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_laser_power_coeff_1)
 
@@ -3313,6 +3344,8 @@ class Ui_MainWindow(object):
 
         self.lineEdit_ee_laser_power_coeff_2 = QLineEdit(self.frame_eeprom_page_3)
         self.lineEdit_ee_laser_power_coeff_2.setObjectName(u"lineEdit_ee_laser_power_coeff_2")
+        self.lineEdit_ee_laser_power_coeff_2.setMaxLength(32)
+        self.lineEdit_ee_laser_power_coeff_2.setMinimumWidth(200)
 
         self.formLayout_ee_page_3.setWidget(6, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_laser_power_coeff_2)
 
@@ -3323,6 +3356,8 @@ class Ui_MainWindow(object):
 
         self.lineEdit_ee_laser_power_coeff_3 = QLineEdit(self.frame_eeprom_page_3)
         self.lineEdit_ee_laser_power_coeff_3.setObjectName(u"lineEdit_ee_laser_power_coeff_3")
+        self.lineEdit_ee_laser_power_coeff_3.setMaxLength(32)
+        self.lineEdit_ee_laser_power_coeff_3.setMinimumWidth(200)
 
         self.formLayout_ee_page_3.setWidget(7, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_laser_power_coeff_3)
 
@@ -3541,6 +3576,9 @@ class Ui_MainWindow(object):
         self.formLayout_ee_page_4 = QFormLayout()
         self.formLayout_ee_page_4.setObjectName(u"formLayout_ee_page_4")
         self.formLayout_ee_page_4.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.AllNonFixedFieldsGrow)
+        self.formLayout_ee_page_4.setLabelAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.formLayout_ee_page_4.setFormAlignment(Qt.AlignmentFlag.AlignHCenter|Qt.AlignmentFlag.AlignTop)
+        self.formLayout_ee_page_4.setVerticalSpacing(4)
         self.label79 = QLabel(self.frame_eeprom_page_4)
         self.label79.setObjectName(u"label79")
 
@@ -3548,6 +3586,7 @@ class Ui_MainWindow(object):
 
         self.lineEdit_ee_user_text = QLineEdit(self.frame_eeprom_page_4)
         self.lineEdit_ee_user_text.setObjectName(u"lineEdit_ee_user_text")
+        self.lineEdit_ee_user_text.setMinimumWidth(200)
 
         self.formLayout_ee_page_4.setWidget(0, QFormLayout.ItemRole.FieldRole, self.lineEdit_ee_user_text)
 
@@ -3584,6 +3623,8 @@ class Ui_MainWindow(object):
         self.formLayout_ee_page_5 = QFormLayout()
         self.formLayout_ee_page_5.setObjectName(u"formLayout_ee_page_5")
         self.formLayout_ee_page_5.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.AllNonFixedFieldsGrow)
+        self.formLayout_ee_page_5.setLabelAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.formLayout_ee_page_5.setFormAlignment(Qt.AlignmentFlag.AlignHCenter|Qt.AlignmentFlag.AlignTop)
         self.formLayout_ee_page_5.setVerticalSpacing(4)
         self.spinBox_ee_bad_pixel_0 = QSpinBox(self.frame_eeprom_page_5)
         self.spinBox_ee_bad_pixel_0.setObjectName(u"spinBox_ee_bad_pixel_0")
@@ -3593,6 +3634,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_0.setMinimum(-1)
         self.spinBox_ee_bad_pixel_0.setMaximum(9999)
         self.spinBox_ee_bad_pixel_0.setValue(-1)
+        self.spinBox_ee_bad_pixel_0.setMinimumWidth(200)
 
         self.formLayout_ee_page_5.setWidget(0, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_0)
 
@@ -3609,6 +3651,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_1.setMinimum(-1)
         self.spinBox_ee_bad_pixel_1.setMaximum(9999)
         self.spinBox_ee_bad_pixel_1.setValue(-1)
+        self.spinBox_ee_bad_pixel_1.setMinimumWidth(200)
 
         self.formLayout_ee_page_5.setWidget(1, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_1)
 
@@ -3625,6 +3668,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_2.setMinimum(-1)
         self.spinBox_ee_bad_pixel_2.setMaximum(9999)
         self.spinBox_ee_bad_pixel_2.setValue(-1)
+        self.spinBox_ee_bad_pixel_2.setMinimumWidth(200)
 
         self.formLayout_ee_page_5.setWidget(2, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_2)
 
@@ -3641,6 +3685,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_3.setMinimum(-1)
         self.spinBox_ee_bad_pixel_3.setMaximum(9999)
         self.spinBox_ee_bad_pixel_3.setValue(-1)
+        self.spinBox_ee_bad_pixel_3.setMinimumWidth(200)
 
         self.formLayout_ee_page_5.setWidget(3, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_3)
 
@@ -3657,6 +3702,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_4.setMinimum(-1)
         self.spinBox_ee_bad_pixel_4.setMaximum(9999)
         self.spinBox_ee_bad_pixel_4.setValue(-1)
+        self.spinBox_ee_bad_pixel_4.setMinimumWidth(200)
 
         self.formLayout_ee_page_5.setWidget(4, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_4)
 
@@ -3673,6 +3719,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_5.setMinimum(-1)
         self.spinBox_ee_bad_pixel_5.setMaximum(9999)
         self.spinBox_ee_bad_pixel_5.setValue(-1)
+        self.spinBox_ee_bad_pixel_5.setMinimumWidth(200)
 
         self.formLayout_ee_page_5.setWidget(5, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_5)
 
@@ -3689,6 +3736,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_6.setMinimum(-1)
         self.spinBox_ee_bad_pixel_6.setMaximum(9999)
         self.spinBox_ee_bad_pixel_6.setValue(-1)
+        self.spinBox_ee_bad_pixel_6.setMinimumWidth(200)
 
         self.formLayout_ee_page_5.setWidget(6, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_6)
 
@@ -3705,6 +3753,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_7.setMinimum(-1)
         self.spinBox_ee_bad_pixel_7.setMaximum(9999)
         self.spinBox_ee_bad_pixel_7.setValue(-1)
+        self.spinBox_ee_bad_pixel_7.setMinimumWidth(200)
 
         self.formLayout_ee_page_5.setWidget(7, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_7)
 
@@ -3721,6 +3770,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_8.setMinimum(-1)
         self.spinBox_ee_bad_pixel_8.setMaximum(9999)
         self.spinBox_ee_bad_pixel_8.setValue(-1)
+        self.spinBox_ee_bad_pixel_8.setMinimumWidth(200)
 
         self.formLayout_ee_page_5.setWidget(8, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_8)
 
@@ -3737,6 +3787,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_9.setMinimum(-1)
         self.spinBox_ee_bad_pixel_9.setMaximum(9999)
         self.spinBox_ee_bad_pixel_9.setValue(-1)
+        self.spinBox_ee_bad_pixel_9.setMinimumWidth(200)
 
         self.formLayout_ee_page_5.setWidget(9, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_9)
 
@@ -3753,6 +3804,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_10.setMinimum(-1)
         self.spinBox_ee_bad_pixel_10.setMaximum(9999)
         self.spinBox_ee_bad_pixel_10.setValue(-1)
+        self.spinBox_ee_bad_pixel_10.setMinimumWidth(200)
 
         self.formLayout_ee_page_5.setWidget(10, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_10)
 
@@ -3769,6 +3821,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_11.setMinimum(-1)
         self.spinBox_ee_bad_pixel_11.setMaximum(9999)
         self.spinBox_ee_bad_pixel_11.setValue(-1)
+        self.spinBox_ee_bad_pixel_11.setMinimumWidth(200)
 
         self.formLayout_ee_page_5.setWidget(11, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_11)
 
@@ -3785,6 +3838,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_12.setMinimum(-1)
         self.spinBox_ee_bad_pixel_12.setMaximum(9999)
         self.spinBox_ee_bad_pixel_12.setValue(-1)
+        self.spinBox_ee_bad_pixel_12.setMinimumWidth(200)
 
         self.formLayout_ee_page_5.setWidget(12, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_12)
 
@@ -3801,6 +3855,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_13.setMinimum(-1)
         self.spinBox_ee_bad_pixel_13.setMaximum(9999)
         self.spinBox_ee_bad_pixel_13.setValue(-1)
+        self.spinBox_ee_bad_pixel_13.setMinimumWidth(200)
 
         self.formLayout_ee_page_5.setWidget(13, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_13)
 
@@ -3817,6 +3872,7 @@ class Ui_MainWindow(object):
         self.spinBox_ee_bad_pixel_14.setMinimum(-1)
         self.spinBox_ee_bad_pixel_14.setMaximum(9999)
         self.spinBox_ee_bad_pixel_14.setValue(-1)
+        self.spinBox_ee_bad_pixel_14.setMinimumWidth(200)
 
         self.formLayout_ee_page_5.setWidget(14, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_bad_pixel_14)
 
@@ -3829,23 +3885,23 @@ class Ui_MainWindow(object):
         self.lineEdit_ee_assembly_revision_packed.setObjectName(u"lineEdit_ee_assembly_revision_packed")
         self.lineEdit_ee_assembly_revision_packed.setMinimumSize(QSize(125, 0))
 
-        self.formLayout_ee_page_5.setWidget(16, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_assembly_revision_packed)
+        self.formLayout_ee_page_5.setWidget(15, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_assembly_revision_packed)
 
         self.label96 = QLabel(self.frame_eeprom_page_5)
         self.label96.setObjectName(u"label96")
 
-        self.formLayout_ee_page_5.setWidget(16, QFormLayout.ItemRole.FieldRole, self.label96)
+        self.formLayout_ee_page_5.setWidget(15, QFormLayout.ItemRole.FieldRole, self.label96)
 
         self.spinBox_ee_subformat = QSpinBox(self.frame_eeprom_page_5)
         self.spinBox_ee_subformat.setObjectName(u"spinBox_ee_subformat")
         self.spinBox_ee_subformat.setMinimumSize(QSize(125, 0))
 
-        self.formLayout_ee_page_5.setWidget(17, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_subformat)
+        self.formLayout_ee_page_5.setWidget(16, QFormLayout.ItemRole.LabelRole, self.spinBox_ee_subformat)
 
         self.label97 = QLabel(self.frame_eeprom_page_5)
         self.label97.setObjectName(u"label97")
 
-        self.formLayout_ee_page_5.setWidget(17, QFormLayout.ItemRole.FieldRole, self.label97)
+        self.formLayout_ee_page_5.setWidget(16, QFormLayout.ItemRole.FieldRole, self.label97)
 
 
         self.vboxLayout12.addLayout(self.formLayout_ee_page_5)
@@ -3889,43 +3945,50 @@ class Ui_MainWindow(object):
         self.formLayout_ee_sub1_page_6.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.AllNonFixedFieldsGrow)
         self.lineEdit_ee_raman_intensity_coeff_0 = QLineEdit(self.frame_eeprom_sub_1_page_6_black)
         self.lineEdit_ee_raman_intensity_coeff_0.setObjectName(u"lineEdit_ee_raman_intensity_coeff_0")
-        self.lineEdit_ee_raman_intensity_coeff_0.setMaxLength(30)
+        self.lineEdit_ee_raman_intensity_coeff_0.setMaxLength(32)
+        self.lineEdit_ee_raman_intensity_coeff_0.setMinimumWidth(200)
 
         self.formLayout_ee_sub1_page_6.setWidget(1, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_raman_intensity_coeff_0)
 
         self.lineEdit_ee_raman_intensity_coeff_1 = QLineEdit(self.frame_eeprom_sub_1_page_6_black)
         self.lineEdit_ee_raman_intensity_coeff_1.setObjectName(u"lineEdit_ee_raman_intensity_coeff_1")
-        self.lineEdit_ee_raman_intensity_coeff_1.setMaxLength(30)
+        self.lineEdit_ee_raman_intensity_coeff_1.setMaxLength(32)
+        self.lineEdit_ee_raman_intensity_coeff_1.setMinimumWidth(200)
 
         self.formLayout_ee_sub1_page_6.setWidget(2, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_raman_intensity_coeff_1)
 
         self.lineEdit_ee_raman_intensity_coeff_2 = QLineEdit(self.frame_eeprom_sub_1_page_6_black)
         self.lineEdit_ee_raman_intensity_coeff_2.setObjectName(u"lineEdit_ee_raman_intensity_coeff_2")
-        self.lineEdit_ee_raman_intensity_coeff_2.setMaxLength(30)
+        self.lineEdit_ee_raman_intensity_coeff_2.setMaxLength(32)
+        self.lineEdit_ee_raman_intensity_coeff_2.setMinimumWidth(200)
 
         self.formLayout_ee_sub1_page_6.setWidget(3, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_raman_intensity_coeff_2)
 
         self.lineEdit_ee_raman_intensity_coeff_3 = QLineEdit(self.frame_eeprom_sub_1_page_6_black)
         self.lineEdit_ee_raman_intensity_coeff_3.setObjectName(u"lineEdit_ee_raman_intensity_coeff_3")
-        self.lineEdit_ee_raman_intensity_coeff_3.setMaxLength(30)
+        self.lineEdit_ee_raman_intensity_coeff_3.setMaxLength(32)
+        self.lineEdit_ee_raman_intensity_coeff_3.setMinimumWidth(200)
 
         self.formLayout_ee_sub1_page_6.setWidget(4, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_raman_intensity_coeff_3)
 
         self.lineEdit_ee_raman_intensity_coeff_4 = QLineEdit(self.frame_eeprom_sub_1_page_6_black)
         self.lineEdit_ee_raman_intensity_coeff_4.setObjectName(u"lineEdit_ee_raman_intensity_coeff_4")
-        self.lineEdit_ee_raman_intensity_coeff_4.setMaxLength(30)
+        self.lineEdit_ee_raman_intensity_coeff_4.setMaxLength(32)
+        self.lineEdit_ee_raman_intensity_coeff_4.setMinimumWidth(200)
 
         self.formLayout_ee_sub1_page_6.setWidget(5, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_raman_intensity_coeff_4)
 
         self.lineEdit_ee_raman_intensity_coeff_5 = QLineEdit(self.frame_eeprom_sub_1_page_6_black)
         self.lineEdit_ee_raman_intensity_coeff_5.setObjectName(u"lineEdit_ee_raman_intensity_coeff_5")
-        self.lineEdit_ee_raman_intensity_coeff_5.setMaxLength(30)
+        self.lineEdit_ee_raman_intensity_coeff_5.setMaxLength(32)
+        self.lineEdit_ee_raman_intensity_coeff_5.setMinimumWidth(200)
 
         self.formLayout_ee_sub1_page_6.setWidget(6, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_raman_intensity_coeff_5)
 
         self.lineEdit_ee_raman_intensity_coeff_6 = QLineEdit(self.frame_eeprom_sub_1_page_6_black)
         self.lineEdit_ee_raman_intensity_coeff_6.setObjectName(u"lineEdit_ee_raman_intensity_coeff_6")
-        self.lineEdit_ee_raman_intensity_coeff_6.setMaxLength(30)
+        self.lineEdit_ee_raman_intensity_coeff_6.setMaxLength(32)
+        self.lineEdit_ee_raman_intensity_coeff_6.setMinimumWidth(200)
 
         self.formLayout_ee_sub1_page_6.setWidget(7, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_raman_intensity_coeff_6)
 
@@ -4697,6 +4760,8 @@ class Ui_MainWindow(object):
         self.lineEdit_ee_laser_password = QLineEdit(self.frame_eeprom_page_8)
         self.lineEdit_ee_laser_password.setObjectName(u"lineEdit_ee_laser_password")
         self.lineEdit_ee_laser_password.setEchoMode(QLineEdit.PasswordEchoOnEdit)
+        self.lineEdit_ee_laser_password.setMinimumWidth(200)
+        self.lineEdit_ee_laser_password.setMaxLength(16)
 
         self.formLayout_ee_page_8.setWidget(0, QFormLayout.ItemRole.LabelRole, self.lineEdit_ee_laser_password)
 
@@ -10996,11 +11061,11 @@ class Ui_MainWindow(object):
         self.lineEdit_ee_adc_to_degC_coeff_1.setText(QCoreApplication.translate("MainWindow", u"1", None))
         self.lineEdit_ee_adc_to_degC_coeff_2.setText(QCoreApplication.translate("MainWindow", u"2", None))
         self.lineEdit_ee_calibration_date.setText(QCoreApplication.translate("MainWindow", u"today", None))
-        self.lineEdit_ee_calibrated_by.setText(QCoreApplication.translate("MainWindow", u"Wilson", None))
+        self.lineEdit_ee_calibrated_by.setText(QCoreApplication.translate("MainWindow", u"Brenda", None))
         self.lineEdit_ee_wavelength_coeff_4.setText(QCoreApplication.translate("MainWindow", u"4", None))
         self.label45.setText(QCoreApplication.translate("MainWindow", u"Wavecal Coeff4", None))
         self.label46.setText(QCoreApplication.translate("MainWindow", u"EEPROM Page 2", None))
-        self.lineEdit_ee_detector.setText(QCoreApplication.translate("MainWindow", u"S16010", None))
+        self.lineEdit_ee_detector.setText(QCoreApplication.translate("MainWindow", u"S16011", None))
         self.label47.setText(QCoreApplication.translate("MainWindow", u"Detector Name", None))
         self.label48.setText(QCoreApplication.translate("MainWindow", u"Active Pixels (Horiz)", None))
         self.label49.setText(QCoreApplication.translate("MainWindow", u"Active Pixels (Vertical)", None))
