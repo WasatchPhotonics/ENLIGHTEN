@@ -151,7 +151,7 @@ class PluginControllerFeature(EnlightenFeature):
 
         # configure our search directories
         self.plugin_dirs = [
-            "plugins",                                              # (for developers running from source)
+            os.path.join(common.get_asset_dir(), r"..", "Plugins", "dist"), # for developers running from source or package
             os.path.join(common.get_default_data_dir(), "plugins")  # (installed EnlightenSpectra/plugins)
         ]
         self.initialize_python_path()
