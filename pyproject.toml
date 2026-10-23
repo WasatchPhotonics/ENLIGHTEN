@@ -38,7 +38,8 @@ dependencies = [
     "qimage2ndarray",
     "scipy",
     "SPyC_Writer",
-    "superman",
+    "superman ; sys_platform != 'linux'", # temporarily drop superman for Debian 12 Bookworm
+    "superman ; platform_system == 'linux' and 'bookworm' not in platform_version",
     "xlwt",
 
     "pywin32   ; sys_platform == 'win32'",

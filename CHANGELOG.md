@@ -2,7 +2,7 @@
 
 ## 4.3 PyPi
 
-- 2026-??-?? 4.3.4
+- 2026-10-23 4.3.4
     - GUI
         - EEPROMEditor visual tidy 
         - tooltips mostly work on MacOS
@@ -11,6 +11,8 @@
         - added Analysis.FlashEtalonCorr
     - scripts
         - added airpls-ratios-to-etalon-correction.py
+    - dependencies
+        - disable superman on Debian 12 (bookworm)
 - 2026-10-20 4.3.3
     - re-releasing, hopefully with the new Wasatch.PY 2.5.2
 - 2026-10-20 4.3.2
