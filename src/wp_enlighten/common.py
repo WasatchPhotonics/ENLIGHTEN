@@ -16,7 +16,7 @@ application.
       can be modules (files) within it
 """
 
-VERSION = "4.3.4"
+VERSION = "4.3.5"
 USE_QT = True       # external scripts may choose to set this False before importing / using other classes
 
 ctl = None

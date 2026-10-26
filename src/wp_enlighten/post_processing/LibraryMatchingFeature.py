@@ -13,7 +13,8 @@ from wp_enlighten.util import unwrap
 
 from wasatch.CSVLoader import CSVLoader
 
-from PySide6 import QtCore, QtWidgets
+if common.USE_QT:
+    from PySide6 import QtCore, QtWidgets
 
 log = logging.getLogger(__name__)
 
@@ -143,9 +144,11 @@ class LibraryMatchingFeature(EnlightenFeature):
         self.metadata_cache = {}
         self.laser_warning_issued = False
 
-        self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(self.tick)
-        self.timer.setSingleShot(True)
+        self.timer = None
+        if common.USE_QT:
+            self.timer = QtCore.QTimer()
+            self.timer.timeout.connect(self.tick)
+            self.timer.setSingleShot(True)
 
         self.ctl.measurement_factory.register_observer(self.factory_callback_save_complete, "save")
 
@@ -172,7 +175,8 @@ class LibraryMatchingFeature(EnlightenFeature):
         super().disconnect()
 
     def stop(self):
-        self.timer.stop()
+        if self.timer:
+            self.timer.stop()
 
     def toggle_callback(self):
         self.cb_enable.setChecked(not self.enabled)
@@ -247,7 +251,8 @@ class LibraryMatchingFeature(EnlightenFeature):
             self.curve_scope.setVisible(False)
             self.curve_scope_XD.setVisible(False)
             self.dataframe = None
-            self.timer.start(self.TIMER_MS)
+            if self.timer:
+                self.timer.start(self.TIMER_MS)
             return
 
         if len(compounds) > self.max_results:
@@ -288,7 +293,8 @@ class LibraryMatchingFeature(EnlightenFeature):
         pr.library_matching_engine = "Pearson"
 
         # schedule GUI update
-        self.timer.start(self.TIMER_MS)
+        if self.timer:
+            self.timer.start(self.TIMER_MS)
 
     def set_library_dir(self, path):
         """ 
