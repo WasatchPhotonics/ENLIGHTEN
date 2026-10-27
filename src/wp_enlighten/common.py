@@ -183,8 +183,7 @@ def get_asset_dir():
     exe = sys.executable
 
     is_enlighten_exe = re.search(r"enlighten[/\\]+enlighten.exe$", exe.lower()) # pyinstaller-build/dist/enlighten/enlighten.exe or /c/Program Files/Wasatch Photonics/ENLIGHTEN/enlighten.exe
-    is_venv_python = re.search(r"\\scripts\\pythonw?.exe$", exe.lower())
-    in_venv = re.search(r"(venv|\.?env)\\(scripts|bin)", cwd.lower()) # hard-coded to venv, .env, env
+    in_venv = "VIRTUAL_ENV" in os.environ
 
     grandchild_path = os.path.join(cwd, "src", "wp_enlighten", "assets")
     grandchild_exists = os.path.exists(grandchild_path)
@@ -195,11 +194,10 @@ def get_asset_dir():
     cousin_path = os.path.join(cwd, "..", "..", "src", "wp_enlighten", "assets")
     cousin_exists = os.path.exists(cousin_path)
 
-    if False:
+    if True:
         log.debug(f"get_asset_dir: cwd {cwd}")
         log.debug(f"get_asset_dir: exe {exe}")
         log.debug(f"get_asset_dir: is_enlighten_exe {is_enlighten_exe}")
-        log.debug(f"get_asset_dir: is_venv_python {is_venv_python}")
         log.debug(f"get_asset_dir: in_venv {in_venv}")
         log.debug(f"get_asset_dir: grandchild_exists {grandchild_exists}, path {grandchild_path}")
         log.debug(f"get_asset_dir: internal_exists {internal_exists}, path {internal_path}")

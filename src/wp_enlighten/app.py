@@ -240,35 +240,35 @@ class EnlightenApplication:
                     # ... and if it is, minimize it
                     ctypes.windll.user32.ShowWindow(console_window, 2)  # SW_SHOWMINIMIZED
 
-    def chdir(self):
-        """
-        ENLIGHTEN loads various settings from its own wp_enlighten/assets/
-        example_code distribution, which it accesses through relative paths, and
-        it can't find those if run from another directory.
-
-        Not sure if this is still needed, now that we have common.get_asset_dir.
-        """
-        script_path = sys.argv[0]
-        # print(f"chdir: script_path {script_path}")
-        # print(f"chdir: sys.path {sys.path}")
-
-        if script_path.endswith(".py"):
-            # run as "python path/to/wp_enlighten/app.py", so want "path/to/wp_enlighten"
-            root_dir = os.path.join(os.path.dirname(script_path), "/..")
-        else:
-            # presumably some kind of compiled executable
-            root_dir = os.path.dirname(script_path)
-
-        # print(f"chdir: cd {root_dir}")
-        try:
-            os.chdir(root_dir)
-        except:
-            print(f"chdir: error changing to {root_dir}")
+    # def chdir(self):
+    #     """
+    #     ENLIGHTEN loads various settings from its own wp_enlighten/assets/
+    #     example_code distribution, which it accesses through relative paths, and
+    #     it can't find those if run from another directory.
+    #
+    #     Not sure if this is still needed, now that we have common.get_asset_dir.
+    #     """
+    #     script_path = sys.argv[0]
+    #     # print(f"chdir: script_path {script_path}")
+    #     # print(f"chdir: sys.path {sys.path}")
+    #
+    #     if script_path.endswith(".py"):
+    #         # run as "python path/to/wp_enlighten/app.py", so want "path/to/wp_enlighten"
+    #         root_dir = os.path.join(os.path.dirname(script_path), "/..")
+    #     else:
+    #         # presumably some kind of compiled executable
+    #         root_dir = os.path.dirname(script_path)
+    #
+    #     # print(f"chdir: cd {root_dir}")
+    #     try:
+    #         os.chdir(root_dir)
+    #     except:
+    #         print(f"chdir: error changing to {root_dir}")
 
 def main():
     enlighten = EnlightenApplication()
     enlighten.parse_args()
-    enlighten.chdir()
+    #enlighten.chdir()
     enlighten.hide_console()
     try:
         ec = enlighten.run()
