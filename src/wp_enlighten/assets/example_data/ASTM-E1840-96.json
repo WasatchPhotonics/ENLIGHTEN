@@ -1,7 +1,7 @@
 {
     "Comment": "Peaks taken from ASTM-E1840-96 (Reapparoved 2014)",
     "Compounds": {
-        "Naphthalene": {
+        "5-Naphthalene": {
              "513.8": { "Intensity": 3 },
              "763.8": { "Intensity": 3 },
             "1021.6": { "Intensity": 2 },
@@ -11,7 +11,7 @@
             "1576.6": { "Intensity": 2 },
             "3056.4": { "Intensity": 3 }
         },
-        "1,4 bis (2-Methylstryryl) Benzene": {
+        "3-Methylstryryl Benzene": {
              "456.0": { "Intensity": 1 },
              "642.4": { "Intensity": 1 },
              "841.6": { "Intensity": 1 },
@@ -26,13 +26,13 @@
             "1593.1": { "Primary": true },
             "1627.9": { "Intensity": 4 }
         },
-        "Sulfur": {
+        "6-Sulfur": {
               "85.1": { "Intensity": 1 },
              "153.8": { "Intensity": 3 },
              "219.1": { "Primary": true },
              "473.2": { "Intensity": 3 }
         },
-        "50/50 Toluene/Acetonitrile": {
+        "8-50/50 Toluene/Acetonitrile": {
              "378.5": { "Intensity": 1 },
              "521.7": { "Intensity": 1 },
              "786.5": { "Intensity": 3 },
@@ -72,7 +72,7 @@
             "3102.4": { "Intensity": 2 },
             "3326.6": { "Intensity": 1 }
         },
-        "Benzonitrile": {
+        "7-Benzonitrile": {
              "460.9": { "Intensity": 2 },
              "548.5": { "Intensity": 1 },
              "751.3": { "Intensity": 1 },
@@ -85,7 +85,7 @@
             "2229.4": { "Intensity": 4 },
             "3072.3": { "Intensity": 3 }
         },
-        "Cyclohexane": {
+        "2-Cyclohexane": {
               "384.1": { "Intensity": 1 },
               "426.3": { "Intensity": 1 },
               "801.3": { "Primary": true },
@@ -98,7 +98,7 @@
              "2923.8": { "Intensity": 3 },
              "2938.3": { "Intensity": 3 }
         },
-        "Polystyrene": {
+        "1-Polystyrene": {
               "620.9": { "Intensity": 2 },
               "795.8": { "Intensity": 1 },
              "1001.4": { "Primary": true },
