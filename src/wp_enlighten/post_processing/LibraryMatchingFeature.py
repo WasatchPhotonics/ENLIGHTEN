@@ -461,19 +461,25 @@ class Pearson:
     """
     This class constructor takes a number of callback functions to make it more 
     easily re-usable outside the ENLIGHTEN GUI.
+
+    csv_loader_class should support:
+        - pr, metadata = csv_loader.load_data(scalar_metadata=True)
+        - pr should support get_processed() and get_wavenumbers()
     """
     def __init__(self, 
                  library_dir_getter, 
                  use_dist_getter=None,
                  dist_library_dir=None,
                  min_score_getter=None,
-                 display_error=None):
+                 display_error=None,
+                 csv_loader_class=None):
 
         self.library_dir_getter = library_dir_getter
         self.dist_library_dir = dist_library_dir
         self.min_score_getter = min_score_getter
         self.use_dist_getter = use_dist_getter
         self.display_error = display_error
+        self.csv_loader_class = csv_loader_class if csv_loader_class else CSVLoader
 
         log.debug(f"Pearson.ctor: library_dir_getter {self.library_dir_getter}")
         log.debug(f"Pearson.ctor: dist_library_dir {self.dist_library_dir}")
@@ -526,7 +532,7 @@ class Pearson:
                     log.debug(f"Pearson.lazy_load_spectra: loading {basename} ({pathname})")
                     try:
                         # note that we load metadata, but don't do anything with it (even label)
-                        csv_loader = CSVLoader(pathname)
+                        csv_loader = self.csv_loader_class(pathname)
                         pr, metadata = csv_loader.load_data(scalar_metadata=True)
                     except:
                         log.error(f"Failed to load library spectrum {pathname}", exc_info=1)
