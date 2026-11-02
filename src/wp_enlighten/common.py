@@ -185,7 +185,7 @@ def get_asset_dir():
     # should be using to access assets.
     this_file_parent = Path(__file__).resolve().parent
     asset_dir = str(this_file_parent / "assets")
-    log.info("get_asset_dir: returning {asset_dir}")
+    log.info(f"get_asset_dir: returning {asset_dir}")
     return asset_dir
 
     # cwd = os.getcwd()
