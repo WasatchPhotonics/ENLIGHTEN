@@ -174,47 +174,57 @@ def get_asset_dir():
     - pip install . && python src/wp_enlighten/app.py
     - pip install -e . && venv/Scripts/enlighten
     - pip install -e . && python src/wp_enlighten/app.py
+    - pip install ~/work/code/enlighten/dist/*.whl
     - make_windows_installer.sh && pyinstaller-build/dist/enlighten/enlighten.exe
     - ENLIGHTEN-4.3.0-Setup64.exe && C:/Program Files/Wasatch Photonics/ENLIGHTEN/enlighten.exe
 
     @TODO: support /opt/homebrew/bin, etc
     """
-    cwd = os.getcwd()
-    exe = sys.executable
+    # This is the path to the wp_enlighten directory which currently provides 
+    # common.py. In every use-case I can think of, this is the directory we
+    # should be using to access assets.
+    this_file_parent = Path(__file__).resolve().parent
+    asset_dir = str(this_file_parent / "assets")
+    log.info("get_asset_dir: returning {asset_dir}")
+    return asset_dir
 
-    is_enlighten_exe = re.search(r"enlighten[/\\]+enlighten.exe$", exe.lower()) # pyinstaller-build/dist/enlighten/enlighten.exe or /c/Program Files/Wasatch Photonics/ENLIGHTEN/enlighten.exe
-    in_venv = "VIRTUAL_ENV" in os.environ
-
-    grandchild_path = os.path.join(cwd, "src", "wp_enlighten", "assets")
-    grandchild_exists = os.path.exists(grandchild_path)
-
-    internal_path = os.path.join(cwd, "_internal", "assets")
-    internal_exists = os.path.exists(internal_path)
-
-    cousin_path = os.path.join(cwd, r"..", r"..", "src", "wp_enlighten", "assets")
-    cousin_exists = os.path.exists(cousin_path)
-
-    if True:
-        log.debug(f"get_asset_dir: cwd {cwd}")
-        log.debug(f"get_asset_dir: exe {exe}")
-        log.debug(f"get_asset_dir: is_enlighten_exe {is_enlighten_exe}")
-        log.debug(f"get_asset_dir: in_venv {in_venv}")
-        log.debug(f"get_asset_dir: grandchild_exists {grandchild_exists}, path {grandchild_path}")
-        log.debug(f"get_asset_dir: internal_exists {internal_exists}, path {internal_path}")
-        log.debug(f"get_asset_dir: cousin_exists {cousin_exists}, path {cousin_path}")
-
-    if internal_exists:
-        log.debug("get_asset_dir: returning internal_path")
-        return internal_path
-    elif grandchild_exists:
-        log.debug("get_asset_dir: returning grandchild_path")
-        return grandchild_path
-    elif cousin_exists:
-        log.debug("get_asset_dir: returning cousin_path")
-        return cousin_path
-    else:
-        log.debug("get_asset_dir: neither _internal, grandchild nor cousin found, returning .")
-        return "."
+    # cwd = os.getcwd()
+    # exe = sys.executable
+    #
+    # is_enlighten_exe = re.search(r"enlighten[/\\]+enlighten.exe$", exe.lower()) # pyinstaller-build/dist/enlighten/enlighten.exe or /c/Program Files/Wasatch Photonics/ENLIGHTEN/enlighten.exe
+    # in_venv = "VIRTUAL_ENV" in os.environ
+    # venv = os.environ["VIRTUAL_ENV"] if "VIRTUAL_ENV" in os.environ else ""
+    #
+    # grandchild_path = os.path.join(cwd, "src", "wp_enlighten", "assets")
+    # grandchild_exists = os.path.exists(grandchild_path)
+    #
+    # internal_path = os.path.join(cwd, "_internal", "assets")
+    # internal_exists = os.path.exists(internal_path)
+    #
+    # cousin_path = os.path.join(cwd, r"..", r"..", "src", "wp_enlighten", "assets")
+    # cousin_exists = os.path.exists(cousin_path)
+    #
+    # log.info(f"get_asset_dir: cwd {cwd}")
+    # log.info(f"get_asset_dir: exe {exe}")
+    # log.info(f"get_asset_dir: is_enlighten_exe {is_enlighten_exe}")
+    # log.info(f"get_asset_dir: in_venv {in_venv}")
+    # log.info(f"get_asset_dir: VIRTUAL_ENV {venv}")
+    # log.info(f"get_asset_dir: grandchild_exists {grandchild_exists}, path {grandchild_path}")
+    # log.info(f"get_asset_dir: internal_exists {internal_exists}, path {internal_path}")
+    # log.info(f"get_asset_dir: cousin_exists {cousin_exists}, path {cousin_path}")
+    #
+    # if internal_exists:
+    #     log.debug("get_asset_dir: returning internal_path")
+    #     return internal_path
+    # elif grandchild_exists:
+    #     log.debug("get_asset_dir: returning grandchild_path")
+    #     return grandchild_path
+    # elif cousin_exists:
+    #     log.debug("get_asset_dir: returning cousin_path")
+    #     return cousin_path
+    # else:
+    #     log.debug("get_asset_dir: neither _internal, grandchild nor cousin found, returning .")
+    #     return "."
 
 def dump_asset_dir():
     root_dir = get_asset_dir()
