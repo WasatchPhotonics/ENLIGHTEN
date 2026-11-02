@@ -15,8 +15,9 @@
         - added Analysis.FlashEtalonCorr
     - scripts
         - added airpls-ratios-to-etalon-correction.py
-    - dependencies
+    - build
         - disable superman on Debian 12 (bookworm)
+        - deprecated app.chdir 
 - 2026-10-20 4.3.3
     - re-releasing, hopefully with the new Wasatch.PY 2.5.2
 - 2026-10-20 4.3.2
