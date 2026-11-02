@@ -16,7 +16,7 @@ application.
       can be modules (files) within it
 """
 
-VERSION = "4.3.4"
+VERSION = "4.3.5"
 USE_QT = True       # external scripts may choose to set this False before importing / using other classes
 
 ctl = None
@@ -191,7 +191,7 @@ def get_asset_dir():
     internal_path = os.path.join(cwd, "_internal", "assets")
     internal_exists = os.path.exists(internal_path)
 
-    cousin_path = os.path.join(cwd, "..", "..", "src", "wp_enlighten", "assets")
+    cousin_path = os.path.join(cwd, r"..", r"..", "src", "wp_enlighten", "assets")
     cousin_exists = os.path.exists(cousin_path)
 
     if True:
@@ -213,7 +213,7 @@ def get_asset_dir():
         log.debug("get_asset_dir: returning cousin_path")
         return cousin_path
     else:
-        log.critical("get_asset_dir: neither _internal, grandchild nor cousin found, returning .")
+        log.debug("get_asset_dir: neither _internal, grandchild nor cousin found, returning .")
         return "."
 
 def dump_asset_dir():

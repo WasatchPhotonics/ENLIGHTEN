@@ -41,7 +41,7 @@ class HelpFeature(EnlightenFeature):
             normally put into mouse-over tooltips. In particular, provides 
             especially rich data on individual measurements in the Clipboard."""))
 
-        self.bt_help.setToolTip(undent("""
+        self.ctl.gui.set_tooltip(self.bt_help, undent("""
             Click or press F1 to view online manual. 
 
             Keyboard shortcuts:

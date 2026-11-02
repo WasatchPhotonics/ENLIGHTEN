@@ -28,7 +28,7 @@ class AccessoryControlXLFeature(EnlightenFeature):
         for widget in [ ]:
             widget.installEventFilter(ScrollStealFilter(widget))
 
-        self.cb_shutter_open.setToolTip("Shutter is OPEN when this checkbox is checked (measuring sample), and shutter is CLOSED when this checkbox is unchecked (taking dark)")
+        self.ctl.gui.set_tooltip(self.cb_shutter_open, "Shutter is OPEN when this checkbox is checked (measuring sample), and shutter is CLOSED when this checkbox is unchecked (taking dark)")
 
         self.update_visibility()
 

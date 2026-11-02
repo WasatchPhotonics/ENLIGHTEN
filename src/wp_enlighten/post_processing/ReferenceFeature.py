@@ -221,11 +221,11 @@ class ReferenceFeature(EnlightenFeature):
         b = self.button_toggle
         b.setEnabled(flag)
         if flag:
-            b.setToolTip(default_tt)
-        elif tt is not None:
-            b.setToolTip(tt)
-        else:
-            b.setToolTip("disabled")
+            tt = default_tt
+        elif tt is None:
+            tt = "disabled"
+
+        self.ctl.gui.set_tooltip(b, tt)
 
     def update_enable(self):
         spec = self.ctl.multispec.current_spectrometer()

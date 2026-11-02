@@ -66,9 +66,10 @@ class BoxcarFeature(EnlightenFeature):
         self.ctl.config.set(spec.settings.eeprom.serial_number, "boxcar_half_width", value)
 
         if value > 0:
-            self.spinbox.setToolTip("boxcar half-width of %d pixels (%d-pixel moving average)" % (value, value * 2 + 1))
+            window = value * 2 + 1
+            self.ctl.gui.set_tooltip(self.spinbox, f"boxcar half-width of {value} pixels ({window}-pixel moving average)")
         else:
-            self.spinbox.setToolTip("smoothing disabled (half-width)")
+            self.ctl.gui.set_tooltip(self.spinbox, "smoothing disabled (half-width)")
 
         # @todo should we call spec.app_state.check_refs() here?
 

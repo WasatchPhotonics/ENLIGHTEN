@@ -124,7 +124,7 @@ class RamanIntensityCorrectionFeature(EnlightenFeature):
         def set_allowed(flag, tt):
             # log.debug(f"set_allowed: flag {flag}, tt {tt}")
             if update_tooltip:
-                self.button.setToolTip(tt)
+                self.ctl.gui.set_tooltip(self.button, tt)
                 if not flag and self.ctl.page_nav.doing_raman() and self.ctl.page_nav.doing_scope():
                     self.ctl.marquee.info(tt)
             self.allowed = flag
@@ -173,14 +173,14 @@ class RamanIntensityCorrectionFeature(EnlightenFeature):
         if self.enabled:
             log.debug("update_visibility: setting button red because enabled")
             self.ctl.gui.colorize_button(self.button, True)
-            self.button.setToolTip("Applying NIST SRM-calibrated Raman Intensity Correction")
+            self.ctl.gui.set_tooltip(self.button, "Applying NIST SRM-calibrated Raman Intensity Correction")
         elif self.enable_when_allowed:
             log.debug("update_visibility: setting button orange because enable_when_allowed")
             self.ctl.gui.colorize_button(self.button, None, tristate=True)
         else:
             log.debug("update_visibility: setting button gray because neither enabled nor enable_when_allowed")
             self.ctl.gui.colorize_button(self.button, False)
-            self.button.setToolTip("Click to apply NIST SRM-calibrated Raman Intensity Correction")
+            self.ctl.gui.set_tooltip(self.button, "Click to apply NIST SRM-calibrated Raman Intensity Correction")
 
         # always send notifications (regardless of was_*) because button_callback may have changed state
         log.debug("update_visibility: notifying observers")

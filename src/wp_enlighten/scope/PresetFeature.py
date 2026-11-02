@@ -72,7 +72,6 @@ class PresetFeature(EnlightenFeature):
         self.combo.currentIndexChanged.connect(self.combo_callback)
         self.combo.installEventFilter(ScrollStealFilter(self.combo))
 
-        self.combo.setToolTip("Save, restore or delete acquisition parameter presets")
         self.combo.setWhatsThis(unwrap("""
             Create presistent 'presets' of acquisition parameters (integration time, 
             gain, scan averaging, boxcar, baseline correction, even plugin settings)

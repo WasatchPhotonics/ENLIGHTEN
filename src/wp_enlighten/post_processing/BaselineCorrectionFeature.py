@@ -1,7 +1,11 @@
 import numpy as np
 import logging
 
-from superman.baseline import BL_CLASSES, AirPLS
+try:
+    from superman.baseline import BL_CLASSES, AirPLS
+    SUPERMAN_AVAILABLE = True
+except:
+    SUPERMAN_AVAILABLE = False
 
 from wp_enlighten.EnlightenFeature import EnlightenFeature
 from wp_enlighten.ui.ScrollStealFilter import ScrollStealFilter
@@ -215,6 +219,13 @@ class BaselineCorrectionFeature(EnlightenFeature):
             self.cb_enabled.setChecked(True)
 
     def update_visibility(self):
+        if not SUPERMAN_AVAILABLE:
+            self.enabled = False
+            self.allowed = False
+            self.show_curve = False
+            self.algo = None
+            return
+
         spec = self.ctl.multispec.current_spectrometer()
 
         self.allowed = self.ctl.page_nav.doing_raman()

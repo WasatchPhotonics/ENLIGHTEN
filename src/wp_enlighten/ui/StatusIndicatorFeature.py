@@ -246,9 +246,9 @@ class StatusIndicatorFeature(EnlightenFeature):
         self.ctl.stylesheets.apply(self.button_lamp,        "light_%s"       % lamp)
         self.ctl.stylesheets.apply(self.button_temperature, "temperature_%s" % temp)
 
-        self.button_hardware    .setToolTip(hw_tt)
-        self.button_lamp        .setToolTip(lamp_tt)
-        self.button_temperature .setToolTip(temp_tt)
+        self.ctl.gui.set_tooltip(self.button_hardware,    hw_tt)
+        self.ctl.gui.set_tooltip(self.button_lamp,        lamp_tt)
+        self.ctl.gui.set_tooltip(self.button_temperature, temp_tt)
 
         self.button_lamp        .setText(lamp_text)
 

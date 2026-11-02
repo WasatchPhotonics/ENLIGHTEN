@@ -333,7 +333,7 @@ class BatchCollectionFeature(EnlightenFeature):
                          of wall-clock time. This runtime will be enforced in addition to Batch Count, Measurement Count, Integration Time and other 
                          settings affecting timing.</p>"""
 
-        self.lb_explain.setToolTip(f"<html><body>{s}</body></html>")
+        self.ctl.gui.set_tooltip(self.lb_explain, f"<html><body>{s}</body></html>")
 
     # ##########################################################################
     # Runtime Loop

@@ -245,22 +245,6 @@ def set_table_row_color(table, row, color):
     for col in range(table.columnCount()):
         table.item(row, col).setBackground(color)
 
-## 
-# Enable or disable a QWidget, while simultaneous restoring or clearing its QToolTip.
-#
-# Normally you can't disable or hide a tooltip.  In this case, I would like to change
-# the tooltip behavior for disabled widgets.
-#
-# @todo move to GUI
-def set_enabled(w, flag, tooltip=None):
-    w.setEnabled(flag)
-
-    if tooltip:
-        if flag:
-            w.setToolTip(tooltip)
-        else:
-            w.setToolTip(None)
-
 def force_size(widget, width, height):
     widget.setMinimumWidth(width)
     widget.setMaximumWidth(width)

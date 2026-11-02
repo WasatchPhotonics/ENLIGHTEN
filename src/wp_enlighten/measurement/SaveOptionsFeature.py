@@ -143,7 +143,7 @@ class SaveOptionsFeature(EnlightenFeature):
         self.rb_by_col          .toggled            .connect(self.update_widgets)
         self.rb_by_row          .toggled            .connect(self.update_widgets)
 
-        self.cb_collated.setToolTip("collate exported spectral components (proc,raw,dark,ref), (proc,raw,dark,ref) vs (proc,proc,proc), (raw,raw,raw)")
+        self.ctl.gui.set_tooltip(self.cb_collated, "collate exported spectral components (proc,raw,dark,ref), (proc,raw,dark,ref) vs (proc,proc,proc), (raw,raw,raw)")
         self.cb_collated.setWhatsThis(unwrap("""
             Collation only applies when exporting a group of measurements, and 
             then only when exporting to column-ordered CSV.
@@ -174,7 +174,7 @@ class SaveOptionsFeature(EnlightenFeature):
             and is not considered in collation. (XD measurements can be 
             "uncollated" by selecting the appropriate option in the export process.)"""))
 
-        self.cb_append.setToolTip("for row-ordered CSV, append all measurements to a single file")
+        self.ctl.gui.set_tooltip(self.cb_append, "for row-ordered CSV, append all measurements to a single file")
 
         row_ordered_msg = unwrap("""
             Due to the way computer memory and filesystems work, a row-ordered

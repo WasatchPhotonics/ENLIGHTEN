@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "wp-enlighten"   # enlighten was taken :-(
-version = "4.3.4"
+version = "4.3.5"
 dependencies = [
     "wasatch==2.5.2",    # if a specific version is required, list it!
 
@@ -38,7 +38,8 @@ dependencies = [
     "qimage2ndarray",
     "scipy",
     "SPyC_Writer",
-    "superman",
+    "superman ; sys_platform != 'linux'", # temporarily drop superman for Debian 12 Bookworm
+    "superman ; platform_system == 'linux' and 'bookworm' not in platform_version",
     "xlwt",
 
     "pywin32   ; sys_platform == 'win32'",

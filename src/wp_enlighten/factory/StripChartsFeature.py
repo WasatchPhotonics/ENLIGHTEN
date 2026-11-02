@@ -152,7 +152,7 @@ class StripChart:
         self.cb_save = QCheckBox(self.parent)
         self.cb_save.setText("Save")
         self.cb_save.stateChanged.connect(self.save_callback)
-        self.cb_save.setToolTip("log data to disk in EnlightenSpectra/today")
+        self.ctl.gui.set_tooltip(self.cb_save, "log data to disk in EnlightenSpectra/today")
 
         # window size (seconds)
         self.sb_sec = QSpinBox(self.parent)
@@ -161,17 +161,17 @@ class StripChart:
         self.sb_sec.setValue(180)
         self.sb_sec.setSuffix(" sec")
         self.sb_sec.valueChanged.connect(self.sec_callback)
-        self.sb_sec.setToolTip("historical depth of graphed data (width in seconds of the graphed region)")
+        self.ctl.gui.set_tooltip(self.sb_sec, "historical depth of graphed data (width in seconds of the graphed region)")
 
         # copy button
         self.pb_copy = self.make_icon_button("clipboard")
         self.pb_copy.clicked.connect(self.copy_callback)
-        self.pb_copy.setToolTip("copy data to clipboard in Excel-compatible table (x unit is 'seconds ago')")
+        self.ctl.gui.set_tooltip(self.pb_copy, "copy data to clipboard in Excel-compatible table (x unit is 'seconds ago')")
 
         # clear button
         self.pb_clear = self.make_icon_button("eraser")
         self.pb_clear.clicked.connect(self.clear_callback)
-        self.pb_clear.setToolTip("erase historical data and start afresh")
+        self.ctl.gui.set_tooltip(self.pb_clear, "erase historical data and start afresh")
 
         # now put all the above into a horizontal row
         hb = QHBoxLayout()

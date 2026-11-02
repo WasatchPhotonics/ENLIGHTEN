@@ -4,7 +4,7 @@ import pyqtgraph
 from wp_enlighten import common
 from wp_enlighten.EnlightenFeature import EnlightenFeature
 
-from PySide6 import QtGui
+from PySide6 import QtGui, QtCore
 from PySide6.QtWidgets import QMessageBox, QCheckBox, QDialog, QLineEdit, QDialogButtonBox, QVBoxLayout, QLabel, QTextEdit, QScrollArea, QWidget, QRadioButton
 
 log = logging.getLogger(__name__)
@@ -91,9 +91,9 @@ class GUIFeature(EnlightenFeature):
 
         cfu = self.ctl.form.ui
         if self.theme.startswith("dark"):
-            cfu.pushButton_dark_mode.setToolTip("Seek the light!")
+            self.set_tooltip(cfu.pushButton_dark_mode, "Seek the light!")
         else:
-            cfu.pushButton_dark_mode.setToolTip("Embrace the dark!")
+            self.set_tooltip(cfu.pushButton_dark_mode, "Embrace the dark!")
 
         path = ":/application/images/enlightenLOGO"
         if not self.theme.startswith("dark"):
@@ -104,6 +104,23 @@ class GUIFeature(EnlightenFeature):
         pixmap = QtGui.QPixmap(path)
         cfu.label_application_logo.setPixmap(pixmap)
         log.debug("update_theme: done")
+
+    def set_enabled(self, w, flag, tooltip=None):
+        """
+        Enable or disable a QWidget, while simultaneous restoring or clearing its QToolTip.
+        
+        Normally you can't disable or hide a tooltip.  In this case, I would like to change
+        the tooltip behavior for disabled widgets.
+        """
+        w.setEnabled(flag)
+        if tooltip:
+            self.set_tooltip(w, tooltip if flag else None)
+
+    def set_tooltip(self, widget, msg):
+        log.debug(f"set_tooltip: {widget.objectName()} -> {msg}")
+        widget.setAttribute(QtCore.Qt.WidgetAttribute.WA_AlwaysShowToolTips, True)
+        widget.setToolTip(msg)
+        self.ctl.stylesheets.apply(widget, "tooltip")
 
     def colorize_button(self, button, flag, tristate=False, active_color="red"):
         if button is None:

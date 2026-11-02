@@ -74,7 +74,7 @@ class ScopeTableFeature(EnlightenFeature):
             b.setText("Copy to Clipboard")
             b.setMinimumHeight(30) 
             b.pressed.connect(self.copy_dataframe_to_clipboard)
-            b.setToolTip("Copy table to Clipboard")
+            self.ctl.gui.set_tooltip(b, "Copy table to Clipboard")
 
             hbox = QtWidgets.QHBoxLayout()
             hbox.addWidget(b)

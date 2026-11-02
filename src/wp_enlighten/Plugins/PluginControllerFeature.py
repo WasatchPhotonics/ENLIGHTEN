@@ -151,7 +151,7 @@ class PluginControllerFeature(EnlightenFeature):
 
         # configure our search directories
         self.plugin_dirs = [
-            "plugins",                                              # (for developers running from source)
+            os.path.join(common.get_asset_dir(), r"..", "Plugins", "dist"), # for developers running from source or package
             os.path.join(common.get_default_data_dir(), "plugins")  # (installed EnlightenSpectra/plugins)
         ]
         self.initialize_python_path()
@@ -637,10 +637,6 @@ class PluginControllerFeature(EnlightenFeature):
             # set title
             log.debug("configure_gui_for_module: setting title")
             self.lb_title.setText(config.name)
-
-            # set tooltip (really doesn't look that good)
-            # if config.tooltip is not None:
-            #     self.frame_control.setToolTip(config.tooltip)
 
             # delete any previously-displayed plugin widgets
             log.debug("configure_gui_for_module: clearing layout")

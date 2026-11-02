@@ -272,7 +272,7 @@ class PageNavigationFeature(EnlightenFeature):
     def update_view_shortcut(self):
         index = self.combo_view.currentIndex()
         tt = f"Ctrl-{index+1} shortcut" if index < common.Views.FACTORY else ""
-        self.combo_view.setToolTip(tt)
+        self.ctl.gui.set_tooltip(self.combo_view, tt)
 
     def is_expert(self):
         return self.operation_mode == common.OperationModes.EXPERT

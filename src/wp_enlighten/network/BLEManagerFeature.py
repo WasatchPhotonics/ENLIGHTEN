@@ -106,7 +106,7 @@ class BLEManagerFeature(EnlightenFeature):
             tt = "Disconnect Bluetooth® LE spectrometer"
         else:
             tt = "Scan for Bluetooth® LE spectrometers"
-        self.bt_ble.setToolTip(tt)
+        self.ctl.gui.set_tooltip(self.bt_ble, tt)
 
     def get_connected_ble_spectrometer(self, include_disconnecting=False):
         for spec in self.ctl.multispec.get_spectrometers():
@@ -331,7 +331,7 @@ class BLESelector(QDialog):
         rssi_num_str = f"RSSI {rssi:0.2f}"
         rssi_bar_str = self.rssi_to_bars(rssi)
         rssi_item = QTableWidgetItem(rssi_bar_str)
-        rssi_item.setToolTip(rssi_num_str)
+        self.ctl.gui.set_tooltip(rssi_item, rssi_num_str)
 
         # last used
         last_used_str = self.ctl.config.get(self.ble_manager.SECTION, serial_number, default=None)

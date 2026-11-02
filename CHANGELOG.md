@@ -2,10 +2,22 @@
 
 ## 4.3 PyPi
 
-- 2026-??-?? 4.3.4
-    - initial version of Analysis.FindEtalonCorr plugin
-    - EEPROMEditor visual tidy 
-    - deprecated app.chdir 
+- 2026-??-?? 4.3.5
+    - LibraryMatchingFeature
+        - respect common.USE_QT
+        - added csv_loader_class
+- 2026-10-23 4.3.4
+    - GUI
+        - EEPROMEditor visual tidy 
+        - tooltips mostly work on MacOS
+    - plugins
+        - added Analysis.FindEtalonCorr 
+        - added Analysis.FlashEtalonCorr
+    - scripts
+        - added airpls-ratios-to-etalon-correction.py
+    - build
+        - disable superman on Debian 12 (bookworm)
+        - deprecated app.chdir 
 - 2026-10-20 4.3.3
     - re-releasing, hopefully with the new Wasatch.PY 2.5.2
 - 2026-10-20 4.3.2

@@ -13,7 +13,8 @@ from wp_enlighten.util import unwrap
 
 from wasatch.CSVLoader import CSVLoader
 
-from PySide6 import QtCore, QtWidgets
+if common.USE_QT:
+    from PySide6 import QtCore, QtWidgets
 
 log = logging.getLogger(__name__)
 
@@ -99,14 +100,13 @@ class LibraryMatchingFeature(EnlightenFeature):
         self.cb_use_dist        .stateChanged   .connect(self.update_settings)
         self.cb_enable          .stateChanged   .connect(self.update_settings)
 
-       #self.bt_select_library  .setToolTip("Select a directory containing a library of Raman spectra")
-        self.bt_save            .setToolTip("Add the current spectrum to the matching library")
-        self.lb_compound        .setToolTip("Declared matching compound (highest matching score)")
-        self.lb_score           .setToolTip("The RamanID algorithm's computed score for the top-matching compound")
-        self.ds_min_score       .setToolTip("Only report matches with this score or above")
-        self.sb_max_results     .setToolTip("Only report this many matches")
-        self.cb_use_dist        .setToolTip("Use standard ENLIGHTEN compound library in addition to user-collected spectra")
-        self.cb_enable          .setToolTip("Perform Pearson Library Matching against measured spectra")
+        self.ctl.gui.set_tooltip(self.bt_save        , "Add the current spectrum to the matching library")
+        self.ctl.gui.set_tooltip(self.lb_compound    , "Declared matching compound (highest matching score)")
+        self.ctl.gui.set_tooltip(self.lb_score       , "The RamanID algorithm's computed score for the top-matching compound")
+        self.ctl.gui.set_tooltip(self.ds_min_score   , "Only report matches with this score or above")
+        self.ctl.gui.set_tooltip(self.sb_max_results , "Only report this many matches")
+        self.ctl.gui.set_tooltip(self.cb_use_dist    , "Use standard ENLIGHTEN compound library in addition to user-collected spectra")
+        self.ctl.gui.set_tooltip(self.cb_enable      , "Perform Pearson Library Matching against measured spectra")
 
         self.bt_select_library  .setWhatsThis(unwrap("""
                                             Choose a folder on your computer where you would like YOUR newly 
@@ -144,9 +144,11 @@ class LibraryMatchingFeature(EnlightenFeature):
         self.metadata_cache = {}
         self.laser_warning_issued = False
 
-        self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(self.tick)
-        self.timer.setSingleShot(True)
+        self.timer = None
+        if common.USE_QT:
+            self.timer = QtCore.QTimer()
+            self.timer.timeout.connect(self.tick)
+            self.timer.setSingleShot(True)
 
         self.ctl.measurement_factory.register_observer(self.factory_callback_save_complete, "save")
 
@@ -173,7 +175,8 @@ class LibraryMatchingFeature(EnlightenFeature):
         super().disconnect()
 
     def stop(self):
-        self.timer.stop()
+        if self.timer:
+            self.timer.stop()
 
     def toggle_callback(self):
         self.cb_enable.setChecked(not self.enabled)
@@ -248,7 +251,8 @@ class LibraryMatchingFeature(EnlightenFeature):
             self.curve_scope.setVisible(False)
             self.curve_scope_XD.setVisible(False)
             self.dataframe = None
-            self.timer.start(self.TIMER_MS)
+            if self.timer:
+                self.timer.start(self.TIMER_MS)
             return
 
         if len(compounds) > self.max_results:
@@ -289,7 +293,8 @@ class LibraryMatchingFeature(EnlightenFeature):
         pr.library_matching_engine = "Pearson"
 
         # schedule GUI update
-        self.timer.start(self.TIMER_MS)
+        if self.timer:
+            self.timer.start(self.TIMER_MS)
 
     def set_library_dir(self, path):
         """ 
@@ -312,7 +317,7 @@ class LibraryMatchingFeature(EnlightenFeature):
         self.ctl.gui.colorize_button(self.bt_select_library, is_custom)
 
         # always show tooltip
-        self.bt_select_library.setToolTip(path)
+        self.ctl.gui.set_tooltip(self.bt_select_library, path)
 
         if self.pearson:
             self.pearson.reset()
@@ -456,19 +461,25 @@ class Pearson:
     """
     This class constructor takes a number of callback functions to make it more 
     easily re-usable outside the ENLIGHTEN GUI.
+
+    csv_loader_class should support:
+        - pr, metadata = csv_loader.load_data(scalar_metadata=True)
+        - pr should support get_processed() and get_wavenumbers()
     """
     def __init__(self, 
                  library_dir_getter, 
                  use_dist_getter=None,
                  dist_library_dir=None,
                  min_score_getter=None,
-                 display_error=None):
+                 display_error=None,
+                 csv_loader_class=None):
 
         self.library_dir_getter = library_dir_getter
         self.dist_library_dir = dist_library_dir
         self.min_score_getter = min_score_getter
         self.use_dist_getter = use_dist_getter
         self.display_error = display_error
+        self.csv_loader_class = csv_loader_class if csv_loader_class else CSVLoader
 
         log.debug(f"Pearson.ctor: library_dir_getter {self.library_dir_getter}")
         log.debug(f"Pearson.ctor: dist_library_dir {self.dist_library_dir}")
@@ -521,7 +532,7 @@ class Pearson:
                     log.debug(f"Pearson.lazy_load_spectra: loading {basename} ({pathname})")
                     try:
                         # note that we load metadata, but don't do anything with it (even label)
-                        csv_loader = CSVLoader(pathname)
+                        csv_loader = self.csv_loader_class(pathname)
                         pr, metadata = csv_loader.load_data(scalar_metadata=True)
                     except:
                         log.error(f"Failed to load library spectrum {pathname}", exc_info=1)

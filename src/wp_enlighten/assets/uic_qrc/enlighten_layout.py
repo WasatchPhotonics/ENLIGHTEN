@@ -182,7 +182,7 @@ class Ui_MainWindow(object):
 "  border: 1px solid #828200;\n"
 "  color: #828200;\n"
 "  padding: 5px;\n"
-"  opacity: 1;\n"
+"  /* opacity: 1; */\n"
 "}\n"
 "\n"
 "/* QStatusBar -------------------------------------------------------------\n"
@@ -201,8 +201,8 @@ class Ui_MainWindow(object):
 "\n"
 "/* QCheckBox --------------------------------------------------------------\n"
 "https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qcheckbox\n"
-"-----------------------------------------------"
-                        "---------------------------- */\n"
+"-----------------------------------------"
+                        "---------------------------------- */\n"
 "\n"
 "QCheckBox {\n"
 "  background-color: transparent;\n"
@@ -241,8 +241,8 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "QCheckBox::indicator:checked {\n"
-"  image: url(\":/qss_ico"
-                        "ns/images/darkstyle_icons/checkbox_checked.png\");\n"
+"  image: url(\":/q"
+                        "ss_icons/images/darkstyle_icons/checkbox_checked.png\");\n"
 "}\n"
 "\n"
 "QCheckBox::indicator:checked:hover, QCheckBox::indicator:checked:focus, QCheckBox::indicator:checked:pressed {\n"
@@ -266,8 +266,8 @@ class Ui_MainWindow(object):
 "  image: url(\":/qss_icons/images/darkstyle_icons/checkbox_indeterminate_focus.png\");\n"
 "}\n"
 "\n"
-"/* QGroupBox ---------------------------------------------"
-                        "-----------------\n"
+"/* QGroupBox ---------------------------------------"
+                        "-----------------------\n"
 "https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qgroupbox\n"
 "--------------------------------------------------------------------------- */\n"
 "\n"
@@ -301,8 +301,8 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "QGroupBox::indicator:unchecked:disabled {\n"
-"  image: url(\":/qss_icons/images/darkstyle_icons/checkbox_unchecked_disabled.p"
-                        "ng\");\n"
+"  image: url(\":/qss_icons/images/darkstyle_icons/checkbox_unchecked_disa"
+                        "bled.png\");\n"
 "}\n"
 "\n"
 "QGroupBox::indicator:checked:hover, QGroupBox::indicator:checked:focus, QGroupBox::indicator:checked:pressed {\n"
@@ -338,8 +338,8 @@ class Ui_MainWindow(object):
 "\n"
 "QRadioButton QWidget {\n"
 "  background-color: #383838;\n"
-"  color: "
-                        "#F0F0F0;\n"
+"  c"
+                        "olor: #F0F0F0;\n"
 "  spacing: 0px;\n"
 "  padding: 0px;\n"
 "  border: none;\n"
@@ -372,8 +372,8 @@ class Ui_MainWindow(object):
 "\n"
 "QRadioButton::indicator:checked:hover, QRadioButton::indicator:checked:focus, QRadioButton::indicator:checked:pressed {\n"
 "  border: none;\n"
-"  image"
-                        ": url(\":/qss_icons/images/darkstyle_icons/radio_checked_focus.png\");\n"
+" "
+                        " image: url(\":/qss_icons/images/darkstyle_icons/radio_checked_focus.png\");\n"
 "}\n"
 "\n"
 "QRadioButton::indicator:checked:disabled {\n"
@@ -411,8 +411,8 @@ class Ui_MainWindow(object):
 "  border: 0px solid #32414B;\n"
 "  background-color: #148CD2;\n"
 "  color: #F0F0F0;\n"
-"  margin-bo"
-                        "ttom: 0px;\n"
+"  mar"
+                        "gin-bottom: 0px;\n"
 "  padding-bottom: 0px;\n"
 "}\n"
 "\n"
@@ -457,8 +457,8 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "QMenu::indicator:non-exclusive:unchecked {\n"
-"  image: url(\":/qss_icons/images/darkstyle_icons/checkbox_unchecked.png\""
-                        ");\n"
+"  image: url(\":/qss_icons/images/darkstyle_icons/checkbox_unchecke"
+                        "d.png\");\n"
 "}\n"
 "\n"
 "QMenu::indicator:non-exclusive:unchecked:selected {\n"
@@ -489,8 +489,8 @@ class Ui_MainWindow(object):
 "  image: url(\":/qss_icons/images/darkstyle_icons/radio_checked_disabled.png\");\n"
 "}\n"
 "\n"
-"QMenu:"
-                        ":right-arrow {\n"
+""
+                        "QMenu::right-arrow {\n"
 "  margin: 5px;\n"
 "  image: url(\":/qss_icons/images/darkstyle_icons/arrow_right.png\");\n"
 "  height: 12px;\n"
@@ -522,8 +522,8 @@ class Ui_MainWindow(object):
 "  border: 1px solid #333;\n"
 "  border-radius: 4px;\n"
 "  padding: 2px;\n"
-"  m"
-                        "in-height: 1.25em;\n"
+""
+                        "  min-height: 1.25em;\n"
 "  color: #F0F0F0;\n"
 "}\n"
 "\n"
@@ -561,8 +561,8 @@ class Ui_MainWindow(object):
 "  width: 16px;\n"
 "  margin: 16px 2px 16px 2px;\n"
 "  border: 1px solid #333;\n"
-"  border-radius: 4px;"
-                        "\n"
+"  border-radius: 4"
+                        "px;\n"
 "}\n"
 "\n"
 "QScrollBar::handle:horizontal {\n"
@@ -601,8 +601,8 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "QScrollBar::add-line:vertical {\n"
-"  margin"
-                        ": 3px 0px 3px 0px;\n"
+"  mar"
+                        "gin: 3px 0px 3px 0px;\n"
 "  border-image: url(\":/qss_icons/images/darkstyle_icons/arrow_down_disabled.png\");\n"
 "  height: 12px;\n"
 "  width: 12px;\n"
@@ -632,8 +632,8 @@ class Ui_MainWindow(object):
 "  height: 12px;\n"
 "  width: 12px;\n"
 "  subcontrol-position: left;\n"
-"  subcontrol-or"
-                        "igin: margin;\n"
+"  subcontrol"
+                        "-origin: margin;\n"
 "}\n"
 "\n"
 "QScrollBar::sub-line:vertical {\n"
@@ -669,8 +669,8 @@ class Ui_MainWindow(object):
 "  background: none;\n"
 "}\n"
 "\n"
-"/* QTextEdit -------------------------"
-                        "-------------------------------------\n"
+"/* QTextEdit ----------------------"
+                        "----------------------------------------\n"
 "https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-specific-widgets\n"
 "--------------------------------------------------------------------------- */\n"
 "\n"
@@ -705,8 +705,8 @@ class Ui_MainWindow(object):
 "  color: #F0F0F0;\n"
 "}\n"
 "\n"
-"QPlainTex"
-                        "tEdit:selected {\n"
+"QPlain"
+                        "TextEdit:selected {\n"
 "  background-color: hsl(0, 0%, 70%);\n"
 "  color: #333;\n"
 "}\n"
@@ -735,9 +735,9 @@ class Ui_MainWindow(object):
 "https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qtoolbar\n"
 "--------------------------------------------------------------------------- */\n"
 "\n"
-"QToolBar {\n"
-""
-                        "  background-color: #32414B;\n"
+"QToolBar "
+                        "{\n"
+"  background-color: #32414B;\n"
 "  border-bottom: 1px solid #383838;\n"
 "  padding: 2px;\n"
 "  font-weight: bold;\n"
@@ -777,8 +777,8 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "QToolBar::separator:vertical {\n"
-"  height:"
-                        " 16px;\n"
+"  h"
+                        "eight: 16px;\n"
 "  image: url(\":/qss_icons/images/darkstyle_icons/toolbar_separator_vertical.png\");\n"
 "}\n"
 "\n"
@@ -814,8 +814,8 @@ class Ui_MainWindow(object):
 "  subcontrol-position: center left;\n"
 "}\n"
 "\n"
-"/* MZ: we use "
-                        "these */\n"
+"/* MZ: w"
+                        "e use these */\n"
 "\n"
 "QAbstractSpinBox::up-arrow, \n"
 "QAbstractSpinBox::up-arrow:disabled, \n"
@@ -851,8 +851,8 @@ class Ui_MainWindow(object):
 "  color: #333;\n"
 "}\n"
 "\n"
-"/* ------------------------------------------------------------"
-                        "------------ */\n"
+"/* ------------------------------------------------------"
+                        "------------------ */\n"
 "/* DISPLAYS --------------------------------------------------------------- */\n"
 "/* ------------------------------------------------------------------------ */\n"
 "\n"
@@ -879,8 +879,8 @@ class Ui_MainWindow(object):
 "https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qabstractscrollarea\n"
 "--------------------------------------------------------------------------- */\n"
 "\n"
-"QTextBrowse"
-                        "r {\n"
+"QText"
+                        "Browser {\n"
 "  background-color: #383838;\n"
 "  border: 1px solid #32414B;\n"
 "  color: #F0F0F0;\n"
@@ -925,8 +925,8 @@ class Ui_MainWindow(object):
 "\n"
 "QGraphicsView:hover, \n"
 "QGraphicsView:!hover, \n"
-"QGraphics"
-                        "View::selected, \n"
+"QGr"
+                        "aphicsView::selected, \n"
 "QGraphicsView::pressed \n"
 "{\n"
 "  border: 1px solid #333;\n"
@@ -960,8 +960,8 @@ class Ui_MainWindow(object):
 "\n"
 "/* QProgressBar -----------------------------------------------------------\n"
 "https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qprogressbar\n"
-"------------------------------------------------------------------------"
-                        "--- */\n"
+"------------------------------------------------------------------"
+                        "--------- */\n"
 "\n"
 "QProgressBar {\n"
 "  background-color: #383838;\n"
@@ -996,9 +996,9 @@ class Ui_MainWindow(object):
 "/* ------------------------------------------------------------------------ */\n"
 "\n"
 "/* ------------------------------------------------------------------------ */\n"
-"/* QPushButton ------------------------------------------------------------\n"
-""
-                        "https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qpushbutton\n"
+"/* QPushButton -------------------------------------------------------"
+                        "-----\n"
+"https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qpushbutton\n"
 "--------------------------------------------------------------------------- */\n"
 "\n"
 "/* Most GUI buttons are wrapping images, so can be fairly tight */\n"
@@ -1033,9 +1033,9 @@ class Ui_MainWindow(object):
 "\n"
 "QPushButton:checked:selected {\n"
 "  background-color: #333;\n"
-"  color: #32414B;\n"
-"}"
-                        "\n"
+"  color: #324"
+                        "14B;\n"
+"}\n"
 "\n"
 "QPushButton:checked:hover {\n"
 "  border: 1px solid hsl(0, 0%, 60%);\n"
@@ -1079,10 +1079,10 @@ class Ui_MainWindow(object):
 "    padding-bottom: 10px;\n"
 "    padding-left: 30px;\n"
 "    padding-right: 30px;\n"
-"}\n"
-"\n"
 ""
-                        "QMessageBox {\n"
+                        "}\n"
+"\n"
+"QMessageBox {\n"
 "    background-color: #383838;\n"
 "}\n"
 "\n"
@@ -1119,8 +1119,8 @@ class Ui_MainWindow(object):
 "  border: none;\n"
 "}\n"
 "\n"
-"QToolButton:disabled:hov"
-                        "er {\n"
+"QToolButton:d"
+                        "isabled:hover {\n"
 "  border: 1px solid hsl(0, 0%, 60%);\n"
 "}\n"
 "\n"
@@ -1160,9 +1160,9 @@ class Ui_MainWindow(object):
 "  width: 16px;\n"
 "}\n"
 "\n"
-"QToolButton::menu-button:hover {\n"
-"  bor"
-                        "der: 1px solid hsl(0, 0%, 60%);\n"
+"QToolButton::menu-button:hover "
+                        "{\n"
+"  border: 1px solid hsl(0, 0%, 60%);\n"
 "}\n"
 "\n"
 "QToolButton::menu-button:checked:hover {\n"
@@ -1202,8 +1202,8 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "QCommandLinkButton:disabled {\n"
-"  backgr"
-                        "ound-color: transparent;\n"
+""
+                        "  background-color: transparent;\n"
 "  color: #787878;\n"
 "}\n"
 "\n"
@@ -1235,8 +1235,8 @@ class Ui_MainWindow(object):
 "    background-color: #626873;\n"
 "    padding-top: 3px;\n"
 "    padding-left: 4px;\n"
-"    selection-background-color: #4a4"
-                        "a4a;\n"
+"    selection-background-col"
+                        "or: #4a4a4a;\n"
 "}\n"
 "\n"
 "QComboBox QAbstractItemView\n"
@@ -1275,9 +1275,9 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "/* QSlider ----------------------------------------------------------------\n"
-"https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qslider\n"
-"---"
-                        "------------------------------------------------------------------------ */\n"
+"https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qslider"
+                        "\n"
+"--------------------------------------------------------------------------- */\n"
 "\n"
 "QSlider:disabled {\n"
 "  background: #383838;\n"
@@ -1326,9 +1326,9 @@ class Ui_MainWindow(object):
 "\n"
 "QSlider::sub-page:horizontal:disabled {\n"
 "  background: #14506E;\n"
-"}\n"
 ""
-                        "\n"
+                        "}\n"
+"\n"
 "QSlider::handle:horizontal {\n"
 "  background: #787878;\n"
 "  border: 1px solid #32414B;\n"
@@ -1372,8 +1372,8 @@ class Ui_MainWindow(object):
 "    background: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0.0 hsl(0, 0%, 60%), stop: 0.2 #a8a8a8, stop: 1 #727272);\n"
 "    border: 1px solid #3A3939;\n"
 "    width: 14px;\n"
-"    heigh"
-                        "t: 14px;\n"
+"   "
+                        " height: 14px;\n"
 "    margin: -4px 0;\n"
 "    border-radius: 2px;\n"
 "}\n"
@@ -1414,8 +1414,8 @@ class Ui_MainWindow(object):
 "\n"
 "/* QLineEdit --------------------------------------------------------------\n"
 "https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qlineedit\n"
-"-----------------------------------------------------------"
-                        "---------------- */\n"
+"-----------------------------------------------------"
+                        "---------------------- */\n"
 "\n"
 "QLineEdit {\n"
 "  background-color: hsl(0, 0%, 40%);\n"
@@ -1458,10 +1458,10 @@ class Ui_MainWindow(object):
 "{\n"
 "    border: 1px solid hsl(0, 0%, 37%);\n"
 "    border-radius: 6px;\n"
-"}\n"
+"}"
+                        "\n"
 "\n"
-""
-                        "/* QTabBar ----------------------------------------------------------------\n"
+"/* QTabBar ----------------------------------------------------------------\n"
 "https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qtabwidget-and-qtabbar\n"
 "--------------------------------------------------------------------------- */\n"
 "\n"
@@ -1489,8 +1489,8 @@ class Ui_MainWindow(object):
 "https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qtabwidget-and-qtabbar\n"
 "--------------------------------------------------------------------------- */\n"
 "\n"
-"/* This i"
-                        "s the \"tab\" atop the QTabPane */\n"
+""
+                        "/* This is the \"tab\" atop the QTabPane */\n"
 "\n"
 "QTabBar::tab {\n"
 "}\n"
@@ -1525,8 +1525,8 @@ class Ui_MainWindow(object):
 "    border: 1px solid #333;\n"
 "    border-top-left-radius: 5px;\n"
 "    border-top-right-radius: 5px;\n"
-"    border-bottom-rig"
-                        "ht-radius: 0;\n"
+"    border-b"
+                        "ottom-right-radius: 0;\n"
 "    border-bottom-left-radius: 0;\n"
 "\n"
 "    margin-top: 0;\n"
@@ -1563,9 +1563,9 @@ class Ui_MainWindow(object):
 "  border-radius: 4px;\n"
 "  border: none;\n"
 "}\n"
-"\n"
-"QDoc"
-                        "kWidget::close-button:hover {\n"
+""
+                        "\n"
+"QDockWidget::close-button:hover {\n"
 "  image: url(\":/qss_icons/images/darkstyle_icons/window_close_focus.png\");\n"
 "}\n"
 "\n"
@@ -1591,8 +1591,8 @@ class Ui_MainWindow(object):
 "https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qtreeview\n"
 "https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qlistview\n"
 "https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qtableview\n"
-"--------------------------------------------------------------------------"
-                        "- */\n"
+"-----------------------------------------------------------------"
+                        "---------- */\n"
 "\n"
 "QTreeView:branch:selected, QTreeView:branch:hover {\n"
 "  background: url(\":/qss_icons/images/darkstyle_icons/transparent.png\");\n"
@@ -1617,9 +1617,9 @@ class Ui_MainWindow(object):
 "\n"
 "QTreeView:branch:open:has-children:!has-siblings, QTreeView:branch:open:has-children:has-siblings {\n"
 "  border-image: none;\n"
-"  image: url(\":/qss_icons/images/darkstyle_icons/branch_open.png\");\n"
-""
-                        "}\n"
+"  image: url(\":/qss_icons/images/darkstyle_icons/branch_open"
+                        ".png\");\n"
+"}\n"
 "\n"
 "QTreeView:branch:has-children:!has-siblings:closed:hover, QTreeView:branch:closed:has-children:has-siblings:hover {\n"
 "  image: url(\":/qss_icons/images/darkstyle_icons/branch_closed_focus.png\");\n"
@@ -1643,8 +1643,8 @@ class Ui_MainWindow(object):
 "\n"
 "QTreeView::indicator:unchecked,\n"
 "QListView::indicator:unchecked {\n"
-"  image: url(\":/qss_icons/im"
-                        "ages/darkstyle_icons/checkbox_unchecked.png\");\n"
+"  image: url(\":"
+                        "/qss_icons/images/darkstyle_icons/checkbox_unchecked.png\");\n"
 "}\n"
 "\n"
 "QTreeView::indicator:unchecked:hover, QTreeView::indicator:unchecked:focus, QTreeView::indicator:unchecked:pressed,\n"
@@ -1669,9 +1669,9 @@ class Ui_MainWindow(object):
 "QTreeView,\n"
 "QListView,\n"
 "QTableView,\n"
-"QColumnView {\n"
-""
-                        "  background-color: hsl(0, 0%, 13%);\n"
+"QCol"
+                        "umnView {\n"
+"  background-color: hsl(0, 0%, 13%);\n"
 "  border: 1px solid #333;\n"
 "  color: #F0F0F0;\n"
 "  gridline-color: #ccc;\n"
@@ -1713,9 +1713,9 @@ class Ui_MainWindow(object):
 "QTreeView::item:selected:hover,\n"
 "QListView::item:selected:hover,\n"
 "QTableView::item:selected:hover,\n"
-"QColumnView::item:selected:hover {\n"
-"  back"
-                        "ground: hsl(0, 0%, 70%);\n"
+"QColumnView::item:selected:hove"
+                        "r {\n"
+"  background: hsl(0, 0%, 70%);\n"
 "  color: #383838;\n"
 "}\n"
 "\n"
@@ -1749,9 +1749,9 @@ class Ui_MainWindow(object):
 "  border: 1px solid #666;\n"
 "  padding: 2px;\n"
 "  margin: 0px;\n"
-"  border-radius: 0px;\n"
-""
-                        "}\n"
+"  border-rad"
+                        "ius: 0px;\n"
+"}\n"
 "\n"
 "QHeaderView:disabled {\n"
 "  padding: 2px;\n"
@@ -1796,10 +1796,10 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "QHeaderView::section::vertical:disabled {\n"
-"  color: #787878;\n"
+"  color: #7878"
+                        "78;\n"
 "}\n"
-""
-                        "\n"
+"\n"
 "QHeaderView::down-arrow {\n"
 "  /* Those settings (border/width/height/background-color) solve bug */\n"
 "  /* transparent arrow background and size */\n"
@@ -1833,9 +1833,9 @@ class Ui_MainWindow(object):
 "\n"
 "QToolBox::tab {\n"
 "  background-color: #383838;\n"
-"  border: 1px solid #32414B;\n"
-"  col"
-                        "or: #F0F0F0;\n"
+"  border: 1px solid #324"
+                        "14B;\n"
+"  color: #F0F0F0;\n"
 "  border-top-left-radius: 4px;\n"
 "  border-top-right-radius: 4px;\n"
 "}\n"
@@ -1876,8 +1876,8 @@ class Ui_MainWindow(object):
 "\n"
 "/* QFrame -----------------------------------------------------------------\n"
 "https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qframe\n"
-"-----------------"
-                        "---------------------------------------------------------- */\n"
+"---"
+                        "------------------------------------------------------------------------ */\n"
 "\n"
 "/*\n"
 ".QFrame {\n"
@@ -1918,8 +1918,8 @@ class Ui_MainWindow(object):
 "  image: url(\":/qss_icons/images/darkstyle_icons/line_vertical.png\");\n"
 "}\n"
 "\n"
-"QSplitter::separ"
-                        "ator:vertical {\n"
+"QS"
+                        "plitter::separator:vertical {\n"
 "  height: 5px;\n"
 "  image: url(\":/qss_icons/images/darkstyle_icons/line_horizontal.png\");\n"
 "}\n"
@@ -1954,10 +1954,10 @@ class Ui_MainWindow(object):
 "QDateEdit::down-arrow {\n"
 "  image: url(\":/qss_icons/images/darkstyle_icons/arrow_down_disabled.png\");\n"
 "  height: 12px;\n"
-"  width: 12px;\n"
+"  width: 12"
+                        "px;\n"
 "}\n"
-""
-                        "\n"
+"\n"
 "QDateEdit::down-arrow:on, QDateEdit::down-arrow:hover, QDateEdit::down-arrow:focus {\n"
 "  image: url(\":/qss_icons/images/darkstyle_icons/arrow_down.png\");\n"
 "}\n"
@@ -1991,8 +1991,8 @@ class Ui_MainWindow(object):
 "   \n"
 "   It would be nice to use [property=\"value\"] string selectors, but I \n"
 "   couldn't get them to work.  These bool flags do seem to work (I don't\n"
-"   even set "
-                        "values, just check for presence -- it defaults to 'false').\n"
+""
+                        "   even set values, just check for presence -- it defaults to 'false').\n"
 "\n"
 "   It would also be nice to use the following enums, but that path wasn't\n"
 "   converging either; I forget why. (I think they worked in Qt Designer,\n"
@@ -2027,9 +2027,9 @@ class Ui_MainWindow(object):
 "   [frameShape=\"6\"] { }\n"
 "\n"
 "   [frameShadow=\"16\"] { }\n"
-"   [frameShadow=\"32\"] { }\n"
-""
-                        "   [frameShadow=\"48\"] { }\n"
+"   [frameShadow=\"32"
+                        "\"] { }\n"
+"   [frameShadow=\"48\"] { }\n"
 "\n"
 "   ---------------------------------------------------------------------- */\n"
 "\n"
@@ -2073,9 +2073,9 @@ class Ui_MainWindow(object):
 "{\n"
 "    /* background: rgb(0, 165, 80); */\n"
 "    color: #fff;\n"
-"    background-color: qlineargradient(spread:pad, \n"
-" "
-                        "       x1:0.5, y1:1, \n"
+"    background-color: qlineargradient(spread"
+                        ":pad, \n"
+"        x1:0.5, y1:1, \n"
 "        x2:0.5, y2:0, \n"
 "        stop:0 rgba(0, 170, 82, 255), \n"
 "        stop:1 rgba(0, 140, 68, 255));\n"
@@ -2117,9 +2117,9 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "[wpPanel] QPushButton:disabled,\n"
-"[wpGrad]  QPushButton:disabled \n"
-""
-                        "{\n"
+"[wpGrad]  QPushButton"
+                        ":disabled \n"
+"{\n"
 "    border: 1px solid #333;\n"
 "    background-color: qlineargradient(spread:pad, \n"
 "        x1:0.5, y1:1, \n"
@@ -7270,6 +7270,7 @@ class Ui_MainWindow(object):
         icon15 = QIcon()
         icon15.addFile(u":/greys/images/grey_icons/lock-spectra.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pushButton_lock_axes.setIcon(icon15)
+        self.pushButton_lock_axes.setIconSize(QSize(16, 16))
 
         self.horizontalLayout_graph_controls.addWidget(self.pushButton_lock_axes)
 
@@ -7282,6 +7283,7 @@ class Ui_MainWindow(object):
         icon16 = QIcon()
         icon16.addFile(u":/greys/images/grey_icons/zoom.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pushButton_zoom_graph.setIcon(icon16)
+        self.pushButton_zoom_graph.setIconSize(QSize(16, 16))
 
         self.horizontalLayout_graph_controls.addWidget(self.pushButton_zoom_graph)
 
@@ -7294,6 +7296,7 @@ class Ui_MainWindow(object):
         icon17 = QIcon()
         icon17.addFile(u":/greys/images/grey_icons/GridIcon.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pushButton_graphGrid.setIcon(icon17)
+        self.pushButton_graphGrid.setIconSize(QSize(16, 16))
 
         self.horizontalLayout_graph_controls.addWidget(self.pushButton_graphGrid)
 
@@ -7306,6 +7309,7 @@ class Ui_MainWindow(object):
         icon18 = QIcon()
         icon18.addFile(u":/greys/images/grey_icons/flip-horiz.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pushButton_invert_x_axis.setIcon(icon18)
+        self.pushButton_invert_x_axis.setIconSize(QSize(16, 16))
 
         self.horizontalLayout_graph_controls.addWidget(self.pushButton_invert_x_axis)
 
@@ -7327,10 +7331,11 @@ class Ui_MainWindow(object):
         icon19 = QIcon()
         icon19.addFile(u":/greys/images/grey_icons/ruler.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pushButton_interp_toggle.setIcon(icon19)
+        self.pushButton_interp_toggle.setIconSize(QSize(16, 16))
 
         self.horizontalLayout_graph_controls.addWidget(self.pushButton_interp_toggle)
 
-        self.horizontalSpacer_gap_left = QSpacerItem(0, 6, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_gap_left = QSpacerItem(0, 16, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_graph_controls.addItem(self.horizontalSpacer_gap_left)
 
@@ -7341,6 +7346,7 @@ class Ui_MainWindow(object):
         self.pushButton_scope_toggle_dark.setMinimumSize(QSize(16, 26))
         self.pushButton_scope_toggle_dark.setMaximumSize(QSize(30, 26))
         self.pushButton_scope_toggle_dark.setIcon(icon8)
+        self.pushButton_scope_toggle_dark.setIconSize(QSize(16, 16))
 
         self.horizontalLayout_graph_controls.addWidget(self.pushButton_scope_toggle_dark)
 
@@ -7351,6 +7357,7 @@ class Ui_MainWindow(object):
         self.pushButton_scope_toggle_reference.setMinimumSize(QSize(16, 26))
         self.pushButton_scope_toggle_reference.setMaximumSize(QSize(30, 26))
         self.pushButton_scope_toggle_reference.setIcon(icon9)
+        self.pushButton_scope_toggle_reference.setIconSize(QSize(16, 16))
 
         self.horizontalLayout_graph_controls.addWidget(self.pushButton_scope_toggle_reference)
 
@@ -7376,6 +7383,7 @@ class Ui_MainWindow(object):
         icon21 = QIcon()
         icon21.addFile(u":/greys/images/grey_icons/ingaas.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pushButton_ingaas_correction.setIcon(icon21)
+        self.pushButton_ingaas_correction.setIconSize(QSize(20, 20))
 
         self.horizontalLayout_graph_controls.addWidget(self.pushButton_ingaas_correction)
 
@@ -7388,6 +7396,7 @@ class Ui_MainWindow(object):
         icon22 = QIcon()
         icon22.addFile(u":/greys/images/grey_icons/etalon.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pushButton_etalon_correction.setIcon(icon22)
+        self.pushButton_etalon_correction.setIconSize(QSize(20, 20))
 
         self.horizontalLayout_graph_controls.addWidget(self.pushButton_etalon_correction)
 
@@ -7400,6 +7409,7 @@ class Ui_MainWindow(object):
         icon23 = QIcon()
         icon23.addFile(u":/greys/images/grey_icons/srm.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pushButton_raman_intensity_correction_tristate.setIcon(icon23)
+        self.pushButton_raman_intensity_correction_tristate.setIconSize(QSize(20, 20))
 
         self.horizontalLayout_graph_controls.addWidget(self.pushButton_raman_intensity_correction_tristate)
 
@@ -7412,6 +7422,7 @@ class Ui_MainWindow(object):
         icon24 = QIcon()
         icon24.addFile(u":/greys/images/grey_icons/XD.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pushButton_XD_toggle.setIcon(icon24)
+        self.pushButton_XD_toggle.setIconSize(QSize(20, 20))
 
         self.horizontalLayout_graph_controls.addWidget(self.pushButton_XD_toggle)
 
@@ -7424,10 +7435,11 @@ class Ui_MainWindow(object):
         icon25 = QIcon()
         icon25.addFile(u":/greys/images/grey_icons/fingerprint.svg", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pushButton_library_matching_toggle.setIcon(icon25)
+        self.pushButton_library_matching_toggle.setIconSize(QSize(20, 20))
 
         self.horizontalLayout_graph_controls.addWidget(self.pushButton_library_matching_toggle)
 
-        self.horizontalSpacer_gap_right = QSpacerItem(0, 5, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_gap_right = QSpacerItem(0, 16, QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_graph_controls.addItem(self.horizontalSpacer_gap_right)
 
@@ -11519,30 +11531,30 @@ class Ui_MainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.pushButton_interp_toggle.setText("")
 #if QT_CONFIG(tooltip)
-        self.pushButton_scope_toggle_dark.setToolTip(QCoreApplication.translate("MainWindow", u"Take Dark (ctrl-D)", None))
+        self.pushButton_scope_toggle_dark.setToolTip(QCoreApplication.translate("MainWindow", u"Take dark", None))
+#endif // QT_CONFIG(tooltip)
+        self.pushButton_scope_toggle_dark.setText("")
+#if QT_CONFIG(tooltip)
+        self.pushButton_scope_toggle_reference.setToolTip(QCoreApplication.translate("MainWindow", u"Take reference", None))
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
-        self.pushButton_scope_toggle_reference.setToolTip(QCoreApplication.translate("MainWindow", u"Take Reference", None))
+        self.pushButton_ramanCorrection.setToolTip(QCoreApplication.translate("MainWindow", u"Take reference", None))
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
-        self.pushButton_ramanCorrection.setToolTip(QCoreApplication.translate("MainWindow", u"X-Axis Calibration", None))
+        self.pushButton_ingaas_correction.setToolTip(QCoreApplication.translate("MainWindow", u"Correct InGaAs sawtooth", None))
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
-        self.pushButton_ingaas_correction.setToolTip(QCoreApplication.translate("MainWindow", u"toggle InGaAs linear correction", None))
-#endif // QT_CONFIG(tooltip)
-        self.pushButton_ingaas_correction.setText("")
-#if QT_CONFIG(tooltip)
-        self.pushButton_etalon_correction.setToolTip(QCoreApplication.translate("MainWindow", u"toggle etalon correction", None))
+        self.pushButton_etalon_correction.setToolTip(QCoreApplication.translate("MainWindow", u"Correct etalon sawtooth", None))
 #endif // QT_CONFIG(tooltip)
         self.pushButton_etalon_correction.setText("")
 #if QT_CONFIG(tooltip)
-        self.pushButton_raman_intensity_correction_tristate.setToolTip(QCoreApplication.translate("MainWindow", u"toggle Raman Intensity Correction", None))
+        self.pushButton_raman_intensity_correction_tristate.setToolTip(QCoreApplication.translate("MainWindow", u"Apply NIST SRM Raman Intensity Correction", None))
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
-        self.pushButton_XD_toggle.setToolTip(QCoreApplication.translate("MainWindow", u"toggle XD processing", None))
+        self.pushButton_XD_toggle.setToolTip(QCoreApplication.translate("MainWindow", u"Apply XD fluorescence correction", None))
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
-        self.pushButton_library_matching_toggle.setToolTip(QCoreApplication.translate("MainWindow", u"toggle library matching", None))
+        self.pushButton_library_matching_toggle.setToolTip(QCoreApplication.translate("MainWindow", u"Enable Raman library matching", None))
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
         self.pushButton_show_ble_selector.setToolTip(QCoreApplication.translate("MainWindow", u"Scan for Bluetooth\u00ae LE spectrometers", None))
@@ -11693,7 +11705,7 @@ class Ui_MainWindow(object):
         self.comboBox_presets.setItemText(2, QCoreApplication.translate("MainWindow", u"Remove...", None))
 
 #if QT_CONFIG(tooltip)
-        self.comboBox_presets.setToolTip(QCoreApplication.translate("MainWindow", u"Presets allow you to save and re-apply key acquisition parameters including integration time, gain dB, scan averaging, boxcar, baseline subtraction and Raman intensity correction.", None))
+        self.comboBox_presets.setToolTip(QCoreApplication.translate("MainWindow", u"Save, restore or delete acquisition parameter presets", None))
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
         self.checkBox_auto_raman_config.setToolTip(QCoreApplication.translate("MainWindow", u"Expose various low-level configuration options for the Auto-Raman feature, which may be assigned to named Presets", None))

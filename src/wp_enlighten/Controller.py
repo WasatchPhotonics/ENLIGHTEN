@@ -273,18 +273,15 @@ class Controller:
     def macos_fix_tooltips(self):
         cfu = self.form.ui
         log.debug("fixing tooltips")
-        if False:
-            # this doesn't work either
-            # cfu.centralwidget.setAttribute(QtCore.Qt.WidgetAttribute.WA_AlwaysShowToolTips, True)
-            self.form.setAttribute(QtCore.Qt.WidgetAttribute.WA_AlwaysShowToolTips, True)
-        else:
-            # this doesn't work
-            # widgets = cfu.centralwidget.findChildren(QWidget)
-            widgets = self.form.findChildren(QWidget)
-            for w in widgets:
-                if w.toolTip().strip():
-                    log.debug(f"  {w.metaObject().className()} {w.objectName()}")
-                    w.setMouseTracking(True)
+
+        # self.form.setAttribute(QtCore.Qt.WidgetAttribute.WA_AlwaysShowToolTips, True)
+
+        widgets = self.form.findChildren(QWidget)
+        for w in widgets:
+            if w.toolTip().strip():
+                log.debug(f"  {w.metaObject().className()} {w.objectName()}")
+                w.setMouseTracking(True)
+                w.setAttribute(QtCore.Qt.WidgetAttribute.WA_AlwaysShowToolTips, True)
 
     def disconnect_device(self, spec=None, closing=False):
         if spec is None:
@@ -1036,7 +1033,7 @@ class Controller:
         cfu = self.form.ui
         lb = cfu.label_hw_view_power_connection_state
         lb.clear()
-        lb.setToolTip(None)
+        self.gui.set_tooltip(lb, None)
 
         spec = self.multispec.current_spectrometer()
         if spec is None:
@@ -1047,7 +1044,7 @@ class Controller:
             return
             
         lb.setText(pcs.short())
-        lb.setToolTip(pcs.long())
+        self.gui.set_tooltip(lb, pcs.long())
 
     def update_assembly_revision(self):
         spec = self.multispec.current_spectrometer()

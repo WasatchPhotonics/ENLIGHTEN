@@ -18,7 +18,7 @@ class GridFeature(EnlightenFeature):
 
         self.button.clicked.connect(self.toggle)
 
-        self.button.setToolTip("show or hide graph grid")
+        self.ctl.gui.set_tooltip(self.button, "show or hide graph grid")
         self.button.setWhatsThis(unwrap("""
                 Convenience shortcut to show or hide a grid on the main graph. 
                 You can fine-tune the grid by right-clicking on the graph. 

@@ -65,9 +65,10 @@ class LaserWatchdogFeature(EnlightenFeature):
         sec = spec.settings.state.laser_watchdog_sec
 
         if self.cb_enable.isChecked():
-            self.sb_sec.setToolTip(f"Laser will automatically stop firing after {sec} seconds")
+            tt = f"Laser will automatically stop firing after {sec} seconds"
         else:
-            self.sb_sec.setToolTip("Laser watchdog disabled")
+            tt = "Laser watchdog disabled"
+        self.ctl.gui.set_tooltip(self.sb_sec, tt)
 
     def set_visible(self, flag):
         log.debug(f"set_visible: flag {flag}")
