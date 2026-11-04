@@ -8,10 +8,10 @@ def error(msg):
     sys.exit(1)
 
 # embed the default DARK stylesheet...
-css_path = 'enlighten/assets/stylesheets/dark/enlighten.css'
+css_path = 'src/wp_enlighten/assets/stylesheets/dark/enlighten.css'
 
 # ...into this Qt Designer/Creator file:
-ui_path  = 'enlighten/assets/uic_qrc/enlighten_layout.ui'
+ui_path  = 'src/wp_enlighten/assets/uic_qrc/enlighten_layout.ui'
 
 # load CSS
 css = None

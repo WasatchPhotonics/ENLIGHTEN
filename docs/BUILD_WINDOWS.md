@@ -1,53 +1,74 @@
-# Windows 10/11 Development Environment
+# Windows 11 Development Environment
 
-This document attempts to maintain a common build process for both
-Windows 10 and Windows 11.  Note that released installers are currently
-always built from Windows 11 (but are believed to work on Windows 10).
+The Windows development process closely mimics the MacOS, Linux and Raspberry Pi
+process, in that it too now heavily uses BUILD_PYPI. 
+
+However, it does have a few unique notes, especially given that we still plan to
+release pre-compiled binary installers for Windows (which are not planned for 
+other platforms.
+
+All Windows development steps currently assume using Git for Windows Bash shell:
+
+- https://git-scm.com/install/windows
+
+There is probably no reason this could not be made to work using PowerShell or 
+[Windows Subsystem for Linux](https://learn.microsoft.com/en-us/windows/wsl),
+I just haven't taken time to learn and verify those environments. If someone
+wants to do so, and update the docs accordingly, that would be sweet.
 
 ## Dependencies
 
-The default supported Python version is 3.11. The latest Python 3.11 binary 
-installer for Windows can be found here:
+### Python 3.14
 
-- https://www.python.org/downloads/windows/
-    - e.g. https://www.python.org/ftp/python/3.11.9/python-3.11.9-amd64.exe
+The default supported Python version is 3.14. At writing, the latest Python 3.14
+binary installer for Windows can be found here:
 
-By default, this will put Python 3.11 someplace like:
+- https://www.python.org/downloads/release/python-3148/
 
-    /c/Users/mzieg/AppData/Local/Programs/Python/Python311/python
-    /c/Users/mzieg/AppData/Local/Programs/Python/Python311/python/Scripts
+By default, this will put Python 3.14 someplace like:
+
+    /c/Users/mzieg/AppData/Local/Programs/Python/Python314/python
 
 You will need to update your Windows %PATH% to make sure those directories
 are high in your search order.
 
 Other than Python, the following installation sequence is recommended:
 
-- [Git for Windows](https://git-scm.com/download/win)
+- [Git for Windows](https://git-scm.com/install/windows)
     - select "Use Git and optional Unix tools from the Command Prompt"
+
+### Inno Setup (building installers)
+
+If you want to build binary installers, you will need the following additional 
+tools:
+
 - [InnoSetup](http://www.jrsoftware.org/isinfo.php) (last tested 6.3.3)
-- [Wasatch.PY](https://github.com/WasatchPhotonics/Wasatch.PY) (clone parallel to Enlighten)
 
-Windows environments have additional dependencies if you need KnowItAll support:
-
-- [KnowItAllWrapper](https://github.com/WasatchPhotonics/KnowItAllWrapper)
-    - a compiled copy of KIAConsole is in dist/
-
-See [MAINTENANCE](MAINTENANCE.md) for temporary changes or workarounds to
-the build process.
-
-# Windows 11 Standard Development Process (New Bootstrap Scripts)
+# Windows 11 Standard Development Process 
 
 For Windows 11, you should then be able to install all Python dependencies, and 
 run the program from source like this (assuming you've cloned ENLIGHTEN to 
-%HOME%\work\code\enlighten):
+$HOME/work/code/enlighten):
 
-    C> cd %HOME%\work\code\enlighten
-    C> python scripts\bootstrap\win11\bootstrap.py
+    $ cd ~/work/code/enlighten
+    $ python -m venv venv
+    $ . venv/Scripts/activate
+    (venv) $ pip install -e .
+    (venv) $ enlighten --log-level debug 2>enlighten.err 1>enlighten.out
+
+    (edit files under src/wp_enlighten as you will)
+
+# Build Installer
+
+    $ scripts/make_windows_installer.sh
 
 # Release Installer
 
-After successfully running ENLIGHTEN from source using the above procedure, you 
-can then build a release installer using Pyinstaller and Inno Setup:
+    $ scripts/deploy
 
-    C> cd %HOME%\work\code\enlighten
-    C> scripts\make_windows_installer.bat
+# Release PyPi Package
+
+Personally I do this from MacOS, but:
+
+    $ make publish-test
+    $ make publish

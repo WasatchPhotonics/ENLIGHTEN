@@ -27,7 +27,7 @@ function upload()
     fi
     FULL_REMOTE_PATH="www/$REMOTE_PATH"
 
-    if ssh $USERNAME@wasatchphotonics.com ls $FULL_REMOTE_PATH 1>/dev/null 2>&1
+    if ssh ${REMOTE_USERNAME}@wasatchphotonics.com ls $FULL_REMOTE_PATH 1>/dev/null 2>&1
     then
         echo "ERROR: $FULL_REMOTE_PATH already found on remote host (manually remove/rename then retry)"
         if $FORCE
@@ -40,7 +40,7 @@ function upload()
         echo "$FULL_REMOTE_PATH does not currently exist on remote host"
     fi
 
-    scp $LOCAL_NAME $USERNAME@wasatchphotonics.com:$FULL_REMOTE_PATH
+    scp $LOCAL_NAME ${REMOTE_USERNAME}@wasatchphotonics.com:$FULL_REMOTE_PATH
 
     mv -f $LOCAL_NAME releases
 
@@ -48,40 +48,38 @@ function upload()
 }
 
 ################################################################################
-# process cmd-line args
+# setup
 ################################################################################
 
-POST_MAC=false
-POST_WIN=false
-POST_LINUX=false
-DOCS_ONLY=false
-FORCE=false
+WIN_USER=$USERNAME
+IS_GIT_BASH=false
+IS_WSL=false
 
-while [ "$1" != "" ]; do
-    case $1 in
-          --mac) POST_MAC=true   ;;
-          --win) POST_WIN=true   ;;
-        --linux) POST_LINUX=true ;;
-        --force) FORCE=true      ;;
-    esac
-    shift
-done
-
-if ! ( $POST_WIN || $POST_MAC || $POST_LINUX )
+if [[ "$OSTYPE" == "msys" ]]
 then
-    echo "Updating documentation only."
-    DOCS_ONLY=true
+    echo "Running under Git for Windows Bash shell"
+    IS_GIT_BASH=true
+else
+    if uname -a | egrep -qi "(Microsoft|WSL)"
+    then
+        echo "Running under WSL"
+        IS_WSL=true
+    else
+        echo "Not running under Git Bash or WSL -- behavior undefined"
+    fi
+
 fi
 
 ################################################################################
 # read parameters
 ################################################################################
 
-read -p "Username:   " USERNAME
+read -p "Username:   " REMOTE_USERNAME
 read -p "Version:    " VERSION 
 read -p "Beta:       " BETA
 
 export VERSION
+export RUST_BACKTRACE=full
 
 if echo $BETA | grep -q y
 then
@@ -94,7 +92,7 @@ fi
 # check for keys
 ################################################################################
 
-if ! [ -f enlighten/network/keys.py ]
+if ! [ -f src/wp_enlighten/network/keys.py ]
 then
     echo "WARNING: keys.py not found"
 fi
@@ -103,12 +101,21 @@ fi
 # validate release requirements
 ################################################################################
 
-# verify version number in code
-if egrep -q "\"$VERSION\"" enlighten/common.py
+# verify version number in enlighten.common
+if egrep -q "\"$VERSION\"" src/wp_enlighten/common.py
 then
     echo "version found in common.py"
 else
     echo "version missing from common.py"
+    exit 1
+fi
+
+# verify version number in pyproject.toml
+if egrep -q "^version = \"$VERSION\"" pyproject.toml
+then
+    echo "version found in pyproject.toml"
+else
+    echo "version missing from pyproject.toml"
     exit 1
 fi
 
@@ -150,18 +157,22 @@ fi
 # render documentation 
 ################################################################################
 
-# commented-out until we fix the symlink issue on Windows
-if false
-then
-    make doc
-    rsync --archive --delete docs/doxygen/html/ $USERNAME@wasatchphotonics.com:www/api/ENLIGHTEN/
-    scp docs/ENLIGHTEN_CHANGELOG.html $USERNAME@wasatchphotonics.com:www/binaries/apps/enlighten/README.html
-fi
+echo "make docs..."
+make docs
+echo
 
-if $DOCS_ONLY
+if $IS_GIT_BASH
 then
-    exit 0
-fi
+    echo "rsync... (from Git Bash via WSL Ubuntu)"
+    # this can probably be simplified, but works IFF host has WSL Ubuntu installed
+    MSYS_NO_PATHCONV=1 wsl -d Ubuntu -u ${WIN_USER} script -q -c "rsync --archive --verbose --progress /mnt${PWD}/docs/doxygen/html/ ${REMOTE_USERNAME}@wasatchphotonics.com:www/api/ENLIGHTEN/" /dev/null
+else
+    echo "rsync..."
+    rsync --archive --verbose --progress docs/doxygen/html/ ${REMOTE_USERNAME}@wasatchphotonics.com:www/api/ENLIGHTEN/
+echo
+
+echo "scp..."
+scp docs/ENLIGHTEN_CHANGELOG.html ${REMOTE_USERNAME}@wasatchphotonics.com:www/binaries/apps/enlighten/README.html
 echo
 
 ################################################################################
@@ -169,30 +180,7 @@ echo
 ################################################################################
 
 mkdir -p releases
-
-if $POST_WIN
-then
-    upload "Enlighten-Setup64-${VERSION}.exe"
-else
-    echo "skipping Windows"
-fi
-
-if $POST_MAC
-then
-    upload "ENLIGHTEN-MacOS-${VERSION}.zip"
-else
-    echo "skipping Mac"
-fi
-
-if $POST_LINUX
-then
-    TARBALL=`ls -t *.tgz | head -1`
-    upload $TARBALL
-else
-    echo "skipping Linux"
-fi
-
-scp scripts/bootstrap/ubuntu/enlighten_ubuntu_launcher.sh $USERNAME@wasatchphotonics.com:www/binaries/apps/enlighten
+upload "Enlighten-Setup64-${VERSION}.exe"
 
 ################################################################################
 # capture build artifacts
@@ -203,7 +191,7 @@ then
     BUILD_LOG=releases/build-${VERSION}.log
     echo "stdout:"   > $BUILD_LOG
     cat   build.out >> $BUILD_LOG
-
+    echo            >> $BUILD_LOG
     echo "stderr:"  >> $BUILD_LOG
     cat   build.err >> $BUILD_LOG
 

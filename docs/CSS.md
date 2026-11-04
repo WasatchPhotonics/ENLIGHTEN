@@ -8,21 +8,19 @@ See also: [QT notes](QT.md)
 
 There are three ways you can style an element:
 
-1. via enlighten/assets/stylesheets/dark/enlighten.css (a secondary copy is
-   embedded at the top of enlighten/assets/uic_qrc/enlighten_layout.ui, but you
-   should edit the .css version)
+1. via wp_enlighten/assets/stylesheets/dark/enlighten.css (a secondary copy is
+   embedded at the top of wp_enlighten/assets/uic_qrc/enlighten_layout.ui, but 
+   you should edit the .css version)
 2. via per-element stylesheets, applied within Qt Designer, and again stored 
    within enlighten_layout.ui
 3. programmatically from Python, typically via the Stylesheets class which 
    provides access to enlighten/assets/stylesheets/dark
 
-My goal is to use #1 as much as possible, fail-over to #3 when dynamic styling is 
-required, and utilize #2 as little as possible.
+Our goal was to use #1 as much as possible, fail-over to #3 when dynamic styling
+is required, and utilize #2 as little as possible.
 
 Originally, ENLIGHTEN made heavy use of #2: ENLIGHTEN 1.6 had almost 400 
-individually styled elements, some with fairly large multi-element stylesheets,
-all showing a bewildering preponderance of copy-pasta.
-
+individually styled elements, some with fairly large multi-element stylesheets.
 The goal is for ENLIGHTEN 1.7.x to use _no_ per-element styles, and rely far
 more heavily on #1.
 
@@ -36,55 +34,37 @@ specifically commit c92d0c4c996e3e859134492e0f9f7f74bd0e12cd of:
 
 # enlighten.css
 
-I have extracted the stylesheet from enlighten_layout.ui, and put it in
+We extracted the stylesheet from enlighten_layout.ui, and put it in
 stylesheets/dark as enlighten.css.
 
-I've also updated scripts\rebuild_resources.sh to use XPath to copy the latest
+We've also updated scripts\rebuild_resources.sh to use XPath to copy the latest
 enlighten.css into enlighten_layout.ui before running pyside2-uic.  That way
 you can directly update and edit enlighten.css in a proper context-colored
 editor, run it through lint-checkers, etc.  Also, it is automatically
 updated into the .ui file so Qt Designer can see it as well.
 
-More significantly, we're TRYING to "apply" enlighten.css to the MainWindow at
-runtime via the Stylesheets class.  That means that end-users SHOULD be able to edit 
+More significantly, we're trying to "apply" enlighten.css to the MainWindow at
+runtime via the Stylesheets class.  That means that end-users should be able to edit 
 enlighten.css (and the other defaults/) to their hearts content, and their styles 
 would automatically override the compiled-in stylesheet at execution.
 
-I also added --stylesheet-path as a cmd-line option.
-
-# Supported CSS Properties
-
-Qt doesn't support all CSS properties (nor does any browser...)  A list of
-supported properties is here:
-
-- https://doc.qt.io/qt-5/stylesheet-reference.html#list-of-properties
-
-Although...empirical testing suggests only these are actually working via PySide2?
-
-- https://doc.qt.io/archives/qt-4.8/stylesheet-reference.html#list-of-properties
-
-Nor does Qt seem to support CSS3 variables :-(
+We also added --stylesheet-path as a cmd-line option.
 
 # Maintenance
 
 After editing the CSS in enlighten.css, you need to re-run
-scripts\rebuild_resources.sh to copy the new CSS into enlighten_layout.ui
+scripts/rebuild_resources.sh to copy the new CSS into enlighten_layout.ui
 so it can be seen in Qt Designer.  
 
-EVENTUALLY, the enlighten.css stylesheet should be
-[re-]applied to MainWindow at runtime, so edits to the .css can be seen
-in ENLIGHTEN without re-running rebuild_resources.sh; but this isn't working
-right now?
+Ideally, the enlighten.css stylesheet should be [re-]applied to MainWindow at 
+runtime, so edits to the .css can be seen in ENLIGHTEN without re-running 
+rebuild_resources.sh, but this isn't working.
 
 # Selectors
 
 Normally you style CSS elements by classes.  I haven't had luck identifying
 Qt widgets by class, but I have found that Qt "custom properties" can be used
 as element selectors (see wpBox, wpPanel, wpGrad etc).
-
-Also note that the styles as shown in Qt Designer are often _not_ what you see
-in running the ENLIGHTEN executable!  I don't know if that would be resolved
-if we moved to the Qt5 Designer, but it could be.
 
 # Appearance Notes
 
@@ -93,20 +73,16 @@ frame (frame_FOO_white) enclosing a heavier dark frame (frame_FOO_black/shaded).
 These are currently implemented with a frame with a wpBox property enclosing a
 frame with a wpPanel or wpGrad property.
 
-This means there are twice as many frames as there needs to be, as you'd THINK
+This means there are twice as many frames as there needs to be, as you'd think
 there would be ways to put a thin white line around a heavier dark line using
 CSS.  And there are: several ways, in fact.  But Qt's CSS rendering engine
 doesn't seem to support the 'outline' property, nor the 'box-shadow' property,
 and I couldn't figure out how to successfully create a .QFrame[wpPanel] :: after
 shadow.
     
-    MZ: Verify the above is still true in Qt5!
-
 There are _programmatic_ ways to do shadows / edged panels in Qt, but that would
 be comingling function and design, and wouldn't support skinning.  So anyway,
 for now we have frame_FOO_white[wpBox] enclosing frame_FOO_black[wpGrad], etc.
-
-Fix if you can.
 
 # Dark Mode vs Light Mode vs Themes
 
@@ -151,11 +127,11 @@ Tailored from this:
 ## Themes
 
 We started with just "dark", then added "light", and then added the various 
-colors (teal, orange, yellow, pink etc).
+colors (teal, orange, yellow, pink etc) for fun.
 
 The colored themes were programmatically generated using scripts/themegen.py.
 
-Right now, light and dark are toggle-able through the moon button on the button 
+Right now, light and dark are toggle-able through the "moon" button on the button 
 bar, while you can select any theme (including light and dark) from the Settings
 page.
 
@@ -170,45 +146,31 @@ If you want to "skin" ENLIGHTEN, including changing the logos and icons, these
 are the basic recommendations:
 
 - Splash Screen
-    - Current images are stored in enlighten/assets/uic_qrc/images/splashscreens
+    - Current images are stored in wp_enlighten/assets/uic_qrc/images/splashscreens
       and defined as Qt resources in uic_qrc/splashscreens.qrc
-    - The splash screen is instantiated and displayed in scripts/Enlighten.py 
+    - The splash screen is instantiated and displayed in wp_enlighten/app.py
     - The version number and "instantiating" messages are written to the splash 
-      screen by enlighten.BusinessObjects.header.
+      screen by wp_enlighten.EnlightenFeature.header.
 - Logo
     - The logos (one each for light and dark modes) are stored in 
-      enlighten/assets/uic_qrc/images and defined as resources in 
+      wp_enlighten/assets/uic_qrc/images and defined as resources in 
       uic_qrc/enlighten_icons.qrc.
     - The logo is positioned in uic_qrc/enlighten_layout.ui.
     - The logo is programatically toggled between light and dark in
-      enlighten.ui.GUI.update_theme.
+      wp_enlighten.ui.GUI.update_theme.
 - GUI Layout
     - The overall layout of the ENLIGHTEN Qt application (the main "form" with
-      all the pages and tabs and frames) is defined in enlighten/assets/uic_qrc/enlighten_layout.ui,
-      and is normally edited with Qt Designer.
+      all the pages and tabs and frames) is defined in 
+      wp_enlighten/assets/uic_qrc/enlighten_layout.ui, and can be edited with Qt
+      Designer or raw XML.
 - Colors (CSS Stylesheets)
     - Colors and styles are defined in a couple places, but most are either in
-      enlighten/assets/stylesheets/dark/enlighten.css (the main stylesheet for the
-      GUI), or other files within stylesheets/dark, or per-theme overrides in
+      wp_enlighten/assets/stylesheets/dark/enlighten.css (the main stylesheet for
+      the GUI), or other files within stylesheets/dark, or per-theme overrides in
       stylesheets/.
-    - Some other codes are defined in enlighten.data.ColorNames
+    - Some other codes are defined in wp_enlighten.data.ColorNames
 - Icons
     - The icons used for compiled executables and shortcuts are in uic_qrc/images,
       and are referenced by scripts/*.iss (for Windows installer)
 
 Note you need to run scripts/rebuild_resources.sh after changing most of the above.
-
-The GUI elements surrounding the Wiley KnowItAll™ interface were specifically 
-negotiated with Wiley, who own the trademark. Wasatch does not advise altering 
-aspects of their logo (other than completely disabling that functionality) 
-without direct communication with Wiley's marketing team.
-
-# Path Forward
-
-## fewer default/
-
-We should probably add a property for wpClickedButton, allowing us to do without
-gray_gradient_button and red_gradient_button.
-
-Would be even better if we could use string matches in property selectors like 
-"benign" or "hazard"...
