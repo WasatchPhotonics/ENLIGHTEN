@@ -2,6 +2,8 @@
 
 ## 4.3 PyPi
 
+- 2026-??-?? 4.3.6
+    - fix tooltip bug which broke BLE
 - 2026-11-02 4.3.5
     - LibraryMatchingFeature
         - respect common.USE_QT

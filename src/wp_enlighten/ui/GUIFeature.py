@@ -5,7 +5,7 @@ from wp_enlighten import common
 from wp_enlighten.EnlightenFeature import EnlightenFeature
 
 from PySide6 import QtGui, QtCore
-from PySide6.QtWidgets import QMessageBox, QCheckBox, QDialog, QLineEdit, QDialogButtonBox, QVBoxLayout, QLabel, QTextEdit, QScrollArea, QWidget, QRadioButton
+from PySide6.QtWidgets import QMessageBox, QCheckBox, QDialog, QLineEdit, QDialogButtonBox, QVBoxLayout, QLabel, QTextEdit, QScrollArea, QWidget, QRadioButton, QTableWidgetItem
 
 log = logging.getLogger(__name__)
 
@@ -117,10 +117,12 @@ class GUIFeature(EnlightenFeature):
             self.set_tooltip(w, tooltip if flag else None)
 
     def set_tooltip(self, widget, msg):
-        log.debug(f"set_tooltip: {widget.objectName()} -> {msg}")
-        widget.setAttribute(QtCore.Qt.WidgetAttribute.WA_AlwaysShowToolTips, True)
+        if not isinstance(widget, QTableWidgetItem):
+            log.debug(f"set_tooltip: {widget.objectName()} -> {msg}") 
+            widget.setAttribute(QtCore.Qt.WidgetAttribute.WA_AlwaysShowToolTips, True)
         widget.setToolTip(msg)
-        self.ctl.stylesheets.apply(widget, "tooltip")
+        if not isinstance(widget, QTableWidgetItem):
+            self.ctl.stylesheets.apply(widget, "tooltip")
 
     def colorize_button(self, button, flag, tristate=False, active_color="red"):
         if button is None:
