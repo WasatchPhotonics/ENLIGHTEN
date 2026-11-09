@@ -56,7 +56,7 @@ Issues:
 import logging
 import time
 
-from wp_enlighten.post_processing.AutoRamanFeature import *
+from wp_enlighten.post_processing.AutoRamanFeature import AutoRamanFeature
 from EnlightenPlugin import EnlightenPluginBase
 from EnlightenPlugin import EnlightenPluginRequest
 
@@ -84,6 +84,7 @@ class Mapper(EnlightenPluginBase):
         self.target_y = 1
         self.position_x = self.cell_1_x
         self.position_y = self.cell_1_y
+        self.step_size = 1
         
         self.name = f"Mapper {self.VERSION}"
 
@@ -191,8 +192,7 @@ class Mapper(EnlightenPluginBase):
 
         # ###########################
         # Mapper Definitions
-        # ###########################      
-        
+        # ########################### 
         self.mapper = MapperArduino.Mapper()   
         self.arf = AutoRamanFeature(self.ctl)
         
