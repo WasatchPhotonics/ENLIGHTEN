@@ -36,8 +36,10 @@ Change Log:
         - Sets whatever your current position is as cell 1
     - Home Mapper button removed
     - Version updated to 1.2, so fancy
-- ?
+- 11-12-2026
     - Updated the start cell 1 values to reflect being able to reach the first row
+    - Set common.USE_QT to false in the configuration to prevent errors
+        - This allows use of the plugin with version 4.3+
 
 Questions:
 - currently completes the X-axis movement then the Y-axis movement, can/should we do both simultaneously? 
@@ -67,7 +69,7 @@ log = logging.getLogger(__name__)
 
 class Mapper(EnlightenPluginBase):
 
-    VERSION = "1.2"
+    VERSION = "1.3"
 
     ############################################################################
     # Lifecycle
