@@ -36,6 +36,10 @@ Change Log:
         - Sets whatever your current position is as cell 1
     - Home Mapper button removed
     - Version updated to 1.2, so fancy
+- 11-12-2026
+    - Updated the start cell 1 values to reflect being able to reach the first row
+    - Set common.USE_QT to false in the configuration to prevent errors
+        - This allows use of the plugin with version 4.3+
 
 Questions:
 - currently completes the X-axis movement then the Y-axis movement, can/should we do both simultaneously? 
@@ -54,7 +58,8 @@ Issues:
 import logging
 import time
 
-from wp_enlighten.post_processing.AutoRamanFeature import *
+from wp_enlighten.post_processing.AutoRamanFeature import AutoRamanFeature
+from wp_enlighten import common
 from EnlightenPlugin import EnlightenPluginBase
 from EnlightenPlugin import EnlightenPluginRequest
 
@@ -64,7 +69,7 @@ log = logging.getLogger(__name__)
 
 class Mapper(EnlightenPluginBase):
 
-    VERSION = "1.2"
+    VERSION = "1.3"
 
     ############################################################################
     # Lifecycle
@@ -72,8 +77,8 @@ class Mapper(EnlightenPluginBase):
 
     def get_configuration(self):
         #Cell Locations....maybe a better way?
-        self.cell_1_x = 20
-        self.cell_1_y = 132
+        self.cell_1_x = 18
+        self.cell_1_y = 146
         self.center_distance = 5
         self.count = 0
         self.scan_running = False
@@ -82,6 +87,7 @@ class Mapper(EnlightenPluginBase):
         self.target_y = 1
         self.position_x = self.cell_1_x
         self.position_y = self.cell_1_y
+        self.step_size = 1
         
         self.name = f"Mapper {self.VERSION}"
 
@@ -185,13 +191,15 @@ class Mapper(EnlightenPluginBase):
         )
 
         self.has_other_graph = False
-        self.block_enlighten = False
+        self.block_enlighten = False        
+        common.USE_QT = False
 
         # ###########################
         # Mapper Definitions
-        # ###########################      
-        
-        self.mapper = MapperArduino.Mapper()   
+        # ########################### 
+        self.mapper = MapperArduino.Mapper()
+        #self.arf = AutoRamanFeature.__new__(AutoRamanFeature)
+        #self.arf = AutoRamanFeature.__new__(AutoRamanFeature(self.ctl))
         self.arf = AutoRamanFeature(self.ctl)
         
         # Moves to home to set the initial location
@@ -352,14 +360,15 @@ class Mapper(EnlightenPluginBase):
             log.debug(f"Current x: {self.position_x}; Current y: {self.position_y}")
             log.debug("Taking Auto-Raman Sample")
             self.arf.measure_callback()
+            #AutoRamanFeature.measure_callback(self.ctl)
             
     def run_mapping(self):
         # The mapper should have been centered on cell 1 before starting
         #log.debug(f"self.running: {self.arf.running}")
         if self.count < 1:
             self.max_x = self.cell_1_x + (self.center_distance * 3)
-            #self.max_y = (self.cell_1_y - (self.center_distance * 26)) #This may need to be updated to allow for less rows
-            self.max_y = (self.cell_1_y - (self.center_distance * 23))
+            self.max_y = (self.cell_1_y - (self.center_distance * 26)) #This may need to be updated to allow for less rows
+            #self.max_y = (self.cell_1_y - (self.center_distance * 23))
             log.debug(f"max_x: {self.max_x}; max_y: {self.max_y}")
             self.mapper.x.move_absolute_mm(self.cell_1_x)
             self.mapper.y.move_absolute_mm(self.cell_1_y)
@@ -388,6 +397,7 @@ class Mapper(EnlightenPluginBase):
 
     def disconnect(self):
         #self.home_mapper()
+        common.USE_QT = True
         self.mapper.y.find_home_position()
         self.mapper.x.find_home_position()
         self.mapper.disconnect()
