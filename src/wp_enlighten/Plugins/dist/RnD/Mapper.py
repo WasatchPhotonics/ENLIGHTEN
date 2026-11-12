@@ -57,6 +57,7 @@ import logging
 import time
 
 from wp_enlighten.post_processing.AutoRamanFeature import AutoRamanFeature
+from wp_enlighten import common
 from EnlightenPlugin import EnlightenPluginBase
 from EnlightenPlugin import EnlightenPluginRequest
 
@@ -188,12 +189,15 @@ class Mapper(EnlightenPluginBase):
         )
 
         self.has_other_graph = False
-        self.block_enlighten = False
+        self.block_enlighten = False        
+        common.USE_QT = False
 
         # ###########################
         # Mapper Definitions
         # ########################### 
-        self.mapper = MapperArduino.Mapper()   
+        self.mapper = MapperArduino.Mapper()
+        #self.arf = AutoRamanFeature.__new__(AutoRamanFeature)
+        #self.arf = AutoRamanFeature.__new__(AutoRamanFeature(self.ctl))
         self.arf = AutoRamanFeature(self.ctl)
         
         # Moves to home to set the initial location
@@ -354,6 +358,7 @@ class Mapper(EnlightenPluginBase):
             log.debug(f"Current x: {self.position_x}; Current y: {self.position_y}")
             log.debug("Taking Auto-Raman Sample")
             self.arf.measure_callback()
+            #AutoRamanFeature.measure_callback(self.ctl)
             
     def run_mapping(self):
         # The mapper should have been centered on cell 1 before starting
@@ -390,6 +395,7 @@ class Mapper(EnlightenPluginBase):
 
     def disconnect(self):
         #self.home_mapper()
+        common.USE_QT = True
         self.mapper.y.find_home_position()
         self.mapper.x.find_home_position()
         self.mapper.disconnect()
