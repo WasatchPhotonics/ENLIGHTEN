@@ -51,6 +51,7 @@ To Do:
 - Set the laser power to 5%
     - Alternative is a msg box that informs that the laser power is at/above 10% and asks for confirmation
     - Should this be done?  Enlighten has controls for laser power that are easily accessible
+- Clean up more of the commented code
 
 Issues:
 """
