@@ -92,7 +92,8 @@ class ConfigurationFeature(EnlightenFeature):
         self.directory = common.get_default_data_dir()
         self.pathname  = os.path.join(self.directory, "enlighten.ini")
         self.test_dir = os.path.join(self.directory, 'testSpectrometers') # MZ: this doesn't belong in Configuration
-
+        self.config_dir = os.path.join(self.directory, 'config')
+        
         self.load_defaults()
         self.stub_missing()
         self.stub_test() # MZ: I don't think this belongs in Configuration
@@ -142,6 +143,17 @@ class ConfigurationFeature(EnlightenFeature):
         except Exception:
             log.critical("failed to create test directory", exc_info=1)
 
+    def stub_config(self):
+        if os.path.exists(self.config_dir)
+            return
+        
+        self.stub_dir()
+        try:
+            log.info(f"creating config directory: {self.config_dir}")
+            os.makedirs(self.config_dir)
+        except Exception:
+            log.critical("failed to create config directory", exc_info=1)
+    
     def stub_missing(self):
         """ If no enlighten.ini file exists, make one. """
         if os.path.exists(self.pathname):
