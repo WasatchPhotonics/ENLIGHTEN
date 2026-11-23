@@ -97,6 +97,7 @@ class ConfigurationFeature(EnlightenFeature):
         self.load_defaults()
         self.stub_missing()
         self.stub_test() # MZ: I don't think this belongs in Configuration
+        self.stub_config()
 
         self.lb_save_result.setText("calibration will be saved to %s" % self.pathname)
 
@@ -127,10 +128,10 @@ class ConfigurationFeature(EnlightenFeature):
             return
 
         try:
-            log.info("creating configuration directory: %s", self.directory)
+            log.info("creating EnlightenSpectra directory: %s", self.directory)
             os.makedirs(self.directory)
         except Exception:
-            log.critical("failed to create config directory", exc_info=1)
+            log.critical("failed to create EnlightenSpectra directory", exc_info=1)
 
     def stub_test(self):
         """ Create test spectra dir if not found. """
